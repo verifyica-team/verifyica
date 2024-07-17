@@ -57,6 +57,16 @@ To perform integration testing, you need a test environment. Typically this is c
 
 Alternatively, tests can be performed on an external environment, though integration testing can be tricky.
 
+# Usage / Examples
+
+Currently, documentation is lacking, but reviewing the [tests](tests) provides some usage examples.
+
+Example tests using [testcontainers-java](https://java.testcontainers.org/)
+
+- [KafkaTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/KafkaTest.java)
+- [MongoDBTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/MongoDBTest.java)
+
+
 # Contributing
 
 See [Contributing](CONTRIBUTING.md) for details.
