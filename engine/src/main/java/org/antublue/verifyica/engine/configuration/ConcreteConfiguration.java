@@ -62,13 +62,13 @@ public class ConcreteConfiguration
         try {
             // Get the properties file from a system property
             Optional<File> optional =
-                    Optional.ofNullable(System.getProperties().get(VERIFYICA_CONFIGURATION_TRACE))
+                    Optional.ofNullable(System.getProperties().get(VERIFYICA_PROPERTIES_FILENAME))
                             .map(value -> new File(value.toString()).getAbsoluteFile());
 
             // If a system property didn't exist, scan the current directory back to the root
             // directory
             if (!optional.isPresent()) {
-                optional = find(Paths.get("."), VERIFYICA_CONFIGURATION_TRACE);
+                optional = find(Paths.get("."), VERIFYICA_PROPERTIES_FILENAME);
             }
 
             if (optional.isPresent()) {
