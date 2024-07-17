@@ -1,0 +1,15 @@
+name: Build - Manual
+on: [workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'zulu'
+        cache: maven
+    - name: Build
+      run: ./mvnw clean verify
