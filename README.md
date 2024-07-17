@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/antublue/verifyica/actions/workflows/build.yml/badge.svg)](https://github.com/antublue/verifyica/actions/workflows/build.yml)
 
-A Java multi-threaded, annotation-based test engine for integration testing.
+A Java annotation-based, multi-threaded test engine for integration testing built on JUnit platform.
 
 # Purpose
 
