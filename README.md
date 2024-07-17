@@ -57,6 +57,10 @@ To perform integration testing, you need a test environment. Typically this is c
 
 Alternatively, tests can be performed on an external environment, though integration testing can be tricky.
 
+# Contributing
+
+See [Contributing](CONTRIBUTING.md) for details.
+
 # Support
 
 ![YourKit logo](https://www.yourkit.com/images/yklogo.png)
