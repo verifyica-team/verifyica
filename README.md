@@ -6,7 +6,7 @@ A Java multi-threaded, annotation-based test engine for integration testing.
 
 # Purpose
 
-Unit testing is traditionally oriented test (methods) first ...
+Unit testing is traditionally oriented tests (methods) ...
 
 - Given a set of tests (methods), execute each test using a set of arguments.
 
@@ -18,7 +18,7 @@ for (Test test : Tests) {
 }
 ```
 
-Verifyica swaps the paradigm to be argument first ...
+Verifyica swaps the paradigm to be arguments first ...
 
 - Given a set of arguments, execute each test with the arguments
 
