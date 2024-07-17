@@ -61,6 +61,10 @@ Alternatively, tests can be performed on an external environment, though integra
 
 See [Contributing](CONTRIBUTING.md) for details.
 
+# Licensing
+
+[Apache-2.0](LICENSE.txt) licensed.
+
 # Support
 
 ![YourKit logo](https://www.yourkit.com/images/yklogo.png)
