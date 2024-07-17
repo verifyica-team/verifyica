@@ -27,6 +27,11 @@ public class BlockingRejectedExecutionHandler implements RejectedExecutionHandle
     private static final Logger LOGGER =
             LoggerFactory.getLogger(BlockingRejectedExecutionHandler.class);
 
+    /** Constructor */
+    public BlockingRejectedExecutionHandler() {
+        // DO NOTHING
+    }
+
     @Override
     public void rejectedExecution(Runnable runnable, ThreadPoolExecutor executor) {
         if (!executor.isShutdown()) {

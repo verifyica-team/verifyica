@@ -55,6 +55,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @param testClass testClass
      * @param beforeAllMethods beforeAllMethods
      * @param afterAllMethods afterAllMethods
+     * @param testArgument testArgument
      */
     public ArgumentTestDescriptor(
             UniqueId uniqueId,

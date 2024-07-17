@@ -70,6 +70,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
     private static final String ARTIFACT_ID = "maven-plugin";
 
+    /** Version */
     public static final String VERSION = Version.version();
 
     @Parameter(defaultValue = "${session}", required = true, readonly = true)

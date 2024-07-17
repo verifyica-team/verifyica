@@ -32,8 +32,13 @@ import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
         implements MetadataTestDescriptor {
 
+    /** ThrowableCollector */
     protected final ThrowableCollector throwableCollector;
+
+    /** Metadata */
     protected final Metadata metadata;
+
+    /** Stopwatch */
     protected final StopWatch stopWatch;
 
     /**

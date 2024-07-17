@@ -79,6 +79,11 @@ public class VerifyicaTestEngine implements TestEngine {
         return Optional.of(VERSION);
     }
 
+    /** Constructor */
+    public VerifyicaTestEngine() {
+        // DO NOTHING
+    }
+
     @Override
     public TestDescriptor discover(
             EngineDiscoveryRequest engineDiscoveryRequest, UniqueId uniqueId) {
@@ -151,6 +156,11 @@ public class VerifyicaTestEngine implements TestEngine {
         }
     }
 
+    /**
+     * Method to get the version
+     *
+     * @return the version
+     */
     public static String version() {
         String value = "unknown";
 

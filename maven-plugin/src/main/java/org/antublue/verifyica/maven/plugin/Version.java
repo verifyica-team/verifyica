@@ -28,6 +28,11 @@ public class Version {
     private static final String VERSION = "version";
     private static final String UNKNOWN = "unknown";
 
+    /** Constructor */
+    private Version() {
+        // DO NOTHING
+    }
+
     /**
      * Method to get the version
      *

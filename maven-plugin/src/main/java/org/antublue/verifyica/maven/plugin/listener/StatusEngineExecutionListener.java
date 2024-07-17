@@ -270,7 +270,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
         }
     }
 
-    public void executionFinished(MetadataTestDescriptor metadataTestDescriptor) {
+    private void executionFinished(MetadataTestDescriptor metadataTestDescriptor) {
         Metadata metadata = metadataTestDescriptor.getMetadata();
 
         Class<?> testClass = metadata.get(MetadataTestDescriptorConstants.TEST_CLASS);

@@ -29,6 +29,12 @@ public @interface Verifyica {
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface ArgumentSupplier {
+
+        /**
+         * Method to get parallelism
+         *
+         * @return parallelism
+         */
         int parallelism() default 1;
     }
 

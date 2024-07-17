@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import org.junit.platform.commons.util.Preconditions;
 
+/** Class to implement Store */
 @SuppressWarnings("unchecked")
 public class Store {
 
@@ -101,6 +102,7 @@ public class Store {
      * Method to get an Object from the Store, throwing an Exception if null
      *
      * @param key key
+     * @param type type
      * @param supplier supplier
      * @return the Object
      * @param <T> type
