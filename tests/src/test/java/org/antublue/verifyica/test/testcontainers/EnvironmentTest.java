@@ -17,6 +17,8 @@
 package org.antublue.verifyica.test.testcontainers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Properties;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
@@ -26,24 +28,49 @@ import org.antublue.verifyica.api.Verifyica;
 public class EnvironmentTest {
 
     @Verifyica.ArgumentSupplier
-    public static Argument<Environment> arguments() {
+    public static Collection<Argument<Environment>> arguments() {
+        Collection<Argument<Environment>> environments = new ArrayList<>();
+
+        // Create environment 1
+
         Properties properties = new Properties();
-
         // ... configure properties for the environment ...
-
-        String name = "Test Environment";
+        String name = "Test Environment 1";
         Environment environment = new Environment(properties);
 
-        return Argument.of(name, environment);
+        environments.add(Argument.of(name, environment));
+
+        // Create environment 2
+
+        properties = new Properties();
+        // ... configure properties for the environment ...
+        name = "Test Environment 2";
+        environment = new Environment(properties);
+
+        environments.add(Argument.of(name, environment));
+
+        // ... more environments ...
+
+        return environments;
     }
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) throws Throwable {
-        argumentContext.getArgument(Environment.class).getPayload().initialize();
+        Argument<Environment> argument = argumentContext.getArgument(Environment.class);
+
+        System.out.println("[" + argument.getName() + "] initializing ...");
+
+        argument.getPayload().initialize();
+
+        System.out.println("[" + argument.getName() + "] initialized");
     }
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
+        Argument<Environment> argument = argumentContext.getArgument(Environment.class);
+
+        System.out.println("[" + argument.getName() + "] test1");
+
         HttpClient httpClient =
                 argumentContext.getArgument(Environment.class).getPayload().getHttpClient();
 
@@ -52,6 +79,10 @@ public class EnvironmentTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
+        Argument<Environment> argument = argumentContext.getArgument(Environment.class);
+
+        System.out.println("[" + argument.getName() + "] test2");
+
         HttpClient httpClient =
                 argumentContext.getArgument(Environment.class).getPayload().getHttpClient();
 
@@ -62,7 +93,13 @@ public class EnvironmentTest {
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) {
-        argumentContext.getArgument(Environment.class).getPayload().destroy();
+        Argument<Environment> argument = argumentContext.getArgument(Environment.class);
+
+        System.out.println("[" + argument.getName() + "] destroying ...");
+
+        argument.getPayload().destroy();
+
+        System.out.println("[" + argument.getName() + "] destroyed");
     }
 
     /** Class to represent an environment */
