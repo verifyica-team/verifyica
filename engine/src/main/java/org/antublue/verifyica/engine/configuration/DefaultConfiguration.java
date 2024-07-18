@@ -26,6 +26,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -50,12 +51,40 @@ public class DefaultConfiguration implements Configuration {
 
     private boolean IS_TRACE_ENABLED;
 
+    private final Map<String, String> deprecatedKeyMappingMap;
     private final Map<String, String> map;
     private final ImmutableConfiguration immutableConfiguration;
     private final ConfigurationParameters configurationParameters;
 
     /** Constructor */
     public DefaultConfiguration() {
+        // TODO load the deprecated configuration property keys from a resource
+
+        deprecatedKeyMappingMap = new HashMap<>();
+        deprecatedKeyMappingMap.put("verifyica.parallelism", Constants.ENGINE_PARALLELISM);
+        deprecatedKeyMappingMap.put("verifyica.thread.type", Constants.ENGINE_EXECUTOR_TYPE);
+        deprecatedKeyMappingMap.put("verifyica.logger.level", Constants.ENGINE_LOGGER_LEVEL);
+        deprecatedKeyMappingMap.put("verifyica.logger.regex", Constants.ENGINE_LOGGER_REGEX);
+
+        deprecatedKeyMappingMap.put(
+                "verifyica.console.log.timing", Constants.MAVEN_PLUGIN_LOG_TIMING);
+        deprecatedKeyMappingMap.put(
+                "verifyica.console.log.timing.units", Constants.MAVEN_PLUGIN_TIMING_UNITS);
+        deprecatedKeyMappingMap.put(
+                "verifyica.console.log.test.messages", Constants.MAVEN_PLUGIN_TEST_MESSAGES);
+        deprecatedKeyMappingMap.put(
+                "verifyica.console.log.test.message", Constants.MAVEN_PLUGIN_LOG_TEST_MESSAGE);
+        deprecatedKeyMappingMap.put(
+                "verifyica.console.log.pass.messages", Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGES);
+        deprecatedKeyMappingMap.put(
+                "verifyica.console.log.pass.message", Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGE);
+        deprecatedKeyMappingMap.put(
+                "verifyica.console.log.skip.messages", Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGES);
+        deprecatedKeyMappingMap.put(
+                "verifyica.console.log.skip.message", Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGE);
+        deprecatedKeyMappingMap.put(
+                "verifyica.console.log.fail.message", Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGES);
+
         map = Collections.synchronizedMap(new TreeMap<>());
         immutableConfiguration = new ImmutableConfiguration(this);
         configurationParameters = new DefaultConfigurationParameters(this);
@@ -74,7 +103,16 @@ public class DefaultConfiguration implements Configuration {
         Preconditions.notNull(key, "key is null");
         Preconditions.condition(!key.trim().isEmpty(), "key is empty");
 
-        map.put(key, value);
+        if (deprecatedKeyMappingMap.containsKey(key)) {
+            warn(
+                    "Configuration property ["
+                            + key
+                            + "] has been deprecated. Converting to ["
+                            + deprecatedKeyMappingMap.get(key)
+                            + "]");
+        }
+
+        map.put(deprecatedKeyMappingMap.getOrDefault(key, key), value);
 
         return this;
     }
@@ -84,7 +122,7 @@ public class DefaultConfiguration implements Configuration {
         Preconditions.notNull(key, "key is null");
         Preconditions.condition(!key.trim().isEmpty(), "key is empty");
 
-        return map.get(key);
+        return map.get(deprecatedKeyMappingMap.getOrDefault(key, key));
     }
 
     @Override
@@ -154,14 +192,18 @@ public class DefaultConfiguration implements Configuration {
                     properties.load(reader);
                 }
 
-                properties.forEach((key, value) -> map.put((String) key, (String) value));
-                map.put(VERIFYICA_CONFIGURATION_TRACE, optional.get().getAbsolutePath());
+                properties.forEach(
+                        (key, value) -> {
+                            setProperty((String) key, (String) value);
+                        });
+
+                setProperty(VERIFYICA_CONFIGURATION_TRACE, optional.get().getAbsolutePath());
             }
         } catch (IOException e) {
             throw new EngineConfigurationException("Exception loading properties", e);
         }
 
-        map.put(Constants.VERSION, Version.version());
+        setProperty(Constants.ENGINE_VERSION, Version.version());
 
         if (Constants.TRUE.equals(System.getenv().get(VERIFYICA_CONFIGURATION_TRACE))) {
             IS_TRACE_ENABLED = true;
@@ -201,7 +243,7 @@ public class DefaultConfiguration implements Configuration {
     }
 
     /**
-     * Method to load a TRACE message
+     * Method to log a TRACE message
      *
      * @param message message
      */
@@ -225,6 +267,31 @@ public class DefaultConfiguration implements Configuration {
                             + message
                             + " ");
         }
+    }
+
+    /**
+     * Method to log a WARN message
+     *
+     * @param message message
+     */
+    private void warn(String message) {
+        String dateTime;
+
+        synchronized (SIMPLE_DATE_FORMAT) {
+            dateTime = SIMPLE_DATE_FORMAT.format(new Date());
+        }
+
+        System.out.println(
+                dateTime
+                        + " | "
+                        + Thread.currentThread().getName()
+                        + " | "
+                        + "WARN"
+                        + " | "
+                        + DefaultConfiguration.class.getName()
+                        + " | "
+                        + message
+                        + " ");
     }
 
     /** Class to hold the singleton instance */

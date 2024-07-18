@@ -81,7 +81,7 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
 
                 int threadCount =
                         configurationParameters
-                                .get(Constants.PARALLELISM)
+                                .get(Constants.ENGINE_PARALLELISM)
                                 .map(
                                         value -> {
                                             int intValue;
@@ -102,7 +102,7 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
                                         })
                                 .orElse(MAX_THREAD_COUNT);
 
-                LOGGER.trace("%s = [%d]", Constants.PARALLELISM, threadCount);
+                LOGGER.trace("%s = [%d]", Constants.ENGINE_PARALLELISM, threadCount);
 
                 executorService =
                         new ThreadPoolExecutor(

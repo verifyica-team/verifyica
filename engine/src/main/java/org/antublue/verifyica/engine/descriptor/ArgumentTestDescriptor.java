@@ -92,7 +92,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
         DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
 
         Preconditions.notNull(executionRequest, "executionRequest is null");
-        Preconditions.notNull(defaultArgumentContext, "concreteArgumentContext is null");
+        Preconditions.notNull(defaultArgumentContext, "defaultArgumentContext is null");
         Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
 
         stopWatch.reset();
@@ -216,7 +216,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                     testInstance.getClass().getName(), testInstance);
         }
 
-        Preconditions.notNull(defaultArgumentContext, "concreteArgumentContext is null");
+        Preconditions.notNull(defaultArgumentContext, "defaultArgumentContext is null");
         Preconditions.notNull(testInstance, "testInstance is null");
 
         for (Method method : beforeAllMethods) {
@@ -303,7 +303,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                     testInstance.getClass().getName(), testInstance);
         }
 
-        Preconditions.notNull(defaultArgumentContext, "concreteArgumentContext is null");
+        Preconditions.notNull(defaultArgumentContext, "defaultArgumentContext is null");
         Preconditions.notNull(testInstance, "testInstance is null");
 
         for (Method method : afterAllMethods) {

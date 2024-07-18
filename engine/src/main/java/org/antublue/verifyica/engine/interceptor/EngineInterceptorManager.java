@@ -19,20 +19,33 @@ package org.antublue.verifyica.engine.interceptor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineExtension;
 import org.antublue.verifyica.api.interceptor.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.EngineInterceptorAdapter;
 import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
+import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
+import org.antublue.verifyica.engine.logger.Logger;
+import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ClassPathSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
 
-/** Class to implement EngineInvocationInterceptorManager */
+/** Class to implement EngineInterceptorManager */
 public class EngineInterceptorManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EngineInterceptorManager.class);
+
+    private static final Configuration CONFIGURATION = DefaultConfiguration.getInstance();
 
     private final List<EngineInterceptor> engineInterceptors;
     private boolean initialized;
@@ -52,6 +65,7 @@ public class EngineInterceptorManager {
 
             List<Class<?>> classes = new ArrayList<>(classSet);
 
+            filter(classes);
             OrderSupport.order(classes);
 
             for (Class<?> clazz : classes) {
@@ -120,6 +134,62 @@ public class EngineInterceptorManager {
      */
     public static EngineInterceptorManager getInstance() {
         return SingletonHolder.SINGLETON;
+    }
+
+    private static void filter(List<Class<?>> classes) {
+        Optional.ofNullable(CONFIGURATION.getProperty(Constants.ENGINE_INTERCEPTORS_INCLUDE_REGEX))
+                .ifPresent(
+                        regex -> {
+                            if (LOGGER.isTraceEnabled()) {
+                                LOGGER.trace(
+                                        "%s [%s]",
+                                        Constants.ENGINE_INTERCEPTORS_INCLUDE_REGEX, regex);
+                            }
+
+                            Pattern pattern = Pattern.compile(regex);
+                            Matcher matcher = pattern.matcher("");
+
+                            Iterator<Class<?>> iterator = classes.iterator();
+                            while (iterator.hasNext()) {
+                                Class<?> clazz = iterator.next();
+                                matcher.reset(clazz.getName());
+                                if (!matcher.find()) {
+                                    if (LOGGER.isTraceEnabled()) {
+                                        LOGGER.trace(
+                                                "removing engine interceptor/extension [%s]",
+                                                clazz.getName());
+                                    }
+                                    iterator.remove();
+                                }
+                            }
+                        });
+
+        Optional.ofNullable(CONFIGURATION.getProperty(Constants.ENGINE_INTERCEPTORS_EXCLUDE_REGEX))
+                .ifPresent(
+                        regex -> {
+                            if (LOGGER.isTraceEnabled()) {
+                                LOGGER.trace(
+                                        "%s [%s]",
+                                        Constants.ENGINE_INTERCEPTORS_EXCLUDE_REGEX, regex);
+                            }
+
+                            Pattern pattern = Pattern.compile(regex);
+                            Matcher matcher = pattern.matcher("");
+
+                            Iterator<Class<?>> iterator = classes.iterator();
+                            while (iterator.hasNext()) {
+                                Class<?> clazz = iterator.next();
+                                matcher.reset(clazz.getName());
+                                if (matcher.find()) {
+                                    if (LOGGER.isTraceEnabled()) {
+                                        LOGGER.trace(
+                                                "removing engine interceptor/extension [%s]",
+                                                clazz.getName());
+                                    }
+                                    iterator.remove();
+                                }
+                            }
+                        });
     }
 
     /** Class to hold the singleton instance */

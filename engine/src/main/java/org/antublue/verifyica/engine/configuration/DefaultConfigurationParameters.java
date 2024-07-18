@@ -51,10 +51,7 @@ public class DefaultConfigurationParameters implements ConfigurationParameters {
         Preconditions.notNull(key, "key is null");
         Preconditions.condition(!key.trim().isEmpty(), "key is empty");
 
-        String value = configuration.getProperty(key);
-        return "true".equalsIgnoreCase(value)
-                ? Optional.of(Boolean.TRUE)
-                : Optional.of(Boolean.FALSE);
+        return Optional.ofNullable(configuration.getProperty(key)).map("true"::equals);
     }
 
     @Override
