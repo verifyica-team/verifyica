@@ -23,7 +23,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import org.antublue.verifyica.api.Context;
-import org.antublue.verifyica.engine.context.ConcreteArgumentContext;
+import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.DisplayNameSupport;
@@ -84,11 +84,11 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
             LOGGER.trace("execute ClassTestDescriptor [%s]", toString());
         }
 
-        ConcreteArgumentContext concreteArgumentContext = (ConcreteArgumentContext) context;
+        DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
 
         Preconditions.notNull(executionRequest, "executionRequest is null");
-        Preconditions.notNull(concreteArgumentContext.getTestInstance(), "testInstance is null");
-        Preconditions.notNull(concreteArgumentContext.getArgument(), "testArgument is null");
+        Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
+        Preconditions.notNull(defaultArgumentContext.getArgument(), "testArgument is null");
 
         stopWatch.reset();
 
@@ -101,18 +101,18 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
         getMetadata()
                 .put(
                         MetadataTestDescriptorConstants.TEST_ARGUMENT,
-                        concreteArgumentContext.getArgument());
+                        defaultArgumentContext.getArgument());
         getMetadata().put(MetadataTestDescriptorConstants.TEST_METHOD, testMethod);
         getMetadata()
                 .put(MetadataTestDescriptorConstants.TEST_METHOD_DISPLAY_NAME, getDisplayName());
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        throwableCollector.execute(() -> invokeBeforeEachMethods(concreteArgumentContext));
+        throwableCollector.execute(() -> invokeBeforeEachMethods(defaultArgumentContext));
         if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(() -> test(concreteArgumentContext));
+            throwableCollector.execute(() -> invokeTestMethod(defaultArgumentContext));
         }
-        throwableCollector.execute(() -> invokeAfterEachMethods(concreteArgumentContext));
+        throwableCollector.execute(() -> invokeAfterEachMethods(defaultArgumentContext));
 
         stopWatch.stop();
 
@@ -144,7 +144,7 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
 
         stopWatch.reset();
 
-        ConcreteArgumentContext concreteArgumentContext = (ConcreteArgumentContext) context;
+        DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
 
         getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
         getMetadata()
@@ -154,7 +154,7 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
         getMetadata()
                 .put(
                         MetadataTestDescriptorConstants.TEST_ARGUMENT,
-                        concreteArgumentContext.getArgument());
+                        defaultArgumentContext.getArgument());
         getMetadata().put(MetadataTestDescriptorConstants.TEST_METHOD, testMethod);
         getMetadata()
                 .put(MetadataTestDescriptorConstants.TEST_METHOD_DISPLAY_NAME, getDisplayName());
@@ -173,7 +173,7 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
                         this,
                         format(
                                 "Argument [%s] test method [%s] skipped",
-                                concreteArgumentContext.getArgument().getName(),
+                                defaultArgumentContext.getArgument().getName(),
                                 testMethod.getName()));
     }
 
@@ -197,9 +197,15 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
                 + "}";
     }
 
-    private void invokeBeforeEachMethods(ConcreteArgumentContext concreteArgumentContext)
+    /**
+     * Method to invoke all before all methods
+     *
+     * @param defaultArgumentContext defaultArgumentContext
+     * @throws Throwable Throwable
+     */
+    private void invokeBeforeEachMethods(DefaultArgumentContext defaultArgumentContext)
             throws Throwable {
-        Object testInstance = concreteArgumentContext.getTestInstance();
+        Object testInstance = defaultArgumentContext.getTestInstance();
         Preconditions.notNull(testInstance, "testInstance is null");
 
         if (LOGGER.isTraceEnabled()) {
@@ -215,12 +221,18 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
                         testInstance.getClass().getName(), testInstance, method);
             }
 
-            method.invoke(testInstance, concreteArgumentContext.toImmutable());
+            method.invoke(testInstance, defaultArgumentContext.asImmutable());
         }
     }
 
-    private void test(ConcreteArgumentContext concreteArgumentContext) throws Throwable {
-        Object testInstance = concreteArgumentContext.getTestInstance();
+    /**
+     * Method to invoke the test method
+     *
+     * @param defaultArgumentContext defaultArgumentContext
+     * @throws Throwable Throwable
+     */
+    private void invokeTestMethod(DefaultArgumentContext defaultArgumentContext) throws Throwable {
+        Object testInstance = defaultArgumentContext.getTestInstance();
         Preconditions.notNull(testInstance, "testInstance is null");
 
         if (LOGGER.isTraceEnabled()) {
@@ -229,12 +241,18 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
                     testInstance.getClass().getName(), testInstance, testMethod);
         }
 
-        testMethod.invoke(testInstance, concreteArgumentContext.toImmutable());
+        testMethod.invoke(testInstance, defaultArgumentContext.asImmutable());
     }
 
-    private void invokeAfterEachMethods(ConcreteArgumentContext concreteArgumentContext)
+    /**
+     * Method to invoke all after each methods
+     *
+     * @param defaultArgumentContext defaultArgumentContext
+     * @throws Throwable Throwable
+     */
+    private void invokeAfterEachMethods(DefaultArgumentContext defaultArgumentContext)
             throws Throwable {
-        Object testInstance = concreteArgumentContext.getTestInstance();
+        Object testInstance = defaultArgumentContext.getTestInstance();
         Preconditions.notNull(testInstance, "testInstance is null");
 
         if (LOGGER.isTraceEnabled()) {
@@ -250,7 +268,7 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
                         testInstance.getClass().getName(), testInstance, method);
             }
 
-            method.invoke(testInstance, concreteArgumentContext.toImmutable());
+            method.invoke(testInstance, defaultArgumentContext.asImmutable());
         }
     }
 }

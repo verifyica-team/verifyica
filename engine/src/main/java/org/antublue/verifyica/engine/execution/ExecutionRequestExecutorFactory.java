@@ -17,8 +17,8 @@
 package org.antublue.verifyica.engine.execution;
 
 import io.github.thunkware.vt.bridge.ThreadTool;
-import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.execution.impl.PlatformThreadsExecutionRequestExecutor;
 import org.antublue.verifyica.engine.execution.impl.VirtualThreadsExecutionRequestExecutor;
 
@@ -29,9 +29,8 @@ public class ExecutionRequestExecutorFactory {
             ThreadTool.hasVirtualThreads()
                     && "virtual"
                             .equalsIgnoreCase(
-                                    ConcreteConfiguration.getInstance()
-                                            .get(Constants.THREAD_TYPE)
-                                            .orElse("platform"));
+                                    DefaultConfiguration.getInstance()
+                                            .getProperty(Constants.THREAD_TYPE));
 
     /** Constructor */
     private ExecutionRequestExecutorFactory() {

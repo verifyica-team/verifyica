@@ -25,17 +25,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 
 /** Class to implement Logger */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class Logger {
 
-    private static final ConcreteConfiguration CONCRETE_CONFIGURATION =
-            ConcreteConfiguration.getInstance();
+    private static final DefaultConfiguration CONFIGURATION = DefaultConfiguration.getInstance();
 
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
@@ -53,9 +53,11 @@ public class Logger {
         this.level = Level.INFO;
 
         String loggerLevel =
-                CONCRETE_CONFIGURATION.get(Constants.LOGGER_LEVEL).orElse(Level.INFO.toString());
+                Optional.ofNullable(CONFIGURATION.getProperty(Constants.LOGGER_LEVEL))
+                        .orElse(Level.INFO.toString());
 
-        String regex = CONCRETE_CONFIGURATION.get(Constants.LOGGER_REGEX).orElse(".*");
+        String regex =
+                Optional.ofNullable(CONFIGURATION.getProperty(Constants.LOGGER_REGEX)).orElse(".*");
 
         try {
             Pattern pattern = Pattern.compile(regex);

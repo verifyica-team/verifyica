@@ -27,9 +27,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.ConcreteClassContext;
-import org.antublue.verifyica.engine.context.ConcreteEngineContext;
-import org.antublue.verifyica.engine.descriptor.ExecutableTestDescriptor;
+import org.antublue.verifyica.engine.context.DefaultClassContext;
+import org.antublue.verifyica.engine.context.ImmutableEngineContext;
+import org.antublue.verifyica.engine.descriptor.ToExecutableTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutor;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -73,7 +73,7 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
 
             ExecutorService executorService = null;
             AtomicReference<CountDownLatch> countDownLatch = new AtomicReference<>();
-            EngineContext engineContext = ConcreteEngineContext.getInstance();
+            EngineContext engineContext = ImmutableEngineContext.getInstance();
 
             try {
                 ConfigurationParameters configurationParameters =
@@ -122,25 +122,25 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
 
                 countDownLatch.set(new CountDownLatch(testDescriptors.size()));
 
-                for (TestDescriptor testDescriptor : testDescriptors) {
-                    if (testDescriptor instanceof ExecutableTestDescriptor) {
-                        ExecutableTestDescriptor executableTestDescriptor =
-                                (ExecutableTestDescriptor) testDescriptor;
+                final ExecutorService finalExecutorService = executorService;
 
-                        executorService.submit(
-                                () -> {
-                                    try {
-                                        executableTestDescriptor.execute(
-                                                executionRequest,
-                                                new ConcreteClassContext(engineContext));
-                                    } catch (Throwable t) {
-                                        t.printStackTrace(System.err);
-                                    } finally {
-                                        countDownLatch.get().countDown();
-                                    }
-                                });
-                    }
-                }
+                testDescriptors.stream()
+                        .map(ToExecutableTestDescriptor.INSTANCE)
+                        .forEach(
+                                executableTestDescriptor ->
+                                        finalExecutorService.submit(
+                                                () -> {
+                                                    try {
+                                                        executableTestDescriptor.execute(
+                                                                executionRequest,
+                                                                new DefaultClassContext(
+                                                                        engineContext));
+                                                    } catch (Throwable t) {
+                                                        t.printStackTrace(System.err);
+                                                    } finally {
+                                                        countDownLatch.get().countDown();
+                                                    }
+                                                }));
             } finally {
                 try {
                     countDownLatch.get().await();

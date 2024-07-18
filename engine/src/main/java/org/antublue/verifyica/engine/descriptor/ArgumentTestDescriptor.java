@@ -22,17 +22,15 @@ import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Context;
-import org.antublue.verifyica.engine.context.ConcreteArgumentContext;
+import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.DisplayNameSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
-import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.ClassSource;
@@ -91,18 +89,18 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
             LOGGER.trace("execute ArgumentTestDescriptor [%s]", toString());
         }
 
-        ConcreteArgumentContext concreteArgumentContext = (ConcreteArgumentContext) context;
+        DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
 
         Preconditions.notNull(executionRequest, "executionRequest is null");
-        Preconditions.notNull(concreteArgumentContext, "concreteArgumentContext is null");
-        Preconditions.notNull(concreteArgumentContext.getTestInstance(), "testInstance is null");
+        Preconditions.notNull(defaultArgumentContext, "concreteArgumentContext is null");
+        Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
 
         stopWatch.reset();
 
-        concreteArgumentContext.setArgument(testArgument);
+        defaultArgumentContext.setArgument(testArgument);
 
-        Preconditions.notNull(concreteArgumentContext.getTestInstance(), "testInstance is null");
-        Preconditions.notNull(concreteArgumentContext.getArgument(), "testArgument is null");
+        Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
+        Preconditions.notNull(defaultArgumentContext.getArgument(), "testArgument is null");
 
         getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
         getMetadata()
@@ -114,13 +112,13 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        throwableCollector.execute(() -> invokeBeforeAllMethods(concreteArgumentContext));
+        throwableCollector.execute(() -> invokeBeforeAllMethods(defaultArgumentContext));
         if (throwableCollector.isEmpty()) {
-            doExecute(executionRequest, concreteArgumentContext);
+            executeChildren(executionRequest, defaultArgumentContext);
         } else {
-            doSkip(executionRequest, concreteArgumentContext);
+            skipChildren(executionRequest, defaultArgumentContext);
         }
-        throwableCollector.execute(() -> invokeAfterAllMethods(concreteArgumentContext));
+        throwableCollector.execute(() -> invokeAfterAllMethods(defaultArgumentContext));
 
         stopWatch.stop();
 
@@ -139,7 +137,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                                 ? MetadataTestDescriptorConstants.PASS
                                 : MetadataTestDescriptorConstants.FAIL);
 
-        concreteArgumentContext.setArgument(null);
+        defaultArgumentContext.setArgument(null);
 
         executionRequest
                 .getEngineExecutionListener()
@@ -154,8 +152,8 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
         stopWatch.reset();
 
-        ConcreteArgumentContext concreteArgumentContext = (ConcreteArgumentContext) context;
-        concreteArgumentContext.setArgument(testArgument);
+        DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
+        defaultArgumentContext.setArgument(testArgument);
 
         getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
         getMetadata()
@@ -165,15 +163,13 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                         MetadataTestDescriptorConstants.TEST_DESCRIPTOR_STATUS,
                         MetadataTestDescriptorConstants.SKIP);
 
-        getChildren()
+        getChildren().stream()
+                .map(ToExecutableTestDescriptor.INSTANCE)
                 .forEach(
-                        (Consumer<TestDescriptor>)
-                                testDescriptor -> {
-                                    if (testDescriptor instanceof ExecutableTestDescriptor) {
-                                        ((ExecutableTestDescriptor) testDescriptor)
-                                                .skip(executionRequest, concreteArgumentContext);
-                                    }
-                                });
+                        executableTestDescriptor ->
+                                executableTestDescriptor.skip(
+                                        executionRequest, defaultArgumentContext));
+
         stopWatch.stop();
 
         getMetadata()
@@ -204,9 +200,15 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                 + "}";
     }
 
-    private void invokeBeforeAllMethods(ConcreteArgumentContext concreteArgumentContext)
+    /**
+     * Method to invoke all before all methods
+     *
+     * @param defaultArgumentContext defaultArgumentContext
+     * @throws Throwable Throwable
+     */
+    private void invokeBeforeAllMethods(DefaultArgumentContext defaultArgumentContext)
             throws Throwable {
-        Object testInstance = concreteArgumentContext.getTestInstance();
+        Object testInstance = defaultArgumentContext.getTestInstance();
 
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace(
@@ -214,7 +216,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                     testInstance.getClass().getName(), testInstance);
         }
 
-        Preconditions.notNull(concreteArgumentContext, "concreteArgumentContext is null");
+        Preconditions.notNull(defaultArgumentContext, "concreteArgumentContext is null");
         Preconditions.notNull(testInstance, "testInstance is null");
 
         for (Method method : beforeAllMethods) {
@@ -224,50 +226,52 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                         testInstance.getClass().getName(), testInstance, method);
             }
 
-            method.invoke(testInstance, concreteArgumentContext.toImmutable());
+            method.invoke(testInstance, defaultArgumentContext.asImmutable());
         }
     }
 
-    private void doExecute(
-            ExecutionRequest executionRequest, ConcreteArgumentContext concreteArgumentContext) {
+    /**
+     * Method to execute all child test descriptors
+     *
+     * @param executionRequest executionRequest
+     * @param defaultArgumentContext defaultArgumentContext
+     */
+    private void executeChildren(
+            ExecutionRequest executionRequest, DefaultArgumentContext defaultArgumentContext) {
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("execute() testClass [%s]", testClass.getName());
+            LOGGER.trace("executeChildren() testClass [%s]", testClass.getName());
         }
 
         Preconditions.notNull(executionRequest, "executionRequest is null");
 
-        getChildren()
+        getChildren().stream()
+                .map(ToExecutableTestDescriptor.INSTANCE)
                 .forEach(
-                        (Consumer<TestDescriptor>)
-                                testDescriptor -> {
-                                    if (testDescriptor instanceof TestMethodTestDescriptor) {
-                                        ExecutableTestDescriptor executableTestDescriptor =
-                                                (ExecutableTestDescriptor) testDescriptor;
-                                        executableTestDescriptor.execute(
-                                                executionRequest, concreteArgumentContext);
-                                    }
-                                });
+                        executableTestDescriptor ->
+                                executableTestDescriptor.execute(
+                                        executionRequest, defaultArgumentContext));
     }
 
-    private void doSkip(
-            ExecutionRequest executionRequest, ConcreteArgumentContext concreteArgumentContext) {
+    /**
+     * Method to skip all child test descriptors
+     *
+     * @param executionRequest executionRequest
+     * @param defaultArgumentContext defaultArgumentContext
+     */
+    private void skipChildren(
+            ExecutionRequest executionRequest, DefaultArgumentContext defaultArgumentContext) {
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("skip() testClass [%s]", testClass.getName());
+            LOGGER.trace("skipChildren() testClass [%s]", testClass.getName());
         }
 
         stopWatch.stop();
 
-        getChildren()
+        getChildren().stream()
+                .map(ToExecutableTestDescriptor.INSTANCE)
                 .forEach(
-                        (Consumer<TestDescriptor>)
-                                testDescriptor -> {
-                                    if (testDescriptor instanceof TestMethodTestDescriptor) {
-                                        ExecutableTestDescriptor executableTestDescriptor =
-                                                (ExecutableTestDescriptor) testDescriptor;
-                                        executableTestDescriptor.skip(
-                                                executionRequest, concreteArgumentContext);
-                                    }
-                                });
+                        executableTestDescriptor -> {
+                            executableTestDescriptor.skip(executionRequest, defaultArgumentContext);
+                        });
 
         stopWatch.reset();
 
@@ -283,9 +287,15 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
         getMetadata().put(MetadataTestDescriptorConstants.TEST_ARGUMENT, testArgument);
     }
 
-    private void invokeAfterAllMethods(ConcreteArgumentContext concreteArgumentContext)
+    /**
+     * Method to invoke all after all methods
+     *
+     * @param defaultArgumentContext defaultArgumentContext
+     * @throws Throwable Throwable
+     */
+    private void invokeAfterAllMethods(DefaultArgumentContext defaultArgumentContext)
             throws Throwable {
-        Object testInstance = concreteArgumentContext.getTestInstance();
+        Object testInstance = defaultArgumentContext.getTestInstance();
 
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace(
@@ -293,7 +303,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                     testInstance.getClass().getName(), testInstance);
         }
 
-        Preconditions.notNull(concreteArgumentContext, "concreteArgumentContext is null");
+        Preconditions.notNull(defaultArgumentContext, "concreteArgumentContext is null");
         Preconditions.notNull(testInstance, "testInstance is null");
 
         for (Method method : afterAllMethods) {
@@ -303,13 +313,13 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                         testInstance.getClass().getName(), testInstance, method);
             }
 
-            method.invoke(testInstance, concreteArgumentContext.toImmutable());
+            method.invoke(testInstance, defaultArgumentContext.asImmutable());
         }
+
+        defaultArgumentContext.getStore().clear();
 
         if (testArgument instanceof AutoCloseable) {
             ((AutoCloseable) testArgument).close();
         }
-
-        concreteArgumentContext.getStore().clear();
     }
 }

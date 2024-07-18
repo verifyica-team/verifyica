@@ -48,6 +48,9 @@ public class ContextTest {
     public static void prepare(ClassContext classContext) {
         System.out.println(format("prepare()"));
 
+        assertThat(classContext.getClass().getSimpleName()).startsWith("Immutable");
+        assertThat(classContext.getEngineContext().getClass().getSimpleName())
+                .startsWith("Immutable");
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();
 
@@ -59,8 +62,8 @@ public class ContextTest {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test(%s)", argumentContext.getArgument()));
+    public void test1(ArgumentContext argumentContext) throws Throwable {
+        System.out.println(format("test1(%s)", argumentContext.getArgument()));
 
         System.out.println("argumentContext [" + argumentContext + "]");
         System.out.println("classContext [" + argumentContext.getClassContext() + "]");
@@ -72,5 +75,16 @@ public class ContextTest {
                 .isEqualTo("BAR");
         assertThat(argumentContext.getClassContext() == ContextTest.classContext);
         assertThat(argumentContext.getClassContext().getEngineContext() == ContextTest.rootContext);
+    }
+
+    @Verifyica.Test
+    public void test2(ArgumentContext argumentContext) {
+        System.out.println(format("test2(%s)", argumentContext.getArgument()));
+
+        assertThat(argumentContext.getClass().getSimpleName()).startsWith("Immutable");
+        assertThat(argumentContext.getClassContext().getClass().getSimpleName())
+                .startsWith("Immutable");
+        assertThat(argumentContext.getClassContext().getEngineContext().getClass().getSimpleName())
+                .startsWith("Immutable");
     }
 }

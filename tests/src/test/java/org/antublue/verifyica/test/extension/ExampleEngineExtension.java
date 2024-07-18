@@ -16,20 +16,22 @@
 
 package org.antublue.verifyica.test.extension;
 
+import java.util.UUID;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.EngineExtension;
 
 /** Class to implement ExampleEngineExtension1 */
 public class ExampleEngineExtension implements EngineExtension {
 
-    public static final String GLOBAL_STRING = "global.string";
+    public static final String KEY = ExampleEngineExtension.class.getName() + ".key";
+    public static final String VALUE = UUID.randomUUID().toString();
 
     @Override
     public void initialize(EngineContext engineContext) {
         System.out.println(getClass().getName() + " initialize()");
 
         // Add a global string to the EngineContext Store
-        engineContext.getStore().put(GLOBAL_STRING, "global string");
+        engineContext.getStore().put(KEY, VALUE);
     }
 
     @Override

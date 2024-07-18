@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
-import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.util.AnsiColor;
 import org.antublue.verifyica.maven.plugin.listener.DelegatingEngineExecutionListener;
 import org.antublue.verifyica.maven.plugin.listener.StatusEngineExecutionListener;
@@ -96,19 +96,19 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         Logger logger = Logger.from(getLog());
 
         try {
-            ConcreteConfiguration concreteConfiguration = ConcreteConfiguration.getInstance();
+            DefaultConfiguration defaultConfiguration = DefaultConfiguration.getInstance();
 
-            concreteConfiguration.set(Constants.MAVEN_PLUGIN, Constants.TRUE);
+            defaultConfiguration.setProperty(Constants.MAVEN_PLUGIN, Constants.TRUE);
             logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN, Constants.TRUE);
 
-            concreteConfiguration.set(Constants.MAVEN_PLUGIN_VERSION, VERSION);
+            defaultConfiguration.setProperty(Constants.MAVEN_PLUGIN_VERSION, VERSION);
             logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_VERSION, VERSION);
 
             if (mavenSession.getRequest().isInteractiveMode()) {
-                concreteConfiguration.set(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
+                defaultConfiguration.setProperty(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
                 logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
             } else {
-                concreteConfiguration.set(Constants.MAVEN_PLUGIN_MODE, BATCH);
+                defaultConfiguration.setProperty(Constants.MAVEN_PLUGIN_MODE, BATCH);
                 logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, BATCH);
             }
 
@@ -239,7 +239,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                             new ExecutionRequest(
                                     testDescriptor,
                                     delegatingEngineExecutionListener,
-                                    ConcreteConfiguration.getInstance());
+                                    DefaultConfiguration.getInstance().asConfigurationParameters());
 
                     engine.execute(executionRequest);
 

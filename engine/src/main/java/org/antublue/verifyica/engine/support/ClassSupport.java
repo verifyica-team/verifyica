@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api;
+package org.antublue.verifyica.engine.support;
 
-/** Interface to implement EngineExtension */
-public interface EngineExtension {
+/** Class to implement ClassSupport */
+public class ClassSupport {
 
-    /**
-     * Method to initialize global environment resources
-     *
-     * @param engineContext engineContext
-     * @throws Throwable Throwable
-     */
-    default void initialize(EngineContext engineContext) throws Throwable {
+    /** Constructor */
+    private ClassSupport() {
         // DO NOTHING
     }
 
     /**
-     * Method to destroy global environment resources
+     * Method to return whether a Class has a default (empty) constructor
      *
-     * @param engineContext engineContext
-     * @throws Throwable Throwable
+     * @param clazz clazz
+     * @return true if the Class has a default (empty) constructor, else false
      */
-    default void destroy(EngineContext engineContext) throws Throwable {
-        // DO NOTHING
+    public static boolean hasDefaultConstructor(Class<?> clazz) {
+        try {
+            clazz.getDeclaredConstructor();
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
     }
 }

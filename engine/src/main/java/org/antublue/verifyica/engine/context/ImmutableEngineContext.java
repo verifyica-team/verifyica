@@ -19,18 +19,17 @@ package org.antublue.verifyica.engine.context;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 
-/** Class to implement ConcreteEngineContext */
-public class ConcreteEngineContext implements EngineContext {
+/** Class to implement ImmutableEngineContext */
+public class ImmutableEngineContext implements EngineContext {
 
-    private static final Configuration CONFIGURATION =
-            ConcreteConfiguration.getInstance().toImmutable();
+    private static final Configuration CONFIGURATION = DefaultConfiguration.getInstance();
 
     private final Store store;
 
     /** Constructor */
-    private ConcreteEngineContext() {
+    private ImmutableEngineContext() {
         store = new Store();
     }
 
@@ -49,7 +48,7 @@ public class ConcreteEngineContext implements EngineContext {
      *
      * @return the singleton instance
      */
-    public static EngineContext getInstance() {
+    public static ImmutableEngineContext getInstance() {
         return SingletonHolder.SINGLETON;
     }
 
@@ -57,6 +56,6 @@ public class ConcreteEngineContext implements EngineContext {
     private static class SingletonHolder {
 
         /** The singleton instance */
-        private static final ConcreteEngineContext SINGLETON = new ConcreteEngineContext();
+        private static final ImmutableEngineContext SINGLETON = new ImmutableEngineContext();
     }
 }

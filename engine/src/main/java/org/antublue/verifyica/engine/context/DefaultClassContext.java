@@ -20,8 +20,8 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 
-/** Class to implement ConcreteClassContext */
-public class ConcreteClassContext implements ClassContext {
+/** Class to implement DefaultClassContext */
+public class DefaultClassContext implements ClassContext {
 
     private final EngineContext engineContext;
     private final Store store;
@@ -34,7 +34,7 @@ public class ConcreteClassContext implements ClassContext {
      *
      * @param engineContext engineContext
      */
-    public ConcreteClassContext(EngineContext engineContext) {
+    public DefaultClassContext(EngineContext engineContext) {
         this.engineContext = engineContext;
         this.store = new Store();
         this.immutableClassContext = new ImmutableClassContext(this);
@@ -73,26 +73,7 @@ public class ConcreteClassContext implements ClassContext {
      *
      * @return an immutable version
      */
-    public ClassContext toImmutable() {
+    public ClassContext asImmutable() {
         return immutableClassContext;
-    }
-
-    private static class ImmutableClassContext implements ClassContext {
-
-        private final ClassContext classContext;
-
-        public ImmutableClassContext(ClassContext classContext) {
-            this.classContext = classContext;
-        }
-
-        @Override
-        public EngineContext getEngineContext() {
-            return classContext.getEngineContext();
-        }
-
-        @Override
-        public Store getStore() {
-            return classContext.getStore();
-        }
     }
 }

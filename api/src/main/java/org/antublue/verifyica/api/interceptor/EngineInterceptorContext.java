@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api;
+package org.antublue.verifyica.api.interceptor;
 
-/** Interface to implement EngineExtension */
-public interface EngineExtension {
+import org.antublue.verifyica.api.EngineContext;
 
-    /**
-     * Method to initialize global environment resources
-     *
-     * @param engineContext engineContext
-     * @throws Throwable Throwable
-     */
-    default void initialize(EngineContext engineContext) throws Throwable {
-        // DO NOTHING
+/** Interface to implement EngineInvocationContext */
+public interface EngineInterceptorContext {
+
+    /** LifeCycle */
+    enum LifeCycle {
+        /** Initialize */
+        INITIALIZE,
+        /** Destroy */
+        DESTROY
     }
 
     /**
-     * Method to destroy global environment resources
+     * Method to get the LifeCycle
      *
-     * @param engineContext engineContext
-     * @throws Throwable Throwable
+     * @return the LifeCycle
      */
-    default void destroy(EngineContext engineContext) throws Throwable {
-        // DO NOTHING
-    }
+    LifeCycle getLifeCycle();
+
+    /**
+     * Method to get the EngineContext
+     *
+     * @return the EngineContext
+     */
+    EngineContext getEngineContext();
 }

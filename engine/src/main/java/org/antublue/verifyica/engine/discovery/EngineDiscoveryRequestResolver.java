@@ -36,8 +36,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
@@ -69,8 +69,7 @@ public class EngineDiscoveryRequestResolver {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(EngineDiscoveryRequestResolver.class);
 
-    private static final ConcreteConfiguration CONCRETE_CONFIGURATION =
-            ConcreteConfiguration.getInstance();
+    private static final DefaultConfiguration CONFIGURATION = DefaultConfiguration.getInstance();
 
     private static Comparator<Object> getClassComparator() {
         return Comparator.comparing(clazz -> OrderSupport.getOrder((Class<?>) clazz))
@@ -476,7 +475,8 @@ public class EngineDiscoveryRequestResolver {
             LOGGER.trace("filterClassesByName()");
         }
 
-        Optional<String> optional = CONCRETE_CONFIGURATION.get(Constants.TEST_CLASS_INCLUDE_REGEX);
+        Optional<String> optional =
+                Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_CLASS_INCLUDE_REGEX));
         if (optional.isPresent()) {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("%s [%s]", Constants.TEST_CLASS_INCLUDE_REGEX, optional.get());
@@ -498,7 +498,8 @@ public class EngineDiscoveryRequestResolver {
             }
         }
 
-        optional = CONCRETE_CONFIGURATION.get(Constants.TEST_CLASS_EXCLUDE_REGEX);
+        optional =
+                Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_CLASS_EXCLUDE_REGEX));
         if (optional.isPresent()) {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("%s [%s]", Constants.TEST_CLASS_EXCLUDE_REGEX, optional.get());
@@ -532,7 +533,8 @@ public class EngineDiscoveryRequestResolver {
         }
 
         Optional<String> optional =
-                CONCRETE_CONFIGURATION.get(Constants.TEST_CLASS_TAG_INCLUDE_REGEX);
+                Optional.ofNullable(
+                        CONFIGURATION.getProperty(Constants.TEST_CLASS_TAG_INCLUDE_REGEX));
         if (optional.isPresent()) {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("%s [%s]", Constants.TEST_CLASS_TAG_INCLUDE_REGEX, optional.get());
@@ -562,7 +564,9 @@ public class EngineDiscoveryRequestResolver {
             }
         }
 
-        optional = CONCRETE_CONFIGURATION.get(Constants.TEST_CLASS_TAG_EXCLUDE_REGEX);
+        optional =
+                Optional.ofNullable(
+                        CONFIGURATION.getProperty(Constants.TEST_CLASS_TAG_EXCLUDE_REGEX));
         if (optional.isPresent()) {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace(" %s [%s]", Constants.TEST_CLASS_TAG_EXCLUDE_REGEX, optional.get());
@@ -598,7 +602,8 @@ public class EngineDiscoveryRequestResolver {
             LOGGER.trace("filterMethodsByName()");
         }
 
-        Optional<String> optional = CONCRETE_CONFIGURATION.get(Constants.TEST_METHOD_INCLUDE_REGEX);
+        Optional<String> optional =
+                Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_METHOD_INCLUDE_REGEX));
         if (optional.isPresent()) {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace(" %s [%s]", Constants.TEST_METHOD_INCLUDE_REGEX, optional.get());
@@ -624,7 +629,8 @@ public class EngineDiscoveryRequestResolver {
             }
         }
 
-        optional = CONCRETE_CONFIGURATION.get(Constants.TEST_METHOD_EXCLUDE_REGEX);
+        optional =
+                Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_METHOD_EXCLUDE_REGEX));
         if (optional.isPresent()) {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace(" %s [%s]", Constants.TEST_METHOD_EXCLUDE_REGEX, optional.get());
@@ -662,7 +668,8 @@ public class EngineDiscoveryRequestResolver {
         }
 
         Optional<String> optional =
-                CONCRETE_CONFIGURATION.get(Constants.TEST_METHOD_TAG_INCLUDE_REGEX);
+                Optional.ofNullable(
+                        CONFIGURATION.getProperty(Constants.TEST_METHOD_TAG_INCLUDE_REGEX));
         if (optional.isPresent()) {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("%s [%s]", Constants.TEST_METHOD_TAG_INCLUDE_REGEX, optional.get());
@@ -698,7 +705,9 @@ public class EngineDiscoveryRequestResolver {
             }
         }
 
-        optional = CONCRETE_CONFIGURATION.get(Constants.TEST_METHOD_TAG_EXCLUDE_REGEX);
+        optional =
+                Optional.ofNullable(
+                        CONFIGURATION.getProperty(Constants.TEST_METHOD_TAG_EXCLUDE_REGEX));
         if (optional.isPresent()) {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("%s [%s]", Constants.TEST_METHOD_TAG_EXCLUDE_REGEX, optional.get());
@@ -774,7 +783,8 @@ public class EngineDiscoveryRequestResolver {
             LOGGER.trace("shuffle()");
         }
 
-        Optional<String> optional = CONCRETE_CONFIGURATION.get(Constants.TEST_CLASS_SHUFFLE);
+        Optional<String> optional =
+                Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_CLASS_SHUFFLE));
         if (optional.isPresent()) {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("shuffling enabled");

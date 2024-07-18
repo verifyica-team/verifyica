@@ -18,12 +18,10 @@ package org.antublue.verifyica.engine.descriptor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.util.StopWatch;
 import org.antublue.verifyica.engine.util.ThrowableCollector;
 import org.junit.platform.engine.ExecutionRequest;
-import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 
@@ -93,20 +91,17 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
             throwables.addAll(throwableCollector.getThrowables());
         }
 
-        getChildren()
+        getChildren().stream()
+                .map(ToExecutableTestDescriptor.INSTANCE)
                 .forEach(
-                        (Consumer<TestDescriptor>)
-                                testDescriptor -> {
-                                    if (testDescriptor instanceof ExecutableTestDescriptor) {
-                                        ExecutableTestDescriptor executableTestDescriptor =
-                                                (ExecutableTestDescriptor) testDescriptor;
-                                        List<Throwable> childThrowables =
-                                                executableTestDescriptor.collectThrowables();
-                                        if (childThrowables != null) {
-                                            throwables.addAll(childThrowables);
-                                        }
-                                    }
-                                });
+                        executableTestDescriptor -> {
+                            List<Throwable> childThrowables =
+                                    executableTestDescriptor.collectThrowables();
+
+                            if (childThrowables != null) {
+                                throwables.addAll(childThrowables);
+                            }
+                        });
 
         return throwables;
     }
