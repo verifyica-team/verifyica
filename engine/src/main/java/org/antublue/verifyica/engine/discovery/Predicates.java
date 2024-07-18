@@ -29,11 +29,6 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 /** Class to implement Predicates */
 public class Predicates {
 
-    /** Constructor */
-    private Predicates() {
-        // DO NOTHING
-    }
-
     /** Predicate to filter test engine extension classes */
     public static final Predicate<Class<?>> ENGINE_EXTENSION_CLASS =
             clazz -> {
@@ -175,6 +170,11 @@ public class Predicates {
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.Conclude.class);
             };
+
+    /** Constructor */
+    private Predicates() {
+        // DO NOTHING
+    }
 
     /**
      * Method to return if a Method accepts a Context
