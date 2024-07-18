@@ -26,6 +26,14 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("PMD.UselessParentheses")
 public final class HumanReadableTimeSupport {
 
+    /** Format */
+    public enum Format {
+        /** Long */
+        LONG,
+        /** Short */
+        SHORT
+    }
+
     /** Constructor */
     private HumanReadableTimeSupport() {
         // DO NOTHING
@@ -38,17 +46,17 @@ public final class HumanReadableTimeSupport {
      * @return the return value
      */
     public static String toHumanReadable(long nanoseconds) {
-        return toHumanReadable(nanoseconds, false);
+        return toHumanReadable(nanoseconds, Format.LONG);
     }
 
     /**
      * Method to convert a duration into a human-readable time
      *
      * @param nanoseconds nanoseconds
-     * @param useShortFormat useShortFormat
+     * @param format format
      * @return the return value
      */
-    public static String toHumanReadable(long nanoseconds, boolean useShortFormat) {
+    public static String toHumanReadable(long nanoseconds, Format format) {
         long nanosecondsPositive = nanoseconds > 0 ? nanoseconds : -nanoseconds;
         long millisecondsDuration = (long) ((double) nanosecondsPositive / 1e+6d);
         long hours = TimeUnit.MILLISECONDS.toHours(millisecondsDuration);
@@ -64,11 +72,12 @@ public final class HumanReadableTimeSupport {
 
         stringBuilder.append(hours);
 
+        boolean useShortFormat = format == Format.SHORT;
+
         if (useShortFormat) {
             stringBuilder.append(" h");
         } else {
             stringBuilder.append(" hour");
-
             if (hours != 1) {
                 stringBuilder.append("s");
             }

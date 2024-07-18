@@ -341,7 +341,8 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                             .append("Total time  : ")
                             .append(
                                     HumanReadableTimeSupport.toHumanReadable(
-                                            elapsedTime.toNanos(), false))
+                                            elapsedTime.toNanos(),
+                                            HumanReadableTimeSupport.Format.SHORT))
                             .append(" (")
                             .append(elapsedTime.toNanos() / 1e+6D)
                             .append(" ms)")
