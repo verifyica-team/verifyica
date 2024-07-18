@@ -40,6 +40,8 @@ In this example, the environment is ...
 - tested (test1, test2, ...)
 - destroyed
 
+### Class
+
 ```java
 import java.io.IOException;
 import java.util.ArrayList;

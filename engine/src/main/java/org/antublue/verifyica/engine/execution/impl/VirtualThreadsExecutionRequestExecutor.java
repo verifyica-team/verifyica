@@ -76,7 +76,7 @@ public class VirtualThreadsExecutionRequestExecutor implements ExecutionRequestE
 
                 int threadCount =
                         configurationParameters
-                                .get(Constants.PARALLELISM)
+                                .get(Constants.ENGINE_PARALLELISM)
                                 .map(
                                         value -> {
                                             int intValue;
@@ -97,7 +97,7 @@ public class VirtualThreadsExecutionRequestExecutor implements ExecutionRequestE
                                         })
                                 .orElse(MAX_THREAD_COUNT);
 
-                LOGGER.trace("%s = [%d]", Constants.PARALLELISM, threadCount);
+                LOGGER.trace("%s = [%d]", Constants.ENGINE_PARALLELISM, threadCount);
 
                 engineExecutionListener.executionStarted(executionRequest.getRootTestDescriptor());
 

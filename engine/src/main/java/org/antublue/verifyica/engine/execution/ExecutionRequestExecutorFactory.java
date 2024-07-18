@@ -17,20 +17,27 @@
 package org.antublue.verifyica.engine.execution;
 
 import io.github.thunkware.vt.bridge.ThreadTool;
+import java.util.Optional;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.execution.impl.PlatformThreadsExecutionRequestExecutor;
 import org.antublue.verifyica.engine.execution.impl.VirtualThreadsExecutionRequestExecutor;
+import org.antublue.verifyica.engine.logger.Logger;
+import org.antublue.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement ExecutionContextExecutorFactory */
+/** Class to implement ExecutionRequestExecutorFactory */
 public class ExecutionRequestExecutorFactory {
+
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(ExecutionRequestExecutorFactory.class);
 
     private static final boolean useVirtualThreads =
             ThreadTool.hasVirtualThreads()
-                    && "virtual"
-                            .equalsIgnoreCase(
+                    && Optional.ofNullable(
                                     DefaultConfiguration.getInstance()
-                                            .getProperty(Constants.THREAD_TYPE));
+                                            .getProperty(Constants.ENGINE_EXECUTOR_TYPE))
+                            .map(value -> "virtual".equalsIgnoreCase(value))
+                            .orElse(true);
 
     /** Constructor */
     private ExecutionRequestExecutorFactory() {
@@ -43,10 +50,19 @@ public class ExecutionRequestExecutorFactory {
      * @return an ExecutionContextExecutor
      */
     public static ExecutionRequestExecutor createExecutionRequestExecutor() {
+        ExecutionRequestExecutor executionRequestExecutor;
+
         if (useVirtualThreads) {
-            return new VirtualThreadsExecutionRequestExecutor();
+            executionRequestExecutor = new VirtualThreadsExecutionRequestExecutor();
         } else {
-            return new PlatformThreadsExecutionRequestExecutor();
+            executionRequestExecutor = new PlatformThreadsExecutionRequestExecutor();
         }
+
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace(
+                    "executionRequestExecutor [%s]", executionRequestExecutor.getClass().getName());
+        }
+
+        return executionRequestExecutor;
     }
 }

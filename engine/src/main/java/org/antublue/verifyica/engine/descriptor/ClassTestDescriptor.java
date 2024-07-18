@@ -48,10 +48,10 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                     && "virtual"
                             .equalsIgnoreCase(
                                     DefaultConfiguration.getInstance()
-                                            .getProperty(Constants.THREAD_TYPE));
+                                            .getProperty(Constants.ENGINE_EXECUTOR_TYPE));
 
     private final Class<?> testClass;
-    private final int permits;
+    private final int parallelism;
     private final List<Method> prepareMethods;
     private final List<Method> concludeMethods;
 
@@ -63,7 +63,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
      * @param testClass testClass
      * @param prepareMethods prepareMethods
      * @param concludeMethods concludeMethods
-     * @param permits permits
+     * @param parallelism parallelism
      */
     public ClassTestDescriptor(
             UniqueId uniqueId,
@@ -71,7 +71,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             Class<?> testClass,
             List<Method> prepareMethods,
             List<Method> concludeMethods,
-            int permits) {
+            int parallelism) {
         super(uniqueId, displayName);
 
         Preconditions.notNull(testClass, "testClass is null");
@@ -79,7 +79,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         this.testClass = testClass;
         this.prepareMethods = prepareMethods;
         this.concludeMethods = concludeMethods;
-        this.permits = permits;
+        this.parallelism = parallelism;
     }
 
     @Override
@@ -256,11 +256,11 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             LOGGER.trace("executeChildren() testClass [%s]", testClass.getName());
         }
 
-        Preconditions.notNull(defaultClassContext, "concreteClassContext is null");
+        Preconditions.notNull(defaultClassContext, "defaultClassContext is null");
         Preconditions.notNull(defaultClassContext.getTestInstance(), "testInstance is null");
 
         CountDownLatch countDownLatch = new CountDownLatch(getChildren().size());
-        Semaphore semaphore = new Semaphore(permits);
+        Semaphore semaphore = new Semaphore(parallelism);
 
         getChildren().stream()
                 .map(ToExecutableTestDescriptor.INSTANCE)
@@ -272,7 +272,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                             defaultArgumentContext.setTestInstance(
                                     defaultClassContext.getTestInstance());
 
-                            if (permits > 1) {
+                            if (parallelism > 1) {
                                 try {
                                     semaphore.acquire();
                                 } catch (Throwable t) {

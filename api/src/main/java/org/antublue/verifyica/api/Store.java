@@ -17,7 +17,10 @@
 package org.antublue.verifyica.api;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 import org.junit.platform.commons.util.Preconditions;
 
@@ -25,15 +28,17 @@ import org.junit.platform.commons.util.Preconditions;
 @SuppressWarnings("unchecked")
 public class Store {
 
+    private final ReadWriteLock readWriteLock;
     private final Map<Object, Object> map;
 
     /** Constructor */
     public Store() {
-        map = new ConcurrentHashMap<>();
+        readWriteLock = new ReentrantReadWriteLock(true);
+        map = new TreeMap<>();
     }
 
     /**
-     * Method to put an object into the Store
+     * Method to put an key / value into the Store
      *
      * @param key key
      * @param value value
@@ -42,44 +47,61 @@ public class Store {
     public Store put(Object key, Object value) {
         Preconditions.notNull(key, "key is null");
 
-        if (value == null) {
-            map.remove(key);
-        } else {
-            map.put(key, value);
+        try {
+            readWriteLock.writeLock().lock();
+
+            if (value == null) {
+                map.remove(key);
+            } else {
+                map.put(key, value);
+            }
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
 
         return this;
     }
 
     /**
-     * Method to get an Object from the Store
+     * Method to get a value from the Store
      *
      * @param key key
-     * @return the Object
+     * @return the value
      * @param <T> type
      */
     public <T> T get(Object key) {
         Preconditions.notNull(key, "key is null");
-        return (T) map.get(key);
+
+        try {
+            readWriteLock.readLock().lock();
+            return (T) map.get(key);
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
     }
 
     /**
-     * Method to get an Object from the Store
+     * Method to get value from the Store
      *
      * @param key key
      * @param type type
-     * @return the Object
+     * @return the value
      * @param <T> type
      */
     public <T> T get(Object key, Class<T> type) {
         Preconditions.notNull(key, "key is null");
         Preconditions.notNull(type, "type is null");
 
-        return type.cast(map.get(key));
+        try {
+            readWriteLock.readLock().lock();
+            return type.cast(map.get(key));
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
     }
 
     /**
-     * Method to get an Object from the Store, throwing an Exception if null
+     * Method to get a value from the Store, throwing an Exception if null
      *
      * @param key key
      * @param supplier supplier
@@ -99,7 +121,7 @@ public class Store {
     }
 
     /**
-     * Method to get an Object from the Store, throwing an Exception if null
+     * Method to get a value from the Store, throwing an Exception if null
      *
      * @param key key
      * @param type type
@@ -122,7 +144,7 @@ public class Store {
     }
 
     /**
-     * Method to remove an Object from the Store, return the existing Object
+     * Method to remove key /value from the Store
      *
      * @param key key
      * @return the existing Object
@@ -131,11 +153,16 @@ public class Store {
     public <T> T remove(Object key) {
         Preconditions.notNull(key, "key is null");
 
-        return (T) map.remove(key);
+        try {
+            readWriteLock.writeLock().lock();
+            return (T) map.remove(key);
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
     }
 
     /**
-     * Method to remove an Object from the Store, return the existing Object
+     * Method to remove a key / value from the Store
      *
      * @param key key
      * @param type type
@@ -146,16 +173,23 @@ public class Store {
         Preconditions.notNull(key, "key is null");
         Preconditions.notNull(type, "type is null");
 
-        return type.cast(map.remove(key));
+        try {
+            readWriteLock.writeLock().lock();
+            return type.cast(map.remove(key));
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
     }
 
     /**
-     * Method to clear the store
+     * Method to clear the Store
      *
      * @return the Store
      */
     public Store clear() {
-        synchronized (map) {
+        try {
+            readWriteLock.writeLock().lock();
+
             for (Object value : map.values()) {
                 if (value instanceof AutoCloseable) {
                     try {
@@ -166,8 +200,80 @@ public class Store {
                 }
             }
             map.clear();
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
 
         return this;
+    }
+
+    /**
+     * Method to get the Store size
+     *
+     * @return the size
+     */
+    public int size() {
+        try {
+            readWriteLock.readLock().lock();
+            return map.size();
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Method to merge a Store into this Store
+     *
+     * @param store store
+     * @return the Store
+     */
+    public Store merge(Store store) {
+        Preconditions.notNull(store, "store is null");
+
+        if (store.size() > 0) {
+            try {
+                store.getLock().readLock().lock();
+                getLock().writeLock().lock();
+
+                map.putAll(store.map);
+            } finally {
+                getLock().writeLock().unlock();
+                store.getLock().readLock().unlock();
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Method to get the Store lock
+     *
+     * @return the Store lock
+     */
+    public ReadWriteLock getLock() {
+        return readWriteLock;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            readWriteLock.readLock().lock();
+            return map.toString();
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Store store = (Store) o;
+        return Objects.equals(map, store.map);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(map);
     }
 }

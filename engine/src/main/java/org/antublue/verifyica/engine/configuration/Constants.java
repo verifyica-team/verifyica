@@ -28,49 +28,33 @@ public final class Constants {
     public static final String PREFIX = "verifyica";
 
     /** Configuration constant */
-    public static final String VERSION = PREFIX + ".version";
+    public static final String ENGINE = PREFIX + ".engine";
 
     /** Configuration constant */
-    public static final String THREAD_TYPE = PREFIX + ".thread.type";
+    public static final String ENGINE_VERSION = ENGINE + ".version";
 
     /** Configuration constant */
-    public static final String PARALLELISM = PREFIX + ".parallelism";
+    public static final String ENGINE_PARALLELISM = ENGINE + ".parallelism";
 
     /** Configuration constant */
-    public static final String LOGGER_REGEX = PREFIX + ".logger.regex";
+    public static final String ENGINE_EXECUTOR_TYPE = ENGINE + ".executor";
 
     /** Configuration constant */
-    public static final String LOGGER_LEVEL = PREFIX + ".logger.level";
+    public static final String ENGINE_LOGGER_REGEX = ENGINE + ".logger.regex";
 
     /** Configuration constant */
-    public static final String CONSOLE_LOG = PREFIX + ".console.log";
+    public static final String ENGINE_LOGGER_LEVEL = ENGINE + ".logger.level";
 
     /** Configuration constant */
-    public static final String CONSOLE_LOG_TIMING = CONSOLE_LOG + ".timing";
+    public static final String ENGINE_INTERCEPTORS = ENGINE + ".interceptors";
 
     /** Configuration constant */
-    public static final String CONSOLE_LOG_TIMING_UNITS = CONSOLE_LOG_TIMING + ".units";
+    public static final String ENGINE_INTERCEPTORS_INCLUDE_REGEX =
+            ENGINE_INTERCEPTORS + ".include.regex";
 
     /** Configuration constant */
-    public static final String CONSOLE_LOG_TEST_MESSAGE = CONSOLE_LOG + ".test.message";
-
-    /** Configuration constant */
-    public static final String CONSOLE_LOG_TEST_MESSAGES = CONSOLE_LOG + ".test.messages";
-
-    /** Configuration constant */
-    public static final String CONSOLE_LOG_SKIP_MESSAGE = CONSOLE_LOG + ".skip.message";
-
-    /** Configuration constant */
-    public static final String CONSOLE_LOG_SKIP_MESSAGES = CONSOLE_LOG + ".skip.messages";
-
-    /** Configuration constant */
-    public static final String CONSOLE_LOG_PASS_MESSAGE = CONSOLE_LOG + ".pass.message";
-
-    /** Configuration constant */
-    public static final String CONSOLE_LOG_PASS_MESSAGES = CONSOLE_LOG + ".pass.messages";
-
-    /** Configuration constant */
-    public static final String CONSOLE_LOG_FAIL_MESSAGE = CONSOLE_LOG + ".fail.message";
+    public static final String ENGINE_INTERCEPTORS_EXCLUDE_REGEX =
+            ENGINE_INTERCEPTORS + ".exclude.regex";
 
     /** Configuration constant */
     public static final String TEST_CLASS_SHUFFLE = PREFIX + ".test.class.shuffle";
@@ -111,6 +95,36 @@ public final class Constants {
 
     /** Configuration constant */
     public static final String MAVEN_PLUGIN_VERSION = MAVEN_PLUGIN + ".version";
+
+    /** Configuration constant */
+    public static final String MAVEN_PLUGIN_LOG = MAVEN_PLUGIN + ".log";
+
+    /** Configuration constant */
+    public static final String MAVEN_PLUGIN_LOG_TIMING = MAVEN_PLUGIN_LOG + ".timing";
+
+    /** Configuration constant */
+    public static final String MAVEN_PLUGIN_TIMING_UNITS = MAVEN_PLUGIN_LOG + ".units";
+
+    /** Configuration constant */
+    public static final String MAVEN_PLUGIN_LOG_TEST_MESSAGE = MAVEN_PLUGIN_LOG + ".test.message";
+
+    /** Configuration constant */
+    public static final String MAVEN_PLUGIN_TEST_MESSAGES = MAVEN_PLUGIN_LOG + ".test.messages";
+
+    /** Configuration constant */
+    public static final String MAVEN_PLUGIN_LOG_SKIP_MESSAGE = MAVEN_PLUGIN_LOG + ".skip.message";
+
+    /** Configuration constant */
+    public static final String MAVEN_PLUGIN_LOG_SKIP_MESSAGES = MAVEN_PLUGIN_LOG + ".skip.messages";
+
+    /** Configuration constant */
+    public static final String MAVEN_PLUGIN_LOG_PASS_MESSAGE = MAVEN_PLUGIN_LOG + ".pass.message";
+
+    /** Configuration constant */
+    public static final String MAVEN_PLUGIN_LOG_PASS_MESSAGES = MAVEN_PLUGIN_LOG + ".pass.messages";
+
+    /** Configuration constant */
+    public static final String MAVEN_PLUGIN_LOG_FAIL_MESSAGE = MAVEN_PLUGIN_LOG + ".fail.message";
 
     /** Constructor */
     private Constants() {

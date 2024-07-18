@@ -199,12 +199,23 @@ public class VerifyicaTestEngine implements TestEngine {
         return value;
     }
 
+    /**
+     * Method trace log a test descriptor tree
+     *
+     * @param testDescriptor testDescriptor
+     */
     private static void traceEngineDescriptor(TestDescriptor testDescriptor) {
         traceTestDescriptor(testDescriptor, 0);
     }
 
+    /**
+     * Method to recursively trace log a test descriptor tree
+     *
+     * @param testDescriptor testDescriptor
+     * @param level level
+     */
     private static void traceTestDescriptor(TestDescriptor testDescriptor, int level) {
-        LOGGER.info(String.join(" ", Collections.nCopies(level, " ")) + testDescriptor);
+        LOGGER.trace(String.join(" ", Collections.nCopies(level, " ")) + testDescriptor);
         testDescriptor
                 .getChildren()
                 .forEach(

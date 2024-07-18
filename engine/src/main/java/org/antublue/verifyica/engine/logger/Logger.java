@@ -53,11 +53,12 @@ public class Logger {
         this.level = Level.INFO;
 
         String loggerLevel =
-                Optional.ofNullable(CONFIGURATION.getProperty(Constants.LOGGER_LEVEL))
+                Optional.ofNullable(CONFIGURATION.getProperty(Constants.ENGINE_LOGGER_LEVEL))
                         .orElse(Level.INFO.toString());
 
         String regex =
-                Optional.ofNullable(CONFIGURATION.getProperty(Constants.LOGGER_REGEX)).orElse(".*");
+                Optional.ofNullable(CONFIGURATION.getProperty(Constants.ENGINE_LOGGER_REGEX))
+                        .orElse(".*");
 
         try {
             Pattern pattern = Pattern.compile(regex);

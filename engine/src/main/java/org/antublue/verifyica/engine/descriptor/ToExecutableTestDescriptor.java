@@ -26,6 +26,11 @@ public class ToExecutableTestDescriptor
     /** Singleton instance */
     public static final ToExecutableTestDescriptor INSTANCE = new ToExecutableTestDescriptor();
 
+    /** Constructor */
+    public ToExecutableTestDescriptor() {
+        // DO NOTHING
+    }
+
     @Override
     public ExecutableTestDescriptor apply(TestDescriptor testDescriptor) {
         return testDescriptor instanceof ExecutableTestDescriptor

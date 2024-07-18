@@ -63,50 +63,57 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     /** Constructor */
     public StatusEngineExecutionListener() {
-        ConfigurationParameters concreteConfiguration =
+        ConfigurationParameters configurationParameters =
                 DefaultConfiguration.getInstance().asConfigurationParameters();
 
         consoleLogTiming =
-                concreteConfiguration.getBoolean(Constants.CONSOLE_LOG_TIMING).orElse(true);
+                configurationParameters.getBoolean(Constants.MAVEN_PLUGIN_LOG_TIMING).orElse(true);
 
-        LOGGER.trace("configuration [%s] = [%b]", Constants.CONSOLE_LOG_TIMING, consoleLogTiming);
+        LOGGER.trace(
+                "configuration [%s] = [%b]", Constants.MAVEN_PLUGIN_LOG_TIMING, consoleLogTiming);
 
         consoleLogTimingUnits =
-                concreteConfiguration
-                        .get(Constants.CONSOLE_LOG_TIMING_UNITS)
+                configurationParameters
+                        .get(Constants.MAVEN_PLUGIN_TIMING_UNITS)
                         .orElse("milliseconds");
 
         LOGGER.trace(
                 "configuration [%s] = [%s]",
-                Constants.CONSOLE_LOG_TIMING_UNITS, consoleLogTimingUnits);
+                Constants.MAVEN_PLUGIN_TIMING_UNITS, consoleLogTimingUnits);
 
         consoleLogTestMessages =
-                concreteConfiguration.getBoolean(Constants.CONSOLE_LOG_TEST_MESSAGES).orElse(true);
+                configurationParameters
+                        .getBoolean(Constants.MAVEN_PLUGIN_TEST_MESSAGES)
+                        .orElse(true);
 
         LOGGER.trace(
                 "configuration [%s] = [%b]",
-                Constants.CONSOLE_LOG_TEST_MESSAGES, consoleLogTestMessages);
+                Constants.MAVEN_PLUGIN_TEST_MESSAGES, consoleLogTestMessages);
 
         consoleLogPassMessages =
-                concreteConfiguration.getBoolean(Constants.CONSOLE_LOG_PASS_MESSAGES).orElse(true);
+                configurationParameters
+                        .getBoolean(Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGES)
+                        .orElse(true);
 
         LOGGER.trace(
                 "configuration [%s] = [%b]",
-                Constants.CONSOLE_LOG_PASS_MESSAGES, consoleLogPassMessages);
+                Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGES, consoleLogPassMessages);
 
         consoleLogSkipMessages =
-                concreteConfiguration.getBoolean(Constants.CONSOLE_LOG_SKIP_MESSAGES).orElse(true);
+                configurationParameters
+                        .getBoolean(Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGES)
+                        .orElse(true);
 
         LOGGER.trace(
                 "configuration [%s] = [%b]",
-                Constants.CONSOLE_LOG_SKIP_MESSAGES, consoleLogSkipMessages);
+                Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGES, consoleLogSkipMessages);
 
         consoleTestMessage =
                 new AnsiColorStringBuilder()
                         .append(AnsiColor.TEXT_WHITE_BRIGHT)
                         .append(
-                                concreteConfiguration
-                                        .get(Constants.CONSOLE_LOG_TEST_MESSAGE)
+                                configurationParameters
+                                        .get(Constants.MAVEN_PLUGIN_LOG_TEST_MESSAGE)
                                         .orElse("TEST"))
                         .color(AnsiColor.TEXT_RESET)
                         .toString();
@@ -115,8 +122,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 new AnsiColorStringBuilder()
                         .color(AnsiColor.TEXT_GREEN_BOLD_BRIGHT)
                         .append(
-                                concreteConfiguration
-                                        .get(Constants.CONSOLE_LOG_PASS_MESSAGE)
+                                configurationParameters
+                                        .get(Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGE)
                                         .orElse("PASS"))
                         .color(AnsiColor.TEXT_RESET)
                         .toString();
@@ -125,8 +132,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 new AnsiColorStringBuilder()
                         .color(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
                         .append(
-                                concreteConfiguration
-                                        .get(Constants.CONSOLE_LOG_SKIP_MESSAGE)
+                                configurationParameters
+                                        .get(Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGE)
                                         .orElse("SKIP"))
                         .color(AnsiColor.TEXT_RESET)
                         .toString();
@@ -135,8 +142,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 new AnsiColorStringBuilder()
                         .color(AnsiColor.TEXT_RED_BOLD_BRIGHT)
                         .append(
-                                concreteConfiguration
-                                        .get(Constants.CONSOLE_LOG_FAIL_MESSAGE)
+                                configurationParameters
+                                        .get(Constants.MAVEN_PLUGIN_LOG_FAIL_MESSAGE)
                                         .orElse("FAIL"))
                         .color(AnsiColor.TEXT_RESET)
                         .toString();

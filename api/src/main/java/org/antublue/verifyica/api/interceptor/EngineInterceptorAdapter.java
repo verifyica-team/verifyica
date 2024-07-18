@@ -48,6 +48,9 @@ public class EngineInterceptorAdapter implements EngineInterceptor {
                     engineExtension.destroy(engineInterceptorContext.getEngineContext());
                     break;
                 }
+            default: {
+                // DO NOTHING
+            }
         }
     }
 }
