@@ -6,7 +6,7 @@ A Java annotation-based, multi-threaded test engine for integration testing buil
 
 # Purpose
 
-Unit testing is traditionally oriented tests (methods) ...
+Parameterized unit testing is traditionally test first oriented ...
 
 - Given a set of tests (methods), execute each test using a set of arguments.
 
@@ -18,7 +18,7 @@ for (Test test : Tests) {
 }
 ```
 
-Verifyica swaps the paradigm to be arguments first ...
+Verifyica swaps the paradigm to be test arguments first oriented ...
 
 - Given a set of arguments, execute each test with the arguments
 
@@ -32,7 +32,7 @@ for (TestArgument testArgument : TestArguments) {
 
 # Basic example
 
-Basic ExampleTest that will execute a set of tests against an environment.
+Basic example test that will execute a set of tests against an environment.
 
 In this example, the environment is ...
 
@@ -166,12 +166,6 @@ Example tests using [testcontainers-java](https://java.testcontainers.org/)
 - [KafkaTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/KafkaTest.java)
 - [MongoDBTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/MongoDBTest.java)
 
-# But Why?
-
-Integration testing typically requires resources that need to be reused (Docker network, Docker containers, etc.)
-
-Creating, using, and destroying these resources is burdensome and doesn't allow multiple tests against the resources, resulting in large tests that execute a specific test flow.
-
 # Features
 
 - Purpose built for integration testing using [testcontainers-java](https://java.testcontainers.org/)
@@ -191,8 +185,7 @@ Creating, using, and destroying these resources is burdensome and doesn't allow 
 
 To perform integration testing, you need a test environment. Typically this is created using [testcontainers-java](https://java.testcontainers.org/) and [Docker](https://www.docker.com/) (or another compatible container environment.)
 
-Alternatively, tests can be performed on an external environment, though integration testing can be tricky.
-
+Alternatively, tests can be performed on an external environment. Ideally the external environment would have an API to initialize and destroy it.
 # Contributing
 
 See [Contributing](CONTRIBUTING.md) for details.
