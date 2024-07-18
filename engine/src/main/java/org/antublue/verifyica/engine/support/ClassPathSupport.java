@@ -93,7 +93,7 @@ public class ClassPathSupport {
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable t) {
-            throw new RuntimeException(t);
+            throw new RuntimeException("Exception resolving classpath URLs", t);
         }
     }
 
