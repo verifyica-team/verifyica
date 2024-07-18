@@ -30,7 +30,143 @@ for (TestArgument testArgument : TestArguments) {
 }
 ```
 
-# But why?
+# Basic example
+
+Basic ExampleTest that will execute a set of tests against an environment.
+
+In this example, the environment is ...
+
+- initialized
+- tested (test1, test2, ...)
+- destroyed
+
+```java
+import java.io.IOException;
+import java.util.Properties;
+import org.antublue.verifyica.api.Argument;
+import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.Verifyica;
+
+/** Example */
+public class EnvironmentTest {
+
+  @Verifyica.ArgumentSupplier
+  public static Argument<Environment> arguments() {
+    Properties properties = new Properties();
+
+    // ... configure properties for the environment ...
+
+    String name = "Test Environment";
+    Environment environment = new Environment(properties);
+
+    return Argument.of(name, environment);
+  }
+
+  @Verifyica.BeforeAll
+  public void beforeAll(ArgumentContext argumentContext) throws Throwable {
+    argumentContext.getArgument(Environment.class).getPayload().initialize();
+  }
+
+  @Verifyica.Test
+  public void test1(ArgumentContext argumentContext) throws Throwable {
+    HttpClient httpClient =
+            argumentContext.getArgument(Environment.class).getPayload().getHttpClient();
+
+    // ... test code ...
+  }
+
+  @Verifyica.Test
+  public void test2(ArgumentContext argumentContext) throws Throwable {
+    HttpClient httpClient =
+            argumentContext.getArgument(Environment.class).getPayload().getHttpClient();
+
+    // ... test code ...
+  }
+
+  // ... more tests
+
+  @Verifyica.AfterAll
+  public void afterAll(ArgumentContext argumentContext) {
+    argumentContext.getArgument(Environment.class).getPayload().destroy();
+  }
+
+  /** Class to represent an environment */
+  public static class Environment {
+
+    private final Properties properties;
+    private final HttpClient httpClient;
+
+    /**
+     * Constructor
+     *
+     * @param properties properties
+     */
+    public Environment(Properties properties) {
+      this.properties = properties;
+      this.httpClient = new HttpClient(properties);
+    }
+
+    /**
+     * Initialize the environment
+     *
+     * @throws Throwable
+     */
+    public void initialize() throws Throwable {
+      // code to initialize the external environment
+    }
+
+    /**
+     * Method to get an HttpClient for the environment
+     *
+     * @return an HttpClient for the environment
+     */
+    public HttpClient getHttpClient() {
+      return httpClient;
+    }
+
+    /** Method to destroy the environment */
+    public void destroy() {
+      // code to destroy the environment
+    }
+  }
+
+  /** Mock HTTP client */
+  public static class HttpClient {
+
+    private final Properties properties;
+
+    /** Constructor */
+    public HttpClient(Properties properties) {
+      this.properties = properties;
+
+      // ... code to initialize the HTTP client ...
+    }
+
+    /**
+     * Method to send a GET request
+     *
+     * @param path path
+     * @return the response
+     * @throws IOException IOException
+     */
+    public String doGet(String path) throws IOException {
+
+      // ... code to perform the HTTP GET request ...
+
+      return "success";
+    }
+  }
+}
+```
+
+# Examples using test containers
+
+Example tests using [testcontainers-java](https://java.testcontainers.org/)
+
+- [KafkaTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/KafkaTest.java)
+- [MongoDBTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/MongoDBTest.java)
+
+# But Why?
 
 Integration testing typically requires resources that need to be reused (Docker network, Docker containers, etc.)
 
@@ -56,16 +192,6 @@ Creating, using, and destroying these resources is burdensome and doesn't allow 
 To perform integration testing, you need a test environment. Typically this is created using [testcontainers-java](https://java.testcontainers.org/) and [Docker](https://www.docker.com/) (or another compatible container environment.)
 
 Alternatively, tests can be performed on an external environment, though integration testing can be tricky.
-
-# Usage / Examples
-
-Currently, documentation is lacking, but reviewing the [tests](tests) provides some usage examples.
-
-Example tests using [testcontainers-java](https://java.testcontainers.org/)
-
-- [KafkaTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/KafkaTest.java)
-- [MongoDBTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/MongoDBTest.java)
-
 
 # Contributing
 
