@@ -87,7 +87,7 @@ public class EnvironmentTest {
          * @throws Throwable
          */
         public void initialize() throws Throwable {
-            // code to initialize the external environment
+            // code to initialize the environment
         }
 
         /**
