@@ -165,30 +165,45 @@ public final class HumanReadableTimeSupport {
                         ? "milliseconds"
                         : timingUnit.trim().toLowerCase(Locale.ENGLISH);
 
-        if (workingUnit.equals("nanoseconds")) {
-            return nanoseconds + " ns";
-        } else if (workingUnit.equals("microseconds")) {
-            return (nanoseconds / 1e+3) + " μs";
-        } else if (workingUnit.equals("milliseconds")) {
-            return (nanoseconds / 1e+6) + " ms";
-        } else if (workingUnit.equals("seconds")) {
-            return (nanoseconds / 1e+9) + " s";
-        } else if (workingUnit.equals("minutes")) {
-            return (nanoseconds / 1e+12) + " m";
-        } else if (workingUnit.equals("adaptive")) {
-            if (nanoseconds >= 1e+12) {
-                return (nanoseconds / 1e+12) + " m";
-            } else if (nanoseconds >= 1e+9) {
-                return (nanoseconds / 1e+9) + " s";
-            } else if (nanoseconds >= 1e+6) {
-                return (nanoseconds / 1e+6) + " ms";
-            } else if (nanoseconds >= 1e+3) {
-                return (nanoseconds / 1e+3) + " μs";
-            } else {
-                return nanoseconds + " ns";
-            }
-        } else {
-            return (nanoseconds / 1e+6) + " ms";
+        switch (workingUnit) {
+            case "nanoseconds":
+                {
+                    return nanoseconds + " ns";
+                }
+            case "microseconds":
+                {
+                    return (nanoseconds / 1e+3) + " μs";
+                }
+            case "milliseconds":
+                {
+                    return (nanoseconds / 1e+6) + " ms";
+                }
+            case "seconds":
+                {
+                    return (nanoseconds / 1e+9) + " s";
+                }
+            case "minutes":
+                {
+                    return (nanoseconds / 1e+12) + " m";
+                }
+            case "adaptive":
+                {
+                    if (nanoseconds >= 1e+12) {
+                        return (nanoseconds / 1e+12) + " m";
+                    } else if (nanoseconds >= 1e+9) {
+                        return (nanoseconds / 1e+9) + " s";
+                    } else if (nanoseconds >= 1e+6) {
+                        return (nanoseconds / 1e+6) + " ms";
+                    } else if (nanoseconds >= 1e+3) {
+                        return (nanoseconds / 1e+3) + " μs";
+                    } else {
+                        return nanoseconds + " ns";
+                    }
+                }
+            default:
+                {
+                    return (nanoseconds / 1e+6) + " ms";
+                }
         }
     }
 }
