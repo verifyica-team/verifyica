@@ -78,26 +78,6 @@ public class ClassPathSupport {
     }
 
     /**
-     * Method to get a list of class path URLs
-     *
-     * @return a List of class path URLs
-     */
-    public static List<URL> getClassPathURLS() {
-        try {
-            List<URI> uris = getClasspathURIs();
-            List<URL> urls = new ArrayList<>();
-            for (URI uri : uris) {
-                urls.add(uri.toURL());
-            }
-            return urls;
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new RuntimeException("Exception resolving classpath URLs", t);
-        }
-    }
-
-    /**
      * Method to scan the Java class path and return a list of classes matching the Predicate
      *
      * @param predicate predicate
