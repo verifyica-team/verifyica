@@ -19,11 +19,6 @@ package org.antublue.verifyica.engine.descriptor;
 /** Class to implement MetadataConstants */
 public class MetadataTestDescriptorConstants {
 
-    /** Constructor */
-    private MetadataTestDescriptorConstants() {
-        // DO NOTHING
-    }
-
     /** Constant */
     public static final String PASS = "PASS";
 
@@ -53,4 +48,9 @@ public class MetadataTestDescriptorConstants {
 
     /** Constant */
     public static final String TEST_DESCRIPTOR_DURATION = "testDescriptorDuration";
+
+    /** Constructor */
+    private MetadataTestDescriptorConstants() {
+        // DO NOTHING
+    }
 }
