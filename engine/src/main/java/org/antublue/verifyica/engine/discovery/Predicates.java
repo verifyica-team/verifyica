@@ -21,6 +21,8 @@ import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.EngineExtension;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.interceptor.EngineInterceptor;
+import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.MethodSupport;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
 
@@ -33,14 +35,27 @@ public class Predicates {
     }
 
     /** Predicate to filter test engine extension classes */
-    public static final Predicate<Class<?>> TEST_ENGINE_EXTENSION_CLASS =
+    public static final Predicate<Class<?>> ENGINE_EXTENSION_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
                         && !Modifier.isAbstract(modifiers)
                         && !Modifier.isStatic(modifiers)
+                        && ClassSupport.hasDefaultConstructor(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
                         && EngineExtension.class.isAssignableFrom(clazz);
+            };
+
+    /** Predicate to filter test engine invocation interceptor classes */
+    public static final Predicate<Class<?>> ENGINE_INTERCEPTOR_CLASS =
+            clazz -> {
+                int modifiers = clazz.getModifiers();
+                return Modifier.isPublic(modifiers)
+                        && !Modifier.isAbstract(modifiers)
+                        && !Modifier.isStatic(modifiers)
+                        && ClassSupport.hasDefaultConstructor(clazz)
+                        && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
+                        && EngineInterceptor.class.isAssignableFrom(clazz);
             };
 
     /** Predicate to filter argument supplier methods */
@@ -74,10 +89,8 @@ public class Predicates {
                 int modifiers = clazz.getModifiers();
 
                 return !Modifier.isAbstract(modifiers)
+                        && ClassSupport.hasDefaultConstructor(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        /*&& !MethodSupport.findMethods(
-                                clazz, TEST_METHOD, HierarchyTraversalMode.TOP_DOWN)
-                        .isEmpty()*/
                         && !MethodSupport.findMethods(
                                         clazz,
                                         ARGUMENT_SUPPLIER_METHOD,

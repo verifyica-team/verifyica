@@ -32,16 +32,14 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.Function;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.Version;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.junit.platform.commons.util.Preconditions;
+import org.junit.platform.engine.ConfigurationParameters;
 
-/** Class to implement Configuration */
-@SuppressWarnings("deprecation")
-public class ConcreteConfiguration
-        implements Configuration, org.junit.platform.engine.ConfigurationParameters {
+/** Class to implement DefaultConfiguration */
+public class DefaultConfiguration implements Configuration {
 
     private static final String VERIFYICA_CONFIGURATION_TRACE = "VERIFYICA_CONFIGURATION_TRACE";
 
@@ -54,11 +52,80 @@ public class ConcreteConfiguration
 
     private final Map<String, String> map;
     private final ImmutableConfiguration immutableConfiguration;
+    private final ConfigurationParameters configurationParameters;
 
     /** Constructor */
-    public ConcreteConfiguration() {
+    public DefaultConfiguration() {
         map = Collections.synchronizedMap(new TreeMap<>());
+        immutableConfiguration = new ImmutableConfiguration(this);
+        configurationParameters = new DefaultConfigurationParameters(this);
 
+        load();
+    }
+
+    /**
+     * Method to put a Configuration key / value
+     *
+     * @param key key
+     * @param value value
+     * @return this
+     */
+    public DefaultConfiguration setProperty(String key, String value) {
+        Preconditions.notNull(key, "key is null");
+        Preconditions.condition(!key.trim().isEmpty(), "key is empty");
+
+        map.put(key, value);
+
+        return this;
+    }
+
+    @Override
+    public String getProperty(String key) {
+        Preconditions.notNull(key, "key is null");
+        Preconditions.condition(!key.trim().isEmpty(), "key is empty");
+
+        return map.get(key);
+    }
+
+    @Override
+    public Set<String> keySet() {
+        return Collections.unmodifiableSet(map.keySet());
+    }
+
+    @Override
+    public Set<Map.Entry<String, String>> entrySet() {
+        return Collections.unmodifiableSet(map.entrySet());
+    }
+
+    /**
+     * Method to get an immutable version
+     *
+     * @return an immutable version
+     */
+    public Configuration asImmutable() {
+        return immutableConfiguration;
+    }
+
+    /**
+     * Method to get a ConfigurationParameters
+     *
+     * @return an immutable version
+     */
+    public ConfigurationParameters asConfigurationParameters() {
+        return configurationParameters;
+    }
+
+    /**
+     * Method to get the singleton instance
+     *
+     * @return the singleton instance
+     */
+    public static DefaultConfiguration getInstance() {
+        return SingletonHolder.SINGLETON;
+    }
+
+    /** Method to load configuration */
+    private void load() {
         try {
             // Get the properties file from a system property
             Optional<File> optional =
@@ -87,14 +154,14 @@ public class ConcreteConfiguration
                     properties.load(reader);
                 }
 
-                properties.forEach((key, value) -> set((String) key, (String) value));
-                set(VERIFYICA_CONFIGURATION_TRACE, optional.get().getAbsolutePath());
+                properties.forEach((key, value) -> map.put((String) key, (String) value));
+                map.put(VERIFYICA_CONFIGURATION_TRACE, optional.get().getAbsolutePath());
             }
         } catch (IOException e) {
             throw new EngineConfigurationException("Exception loading properties", e);
         }
 
-        set(Constants.VERSION, Version.version());
+        map.put(Constants.VERSION, Version.version());
 
         if (Constants.TRUE.equals(System.getenv().get(VERIFYICA_CONFIGURATION_TRACE))) {
             IS_TRACE_ENABLED = true;
@@ -103,88 +170,6 @@ public class ConcreteConfiguration
         if (IS_TRACE_ENABLED) {
             map.forEach((key, value) -> trace(key + " = [" + value + "]"));
         }
-
-        immutableConfiguration = new ImmutableConfiguration(this);
-    }
-
-    /**
-     * Method to set a configuration value
-     *
-     * @param key key
-     * @param value value
-     */
-    public void set(String key, String value) {
-        Preconditions.notNull(key, "key is null");
-        Preconditions.notNull(value, "value is null");
-        map.put(key, value);
-    }
-
-    @Override
-    public Optional<String> get(String key) {
-        Preconditions.notNull(key, "key is null");
-        return Optional.ofNullable(map.get(key));
-    }
-
-    @Override
-    public String getProperty(String key) {
-        Preconditions.notNull(key, "key is null");
-        return map.get(key);
-    }
-
-    @Override
-    public Optional<Boolean> getBoolean(String key) {
-        Preconditions.notNull(key, "key is null");
-        Optional<String> optional = get(key);
-        return optional.map("true"::equals);
-    }
-
-    @Override
-    public <T> Optional<T> get(String key, Function<String, T> transformer) {
-        Preconditions.notNull(key, "key is null");
-        Preconditions.notNull(transformer, "transformer is null");
-        String value = map.get(key);
-        if (value != null) {
-            return Optional.ofNullable(transformer.apply(value));
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    @Override
-    public int size() {
-        return keySet().size();
-    }
-
-    @Override
-    public Set<String> keySet() {
-        return map.keySet();
-    }
-
-    /**
-     * Method to get the entry set
-     *
-     * @return the entry set
-     */
-    public Set<Map.Entry<String, String>> entrySet() {
-        return map.entrySet();
-    }
-
-    /**
-     * Method to get an immutable version of Configuration
-     *
-     * @return an immutable version of Configuration
-     */
-    public Configuration toImmutable() {
-        return immutableConfiguration;
-    }
-
-    /**
-     * Method to get the singleton instance
-     *
-     * @return the singleton instance
-     */
-    public static ConcreteConfiguration getInstance() {
-        return SingletonHolder.SINGLETON;
     }
 
     /**
@@ -235,40 +220,10 @@ public class ConcreteConfiguration
                             + " | "
                             + "TRACE"
                             + " | "
-                            + ConcreteConfiguration.class.getName()
+                            + DefaultConfiguration.class.getName()
                             + " | "
                             + message
                             + " ");
-        }
-    }
-
-    /** Class to implement ImmutableConfiguration */
-    private static class ImmutableConfiguration implements Configuration {
-
-        private final Configuration configuration;
-
-        /**
-         * Constructor
-         *
-         * @param configuration configuration
-         */
-        public ImmutableConfiguration(Configuration configuration) {
-            this.configuration = configuration;
-        }
-
-        @Override
-        public String getProperty(String key) {
-            return configuration.getProperty(key);
-        }
-
-        @Override
-        public Set<String> keySet() {
-            return Collections.unmodifiableSet(configuration.keySet());
-        }
-
-        @Override
-        public Set<Map.Entry<String, String>> entrySet() {
-            return Collections.unmodifiableSet(configuration.entrySet());
         }
     }
 
@@ -276,6 +231,6 @@ public class ConcreteConfiguration
     private static class SingletonHolder {
 
         /** The singleton instance */
-        private static final ConcreteConfiguration SINGLETON = new ConcreteConfiguration();
+        private static final DefaultConfiguration SINGLETON = new DefaultConfiguration();
     }
 }

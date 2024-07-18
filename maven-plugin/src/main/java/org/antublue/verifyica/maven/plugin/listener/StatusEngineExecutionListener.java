@@ -19,8 +19,8 @@ package org.antublue.verifyica.maven.plugin.listener;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import org.antublue.verifyica.api.Argument;
-import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.descriptor.Metadata;
 import org.antublue.verifyica.engine.descriptor.MetadataTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.MetadataTestDescriptorConstants;
@@ -29,6 +29,7 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.HumanReadableTimeSupport;
 import org.antublue.verifyica.engine.util.AnsiColor;
 import org.antublue.verifyica.engine.util.AnsiColorStringBuilder;
+import org.junit.platform.engine.ConfigurationParameters;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
@@ -62,7 +63,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     /** Constructor */
     public StatusEngineExecutionListener() {
-        ConcreteConfiguration concreteConfiguration = ConcreteConfiguration.getInstance();
+        ConfigurationParameters concreteConfiguration =
+                DefaultConfiguration.getInstance().asConfigurationParameters();
 
         consoleLogTiming =
                 concreteConfiguration.getBoolean(Constants.CONSOLE_LOG_TIMING).orElse(true);

@@ -23,12 +23,28 @@ import java.util.Set;
 public interface Configuration {
 
     /**
-     * Method to get a Configuration property value
+     * Method to get a Configuration value
      *
      * @param key key
      * @return the Configuration property value
      */
     String getProperty(String key);
+
+    /**
+     * Method to get a Configuration value
+     *
+     * @param key key
+     * @return the Configuration value
+     */
+    // String get(String key);
+
+    /**
+     * Method to return if a Configuration key
+     *
+     * @param key key
+     * @return true if the key exists, else false
+     */
+    // boolean containsKey(String key);
 
     /**
      * Method to get the Configuration key set

@@ -23,7 +23,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class ExtensionTest {
+public class EngineExtensionTest {
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
@@ -49,7 +49,7 @@ public class ExtensionTest {
                                         .getClassContext()
                                         .getEngineContext()
                                         .getStore()
-                                        .get(ExampleEngineExtension.GLOBAL_STRING))
+                                        .get(ExampleEngineExtension.KEY))
                 .isNotNull();
 
         assertThat(
@@ -57,17 +57,7 @@ public class ExtensionTest {
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleEngineExtension.GLOBAL_STRING, String.class))
-                .isEqualTo("global string");
-
-        argumentContext
-                .getClassContext()
-                .getEngineContext()
-                .getConfiguration()
-                .entrySet()
-                .forEach(
-                        entry ->
-                                System.out.println(
-                                        format("  [%s] = [%s]", entry.getKey(), entry.getValue())));
+                                .get(ExampleEngineExtension.KEY, String.class))
+                .isEqualTo(ExampleEngineExtension.VALUE);
     }
 }

@@ -23,18 +23,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
-import java.util.function.Consumer;
 import org.antublue.verifyica.api.Context;
-import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.ConcreteArgumentContext;
-import org.antublue.verifyica.engine.context.ConcreteClassContext;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
+import org.antublue.verifyica.engine.context.DefaultArgumentContext;
+import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
-import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.ClassSource;
@@ -49,9 +47,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             ThreadTool.hasVirtualThreads()
                     && "virtual"
                             .equalsIgnoreCase(
-                                    ConcreteConfiguration.getInstance()
-                                            .get(Constants.THREAD_TYPE)
-                                            .orElse("platform"));
+                                    DefaultConfiguration.getInstance()
+                                            .getProperty(Constants.THREAD_TYPE));
 
     private final Class<?> testClass;
     private final int permits;
@@ -103,7 +100,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
         stopWatch.reset();
 
-        ConcreteClassContext concreteClassContext = (ConcreteClassContext) context;
+        DefaultClassContext defaultClassContext = (DefaultClassContext) context;
 
         getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
         getMetadata()
@@ -111,17 +108,17 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        throwableCollector.execute(() -> createTestInstance(concreteClassContext));
+        throwableCollector.execute(() -> createTestInstance(defaultClassContext));
         if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(() -> invokePrepareMethods(concreteClassContext));
+            throwableCollector.execute(() -> invokePrepareMethods(defaultClassContext));
             if (throwableCollector.isEmpty()) {
-                doExecute(executionRequest, concreteClassContext);
+                executeChildren(executionRequest, defaultClassContext);
             } else {
-                doSkip(executionRequest, concreteClassContext);
+                skipChildren(executionRequest, defaultClassContext);
             }
-            throwableCollector.execute(() -> invokeConcludeMethods(concreteClassContext));
+            throwableCollector.execute(() -> invokeConcludeMethods(defaultClassContext));
         }
-        throwableCollector.execute(() -> destroyTestInstance(concreteClassContext));
+        throwableCollector.execute(() -> destroyTestInstance(defaultClassContext));
 
         stopWatch.stop();
 
@@ -153,7 +150,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
         stopWatch.reset();
 
-        ConcreteClassContext concreteClassContext = (ConcreteClassContext) context;
+        DefaultClassContext defaultClassContext = (DefaultClassContext) context;
 
         getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
         getMetadata()
@@ -167,15 +164,12 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                         MetadataTestDescriptorConstants.TEST_DESCRIPTOR_STATUS,
                         MetadataTestDescriptorConstants.SKIP);
 
-        getChildren()
+        getChildren().stream()
+                .map(ToExecutableTestDescriptor.INSTANCE)
                 .forEach(
-                        (Consumer<TestDescriptor>)
-                                testDescriptor -> {
-                                    if (testDescriptor instanceof ExecutableTestDescriptor) {
-                                        ((ExecutableTestDescriptor) testDescriptor)
-                                                .skip(executionRequest, concreteClassContext);
-                                    }
-                                });
+                        executableTestDescriptor ->
+                                executableTestDescriptor.skip(
+                                        executionRequest, defaultClassContext));
 
         stopWatch.stop();
 
@@ -205,7 +199,13 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                 + "}";
     }
 
-    private void createTestInstance(ConcreteClassContext concreteClassContext) throws Throwable {
+    /**
+     * Method to create the test instance
+     *
+     * @param defaultClassContext defaultClassContext
+     * @throws Throwable Throwable
+     */
+    private void createTestInstance(DefaultClassContext defaultClassContext) throws Throwable {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("createTestInstance() testClass [%s]", testClass.getName());
         }
@@ -219,10 +219,16 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                     testClass.getName(), testInstance);
         }
 
-        concreteClassContext.setTestInstance(testInstance);
+        defaultClassContext.setTestInstance(testInstance);
     }
 
-    private void invokePrepareMethods(ConcreteClassContext concreteClassContext) throws Throwable {
+    /**
+     * Method to invoke all prepare methods
+     *
+     * @param defaultClassContext defaultClassContext
+     * @throws Throwable Throwable
+     */
+    private void invokePrepareMethods(DefaultClassContext defaultClassContext) throws Throwable {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("invokePrepareMethods() testClass [%s]", testClass.getName());
         }
@@ -234,78 +240,76 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                         testClass.getName(), method);
             }
 
-            method.invoke(null, concreteClassContext.toImmutable());
+            method.invoke(null, defaultClassContext.asImmutable());
         }
     }
 
-    private void doExecute(
-            ExecutionRequest executionRequest, ConcreteClassContext concreteClassContext) {
+    /**
+     * Method to execute all child test descriptors
+     *
+     * @param executionRequest executionRequest
+     * @param defaultClassContext defaultClassContext
+     */
+    private void executeChildren(
+            ExecutionRequest executionRequest, DefaultClassContext defaultClassContext) {
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("doExecute() testClass [%s]", testClass.getName());
+            LOGGER.trace("executeChildren() testClass [%s]", testClass.getName());
         }
 
-        Preconditions.notNull(concreteClassContext, "concreteClassContext is null");
-        Preconditions.notNull(
-                concreteClassContext.getTestInstance(), "concreteClassContext is null");
+        Preconditions.notNull(defaultClassContext, "concreteClassContext is null");
+        Preconditions.notNull(defaultClassContext.getTestInstance(), "testInstance is null");
 
         CountDownLatch countDownLatch = new CountDownLatch(getChildren().size());
         Semaphore semaphore = new Semaphore(permits);
 
-        getChildren()
+        getChildren().stream()
+                .map(ToExecutableTestDescriptor.INSTANCE)
                 .forEach(
-                        (Consumer<TestDescriptor>)
-                                testDescriptor -> {
-                                    if (testDescriptor instanceof ArgumentTestDescriptor) {
-                                        ExecutableTestDescriptor executableTestDescriptor =
-                                                (ExecutableTestDescriptor) testDescriptor;
+                        executableTestDescriptor -> {
+                            DefaultArgumentContext defaultArgumentContext =
+                                    new DefaultArgumentContext(defaultClassContext);
 
-                                        ConcreteArgumentContext concreteArgumentContext =
-                                                new ConcreteArgumentContext(concreteClassContext);
+                            defaultArgumentContext.setTestInstance(
+                                    defaultClassContext.getTestInstance());
 
-                                        concreteArgumentContext.setTestInstance(
-                                                concreteClassContext.getTestInstance());
+                            if (permits > 1) {
+                                try {
+                                    semaphore.acquire();
+                                } catch (Throwable t) {
+                                    // DO NOTHING
+                                }
 
-                                        if (permits > 1) {
-                                            try {
-                                                semaphore.acquire();
-                                            } catch (Throwable t) {
-                                                // DO NOTHING
-                                            }
-
-                                            Runnable runnable =
-                                                    () -> {
-                                                        try {
-                                                            executableTestDescriptor.execute(
-                                                                    executionRequest,
-                                                                    concreteArgumentContext);
-                                                        } finally {
-                                                            semaphore.release();
-                                                            countDownLatch.countDown();
-                                                        }
-                                                    };
-
-                                            Thread thread;
-
-                                            if (useVirtualThreads) {
-                                                thread =
-                                                        ThreadTool.unstartedVirtualThread(runnable);
-                                            } else {
-                                                thread = new Thread(runnable);
-                                            }
-
-                                            thread.setDaemon(true);
-                                            thread.setName(Thread.currentThread().getName());
-                                            thread.start();
-                                        } else {
+                                Runnable runnable =
+                                        () -> {
                                             try {
                                                 executableTestDescriptor.execute(
-                                                        executionRequest, concreteArgumentContext);
+                                                        executionRequest, defaultArgumentContext);
                                             } finally {
+                                                semaphore.release();
                                                 countDownLatch.countDown();
                                             }
-                                        }
-                                    }
-                                });
+                                        };
+
+                                Thread thread;
+
+                                if (useVirtualThreads) {
+                                    thread = ThreadTool.unstartedVirtualThread(runnable);
+                                } else {
+                                    thread = new Thread(runnable);
+                                }
+
+                                thread.setDaemon(true);
+                                thread.setName(Thread.currentThread().getName());
+                                thread.start();
+                            } else {
+                                try {
+                                    executableTestDescriptor.execute(
+                                            executionRequest, defaultArgumentContext);
+                                } finally {
+                                    countDownLatch.countDown();
+                                }
+                            }
+                        });
 
         try {
             countDownLatch.await();
@@ -314,10 +318,16 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         }
     }
 
-    private void doSkip(
-            ExecutionRequest executionRequest, ConcreteClassContext concreteClassContext) {
+    /**
+     * Method to skip child test descriptors
+     *
+     * @param executionRequest executionRequest
+     * @param defaultClassContext defaultClassContext
+     */
+    private void skipChildren(
+            ExecutionRequest executionRequest, DefaultClassContext defaultClassContext) {
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("doSkip() testClass [%s]", testClass.getName());
+            LOGGER.trace("skipChildren() testClass [%s]", testClass.getName());
         }
 
         getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
@@ -330,27 +340,27 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionSkipped(this, "Skipped");
 
-        getChildren()
+        getChildren().stream()
+                .map(ToExecutableTestDescriptor.INSTANCE)
                 .forEach(
-                        (Consumer<TestDescriptor>)
-                                testDescriptor -> {
-                                    if (testDescriptor instanceof ArgumentTestDescriptor) {
-                                        ArgumentTestDescriptor argumentTestDescriptor =
-                                                (ArgumentTestDescriptor) testDescriptor;
+                        executableTestDescriptor -> {
+                            DefaultArgumentContext defaultArgumentContext =
+                                    new DefaultArgumentContext(defaultClassContext);
 
-                                        ConcreteArgumentContext concreteArgumentContext =
-                                                new ConcreteArgumentContext(concreteClassContext);
+                            defaultArgumentContext.setTestInstance(
+                                    defaultClassContext.getTestInstance());
 
-                                        concreteArgumentContext.setTestInstance(
-                                                concreteClassContext.getTestInstance());
-
-                                        argumentTestDescriptor.skip(
-                                                executionRequest, concreteArgumentContext);
-                                    }
-                                });
+                            executableTestDescriptor.skip(executionRequest, defaultArgumentContext);
+                        });
     }
 
-    private void invokeConcludeMethods(ConcreteClassContext concreteClassContext) throws Throwable {
+    /**
+     * Method to invoke all conclude methods
+     *
+     * @param defaultClassContext defaultClassContext
+     * @throws Throwable Throwable
+     */
+    private void invokeConcludeMethods(DefaultClassContext defaultClassContext) throws Throwable {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("invokeConcludeMethods() testClass [%s]", testClass.getName());
         }
@@ -362,15 +372,27 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                         testClass.getName(), method);
             }
 
-            method.invoke(null, concreteClassContext.toImmutable());
+            method.invoke(null, defaultClassContext.asImmutable());
         }
 
-        concreteClassContext.getStore().clear();
+        defaultClassContext.getStore().clear();
     }
 
-    private void destroyTestInstance(ConcreteClassContext concreteClassContext) {
-        Object testInstance = concreteClassContext.getTestInstance();
-        LOGGER.trace("destroyTestInstance() testClass [%s]", testClass.getName(), testInstance);
-        concreteClassContext.setTestInstance(null);
+    /**
+     * Method to destroy the test instance
+     *
+     * @param defaultClassContext defaultClassContext
+     */
+    private void destroyTestInstance(DefaultClassContext defaultClassContext) throws Throwable {
+        Object testInstance = defaultClassContext.getTestInstance();
+        defaultClassContext.setTestInstance(null);
+
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("destroyTestInstance() testClass [%s]", testClass.getName(), testInstance);
+        }
+
+        if (testInstance instanceof AutoCloseable) {
+            ((AutoCloseable) testInstance).close();
+        }
     }
 }

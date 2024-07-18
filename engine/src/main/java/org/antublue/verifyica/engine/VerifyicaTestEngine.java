@@ -22,11 +22,14 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Consumer;
-import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
+import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
+import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
+import org.antublue.verifyica.engine.context.ImmutableEngineContext;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutor;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutorFactory;
-import org.antublue.verifyica.engine.extension.EngineExtensionManager;
+import org.antublue.verifyica.engine.interceptor.EngineInterceptorManager;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.util.ThrowableCollector;
@@ -91,7 +94,7 @@ public class VerifyicaTestEngine implements TestEngine {
             return null;
         }
 
-        ConcreteConfiguration.getInstance();
+        DefaultConfiguration.getInstance();
 
         LOGGER.trace("discover(" + uniqueId + ")");
 
@@ -121,9 +124,19 @@ public class VerifyicaTestEngine implements TestEngine {
                 .getEngineExecutionListener()
                 .executionStarted(executionRequest.getRootTestDescriptor());
 
+        ImmutableEngineContext immutableEngineContext = ImmutableEngineContext.getInstance();
+
+        DefaultEngineInterceptorContext defaultEngineInterceptorContext =
+                new DefaultEngineInterceptorContext(immutableEngineContext);
+
+        defaultEngineInterceptorContext.setLifeCycle(EngineInterceptorContext.LifeCycle.INITIALIZE);
+
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
-        throwableCollector.execute(() -> EngineExtensionManager.getInstance().initialize());
+        throwableCollector.execute(
+                () ->
+                        EngineInterceptorManager.getInstance()
+                                .initialize(defaultEngineInterceptorContext.asImmutable()));
 
         if (throwableCollector.isEmpty()) {
             throwableCollector.execute(
@@ -135,11 +148,19 @@ public class VerifyicaTestEngine implements TestEngine {
                     });
         }
 
+        defaultEngineInterceptorContext.setLifeCycle(EngineInterceptorContext.LifeCycle.DESTROY);
+
         throwableCollector.execute(
                 () ->
                         throwableCollector
                                 .getThrowables()
-                                .addAll(EngineExtensionManager.getInstance().destroy()));
+                                .addAll(
+                                        EngineInterceptorManager.getInstance()
+                                                .destroy(
+                                                        defaultEngineInterceptorContext
+                                                                .asImmutable())));
+
+        immutableEngineContext.getStore().clear();
 
         if (throwableCollector.isEmpty()) {
             executionRequest

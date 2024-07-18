@@ -21,10 +21,10 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
 
-/** Class to implement ConcreteArgumentContext */
-public class ConcreteArgumentContext implements ArgumentContext {
+/** Class to implement DefaultArgumentContext */
+public class DefaultArgumentContext implements ArgumentContext {
 
-    private final ConcreteClassContext concreteClassContext;
+    private final DefaultClassContext defaultClassContext;
     private final Store store;
     private final ImmutableArgumentContext immutableArgumentContext;
 
@@ -34,18 +34,18 @@ public class ConcreteArgumentContext implements ArgumentContext {
     /**
      * Constructor
      *
-     * @param concreteClassContext concreteClassContext
+     * @param defaultClassContext classContextImpl
      */
-    public ConcreteArgumentContext(ConcreteClassContext concreteClassContext) {
-        this.concreteClassContext = concreteClassContext;
+    public DefaultArgumentContext(DefaultClassContext defaultClassContext) {
+        this.defaultClassContext = defaultClassContext;
         this.store = new Store();
         this.immutableArgumentContext =
-                new ImmutableArgumentContext(concreteClassContext.toImmutable(), this);
+                new ImmutableArgumentContext(defaultClassContext.asImmutable(), this);
     }
 
     @Override
     public ClassContext getClassContext() {
-        return concreteClassContext;
+        return defaultClassContext;
     }
 
     @Override
@@ -95,39 +95,7 @@ public class ConcreteArgumentContext implements ArgumentContext {
      *
      * @return an immutable version
      */
-    public ArgumentContext toImmutable() {
+    public ArgumentContext asImmutable() {
         return immutableArgumentContext;
-    }
-
-    private static class ImmutableArgumentContext implements ArgumentContext {
-
-        private final ClassContext classContext;
-        private final ArgumentContext argumentContext;
-
-        public ImmutableArgumentContext(
-                ClassContext classContext, ArgumentContext argumentContext) {
-            this.classContext = classContext;
-            this.argumentContext = argumentContext;
-        }
-
-        @Override
-        public ClassContext getClassContext() {
-            return classContext;
-        }
-
-        @Override
-        public Argument<?> getArgument() {
-            return argumentContext.getArgument();
-        }
-
-        @Override
-        public <T> Argument<T> getArgument(Class<T> type) {
-            return argumentContext.getArgument(type);
-        }
-
-        @Override
-        public Store getStore() {
-            return argumentContext.getStore();
-        }
     }
 }
