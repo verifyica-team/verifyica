@@ -65,8 +65,7 @@ public class ClassPathSupport {
                 String classpath = System.getProperty("java.class.path");
                 String[] paths = classpath.split(File.pathSeparator);
                 for (String path : paths) {
-                    URI uri = new File(path).toURI();
-                    uriSet.add(uri);
+                    uriSet.add(new File(path).toURI());
                 }
 
                 URIS = new ArrayList<>(uriSet);
