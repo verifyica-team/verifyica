@@ -18,6 +18,9 @@ package org.antublue.verifyica.test.store;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.Verifyica;
@@ -31,20 +34,78 @@ public class StoreMergeTest {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
+        System.out.println("test1()");
+
+        argumentContext.getStore().clear();
         System.out.println("argument context store before merge " + argumentContext.getStore());
 
         Store store = new Store();
-
         for (int i = 0; i < 10; i++) {
             store.put("key " + i, "value " + i);
         }
-
         System.out.println("store " + store);
 
         argumentContext.getStore().merge(store);
-
         assertThat(argumentContext.getStore()).isEqualTo(store);
+
+        System.out.println("argument context store after merge " + argumentContext.getStore());
+    }
+
+    @Verifyica.Test
+    public void test2(ArgumentContext argumentContext) {
+        System.out.println("test2()");
+
+        argumentContext.getStore().clear();
+        System.out.println("argument context store before merge " + argumentContext.getStore());
+
+        Map<String, String> map = new HashMap<>();
+        for (int i = 0; i < 10; i++) {
+            map.put("key " + i, "value " + i);
+        }
+
+        System.out.println("map " + map);
+
+        argumentContext.getStore().merge(map);
+
+        assertThat(argumentContext.getStore().size()).isEqualTo(map.size());
+
+        map.forEach(
+                (key, value) -> {
+                    Store store = argumentContext.getStore();
+
+                    assertThat(store.containsKey(key)).isTrue();
+                    assertThat(store.get(key) == value).isTrue();
+                });
+
+        System.out.println("argument context store after merge " + argumentContext.getStore());
+    }
+
+    @Verifyica.Test
+    public void test3(ArgumentContext argumentContext) {
+        System.out.println("test3()");
+
+        argumentContext.getStore().clear();
+        System.out.println("argument context store before merge " + argumentContext.getStore());
+
+        Properties properties = new Properties();
+        for (int i = 0; i < 10; i++) {
+            properties.setProperty("key " + i, "value " + i);
+        }
+
+        System.out.println("properties " + properties);
+
+        argumentContext.getStore().merge(properties);
+
+        assertThat(argumentContext.getStore().size()).isEqualTo(properties.size());
+
+        properties.forEach(
+                (key, value) -> {
+                    Store store = argumentContext.getStore();
+
+                    assertThat(store.containsKey(key)).isTrue();
+                    assertThat(store.get(key) == value).isTrue();
+                });
 
         System.out.println("argument context store after merge " + argumentContext.getStore());
     }

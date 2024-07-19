@@ -16,8 +16,11 @@
 
 package org.antublue.verifyica.api;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -108,6 +111,7 @@ public class Store {
      * @return the Object
      * @param <T> type
      */
+    @Deprecated
     public <T> T getOrThrow(Object key, Supplier<? extends RuntimeException> supplier) {
         Preconditions.notNull(key, "key is null");
         Preconditions.notNull(supplier, "supplier is null");
@@ -129,6 +133,7 @@ public class Store {
      * @return the Object
      * @param <T> type
      */
+    @Deprecated
     public <T> T getOrThrow(
             Object key, Class<T> type, Supplier<? extends RuntimeException> supplier) {
         Preconditions.notNull(key, "key is null");
@@ -208,6 +213,23 @@ public class Store {
     }
 
     /**
+     * Method to return if the Store contains the key
+     *
+     * @param key key
+     * @return true if the Store contains the key, else false
+     */
+    public boolean containsKey(Object key) {
+        Preconditions.notNull(key, "key is null");
+
+        try {
+            readWriteLock.writeLock().lock();
+            return map.containsKey(key);
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
+    }
+
+    /**
      * Method to return whether the Store is empty
      *
      * @return true of the store is empty, else false
@@ -236,7 +258,7 @@ public class Store {
     }
 
     /**
-     * Method to merge a Store into the Store
+     * Method to merge a Store into the Store. Locks the Stores.
      *
      * @param store store
      * @return this
@@ -248,7 +270,6 @@ public class Store {
             try {
                 store.getLock().readLock().lock();
                 getLock().writeLock().lock();
-
                 map.putAll(store.map);
             } finally {
                 getLock().writeLock().unlock();
@@ -260,9 +281,9 @@ public class Store {
     }
 
     /**
-     * Method to merge a Map into the Store
+     * Method to merge a Map into the Store. Locks the Store.
      *
-     * @param map
+     * @param map map
      * @return this
      */
     public Store merge(Map<String, String> map) {
@@ -271,8 +292,29 @@ public class Store {
         if (!map.isEmpty()) {
             try {
                 getLock().writeLock().lock();
+                this.map.putAll(map);
+            } finally {
+                getLock().writeLock().unlock();
+            }
+        }
 
-                map.putAll(map);
+        return this;
+    }
+
+    /**
+     * Method to merge Properties into the Store. Locks the Store.
+     *
+     * @param properties properties
+     * @return this
+     */
+    public Store merge(Properties properties) {
+        Preconditions.notNull(properties, "properties is null");
+
+        if (!properties.isEmpty()) {
+            try {
+                getLock().writeLock().lock();
+                Set<Map.Entry<Object, Object>> entrySet = new HashSet<>(properties.entrySet());
+                entrySet.forEach(entry -> map.put(entry.getKey(), entry.getValue()));
             } finally {
                 getLock().writeLock().unlock();
             }
