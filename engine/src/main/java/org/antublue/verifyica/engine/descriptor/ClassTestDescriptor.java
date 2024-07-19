@@ -187,13 +187,13 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                 + " "
                 + getUniqueId()
                 + " {"
-                + " testClass["
+                + " testClass ["
                 + testClass.getName()
                 + "]"
-                + " prepareMethods["
+                + " prepareMethods ["
                 + ObjectSupport.toString(prepareMethods)
                 + "]"
-                + " concludeMethods["
+                + " concludeMethods ["
                 + ObjectSupport.toString(concludeMethods)
                 + "] "
                 + "}";

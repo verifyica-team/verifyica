@@ -188,13 +188,13 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                 + " "
                 + getUniqueId()
                 + " {"
-                + " testClass["
+                + " testClass ["
                 + testClass.getName()
                 + "]"
-                + " beforeAllMethods["
+                + " beforeAllMethods ["
                 + ObjectSupport.toString(beforeAllMethods)
                 + "]"
-                + " afterAllMethods["
+                + " afterAllMethods ["
                 + ObjectSupport.toString(afterAllMethods)
                 + "] "
                 + "}";

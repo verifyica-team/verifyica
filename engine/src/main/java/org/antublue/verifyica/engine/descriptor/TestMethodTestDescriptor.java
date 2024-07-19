@@ -183,15 +183,15 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
                 + " "
                 + getUniqueId()
                 + " { "
-                + "testClass["
+                + "testClass ["
                 + testClass.getName()
                 + "]"
-                + " beforeEachMethods["
+                + " beforeEachMethods ["
                 + ObjectSupport.toString(beforeEachMethods)
                 + "]"
-                + " testMethod["
+                + " testMethod ["
                 + testMethod.getName()
-                + "] afterEachMethods["
+                + "] afterEachMethods ["
                 + ObjectSupport.toString(afterEachMethods)
                 + "] "
                 + "}";
