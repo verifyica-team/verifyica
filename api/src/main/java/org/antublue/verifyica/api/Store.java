@@ -17,6 +17,7 @@
 package org.antublue.verifyica.api;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -51,7 +52,7 @@ public class Store {
         Preconditions.notNull(key, "key is null");
 
         try {
-            readWriteLock.writeLock().lock();
+            getLock().writeLock().lock();
 
             if (value == null) {
                 map.remove(key);
@@ -59,7 +60,7 @@ public class Store {
                 map.put(key, value);
             }
         } finally {
-            readWriteLock.writeLock().unlock();
+            getLock().writeLock().unlock();
         }
 
         return this;
@@ -76,10 +77,10 @@ public class Store {
         Preconditions.notNull(key, "key is null");
 
         try {
-            readWriteLock.readLock().lock();
+            getLock().readLock().lock();
             return (T) map.get(key);
         } finally {
-            readWriteLock.readLock().unlock();
+            getLock().readLock().unlock();
         }
     }
 
@@ -96,10 +97,10 @@ public class Store {
         Preconditions.notNull(type, "type is null");
 
         try {
-            readWriteLock.readLock().lock();
+            getLock().readLock().lock();
             return type.cast(map.get(key));
         } finally {
-            readWriteLock.readLock().unlock();
+            getLock().readLock().unlock();
         }
     }
 
@@ -159,10 +160,10 @@ public class Store {
         Preconditions.notNull(key, "key is null");
 
         try {
-            readWriteLock.writeLock().lock();
+            getLock().writeLock().lock();
             return (T) map.remove(key);
         } finally {
-            readWriteLock.writeLock().unlock();
+            getLock().writeLock().unlock();
         }
     }
 
@@ -179,10 +180,10 @@ public class Store {
         Preconditions.notNull(type, "type is null");
 
         try {
-            readWriteLock.writeLock().lock();
+            getLock().writeLock().lock();
             return type.cast(map.remove(key));
         } finally {
-            readWriteLock.writeLock().unlock();
+            getLock().writeLock().unlock();
         }
     }
 
@@ -193,7 +194,7 @@ public class Store {
      */
     public Store clear() {
         try {
-            readWriteLock.writeLock().lock();
+            getLock().writeLock().lock();
 
             for (Object value : map.values()) {
                 if (value instanceof AutoCloseable) {
@@ -206,7 +207,7 @@ public class Store {
             }
             map.clear();
         } finally {
-            readWriteLock.writeLock().unlock();
+            getLock().writeLock().unlock();
         }
 
         return this;
@@ -222,10 +223,10 @@ public class Store {
         Preconditions.notNull(key, "key is null");
 
         try {
-            readWriteLock.writeLock().lock();
+            getLock().writeLock().lock();
             return map.containsKey(key);
         } finally {
-            readWriteLock.writeLock().unlock();
+            getLock().writeLock().unlock();
         }
     }
 
@@ -250,15 +251,29 @@ public class Store {
      */
     public int size() {
         try {
-            readWriteLock.readLock().lock();
+            getLock().readLock().lock();
             return map.size();
         } finally {
-            readWriteLock.readLock().unlock();
+            getLock().readLock().unlock();
         }
     }
 
     /**
-     * Method to merge a Store into the Store. Locks the Stores.
+     * Method to get the Store's key set
+     *
+     * @return the Store's key set
+     */
+    public Set<Object> keySet() {
+        try {
+            getLock().readLock().lock();
+            return new LinkedHashSet<>(map.keySet());
+        } finally {
+            getLock().readLock().unlock();
+        }
+    }
+
+    /**
+     * Method to merge a Store into the Store. Locks the Store
      *
      * @param store store
      * @return this
@@ -281,7 +296,7 @@ public class Store {
     }
 
     /**
-     * Method to merge a Map into the Store. Locks the Store.
+     * Method to merge a Map into the Store. Locks the Store
      *
      * @param map map
      * @return this
@@ -302,7 +317,7 @@ public class Store {
     }
 
     /**
-     * Method to merge Properties into the Store. Locks the Store.
+     * Method to merge Properties into the Store. Locks the Store
      *
      * @param properties properties
      * @return this
@@ -324,6 +339,23 @@ public class Store {
     }
 
     /**
+     * Method to duplicate the Store
+     *
+     * @return a duplicate Store
+     */
+    public Store duplicate() {
+        try {
+            getLock().readLock().lock();
+
+            Store store = new Store();
+            store.map.putAll(this.map);
+            return store;
+        } finally {
+            getLock().readLock().unlock();
+        }
+    }
+
+    /**
      * Method to get the Store lock
      *
      * @return the Store lock
@@ -335,10 +367,10 @@ public class Store {
     @Override
     public String toString() {
         try {
-            readWriteLock.readLock().lock();
+            getLock().readLock().lock();
             return map.toString();
         } finally {
-            readWriteLock.readLock().unlock();
+            getLock().readLock().unlock();
         }
     }
 
