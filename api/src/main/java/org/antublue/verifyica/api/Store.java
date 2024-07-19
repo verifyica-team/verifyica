@@ -208,6 +208,20 @@ public class Store {
     }
 
     /**
+     * Method to return whether the Store is empty
+     *
+     * @return true of the store is empty, else false
+     */
+    public boolean isEmpty() {
+        try {
+            getLock().readLock().lock();
+            return map.isEmpty();
+        } finally {
+            getLock().readLock().unlock();
+        }
+    }
+
+    /**
      * Method to get the Store size
      *
      * @return the size
@@ -222,10 +236,10 @@ public class Store {
     }
 
     /**
-     * Method to merge a Store into this Store
+     * Method to merge a Store into the Store
      *
      * @param store store
-     * @return the Store
+     * @return this
      */
     public Store merge(Store store) {
         Preconditions.notNull(store, "store is null");
@@ -239,6 +253,28 @@ public class Store {
             } finally {
                 getLock().writeLock().unlock();
                 store.getLock().readLock().unlock();
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Method to merge a Map into the Store
+     *
+     * @param map
+     * @return this
+     */
+    public Store merge(Map<String, String> map) {
+        Preconditions.notNull(map, "map is null");
+
+        if (!map.isEmpty()) {
+            try {
+                getLock().writeLock().lock();
+
+                map.putAll(map);
+            } finally {
+                getLock().writeLock().unlock();
             }
         }
 
