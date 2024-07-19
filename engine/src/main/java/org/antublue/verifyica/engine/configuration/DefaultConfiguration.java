@@ -65,7 +65,6 @@ public class DefaultConfiguration implements Configuration {
         deprecatedKeyMappingMap.put("verifyica.thread.type", Constants.ENGINE_EXECUTOR_TYPE);
         deprecatedKeyMappingMap.put("verifyica.logger.level", Constants.ENGINE_LOGGER_LEVEL);
         deprecatedKeyMappingMap.put("verifyica.logger.regex", Constants.ENGINE_LOGGER_REGEX);
-
         deprecatedKeyMappingMap.put(
                 "verifyica.console.log.timing", Constants.MAVEN_PLUGIN_LOG_TIMING);
         deprecatedKeyMappingMap.put(
