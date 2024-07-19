@@ -16,7 +16,7 @@
 
 package org.antublue.verifyica.engine.descriptor;
 
-/** Interface to implement ExecutableTestDescriptorMetadataSupport */
+/** Interface to implement MetadataTestDescriptor */
 public interface MetadataTestDescriptor {
 
     /**
