@@ -108,7 +108,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        throwableCollector.execute(() -> createTestInstance(defaultClassContext));
+        throwableCollector.execute(() -> instantiateTestInstance(defaultClassContext));
         if (throwableCollector.isEmpty()) {
             throwableCollector.execute(() -> invokePrepareMethods(defaultClassContext));
             if (throwableCollector.isEmpty()) {
@@ -200,24 +200,18 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     }
 
     /**
-     * Method to create the test instance
+     * Method to instantiate the test instance
      *
      * @param defaultClassContext defaultClassContext
      * @throws Throwable Throwable
      */
-    private void createTestInstance(DefaultClassContext defaultClassContext) throws Throwable {
+    private void instantiateTestInstance(DefaultClassContext defaultClassContext) throws Throwable {
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("createTestInstance() testClass [%s]", testClass.getName());
+            LOGGER.trace("instantiateTestInstance() testClass [%s]", testClass.getName());
         }
 
         Object testInstance =
                 testClass.getDeclaredConstructor((Class<?>[]) null).newInstance((Object[]) null);
-
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(
-                    "createTestInstance() testClass [%s] testInstance [%s]",
-                    testClass.getName(), testInstance);
-        }
 
         defaultClassContext.setTestInstance(testInstance);
     }
