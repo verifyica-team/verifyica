@@ -38,7 +38,7 @@ public class Store {
     }
 
     /**
-     * Method to put an key / value into the Store
+     * Method to put a value into the Store
      *
      * @param key key
      * @param value value
@@ -144,7 +144,7 @@ public class Store {
     }
 
     /**
-     * Method to remove key /value from the Store
+     * Method to remove value from the Store
      *
      * @param key key
      * @return the existing Object
@@ -162,7 +162,7 @@ public class Store {
     }
 
     /**
-     * Method to remove a key / value from the Store
+     * Method to remove a value from the Store
      *
      * @param key key
      * @param type type
