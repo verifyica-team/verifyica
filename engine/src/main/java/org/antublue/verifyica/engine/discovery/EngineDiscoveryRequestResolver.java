@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -100,14 +101,16 @@ public class EngineDiscoveryRequestResolver {
         }
 
         StopWatch stopWatch = new StopWatch();
+
         Map<Class<?>, Set<Method>> classMethodMap = new TreeMap<>(getClassComparator());
+        Map<Class<?>, Set<Integer>> classArgumentIndexMap = new TreeMap<>(getClassComparator());
 
         try {
             resolveClasspathRootSelectors(engineDiscoveryRequest, classMethodMap);
             resolvePackageSelectors(engineDiscoveryRequest, classMethodMap);
             resolveClassSelectors(engineDiscoveryRequest, classMethodMap);
             resolveMethodSelectors(engineDiscoveryRequest, classMethodMap);
-            resolveUniqueIdSelectors(engineDiscoveryRequest, classMethodMap);
+            resolveUniqueIdSelectors(engineDiscoveryRequest, classMethodMap, classArgumentIndexMap);
 
             filterClassesByName(classMethodMap);
             filterClassesByTag(classMethodMap);
@@ -144,6 +147,12 @@ public class EngineDiscoveryRequestResolver {
 
                 int argumentIndex = 0;
                 for (Argument<?> argument : arguments) {
+                    Set<Integer> argumentIndexSet = classArgumentIndexMap.get(testClass);
+                    if (argumentIndexSet != null && !argumentIndexSet.contains(argumentIndex)) {
+                        argumentIndex++;
+                        continue;
+                    }
+
                     UniqueId argumentTestDescriptorUniqueId =
                             classTestDescriptorUniqueId.append(
                                     "argument", String.valueOf(argumentIndex));
@@ -373,10 +382,12 @@ public class EngineDiscoveryRequestResolver {
      *
      * @param engineDiscoveryRequest engineDiscoveryRequest
      * @param classMethodMap classMethodMap
+     * @param argumentIndexMap argumentIndexMap
      */
     private static void resolveUniqueIdSelectors(
             EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, Set<Method>> classMethodMap) {
+            Map<Class<?>, Set<Method>> classMethodMap,
+            Map<Class<?>, Set<Integer>> argumentIndexMap) {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("resolveUniqueIdSelectors()");
         }
@@ -392,39 +403,70 @@ public class EngineDiscoveryRequestResolver {
                                 LOGGER.trace("uniqueId [%s]", uniqueId);
                             }
 
-                            segments.forEach(
-                                    segment -> {
-                                        String segmentType = segment.getType();
+                            // Specific argument selected
+                            if (segments.size() == 3) {
+                                UniqueId.Segment classSegment = segments.get(1);
+                                UniqueId.Segment argumentSegment = segments.get(2);
 
-                                        if (segmentType.equals(
-                                                ClassTestDescriptor.class.getName())) {
-                                            String javaClassName = segment.getValue();
+                                Class<?> testClass = null;
 
-                                            Class<?> testClass = null;
+                                try {
+                                    testClass =
+                                            Thread.currentThread()
+                                                    .getContextClassLoader()
+                                                    .loadClass(classSegment.getValue());
+                                } catch (ClassNotFoundException e) {
+                                    UncheckedClassNotFoundException.propagate(e);
+                                }
 
-                                            try {
-                                                testClass =
-                                                        Thread.currentThread()
-                                                                .getContextClassLoader()
-                                                                .loadClass(javaClassName);
-                                            } catch (ClassNotFoundException e) {
-                                                UncheckedClassNotFoundException.propagate(e);
+                                classMethodMap
+                                        .computeIfAbsent(
+                                                testClass,
+                                                method -> new TreeSet<>(getMethodComparator()))
+                                        .addAll(
+                                                MethodSupport.findMethods(
+                                                        testClass,
+                                                        Predicates.TEST_METHOD,
+                                                        HierarchyTraversalMode.BOTTOM_UP));
+
+                                argumentIndexMap
+                                        .computeIfAbsent(testClass, clazz -> new LinkedHashSet<>())
+                                        .add(Integer.parseInt(argumentSegment.getValue()));
+                            } else {
+                                segments.forEach(
+                                        segment -> {
+                                            String segmentType = segment.getType();
+
+                                            if (segmentType.equals(
+                                                    ClassTestDescriptor.class.getName())) {
+                                                String javaClassName = segment.getValue();
+
+                                                Class<?> testClass = null;
+
+                                                try {
+                                                    testClass =
+                                                            Thread.currentThread()
+                                                                    .getContextClassLoader()
+                                                                    .loadClass(javaClassName);
+                                                } catch (ClassNotFoundException e) {
+                                                    UncheckedClassNotFoundException.propagate(e);
+                                                }
+
+                                                classMethodMap
+                                                        .computeIfAbsent(
+                                                                testClass,
+                                                                method ->
+                                                                        new TreeSet<>(
+                                                                                getMethodComparator()))
+                                                        .addAll(
+                                                                MethodSupport.findMethods(
+                                                                        testClass,
+                                                                        Predicates.TEST_METHOD,
+                                                                        HierarchyTraversalMode
+                                                                                .BOTTOM_UP));
                                             }
-
-                                            classMethodMap
-                                                    .computeIfAbsent(
-                                                            testClass,
-                                                            method ->
-                                                                    new TreeSet<>(
-                                                                            getMethodComparator()))
-                                                    .addAll(
-                                                            MethodSupport.findMethods(
-                                                                    testClass,
-                                                                    Predicates.TEST_METHOD,
-                                                                    HierarchyTraversalMode
-                                                                            .BOTTOM_UP));
-                                        }
-                                    });
+                                        });
+                            }
                         });
     }
 
