@@ -170,13 +170,6 @@
             <version>0.0.2-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.antublue.verifyica</groupId>
-            <artifactId>extras</artifactId>
-            <version>x.x.1-SNAPSHOT</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -198,13 +191,13 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.19.8</version>
+            <version>1.20.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>kafka</artifactId>
-            <version>1.19.8</version>
+            <version>1.20.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -216,7 +209,7 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mongodb</artifactId>
-            <version>1.19.8</version>
+            <version>1.20.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
