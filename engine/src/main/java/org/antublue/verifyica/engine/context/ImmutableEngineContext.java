@@ -24,7 +24,8 @@ import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 /** Class to implement ImmutableEngineContext */
 public class ImmutableEngineContext implements EngineContext {
 
-    private static final Configuration CONFIGURATION = DefaultConfiguration.getInstance();
+    private static final Configuration CONFIGURATION =
+            DefaultConfiguration.getInstance().asImmutable();
 
     private final Store store;
 

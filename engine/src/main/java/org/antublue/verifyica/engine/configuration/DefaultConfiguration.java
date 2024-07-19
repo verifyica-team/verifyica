@@ -91,13 +91,13 @@ public class DefaultConfiguration implements Configuration {
     }
 
     /**
-     * Method to put a Configuration key / value
+     * Method to set a Configuration key / value
      *
      * @param key key
      * @param value value
-     * @return this
+     * @return DefaultConfiguration DefaultConfiguration
      */
-    public DefaultConfiguration setProperty(String key, String value) {
+    public DefaultConfiguration set(String key, String value) {
         Preconditions.notNull(key, "key is null");
         Preconditions.condition(!key.trim().isEmpty(), "key is empty");
 
@@ -121,6 +121,22 @@ public class DefaultConfiguration implements Configuration {
         Preconditions.condition(!key.trim().isEmpty(), "key is empty");
 
         return map.get(deprecatedKeyMappingMap.getOrDefault(key, key));
+    }
+
+    @Override
+    public String get(String key) {
+        Preconditions.notNull(key, "key is null");
+        Preconditions.condition(!key.trim().isEmpty(), "key is empty");
+
+        return map.get(deprecatedKeyMappingMap.getOrDefault(key, key));
+    }
+
+    @Override
+    public boolean containsKey(String key) {
+        Preconditions.notNull(key, "key is null");
+        Preconditions.condition(!key.trim().isEmpty(), "key is empty");
+
+        return map.containsKey(key);
     }
 
     @Override
@@ -192,16 +208,16 @@ public class DefaultConfiguration implements Configuration {
 
                 properties.forEach(
                         (key, value) -> {
-                            setProperty((String) key, (String) value);
+                            set((String) key, (String) value);
                         });
 
-                setProperty(VERIFYICA_CONFIGURATION_TRACE, optional.get().getAbsolutePath());
+                set(VERIFYICA_CONFIGURATION_TRACE, optional.get().getAbsolutePath());
             }
         } catch (IOException e) {
             throw new EngineConfigurationException("Exception loading properties", e);
         }
 
-        setProperty(Constants.ENGINE_VERSION, Version.version());
+        set(Constants.ENGINE_VERSION, Version.version());
 
         if (Constants.TRUE.equals(System.getenv().get(VERIFYICA_CONFIGURATION_TRACE))) {
             IS_TRACE_ENABLED = true;

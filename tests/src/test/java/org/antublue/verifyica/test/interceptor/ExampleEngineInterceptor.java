@@ -48,9 +48,10 @@ public class ExampleEngineInterceptor implements EngineInterceptor {
                     engineInterceptorContext.getEngineContext().getStore().remove(KEY);
                     break;
                 }
-            default: {
-                // DO NOTHING
-            }
+            default:
+                {
+                    // DO NOTHING
+                }
         }
     }
 }

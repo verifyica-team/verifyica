@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.api.interceptor;
 
+import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 
 /** Interface to implement EngineInvocationContext */
@@ -30,16 +31,23 @@ public interface EngineInterceptorContext {
     }
 
     /**
+     * Method to get the Configuration
+     *
+     * @return Configuration Configuration
+     */
+    Configuration getConfiguration();
+
+    /**
      * Method to get the LifeCycle
      *
-     * @return the LifeCycle
+     * @return LifeCycle LifeCycle
      */
     LifeCycle getLifeCycle();
 
     /**
      * Method to get the EngineContext
      *
-     * @return the EngineContext
+     * @return EngineContext EngineContext
      */
     EngineContext getEngineContext();
 }

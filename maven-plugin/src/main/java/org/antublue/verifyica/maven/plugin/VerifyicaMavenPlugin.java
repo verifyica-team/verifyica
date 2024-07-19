@@ -98,17 +98,17 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         try {
             DefaultConfiguration defaultConfiguration = DefaultConfiguration.getInstance();
 
-            defaultConfiguration.setProperty(Constants.MAVEN_PLUGIN, Constants.TRUE);
+            defaultConfiguration.set(Constants.MAVEN_PLUGIN, Constants.TRUE);
             logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN, Constants.TRUE);
 
-            defaultConfiguration.setProperty(Constants.MAVEN_PLUGIN_VERSION, VERSION);
+            defaultConfiguration.set(Constants.MAVEN_PLUGIN_VERSION, VERSION);
             logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_VERSION, VERSION);
 
             if (mavenSession.getRequest().isInteractiveMode()) {
-                defaultConfiguration.setProperty(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
+                defaultConfiguration.set(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
                 logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
             } else {
-                defaultConfiguration.setProperty(Constants.MAVEN_PLUGIN_MODE, BATCH);
+                defaultConfiguration.set(Constants.MAVEN_PLUGIN_MODE, BATCH);
                 logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, BATCH);
             }
 

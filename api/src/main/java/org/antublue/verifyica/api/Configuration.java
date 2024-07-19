@@ -26,8 +26,9 @@ public interface Configuration {
      * Method to get a Configuration value
      *
      * @param key key
-     * @return the Configuration property value
+     * @return the Configuration value
      */
+    @Deprecated
     String getProperty(String key);
 
     /**
@@ -36,15 +37,15 @@ public interface Configuration {
      * @param key key
      * @return the Configuration value
      */
-    // String get(String key);
+    String get(String key);
 
     /**
-     * Method to return if a Configuration key
+     * Method to return if a Configuration key exists
      *
      * @param key key
      * @return true if the key exists, else false
      */
-    // boolean containsKey(String key);
+    boolean containsKey(String key);
 
     /**
      * Method to get the Configuration key set

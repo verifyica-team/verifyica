@@ -40,7 +40,23 @@ public class ImmutableConfiguration implements Configuration {
         Preconditions.notNull(key, "key is null");
         Preconditions.condition(!key.trim().isEmpty(), "key is empty");
 
-        return configuration.getProperty(key);
+        return configuration.get(key);
+    }
+
+    @Override
+    public String get(String key) {
+        Preconditions.notNull(key, "key is null");
+        Preconditions.condition(!key.trim().isEmpty(), "key is empty");
+
+        return configuration.get(key);
+    }
+
+    @Override
+    public boolean containsKey(String key) {
+        Preconditions.notNull(key, "key is null");
+        Preconditions.condition(!key.trim().isEmpty(), "key is empty");
+
+        return configuration.containsKey(key);
     }
 
     @Override

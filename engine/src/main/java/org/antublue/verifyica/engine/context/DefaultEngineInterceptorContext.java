@@ -16,12 +16,17 @@
 
 package org.antublue.verifyica.engine.context;
 
+import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.junit.platform.commons.util.Preconditions;
 
 /** Class to implement DefaultEngineInterceptorContext */
 public class DefaultEngineInterceptorContext implements EngineInterceptorContext {
+
+    private static final Configuration CONFIGURATION =
+            DefaultConfiguration.getInstance().asImmutable();
 
     private final EngineContext engineContext;
     private final EngineInterceptorContext immutableEngineInterceptorContext;
@@ -40,11 +45,16 @@ public class DefaultEngineInterceptorContext implements EngineInterceptorContext
         this.immutableEngineInterceptorContext = new ImmutableEngineInterceptorContext(this);
     }
 
+    @Override
+    public Configuration getConfiguration() {
+        return CONFIGURATION;
+    }
+
     /**
      * Method to set the LifeCycle
      *
      * @param lifeCycle lifeCycle
-     * @return this
+     * @return DefaultEngineInterceptorContext DefaultEngineInterceptorContext
      */
     public DefaultEngineInterceptorContext setLifeCycle(
             EngineInterceptorContext.LifeCycle lifeCycle) {
