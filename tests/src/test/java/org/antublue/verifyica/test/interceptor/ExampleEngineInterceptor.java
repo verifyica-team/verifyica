@@ -23,7 +23,7 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
 
-/** Class to implement ExampleEngineExtension1 */
+/** Class to implement ExampleEngineInterceptor */
 @Verifyica.Order(order = 0)
 public class ExampleEngineInterceptor implements EngineInterceptor {
 
