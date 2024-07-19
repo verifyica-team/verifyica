@@ -20,7 +20,7 @@ package org.antublue.verifyica.api;
 public interface Context {
 
     /**
-     * Method to get the Store
+     * Returns the Store
      *
      * @return the Store
      */

@@ -20,9 +20,9 @@ package org.antublue.verifyica.api;
 public interface ClassContext extends Context {
 
     /**
-     * Method to get the engine Context
+     * Returns the EngineContext
      *
-     * @return the engine context
+     * @return the EngineContext
      */
     EngineContext getEngineContext();
 }

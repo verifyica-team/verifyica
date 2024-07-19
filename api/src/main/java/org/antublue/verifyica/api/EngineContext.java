@@ -20,7 +20,7 @@ package org.antublue.verifyica.api;
 public interface EngineContext extends Context {
 
     /**
-     * Method to get Configuration
+     * Returns the engine Configuration
      *
      * @return the engine configuration
      */
