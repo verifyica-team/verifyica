@@ -59,7 +59,6 @@ public class DefaultConfiguration implements Configuration {
     /** Constructor */
     public DefaultConfiguration() {
         // TODO load the deprecated configuration property keys from a resource
-
         deprecatedKeyMappingMap = new HashMap<>();
         deprecatedKeyMappingMap.put("verifyica.parallelism", Constants.ENGINE_PARALLELISM);
         deprecatedKeyMappingMap.put("verifyica.thread.type", Constants.ENGINE_EXECUTOR_TYPE);
