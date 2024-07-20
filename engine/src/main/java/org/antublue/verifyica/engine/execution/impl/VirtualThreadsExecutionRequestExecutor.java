@@ -132,10 +132,12 @@ public class VirtualThreadsExecutionRequestExecutor implements ExecutionRequestE
                                                                 semaphore.release();
                                                             }
                                                         });
+
                                         thread.setName(
                                                 format(
                                                         "verifyica-%02d",
                                                         threadId.getAndIncrement()));
+                                        thread.setDaemon(true);
                                         thread.start();
                                     } catch (InterruptedException e) {
                                         // DO NOTHING
