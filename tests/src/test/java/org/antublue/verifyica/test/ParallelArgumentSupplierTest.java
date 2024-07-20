@@ -30,7 +30,7 @@ import org.antublue.verifyica.engine.support.RandomSupport;
 /** Example test */
 public class ParallelArgumentSupplierTest {
 
-    @Verifyica.ArgumentSupplier
+    @Verifyica.ArgumentSupplier(parallelism = 2)
     public static Collection<Argument<String>> arguments() {
         Collection<Argument<String>> collection = new ArrayList<>();
 
