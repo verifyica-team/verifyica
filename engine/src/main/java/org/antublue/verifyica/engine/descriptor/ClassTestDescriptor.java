@@ -213,6 +213,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         Object testInstance =
                 testClass.getDeclaredConstructor((Class<?>[]) null).newInstance((Object[]) null);
 
+        defaultClassContext.setTestClass(testClass);
         defaultClassContext.setTestInstance(testInstance);
     }
 

@@ -97,7 +97,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
         stopWatch.reset();
 
-        defaultArgumentContext.setArgument(testArgument);
+        defaultArgumentContext.setTestArgument(testArgument);
 
         Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
         Preconditions.notNull(defaultArgumentContext.getArgument(), "testArgument is null");
@@ -137,7 +137,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                                 ? MetadataTestDescriptorConstants.PASS
                                 : MetadataTestDescriptorConstants.FAIL);
 
-        defaultArgumentContext.setArgument(null);
+        defaultArgumentContext.setTestArgument(null);
 
         executionRequest
                 .getEngineExecutionListener()
@@ -153,7 +153,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
         stopWatch.reset();
 
         DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
-        defaultArgumentContext.setArgument(testArgument);
+        defaultArgumentContext.setTestArgument(testArgument);
 
         getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
         getMetadata()

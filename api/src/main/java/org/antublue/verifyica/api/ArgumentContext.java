@@ -37,11 +37,29 @@ public interface ArgumentContext extends Context {
     ClassContext getClassContext();
 
     /**
+     * Returns the testArgument
+     *
+     * @return the test Argument
+     */
+    @Deprecated
+    Argument<?> getArgument();
+
+    /**
+     * Returns the testArgument
+     *
+     * @return the test Argument
+     */
+    Argument<?> getTestArgument();
+
+    /**
      * Returns the Argument
      *
-     * @return the Argument
+     * @param type the Argument return type
+     * @return the test Argument
+     * @param <T> the Argument return type
      */
-    Argument<?> getArgument();
+    @Deprecated
+    <T> Argument<T> getArgument(Class<T> type);
 
     /**
      * Returns the Argument
@@ -50,7 +68,7 @@ public interface ArgumentContext extends Context {
      * @return the Argument
      * @param <T> the Argument return type
      */
-    <T> Argument<T> getArgument(Class<T> type);
+    <T> Argument<T> getTestArgument(Class<T> type);
 
     /**
      * Returns the Argument payload

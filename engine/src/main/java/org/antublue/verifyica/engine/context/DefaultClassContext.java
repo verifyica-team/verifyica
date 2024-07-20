@@ -21,12 +21,14 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 
 /** Class to implement DefaultClassContext */
+@SuppressWarnings("unchecked")
 public class DefaultClassContext implements ClassContext {
 
     private final EngineContext engineContext;
     private final Store store;
     private final ImmutableClassContext immutableClassContext;
 
+    private Class<?> testClass;
     private Object testInstance;
 
     /**
@@ -50,6 +52,20 @@ public class DefaultClassContext implements ClassContext {
         return store;
     }
 
+    public void setTestClass(Class<?> testClass) {
+        this.testClass = testClass;
+    }
+
+    @Override
+    public Class<?> getTestClass() {
+        return testClass;
+    }
+
+    @Override
+    public <T> Class<T> getTestClass(Class<T> type) {
+        return (Class<T>) type.cast(getTestClass());
+    }
+
     /**
      * Method to set the test instance
      *
@@ -64,8 +80,14 @@ public class DefaultClassContext implements ClassContext {
      *
      * @return the test instance
      */
+    @Override
     public Object getTestInstance() {
         return testInstance;
+    }
+
+    @Override
+    public <T> T getTestInstance(Class<T> type) {
+        return type.cast(getTestInstance());
     }
 
     /**

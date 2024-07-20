@@ -22,6 +22,7 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
 
 /** Class to implement ImmutableArgumentContext */
+@SuppressWarnings("deprecated")
 public class ImmutableArgumentContext implements ArgumentContext {
 
     private final ClassContext classContext;
@@ -49,12 +50,36 @@ public class ImmutableArgumentContext implements ArgumentContext {
     }
 
     @Override
+    public Argument<?> getTestArgument() {
+        return argumentContext.getArgument();
+    }
+
+    @Override
     public <T> Argument<T> getArgument(Class<T> type) {
+        notNull(type, "type is null");
+        return argumentContext.getArgument(type);
+    }
+
+    @Override
+    public <T> Argument<T> getTestArgument(Class<T> type) {
+        notNull(type, "type is null");
         return argumentContext.getArgument(type);
     }
 
     @Override
     public Store getStore() {
         return argumentContext.getStore();
+    }
+
+    /**
+     * Checks if an Object is not null, throwing an IllegalArgumentException is the Object is null.
+     *
+     * @param object object
+     * @param message message
+     */
+    private static void notNull(Object object, String message) {
+        if (object == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 }

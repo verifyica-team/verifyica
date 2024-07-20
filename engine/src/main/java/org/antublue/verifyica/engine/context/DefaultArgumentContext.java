@@ -22,6 +22,7 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
 
 /** Class to implement DefaultArgumentContext */
+@SuppressWarnings("deprecated")
 public class DefaultArgumentContext implements ArgumentContext {
 
     private final DefaultClassContext defaultClassContext;
@@ -50,11 +51,23 @@ public class DefaultArgumentContext implements ArgumentContext {
 
     @Override
     public Argument<?> getArgument() {
+        return getTestArgument();
+    }
+
+    @Override
+    public Argument<?> getTestArgument() {
         return argument;
     }
 
     @Override
     public <T> Argument<T> getArgument(Class<T> type) {
+        notNull(type, "type is null");
+        return getTestArgument(type);
+    }
+
+    @Override
+    public <T> Argument<T> getTestArgument(Class<T> type) {
+        notNull(type, "type is null");
         return Argument.of(argument.getName(), type.cast(argument.getPayload()));
     }
 
@@ -86,7 +99,7 @@ public class DefaultArgumentContext implements ArgumentContext {
      *
      * @param argument argument
      */
-    public void setArgument(Argument<?> argument) {
+    public void setTestArgument(Argument<?> argument) {
         this.argument = argument;
     }
 
@@ -97,5 +110,17 @@ public class DefaultArgumentContext implements ArgumentContext {
      */
     public ArgumentContext asImmutable() {
         return immutableArgumentContext;
+    }
+
+    /**
+     * Checks if an Object is not null, throwing an IllegalArgumentException is the Object is null.
+     *
+     * @param object object
+     * @param message message
+     */
+    private static void notNull(Object object, String message) {
+        if (object == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 }

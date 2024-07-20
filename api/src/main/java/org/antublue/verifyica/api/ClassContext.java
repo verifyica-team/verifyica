@@ -25,4 +25,12 @@ public interface ClassContext extends Context {
      * @return the EngineContext
      */
     EngineContext getEngineContext();
+
+    Class<?> getTestClass();
+
+    <T> Class<T> getTestClass(Class<T> type);
+
+    Object getTestInstance();
+
+    <T> T getTestInstance(Class<T> type);
 }

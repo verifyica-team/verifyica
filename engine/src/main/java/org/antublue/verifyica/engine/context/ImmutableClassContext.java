@@ -43,4 +43,24 @@ public class ImmutableClassContext implements ClassContext {
     public Store getStore() {
         return classContext.getStore();
     }
+
+    @Override
+    public Class<?> getTestClass() {
+        return classContext.getTestClass();
+    }
+
+    @Override
+    public <T> Class<T> getTestClass(Class<T> type) {
+        return classContext.getTestClass(type);
+    }
+
+    @Override
+    public Object getTestInstance() {
+        return classContext.getTestInstance();
+    }
+
+    @Override
+    public <T> T getTestInstance(Class<T> type) {
+        return classContext.getTestInstance(type);
+    }
 }
