@@ -20,12 +20,15 @@ import static java.lang.String.format;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.Semaphore;
+import java.util.function.Function;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class StoreLockTest {
+public class StoreComputeIfAbsentTest2 {
+
+    private static final String KEY = "key";
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<String> arguments() {
@@ -40,23 +43,22 @@ public class StoreLockTest {
 
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
-        Store classContextStore = argumentContext.getClassContext().getStore();
-        try {
-            classContextStore.getReadWriteLock().writeLock().lock();
-            System.out.println(
-                    format(
-                            "%s test() locked class context store",
-                            argumentContext.getArgument(String.class).getName()));
+        Semaphore semaphore =
+                argumentContext
+                        .getClassContext()
+                        .getStore()
+                        .computeIfAbsent(
+                                KEY, (Function<Object, Semaphore>) key -> new Semaphore(1));
 
-            System.out.println("test()");
+        try {
+            semaphore.acquire();
+
+            System.out.println(format("test(%s)", argumentContext.getArgument().getPayload()));
 
             Thread.sleep(2000);
         } finally {
-            System.out.println(
-                    format(
-                            "%s test() unlocked class context",
-                            argumentContext.getArgument(String.class).getName()));
-            classContextStore.getReadWriteLock().writeLock().unlock();
+            semaphore.release();
+            argumentContext.getClassContext().getStore().remove(KEY);
         }
     }
 }

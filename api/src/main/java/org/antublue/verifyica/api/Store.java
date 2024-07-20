@@ -62,10 +62,10 @@ public class Store {
      */
     public int size() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return map.size();
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -78,10 +78,10 @@ public class Store {
         notNull(function, "function is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             map.replaceAll(function);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -99,10 +99,10 @@ public class Store {
         notNull(remappingFunction, "remappingFunction is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             return (T) map.compute(key, remappingFunction);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -113,10 +113,10 @@ public class Store {
      */
     public Collection<Object> values() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return map.values();
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -132,10 +132,10 @@ public class Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             return (T) map.put(key, value);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -151,10 +151,10 @@ public class Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             return (T) map.replace(key, value);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -167,10 +167,10 @@ public class Store {
         notNull(action, "action is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             map.forEach(action);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -186,10 +186,10 @@ public class Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             return map.replace(key, oldValue, newValue);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -203,10 +203,10 @@ public class Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return map.containsKey(key);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -221,10 +221,10 @@ public class Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             return (T) map.remove(key);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -241,10 +241,10 @@ public class Store {
         notNull(type, "type is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             return type.cast(map.remove(key));
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -255,10 +255,10 @@ public class Store {
      */
     public boolean isEmpty() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return map.isEmpty();
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -269,10 +269,10 @@ public class Store {
      */
     public Set<Map.Entry<Object, Object>> entrySet() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return new LinkedHashSet<>(map.entrySet());
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -287,10 +287,10 @@ public class Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             return map.remove(key, value);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -304,10 +304,10 @@ public class Store {
         notNull(value, "value is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return map.containsValue(value);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -320,10 +320,10 @@ public class Store {
         notNull(map, "map is null");
 
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             this.map.putAll(map);
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -341,10 +341,10 @@ public class Store {
         notNull(remappingFunction, "remappingFunction is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             return (T) map.computeIfPresent(key, remappingFunction);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -360,10 +360,10 @@ public class Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             return (T) map.putIfAbsent(key, value);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -384,10 +384,10 @@ public class Store {
         notNull(remappingFunction, "remappingFunction is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             return (T) map.merge(key, value, remappingFunction);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -398,10 +398,10 @@ public class Store {
      */
     public Set<Object> keySet() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return new LinkedHashSet<>(map.keySet());
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -416,10 +416,10 @@ public class Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return (T) map.get(key);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -436,20 +436,20 @@ public class Store {
         notNull(type, "type is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return type.cast(map.get(key));
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
     /** Removes all key-value mappings */
     public void clear() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             map.clear();
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -465,10 +465,10 @@ public class Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return (T) map.getOrDefault(key, defaultValue);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -485,10 +485,10 @@ public class Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return (T) map.getOrDefault(key, defaultValue);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -505,10 +505,10 @@ public class Store {
         notNull(mappingFunction, "mappingFunction is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             return (T) map.computeIfAbsent(key, mappingFunction);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -522,12 +522,12 @@ public class Store {
         notNull(store, "store is null");
 
         try {
-            store.getLock().readLock().lock();
-            getLock().writeLock().lock();
+            store.getReadWriteLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             this.map.putAll(store.map);
         } finally {
-            getLock().writeLock().unlock();
-            store.getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
+            store.getReadWriteLock().readLock().unlock();
         }
 
         return this;
@@ -544,10 +544,10 @@ public class Store {
 
         if (!map.isEmpty()) {
             try {
-                getLock().writeLock().lock();
+                getReadWriteLock().writeLock().lock();
                 this.map.putAll(map);
             } finally {
-                getLock().writeLock().unlock();
+                getReadWriteLock().writeLock().unlock();
             }
         }
 
@@ -565,11 +565,11 @@ public class Store {
 
         if (!properties.isEmpty()) {
             try {
-                getLock().writeLock().lock();
+                getReadWriteLock().writeLock().lock();
                 Set<Map.Entry<Object, Object>> entrySet = new HashSet<>(properties.entrySet());
                 entrySet.forEach(entry -> map.put(entry.getKey(), entry.getValue()));
             } finally {
-                getLock().writeLock().unlock();
+                getReadWriteLock().writeLock().unlock();
             }
         }
 
@@ -583,10 +583,10 @@ public class Store {
      */
     public Store duplicate() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return new Store(this.map);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -595,7 +595,7 @@ public class Store {
      *
      * @return the Store's ReadWriteLock
      */
-    public ReadWriteLock getLock() {
+    public ReadWriteLock getReadWriteLock() {
         return readWriteLock;
     }
 

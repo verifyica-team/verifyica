@@ -20,12 +20,16 @@ import static java.lang.String.format;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class StoreLockTest {
+public class StoreComputeIfAbsentTest1 {
+
+    private static final String KEY = "key";
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<String> arguments() {
@@ -40,23 +44,22 @@ public class StoreLockTest {
 
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
-        Store classContextStore = argumentContext.getClassContext().getStore();
-        try {
-            classContextStore.getReadWriteLock().writeLock().lock();
-            System.out.println(
-                    format(
-                            "%s test() locked class context store",
-                            argumentContext.getArgument(String.class).getName()));
+        Lock lock =
+                argumentContext
+                        .getClassContext()
+                        .getStore()
+                        .computeIfAbsent(
+                                KEY, (Function<Object, Lock>) key -> new ReentrantLock(true));
 
-            System.out.println("test()");
+        try {
+            lock.lock();
+
+            System.out.println(format("test(%s)", argumentContext.getArgument().getPayload()));
 
             Thread.sleep(2000);
         } finally {
-            System.out.println(
-                    format(
-                            "%s test() unlocked class context",
-                            argumentContext.getArgument(String.class).getName()));
-            classContextStore.getReadWriteLock().writeLock().unlock();
+            lock.unlock();
+            argumentContext.getClassContext().getStore().remove(KEY);
         }
     }
 }

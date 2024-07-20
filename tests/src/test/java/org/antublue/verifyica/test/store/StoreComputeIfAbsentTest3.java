@@ -17,15 +17,19 @@
 package org.antublue.verifyica.test.store;
 
 import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class StoreLockTest {
+public class StoreComputeIfAbsentTest3 {
+
+    private static final String KEY = "key";
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<String> arguments() {
@@ -40,23 +44,26 @@ public class StoreLockTest {
 
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
-        Store classContextStore = argumentContext.getClassContext().getStore();
-        try {
-            classContextStore.getReadWriteLock().writeLock().lock();
-            System.out.println(
-                    format(
-                            "%s test() locked class context store",
-                            argumentContext.getArgument(String.class).getName()));
+        ReentrantReadWriteLock readWriteLock =
+                argumentContext
+                        .getClassContext()
+                        .getStore()
+                        .computeIfAbsent(
+                                KEY,
+                                (Function<Object, ReentrantReadWriteLock>)
+                                        key -> new ReentrantReadWriteLock(true));
 
-            System.out.println("test()");
+        try {
+            readWriteLock.writeLock().lock();
+
+            System.out.println(format("test(%s)", argumentContext.getArgument().getPayload()));
 
             Thread.sleep(2000);
         } finally {
-            System.out.println(
-                    format(
-                            "%s test() unlocked class context",
-                            argumentContext.getArgument(String.class).getName()));
-            classContextStore.getReadWriteLock().writeLock().unlock();
+            readWriteLock.writeLock().unlock();
+            argumentContext.getClassContext().getStore().remove(KEY);
         }
+
+        assertThat(argumentContext.getClassContext().getStore().isEmpty()).isTrue();
     }
 }
