@@ -91,7 +91,7 @@ public class Store {
      * @param key key
      * @param remappingFunction remapping function
      * @return the new value for the key if it exists, else null
-     * @param <T>
+     * @param <T> the return type
      */
     public <T> T compute(
             Object key, BiFunction<? super Object, ? super Object, ?> remappingFunction) {

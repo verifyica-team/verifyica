@@ -6,7 +6,7 @@
 
     <groupId>org.antublue.verifyica</groupId>
     <artifactId>maven-plugin</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.2</version>
     <packaging>maven-plugin</packaging>
     <name>Verifyica Maven Plugin</name>
     <description>Verifyica Maven Plugin</description>
@@ -246,12 +246,12 @@
         <dependency>
             <groupId>org.antublue.verifyica</groupId>
             <artifactId>api</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.antublue.verifyica</groupId>
             <artifactId>engine</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
