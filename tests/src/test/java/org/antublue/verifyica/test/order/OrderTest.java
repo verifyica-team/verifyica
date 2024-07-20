@@ -42,30 +42,30 @@ public class OrderTest {
     @Verifyica.Test
     @Verifyica.Order(order = 1)
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test1(%s)", argumentContext.getArgument()));
+        System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.Test
     @Verifyica.Order(order = 0)
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test2(%s)", argumentContext.getArgument()));
+        System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.Test
     @Verifyica.Order(order = 0)
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test3(%s)", argumentContext.getArgument()));
+        System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 }

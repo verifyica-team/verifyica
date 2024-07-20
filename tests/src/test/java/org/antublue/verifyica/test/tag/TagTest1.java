@@ -42,29 +42,29 @@ public class TagTest1 {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test1(%s)", argumentContext.getArgument()));
+        System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.Test
     @Verifyica.Tag(tag = "/Tagged/")
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test2(%s)", argumentContext.getArgument()));
+        System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test3(%s)", argumentContext.getArgument()));
+        System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 }

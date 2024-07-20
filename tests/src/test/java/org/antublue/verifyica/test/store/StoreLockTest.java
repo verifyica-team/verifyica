@@ -46,7 +46,7 @@ public class StoreLockTest {
             System.out.println(
                     format(
                             "%s test() locked class context store",
-                            argumentContext.getArgument(String.class).getName()));
+                            argumentContext.getTestArgument(String.class).getName()));
 
             System.out.println("test()");
 
@@ -55,7 +55,7 @@ public class StoreLockTest {
             System.out.println(
                     format(
                             "%s test() unlocked class context",
-                            argumentContext.getArgument(String.class).getName()));
+                            argumentContext.getTestArgument(String.class).getName()));
             classContextStore.getReadWriteLock().writeLock().unlock();
         }
     }

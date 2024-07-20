@@ -56,7 +56,7 @@ public class EnvironmentTest {
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) throws Throwable {
-        Argument<Environment> argument = argumentContext.getArgument(Environment.class);
+        Argument<Environment> argument = argumentContext.getTestArgument(Environment.class);
 
         System.out.println("[" + argument.getName() + "] initializing ...");
 
@@ -67,24 +67,24 @@ public class EnvironmentTest {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        Argument<Environment> argument = argumentContext.getArgument(Environment.class);
+        Argument<Environment> argument = argumentContext.getTestArgument(Environment.class);
 
         System.out.println("[" + argument.getName() + "] test1");
 
         HttpClient httpClient =
-                argumentContext.getArgument(Environment.class).getPayload().getHttpClient();
+                argumentContext.getTestArgument(Environment.class).getPayload().getHttpClient();
 
         // ... test code ...
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Argument<Environment> argument = argumentContext.getArgument(Environment.class);
+        Argument<Environment> argument = argumentContext.getTestArgument(Environment.class);
 
         System.out.println("[" + argument.getName() + "] test2");
 
         HttpClient httpClient =
-                argumentContext.getArgument(Environment.class).getPayload().getHttpClient();
+                argumentContext.getTestArgument(Environment.class).getPayload().getHttpClient();
 
         // ... test code ...
     }
@@ -93,7 +93,7 @@ public class EnvironmentTest {
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) {
-        Argument<Environment> argument = argumentContext.getArgument(Environment.class);
+        Argument<Environment> argument = argumentContext.getTestArgument(Environment.class);
 
         System.out.println("[" + argument.getName() + "] destroying ...");
 

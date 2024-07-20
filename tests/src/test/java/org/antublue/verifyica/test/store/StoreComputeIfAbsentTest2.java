@@ -53,7 +53,7 @@ public class StoreComputeIfAbsentTest2 {
         try {
             semaphore.acquire();
 
-            System.out.println(format("test(%s)", argumentContext.getArgument().getPayload()));
+            System.out.println(format("test(%s)", argumentContext.getTestArgument().getPayload()));
 
             Thread.sleep(2000);
         } finally {

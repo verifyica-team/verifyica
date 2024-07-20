@@ -56,60 +56,60 @@ public class CustomArgumentWithSemaphoreTest {
     public void beforeAll(ArgumentContext argumentContext) throws Throwable {
         argumentContext.getArgumentPayload(CustomArgument.class).acquire();
 
-        System.out.println(format("beforeAll(%s)", argumentContext.getArgument()));
+        System.out.println(format("beforeAll(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) {
-        System.out.println(format("beforeEach(%s)", argumentContext.getArgument()));
+        System.out.println(format("beforeEach(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test1(%s)", argumentContext.getArgument()));
+        System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
 
         Thread.sleep(RandomSupport.randomInt(0, 1000));
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test2(%s)", argumentContext.getArgument()));
+        System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
 
         Thread.sleep(RandomSupport.randomInt(0, 1000));
     }
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) {
-        System.out.println(format("afterEach(%s)", argumentContext.getArgument()));
+        System.out.println(format("afterEach(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("afterAll(%s)", argumentContext.getArgument()));
+        System.out.println(format("afterAll(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
 
         argumentContext.getArgumentPayload(CustomArgument.class).release();
     }

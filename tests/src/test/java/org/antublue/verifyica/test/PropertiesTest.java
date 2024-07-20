@@ -31,7 +31,7 @@ public class PropertiesTest {
 
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test(%s)", argumentContext.getArgument().getPayload()));
+        System.out.println(format("test(%s)", argumentContext.getTestArgument().getPayload()));
 
         argumentContext
                 .getClassContext()

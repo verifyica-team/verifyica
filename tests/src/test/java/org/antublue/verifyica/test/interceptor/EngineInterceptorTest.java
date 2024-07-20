@@ -32,11 +32,11 @@ public class EngineInterceptorTest {
 
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test(%s)", argumentContext.getArgument().getPayload()));
+        System.out.println(format("test(%s)", argumentContext.getTestArgument().getPayload()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
         assertThat(
                         argumentContext.getEngineContext()
                                 == argumentContext.getClassContext().getEngineContext())

@@ -51,49 +51,50 @@ public class ConcreteTest extends AbstractTest {
     @Verifyica.BeforeAll
     public void beforeAll2(ArgumentContext argumentContext) {
         System.out.println(
-                format("    ConcreteTest beforeAll2(%s)", argumentContext.getArgument()));
+                format("    ConcreteTest beforeAll2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.BeforeEach
     public void beforeEach2(ArgumentContext argumentContext) {
         System.out.println(
-                format("    ConcreteTest beforeEach2(%s)", argumentContext.getArgument()));
+                format("    ConcreteTest beforeEach2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
-        System.out.println(format("    ConcreteTest test2(%s)", argumentContext.getArgument()));
+        System.out.println(format("    ConcreteTest test2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.AfterEach
     public void afterEach2(ArgumentContext argumentContext) {
         System.out.println(
-                format("    ConcreteTest afterEach2(%s)", argumentContext.getArgument()));
+                format("    ConcreteTest afterEach2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.AfterAll
     public void afterAll2(ArgumentContext argumentContext) {
-        System.out.println(format("    ConcreteTest afterAll2(%s)", argumentContext.getArgument()));
+        System.out.println(
+                format("    ConcreteTest afterAll2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
     @Verifyica.Conclude
