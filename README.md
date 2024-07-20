@@ -249,7 +249,7 @@ See [Contributing](CONTRIBUTING.md) for details.
 
 # Licensing
 
-[Apache-2.0](LICENSE.txt) licensed.
+[Apache-2.0](LICENSE.txt)
 
 # Support
 
