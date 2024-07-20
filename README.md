@@ -18,7 +18,7 @@ for (Test test : Tests) {
 }
 ```
 
-Verifyica swaps the paradigm to be test arguments first oriented ...
+Verifyica swaps the paradigm to be test argument first oriented ...
 
 - Given a set of arguments, execute each test with the arguments
 
