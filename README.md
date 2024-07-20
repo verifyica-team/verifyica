@@ -30,6 +30,17 @@ for (TestArgument testArgument : TestArguments) {
 }
 ```
 
+# Features
+
+- Purpose built for integration testing using [testcontainers-java](https://java.testcontainers.org/)
+  - i.e. for each argument, execute a set of test methods
+- Annotation based
+- Multi-threaded class / argument testing support
+- Virtual thread support (Java 21+)
+- Properties file driven configuration
+- IntelliJ support
+- Engine interceptors for global set up / tear down
+
 # Basic example
 
 Basic example test that will execute a set of tests against an environment.
@@ -221,16 +232,6 @@ Example tests using [testcontainers-java](https://java.testcontainers.org/)
 
 - [KafkaTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/KafkaTest.java)
 - [MongoDBTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/MongoDBTest.java)
-
-# Features
-
-- Purpose built for integration testing using [testcontainers-java](https://java.testcontainers.org/)
-    - i.e. for each argument, execute a set of test methods
-- Annotation based
-- Multi-threaded support
-- Virtual thread support (Java 21+)
-- Properties file driven configuration
-- IntelliJ support
 
 # Base Requirements
 
