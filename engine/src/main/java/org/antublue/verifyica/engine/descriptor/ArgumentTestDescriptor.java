@@ -316,7 +316,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
             method.invoke(testInstance, defaultArgumentContext.asImmutable());
         }
 
-        defaultArgumentContext.getObjectStore().clear();
+        defaultArgumentContext.getStore().clear();
 
         if (testArgument instanceof AutoCloseable) {
             ((AutoCloseable) testArgument).close();

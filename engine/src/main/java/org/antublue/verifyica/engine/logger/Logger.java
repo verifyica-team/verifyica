@@ -56,15 +56,15 @@ public class Logger {
         String loggerLevel =
                 Optional.ofNullable(
                                 DEFAULT_ENGINE_CONTEXT
-                                        .getConfigurationStore()
-                                        .get(Constants.ENGINE_LOGGER_LEVEL, String.class))
+                                        .getConfiguration()
+                                        .get(Constants.ENGINE_LOGGER_LEVEL))
                         .orElse(Level.INFO.toString());
 
         String regex =
                 Optional.ofNullable(
                                 DEFAULT_ENGINE_CONTEXT
-                                        .getConfigurationStore()
-                                        .get(Constants.ENGINE_LOGGER_REGEX, String.class))
+                                        .getConfiguration()
+                                        .get(Constants.ENGINE_LOGGER_REGEX))
                         .orElse(".*");
 
         try {

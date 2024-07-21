@@ -46,7 +46,7 @@ public class StoreComputeIfAbsentTest1 {
         Lock lock =
                 argumentContext
                         .getClassContext()
-                        .getObjectStore()
+                        .getStore()
                         .computeIfAbsent(KEY, key -> new ReentrantLock(true));
 
         try {
@@ -57,7 +57,7 @@ public class StoreComputeIfAbsentTest1 {
             Thread.sleep(2000);
         } finally {
             lock.unlock();
-            argumentContext.getClassContext().getObjectStore().remove(KEY);
+            argumentContext.getClassContext().getStore().remove(KEY);
         }
     }
 }

@@ -56,8 +56,8 @@ public class ImmutableArgumentContext implements ArgumentContext {
     }
 
     @Override
-    public Store<Object, Object> getObjectStore() {
-        return argumentContext.getObjectStore();
+    public Store getStore() {
+        return argumentContext.getStore();
     }
 
     /**

@@ -46,7 +46,7 @@ public class StoreComputeIfAbsentTest3 {
         ReentrantReadWriteLock readWriteLock =
                 argumentContext
                         .getClassContext()
-                        .getObjectStore()
+                        .getStore()
                         .computeIfAbsent(KEY, key -> new ReentrantReadWriteLock(true));
 
         try {
@@ -57,9 +57,9 @@ public class StoreComputeIfAbsentTest3 {
             Thread.sleep(2000);
         } finally {
             readWriteLock.writeLock().unlock();
-            argumentContext.getClassContext().getObjectStore().remove(KEY);
+            argumentContext.getClassContext().getStore().remove(KEY);
         }
 
-        assertThat(argumentContext.getClassContext().getObjectStore().isEmpty()).isTrue();
+        assertThat(argumentContext.getClassContext().getStore().isEmpty()).isTrue();
     }
 }

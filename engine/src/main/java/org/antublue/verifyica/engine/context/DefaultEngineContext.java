@@ -24,17 +24,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.TreeMap;
+import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.Version;
 import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 
 /** Class to implement DefaultConfiguration */
@@ -50,27 +49,26 @@ public class DefaultEngineContext implements EngineContext {
 
     private boolean IS_TRACE_ENABLED;
 
-    private final Map<String, String> map;
-    private final Store<String, String> configurationStore;
-    private final Store<Object, Object> objectStore;
+    // private final Map<String, String> map;
+    private final Configuration configuration;
+    private final Store store;
 
     /** Constructor */
     private DefaultEngineContext() {
-        map = Collections.synchronizedMap(new TreeMap<>());
-        configurationStore = new Store<>();
-        objectStore = new Store<>();
+        configuration = new DefaultConfiguration();
+        store = new DefaultStore();
 
-        load(configurationStore);
+        load(configuration);
     }
 
     @Override
-    public Store<String, String> getConfigurationStore() {
-        return configurationStore;
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     @Override
-    public Store<Object, Object> getObjectStore() {
-        return objectStore;
+    public Store getStore() {
+        return store;
     }
 
     /**
@@ -83,7 +81,7 @@ public class DefaultEngineContext implements EngineContext {
     }
 
     /** Method to load configuration */
-    private void load(Store<String, String> store) {
+    private void load(Configuration configuration) {
         try {
             // Get the properties file from a system property
             Optional<File> optional =
@@ -127,7 +125,9 @@ public class DefaultEngineContext implements EngineContext {
         }
 
         if (IS_TRACE_ENABLED) {
-            map.forEach((key, value) -> trace(key + " = [" + value + "]"));
+            configuration
+                    .keySet()
+                    .forEach((key) -> trace(key + " = [" + configuration.get(key) + "]"));
         }
     }
 

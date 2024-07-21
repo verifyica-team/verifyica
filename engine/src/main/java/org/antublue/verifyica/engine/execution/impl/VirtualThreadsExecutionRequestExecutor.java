@@ -150,7 +150,7 @@ public class VirtualThreadsExecutionRequestExecutor implements ExecutionRequestE
                     // DO NOTHING
                 }
 
-                engineContext.getObjectStore().clear();
+                engineContext.getStore().clear();
             }
 
             engineExecutionListener.executionFinished(

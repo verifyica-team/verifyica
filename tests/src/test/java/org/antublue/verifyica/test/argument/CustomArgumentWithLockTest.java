@@ -49,7 +49,7 @@ public class CustomArgumentWithLockTest {
         System.out.println(format("prepare()"));
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getObjectStore()).isNotNull();
+        assertThat(classContext.getStore()).isNotNull();
     }
 
     @Verifyica.BeforeAll
@@ -59,7 +59,7 @@ public class CustomArgumentWithLockTest {
         System.out.println(format("beforeAll(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getObjectStore()).isNotNull();
+        assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -68,7 +68,7 @@ public class CustomArgumentWithLockTest {
         System.out.println(format("beforeEach(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getObjectStore()).isNotNull();
+        assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -77,7 +77,7 @@ public class CustomArgumentWithLockTest {
         System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getObjectStore()).isNotNull();
+        assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         Thread.sleep(RandomSupport.randomInt(0, 1000));
@@ -88,7 +88,7 @@ public class CustomArgumentWithLockTest {
         System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getObjectStore()).isNotNull();
+        assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         Thread.sleep(RandomSupport.randomInt(0, 1000));
@@ -99,7 +99,7 @@ public class CustomArgumentWithLockTest {
         System.out.println(format("afterEach(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getObjectStore()).isNotNull();
+        assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -108,7 +108,7 @@ public class CustomArgumentWithLockTest {
         System.out.println(format("afterAll(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getObjectStore()).isNotNull();
+        assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         argumentContext.getTestArgument(CustomArgument.class).getPayload().unlock();
@@ -119,7 +119,7 @@ public class CustomArgumentWithLockTest {
         System.out.println(format("conclude()"));
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getObjectStore()).isNotNull();
+        assertThat(classContext.getStore()).isNotNull();
     }
 
     public static class CustomArgument implements Argument<CustomArgument> {

@@ -40,8 +40,8 @@ public class ImmutableClassContext implements ClassContext {
     }
 
     @Override
-    public Store getObjectStore() {
-        return classContext.getObjectStore();
+    public Store getStore() {
+        return classContext.getStore();
     }
 
     @Override

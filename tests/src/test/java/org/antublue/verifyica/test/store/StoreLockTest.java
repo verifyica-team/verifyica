@@ -40,9 +40,9 @@ public class StoreLockTest {
 
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
-        Store classContextStore = argumentContext.getClassContext().getObjectStore();
+        Store classContextStore = argumentContext.getClassContext().getStore();
         try {
-            classContextStore.getReadWriteLock().writeLock().lock();
+            classContextStore.getLock().writeLock().lock();
             System.out.println(
                     format(
                             "%s test() locked class context store",
@@ -56,7 +56,7 @@ public class StoreLockTest {
                     format(
                             "%s test() unlocked class context",
                             argumentContext.getTestArgument(String.class).getName()));
-            classContextStore.getReadWriteLock().writeLock().unlock();
+            classContextStore.getLock().writeLock().unlock();
         }
     }
 }
