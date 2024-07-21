@@ -30,8 +30,10 @@ import org.antublue.verifyica.api.Verifyica;
 /** Example test */
 public class ContextTest {
 
+    // Only declared for testing
     private static Context rootContext;
     private static ClassContext classContext;
+    private static int value;
 
     @Verifyica.ArgumentSupplier
     public static Collection<Argument<String>> arguments() {
@@ -82,5 +84,15 @@ public class ContextTest {
                 .startsWith("Immutable");
         assertThat(argumentContext.getClassContext().getEngineContext().getClass().getSimpleName())
                 .startsWith("Immutable");
+    }
+
+    @Verifyica.Test
+    public void test3(ArgumentContext argumentContext) throws Throwable {
+        assertThat(ContextTest.value).isEqualTo(0);
+
+        Class<ContextTest> contextTest = argumentContext.getClassContext().getTestClass(ContextTest.class);
+        contextTest.getDeclaredField("value").set(null, 10);
+
+        assertThat(ContextTest.value).isEqualTo(10);
     }
 }

@@ -63,7 +63,7 @@ public class DefaultClassContext implements ClassContext {
 
     @Override
     public <T> Class<T> getTestClass(Class<T> type) {
-        return (Class<T>) type.cast(getTestClass());
+        return (Class<T>) getTestClass().asSubclass(type);
     }
 
     /**
