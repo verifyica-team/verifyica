@@ -16,15 +16,11 @@
 
 package org.antublue.verifyica.api.interceptor;
 
-import org.antublue.verifyica.api.EngineContext;
+/** Enum to implement InterceptorResult */
+public enum InterceptorResult {
 
-/** Interface to implement EngineInvocationContext */
-public interface EngineInterceptorContext {
-
-    /**
-     * Method to get the EngineContext
-     *
-     * @return the EngineContext
-     */
-    EngineContext getEngineContext();
+    /** Proceed */
+    PROCEED,
+    /** Abort */
+    ABORT
 }

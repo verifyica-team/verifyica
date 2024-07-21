@@ -20,12 +20,25 @@ package org.antublue.verifyica.api.interceptor;
 public interface EngineInterceptor {
 
     /**
-     * Method to intercept the engine invocation
+     * Method to intercept engine initialization
+     *
+     * @param engineInterceptorContext engineInterceptorContext
+     * @return the InterceptorResult
+     * @throws Throwable Throwable
+     */
+    default InterceptorResult interceptInitialize(EngineInterceptorContext engineInterceptorContext)
+            throws Throwable {
+        return InterceptorResult.PROCEED;
+    }
+
+    /**
+     * Method to intercept engine destruction
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable
      */
-    default void intercept(EngineInterceptorContext engineInterceptorContext) throws Throwable {
+    default void interceptDestroy(EngineInterceptorContext engineInterceptorContext)
+            throws Throwable {
         // DO NOTHING
     }
 }

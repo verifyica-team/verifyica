@@ -17,6 +17,7 @@
 package org.antublue.verifyica.api;
 
 /** Interface to implement EngineExtension */
+@Deprecated
 public interface EngineExtension {
 
     /**

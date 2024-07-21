@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antublue.verifyica.api.Configuration;
@@ -30,6 +32,7 @@ import org.antublue.verifyica.api.EngineExtension;
 import org.antublue.verifyica.api.interceptor.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.EngineInterceptorAdapter;
 import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
+import org.antublue.verifyica.api.interceptor.InterceptorResult;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.discovery.Predicates;
@@ -47,44 +50,68 @@ public class EngineInterceptorManager {
 
     private static final Configuration CONFIGURATION = DefaultConfiguration.getInstance();
 
+    private final Lock lock;
     private final List<EngineInterceptor> engineInterceptors;
     private boolean initialized;
 
     /** Constructor */
     private EngineInterceptorManager() {
+        lock = new ReentrantLock(true);
         engineInterceptors = new ArrayList<>();
     }
 
     /** Method to load test engine interceptors */
-    private synchronized void load() {
-        if (!initialized) {
-            Set<Class<?>> classSet = new HashSet<>();
+    private void load() {
+        try {
+            lock.lock();
 
-            classSet.addAll(ClassPathSupport.findClasses(Predicates.ENGINE_INTERCEPTOR_CLASS));
-            classSet.addAll(ClassPathSupport.findClasses(Predicates.ENGINE_EXTENSION_CLASS));
-
-            List<Class<?>> classes = new ArrayList<>(classSet);
-
-            filter(classes);
-            OrderSupport.order(classes);
-
-            for (Class<?> clazz : classes) {
-                try {
-                    Object object = ObjectSupport.createObject(clazz);
-                    if (object instanceof EngineInterceptor) {
-                        engineInterceptors.add((EngineInterceptor) object);
-                    } else {
-                        engineInterceptors.add(
-                                new EngineInterceptorAdapter((EngineExtension) object));
-                    }
-                } catch (EngineException e) {
-                    throw e;
-                } catch (Throwable t) {
-                    throw new EngineException(t);
+            if (!initialized) {
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("load()");
                 }
-            }
 
-            initialized = true;
+                Set<Class<?>> classSet = new HashSet<>();
+
+                classSet.addAll(ClassPathSupport.findClasses(Predicates.ENGINE_INTERCEPTOR_CLASS));
+                classSet.addAll(ClassPathSupport.findClasses(Predicates.ENGINE_EXTENSION_CLASS));
+
+                List<Class<?>> classes = new ArrayList<>(classSet);
+
+                filter(classes);
+                OrderSupport.order(classes);
+
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("engine interceptor count [%d]", classes.size());
+                }
+
+                for (Class<?> clazz : classes) {
+                    if (LOGGER.isTraceEnabled()) {
+                        engineInterceptors.forEach(
+                                engineInterceptor ->
+                                        LOGGER.trace(
+                                                "engine interceptor [%s]",
+                                                engineInterceptor.getClass().getName()));
+                    }
+
+                    try {
+                        Object object = ObjectSupport.createObject(clazz);
+                        if (object instanceof EngineInterceptor) {
+                            engineInterceptors.add((EngineInterceptor) object);
+                        } else {
+                            engineInterceptors.add(
+                                    new EngineInterceptorAdapter((EngineExtension) object));
+                        }
+                    } catch (EngineException e) {
+                        throw e;
+                    } catch (Throwable t) {
+                        throw new EngineException(t);
+                    }
+                }
+
+                initialized = true;
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -92,14 +119,36 @@ public class EngineInterceptorManager {
      * Method to invoke engine interceptors
      *
      * @param engineInterceptorContext engineInvocationContext
+     * @return the InterceptorResult
      * @throws Throwable Throwable
      */
-    public void initialize(EngineInterceptorContext engineInterceptorContext) throws Throwable {
+    public InterceptorResult initialize(EngineInterceptorContext engineInterceptorContext)
+            throws Throwable {
         load();
 
+        InterceptorResult interceptorResult = InterceptorResult.PROCEED;
+
         for (EngineInterceptor engineInterceptor : engineInterceptors) {
-            engineInterceptor.intercept(engineInterceptorContext);
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace(
+                        "engine interceptor [%s] interceptInitialize()",
+                        engineInterceptor.getClass().getName());
+            }
+
+            interceptorResult = engineInterceptor.interceptInitialize(engineInterceptorContext);
+
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace(
+                        "engine interceptor [%s] interceptInitialize() result [%s]",
+                        engineInterceptor.getClass().getName(), interceptorResult);
+            }
+
+            if (interceptorResult != InterceptorResult.PROCEED) {
+                break;
+            }
         }
+
+        return interceptorResult;
     }
 
     /**
@@ -118,7 +167,10 @@ public class EngineInterceptorManager {
 
         for (EngineInterceptor engineInterceptor : engineInterceptors) {
             try {
-                engineInterceptor.intercept(engineInterceptorContext);
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("%s interceptDestroy()", engineInterceptor.getClass().getName());
+                }
+                engineInterceptor.interceptDestroy(engineInterceptorContext);
             } catch (Throwable t) {
                 throwables.add(t);
             }
@@ -136,6 +188,11 @@ public class EngineInterceptorManager {
         return SingletonHolder.SINGLETON;
     }
 
+    /**
+     * Method to filter engine interceptors
+     *
+     * @param classes classes
+     */
     private static void filter(List<Class<?>> classes) {
         Optional.ofNullable(CONFIGURATION.getProperty(Constants.ENGINE_INTERCEPTORS_INCLUDE_REGEX))
                 .ifPresent(

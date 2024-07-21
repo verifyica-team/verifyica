@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.engine.context;
 
-import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
 
@@ -32,16 +31,6 @@ public class ImmutableEngineInterceptorContext implements EngineInterceptorConte
      */
     public ImmutableEngineInterceptorContext(EngineInterceptorContext engineInterceptorContext) {
         this.engineInterceptorContext = engineInterceptorContext;
-    }
-
-    @Override
-    public Configuration getConfiguration() {
-        return engineInterceptorContext.getConfiguration();
-    }
-
-    @Override
-    public LifeCycle getLifeCycle() {
-        return engineInterceptorContext.getLifeCycle();
     }
 
     @Override
