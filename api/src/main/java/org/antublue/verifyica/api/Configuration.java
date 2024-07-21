@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.api;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
@@ -56,6 +57,14 @@ public interface Configuration {
      * @return the value
      */
     String computeIfAbsent(String key, Function<String, String> function);
+
+    /**
+     * Merge a Map
+     *
+     * @param map map
+     * @return this
+     */
+    Configuration merge(Map<String, String> map);
 
     /**
      * Return if a key exists

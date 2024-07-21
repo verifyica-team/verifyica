@@ -97,6 +97,19 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
+    public Configuration merge(Map<String, String> map) {
+        notNull(map, "map is null");
+
+        try {
+            getLock().writeLock().lock();
+            this.map.putAll(map);
+            return this;
+        } finally {
+            getLock().writeLock().unlock();
+        }
+    }
+
+    @Override
     public String computeIfAbsent(String key, Function<String, String> function) {
         notNullOrEmpty(key, "key is null", "key is empty");
         notNull(function, "functio is null");
