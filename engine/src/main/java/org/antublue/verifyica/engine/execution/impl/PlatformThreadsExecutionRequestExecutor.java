@@ -148,7 +148,7 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
                     // DO NOTHING
                 }
 
-                engineContext.getObjectStore().clear();
+                engineContext.getStore().clear();
 
                 if (executorService != null) {
                     executorService.shutdown();

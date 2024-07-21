@@ -19,6 +19,7 @@ package org.antublue.verifyica.test;
 import static java.lang.String.format;
 
 import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
@@ -33,14 +34,14 @@ public class PropertiesTest {
     public void test(ArgumentContext argumentContext) throws Throwable {
         System.out.println(format("test(%s)", argumentContext.getTestArgument().getPayload()));
 
-        argumentContext
-                .getClassContext()
-                .getEngineContext()
-                .getConfigurationStore()
-                .entrySet()
+        Configuration configuration =
+                argumentContext.getClassContext().getEngineContext().getConfiguration();
+
+        configuration
+                .keySet()
                 .forEach(
-                        entry ->
+                        key ->
                                 System.out.println(
-                                        format("  [%s] = [%s]", entry.getKey(), entry.getValue())));
+                                        format("  [%s] = [%s]", key, configuration.get(key))));
     }
 }

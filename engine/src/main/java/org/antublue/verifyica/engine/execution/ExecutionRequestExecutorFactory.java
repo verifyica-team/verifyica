@@ -35,8 +35,8 @@ public class ExecutionRequestExecutorFactory {
             ThreadTool.hasVirtualThreads()
                     && Optional.ofNullable(
                                     DefaultEngineContext.getInstance()
-                                            .getConfigurationStore()
-                                            .get(Constants.ENGINE_EXECUTOR_TYPE, String.class))
+                                            .getConfiguration()
+                                            .get(Constants.ENGINE_EXECUTOR_TYPE))
                             .map("virtual"::equalsIgnoreCase)
                             .orElse(true);
 

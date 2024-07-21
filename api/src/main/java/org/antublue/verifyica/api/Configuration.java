@@ -16,13 +16,28 @@
 
 package org.antublue.verifyica.api;
 
-/** Interface to implement Context */
-public interface Context {
+import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
 
-    /**
-     * Returns the Store
-     *
-     * @return the Store
-     */
-    Store getStore();
+public interface Configuration {
+
+    String put(String key, String value);
+
+    String get(String key);
+
+    String getOrDefault(String key, String defaultValue);
+
+    boolean containsKey(String key);
+
+    String remove(String key);
+
+    int size();
+
+    boolean isEmpty();
+
+    void clear();
+
+    Set<String> keySet();
+
+    ReadWriteLock getLock();
 }

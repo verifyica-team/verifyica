@@ -184,8 +184,8 @@ public class EngineInterceptorManager {
     private static void filter(List<Class<?>> classes) {
         Optional.ofNullable(
                         DEFAULT_ENGINE_CONTEXT
-                                .getConfigurationStore()
-                                .get(Constants.ENGINE_INTERCEPTORS_INCLUDE_REGEX, String.class))
+                                .getConfiguration()
+                                .get(Constants.ENGINE_INTERCEPTORS_INCLUDE_REGEX))
                 .ifPresent(
                         regex -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -214,8 +214,8 @@ public class EngineInterceptorManager {
 
         Optional.ofNullable(
                         DEFAULT_ENGINE_CONTEXT
-                                .getConfigurationStore()
-                                .get(Constants.ENGINE_INTERCEPTORS_EXCLUDE_REGEX, String.class))
+                                .getConfiguration()
+                                .get(Constants.ENGINE_INTERCEPTORS_EXCLUDE_REGEX))
                 .ifPresent(
                         regex -> {
                             if (LOGGER.isTraceEnabled()) {

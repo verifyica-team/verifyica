@@ -35,7 +35,7 @@ public class EngineInterceptorTest {
         System.out.println(format("test(%s)", argumentContext.getTestArgument().getPayload()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getObjectStore()).isNotNull();
+        assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
         assertThat(
                         argumentContext.getClassContext().getEngineContext()
@@ -48,7 +48,7 @@ public class EngineInterceptorTest {
                                 argumentContext
                                         .getClassContext()
                                         .getEngineContext()
-                                        .getObjectStore()
+                                        .getStore()
                                         .get(ExampleEngineInterceptor.KEY))
                 .isNotNull();
 
@@ -56,7 +56,7 @@ public class EngineInterceptorTest {
                         argumentContext
                                 .getClassContext()
                                 .getEngineContext()
-                                .getObjectStore()
+                                .getStore()
                                 .get(ExampleEngineInterceptor.KEY, String.class))
                 .isEqualTo(ExampleEngineInterceptor.VALUE);
     }

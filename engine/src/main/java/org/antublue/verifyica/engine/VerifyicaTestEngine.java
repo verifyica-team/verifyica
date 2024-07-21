@@ -157,7 +157,7 @@ public class VerifyicaTestEngine implements TestEngine {
                                         EngineInterceptorManager.getInstance()
                                                 .destroy(defaultEngineInterceptorContext)));
 
-        defaultEngineInterceptorContext.getEngineContext().getObjectStore().clear();
+        defaultEngineInterceptorContext.getEngineContext().getStore().clear();
 
         if (throwableCollector.isEmpty()) {
             executionRequest

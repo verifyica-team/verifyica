@@ -40,7 +40,7 @@ public class ExampleEngineInterceptor implements EngineInterceptor {
         System.out.println(getClass().getName() + " interceptInitialize()");
 
         // Add a global string to the EngineContext Store
-        engineInterceptorContext.getEngineContext().getObjectStore().put(KEY, VALUE);
+        engineInterceptorContext.getEngineContext().getStore().put(KEY, VALUE);
 
         return InterceptorResult.PROCEED;
     }

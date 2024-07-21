@@ -24,5 +24,5 @@ public interface EngineContext extends Context {
      *
      * @return the configuration Store
      */
-    Store<String, String> getConfigurationStore();
+    Configuration getConfiguration();
 }

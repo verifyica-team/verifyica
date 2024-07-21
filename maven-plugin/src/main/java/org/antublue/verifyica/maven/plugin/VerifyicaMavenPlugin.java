@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
-import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
@@ -98,20 +98,19 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         Logger logger = Logger.from(getLog());
 
         try {
-            DefaultEngineContext defaultEngineContext = DefaultEngineContext.getInstance();
-            Store<String, String> configurationStore = defaultEngineContext.getConfigurationStore();
+            Configuration configuration = DefaultEngineContext.getInstance().getConfiguration();
 
-            configurationStore.put(Constants.MAVEN_PLUGIN, Constants.TRUE);
+            configuration.put(Constants.MAVEN_PLUGIN, Constants.TRUE);
             logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN, Constants.TRUE);
 
-            configurationStore.put(Constants.MAVEN_PLUGIN_VERSION, VERSION);
+            configuration.put(Constants.MAVEN_PLUGIN_VERSION, VERSION);
             logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_VERSION, VERSION);
 
             if (mavenSession.getRequest().isInteractiveMode()) {
-                configurationStore.put(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
+                configuration.put(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
                 logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
             } else {
-                configurationStore.put(Constants.MAVEN_PLUGIN_MODE, BATCH);
+                configuration.put(Constants.MAVEN_PLUGIN_MODE, BATCH);
                 logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, BATCH);
             }
 
@@ -243,8 +242,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                                     testDescriptor,
                                     delegatingEngineExecutionListener,
                                     new DefaultConfigurationParameters(
-                                            DefaultEngineContext.getInstance()
-                                                    .getConfigurationStore()));
+                                            DefaultEngineContext.getInstance().getConfiguration()));
 
                     engine.execute(executionRequest);
 

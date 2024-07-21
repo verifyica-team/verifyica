@@ -551,8 +551,8 @@ public class EngineDiscoveryRequestResolver {
 
         Optional.ofNullable(
                         DEFAULT_ENGINE_CONTEXT
-                                .getConfigurationStore()
-                                .get(Constants.TEST_CLASS_INCLUDE_REGEX, String.class))
+                                .getConfiguration()
+                                .get(Constants.TEST_CLASS_INCLUDE_REGEX))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -577,8 +577,8 @@ public class EngineDiscoveryRequestResolver {
 
         Optional.ofNullable(
                         DEFAULT_ENGINE_CONTEXT
-                                .getConfigurationStore()
-                                .get(Constants.TEST_CLASS_EXCLUDE_REGEX, String.class))
+                                .getConfiguration()
+                                .get(Constants.TEST_CLASS_EXCLUDE_REGEX))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -614,8 +614,8 @@ public class EngineDiscoveryRequestResolver {
 
         Optional.ofNullable(
                         DEFAULT_ENGINE_CONTEXT
-                                .getConfigurationStore()
-                                .get(Constants.TEST_CLASS_TAG_INCLUDE_REGEX, String.class))
+                                .getConfiguration()
+                                .get(Constants.TEST_CLASS_TAG_INCLUDE_REGEX))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -650,8 +650,8 @@ public class EngineDiscoveryRequestResolver {
 
         Optional.ofNullable(
                         DEFAULT_ENGINE_CONTEXT
-                                .getConfigurationStore()
-                                .get(Constants.TEST_CLASS_TAG_EXCLUDE_REGEX, String.class))
+                                .getConfiguration()
+                                .get(Constants.TEST_CLASS_TAG_EXCLUDE_REGEX))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -692,8 +692,8 @@ public class EngineDiscoveryRequestResolver {
 
         Optional.ofNullable(
                         DEFAULT_ENGINE_CONTEXT
-                                .getConfigurationStore()
-                                .get(Constants.TEST_METHOD_INCLUDE_REGEX, String.class))
+                                .getConfiguration()
+                                .get(Constants.TEST_METHOD_INCLUDE_REGEX))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -725,8 +725,8 @@ public class EngineDiscoveryRequestResolver {
 
         Optional.ofNullable(
                         DEFAULT_ENGINE_CONTEXT
-                                .getConfigurationStore()
-                                .get(Constants.TEST_METHOD_EXCLUDE_REGEX, String.class))
+                                .getConfiguration()
+                                .get(Constants.TEST_METHOD_EXCLUDE_REGEX))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -769,8 +769,8 @@ public class EngineDiscoveryRequestResolver {
 
         Optional.ofNullable(
                         DEFAULT_ENGINE_CONTEXT
-                                .getConfigurationStore()
-                                .get(Constants.TEST_METHOD_TAG_INCLUDE_REGEX, String.class))
+                                .getConfiguration()
+                                .get(Constants.TEST_METHOD_TAG_INCLUDE_REGEX))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -813,8 +813,8 @@ public class EngineDiscoveryRequestResolver {
 
         Optional.ofNullable(
                         DEFAULT_ENGINE_CONTEXT
-                                .getConfigurationStore()
-                                .get(Constants.TEST_METHOD_TAG_EXCLUDE_REGEX, String.class))
+                                .getConfiguration()
+                                .get(Constants.TEST_METHOD_TAG_EXCLUDE_REGEX))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -897,8 +897,8 @@ public class EngineDiscoveryRequestResolver {
         if ("true"
                 .equals(
                         DEFAULT_ENGINE_CONTEXT
-                                .getConfigurationStore()
-                                .get(Constants.TEST_CLASS_SHUFFLE, String.class))) {
+                                .getConfiguration()
+                                .get(Constants.TEST_CLASS_SHUFFLE))) {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("shuffling enabled");
             }

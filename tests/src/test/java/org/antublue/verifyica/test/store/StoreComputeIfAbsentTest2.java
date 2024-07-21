@@ -45,7 +45,7 @@ public class StoreComputeIfAbsentTest2 {
         Semaphore semaphore =
                 argumentContext
                         .getClassContext()
-                        .getObjectStore()
+                        .getStore()
                         .computeIfAbsent(KEY, key -> new Semaphore(1));
 
         try {
@@ -56,7 +56,7 @@ public class StoreComputeIfAbsentTest2 {
             Thread.sleep(2000);
         } finally {
             semaphore.release();
-            argumentContext.getClassContext().getObjectStore().remove(KEY);
+            argumentContext.getClassContext().getStore().remove(KEY);
         }
     }
 }

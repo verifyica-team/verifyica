@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.Optional;
 import org.antublue.verifyica.api.Argument;
-import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.descriptor.Metadata;
@@ -64,13 +64,10 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     /** Constructor */
     public StatusEngineExecutionListener() {
-        Store<String, String> configurationStore =
-                DefaultEngineContext.getInstance().getConfigurationStore();
+        Configuration configuration = DefaultEngineContext.getInstance().getConfiguration();
 
         consoleLogTiming =
-                Optional.ofNullable(
-                                configurationStore.get(
-                                        Constants.MAVEN_PLUGIN_LOG_TIMING, String.class))
+                Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_LOG_TIMING))
                         .map(Boolean::parseBoolean)
                         .orElse(true);
 
@@ -78,9 +75,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 "configuration [%s] = [%b]", Constants.MAVEN_PLUGIN_LOG_TIMING, consoleLogTiming);
 
         consoleLogTimingUnits =
-                Optional.ofNullable(
-                                configurationStore.get(
-                                        Constants.MAVEN_PLUGIN_TIMING_UNITS, String.class))
+                Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_TIMING_UNITS))
                         .orElse("milliseconds");
 
         LOGGER.trace(
@@ -88,9 +83,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 Constants.MAVEN_PLUGIN_TIMING_UNITS, consoleLogTimingUnits);
 
         consoleLogTestMessages =
-                Optional.ofNullable(
-                                configurationStore.get(
-                                        Constants.MAVEN_PLUGIN_TEST_MESSAGES, String.class))
+                Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_TEST_MESSAGES))
                         .map(Boolean::parseBoolean)
                         .orElse(true);
 
@@ -99,9 +92,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 Constants.MAVEN_PLUGIN_TEST_MESSAGES, consoleLogTestMessages);
 
         consoleLogPassMessages =
-                Optional.ofNullable(
-                                configurationStore.get(
-                                        Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGES, String.class))
+                Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGES))
                         .map(Boolean::parseBoolean)
                         .orElse(true);
 
@@ -110,9 +101,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGES, consoleLogPassMessages);
 
         consoleLogSkipMessages =
-                Optional.ofNullable(
-                                configurationStore.get(
-                                        Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGES, String.class))
+                Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGES))
                         .map(Boolean::parseBoolean)
                         .orElse(true);
 
@@ -125,9 +114,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .append(AnsiColor.TEXT_WHITE_BRIGHT)
                         .append(
                                 Optional.ofNullable(
-                                                configurationStore.get(
-                                                        Constants.MAVEN_PLUGIN_LOG_TEST_MESSAGE,
-                                                        String.class))
+                                                configuration.get(
+                                                        Constants.MAVEN_PLUGIN_LOG_TEST_MESSAGE))
                                         .orElse("TEST"))
                         .color(AnsiColor.TEXT_RESET)
                         .toString();
@@ -137,7 +125,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .color(AnsiColor.TEXT_GREEN_BOLD_BRIGHT)
                         .append(
                                 Optional.ofNullable(
-                                                configurationStore.get(
+                                                configuration.get(
                                                         Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGE))
                                         .orElse("PASS"))
                         .color(AnsiColor.TEXT_RESET)
@@ -148,7 +136,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .color(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
                         .append(
                                 Optional.ofNullable(
-                                                configurationStore.get(
+                                                configuration.get(
                                                         Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGE))
                                         .orElse("SKIP"))
                         .color(AnsiColor.TEXT_RESET)
@@ -159,7 +147,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .color(AnsiColor.TEXT_RED_BOLD_BRIGHT)
                         .append(
                                 Optional.ofNullable(
-                                                configurationStore.get(
+                                                configuration.get(
                                                         Constants.MAVEN_PLUGIN_LOG_FAIL_MESSAGE))
                                         .orElse("FAIL"))
                         .color(AnsiColor.TEXT_RESET)

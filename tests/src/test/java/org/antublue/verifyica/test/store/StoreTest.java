@@ -41,12 +41,12 @@ public class StoreTest {
         System.out.println(
                 format("putIntoStores(%s)", argumentContext.getTestArgument().getPayload()));
 
-        argumentContext.getObjectStore().put(ARGUMENT_CONTEXT_KEY, "argument");
-        argumentContext.getClassContext().getObjectStore().put(CLASS_CONTEXT_KEY, "class");
+        argumentContext.getStore().put(ARGUMENT_CONTEXT_KEY, "argument");
+        argumentContext.getClassContext().getStore().put(CLASS_CONTEXT_KEY, "class");
         argumentContext
                 .getClassContext()
                 .getEngineContext()
-                .getObjectStore()
+                .getStore()
                 .put(ENGINE_CONTEXT_KEY, "engine");
     }
 
@@ -56,13 +56,13 @@ public class StoreTest {
         System.out.println(
                 format("getOutOfStores(%s)", argumentContext.getTestArgument().getPayload()));
 
-        assertThat(argumentContext.getObjectStore().get(ARGUMENT_CONTEXT_KEY, String.class))
+        assertThat(argumentContext.getStore().get(ARGUMENT_CONTEXT_KEY, String.class))
                 .isEqualTo("argument");
 
         assertThat(
                         argumentContext
                                 .getClassContext()
-                                .getObjectStore()
+                                .getStore()
                                 .get(CLASS_CONTEXT_KEY, String.class))
                 .isEqualTo("class");
 
@@ -70,7 +70,7 @@ public class StoreTest {
                         argumentContext
                                 .getClassContext()
                                 .getEngineContext()
-                                .getObjectStore()
+                                .getStore()
                                 .get(ENGINE_CONTEXT_KEY, String.class))
                 .isEqualTo("engine");
 
@@ -78,7 +78,7 @@ public class StoreTest {
                         argumentContext
                                 .getClassContext()
                                 .getEngineContext()
-                                .getObjectStore()
+                                .getStore()
                                 .get(ENGINE_CONTEXT_KEY, String.class))
                 .isEqualTo("engine");
     }
@@ -87,14 +87,9 @@ public class StoreTest {
     public static void conclude(ClassContext classContext) {
         System.out.println("conclude()");
 
-        assertThat(classContext.getObjectStore().get(CLASS_CONTEXT_KEY, String.class))
-                .isEqualTo("class");
+        assertThat(classContext.getStore().get(CLASS_CONTEXT_KEY, String.class)).isEqualTo("class");
 
-        assertThat(
-                        classContext
-                                .getEngineContext()
-                                .getObjectStore()
-                                .get(ENGINE_CONTEXT_KEY, String.class))
+        assertThat(classContext.getEngineContext().getStore().get(ENGINE_CONTEXT_KEY, String.class))
                 .isEqualTo("engine");
     }
 }

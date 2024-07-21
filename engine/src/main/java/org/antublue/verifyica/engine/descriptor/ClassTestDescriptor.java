@@ -48,7 +48,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                     && "virtual"
                             .equalsIgnoreCase(
                                     DefaultEngineContext.getInstance()
-                                            .getConfigurationStore()
+                                            .getConfiguration()
                                             .get(Constants.ENGINE_EXECUTOR_TYPE));
 
     private final Class<?> testClass;
@@ -371,7 +371,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             method.invoke(null, defaultClassContext.asImmutable());
         }
 
-        defaultClassContext.getObjectStore().clear();
+        defaultClassContext.getStore().clear();
     }
 
     /**
