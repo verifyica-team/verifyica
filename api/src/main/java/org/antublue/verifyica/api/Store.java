@@ -21,37 +21,134 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
 
+/** Class to implement Store */
 public interface Store {
 
+    /**
+     * Put a key-value pair
+     *
+     * @param key key
+     * @param value value
+     * @return the existing value, or null
+     * @param <T>
+     */
     <T> T put(Object key, Object value);
 
-    void replace(Store store);
+    /**
+     * Replace the contents
+     *
+     * @param store store
+     * @return this
+     */
+    Store replace(Store store);
 
+    /**
+     * Get the value or use the function to create a value
+     *
+     * @param key key
+     * @param function function
+     * @return the value
+     * @param <T> type
+     */
     <T> T computeIfAbsent(Object key, Function<Object, Object> function);
 
+    /**
+     * Merge a Store
+     *
+     * @param store store
+     * @return this
+     */
     Store merge(Store store);
 
+    /**
+     * Merge a Map
+     *
+     * @param map map
+     * @return this
+     */
     Store merge(Map<Object, Object> map);
 
+    /**
+     * Get a value
+     *
+     * @param key key
+     * @return the value
+     * @param <T> the return type
+     */
     <T> T get(Object key);
 
+    /**
+     * Get a value
+     *
+     * @param key key
+     * @param type the return type
+     * @return the value
+     * @param <T> the return type
+     */
     <T> T get(Object key, Class<T> type);
 
+    /**
+     * Return if a key exists
+     *
+     * @param key key
+     * @return true if the key exists, else false
+     */
     boolean containsKey(Object key);
 
+    /**
+     * Remove a key-value pair
+     *
+     * @param key key
+     * @return the value
+     * @param <T> the return type
+     */
     <T> T remove(Object key);
 
+    /**
+     * Remove a key-value pair
+     *
+     * @param key key
+     * @param type type
+     * @return the value
+     * @param <T> the return type
+     */
     <T> T remove(Object key, Class<T> type);
 
+    /** Clear */
     void clear();
 
+    /**
+     * Return the size
+     *
+     * @return the size
+     */
     int size();
 
+    /**
+     * Return whether empty
+     *
+     * @return true if empty, else false
+     */
     boolean isEmpty();
 
+    /**
+     * Return a COPY of the keySet
+     *
+     * @return a COPY of the keySet
+     */
     Set<Object> keySet();
 
+    /**
+     * Duplicate
+     *
+     * @return a duplicate Store
+     */
     Store duplicate();
 
+    /**
+     * Get the ReadWriteLock
+     *
+     * @return the ReadWriteLock
+     */
     ReadWriteLock getLock();
 }

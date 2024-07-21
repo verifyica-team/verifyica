@@ -55,7 +55,7 @@ public class DefaultStore implements Store {
     }
 
     @Override
-    public void replace(Store store) {
+    public Store replace(Store store) {
         notNull(store, "store is null");
 
         try {
@@ -63,6 +63,7 @@ public class DefaultStore implements Store {
             getLock().writeLock().lock();
             clear();
             merge(store);
+            return this;
         } finally {
             getLock().writeLock().unlock();
             store.getLock().readLock().unlock();
