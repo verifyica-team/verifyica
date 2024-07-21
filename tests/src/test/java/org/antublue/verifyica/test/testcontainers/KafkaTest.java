@@ -64,7 +64,10 @@ public class KafkaTest {
         network.getId();
 
         argumentContext.getStore().put("network", network);
-        argumentContext.getArgumentPayload(KafkaTestEnvironment.class).initialize(network);
+        argumentContext
+                .getTestArgument(KafkaTestEnvironment.class)
+                .getPayload()
+                .initialize(network);
     }
 
     @Verifyica.Test
@@ -73,7 +76,8 @@ public class KafkaTest {
             throws ExecutionException, InterruptedException {
         info("testing testProduce() ...");
 
-        KafkaTestEnvironment kafkaTestEnvironment = argumentContext.getArgumentPayload();
+        KafkaTestEnvironment kafkaTestEnvironment =
+                argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload();
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
@@ -101,7 +105,8 @@ public class KafkaTest {
     public void testConsume1(ArgumentContext argumentContext) {
         info("testConsume1() ...");
 
-        KafkaTestEnvironment kafkaTestEnvironment = argumentContext.getArgumentPayload();
+        KafkaTestEnvironment kafkaTestEnvironment =
+                argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload();
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
@@ -144,7 +149,8 @@ public class KafkaTest {
     public void testConsume2(ArgumentContext argumentContext) {
         info("testConsume2() ...");
 
-        KafkaTestEnvironment kafkaTestEnvironment = argumentContext.getArgumentPayload();
+        KafkaTestEnvironment kafkaTestEnvironment =
+                argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload();
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
@@ -186,7 +192,7 @@ public class KafkaTest {
     public void destroyTestEnvironment(ArgumentContext argumentContext) {
         info("destroy test environment ...");
 
-        argumentContext.getArgumentPayload(KafkaTestEnvironment.class).destroy();
+        argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload().destroy();
 
         Network network = argumentContext.getStore().remove("network");
         if (network != null) {

@@ -54,7 +54,7 @@ public class CustomArgumentWithLockTest {
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) {
-        argumentContext.getArgumentPayload(CustomArgument.class).lock();
+        argumentContext.getTestArgument(CustomArgument.class).getPayload().lock();
 
         System.out.println(format("beforeAll(%s)", argumentContext.getTestArgument()));
 
@@ -111,7 +111,7 @@ public class CustomArgumentWithLockTest {
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
-        argumentContext.getArgumentPayload(CustomArgument.class).unlock();
+        argumentContext.getTestArgument(CustomArgument.class).getPayload().unlock();
     }
 
     @Verifyica.Conclude

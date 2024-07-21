@@ -54,7 +54,7 @@ public class CustomArgumentWithSemaphoreTest {
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) throws Throwable {
-        argumentContext.getArgumentPayload(CustomArgument.class).acquire();
+        argumentContext.getTestArgument(CustomArgument.class).getPayload().acquire();
 
         System.out.println(format("beforeAll(%s)", argumentContext.getTestArgument()));
 
@@ -111,7 +111,7 @@ public class CustomArgumentWithSemaphoreTest {
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
-        argumentContext.getArgumentPayload(CustomArgument.class).release();
+        argumentContext.getTestArgument(CustomArgument.class).getPayload().release();
     }
 
     @Verifyica.Conclude

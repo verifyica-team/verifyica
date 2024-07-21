@@ -56,7 +56,10 @@ public class MongoDBTest {
         network.getId();
 
         argumentContext.getStore().put(NETWORK, network);
-        argumentContext.getArgumentPayload(MongoDBTestEnvironment.class).initialize(network);
+        argumentContext
+                .getTestArgument(MongoDBTestEnvironment.class)
+                .getPayload()
+                .initialize(network);
     }
 
     @Verifyica.Test
@@ -68,7 +71,8 @@ public class MongoDBTest {
         argumentContext.getStore().put("name", name);
         info("name [%s]", name);
 
-        MongoDBTestEnvironment mongoDBTestEnvironment = argumentContext.getArgumentPayload();
+        MongoDBTestEnvironment mongoDBTestEnvironment =
+                argumentContext.getTestArgument(MongoDBTestEnvironment.class).getPayload();
 
         MongoClientSettings settings =
                 MongoClientSettings.builder()
@@ -96,7 +100,8 @@ public class MongoDBTest {
         String name = argumentContext.getStore().get("name");
         info("name [%s]", name);
 
-        MongoDBTestEnvironment mongoDBTestEnvironment = argumentContext.getArgumentPayload();
+        MongoDBTestEnvironment mongoDBTestEnvironment =
+                argumentContext.getTestArgument(MongoDBTestEnvironment.class).getPayload();
 
         MongoClientSettings settings =
                 MongoClientSettings.builder()
@@ -122,7 +127,7 @@ public class MongoDBTest {
     public void destroyTestEnvironment(ArgumentContext argumentContext) {
         info("destroy test environment ...");
 
-        argumentContext.getArgumentPayload(MongoDBTestEnvironment.class).destroy();
+        argumentContext.getTestArgument(MongoDBTestEnvironment.class).getPayload().destroy();
 
         Network network = argumentContext.getStore().remove(NETWORK);
         if (network != null) {
