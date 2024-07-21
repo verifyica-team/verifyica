@@ -40,14 +40,14 @@ public interface EngineInterceptorContext {
     /**
      * Method to get the LifeCycle
      *
-     * @return LifeCycle LifeCycle
+     * @return the LifeCycle
      */
     LifeCycle getLifeCycle();
 
     /**
      * Method to get the EngineContext
      *
-     * @return EngineContext EngineContext
+     * @return the EngineContext
      */
     EngineContext getEngineContext();
 }
