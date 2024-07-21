@@ -17,7 +17,7 @@
 package org.antublue.verifyica.api;
 
 /** Interface to implement ArgumentContext */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"deprecated", "unchecked"})
 public interface ArgumentContext extends Context {
 
     /**
@@ -37,7 +37,7 @@ public interface ArgumentContext extends Context {
     ClassContext getClassContext();
 
     /**
-     * Returns the testArgument
+     * Deprecated - use getTestArgument()
      *
      * @return the test Argument
      */
@@ -45,14 +45,7 @@ public interface ArgumentContext extends Context {
     Argument<?> getArgument();
 
     /**
-     * Returns the testArgument
-     *
-     * @return the test Argument
-     */
-    Argument<?> getTestArgument();
-
-    /**
-     * Returns the Argument
+     * Deprecated - use getTestArgument(Class&lt;T&gt; type)
      *
      * @param type the Argument return type
      * @return the test Argument
@@ -63,6 +56,13 @@ public interface ArgumentContext extends Context {
 
     /**
      * Returns the Argument
+     *
+     * @return the Argument
+     */
+    Argument<?> getTestArgument();
+
+    /**
+     * Returns the Argument, casting the Argument payload to type
      *
      * @param type the Argument return type
      * @return the Argument
@@ -76,8 +76,9 @@ public interface ArgumentContext extends Context {
      * @return the Argument payload
      * @param <T> the payload type
      */
+    @Deprecated
     default <T> T getArgumentPayload() {
-        return (T) getArgument().getPayload();
+        return (T) getTestArgument(Object.class).getPayload();
     }
 
     /**
@@ -87,7 +88,8 @@ public interface ArgumentContext extends Context {
      * @return the Argument payload
      * @param <T> the payload type
      */
+    @Deprecated
     default <T> T getArgumentPayload(Class<T> type) {
-        return type.cast(getArgument().getPayload());
+        return type.cast(getTestArgument(type).getPayload());
     }
 }
