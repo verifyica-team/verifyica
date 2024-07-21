@@ -251,6 +251,14 @@ See [Contributing](CONTRIBUTING.md) for details.
 
 [Apache-2.0](LICENSE.txt)
 
+# Code of Conduct
+
+[Code of Conduct](CODE_OF_CONDUCT.md)
+
+# DCO
+
+[DCO](DCO.md)
+
 # Support
 
 ![YourKit logo](https://www.yourkit.com/images/yklogo.png)
