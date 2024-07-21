@@ -23,7 +23,7 @@ import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class PropertiesTest {
+public class ConfigurationTest {
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
@@ -33,6 +33,11 @@ public class PropertiesTest {
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
         System.out.println(format("test(%s)", argumentContext.getTestArgument().getPayload()));
+
+        System.out.println(
+                format(
+                        "engine.version [%s]",
+                        argumentContext.getClassContext().getEngineContext().getVersion()));
 
         Configuration configuration =
                 argumentContext.getClassContext().getEngineContext().getConfiguration();

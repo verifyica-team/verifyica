@@ -62,6 +62,11 @@ public class DefaultEngineContext implements EngineContext {
     }
 
     @Override
+    public String getVersion() {
+        return Version.version();
+    }
+
+    @Override
     public Configuration getConfiguration() {
         return configuration;
     }
