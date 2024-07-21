@@ -55,7 +55,7 @@ public class DefaultEngineContext implements EngineContext {
     private final Store<Object, Object> objectStore;
 
     /** Constructor */
-    public DefaultEngineContext() {
+    private DefaultEngineContext() {
         map = Collections.synchronizedMap(new TreeMap<>());
         configurationStore = new Store<>();
         objectStore = new Store<>();
