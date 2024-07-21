@@ -22,11 +22,10 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
 
 /** Class to implement DefaultArgumentContext */
-@SuppressWarnings("deprecated")
 public class DefaultArgumentContext implements ArgumentContext {
 
     private final DefaultClassContext defaultClassContext;
-    private final Store store;
+    private final Store<Object, Object> store;
     private final ImmutableArgumentContext immutableArgumentContext;
 
     private Object testInstance;
@@ -39,7 +38,7 @@ public class DefaultArgumentContext implements ArgumentContext {
      */
     public DefaultArgumentContext(DefaultClassContext defaultClassContext) {
         this.defaultClassContext = defaultClassContext;
-        this.store = new Store();
+        this.store = new Store<>();
         this.immutableArgumentContext =
                 new ImmutableArgumentContext(defaultClassContext.asImmutable(), this);
     }
@@ -47,17 +46,6 @@ public class DefaultArgumentContext implements ArgumentContext {
     @Override
     public ClassContext getClassContext() {
         return defaultClassContext;
-    }
-
-    @Override
-    public Argument<?> getArgument() {
-        return getTestArgument(Object.class);
-    }
-
-    @Override
-    public <T> Argument<T> getArgument(Class<T> type) {
-        notNull(type, "type is null");
-        return getTestArgument(type);
     }
 
     @Override
@@ -72,7 +60,7 @@ public class DefaultArgumentContext implements ArgumentContext {
     }
 
     @Override
-    public Store getStore() {
+    public Store<Object, Object> getObjectStore() {
         return store;
     }
 

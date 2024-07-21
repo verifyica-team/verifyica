@@ -45,17 +45,6 @@ public class ImmutableArgumentContext implements ArgumentContext {
     }
 
     @Override
-    public Argument<?> getArgument() {
-        return getTestArgument();
-    }
-
-    @Override
-    public <T> Argument<T> getArgument(Class<T> type) {
-        notNull(type, "type is null");
-        return getTestArgument(type);
-    }
-
-    @Override
     public Argument<?> getTestArgument() {
         return getTestArgument(Object.class);
     }
@@ -63,12 +52,12 @@ public class ImmutableArgumentContext implements ArgumentContext {
     @Override
     public <T> Argument<T> getTestArgument(Class<T> type) {
         notNull(type, "type is null");
-        return argumentContext.getArgument(type);
+        return argumentContext.getTestArgument(type);
     }
 
     @Override
-    public Store getStore() {
-        return argumentContext.getStore();
+    public Store<Object, Object> getObjectStore() {
+        return argumentContext.getObjectStore();
     }
 
     /**

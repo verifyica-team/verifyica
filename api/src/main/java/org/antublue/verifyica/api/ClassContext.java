@@ -26,11 +26,35 @@ public interface ClassContext extends Context {
      */
     EngineContext getEngineContext();
 
+    /**
+     * Return the test class
+     *
+     * @return the test class
+     */
     Class<?> getTestClass();
 
+    /**
+     * Returns the test class
+     *
+     * @param type type
+     * @return the test class
+     * @param <T> the type
+     */
     <T> Class<T> getTestClass(Class<T> type);
 
+    /**
+     * Returns the test class instance
+     *
+     * @return the test class instance
+     */
     Object getTestInstance();
 
+    /**
+     * Return the test class instance
+     *
+     * @param type type
+     * @return the test class instance
+     * @param <T> the type
+     */
     <T> T getTestInstance(Class<T> type);
 }

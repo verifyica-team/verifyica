@@ -25,9 +25,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
+import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ObjectSupport;
@@ -47,8 +47,9 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             ThreadTool.hasVirtualThreads()
                     && "virtual"
                             .equalsIgnoreCase(
-                                    DefaultConfiguration.getInstance()
-                                            .getProperty(Constants.ENGINE_EXECUTOR_TYPE));
+                                    DefaultEngineContext.getInstance()
+                                            .getConfigurationStore()
+                                            .get(Constants.ENGINE_EXECUTOR_TYPE));
 
     private final Class<?> testClass;
     private final int parallelism;
@@ -370,7 +371,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             method.invoke(null, defaultClassContext.asImmutable());
         }
 
-        defaultClassContext.getStore().clear();
+        defaultClassContext.getObjectStore().clear();
     }
 
     /**

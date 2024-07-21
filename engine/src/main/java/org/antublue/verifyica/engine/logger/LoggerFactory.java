@@ -18,7 +18,7 @@ package org.antublue.verifyica.engine.logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
+import org.antublue.verifyica.engine.context.DefaultEngineContext;
 
 /** Class to implement LoggerFactory */
 @SuppressWarnings("PMD.EmptyCatchBlock")
@@ -58,7 +58,7 @@ public final class LoggerFactory {
      * @return the return value
      */
     public static Logger getLogger(String name) {
-        synchronized (DefaultConfiguration.getInstance()) {
+        synchronized (DefaultEngineContext.getInstance()) {
             return SingletonHolder.SINGLETON.createLogger(name);
         }
     }

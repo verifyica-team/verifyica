@@ -19,7 +19,6 @@ package org.antublue.verifyica.engine.discovery;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
-import org.antublue.verifyica.api.EngineExtension;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.EngineInterceptor;
 import org.antublue.verifyica.engine.support.ClassSupport;
@@ -28,18 +27,6 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 
 /** Class to implement Predicates */
 public class Predicates {
-
-    /** Predicate to filter test engine extension classes */
-    public static final Predicate<Class<?>> ENGINE_EXTENSION_CLASS =
-            clazz -> {
-                int modifiers = clazz.getModifiers();
-                return Modifier.isPublic(modifiers)
-                        && !Modifier.isAbstract(modifiers)
-                        && !Modifier.isStatic(modifiers)
-                        && ClassSupport.hasDefaultConstructor(clazz)
-                        && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && EngineExtension.class.isAssignableFrom(clazz);
-            };
 
     /** Predicate to filter test engine invocation interceptor classes */
     public static final Predicate<Class<?>> ENGINE_INTERCEPTOR_CLASS =

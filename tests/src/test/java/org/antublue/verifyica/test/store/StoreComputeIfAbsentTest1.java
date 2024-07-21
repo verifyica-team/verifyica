@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
@@ -47,9 +46,8 @@ public class StoreComputeIfAbsentTest1 {
         Lock lock =
                 argumentContext
                         .getClassContext()
-                        .getStore()
-                        .computeIfAbsent(
-                                KEY, (Function<Object, Lock>) key -> new ReentrantLock(true));
+                        .getObjectStore()
+                        .computeIfAbsent(KEY, key -> new ReentrantLock(true));
 
         try {
             lock.lock();
@@ -59,7 +57,7 @@ public class StoreComputeIfAbsentTest1 {
             Thread.sleep(2000);
         } finally {
             lock.unlock();
-            argumentContext.getClassContext().getStore().remove(KEY);
+            argumentContext.getClassContext().getObjectStore().remove(KEY);
         }
     }
 }

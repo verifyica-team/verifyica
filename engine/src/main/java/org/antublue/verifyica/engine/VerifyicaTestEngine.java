@@ -24,9 +24,8 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import org.antublue.verifyica.api.interceptor.InterceptorResult;
-import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
+import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
-import org.antublue.verifyica.engine.context.ImmutableEngineContext;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutor;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutorFactory;
@@ -95,7 +94,7 @@ public class VerifyicaTestEngine implements TestEngine {
             return null;
         }
 
-        DefaultConfiguration.getInstance();
+        DefaultEngineContext.getInstance();
 
         LOGGER.trace("discover(" + uniqueId + ")");
 
@@ -125,10 +124,8 @@ public class VerifyicaTestEngine implements TestEngine {
                 .getEngineExecutionListener()
                 .executionStarted(executionRequest.getRootTestDescriptor());
 
-        ImmutableEngineContext immutableEngineContext = ImmutableEngineContext.getInstance();
-
         DefaultEngineInterceptorContext defaultEngineInterceptorContext =
-                new DefaultEngineInterceptorContext(immutableEngineContext);
+                new DefaultEngineInterceptorContext(DefaultEngineContext.getInstance());
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -139,8 +136,7 @@ public class VerifyicaTestEngine implements TestEngine {
                 () ->
                         atomicReferenceInterceptorResult.set(
                                 EngineInterceptorManager.getInstance()
-                                        .initialize(
-                                                defaultEngineInterceptorContext.asImmutable())));
+                                        .initialize(defaultEngineInterceptorContext)));
 
         if (atomicReferenceInterceptorResult.get() == InterceptorResult.PROCEED
                 && throwableCollector.isEmpty()) {
@@ -159,11 +155,9 @@ public class VerifyicaTestEngine implements TestEngine {
                                 .getThrowables()
                                 .addAll(
                                         EngineInterceptorManager.getInstance()
-                                                .destroy(
-                                                        defaultEngineInterceptorContext
-                                                                .asImmutable())));
+                                                .destroy(defaultEngineInterceptorContext)));
 
-        immutableEngineContext.getStore().clear();
+        defaultEngineInterceptorContext.getEngineContext().getObjectStore().clear();
 
         if (throwableCollector.isEmpty()) {
             executionRequest

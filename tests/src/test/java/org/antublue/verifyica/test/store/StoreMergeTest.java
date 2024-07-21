@@ -37,56 +37,60 @@ public class StoreMergeTest {
     public void test1(ArgumentContext argumentContext) {
         System.out.println("test1()");
 
-        argumentContext.getStore().clear();
-        System.out.println("argument context store before merge " + argumentContext.getStore());
+        argumentContext.getObjectStore().clear();
+        System.out.println(
+                "argument context store before merge " + argumentContext.getObjectStore());
 
-        Store store = new Store();
+        Store<Object, Object> store = new Store<>();
         for (int i = 0; i < 10; i++) {
             store.put("key " + i, "value " + i);
         }
         System.out.println("store " + store);
 
-        argumentContext.getStore().merge(store);
-        assertThat(argumentContext.getStore()).isEqualTo(store);
+        argumentContext.getObjectStore().merge(store);
+        assertThat(argumentContext.getObjectStore()).isEqualTo(store);
 
-        System.out.println("argument context store after merge " + argumentContext.getStore());
+        System.out.println(
+                "argument context store after merge " + argumentContext.getObjectStore());
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
         System.out.println("test2()");
 
-        argumentContext.getStore().clear();
-        System.out.println("argument context store before merge " + argumentContext.getStore());
+        argumentContext.getObjectStore().clear();
+        System.out.println(
+                "argument context store before merge " + argumentContext.getObjectStore());
 
-        Map<String, String> map = new HashMap<>();
+        Map<Object, Object> map = new HashMap<>();
         for (int i = 0; i < 10; i++) {
             map.put("key " + i, "value " + i);
         }
 
         System.out.println("map " + map);
 
-        argumentContext.getStore().merge(map);
+        argumentContext.getObjectStore().merge(map);
 
-        assertThat(argumentContext.getStore().size()).isEqualTo(map.size());
+        assertThat(argumentContext.getObjectStore().size()).isEqualTo(map.size());
 
         map.forEach(
                 (key, value) -> {
-                    Store store = argumentContext.getStore();
-
+                    Store<Object, Object> store = argumentContext.getObjectStore();
                     assertThat(store.containsKey(key)).isTrue();
                     assertThat(store.get(key) == value).isTrue();
                 });
 
-        System.out.println("argument context store after merge " + argumentContext.getStore());
+        System.out.println(
+                "argument context store after merge " + argumentContext.getObjectStore());
     }
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) {
         System.out.println("test3()");
 
-        argumentContext.getStore().clear();
-        System.out.println("argument context store before merge " + argumentContext.getStore());
+        argumentContext.getObjectStore().clear();
+        System.out.println(
+                "argument context store before merge " + argumentContext.getObjectStore());
 
         Properties properties = new Properties();
         for (int i = 0; i < 10; i++) {
@@ -95,18 +99,18 @@ public class StoreMergeTest {
 
         System.out.println("properties " + properties);
 
-        argumentContext.getStore().merge(properties);
+        argumentContext.getObjectStore().merge(properties);
 
-        assertThat(argumentContext.getStore().size()).isEqualTo(properties.size());
+        assertThat(argumentContext.getObjectStore().size()).isEqualTo(properties.size());
 
         properties.forEach(
                 (key, value) -> {
-                    Store store = argumentContext.getStore();
-
+                    Store<Object, Object> store = argumentContext.getObjectStore();
                     assertThat(store.containsKey(key)).isTrue();
                     assertThat(store.get(key) == value).isTrue();
                 });
 
-        System.out.println("argument context store after merge " + argumentContext.getStore());
+        System.out.println(
+                "argument context store after merge " + argumentContext.getObjectStore());
     }
 }

@@ -19,7 +19,7 @@ package org.antublue.verifyica.engine.configuration;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import org.antublue.verifyica.api.Configuration;
+import org.antublue.verifyica.api.Store;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ConfigurationParameters;
 
@@ -27,15 +27,15 @@ import org.junit.platform.engine.ConfigurationParameters;
 @SuppressWarnings("deprecation")
 public class DefaultConfigurationParameters implements ConfigurationParameters {
 
-    private final Configuration configuration;
+    private final Store<String, String> configurationStore;
 
     /**
      * Constructor
      *
-     * @param configuration configuration
+     * @param configurationStore configurationStore
      */
-    public DefaultConfigurationParameters(Configuration configuration) {
-        this.configuration = configuration;
+    public DefaultConfigurationParameters(Store<String, String> configurationStore) {
+        this.configurationStore = configurationStore;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class DefaultConfigurationParameters implements ConfigurationParameters {
         Preconditions.notNull(key, "key is null");
         Preconditions.condition(!key.trim().isEmpty(), "key is empty");
 
-        return Optional.ofNullable(configuration.getProperty(key));
+        return Optional.ofNullable(configurationStore.get(key));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class DefaultConfigurationParameters implements ConfigurationParameters {
         Preconditions.notNull(key, "key is null");
         Preconditions.condition(!key.trim().isEmpty(), "key is empty");
 
-        return Optional.ofNullable(configuration.getProperty(key)).map("true"::equals);
+        return Optional.ofNullable(configurationStore.get(key)).map("true"::equals);
     }
 
     @Override
@@ -60,17 +60,17 @@ public class DefaultConfigurationParameters implements ConfigurationParameters {
         Preconditions.condition(!key.trim().isEmpty(), "key is empty");
         Preconditions.notNull(transformer, "transformer is null");
 
-        String value = configuration.getProperty(key);
+        String value = configurationStore.get(key);
         return value != null ? Optional.ofNullable(transformer.apply(value)) : Optional.empty();
     }
 
     @Override
     public int size() {
-        return configuration.keySet().size();
+        return configurationStore.size();
     }
 
     @Override
     public Set<String> keySet() {
-        return configuration.keySet();
+        return configurationStore.keySet();
     }
 }

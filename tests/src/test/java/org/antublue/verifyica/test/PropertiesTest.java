@@ -36,7 +36,7 @@ public class PropertiesTest {
         argumentContext
                 .getClassContext()
                 .getEngineContext()
-                .getConfiguration()
+                .getConfigurationStore()
                 .entrySet()
                 .forEach(
                         entry ->

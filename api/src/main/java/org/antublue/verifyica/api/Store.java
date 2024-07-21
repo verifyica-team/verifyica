@@ -17,13 +17,11 @@
 package org.antublue.verifyica.api;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
@@ -32,14 +30,14 @@ import java.util.function.Function;
 
 /** Class to implement Store */
 @SuppressWarnings({"unchecked", "unused"})
-public class Store {
+public class Store<K, V> {
 
-    private final Map<Object, Object> map;
+    private final Map<K, V> map;
     private final ReadWriteLock readWriteLock;
 
     /** Constructor */
     public Store() {
-        map = new TreeMap<>();
+        map = new ConcurrentHashMap<>();
         readWriteLock = new ReentrantReadWriteLock(true);
     }
 
@@ -48,10 +46,10 @@ public class Store {
      *
      * @param map map
      */
-    public Store(Map<Object, Object> map) {
+    public Store(Map<K, V> map) {
         notNull(map, "map is null");
 
-        this.map = new TreeMap<>(map);
+        this.map = new ConcurrentHashMap<>(map);
         this.readWriteLock = new ReentrantReadWriteLock(true);
     }
 
@@ -74,7 +72,7 @@ public class Store {
      *
      * @param function the function
      */
-    public void replaceAll(BiFunction<? super Object, ? super Object, ?> function) {
+    public void replaceAll(BiFunction<K, V, V> function) {
         notNull(function, "function is null");
 
         try {
@@ -91,10 +89,9 @@ public class Store {
      * @param key key
      * @param remappingFunction remapping function
      * @return the new value for the key if it exists, else null
-     * @param <T>
+     * @param <T> type
      */
-    public <T> T compute(
-            Object key, BiFunction<? super Object, ? super Object, ?> remappingFunction) {
+    public <T> T compute(K key, BiFunction<K, V, V> remappingFunction) {
         notNull(key, "key is null");
         notNull(remappingFunction, "remappingFunction is null");
 
@@ -111,7 +108,7 @@ public class Store {
      *
      * @return a Collection of values in this Store
      */
-    public Collection<Object> values() {
+    public Collection<V> values() {
         try {
             getReadWriteLock().readLock().lock();
             return map.values();
@@ -128,7 +125,7 @@ public class Store {
      * @return the existing value (or null if an existing value doesn't exist)
      * @param <T> the return type
      */
-    public <T> T put(Object key, Object value) {
+    public <T> T put(K key, V value) {
         notNull(key, "key is null");
 
         try {
@@ -147,7 +144,7 @@ public class Store {
      * @return the existing value (or null if an existing value doesn't exist)
      * @param <T> the return type
      */
-    public <T> T replace(Object key, Object value) {
+    public <T> T replace(K key, V value) {
         notNull(key, "key is null");
 
         try {
@@ -182,7 +179,7 @@ public class Store {
      * @param newValue new value
      * @return true if a value was replaced, else false
      */
-    public boolean replace(Object key, Object oldValue, Object newValue) {
+    public boolean replace(K key, V oldValue, V newValue) {
         notNull(key, "key is null");
 
         try {
@@ -199,7 +196,7 @@ public class Store {
      * @param key key
      * @return true if the key exists, else false
      */
-    public boolean containsKey(Object key) {
+    public boolean containsKey(K key) {
         notNull(key, "key is null");
 
         try {
@@ -217,7 +214,7 @@ public class Store {
      * @return the value
      * @param <T> the return type
      */
-    public <T> T remove(Object key) {
+    public <T> T remove(K key) {
         notNull(key, "key is null");
 
         try {
@@ -236,7 +233,7 @@ public class Store {
      * @return the value
      * @param <T> the return type
      */
-    public <T> T remove(Object key, Class<T> type) {
+    public <T> T remove(K key, Class<T> type) {
         notNull(key, "key is null");
         notNull(type, "type is null");
 
@@ -267,7 +264,7 @@ public class Store {
      *
      * @return a copy of this Store's entry set
      */
-    public Set<Map.Entry<Object, Object>> entrySet() {
+    public Set<Map.Entry<K, V>> entrySet() {
         try {
             getReadWriteLock().readLock().lock();
             return new LinkedHashSet<>(map.entrySet());
@@ -283,7 +280,7 @@ public class Store {
      * @param value value
      * @return true if the key-value mapping was removed, else false
      */
-    public boolean remove(Object key, Object value) {
+    public boolean remove(K key, V value) {
         notNull(key, "key is null");
 
         try {
@@ -300,7 +297,7 @@ public class Store {
      * @param value value
      * @return true if the value exists, else false
      */
-    public boolean containsValue(Object value) {
+    public boolean containsValue(V value) {
         notNull(value, "value is null");
 
         try {
@@ -316,7 +313,7 @@ public class Store {
      *
      * @param map map
      */
-    public void putAll(Map<?, ?> map) {
+    public void putAll(Map<K, V> map) {
         notNull(map, "map is null");
 
         try {
@@ -335,8 +332,7 @@ public class Store {
      * @return the existing value, or result from the remapping function
      * @param <T> the return type
      */
-    public <T> T computeIfPresent(
-            Object key, BiFunction<? super Object, ? super Object, ?> remappingFunction) {
+    public <T> T computeIfPresent(K key, BiFunction<K, V, V> remappingFunction) {
         notNull(key, "key is null");
         notNull(remappingFunction, "remappingFunction is null");
 
@@ -356,7 +352,7 @@ public class Store {
      * @return the existing value
      * @param <T> the return type
      */
-    public <T> T putIfAbsent(Object key, Object value) {
+    public <T> T putIfAbsent(K key, V value) {
         notNull(key, "key is null");
 
         try {
@@ -376,10 +372,7 @@ public class Store {
      * @return the new value or null if there is no key-value mapping
      * @param <T> the return type
      */
-    public <T> T merge(
-            Object key,
-            Object value,
-            BiFunction<? super Object, ? super Object, ?> remappingFunction) {
+    public <T> T merge(K key, V value, BiFunction<V, V, V> remappingFunction) {
         notNull(key, "key is null");
         notNull(remappingFunction, "remappingFunction is null");
 
@@ -396,7 +389,7 @@ public class Store {
      *
      * @return a copy of this Store's key set
      */
-    public Set<Object> keySet() {
+    public Set<K> keySet() {
         try {
             getReadWriteLock().readLock().lock();
             return new LinkedHashSet<>(map.keySet());
@@ -412,7 +405,7 @@ public class Store {
      * @return the value if it exists, else null
      * @param <T> the return type
      */
-    public <T> T get(Object key) {
+    public <T> T get(K key) {
         notNull(key, "key is null");
 
         try {
@@ -431,7 +424,7 @@ public class Store {
      * @return the value if it exists, else null
      * @param <T> the return type
      */
-    public <T> T get(Object key, Class<T> type) {
+    public <T> T get(K key, Class<T> type) {
         notNull(key, "key is null");
         notNull(type, "type is null");
 
@@ -461,7 +454,7 @@ public class Store {
      * @return the value if it exists, else the default value
      * @param <T> the return type
      */
-    public <T> T getOrDefault(Object key, Object defaultValue) {
+    public <T> T getOrDefault(K key, V defaultValue) {
         notNull(key, "key is null");
 
         try {
@@ -481,7 +474,7 @@ public class Store {
      * @return the value if it exists, else the default value
      * @param <T> the return type
      */
-    public <T> T getOrDefault(Object key, Class<T> type, T defaultValue) {
+    public <T> T getOrDefault(K key, Class<T> type, V defaultValue) {
         notNull(key, "key is null");
 
         try {
@@ -500,7 +493,7 @@ public class Store {
      * @return the existing value if it exists, else the result of the mapping function
      * @param <T> the return type
      */
-    public <T> T computeIfAbsent(Object key, Function<? super Object, ?> mappingFunction) {
+    public <T> T computeIfAbsent(K key, Function<K, V> mappingFunction) {
         notNull(key, "key is null");
         notNull(mappingFunction, "mappingFunction is null");
 
@@ -518,7 +511,7 @@ public class Store {
      * @param store store
      * @return this Store
      */
-    public Store merge(Store store) {
+    public Store<K, V> merge(Store<K, V> store) {
         notNull(store, "store is null");
 
         try {
@@ -539,7 +532,7 @@ public class Store {
      * @param map map
      * @return this Store
      */
-    public Store merge(Map<?, ?> map) {
+    public Store<K, V> merge(Map<K, V> map) {
         notNull(map, "map is null");
 
         if (!map.isEmpty()) {
@@ -555,36 +548,14 @@ public class Store {
     }
 
     /**
-     * Merges Properties into the Store
-     *
-     * @param properties properties
-     * @return this Store
-     */
-    public Store merge(Properties properties) {
-        notNull(properties, "properties is null");
-
-        if (!properties.isEmpty()) {
-            try {
-                getReadWriteLock().writeLock().lock();
-                Set<Map.Entry<Object, Object>> entrySet = new HashSet<>(properties.entrySet());
-                entrySet.forEach(entry -> map.put(entry.getKey(), entry.getValue()));
-            } finally {
-                getReadWriteLock().writeLock().unlock();
-            }
-        }
-
-        return this;
-    }
-
-    /**
      * Duplicates this Store
      *
      * @return a duplicate of this Store
      */
-    public Store duplicate() {
+    public Store<K, V> duplicate() {
         try {
             getReadWriteLock().readLock().lock();
-            return new Store(this.map);
+            return new Store<>(this.map);
         } finally {
             getReadWriteLock().readLock().unlock();
         }
@@ -603,7 +574,7 @@ public class Store {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Store store = (Store) o;
+        Store<K, V> store = (Store<K, V>) o;
         return Objects.equals(map, store.map);
     }
 

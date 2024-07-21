@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
+import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
@@ -71,7 +71,8 @@ public class EngineDiscoveryRequestResolver {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(EngineDiscoveryRequestResolver.class);
 
-    private static final DefaultConfiguration CONFIGURATION = DefaultConfiguration.getInstance();
+    private static final DefaultEngineContext DEFAULT_ENGINE_CONTEXT =
+            DefaultEngineContext.getInstance();
 
     private static Comparator<Object> getClassComparator() {
         return Comparator.comparing(clazz -> OrderSupport.getOrder((Class<?>) clazz))
@@ -548,7 +549,10 @@ public class EngineDiscoveryRequestResolver {
             LOGGER.trace("filterClassesByName()");
         }
 
-        Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_CLASS_INCLUDE_REGEX))
+        Optional.ofNullable(
+                        DEFAULT_ENGINE_CONTEXT
+                                .getConfigurationStore()
+                                .get(Constants.TEST_CLASS_INCLUDE_REGEX, String.class))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -571,7 +575,10 @@ public class EngineDiscoveryRequestResolver {
                             }
                         });
 
-        Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_CLASS_EXCLUDE_REGEX))
+        Optional.ofNullable(
+                        DEFAULT_ENGINE_CONTEXT
+                                .getConfigurationStore()
+                                .get(Constants.TEST_CLASS_EXCLUDE_REGEX, String.class))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -605,7 +612,10 @@ public class EngineDiscoveryRequestResolver {
             LOGGER.trace("filterClassesByTag()");
         }
 
-        Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_CLASS_TAG_INCLUDE_REGEX))
+        Optional.ofNullable(
+                        DEFAULT_ENGINE_CONTEXT
+                                .getConfigurationStore()
+                                .get(Constants.TEST_CLASS_TAG_INCLUDE_REGEX, String.class))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -638,7 +648,10 @@ public class EngineDiscoveryRequestResolver {
                             }
                         });
 
-        Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_CLASS_TAG_EXCLUDE_REGEX))
+        Optional.ofNullable(
+                        DEFAULT_ENGINE_CONTEXT
+                                .getConfigurationStore()
+                                .get(Constants.TEST_CLASS_TAG_EXCLUDE_REGEX, String.class))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -677,7 +690,10 @@ public class EngineDiscoveryRequestResolver {
             LOGGER.trace("filterMethodsByName()");
         }
 
-        Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_METHOD_INCLUDE_REGEX))
+        Optional.ofNullable(
+                        DEFAULT_ENGINE_CONTEXT
+                                .getConfigurationStore()
+                                .get(Constants.TEST_METHOD_INCLUDE_REGEX, String.class))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -707,7 +723,10 @@ public class EngineDiscoveryRequestResolver {
                             }
                         });
 
-        Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_METHOD_EXCLUDE_REGEX))
+        Optional.ofNullable(
+                        DEFAULT_ENGINE_CONTEXT
+                                .getConfigurationStore()
+                                .get(Constants.TEST_METHOD_EXCLUDE_REGEX, String.class))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -748,7 +767,10 @@ public class EngineDiscoveryRequestResolver {
             LOGGER.trace("filterMethodsByTag()");
         }
 
-        Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_METHOD_TAG_INCLUDE_REGEX))
+        Optional.ofNullable(
+                        DEFAULT_ENGINE_CONTEXT
+                                .getConfigurationStore()
+                                .get(Constants.TEST_METHOD_TAG_INCLUDE_REGEX, String.class))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -789,7 +811,10 @@ public class EngineDiscoveryRequestResolver {
                             }
                         });
 
-        Optional.ofNullable(CONFIGURATION.getProperty(Constants.TEST_METHOD_TAG_EXCLUDE_REGEX))
+        Optional.ofNullable(
+                        DEFAULT_ENGINE_CONTEXT
+                                .getConfigurationStore()
+                                .get(Constants.TEST_METHOD_TAG_EXCLUDE_REGEX, String.class))
                 .ifPresent(
                         value -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -869,7 +894,11 @@ public class EngineDiscoveryRequestResolver {
             LOGGER.trace("shuffle()");
         }
 
-        if ("true".equals(CONFIGURATION.getProperty(Constants.TEST_CLASS_SHUFFLE))) {
+        if ("true"
+                .equals(
+                        DEFAULT_ENGINE_CONTEXT
+                                .getConfigurationStore()
+                                .get(Constants.TEST_CLASS_SHUFFLE, String.class))) {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("shuffling enabled");
             }

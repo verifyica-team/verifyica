@@ -45,7 +45,7 @@ public class ConcreteTest extends AbstractTest {
         System.out.println(format("    ConcreteTest prepare2()"));
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getObjectStore()).isNotNull();
     }
 
     @Verifyica.BeforeAll
@@ -54,7 +54,7 @@ public class ConcreteTest extends AbstractTest {
                 format("    ConcreteTest beforeAll2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getObjectStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -64,7 +64,7 @@ public class ConcreteTest extends AbstractTest {
                 format("    ConcreteTest beforeEach2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getObjectStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -73,7 +73,7 @@ public class ConcreteTest extends AbstractTest {
         System.out.println(format("    ConcreteTest test2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getObjectStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -83,7 +83,7 @@ public class ConcreteTest extends AbstractTest {
                 format("    ConcreteTest afterEach2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getObjectStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -93,7 +93,7 @@ public class ConcreteTest extends AbstractTest {
                 format("    ConcreteTest afterAll2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getObjectStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -102,6 +102,6 @@ public class ConcreteTest extends AbstractTest {
         System.out.println(format("    ConcreteTest conclude2()"));
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getObjectStore()).isNotNull();
     }
 }

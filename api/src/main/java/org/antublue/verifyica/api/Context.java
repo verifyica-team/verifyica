@@ -20,9 +20,9 @@ package org.antublue.verifyica.api;
 public interface Context {
 
     /**
-     * Returns the Store
+     * Returns the Object Store
      *
-     * @return the Store
+     * @return the Object Store
      */
-    Store getStore();
+    Store<Object, Object> getObjectStore();
 }

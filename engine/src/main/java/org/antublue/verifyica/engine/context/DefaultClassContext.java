@@ -25,7 +25,7 @@ import org.antublue.verifyica.api.Store;
 public class DefaultClassContext implements ClassContext {
 
     private final EngineContext engineContext;
-    private final Store store;
+    private final Store<Object, Object> store;
     private final ImmutableClassContext immutableClassContext;
 
     private Class<?> testClass;
@@ -38,7 +38,7 @@ public class DefaultClassContext implements ClassContext {
      */
     public DefaultClassContext(EngineContext engineContext) {
         this.engineContext = engineContext;
-        this.store = new Store();
+        this.store = new Store<>();
         this.immutableClassContext = new ImmutableClassContext(this);
     }
 
@@ -48,7 +48,7 @@ public class DefaultClassContext implements ClassContext {
     }
 
     @Override
-    public Store getStore() {
+    public Store getObjectStore() {
         return store;
     }
 
