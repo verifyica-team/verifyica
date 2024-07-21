@@ -21,7 +21,7 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 
 /** Class to implement ImmutableClassContext */
-public class ImmutableClassContext implements org.antublue.verifyica.api.ClassContext {
+public class ImmutableClassContext implements ClassContext {
 
     private final ClassContext classContext;
 

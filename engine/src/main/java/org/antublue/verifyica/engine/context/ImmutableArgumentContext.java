@@ -17,12 +17,13 @@
 package org.antublue.verifyica.engine.context;
 
 import org.antublue.verifyica.api.Argument;
+import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
 
 /** Class to implement ImmutableArgumentContext */
 @SuppressWarnings("deprecated")
-public class ArgumentContext implements org.antublue.verifyica.api.ArgumentContext {
+public class ImmutableArgumentContext implements ArgumentContext {
 
     private final ClassContext classContext;
     private final ArgumentContext argumentContext;
@@ -33,7 +34,7 @@ public class ArgumentContext implements org.antublue.verifyica.api.ArgumentConte
      * @param classContext classContext
      * @param argumentContext argumentContext
      */
-    public ArgumentContext(ClassContext classContext, ArgumentContext argumentContext) {
+    public ImmutableArgumentContext(ClassContext classContext, ArgumentContext argumentContext) {
         this.classContext = classContext;
         this.argumentContext = argumentContext;
     }

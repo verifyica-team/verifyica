@@ -51,18 +51,18 @@ public class DefaultArgumentContext implements ArgumentContext {
 
     @Override
     public Argument<?> getArgument() {
-        return getTestArgument();
-    }
-
-    @Override
-    public Argument<?> getTestArgument() {
-        return argument;
+        return getTestArgument(Object.class);
     }
 
     @Override
     public <T> Argument<T> getArgument(Class<T> type) {
         notNull(type, "type is null");
         return getTestArgument(type);
+    }
+
+    @Override
+    public Argument<?> getTestArgument() {
+        return getTestArgument(Object.class);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class DefaultArgumentContext implements ArgumentContext {
     }
 
     /**
-     * Checks if an Object is not null, throwing an IllegalArgumentException is the Object is null.
+     * Checks if an Object is not null, throwing an IllegalArgumentException if the Object is null.
      *
      * @param object object
      * @param message message
