@@ -34,10 +34,9 @@ public class ExampleEngineInterceptor implements EngineInterceptor {
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @return the InterceptorResult
-     * @throws Throwable Throwable
      */
-    public InterceptorResult interceptInitialize(EngineInterceptorContext engineInterceptorContext)
-            throws Throwable {
+    public InterceptorResult interceptInitialize(
+            EngineInterceptorContext engineInterceptorContext) {
         System.out.println(getClass().getName() + " interceptInitialize()");
 
         // Add a global string to the EngineContext Store
@@ -50,10 +49,8 @@ public class ExampleEngineInterceptor implements EngineInterceptor {
      * Method to intercept engine destruction
      *
      * @param engineInterceptorContext engineInterceptorContext
-     * @throws Throwable Throwable
      */
-    public void interceptDestroy(EngineInterceptorContext engineInterceptorContext)
-            throws Throwable {
+    public void interceptDestroy(EngineInterceptorContext engineInterceptorContext) {
         System.out.println(getClass().getName() + " interceptDestroy()");
     }
 }
