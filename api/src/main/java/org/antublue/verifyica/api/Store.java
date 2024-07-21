@@ -25,6 +25,8 @@ public interface Store {
 
     <T> T put(Object key, Object value);
 
+    void replace(Store store);
+
     <T> T computeIfAbsent(Object key, Function<Object, Object> function);
 
     Store merge(Store store);

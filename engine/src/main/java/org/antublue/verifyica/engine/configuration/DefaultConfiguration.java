@@ -23,6 +23,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
 import org.antublue.verifyica.api.Configuration;
 
 public class DefaultConfiguration implements Configuration {
@@ -37,6 +38,8 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public String put(String key, String value) {
+        notNullOrEmpty(key, "key is null", "key is empty");
+
         try {
             getLock().writeLock().lock();
             return map.put(key, value);
@@ -47,6 +50,8 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public String get(String key) {
+        notNullOrEmpty(key, "key is null", "key is empty");
+
         try {
             getLock().readLock().lock();
             return map.get(key);
@@ -57,6 +62,8 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public String getOrDefault(String key, String defaultValue) {
+        notNullOrEmpty(key, "key is null", "key is empty");
+
         try {
             getLock().readLock().lock();
             return map.getOrDefault(key, defaultValue);
@@ -66,7 +73,22 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
+    public String computeIfAbsent(String key, Function<String, String> function) {
+        notNullOrEmpty(key, "key is null", "key is empty");
+        notNull(function, "functio is null");
+
+        try {
+            getLock().writeLock().lock();
+            return map.computeIfAbsent(key, function);
+        } finally {
+            getLock().writeLock().unlock();
+        }
+    }
+
+    @Override
     public boolean containsKey(String key) {
+        notNullOrEmpty(key, "key is null", "key is empty");
+
         try {
             getLock().readLock().lock();
             return map.containsKey(key);
@@ -77,6 +99,8 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public String remove(String key) {
+        notNullOrEmpty(key, "key is null", "key is empty");
+
         try {
             getLock().writeLock().lock();
             return map.remove(key);
@@ -141,5 +165,21 @@ public class DefaultConfiguration implements Configuration {
     @Override
     public int hashCode() {
         return Objects.hashCode(map);
+    }
+
+    private static void notNull(Object object, String message) {
+        if (object == null) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    private static void notNullOrEmpty(String string, String nullMessage, String emptyMessage) {
+        if (string == null) {
+            throw new IllegalArgumentException(nullMessage);
+        }
+
+        if (string.trim().isEmpty()) {
+            throw new IllegalArgumentException(emptyMessage);
+        }
     }
 }

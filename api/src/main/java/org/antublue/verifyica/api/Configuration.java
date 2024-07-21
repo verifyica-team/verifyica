@@ -18,6 +18,7 @@ package org.antublue.verifyica.api;
 
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.function.Function;
 
 public interface Configuration {
 
@@ -26,6 +27,8 @@ public interface Configuration {
     String get(String key);
 
     String getOrDefault(String key, String defaultValue);
+
+    String computeIfAbsent(String key, Function<String, String> function);
 
     boolean containsKey(String key);
 
@@ -37,6 +40,11 @@ public interface Configuration {
 
     void clear();
 
+    /**
+     * Returns a copy of the keySet
+     *
+     * @return a copy of the keySet
+     */
     Set<String> keySet();
 
     ReadWriteLock getLock();

@@ -37,12 +37,15 @@ public class DefaultStore implements Store {
     }
 
     private DefaultStore(TreeMap<Object, Object> map) {
+        notNull(map, "map is null");
         this.map = map;
         readWriteLock = new ReentrantReadWriteLock(true);
     }
 
     @Override
     public <T> T put(Object key, Object value) {
+        notNull(key, "key is null");
+
         try {
             getLock().writeLock().lock();
             return (T) map.put(key, value);
@@ -52,7 +55,25 @@ public class DefaultStore implements Store {
     }
 
     @Override
+    public void replace(Store store) {
+        notNull(store, "store is null");
+
+        try {
+            store.getLock().readLock().lock();
+            getLock().writeLock().lock();
+            clear();
+            merge(store);
+        } finally {
+            getLock().writeLock().unlock();
+            store.getLock().readLock().unlock();
+        }
+    }
+
+    @Override
     public <T> T computeIfAbsent(Object key, Function<Object, Object> function) {
+        notNull(key, "key is null");
+        notNull(function, "function is null");
+
         try {
             getLock().writeLock().lock();
             return (T) map.computeIfAbsent(key, function);
@@ -63,6 +84,8 @@ public class DefaultStore implements Store {
 
     @Override
     public Store merge(Store store) {
+        notNull(store, "store is null");
+
         try {
             store.getLock().readLock().lock();
             getLock().writeLock().lock();
@@ -78,6 +101,8 @@ public class DefaultStore implements Store {
 
     @Override
     public Store merge(Map<Object, Object> map) {
+        notNull(map, "map is null");
+
         try {
             getLock().writeLock().lock();
             this.map.putAll(map);
@@ -89,6 +114,8 @@ public class DefaultStore implements Store {
 
     @Override
     public <T> T get(Object key) {
+        notNull(key, "key is null");
+
         try {
             getLock().readLock().lock();
             return (T) map.get(key);
@@ -99,6 +126,9 @@ public class DefaultStore implements Store {
 
     @Override
     public <T> T get(Object key, Class<T> type) {
+        notNull(key, "key is null");
+        notNull(type, "type is null");
+
         try {
             getLock().readLock().lock();
             return type.cast(map.get(key));
@@ -109,6 +139,8 @@ public class DefaultStore implements Store {
 
     @Override
     public boolean containsKey(Object key) {
+        notNull(key, "key is null");
+
         try {
             getLock().readLock().lock();
             return map.containsKey(key);
@@ -119,6 +151,8 @@ public class DefaultStore implements Store {
 
     @Override
     public <T> T remove(Object key) {
+        notNull(key, "key is null");
+
         try {
             getLock().writeLock().lock();
             return (T) map.remove(key);
@@ -129,6 +163,9 @@ public class DefaultStore implements Store {
 
     @Override
     public <T> T remove(Object key, Class<T> type) {
+        notNull(key, "key is null");
+        notNull(type, "type is null");
+
         try {
             getLock().writeLock().lock();
             return type.cast(map.remove(key));
@@ -203,5 +240,11 @@ public class DefaultStore implements Store {
     @Override
     public int hashCode() {
         return Objects.hashCode(map);
+    }
+
+    private static void notNull(Object object, String message) {
+        if (object == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 }
