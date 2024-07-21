@@ -114,8 +114,12 @@ public interface Store {
      */
     <T> T remove(Object key, Class<T> type);
 
-    /** Clear */
-    void clear();
+    /**
+     * Clear
+     *
+     * @return this
+     */
+    Store clear();
 
     /**
      * Return the size

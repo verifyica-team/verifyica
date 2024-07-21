@@ -125,10 +125,11 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public void clear() {
+    public Configuration clear() {
         try {
             getLock().writeLock().lock();
             map.clear();
+            return this;
         } finally {
             getLock().writeLock().unlock();
         }
@@ -167,12 +168,25 @@ public class DefaultConfiguration implements Configuration {
         return Objects.hashCode(map);
     }
 
+    /**
+     * Check if a Object is not null
+     *
+     * @param object object
+     * @param message message
+     */
     private static void notNull(Object object, String message) {
         if (object == null) {
             throw new IllegalArgumentException(message);
         }
     }
 
+    /**
+     * Check if a String is not null and not blank
+     *
+     * @param string object
+     * @param nullMessage nullMessage
+     * @param emptyMessage emptyMessage
+     */
     private static void notNullOrEmpty(String string, String nullMessage, String emptyMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);

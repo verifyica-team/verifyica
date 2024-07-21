@@ -191,10 +191,11 @@ public class DefaultStore implements Store {
     }
 
     @Override
-    public void clear() {
+    public Store clear() {
         try {
             getLock().writeLock().lock();
             map.clear();
+            return this;
         } finally {
             getLock().writeLock().unlock();
         }
@@ -243,6 +244,12 @@ public class DefaultStore implements Store {
         return Objects.hashCode(map);
     }
 
+    /**
+     * Check if an Object is not null
+     *
+     * @param object object
+     * @param message message
+     */
     private static void notNull(Object object, String message) {
         if (object == null) {
             throw new IllegalArgumentException(message);
