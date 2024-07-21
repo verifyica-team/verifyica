@@ -18,23 +18,18 @@ package org.antublue.verifyica.engine.interceptor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.antublue.verifyica.api.Configuration;
-import org.antublue.verifyica.api.EngineExtension;
 import org.antublue.verifyica.api.interceptor.EngineInterceptor;
-import org.antublue.verifyica.api.interceptor.EngineInterceptorAdapter;
 import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
 import org.antublue.verifyica.api.interceptor.InterceptorResult;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
+import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -48,7 +43,8 @@ public class EngineInterceptorManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EngineInterceptorManager.class);
 
-    private static final Configuration CONFIGURATION = DefaultConfiguration.getInstance();
+    private static final DefaultEngineContext DEFAULT_ENGINE_CONTEXT =
+            DefaultEngineContext.getInstance();
 
     private final Lock lock;
     private final List<EngineInterceptor> engineInterceptors;
@@ -70,21 +66,18 @@ public class EngineInterceptorManager {
                     LOGGER.trace("load()");
                 }
 
-                Set<Class<?>> classSet = new HashSet<>();
+                List<Class<?>> interceptorClasses =
+                        new ArrayList<>(
+                                ClassPathSupport.findClasses(Predicates.ENGINE_INTERCEPTOR_CLASS));
 
-                classSet.addAll(ClassPathSupport.findClasses(Predicates.ENGINE_INTERCEPTOR_CLASS));
-                classSet.addAll(ClassPathSupport.findClasses(Predicates.ENGINE_EXTENSION_CLASS));
-
-                List<Class<?>> classes = new ArrayList<>(classSet);
-
-                filter(classes);
-                OrderSupport.order(classes);
+                filter(interceptorClasses);
+                OrderSupport.order(interceptorClasses);
 
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.trace("engine interceptor count [%d]", classes.size());
+                    LOGGER.trace("engine interceptor count [%d]", interceptorClasses.size());
                 }
 
-                for (Class<?> clazz : classes) {
+                for (Class<?> interceptorClass : interceptorClasses) {
                     if (LOGGER.isTraceEnabled()) {
                         engineInterceptors.forEach(
                                 engineInterceptor ->
@@ -94,13 +87,8 @@ public class EngineInterceptorManager {
                     }
 
                     try {
-                        Object object = ObjectSupport.createObject(clazz);
-                        if (object instanceof EngineInterceptor) {
-                            engineInterceptors.add((EngineInterceptor) object);
-                        } else {
-                            engineInterceptors.add(
-                                    new EngineInterceptorAdapter((EngineExtension) object));
-                        }
+                        Object object = ObjectSupport.createObject(interceptorClass);
+                        engineInterceptors.add((EngineInterceptor) object);
                     } catch (EngineException e) {
                         throw e;
                     } catch (Throwable t) {
@@ -194,7 +182,10 @@ public class EngineInterceptorManager {
      * @param classes classes
      */
     private static void filter(List<Class<?>> classes) {
-        Optional.ofNullable(CONFIGURATION.getProperty(Constants.ENGINE_INTERCEPTORS_INCLUDE_REGEX))
+        Optional.ofNullable(
+                        DEFAULT_ENGINE_CONTEXT
+                                .getConfigurationStore()
+                                .get(Constants.ENGINE_INTERCEPTORS_INCLUDE_REGEX, String.class))
                 .ifPresent(
                         regex -> {
                             if (LOGGER.isTraceEnabled()) {
@@ -221,7 +212,10 @@ public class EngineInterceptorManager {
                             }
                         });
 
-        Optional.ofNullable(CONFIGURATION.getProperty(Constants.ENGINE_INTERCEPTORS_EXCLUDE_REGEX))
+        Optional.ofNullable(
+                        DEFAULT_ENGINE_CONTEXT
+                                .getConfigurationStore()
+                                .get(Constants.ENGINE_INTERCEPTORS_EXCLUDE_REGEX, String.class))
                 .ifPresent(
                         regex -> {
                             if (LOGGER.isTraceEnabled()) {

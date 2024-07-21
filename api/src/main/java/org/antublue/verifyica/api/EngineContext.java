@@ -20,9 +20,9 @@ package org.antublue.verifyica.api;
 public interface EngineContext extends Context {
 
     /**
-     * Returns the engine Configuration
+     * Returns the configuration Store
      *
-     * @return the engine configuration
+     * @return the configuration Store
      */
-    Configuration getConfiguration();
+    Store<String, String> getConfigurationStore();
 }

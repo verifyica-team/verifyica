@@ -88,7 +88,7 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
 
         Preconditions.notNull(executionRequest, "executionRequest is null");
         Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
-        Preconditions.notNull(defaultArgumentContext.getArgument(), "testArgument is null");
+        Preconditions.notNull(defaultArgumentContext.getTestArgument(), "testArgument is null");
 
         stopWatch.reset();
 
@@ -101,7 +101,7 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
         getMetadata()
                 .put(
                         MetadataTestDescriptorConstants.TEST_ARGUMENT,
-                        defaultArgumentContext.getArgument());
+                        defaultArgumentContext.getTestArgument());
         getMetadata().put(MetadataTestDescriptorConstants.TEST_METHOD, testMethod);
         getMetadata()
                 .put(MetadataTestDescriptorConstants.TEST_METHOD_DISPLAY_NAME, getDisplayName());
@@ -154,7 +154,7 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
         getMetadata()
                 .put(
                         MetadataTestDescriptorConstants.TEST_ARGUMENT,
-                        defaultArgumentContext.getArgument());
+                        defaultArgumentContext.getTestArgument());
         getMetadata().put(MetadataTestDescriptorConstants.TEST_METHOD, testMethod);
         getMetadata()
                 .put(MetadataTestDescriptorConstants.TEST_METHOD_DISPLAY_NAME, getDisplayName());
@@ -173,7 +173,7 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
                         this,
                         format(
                                 "Argument [%s] test method [%s] skipped",
-                                defaultArgumentContext.getArgument().getName(),
+                                defaultArgumentContext.getTestArgument().getName(),
                                 testMethod.getName()));
     }
 

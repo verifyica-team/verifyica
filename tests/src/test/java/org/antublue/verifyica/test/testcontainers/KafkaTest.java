@@ -63,7 +63,7 @@ public class KafkaTest {
         Network network = Network.newNetwork();
         network.getId();
 
-        argumentContext.getStore().put("network", network);
+        argumentContext.getObjectStore().put("network", network);
         argumentContext
                 .getTestArgument(KafkaTestEnvironment.class)
                 .getPayload()
@@ -82,7 +82,7 @@ public class KafkaTest {
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
         String message = randomString(16);
-        argumentContext.getStore().put("message", message);
+        argumentContext.getObjectStore().put("message", message);
         info("producing message [%s] to [%s] ...", message, bootstrapServers);
 
         Properties properties = new Properties();
@@ -110,7 +110,7 @@ public class KafkaTest {
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
-        String message = argumentContext.getStore().get("message");
+        String message = argumentContext.getObjectStore().get("message");
 
         info("consuming message from [%s] ...", bootstrapServers);
 
@@ -154,7 +154,7 @@ public class KafkaTest {
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
-        String message = argumentContext.getStore().get("message");
+        String message = argumentContext.getObjectStore().get("message");
 
         info("consuming message from [%s] ...", bootstrapServers);
 
@@ -194,7 +194,7 @@ public class KafkaTest {
 
         argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload().destroy();
 
-        Network network = argumentContext.getStore().remove("network");
+        Network network = argumentContext.getObjectStore().remove("network");
         if (network != null) {
             network.close();
         }

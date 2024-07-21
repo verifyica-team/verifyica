@@ -55,7 +55,7 @@ public class MongoDBTest {
         Network network = Network.newNetwork();
         network.getId();
 
-        argumentContext.getStore().put(NETWORK, network);
+        argumentContext.getObjectStore().put(NETWORK, network);
         argumentContext
                 .getTestArgument(MongoDBTestEnvironment.class)
                 .getPayload()
@@ -68,7 +68,7 @@ public class MongoDBTest {
         info("testing testInsert() ...");
 
         String name = randomString(16);
-        argumentContext.getStore().put("name", name);
+        argumentContext.getObjectStore().put("name", name);
         info("name [%s]", name);
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
@@ -97,7 +97,7 @@ public class MongoDBTest {
     @Verifyica.Order(order = 2)
     public void testQuery(ArgumentContext argumentContext) {
         info("testing testQuery() ...");
-        String name = argumentContext.getStore().get("name");
+        String name = argumentContext.getObjectStore().get("name");
         info("name [%s]", name);
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
@@ -129,7 +129,7 @@ public class MongoDBTest {
 
         argumentContext.getTestArgument(MongoDBTestEnvironment.class).getPayload().destroy();
 
-        Network network = argumentContext.getStore().remove(NETWORK);
+        Network network = argumentContext.getObjectStore().remove(NETWORK);
         if (network != null) {
             network.close();
         }

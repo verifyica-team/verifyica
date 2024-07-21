@@ -100,7 +100,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
         defaultArgumentContext.setTestArgument(testArgument);
 
         Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
-        Preconditions.notNull(defaultArgumentContext.getArgument(), "testArgument is null");
+        Preconditions.notNull(defaultArgumentContext.getTestArgument(), "testArgument is null");
 
         getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
         getMetadata()
@@ -316,7 +316,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
             method.invoke(testInstance, defaultArgumentContext.asImmutable());
         }
 
-        defaultArgumentContext.getStore().clear();
+        defaultArgumentContext.getObjectStore().clear();
 
         if (testArgument instanceof AutoCloseable) {
             ((AutoCloseable) testArgument).close();

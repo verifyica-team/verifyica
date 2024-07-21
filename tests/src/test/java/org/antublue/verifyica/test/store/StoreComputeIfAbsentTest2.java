@@ -21,7 +21,6 @@ import static java.lang.String.format;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Semaphore;
-import java.util.function.Function;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
@@ -46,9 +45,8 @@ public class StoreComputeIfAbsentTest2 {
         Semaphore semaphore =
                 argumentContext
                         .getClassContext()
-                        .getStore()
-                        .computeIfAbsent(
-                                KEY, (Function<Object, Semaphore>) key -> new Semaphore(1));
+                        .getObjectStore()
+                        .computeIfAbsent(KEY, key -> new Semaphore(1));
 
         try {
             semaphore.acquire();
@@ -58,7 +56,7 @@ public class StoreComputeIfAbsentTest2 {
             Thread.sleep(2000);
         } finally {
             semaphore.release();
-            argumentContext.getClassContext().getStore().remove(KEY);
+            argumentContext.getClassContext().getObjectStore().remove(KEY);
         }
     }
 }

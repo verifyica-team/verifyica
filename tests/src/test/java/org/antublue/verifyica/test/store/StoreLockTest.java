@@ -40,7 +40,7 @@ public class StoreLockTest {
 
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
-        Store classContextStore = argumentContext.getClassContext().getStore();
+        Store classContextStore = argumentContext.getClassContext().getObjectStore();
         try {
             classContextStore.getReadWriteLock().writeLock().lock();
             System.out.println(

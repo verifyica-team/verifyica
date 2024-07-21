@@ -18,9 +18,11 @@ package org.antublue.verifyica.maven.plugin.listener;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.Optional;
 import org.antublue.verifyica.api.Argument;
+import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
+import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.descriptor.Metadata;
 import org.antublue.verifyica.engine.descriptor.MetadataTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.MetadataTestDescriptorConstants;
@@ -29,7 +31,6 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.HumanReadableTimeSupport;
 import org.antublue.verifyica.engine.util.AnsiColor;
 import org.antublue.verifyica.engine.util.AnsiColorStringBuilder;
-import org.junit.platform.engine.ConfigurationParameters;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
@@ -63,18 +64,23 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     /** Constructor */
     public StatusEngineExecutionListener() {
-        ConfigurationParameters configurationParameters =
-                DefaultConfiguration.getInstance().asConfigurationParameters();
+        Store<String, String> configurationStore =
+                DefaultEngineContext.getInstance().getConfigurationStore();
 
         consoleLogTiming =
-                configurationParameters.getBoolean(Constants.MAVEN_PLUGIN_LOG_TIMING).orElse(true);
+                Optional.ofNullable(
+                                configurationStore.get(
+                                        Constants.MAVEN_PLUGIN_LOG_TIMING, String.class))
+                        .map(Boolean::parseBoolean)
+                        .orElse(true);
 
         LOGGER.trace(
                 "configuration [%s] = [%b]", Constants.MAVEN_PLUGIN_LOG_TIMING, consoleLogTiming);
 
         consoleLogTimingUnits =
-                configurationParameters
-                        .get(Constants.MAVEN_PLUGIN_TIMING_UNITS)
+                Optional.ofNullable(
+                                configurationStore.get(
+                                        Constants.MAVEN_PLUGIN_TIMING_UNITS, String.class))
                         .orElse("milliseconds");
 
         LOGGER.trace(
@@ -82,8 +88,10 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 Constants.MAVEN_PLUGIN_TIMING_UNITS, consoleLogTimingUnits);
 
         consoleLogTestMessages =
-                configurationParameters
-                        .getBoolean(Constants.MAVEN_PLUGIN_TEST_MESSAGES)
+                Optional.ofNullable(
+                                configurationStore.get(
+                                        Constants.MAVEN_PLUGIN_TEST_MESSAGES, String.class))
+                        .map(Boolean::parseBoolean)
                         .orElse(true);
 
         LOGGER.trace(
@@ -91,8 +99,10 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 Constants.MAVEN_PLUGIN_TEST_MESSAGES, consoleLogTestMessages);
 
         consoleLogPassMessages =
-                configurationParameters
-                        .getBoolean(Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGES)
+                Optional.ofNullable(
+                                configurationStore.get(
+                                        Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGES, String.class))
+                        .map(Boolean::parseBoolean)
                         .orElse(true);
 
         LOGGER.trace(
@@ -100,8 +110,10 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGES, consoleLogPassMessages);
 
         consoleLogSkipMessages =
-                configurationParameters
-                        .getBoolean(Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGES)
+                Optional.ofNullable(
+                                configurationStore.get(
+                                        Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGES, String.class))
+                        .map(Boolean::parseBoolean)
                         .orElse(true);
 
         LOGGER.trace(
@@ -112,8 +124,10 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 new AnsiColorStringBuilder()
                         .append(AnsiColor.TEXT_WHITE_BRIGHT)
                         .append(
-                                configurationParameters
-                                        .get(Constants.MAVEN_PLUGIN_LOG_TEST_MESSAGE)
+                                Optional.ofNullable(
+                                                configurationStore.get(
+                                                        Constants.MAVEN_PLUGIN_LOG_TEST_MESSAGE,
+                                                        String.class))
                                         .orElse("TEST"))
                         .color(AnsiColor.TEXT_RESET)
                         .toString();
@@ -122,8 +136,9 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 new AnsiColorStringBuilder()
                         .color(AnsiColor.TEXT_GREEN_BOLD_BRIGHT)
                         .append(
-                                configurationParameters
-                                        .get(Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGE)
+                                Optional.ofNullable(
+                                                configurationStore.get(
+                                                        Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGE))
                                         .orElse("PASS"))
                         .color(AnsiColor.TEXT_RESET)
                         .toString();
@@ -132,8 +147,9 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 new AnsiColorStringBuilder()
                         .color(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
                         .append(
-                                configurationParameters
-                                        .get(Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGE)
+                                Optional.ofNullable(
+                                                configurationStore.get(
+                                                        Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGE))
                                         .orElse("SKIP"))
                         .color(AnsiColor.TEXT_RESET)
                         .toString();
@@ -142,8 +158,9 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 new AnsiColorStringBuilder()
                         .color(AnsiColor.TEXT_RED_BOLD_BRIGHT)
                         .append(
-                                configurationParameters
-                                        .get(Constants.MAVEN_PLUGIN_LOG_FAIL_MESSAGE)
+                                Optional.ofNullable(
+                                                configurationStore.get(
+                                                        Constants.MAVEN_PLUGIN_LOG_FAIL_MESSAGE))
                                         .orElse("FAIL"))
                         .color(AnsiColor.TEXT_RESET)
                         .toString();

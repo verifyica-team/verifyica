@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
-import org.antublue.verifyica.engine.context.ImmutableEngineContext;
+import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.descriptor.ToExecutableTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutor;
@@ -73,7 +73,7 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
 
             ExecutorService executorService = null;
             AtomicReference<CountDownLatch> countDownLatch = new AtomicReference<>();
-            EngineContext engineContext = ImmutableEngineContext.getInstance();
+            EngineContext engineContext = DefaultEngineContext.getInstance();
 
             try {
                 ConfigurationParameters configurationParameters =
@@ -148,7 +148,7 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
                     // DO NOTHING
                 }
 
-                engineContext.getStore().clear();
+                engineContext.getObjectStore().clear();
 
                 if (executorService != null) {
                     executorService.shutdown();

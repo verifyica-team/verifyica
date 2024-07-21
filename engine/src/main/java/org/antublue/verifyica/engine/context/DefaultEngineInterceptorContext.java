@@ -24,7 +24,6 @@ import org.junit.platform.commons.util.Preconditions;
 public class DefaultEngineInterceptorContext implements EngineInterceptorContext {
 
     private final EngineContext engineContext;
-    private final EngineInterceptorContext immutableEngineInterceptorContext;
 
     /**
      * Constructor
@@ -35,20 +34,10 @@ public class DefaultEngineInterceptorContext implements EngineInterceptorContext
         Preconditions.notNull(engineContext, "engineContext is null");
 
         this.engineContext = engineContext;
-        this.immutableEngineInterceptorContext = new ImmutableEngineInterceptorContext(this);
     }
 
     @Override
     public EngineContext getEngineContext() {
         return engineContext;
-    }
-
-    /**
-     * Method to get an immutable version
-     *
-     * @return an immutable version
-     */
-    public EngineInterceptorContext asImmutable() {
-        return immutableEngineInterceptorContext;
     }
 }

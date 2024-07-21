@@ -23,7 +23,7 @@ import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
 import org.antublue.verifyica.api.interceptor.InterceptorResult;
 
 /** Class to implement ExampleEngineInterceptor */
-@Verifyica.Order(order = 0)
+@Verifyica.Order(order = 2)
 public class ExampleEngineInterceptor implements EngineInterceptor {
 
     public static final String KEY = ExampleEngineInterceptor.class.getName() + ".key";
@@ -40,7 +40,7 @@ public class ExampleEngineInterceptor implements EngineInterceptor {
         System.out.println(getClass().getName() + " interceptInitialize()");
 
         // Add a global string to the EngineContext Store
-        engineInterceptorContext.getEngineContext().getStore().put(KEY, VALUE);
+        engineInterceptorContext.getEngineContext().getObjectStore().put(KEY, VALUE);
 
         return InterceptorResult.PROCEED;
     }

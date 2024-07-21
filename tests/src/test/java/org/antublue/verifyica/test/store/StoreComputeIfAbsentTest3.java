@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Function;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
@@ -47,11 +46,8 @@ public class StoreComputeIfAbsentTest3 {
         ReentrantReadWriteLock readWriteLock =
                 argumentContext
                         .getClassContext()
-                        .getStore()
-                        .computeIfAbsent(
-                                KEY,
-                                (Function<Object, ReentrantReadWriteLock>)
-                                        key -> new ReentrantReadWriteLock(true));
+                        .getObjectStore()
+                        .computeIfAbsent(KEY, key -> new ReentrantReadWriteLock(true));
 
         try {
             readWriteLock.writeLock().lock();
@@ -61,9 +57,9 @@ public class StoreComputeIfAbsentTest3 {
             Thread.sleep(2000);
         } finally {
             readWriteLock.writeLock().unlock();
-            argumentContext.getClassContext().getStore().remove(KEY);
+            argumentContext.getClassContext().getObjectStore().remove(KEY);
         }
 
-        assertThat(argumentContext.getClassContext().getStore().isEmpty()).isTrue();
+        assertThat(argumentContext.getClassContext().getObjectStore().isEmpty()).isTrue();
     }
 }
