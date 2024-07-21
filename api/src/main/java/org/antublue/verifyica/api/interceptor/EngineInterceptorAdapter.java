@@ -17,7 +17,6 @@
 package org.antublue.verifyica.api.interceptor;
 
 import org.antublue.verifyica.api.EngineExtension;
-import org.junit.platform.commons.util.Preconditions;
 
 /** Class to implement EngineInterceptorAdapter */
 public class EngineInterceptorAdapter implements EngineInterceptor {
@@ -30,28 +29,45 @@ public class EngineInterceptorAdapter implements EngineInterceptor {
      * @param engineExtension engineExtension
      */
     public EngineInterceptorAdapter(EngineExtension engineExtension) {
-        Preconditions.notNull(engineExtension, "engineExtension is null");
+        notNull(engineExtension, "engineExtension is null");
 
         this.engineExtension = engineExtension;
     }
 
-    @Override
-    public void intercept(EngineInterceptorContext engineInterceptorContext) throws Throwable {
-        switch (engineInterceptorContext.getLifeCycle()) {
-            case INITIALIZE:
-                {
-                    engineExtension.initialize(engineInterceptorContext.getEngineContext());
-                    break;
-                }
-            case DESTROY:
-                {
-                    engineExtension.destroy(engineInterceptorContext.getEngineContext());
-                    break;
-                }
-            default:
-                {
-                    // DO NOTHING
-                }
+    /**
+     * Method to intercept engine initialization
+     *
+     * @param engineInterceptorContext engineInterceptorContext
+     * @return the InterceptorResult
+     * @throws Throwable Throwable
+     */
+    public InterceptorResult interceptInitialize(EngineInterceptorContext engineInterceptorContext)
+            throws Throwable {
+        engineExtension.initialize(engineInterceptorContext.getEngineContext());
+        return InterceptorResult.PROCEED;
+    }
+
+    /**
+     * Method to intercept engine destruction
+     *
+     * @param engineInterceptorContext engineInterceptorContext
+     * @return the InterceptorResult
+     * @throws Throwable Throwable
+     */
+    public void interceptDestroy(EngineInterceptorContext engineInterceptorContext)
+            throws Throwable {
+        engineExtension.destroy(engineInterceptorContext.getEngineContext());
+    }
+
+    /**
+     * Checks if an Object is not null, throwing an IllegalArgumentException is the Object is null.
+     *
+     * @param object object
+     * @param message message
+     */
+    private static void notNull(Object object, String message) {
+        if (object == null) {
+            throw new IllegalArgumentException(message);
         }
     }
 }

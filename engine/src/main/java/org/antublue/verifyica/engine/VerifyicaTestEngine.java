@@ -21,8 +21,9 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
+import org.antublue.verifyica.api.interceptor.InterceptorResult;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
 import org.antublue.verifyica.engine.context.ImmutableEngineContext;
@@ -129,16 +130,20 @@ public class VerifyicaTestEngine implements TestEngine {
         DefaultEngineInterceptorContext defaultEngineInterceptorContext =
                 new DefaultEngineInterceptorContext(immutableEngineContext);
 
-        defaultEngineInterceptorContext.setLifeCycle(EngineInterceptorContext.LifeCycle.INITIALIZE);
-
         ThrowableCollector throwableCollector = new ThrowableCollector();
+
+        AtomicReference<InterceptorResult> atomicReferenceInterceptorResult =
+                new AtomicReference<>();
 
         throwableCollector.execute(
                 () ->
-                        EngineInterceptorManager.getInstance()
-                                .initialize(defaultEngineInterceptorContext.asImmutable()));
+                        atomicReferenceInterceptorResult.set(
+                                EngineInterceptorManager.getInstance()
+                                        .initialize(
+                                                defaultEngineInterceptorContext.asImmutable())));
 
-        if (throwableCollector.isEmpty()) {
+        if (atomicReferenceInterceptorResult.get() == InterceptorResult.PROCEED
+                && throwableCollector.isEmpty()) {
             throwableCollector.execute(
                     () -> {
                         ExecutionRequestExecutor executionRequestExecutor =
@@ -147,8 +152,6 @@ public class VerifyicaTestEngine implements TestEngine {
                         executionRequestExecutor.await();
                     });
         }
-
-        defaultEngineInterceptorContext.setLifeCycle(EngineInterceptorContext.LifeCycle.DESTROY);
 
         throwableCollector.execute(
                 () ->

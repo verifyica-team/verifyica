@@ -16,12 +16,11 @@
 
 package org.antublue.verifyica.test.interceptor;
 
-import static java.lang.String.format;
-
 import java.util.UUID;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
+import org.antublue.verifyica.api.interceptor.InterceptorResult;
 
 /** Class to implement ExampleEngineInterceptor */
 @Verifyica.Order(order = 0)
@@ -30,28 +29,31 @@ public class ExampleEngineInterceptor implements EngineInterceptor {
     public static final String KEY = ExampleEngineInterceptor.class.getName() + ".key";
     public static final String VALUE = UUID.randomUUID().toString();
 
-    @Override
-    public void intercept(EngineInterceptorContext engineInterceptorContext) throws Throwable {
-        System.out.println(
-                format(
-                        "%s intercept(%s)",
-                        getClass().getName(), engineInterceptorContext.getLifeCycle()));
+    /**
+     * Method to intercept engine initialization
+     *
+     * @param engineInterceptorContext engineInterceptorContext
+     * @return the InterceptorResult
+     * @throws Throwable Throwable
+     */
+    public InterceptorResult interceptInitialize(EngineInterceptorContext engineInterceptorContext)
+            throws Throwable {
+        System.out.println(getClass().getName() + " interceptInitialize()");
 
-        switch (engineInterceptorContext.getLifeCycle()) {
-            case INITIALIZE:
-                {
-                    engineInterceptorContext.getEngineContext().getStore().put(KEY, VALUE);
-                    break;
-                }
-            case DESTROY:
-                {
-                    engineInterceptorContext.getEngineContext().getStore().remove(KEY);
-                    break;
-                }
-            default:
-                {
-                    // DO NOTHING
-                }
-        }
+        // Add a global string to the EngineContext Store
+        engineInterceptorContext.getEngineContext().getStore().put(KEY, VALUE);
+
+        return InterceptorResult.PROCEED;
+    }
+
+    /**
+     * Method to intercept engine destruction
+     *
+     * @param engineInterceptorContext engineInterceptorContext
+     * @throws Throwable Throwable
+     */
+    public void interceptDestroy(EngineInterceptorContext engineInterceptorContext)
+            throws Throwable {
+        System.out.println(getClass().getName() + " interceptDestroy()");
     }
 }
