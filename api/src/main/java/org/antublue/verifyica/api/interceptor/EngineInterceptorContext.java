@@ -18,7 +18,7 @@ package org.antublue.verifyica.api.interceptor;
 
 import org.antublue.verifyica.api.EngineContext;
 
-/** Interface to implement EngineInvocationContext */
+/** Interface to implement EngineInterceptorContext */
 public interface EngineInterceptorContext {
 
     /**
