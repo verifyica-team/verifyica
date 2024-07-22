@@ -48,7 +48,8 @@ public class DefaultConfiguration implements Configuration {
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
 
-    private boolean IS_TRACE_ENABLED;
+    private static final boolean IS_TRACE_ENABLED =
+            Constants.TRUE.equals(System.getenv().get(VERIFYICA_CONFIGURATION_TRACE));
 
     private final Map<String, String> map;
     private final ReadWriteLock readWriteLock;
@@ -207,25 +208,25 @@ public class DefaultConfiguration implements Configuration {
 
     /** Method to load configuration */
     private void load() {
+        if (IS_TRACE_ENABLED) {
+            trace("load()");
+        }
+
         try {
             // Get the properties file from a system property
             Optional<File> optional =
                     Optional.ofNullable(System.getProperties().get(VERIFYICA_PROPERTIES_FILENAME))
                             .map(value -> new File(value.toString()).getAbsoluteFile());
 
-            // If a system property didn't exist, scan the current directory back to the root
-            // directory
+            // If a system property didn't exist, scan from the
+            // current directory to the root directory
             if (!optional.isPresent()) {
                 optional = find(Paths.get("."), VERIFYICA_PROPERTIES_FILENAME);
             }
 
             if (optional.isPresent()) {
                 if (IS_TRACE_ENABLED) {
-                    trace(
-                            VERIFYICA_CONFIGURATION_TRACE
-                                    + " ["
-                                    + optional.get().getAbsolutePath()
-                                    + "]");
+                    trace("loading [" + optional.get().getAbsolutePath() + "]");
                 }
 
                 Properties properties = new Properties();
@@ -235,23 +236,25 @@ public class DefaultConfiguration implements Configuration {
                     properties.load(reader);
                 }
 
-                properties.forEach(
-                        (key, value) -> {
-                            put((String) key, (String) value);
-                        });
+                if (IS_TRACE_ENABLED) {
+                    trace("loaded [" + optional.get().getAbsolutePath() + "]");
+                }
 
-                put(VERIFYICA_CONFIGURATION_TRACE, optional.get().getAbsolutePath());
+                properties.forEach((key, value) -> map.put((String) key, (String) value));
+
+                map.put(VERIFYICA_PROPERTIES_FILENAME, optional.get().getAbsolutePath());
+            } else {
+                if (IS_TRACE_ENABLED) {
+                    trace("no properties file found");
+                }
             }
         } catch (IOException e) {
             throw new EngineConfigurationException("Exception loading properties", e);
         }
 
-        if (Constants.TRUE.equals(System.getenv().get(VERIFYICA_CONFIGURATION_TRACE))) {
-            IS_TRACE_ENABLED = true;
-        }
-
         if (IS_TRACE_ENABLED) {
-            map.forEach((key, value) -> trace(key + " = [" + value + "]"));
+            trace("configuration properties...");
+            map.keySet().forEach((key) -> trace("  [" + key + "] = [" + map.get(key) + "]"));
         }
     }
 
@@ -267,8 +270,19 @@ public class DefaultConfiguration implements Configuration {
         Path currentPath = path.toAbsolutePath().normalize();
 
         while (true) {
+            if (IS_TRACE_ENABLED) {
+                String currentPathString = currentPath.toString();
+                if (!currentPathString.endsWith("/")) {
+                    currentPathString += "/";
+                }
+                trace("searching path [" + currentPathString + "]");
+            }
+
             File file = new File(currentPath.toAbsolutePath() + File.separator + filename);
             if (file.exists() && file.isFile() && file.canRead()) {
+                if (IS_TRACE_ENABLED) {
+                    trace("found [" + file.getAbsoluteFile() + "]");
+                }
                 return Optional.of(file);
             }
 
@@ -288,7 +302,7 @@ public class DefaultConfiguration implements Configuration {
      *
      * @param message message
      */
-    private void trace(String message) {
+    private static void trace(String message) {
         if (IS_TRACE_ENABLED) {
             String dateTime;
 

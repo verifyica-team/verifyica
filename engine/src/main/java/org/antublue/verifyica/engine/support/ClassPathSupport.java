@@ -41,6 +41,7 @@ import org.junit.platform.commons.support.ReflectionSupport;
 import org.junit.platform.commons.util.Preconditions;
 
 /** Class to implement ClassPathSupport */
+@SuppressWarnings("deprecated")
 public class ClassPathSupport {
 
     private static final ReentrantLock LOCK = new ReentrantLock(true);
