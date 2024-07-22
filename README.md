@@ -74,11 +74,6 @@ for (TestClass testClass : TestClasses) {
 }
 ```
 
-Where ...
-
-- test classes are executed in multi-threads
-- test arguments are executed in multi-threads (if configured.)
-
 # Basic example
 
 Basic example test that will execute a set of tests against an environment.
