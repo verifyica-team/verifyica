@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.antublue.verifyica</groupId>
     <artifactId>engine</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.3</version>
     <packaging>jar</packaging>
     <name>Verifyica Engine</name>
     <description>Verifyica Engine</description>
@@ -336,7 +336,7 @@
         <dependency>
             <groupId>org.antublue.verifyica</groupId>
             <artifactId>api</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>0.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
