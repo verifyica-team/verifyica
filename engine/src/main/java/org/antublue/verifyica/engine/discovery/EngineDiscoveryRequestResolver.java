@@ -20,7 +20,6 @@ import static org.junit.platform.engine.Filter.composeFilters;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -39,11 +38,13 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
+import org.antublue.verifyica.engine.context.DefaultEngineDiscoveryInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.exception.UncheckedClassNotFoundException;
+import org.antublue.verifyica.engine.interceptor.EngineInterceptorManager;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ClassPathSupport;
@@ -117,6 +118,19 @@ public class EngineDiscoveryRequestResolver {
             filterClassesByTag(classMethodMap);
             filterMethodsByName(classMethodMap);
             filterMethodsByTag(classMethodMap);
+
+            List<Class<?>> classes = new ArrayList<>(classMethodMap.keySet());
+            classes.addAll(classArgumentIndexMap.keySet());
+
+            DefaultEngineDiscoveryInterceptorContext defaultEngineDiscoveryInterceptorContext =
+                    new DefaultEngineDiscoveryInterceptorContext(
+                            DefaultEngineContext.getInstance(), classes);
+
+            EngineInterceptorManager.getInstance()
+                    .discovery(defaultEngineDiscoveryInterceptorContext);
+
+            classMethodMap.entrySet().removeIf(entry -> !classes.contains(entry.getKey()));
+            classArgumentIndexMap.entrySet().removeIf(entry -> !classes.contains(entry.getKey()));
 
             for (Class<?> testClass : classMethodMap.keySet()) {
                 Method argumentSupplierMethod = getArgumentSupplierMethod(testClass);
@@ -202,7 +216,6 @@ public class EngineDiscoveryRequestResolver {
             }
 
             prune(engineDescriptor);
-            shuffle(engineDescriptor);
         } catch (EngineException e) {
             throw e;
         } catch (Throwable t) {
@@ -881,42 +894,6 @@ public class EngineDiscoveryRequestResolver {
                 LOGGER.trace("pruned testDescriptor [%s]", testDescriptor);
             }
             testDescriptor.removeFromHierarchy();
-        }
-    }
-
-    /**
-     * Method to shuffle or sort an engine descriptor's children
-     *
-     * @param engineDescriptor engineDescriptor
-     */
-    private static void shuffle(EngineDescriptor engineDescriptor) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("shuffle()");
-        }
-
-        if ("true"
-                .equals(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_CLASS_SHUFFLE))) {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("shuffling enabled");
-            }
-
-            /*
-            engineDescriptor.getChildren() returns an
-            unmodifiable list, so we have to create a copy
-            of the list, remove all children from the engineDescriptor,
-            shuffle our copy of the list, then add our list
-            back to the engineDescriptor
-            */
-
-            List<TestDescriptor> testDescriptors = new ArrayList<>(engineDescriptor.getChildren());
-            testDescriptors.forEach(engineDescriptor::removeChild);
-
-            Collections.shuffle(testDescriptors);
-
-            testDescriptors.forEach(engineDescriptor::addChild);
         }
     }
 }

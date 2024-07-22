@@ -25,6 +25,9 @@ public final class Constants {
     public static final String TRUE = "true";
 
     /** Configuration constant */
+    public static final String FALSE = "false";
+
+    /** Configuration constant */
     public static final String PREFIX = "verifyica";
 
     /** Configuration constant */
@@ -57,7 +60,7 @@ public final class Constants {
             ENGINE_INTERCEPTORS + ".exclude.regex";
 
     /** Configuration constant */
-    public static final String TEST_CLASS_SHUFFLE = PREFIX + ".test.class.shuffle";
+    public static final String ENGINE_TEST_CLASS_SHUFFLE = ENGINE + ".test.class.shuffle";
 
     /** Configuration constant */
     public static final String TEST_CLASS_INCLUDE_REGEX = PREFIX + ".test.class.include.regex";

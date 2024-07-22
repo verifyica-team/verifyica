@@ -25,6 +25,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.antublue.verifyica.api.interceptor.EngineDiscoveryInterceptorContext;
 import org.antublue.verifyica.api.interceptor.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
 import org.antublue.verifyica.api.interceptor.InterceptorResult;
@@ -66,18 +67,35 @@ public class EngineInterceptorManager {
                     LOGGER.trace("load()");
                 }
 
-                List<Class<?>> interceptorClasses =
+                // Load internal engine interceptors
+                List<Class<?>> internalEngineInterceptorClasses =
                         new ArrayList<>(
-                                ClassPathSupport.findClasses(Predicates.ENGINE_INTERCEPTOR_CLASS));
+                                ClassPathSupport.findClasses(
+                                        Predicates.ENGINE_INTERNAL_INTERCEPTOR_CLASS));
 
-                filter(interceptorClasses);
-                OrderSupport.order(interceptorClasses);
+                // Load external engine interceptors
+                List<Class<?>> externalEngineInterceptorClasses =
+                        new ArrayList<>(
+                                ClassPathSupport.findClasses(
+                                        Predicates.ENGINE_EXTERNAL_INTERCEPTOR_CLASS));
+
+                // Filter external engine interceptors
+                filter(externalEngineInterceptorClasses);
+
+                // Order engine interceptors
+                OrderSupport.order(internalEngineInterceptorClasses);
+                OrderSupport.order(externalEngineInterceptorClasses);
+
+                // Combine both internal and external engine interceptors
+                List<Class<?>> engineInterceptorClasses =
+                        new ArrayList<>(internalEngineInterceptorClasses);
+                engineInterceptorClasses.addAll(externalEngineInterceptorClasses);
 
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.trace("engine interceptor count [%d]", interceptorClasses.size());
+                    LOGGER.trace("engine interceptor count [%d]", engineInterceptors.size());
                 }
 
-                for (Class<?> interceptorClass : interceptorClasses) {
+                for (Class<?> interceptorClass : engineInterceptorClasses) {
                     if (LOGGER.isTraceEnabled()) {
                         engineInterceptors.forEach(
                                 engineInterceptor ->
@@ -101,6 +119,43 @@ public class EngineInterceptorManager {
         } finally {
             lock.unlock();
         }
+    }
+
+    /**
+     * Method to invoke engine interceptors
+     *
+     * @param engineDiscoveryInterceptorContext engineDiscoveryInterceptorContext
+     * @return the InterceptorResult
+     * @throws Throwable Throwable
+     */
+    public InterceptorResult discovery(
+            EngineDiscoveryInterceptorContext engineDiscoveryInterceptorContext) throws Throwable {
+        load();
+
+        InterceptorResult interceptorResult = InterceptorResult.PROCEED;
+
+        for (EngineInterceptor engineInterceptor : engineInterceptors) {
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace(
+                        "engine interceptor [%s] discovery()",
+                        engineInterceptor.getClass().getName());
+            }
+
+            interceptorResult =
+                    engineInterceptor.interceptDiscovery(engineDiscoveryInterceptorContext);
+
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace(
+                        "engine interceptor [%s] discovery() result [%s]",
+                        engineInterceptor.getClass().getName(), interceptorResult);
+            }
+
+            if (interceptorResult != InterceptorResult.PROCEED) {
+                break;
+            }
+        }
+
+        return interceptorResult;
     }
 
     /**

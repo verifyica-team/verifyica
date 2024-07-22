@@ -21,6 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.EngineInterceptor;
+import org.antublue.verifyica.engine.interceptor.InternalEngineInterceptor;
 import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.MethodSupport;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
@@ -28,8 +29,8 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 /** Class to implement Predicates */
 public class Predicates {
 
-    /** Predicate to filter test engine invocation interceptor classes */
-    public static final Predicate<Class<?>> ENGINE_INTERCEPTOR_CLASS =
+    /** Predicate to filter test engine internal interceptor classes */
+    public static final Predicate<Class<?>> ENGINE_INTERNAL_INTERCEPTOR_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
@@ -37,6 +38,20 @@ public class Predicates {
                         && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
+                        && clazz.isAnnotationPresent(InternalEngineInterceptor.class)
+                        && EngineInterceptor.class.isAssignableFrom(clazz);
+            };
+
+    /** Predicate to filter test engine interceptor classes */
+    public static final Predicate<Class<?>> ENGINE_EXTERNAL_INTERCEPTOR_CLASS =
+            clazz -> {
+                int modifiers = clazz.getModifiers();
+                return Modifier.isPublic(modifiers)
+                        && !Modifier.isAbstract(modifiers)
+                        && !Modifier.isStatic(modifiers)
+                        && ClassSupport.hasDefaultConstructor(clazz)
+                        && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
+                        && !clazz.isAnnotationPresent(InternalEngineInterceptor.class)
                         && EngineInterceptor.class.isAssignableFrom(clazz);
             };
 

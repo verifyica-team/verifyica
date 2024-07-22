@@ -20,6 +20,18 @@ package org.antublue.verifyica.api.interceptor;
 public interface EngineInterceptor {
 
     /**
+     * Method to intercept engine test discovery
+     *
+     * @param engineDiscoveryInterceptorContext engineDiscoveryInterceptorContext
+     * @return the InterceptorResult
+     * @throws Throwable Throwable
+     */
+    default InterceptorResult interceptDiscovery(
+            EngineDiscoveryInterceptorContext engineDiscoveryInterceptorContext) throws Throwable {
+        return InterceptorResult.PROCEED;
+    }
+
+    /**
      * Method to intercept engine initialization
      *
      * @param engineInterceptorContext engineInterceptorContext

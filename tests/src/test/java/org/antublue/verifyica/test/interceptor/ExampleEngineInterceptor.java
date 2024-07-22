@@ -17,39 +17,44 @@
 package org.antublue.verifyica.test.interceptor;
 
 import java.util.UUID;
-import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.interceptor.EngineDiscoveryInterceptorContext;
 import org.antublue.verifyica.api.interceptor.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
 import org.antublue.verifyica.api.interceptor.InterceptorResult;
 
 /** Class to implement ExampleEngineInterceptor */
-@Verifyica.Order(order = 2)
 public class ExampleEngineInterceptor implements EngineInterceptor {
 
     public static final String KEY = ExampleEngineInterceptor.class.getName() + ".key";
     public static final String VALUE = UUID.randomUUID().toString();
 
-    /**
-     * Method to intercept engine initialization
-     *
-     * @param engineInterceptorContext engineInterceptorContext
-     * @return the InterceptorResult
-     */
+    @Override
+    public InterceptorResult interceptDiscovery(
+            EngineDiscoveryInterceptorContext engineDiscoveryInterceptorContext) {
+        System.out.println(getClass().getName() + " interceptDiscovery()");
+
+        // Print all test classes that were discovered
+        engineDiscoveryInterceptorContext
+                .getTestClasses()
+                .forEach(
+                        testClass ->
+                                System.out.println("test class [" + testClass.getName() + "]"));
+
+        return InterceptorResult.PROCEED;
+    }
+
+    @Override
     public InterceptorResult interceptInitialize(
             EngineInterceptorContext engineInterceptorContext) {
         System.out.println(getClass().getName() + " interceptInitialize()");
 
-        // Add a global string to the EngineContext Store
+        // Add a global string to the EngineContext Store for EngineInterceptorTest
         engineInterceptorContext.getEngineContext().getStore().put(KEY, VALUE);
 
         return InterceptorResult.PROCEED;
     }
 
-    /**
-     * Method to intercept engine destruction
-     *
-     * @param engineInterceptorContext engineInterceptorContext
-     */
+    @Override
     public void interceptDestroy(EngineInterceptorContext engineInterceptorContext) {
         System.out.println(getClass().getName() + " interceptDestroy()");
     }
