@@ -58,7 +58,7 @@ for (TestClass testClass : TestClasses) {
                
                   execute @Verifyica.BeforeEach methods
                   
-                  execute test method
+                      execute test method
                   
                   execute @Verifyica.AfterEach methods
                }
