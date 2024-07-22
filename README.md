@@ -56,10 +56,9 @@ for (TestClass testClass : TestClasses) {
               
                for (test method : Test methods) {
                
-                  execute @Verifyica.BeforeEach methods {
+                  execute @Verifyica.BeforeEach methods
                   
-                      execute test method
-                  }
+                  execute test method
                   
                   execute @Verifyica.AfterEach methods
                }
