@@ -92,6 +92,11 @@ public class EnvironmentTest {
     return environments;
   }
 
+  @Verifyica.Prepare
+  public static void prepare(ClassContext classContext) {
+    // ... initialize any static values ...
+  }
+
   @Verifyica.BeforeAll
   public void beforeAll(ArgumentContext argumentContext) throws Throwable {
     Argument<Environment> argument = argumentContext.getTestArgument(Environment.class);
@@ -138,6 +143,11 @@ public class EnvironmentTest {
     argument.getPayload().destroy();
 
     System.out.println("[" + argument.getName() + "] destroyed");
+  }
+
+  @Verifyica.Conclude
+  public static void conclude(ClassContext classContext) {
+    // ... destroy/cleanup any static values ...
   }
 
   /** Class to represent an environment */

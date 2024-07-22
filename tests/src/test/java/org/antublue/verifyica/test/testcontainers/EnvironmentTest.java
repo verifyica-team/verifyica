@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Properties;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example */
@@ -52,6 +53,11 @@ public class EnvironmentTest {
         // ... more environments ...
 
         return environments;
+    }
+
+    @Verifyica.Prepare
+    public static void prepare(ClassContext classContext) {
+        // ... initialize any static values ...
     }
 
     @Verifyica.BeforeAll
@@ -100,6 +106,11 @@ public class EnvironmentTest {
         argument.getPayload().destroy();
 
         System.out.println("[" + argument.getName() + "] destroyed");
+    }
+
+    @Verifyica.Conclude
+    public static void conclude(ClassContext classContext) {
+        // ... destroy/cleanup any static values ...
     }
 
     /** Class to represent an environment */

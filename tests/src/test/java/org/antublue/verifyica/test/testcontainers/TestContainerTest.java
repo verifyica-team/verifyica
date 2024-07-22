@@ -161,10 +161,11 @@ public class TestContainerTest {
 
             // Define the generic container with the network
             this.genericContainer = null;
-            //this.genericContainer = new GenericContainer<>("<DOCKER IMAGE NAME>").withNetwork(network);
+            // this.genericContainer = new GenericContainer<>("<DOCKER IMAGE
+            // NAME>").withNetwork(network);
 
             // Start the generic container
-            //this.genericContainer.start();
+            // this.genericContainer.start();
         }
 
         /**
