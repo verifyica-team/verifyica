@@ -23,11 +23,17 @@ import java.util.Properties;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 
 /** Example */
-public class EnvironmentTest {
+public class TestContainerTest {
 
-    @Verifyica.ArgumentSupplier
+    // The network key
+    private static final String NETWORK = "network";
+
+    /* ... using parallelism = 2 to test 2 environments in parallel ... */
+    @Verifyica.ArgumentSupplier(parallelism = 2)
     public static Collection<Argument<Environment>> arguments() {
         Collection<Argument<Environment>> environments = new ArrayList<>();
 
@@ -49,6 +55,15 @@ public class EnvironmentTest {
 
         environments.add(Argument.of(name, environment));
 
+        // Create environment 3
+
+        properties = new Properties();
+        // ... configure properties for the environment ...
+        name = "Test Environment 3";
+        environment = new Environment(properties);
+
+        environments.add(Argument.of(name, environment));
+
         // ... more environments ...
 
         return environments;
@@ -60,7 +75,17 @@ public class EnvironmentTest {
 
         System.out.println("[" + argument.getName() + "] initializing ...");
 
-        argument.getPayload().initialize();
+        // Create the network
+        Network network = Network.newNetwork();
+
+        // Get the network ID to force network creation
+        network.getId();
+
+        // Store the network in the argument context store
+        argumentContext.getStore().put(NETWORK, network);
+
+        // Initialize the environment
+        argument.getPayload().initialize(network);
 
         System.out.println("[" + argument.getName() + "] initialized");
     }
@@ -69,7 +94,7 @@ public class EnvironmentTest {
     public void test1(ArgumentContext argumentContext) throws Throwable {
         Argument<Environment> argument = argumentContext.getTestArgument(Environment.class);
 
-        System.out.println("[" + argument.getName() + "] test1");
+        System.out.println("[" + argument.getName() + "] test1 ...");
 
         HttpClient httpClient =
                 argumentContext.getTestArgument(Environment.class).getPayload().getHttpClient();
@@ -81,7 +106,7 @@ public class EnvironmentTest {
     public void test2(ArgumentContext argumentContext) throws Throwable {
         Argument<Environment> argument = argumentContext.getTestArgument(Environment.class);
 
-        System.out.println("[" + argument.getName() + "] test2");
+        System.out.println("[" + argument.getName() + "] test2 ..");
 
         HttpClient httpClient =
                 argumentContext.getTestArgument(Environment.class).getPayload().getHttpClient();
@@ -97,7 +122,15 @@ public class EnvironmentTest {
 
         System.out.println("[" + argument.getName() + "] destroying ...");
 
+        // Destroy the environment
         argument.getPayload().destroy();
+
+        // Remove the network
+        Network network = argumentContext.getStore().remove(NETWORK);
+        if (network != null) {
+            // Close the network
+            network.close();
+        }
 
         System.out.println("[" + argument.getName() + "] destroyed");
     }
@@ -106,7 +139,8 @@ public class EnvironmentTest {
     public static class Environment {
 
         private final Properties properties;
-        private final HttpClient httpClient;
+        private GenericContainer<?> genericContainer;
+        private HttpClient httpClient;
 
         /**
          * Constructor
@@ -115,7 +149,6 @@ public class EnvironmentTest {
          */
         public Environment(Properties properties) {
             this.properties = properties;
-            this.httpClient = new HttpClient(properties);
         }
 
         /**
@@ -123,8 +156,15 @@ public class EnvironmentTest {
          *
          * @throws Throwable Throwable
          */
-        public void initialize() throws Throwable {
-            // code to initialize the environment
+        public void initialize(Network network) throws Throwable {
+            // code to initialize the environment / generic container
+
+            // Define the generic container with the network
+            this.genericContainer = null;
+            //this.genericContainer = new GenericContainer<>("<DOCKER IMAGE NAME>").withNetwork(network);
+
+            // Start the generic container
+            //this.genericContainer.start();
         }
 
         /**
@@ -133,25 +173,36 @@ public class EnvironmentTest {
          * @return an HttpClient for the environment
          */
         public HttpClient getHttpClient() {
+            if (httpClient == null) {
+                // Create the HTTP client
+                httpClient = new HttpClient(genericContainer);
+            }
+
             return httpClient;
         }
 
         /** Method to destroy the environment */
         public void destroy() {
-            // code to destroy the environment
+            // code to destroy the environment / generic container
+
+            /* ... stop the generic container ... */
+            if (genericContainer != null && genericContainer.isRunning()) {
+                genericContainer.stop();
+                genericContainer = null;
+            }
         }
     }
 
     /** Mock HTTP client */
     public static class HttpClient {
 
-        private final Properties properties;
+        private final GenericContainer<?> genericContainer;
 
         /** Constructor */
-        public HttpClient(Properties properties) {
-            this.properties = properties;
+        public HttpClient(GenericContainer<?> genericContainer) {
+            this.genericContainer = genericContainer;
 
-            // ... code to initialize the HTTP client ...
+            // ... code to create the HTTP client using the generic container ...
         }
 
         /**

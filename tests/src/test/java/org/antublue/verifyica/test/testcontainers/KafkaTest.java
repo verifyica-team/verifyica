@@ -64,6 +64,7 @@ public class KafkaTest {
         network.getId();
 
         argumentContext.getStore().put("network", network);
+
         argumentContext
                 .getTestArgument(KafkaTestEnvironment.class)
                 .getPayload()
