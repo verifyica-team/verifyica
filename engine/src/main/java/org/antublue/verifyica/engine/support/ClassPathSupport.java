@@ -142,11 +142,27 @@ public class ClassPathSupport {
         return resourceUrls;
     }
 
+    /**
+     * Method to scan a directory
+     *
+     * @param pattern pattern
+     * @param directoryPath directoryPath
+     * @param resourceUrls resourceUrls
+     * @throws IOException IOException
+     */
     private static void scanDirectory(Pattern pattern, Path directoryPath, List<URL> resourceUrls)
             throws IOException {
         Files.walkFileTree(directoryPath, new PathSimpleFileVisitor(pattern, resourceUrls));
     }
 
+    /**
+     * Method to scan a Jar file
+     *
+     * @param pattern pattern
+     * @param jarPath jarPath
+     * @param resourceUrls resourceUrls
+     * @throws IOException IOException
+     */
     private static void scanJarFile(Pattern pattern, Path jarPath, List<URL> resourceUrls)
             throws IOException {
         try (JarFile jarFile = new JarFile(jarPath.toFile().getPath())) {
@@ -166,6 +182,12 @@ public class ClassPathSupport {
         private final Pattern pattern;
         private final List<URL> foundUrls;
 
+        /**
+         * Constructor
+         *
+         * @param pattern pattern
+         * @param foundUrls foundUrls
+         */
         public PathSimpleFileVisitor(Pattern pattern, List<URL> foundUrls) {
             this.pattern = pattern;
             this.foundUrls = foundUrls;
