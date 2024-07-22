@@ -41,6 +41,40 @@ for (TestArgument testArgument : TestArguments) {
 - IntelliJ support
 - Engine interceptors for global set up / tear down
 
+# Design
+
+```
+for (TestClass testClass : TestClasses) {
+
+    instantiate test class instance {
+
+        execute @Verifyica.Prepare methods {
+    
+            for (TestArgument testArgument : TestArguments) {
+            
+               execute @Verifyica.BeforeAll methods
+              
+               for (test method : Test methods) {
+               
+                  execute @Verifyica.BeforeEach methods {
+                  
+                      execute test method
+                  }
+                  
+                  execute @Verifyica.AfterEach methods
+               }
+               
+               execute @Verifyica.AfterAll methods
+            }
+        }
+    
+        execute @Verificya.Conclude methods
+    }
+    
+    destroy test class instance
+}
+```
+
 # Basic example
 
 Basic example test that will execute a set of tests against an environment.
