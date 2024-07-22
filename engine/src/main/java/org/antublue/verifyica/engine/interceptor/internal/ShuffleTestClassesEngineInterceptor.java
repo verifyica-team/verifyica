@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.interceptor;
+package org.antublue.verifyica.engine.interceptor.internal;
 
 import java.util.Collections;
 import org.antublue.verifyica.api.Verifyica;
@@ -22,6 +22,7 @@ import org.antublue.verifyica.api.interceptor.EngineDiscoveryInterceptorContext;
 import org.antublue.verifyica.api.interceptor.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.InterceptorResult;
 import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.interceptor.InternalEngineInterceptor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
