@@ -276,7 +276,7 @@ Example tests using [testcontainers-java](https://java.testcontainers.org/)
 - [TestContainerTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/TestContainerTest.java))
   - Generic example showing multi-threaded argument testing
 
-Real examples
+Examples using real test containers ...
 
 - [KafkaTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/KafkaTest.java)
 - [MongoDBTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/MongoDBTest.java)
