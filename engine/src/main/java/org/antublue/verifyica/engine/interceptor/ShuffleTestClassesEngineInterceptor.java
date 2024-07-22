@@ -17,6 +17,7 @@
 package org.antublue.verifyica.engine.interceptor;
 
 import java.util.Collections;
+import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.EngineDiscoveryInterceptorContext;
 import org.antublue.verifyica.api.interceptor.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.InterceptorResult;
@@ -26,6 +27,7 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement ShuffleTestClassesEngineInterceptor */
 @InternalEngineInterceptor
+@Verifyica.Order(order = Integer.MAX_VALUE)
 public class ShuffleTestClassesEngineInterceptor implements EngineInterceptor {
 
     private static final Logger LOGGER =

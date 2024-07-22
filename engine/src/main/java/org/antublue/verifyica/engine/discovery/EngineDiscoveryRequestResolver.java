@@ -114,11 +114,6 @@ public class EngineDiscoveryRequestResolver {
             resolveMethodSelectors(engineDiscoveryRequest, classMethodMap);
             resolveUniqueIdSelectors(engineDiscoveryRequest, classMethodMap, classArgumentIndexMap);
 
-            filterClassesByName(classMethodMap);
-            filterClassesByTag(classMethodMap);
-            filterMethodsByName(classMethodMap);
-            filterMethodsByTag(classMethodMap);
-
             List<Class<?>> classes = new ArrayList<>(classMethodMap.keySet());
             classes.addAll(classArgumentIndexMap.keySet());
 
@@ -131,6 +126,9 @@ public class EngineDiscoveryRequestResolver {
 
             classMethodMap.entrySet().removeIf(entry -> !classes.contains(entry.getKey()));
             classArgumentIndexMap.entrySet().removeIf(entry -> !classes.contains(entry.getKey()));
+
+            filterMethodsByName(classMethodMap);
+            filterMethodsByTag(classMethodMap);
 
             for (Class<?> testClass : classMethodMap.keySet()) {
                 Method argumentSupplierMethod = getArgumentSupplierMethod(testClass);
@@ -550,147 +548,6 @@ public class EngineDiscoveryRequestResolver {
                         HierarchyTraversalMode.BOTTOM_UP);
 
         return methods.get(0);
-    }
-
-    /**
-     * Method to filter classes by class name
-     *
-     * @param classMethodMap classMethodMap
-     */
-    private void filterClassesByName(Map<Class<?>, Set<Method>> classMethodMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("filterClassesByName()");
-        }
-
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_CLASS_INCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace("%s [%s]", Constants.TEST_CLASS_INCLUDE_REGEX, value);
-                            }
-
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
-
-                            Iterator<Class<?>> iterator = classMethodMap.keySet().iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
-                                matcher.reset(clazz.getName());
-                                if (!matcher.find()) {
-                                    if (LOGGER.isTraceEnabled()) {
-                                        LOGGER.trace("removing testClass [%s]", clazz.getName());
-                                    }
-                                    iterator.remove();
-                                }
-                            }
-                        });
-
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_CLASS_EXCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace("%s [%s]", Constants.TEST_CLASS_EXCLUDE_REGEX, value);
-                            }
-
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
-
-                            Iterator<Class<?>> iterator = classMethodMap.keySet().iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
-                                matcher.reset(clazz.getName());
-                                if (matcher.find()) {
-                                    if (LOGGER.isTraceEnabled()) {
-                                        LOGGER.trace("removing testClass [%s]", clazz.getName());
-                                    }
-                                    iterator.remove();
-                                }
-                            }
-                        });
-    }
-
-    /**
-     * Method to filter classes by tags
-     *
-     * @param classMethodMap classMethodMap
-     */
-    private void filterClassesByTag(Map<Class<?>, Set<Method>> classMethodMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("filterClassesByTag()");
-        }
-
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_CLASS_TAG_INCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(
-                                        "%s [%s]", Constants.TEST_CLASS_TAG_INCLUDE_REGEX, value);
-                            }
-
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
-
-                            Iterator<Class<?>> iterator = classMethodMap.keySet().iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
-                                String tag = TagSupport.getTag(clazz);
-                                if (tag == null) {
-                                    if (LOGGER.isTraceEnabled()) {
-                                        LOGGER.trace("removing testClass [%s]", clazz.getName());
-                                    }
-                                    iterator.remove();
-                                } else {
-                                    matcher.reset(tag);
-                                    if (!matcher.find()) {
-                                        if (LOGGER.isTraceEnabled()) {
-                                            LOGGER.trace(
-                                                    "removing testClass [%s]", clazz.getName());
-                                        }
-                                        iterator.remove();
-                                    }
-                                }
-                            }
-                        });
-
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_CLASS_TAG_EXCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(
-                                        " %s [%s]", Constants.TEST_CLASS_TAG_EXCLUDE_REGEX, value);
-                            }
-
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
-
-                            Iterator<Class<?>> iterator = classMethodMap.keySet().iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
-                                String tag = TagSupport.getTag(clazz);
-                                if (tag != null) {
-                                    matcher.reset(tag);
-                                    if (matcher.find()) {
-                                        if (LOGGER.isTraceEnabled()) {
-                                            LOGGER.trace(
-                                                    "removing testClass [%s]", clazz.getName());
-                                        }
-                                        iterator.remove();
-                                    }
-                                }
-                            }
-                        });
     }
 
     /**
