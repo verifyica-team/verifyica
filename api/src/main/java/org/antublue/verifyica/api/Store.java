@@ -30,7 +30,7 @@ public interface Store {
      * @param key key
      * @param value value
      * @return the existing value, or null
-     * @param <T>
+     * @param <T> the return type
      */
     <T> T put(Object key, Object value);
 
@@ -48,7 +48,7 @@ public interface Store {
      * @param key key
      * @param function function
      * @return the value
-     * @param <T> type
+     * @param <T> the return type
      */
     <T> T computeIfAbsent(Object key, Function<Object, Object> function);
 

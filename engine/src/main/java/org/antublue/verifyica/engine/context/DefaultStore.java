@@ -26,16 +26,23 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import org.antublue.verifyica.api.Store;
 
+/** Class to implement DefaultStore */
 @SuppressWarnings("unchecked")
 public class DefaultStore implements Store {
 
     private final TreeMap<Object, Object> map;
     private final ReadWriteLock readWriteLock;
 
+    /** Constructor */
     public DefaultStore() {
         this(new TreeMap<>());
     }
 
+    /**
+     * Constructor
+     *
+     * @param map map
+     */
     private DefaultStore(TreeMap<Object, Object> map) {
         notNull(map, "map is null");
         this.map = map;

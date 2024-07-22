@@ -39,6 +39,7 @@ import java.util.function.Function;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 
+/** Class to implement DefaultConfiguration */
 public class DefaultConfiguration implements Configuration {
 
     private static final String VERIFYICA_CONFIGURATION_TRACE = "VERIFYICA_CONFIGURATION_TRACE";
@@ -54,6 +55,7 @@ public class DefaultConfiguration implements Configuration {
     private final Map<String, String> map;
     private final ReadWriteLock readWriteLock;
 
+    /** Constructor */
     public DefaultConfiguration() {
         map = new TreeMap<>();
         readWriteLock = new ReentrantReadWriteLock(true);

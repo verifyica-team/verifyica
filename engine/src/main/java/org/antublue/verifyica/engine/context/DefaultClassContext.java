@@ -52,6 +52,11 @@ public class DefaultClassContext implements ClassContext {
         return store;
     }
 
+    /**
+     * Method to test the test class
+     *
+     * @param testClass testClass
+     */
     public void setTestClass(Class<?> testClass) {
         this.testClass = testClass;
     }

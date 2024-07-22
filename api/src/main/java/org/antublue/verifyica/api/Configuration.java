@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
 
+/** Interface to implement Configuration */
 public interface Configuration {
 
     /**
@@ -96,7 +97,11 @@ public interface Configuration {
      */
     boolean isEmpty();
 
-    /** Clear */
+    /**
+     * Clear
+     *
+     * @return this
+     */
     Configuration clear();
 
     /**
