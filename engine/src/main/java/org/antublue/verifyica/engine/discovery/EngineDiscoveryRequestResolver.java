@@ -132,8 +132,10 @@ public class EngineDiscoveryRequestResolver {
 
             for (Class<?> testClass : classMethodMap.keySet()) {
                 Method argumentSupplierMethod = getArgumentSupplierMethod(testClass);
+
                 Verifyica.ArgumentSupplier annotation =
                         argumentSupplierMethod.getAnnotation(Verifyica.ArgumentSupplier.class);
+
                 int parallelism = Math.max(annotation.parallelism(), 1);
 
                 UniqueId classTestDescriptorUniqueId =
