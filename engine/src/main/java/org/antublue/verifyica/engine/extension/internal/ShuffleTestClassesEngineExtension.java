@@ -35,6 +35,11 @@ public class ShuffleTestClassesEngineExtension implements EngineExtension {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(ShuffleTestClassesEngineExtension.class);
 
+    /** Constructor */
+    public ShuffleTestClassesEngineExtension() {
+        // DO NOTHING
+    }
+
     @Override
     public ExtensionResult onTestClassDiscovery(
             EngineExtensionContext engineExtensionContext, List<Class<?>> testClasses) {

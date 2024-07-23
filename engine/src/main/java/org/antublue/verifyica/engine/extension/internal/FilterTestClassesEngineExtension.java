@@ -39,6 +39,12 @@ public class FilterTestClassesEngineExtension implements EngineExtension {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(FilterTestClassesEngineExtension.class);
 
+    /** Constructor */
+    public FilterTestClassesEngineExtension() {
+        // DO NOTHING
+    }
+
+    @Override
     public ExtensionResult onTestClassDiscovery(
             EngineExtensionContext engineExtensionContext, List<Class<?>> testClasses) {
         if (LOGGER.isTraceEnabled()) {
