@@ -45,6 +45,7 @@ public class DefaultStore implements Store {
      */
     private DefaultStore(TreeMap<Object, Object> map) {
         notNull(map, "map is null");
+
         this.map = map;
         readWriteLock = new ReentrantReadWriteLock(true);
     }
@@ -235,7 +236,7 @@ public class DefaultStore implements Store {
 
     @Override
     public String toString() {
-        return "DefaultNewStore{" + "map=" + map + '}';
+        return "Store{map=" + map + '}';
     }
 
     @Override

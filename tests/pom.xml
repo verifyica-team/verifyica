@@ -7,7 +7,7 @@
 
     <groupId>org.antublue.verifyica</groupId>
     <artifactId>tests</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Verifyica Tests</name>
 
@@ -79,7 +79,7 @@
             <plugin>
                 <groupId>org.antublue.verifyica</groupId>
                 <artifactId>maven-plugin</artifactId>
-                <version>0.0.3-SNAPSHOT</version>
+                <version>0.0.4-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <phase>integration-test</phase>
@@ -161,13 +161,13 @@
         <dependency>
             <groupId>org.antublue.verifyica</groupId>
             <artifactId>api</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>0.0.4-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.antublue.verifyica</groupId>
             <artifactId>engine</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>0.0.4-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>

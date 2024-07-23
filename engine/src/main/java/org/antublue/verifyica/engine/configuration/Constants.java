@@ -25,6 +25,9 @@ public final class Constants {
     public static final String TRUE = "true";
 
     /** Configuration constant */
+    public static final String FALSE = "false";
+
+    /** Configuration constant */
     public static final String PREFIX = "verifyica";
 
     /** Configuration constant */
@@ -46,38 +49,40 @@ public final class Constants {
     public static final String ENGINE_LOGGER_LEVEL = ENGINE + ".logger.level";
 
     /** Configuration constant */
-    public static final String ENGINE_INTERCEPTORS = ENGINE + ".interceptors";
+    public static final String ENGINE_EXTENSIONS = ENGINE + ".extensions";
 
     /** Configuration constant */
-    public static final String ENGINE_INTERCEPTORS_INCLUDE_REGEX =
-            ENGINE_INTERCEPTORS + ".include.regex";
+    public static final String ENGINE_EXTENSIONS_INCLUDE_REGEX =
+            ENGINE_EXTENSIONS + ".include.regex";
 
     /** Configuration constant */
-    public static final String ENGINE_INTERCEPTORS_EXCLUDE_REGEX =
-            ENGINE_INTERCEPTORS + ".exclude.regex";
+    public static final String ENGINE_EXTENSIONS_EXCLUDE_REGEX =
+            ENGINE_EXTENSIONS + ".exclude.regex";
 
     /** Configuration constant */
-    public static final String TEST_CLASS_SHUFFLE = PREFIX + ".test.class.shuffle";
+    public static final String ENGINE_TEST_CLASS_SHUFFLE = ENGINE + ".test.class.shuffle";
 
     /** Configuration constant */
-    public static final String TEST_CLASS_INCLUDE_REGEX = PREFIX + ".test.class.include.regex";
+    public static final String ENGINE_TEST_CLASS_INCLUDE_REGEX =
+            ENGINE + ".test.class.include.regex";
 
     /** Configuration constant */
-    public static final String TEST_CLASS_EXCLUDE_REGEX = PREFIX + ".test.class.exclude.regex";
+    public static final String ENGINE_TEST_CLASS_EXCLUDE_REGEX =
+            ENGINE + ".test.class.exclude.regex";
+
+    /** Configuration constant */
+    public static final String ENGINE_TEST_CLASS_TAG_INCLUDE_REGEX =
+            ENGINE + ".test.class.tag.include.regex";
+
+    /** Configuration constant */
+    public static final String ENGINE_TEST_CLASS_TAG_EXCLUDE_REGEX =
+            ENGINE + ".test.class.tag.exclude.regex";
 
     /** Configuration constant */
     public static final String TEST_METHOD_INCLUDE_REGEX = PREFIX + ".test.method.include.regex";
 
     /** Configuration constant */
     public static final String TEST_METHOD_EXCLUDE_REGEX = PREFIX + ".test.method.exclude.regex";
-
-    /** Configuration constant */
-    public static final String TEST_CLASS_TAG_INCLUDE_REGEX =
-            PREFIX + ".test.class.tag.include.regex";
-
-    /** Configuration constant */
-    public static final String TEST_CLASS_TAG_EXCLUDE_REGEX =
-            PREFIX + ".test.class.tag.exclude.regex";
 
     /** Configuration constant */
     public static final String TEST_METHOD_TAG_INCLUDE_REGEX =

@@ -23,13 +23,13 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import org.antublue.verifyica.api.interceptor.InterceptorResult;
+import org.antublue.verifyica.api.engine.ExtensionResult;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
-import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
+import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutor;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutorFactory;
-import org.antublue.verifyica.engine.interceptor.EngineInterceptorManager;
+import org.antublue.verifyica.engine.extension.EngineExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.util.ThrowableCollector;
@@ -43,9 +43,9 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 
 /** Class to implement VerifyicaEngine */
 @SuppressWarnings("PMD.EmptyCatchBlock")
-public class VerifyicaTestEngine implements TestEngine {
+public class VerifyicaEngine implements TestEngine {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(VerifyicaTestEngine.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VerifyicaEngine.class);
 
     /** Configuration constant */
     public static final String ID = "verifyica";
@@ -83,7 +83,7 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /** Constructor */
-    public VerifyicaTestEngine() {
+    public VerifyicaEngine() {
         // DO NOTHING
     }
 
@@ -94,14 +94,30 @@ public class VerifyicaTestEngine implements TestEngine {
             return null;
         }
 
+        EngineDescriptor engineDescriptor = new EngineDescriptor(uniqueId, getId());
+
         DefaultEngineContext.getInstance();
 
         LOGGER.trace("discover(" + uniqueId + ")");
 
-        EngineDescriptor engineDescriptor = new EngineDescriptor(uniqueId, getId());
+        DefaultEngineExtensionContext defaultEngineExtensionContext =
+                new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
 
-        new EngineDiscoveryRequestResolver()
-                .resolveSelectors(engineDiscoveryRequest, engineDescriptor);
+        ThrowableCollector throwableCollector = new ThrowableCollector();
+
+        AtomicReference<ExtensionResult> atomicReferenceExtensionResult = new AtomicReference<>();
+
+        throwableCollector.execute(
+                () ->
+                        atomicReferenceExtensionResult.set(
+                                EngineExtensionRegistry.getInstance()
+                                        .onInitialize(defaultEngineExtensionContext)));
+
+        if (atomicReferenceExtensionResult.get() == ExtensionResult.PROCEED
+                && throwableCollector.isEmpty()) {
+            new EngineDiscoveryRequestResolver()
+                    .resolveSelectors(engineDiscoveryRequest, engineDescriptor);
+        }
 
         return engineDescriptor;
     }
@@ -124,21 +140,20 @@ public class VerifyicaTestEngine implements TestEngine {
                 .getEngineExecutionListener()
                 .executionStarted(executionRequest.getRootTestDescriptor());
 
-        DefaultEngineInterceptorContext defaultEngineInterceptorContext =
-                new DefaultEngineInterceptorContext(DefaultEngineContext.getInstance());
+        DefaultEngineExtensionContext defaultEngineExtensionContext =
+                new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
-        AtomicReference<InterceptorResult> atomicReferenceInterceptorResult =
-                new AtomicReference<>();
+        AtomicReference<ExtensionResult> atomicReferenceExtensionResult = new AtomicReference<>();
 
         throwableCollector.execute(
                 () ->
-                        atomicReferenceInterceptorResult.set(
-                                EngineInterceptorManager.getInstance()
-                                        .initialize(defaultEngineInterceptorContext)));
+                        atomicReferenceExtensionResult.set(
+                                EngineExtensionRegistry.getInstance()
+                                        .onExecute(defaultEngineExtensionContext)));
 
-        if (atomicReferenceInterceptorResult.get() == InterceptorResult.PROCEED
+        if (atomicReferenceExtensionResult.get() == ExtensionResult.PROCEED
                 && throwableCollector.isEmpty()) {
             throwableCollector.execute(
                     () -> {
@@ -154,10 +169,10 @@ public class VerifyicaTestEngine implements TestEngine {
                         throwableCollector
                                 .getThrowables()
                                 .addAll(
-                                        EngineInterceptorManager.getInstance()
-                                                .destroy(defaultEngineInterceptorContext)));
+                                        EngineExtensionRegistry.getInstance()
+                                                .onDestroy(defaultEngineExtensionContext)));
 
-        defaultEngineInterceptorContext.getEngineContext().getStore().clear();
+        defaultEngineExtensionContext.getEngineContext().getStore().clear();
 
         if (throwableCollector.isEmpty()) {
             executionRequest
@@ -183,7 +198,7 @@ public class VerifyicaTestEngine implements TestEngine {
         String value = "unknown";
 
         try (InputStream inputStream =
-                VerifyicaTestEngine.class.getResourceAsStream("/engine.properties")) {
+                VerifyicaEngine.class.getResourceAsStream("/engine.properties")) {
             if (inputStream != null) {
                 Properties properties = new Properties();
                 properties.load(inputStream);

@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.interceptor;
+package org.antublue.verifyica.engine.extension;
 
-import org.antublue.verifyica.api.EngineContext;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/** Interface to implement EngineInterceptorContext */
-public interface EngineInterceptorContext {
-
-    /**
-     * Method to get the EngineContext
-     *
-     * @return the EngineContext
-     */
-    EngineContext getEngineContext();
-}
+/** InternalEngineExtension annotation */
+@Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface InternalEngineExtension {}

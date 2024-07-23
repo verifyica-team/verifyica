@@ -96,6 +96,19 @@ public class ThrowableCollector {
     }
 
     /**
+     * Method to get the first Throwable
+     *
+     * @return the first Throwable
+     */
+    public Throwable getFirst() {
+        if (isEmpty()) {
+            throw new IllegalStateException("No throwables");
+        } else {
+            return getThrowables().get(0);
+        }
+    }
+
+    /**
      * Method to convert the first Throwable to a TestExecutionResult
      *
      * @return a TestExecutionResult

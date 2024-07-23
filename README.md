@@ -39,7 +39,7 @@ for (TestArgument testArgument : TestArguments) {
 - Virtual thread support (Java 21+)
 - Properties file driven configuration
 - IntelliJ support
-- Engine interceptors for global set up / tear down
+- Engine extensions for global set up / tear down
 
 # Design
 

@@ -20,7 +20,6 @@ import static org.junit.platform.engine.Filter.composeFilters;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -37,13 +36,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.engine.ExtensionResult;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
+import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.exception.UncheckedClassNotFoundException;
+import org.antublue.verifyica.engine.extension.EngineExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ClassPathSupport;
@@ -113,96 +115,14 @@ public class EngineDiscoveryRequestResolver {
             resolveMethodSelectors(engineDiscoveryRequest, classMethodMap);
             resolveUniqueIdSelectors(engineDiscoveryRequest, classMethodMap, classArgumentIndexMap);
 
-            filterClassesByName(classMethodMap);
-            filterClassesByTag(classMethodMap);
+            invokeEngineExtensions(classMethodMap, classArgumentIndexMap);
+
+            // TODO move filtering into new class FilterTestClassTestMethodsEngineExtension
             filterMethodsByName(classMethodMap);
             filterMethodsByTag(classMethodMap);
 
-            for (Class<?> testClass : classMethodMap.keySet()) {
-                Method argumentSupplierMethod = getArgumentSupplierMethod(testClass);
-                Verifyica.ArgumentSupplier annotation =
-                        argumentSupplierMethod.getAnnotation(Verifyica.ArgumentSupplier.class);
-                int parallelism = Math.max(annotation.parallelism(), 1);
-
-                UniqueId classTestDescriptorUniqueId =
-                        engineDescriptor.getUniqueId().append("class", testClass.getName());
-
-                ClassTestDescriptor classTestDescriptor =
-                        new ClassTestDescriptor(
-                                classTestDescriptorUniqueId,
-                                DisplayNameSupport.getDisplayName(testClass),
-                                testClass,
-                                MethodSupport.findMethods(
-                                        testClass,
-                                        Predicates.PREPARE_METHOD,
-                                        HierarchyTraversalMode.TOP_DOWN),
-                                MethodSupport.findMethods(
-                                        testClass,
-                                        Predicates.CONCLUDE_METHOD,
-                                        HierarchyTraversalMode.BOTTOM_UP),
-                                parallelism);
-
-                engineDescriptor.addChild(classTestDescriptor);
-
-                List<Argument<?>> arguments = getArguments(testClass);
-
-                int argumentIndex = 0;
-                for (Argument<?> argument : arguments) {
-                    Set<Integer> argumentIndexSet = classArgumentIndexMap.get(testClass);
-                    if (argumentIndexSet != null && !argumentIndexSet.contains(argumentIndex)) {
-                        argumentIndex++;
-                        continue;
-                    }
-
-                    UniqueId argumentTestDescriptorUniqueId =
-                            classTestDescriptorUniqueId.append(
-                                    "argument", String.valueOf(argumentIndex));
-
-                    ArgumentTestDescriptor argumentTestDescriptor =
-                            new ArgumentTestDescriptor(
-                                    argumentTestDescriptorUniqueId,
-                                    argument.getName(),
-                                    testClass,
-                                    MethodSupport.findMethods(
-                                            testClass,
-                                            Predicates.BEFORE_ALL_METHOD,
-                                            HierarchyTraversalMode.TOP_DOWN),
-                                    MethodSupport.findMethods(
-                                            testClass,
-                                            Predicates.AFTER_ALL_METHOD,
-                                            HierarchyTraversalMode.BOTTOM_UP),
-                                    argument);
-
-                    classTestDescriptor.addChild(argumentTestDescriptor);
-
-                    for (Method method : classMethodMap.get(testClass)) {
-                        UniqueId testMethodDescriptorUniqueId =
-                                argumentTestDescriptorUniqueId.append("test", method.getName());
-
-                        TestMethodTestDescriptor testMethodTestDescriptor =
-                                new TestMethodTestDescriptor(
-                                        testMethodDescriptorUniqueId,
-                                        DisplayNameSupport.getDisplayName(method),
-                                        testClass,
-                                        MethodSupport.findMethods(
-                                                testClass,
-                                                Predicates.BEFORE_EACH_METHOD,
-                                                HierarchyTraversalMode.TOP_DOWN),
-                                        method,
-                                        MethodSupport.findMethods(
-                                                testClass,
-                                                Predicates.AFTER_EACH_METHOD,
-                                                HierarchyTraversalMode.BOTTOM_UP));
-
-                        argumentTestDescriptor.addChild(testMethodTestDescriptor);
-                    }
-
-                    argumentIndex++;
-                }
-            }
-
-            prune(engineDescriptor);
-            shuffle(engineDescriptor);
+            buildEngineDescriptor(engineDescriptor, classMethodMap, classArgumentIndexMap);
+            pruneEngineDescriptor(engineDescriptor);
         } catch (EngineException e) {
             throw e;
         } catch (Throwable t) {
@@ -540,144 +460,44 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
-     * Method to filter classes by class name
+     * Method to invoke engine extensions
      *
      * @param classMethodMap classMethodMap
+     * @param classArgumentIndexMap classArgumentIndexMap
+     * @throws Throwable Throwable
      */
-    private void filterClassesByName(Map<Class<?>, Set<Method>> classMethodMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("filterClassesByName()");
+    private static void invokeEngineExtensions(
+            Map<Class<?>, Set<Method>> classMethodMap,
+            Map<Class<?>, Set<Integer>> classArgumentIndexMap)
+            throws Throwable {
+        List<Class<?>> testClasses = new ArrayList<>(classMethodMap.keySet());
+        testClasses.addAll(classArgumentIndexMap.keySet());
+
+        DefaultEngineExtensionContext defaultEngineExtensionContext =
+                new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
+
+        if (EngineExtensionRegistry.getInstance()
+                        .onTestClassDiscovery(defaultEngineExtensionContext, testClasses)
+                != ExtensionResult.PROCEED) {
+            return;
         }
 
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_CLASS_INCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace("%s [%s]", Constants.TEST_CLASS_INCLUDE_REGEX, value);
-                            }
+        classMethodMap.entrySet().removeIf(entry -> !testClasses.contains(entry.getKey()));
 
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
+        classArgumentIndexMap.entrySet().removeIf(entry -> !testClasses.contains(entry.getKey()));
 
-                            Iterator<Class<?>> iterator = classMethodMap.keySet().iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
-                                matcher.reset(clazz.getName());
-                                if (!matcher.find()) {
-                                    if (LOGGER.isTraceEnabled()) {
-                                        LOGGER.trace("removing testClass [%s]", clazz.getName());
-                                    }
-                                    iterator.remove();
-                                }
-                            }
-                        });
+        for (Class<?> testClass : testClasses) {
+            List<Method> testMethods = new ArrayList<>(classMethodMap.get(testClass));
 
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_CLASS_EXCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace("%s [%s]", Constants.TEST_CLASS_EXCLUDE_REGEX, value);
-                            }
+            if (EngineExtensionRegistry.getInstance()
+                            .onTestClassTestClassMethodDiscovery(
+                                    defaultEngineExtensionContext, testClass, testMethods)
+                    != ExtensionResult.PROCEED) {
+                break;
+            }
 
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
-
-                            Iterator<Class<?>> iterator = classMethodMap.keySet().iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
-                                matcher.reset(clazz.getName());
-                                if (matcher.find()) {
-                                    if (LOGGER.isTraceEnabled()) {
-                                        LOGGER.trace("removing testClass [%s]", clazz.getName());
-                                    }
-                                    iterator.remove();
-                                }
-                            }
-                        });
-    }
-
-    /**
-     * Method to filter classes by tags
-     *
-     * @param classMethodMap classMethodMap
-     */
-    private void filterClassesByTag(Map<Class<?>, Set<Method>> classMethodMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("filterClassesByTag()");
+            classMethodMap.put(testClass, new LinkedHashSet<>(testMethods));
         }
-
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_CLASS_TAG_INCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(
-                                        "%s [%s]", Constants.TEST_CLASS_TAG_INCLUDE_REGEX, value);
-                            }
-
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
-
-                            Iterator<Class<?>> iterator = classMethodMap.keySet().iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
-                                String tag = TagSupport.getTag(clazz);
-                                if (tag == null) {
-                                    if (LOGGER.isTraceEnabled()) {
-                                        LOGGER.trace("removing testClass [%s]", clazz.getName());
-                                    }
-                                    iterator.remove();
-                                } else {
-                                    matcher.reset(tag);
-                                    if (!matcher.find()) {
-                                        if (LOGGER.isTraceEnabled()) {
-                                            LOGGER.trace(
-                                                    "removing testClass [%s]", clazz.getName());
-                                        }
-                                        iterator.remove();
-                                    }
-                                }
-                            }
-                        });
-
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_CLASS_TAG_EXCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(
-                                        " %s [%s]", Constants.TEST_CLASS_TAG_EXCLUDE_REGEX, value);
-                            }
-
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
-
-                            Iterator<Class<?>> iterator = classMethodMap.keySet().iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
-                                String tag = TagSupport.getTag(clazz);
-                                if (tag != null) {
-                                    matcher.reset(tag);
-                                    if (matcher.find()) {
-                                        if (LOGGER.isTraceEnabled()) {
-                                            LOGGER.trace(
-                                                    "removing testClass [%s]", clazz.getName());
-                                        }
-                                        iterator.remove();
-                                    }
-                                }
-                            }
-                        });
     }
 
     /**
@@ -850,11 +670,110 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
+     * Method to build the EngineDescriptor
+     *
+     * @param engineDescriptor engineDescriptor
+     * @param classMethodMap classMethodMap
+     * @param classArgumentIndexMap classArgumentIndexMap
+     * @throws Throwable Throwable
+     */
+    private static void buildEngineDescriptor(
+            EngineDescriptor engineDescriptor,
+            Map<Class<?>, Set<Method>> classMethodMap,
+            Map<Class<?>, Set<Integer>> classArgumentIndexMap)
+            throws Throwable {
+        for (Class<?> testClass : classMethodMap.keySet()) {
+            Method argumentSupplierMethod = getArgumentSupplierMethod(testClass);
+
+            Verifyica.ArgumentSupplier annotation =
+                    argumentSupplierMethod.getAnnotation(Verifyica.ArgumentSupplier.class);
+
+            int parallelism = Math.max(annotation.parallelism(), 1);
+
+            UniqueId classTestDescriptorUniqueId =
+                    engineDescriptor.getUniqueId().append("class", testClass.getName());
+
+            ClassTestDescriptor classTestDescriptor =
+                    new ClassTestDescriptor(
+                            classTestDescriptorUniqueId,
+                            DisplayNameSupport.getDisplayName(testClass),
+                            testClass,
+                            MethodSupport.findMethods(
+                                    testClass,
+                                    Predicates.PREPARE_METHOD,
+                                    HierarchyTraversalMode.TOP_DOWN),
+                            MethodSupport.findMethods(
+                                    testClass,
+                                    Predicates.CONCLUDE_METHOD,
+                                    HierarchyTraversalMode.BOTTOM_UP),
+                            parallelism);
+
+            engineDescriptor.addChild(classTestDescriptor);
+
+            List<Argument<?>> arguments = getArguments(testClass);
+
+            int argumentIndex = 0;
+            for (Argument<?> argument : arguments) {
+                Set<Integer> argumentIndexSet = classArgumentIndexMap.get(testClass);
+                if (argumentIndexSet != null && !argumentIndexSet.contains(argumentIndex)) {
+                    argumentIndex++;
+                    continue;
+                }
+
+                UniqueId argumentTestDescriptorUniqueId =
+                        classTestDescriptorUniqueId.append(
+                                "argument", String.valueOf(argumentIndex));
+
+                ArgumentTestDescriptor argumentTestDescriptor =
+                        new ArgumentTestDescriptor(
+                                argumentTestDescriptorUniqueId,
+                                argument.getName(),
+                                testClass,
+                                MethodSupport.findMethods(
+                                        testClass,
+                                        Predicates.BEFORE_ALL_METHOD,
+                                        HierarchyTraversalMode.TOP_DOWN),
+                                MethodSupport.findMethods(
+                                        testClass,
+                                        Predicates.AFTER_ALL_METHOD,
+                                        HierarchyTraversalMode.BOTTOM_UP),
+                                argument);
+
+                classTestDescriptor.addChild(argumentTestDescriptor);
+
+                for (Method method : classMethodMap.get(testClass)) {
+                    UniqueId testMethodDescriptorUniqueId =
+                            argumentTestDescriptorUniqueId.append("test", method.getName());
+
+                    TestMethodTestDescriptor testMethodTestDescriptor =
+                            new TestMethodTestDescriptor(
+                                    testMethodDescriptorUniqueId,
+                                    DisplayNameSupport.getDisplayName(method),
+                                    testClass,
+                                    MethodSupport.findMethods(
+                                            testClass,
+                                            Predicates.BEFORE_EACH_METHOD,
+                                            HierarchyTraversalMode.TOP_DOWN),
+                                    method,
+                                    MethodSupport.findMethods(
+                                            testClass,
+                                            Predicates.AFTER_EACH_METHOD,
+                                            HierarchyTraversalMode.BOTTOM_UP));
+
+                    argumentTestDescriptor.addChild(testMethodTestDescriptor);
+                }
+
+                argumentIndex++;
+            }
+        }
+    }
+
+    /**
      * Method to prune a test descriptor depth first
      *
      * @param testDescriptor testDescriptor
      */
-    private static void prune(TestDescriptor testDescriptor) {
+    private static void pruneEngineDescriptor(TestDescriptor testDescriptor) {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("prune()");
         }
@@ -870,7 +789,9 @@ public class EngineDiscoveryRequestResolver {
     private static void recursivePrune(TestDescriptor testDescriptor) {
         testDescriptor
                 .getChildren()
-                .forEach((Consumer<TestDescriptor>) EngineDiscoveryRequestResolver::prune);
+                .forEach(
+                        (Consumer<TestDescriptor>)
+                                EngineDiscoveryRequestResolver::pruneEngineDescriptor);
 
         if (testDescriptor.isRoot()) {
             return;
@@ -881,42 +802,6 @@ public class EngineDiscoveryRequestResolver {
                 LOGGER.trace("pruned testDescriptor [%s]", testDescriptor);
             }
             testDescriptor.removeFromHierarchy();
-        }
-    }
-
-    /**
-     * Method to shuffle or sort an engine descriptor's children
-     *
-     * @param engineDescriptor engineDescriptor
-     */
-    private static void shuffle(EngineDescriptor engineDescriptor) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("shuffle()");
-        }
-
-        if ("true"
-                .equals(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_CLASS_SHUFFLE))) {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("shuffling enabled");
-            }
-
-            /*
-            engineDescriptor.getChildren() returns an
-            unmodifiable list, so we have to create a copy
-            of the list, remove all children from the engineDescriptor,
-            shuffle our copy of the list, then add our list
-            back to the engineDescriptor
-            */
-
-            List<TestDescriptor> testDescriptors = new ArrayList<>(engineDescriptor.getChildren());
-            testDescriptors.forEach(engineDescriptor::removeChild);
-
-            Collections.shuffle(testDescriptors);
-
-            testDescriptors.forEach(engineDescriptor::addChild);
         }
     }
 }

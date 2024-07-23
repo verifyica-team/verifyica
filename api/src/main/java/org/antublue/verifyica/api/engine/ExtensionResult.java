@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.interceptor;
+package org.antublue.verifyica.api.engine;
 
-/** Enum to implement InterceptorResult */
-public enum InterceptorResult {
+/** Enum to implement ExtensionResult */
+public enum ExtensionResult {
 
     /** Proceed */
     PROCEED,

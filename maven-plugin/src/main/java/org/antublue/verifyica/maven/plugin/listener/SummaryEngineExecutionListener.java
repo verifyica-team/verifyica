@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.antublue.verifyica.engine.VerifyicaTestEngine;
+import org.antublue.verifyica.engine.VerifyicaEngine;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.Metadata;
@@ -42,7 +42,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             new AnsiColorStringBuilder()
                     .color(AnsiColor.TEXT_WHITE_BRIGHT)
                     .append("Verifyica ")
-                    .append(VerifyicaTestEngine.VERSION)
+                    .append(VerifyicaEngine.VERSION)
                     .color(AnsiColor.TEXT_RESET)
                     .toString();
 

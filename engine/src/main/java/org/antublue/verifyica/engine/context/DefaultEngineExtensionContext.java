@@ -17,11 +17,11 @@
 package org.antublue.verifyica.engine.context;
 
 import org.antublue.verifyica.api.EngineContext;
-import org.antublue.verifyica.api.interceptor.EngineInterceptorContext;
+import org.antublue.verifyica.api.engine.EngineExtensionContext;
 import org.junit.platform.commons.util.Preconditions;
 
-/** Class to implement DefaultEngineInterceptorContext */
-public class DefaultEngineInterceptorContext implements EngineInterceptorContext {
+/** Class to implement DefaultEngineExtensionContext */
+public class DefaultEngineExtensionContext implements EngineExtensionContext {
 
     private final EngineContext engineContext;
 
@@ -30,7 +30,7 @@ public class DefaultEngineInterceptorContext implements EngineInterceptorContext
      *
      * @param engineContext engineContext
      */
-    public DefaultEngineInterceptorContext(EngineContext engineContext) {
+    public DefaultEngineExtensionContext(EngineContext engineContext) {
         Preconditions.notNull(engineContext, "engineContext is null");
 
         this.engineContext = engineContext;

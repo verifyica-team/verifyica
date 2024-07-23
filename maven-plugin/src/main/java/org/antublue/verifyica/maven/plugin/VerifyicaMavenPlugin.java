@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.antublue.verifyica.api.Configuration;
-import org.antublue.verifyica.engine.VerifyicaTestEngine;
+import org.antublue.verifyica.engine.VerifyicaEngine;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
@@ -219,7 +219,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                             .configurationParameters(Collections.emptyMap())
                             .build();
 
-            VerifyicaTestEngine engine = new VerifyicaTestEngine();
+            VerifyicaEngine engine = new VerifyicaEngine();
             TestDescriptor testDescriptor = null;
 
             try {
