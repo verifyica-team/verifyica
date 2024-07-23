@@ -25,6 +25,7 @@ import java.util.Optional;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
+import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.DisplayNameSupport;
@@ -112,13 +113,13 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        throwableCollector.execute(() -> invokeBeforeAllMethods(defaultArgumentContext));
+        throwableCollector.execute(() -> beforeAll(defaultArgumentContext));
         if (throwableCollector.isEmpty()) {
             executeChildren(executionRequest, defaultArgumentContext);
         } else {
             skipChildren(executionRequest, defaultArgumentContext);
         }
-        throwableCollector.execute(() -> invokeAfterAllMethods(defaultArgumentContext));
+        throwableCollector.execute(() -> afterAll(defaultArgumentContext));
 
         stopWatch.stop();
 
@@ -206,28 +207,8 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @param defaultArgumentContext defaultArgumentContext
      * @throws Throwable Throwable
      */
-    private void invokeBeforeAllMethods(DefaultArgumentContext defaultArgumentContext)
-            throws Throwable {
-        Object testInstance = defaultArgumentContext.getTestInstance();
-
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(
-                    "invokeBeforeAllMethods() testClass [%s] testInstance [%s]",
-                    testInstance.getClass().getName(), testInstance);
-        }
-
-        Preconditions.notNull(defaultArgumentContext, "defaultArgumentContext is null");
-        Preconditions.notNull(testInstance, "testInstance is null");
-
-        for (Method method : beforeAllMethods) {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(
-                        "invokeBeforeAllMethods() testClass [%s] testInstance [%s] method [%s]",
-                        testInstance.getClass().getName(), testInstance, method);
-            }
-
-            method.invoke(testInstance, defaultArgumentContext.asImmutable());
-        }
+    private void beforeAll(DefaultArgumentContext defaultArgumentContext) throws Throwable {
+        ClassExtensionRegistry.getInstance().beforeAll(defaultArgumentContext, beforeAllMethods);
     }
 
     /**
@@ -293,30 +274,8 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @param defaultArgumentContext defaultArgumentContext
      * @throws Throwable Throwable
      */
-    private void invokeAfterAllMethods(DefaultArgumentContext defaultArgumentContext)
-            throws Throwable {
-        Object testInstance = defaultArgumentContext.getTestInstance();
-
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(
-                    "invokeAfterAllMethods() testClass [%s] testInstance [%s]",
-                    testInstance.getClass().getName(), testInstance);
-        }
-
-        Preconditions.notNull(defaultArgumentContext, "defaultArgumentContext is null");
-        Preconditions.notNull(testInstance, "testInstance is null");
-
-        for (Method method : afterAllMethods) {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(
-                        "invokeAfterAllMethods() testClass [%s] testInstance [%s] method [%s]",
-                        testInstance.getClass().getName(), testInstance, method);
-            }
-
-            method.invoke(testInstance, defaultArgumentContext.asImmutable());
-        }
-
-        defaultArgumentContext.getStore().clear();
+    private void afterAll(DefaultArgumentContext defaultArgumentContext) throws Throwable {
+        ClassExtensionRegistry.getInstance().afterAll(defaultArgumentContext, afterAllMethods);
 
         if (testArgument instanceof AutoCloseable) {
             ((AutoCloseable) testArgument).close();

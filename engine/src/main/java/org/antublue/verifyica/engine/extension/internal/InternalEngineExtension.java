@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.exception;
+package org.antublue.verifyica.engine.extension.internal;
 
-/** Class to implement EngineConfigurationException */
-public class EngineConfigurationException extends RuntimeException {
+import org.antublue.verifyica.api.extension.engine.EngineExtension;
 
-    /**
-     * Constructor
-     *
-     * @param message message
-     */
-    public EngineConfigurationException(String message) {
-        super(message);
-    }
+/** Interface to implement InternalEngineExtension */
+public interface InternalEngineExtension extends EngineExtension {
 
-    /**
-     * Constructor
-     *
-     * @param message message
-     * @param throwable throwable
-     */
-    public EngineConfigurationException(String message, Throwable throwable) {
-        super(message, throwable);
-    }
+    // MARKER INTERFACE
 }

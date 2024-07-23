@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
+import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.DisplayNameSupport;
@@ -108,11 +109,11 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        throwableCollector.execute(() -> invokeBeforeEachMethods(defaultArgumentContext));
+        throwableCollector.execute(() -> beforeEach(defaultArgumentContext));
         if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(() -> invokeTestMethod(defaultArgumentContext));
+            throwableCollector.execute(() -> test(defaultArgumentContext));
         }
-        throwableCollector.execute(() -> invokeAfterEachMethods(defaultArgumentContext));
+        throwableCollector.execute(() -> afterEach(defaultArgumentContext));
 
         stopWatch.stop();
 
@@ -203,26 +204,8 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
      * @param defaultArgumentContext defaultArgumentContext
      * @throws Throwable Throwable
      */
-    private void invokeBeforeEachMethods(DefaultArgumentContext defaultArgumentContext)
-            throws Throwable {
-        Object testInstance = defaultArgumentContext.getTestInstance();
-        Preconditions.notNull(testInstance, "testInstance is null");
-
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(
-                    "invokeBeforeEachMethods() testClass [%s] testInstance [%s]",
-                    testInstance.getClass().getName(), testInstance);
-        }
-
-        for (Method method : beforeEachMethods) {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(
-                        "invokeBeforeEachMethods() testClass [%s] testInstance [%s] method [%s]",
-                        testInstance.getClass().getName(), testInstance, method);
-            }
-
-            method.invoke(testInstance, defaultArgumentContext.asImmutable());
-        }
+    private void beforeEach(DefaultArgumentContext defaultArgumentContext) throws Throwable {
+        ClassExtensionRegistry.getInstance().beforeEach(defaultArgumentContext, beforeEachMethods);
     }
 
     /**
@@ -231,17 +214,8 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
      * @param defaultArgumentContext defaultArgumentContext
      * @throws Throwable Throwable
      */
-    private void invokeTestMethod(DefaultArgumentContext defaultArgumentContext) throws Throwable {
-        Object testInstance = defaultArgumentContext.getTestInstance();
-        Preconditions.notNull(testInstance, "testInstance is null");
-
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(
-                    "test() testClass [%s] testInstance [%s] method [%s]",
-                    testInstance.getClass().getName(), testInstance, testMethod);
-        }
-
-        testMethod.invoke(testInstance, defaultArgumentContext.asImmutable());
+    private void test(DefaultArgumentContext defaultArgumentContext) throws Throwable {
+        ClassExtensionRegistry.getInstance().test(defaultArgumentContext, testMethod);
     }
 
     /**
@@ -250,25 +224,7 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
      * @param defaultArgumentContext defaultArgumentContext
      * @throws Throwable Throwable
      */
-    private void invokeAfterEachMethods(DefaultArgumentContext defaultArgumentContext)
-            throws Throwable {
-        Object testInstance = defaultArgumentContext.getTestInstance();
-        Preconditions.notNull(testInstance, "testInstance is null");
-
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(
-                    "invokeAfterEachMethods() testClass [%s] testInstance [%s]",
-                    testInstance.getClass().getName(), testInstance);
-        }
-
-        for (Method method : afterEachMethods) {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(
-                        "invokeAfterEachMethods() testClass [%s] testInstance [%s] method [%s]",
-                        testInstance.getClass().getName(), testInstance, method);
-            }
-
-            method.invoke(testInstance, defaultArgumentContext.asImmutable());
-        }
+    private void afterEach(DefaultArgumentContext defaultArgumentContext) throws Throwable {
+        ClassExtensionRegistry.getInstance().afterEach(defaultArgumentContext, afterEachMethods);
     }
 }

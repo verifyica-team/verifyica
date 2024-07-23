@@ -1,0 +1,6 @@
+#includeClass "org.antublue.verifyica.test.BasicTest" "test1"
+#includeClass "org.antublue.verifyica.test.BasicTest" "test2"
+#excludeClass "org.antublue.verifyica.test.BasicTest" "test1"
+#includeClass "org.antublue.verifyica.test.store.StoreTest" ".*"
+#excludeClass "org.antublue.verifyica.test.store.StoreTest" "^get"
+#includeClass "org.antublue.verifyica.test.store..*Compute.*" ""

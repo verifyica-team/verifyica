@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.extension;
+package org.antublue.verifyica.api.extension;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.antublue.verifyica.api.ArgumentContext;
 
-/** InternalEngineExtension annotation */
-@Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface InternalEngineExtension {}
+/** Interface to implement ArgumentExtensionContext */
+public interface ArgumentExtensionContext {
+
+    /**
+     * Returns the ArgumentContext
+     *
+     * @return the ArgumentContext
+     */
+    ArgumentContext getArgumentContext();
+}

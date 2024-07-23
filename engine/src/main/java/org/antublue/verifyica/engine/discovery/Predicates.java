@@ -20,8 +20,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.engine.EngineExtension;
-import org.antublue.verifyica.engine.extension.InternalEngineExtension;
+import org.antublue.verifyica.api.extension.engine.EngineExtension;
+import org.antublue.verifyica.engine.extension.internal.InternalEngineExtension;
 import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.MethodSupport;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
@@ -38,7 +38,7 @@ public class Predicates {
                         && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && clazz.isAnnotationPresent(InternalEngineExtension.class)
+                        && InternalEngineExtension.class.isAssignableFrom(clazz)
                         && EngineExtension.class.isAssignableFrom(clazz);
             };
 
@@ -51,8 +51,20 @@ public class Predicates {
                         && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && !clazz.isAnnotationPresent(InternalEngineExtension.class)
+                        && !InternalEngineExtension.class.isAssignableFrom(clazz)
                         && EngineExtension.class.isAssignableFrom(clazz);
+            };
+
+    /** Predicate to filter class extension supplier methods */
+    public static final Predicate<Method> CLASS_EXTENSION_SUPPLIER =
+            method -> {
+                int modifiers = method.getModifiers();
+
+                return Modifier.isPublic(modifiers)
+                        && Modifier.isStatic(modifiers)
+                        // TODO check return type
+                        && method.getParameterCount() == 0
+                        && method.isAnnotationPresent(Verifyica.ClassExtensionSupplier.class);
             };
 
     /** Predicate to filter argument supplier methods */

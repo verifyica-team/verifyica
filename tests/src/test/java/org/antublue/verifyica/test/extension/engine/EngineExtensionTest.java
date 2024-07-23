@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.engine;
+package org.antublue.verifyica.test.extension.engine;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +50,7 @@ public class EngineExtensionTest {
                                         .getClassContext()
                                         .getEngineContext()
                                         .getStore()
-                                        .get(ExampleEngineExtension.KEY))
+                                        .get(ExampleEngineExtension1.KEY))
                 .isNotNull();
 
         assertThat(
@@ -58,8 +58,8 @@ public class EngineExtensionTest {
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleEngineExtension.KEY, String.class))
-                .isEqualTo(ExampleEngineExtension.VALUE);
+                                .get(ExampleEngineExtension1.KEY, String.class))
+                .isEqualTo(ExampleEngineExtension1.VALUE);
     }
 
     @Verifyica.Test
@@ -82,7 +82,7 @@ public class EngineExtensionTest {
                                         .getClassContext()
                                         .getEngineContext()
                                         .getStore()
-                                        .get(ExampleEngineExtension.KEY))
+                                        .get(ExampleEngineExtension1.KEY))
                 .isNotNull();
 
         assertThat(
@@ -90,8 +90,8 @@ public class EngineExtensionTest {
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleEngineExtension.KEY, String.class))
-                .isEqualTo(ExampleEngineExtension.VALUE);
+                                .get(ExampleEngineExtension1.KEY, String.class))
+                .isEqualTo(ExampleEngineExtension1.VALUE);
     }
 
     @Verifyica.Test
@@ -114,7 +114,7 @@ public class EngineExtensionTest {
                                         .getClassContext()
                                         .getEngineContext()
                                         .getStore()
-                                        .get(ExampleEngineExtension.KEY))
+                                        .get(ExampleEngineExtension1.KEY))
                 .isNotNull();
 
         assertThat(
@@ -122,7 +122,7 @@ public class EngineExtensionTest {
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleEngineExtension.KEY, String.class))
-                .isEqualTo(ExampleEngineExtension.VALUE);
+                                .get(ExampleEngineExtension1.KEY, String.class))
+                .isEqualTo(ExampleEngineExtension1.VALUE);
     }
 }

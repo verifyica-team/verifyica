@@ -17,7 +17,7 @@
 package org.antublue.verifyica.engine.context;
 
 import org.antublue.verifyica.api.EngineContext;
-import org.antublue.verifyica.api.engine.EngineExtensionContext;
+import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.junit.platform.commons.util.Preconditions;
 
 /** Class to implement DefaultEngineExtensionContext */
