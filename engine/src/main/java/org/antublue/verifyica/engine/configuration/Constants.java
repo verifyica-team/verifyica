@@ -49,15 +49,15 @@ public final class Constants {
     public static final String ENGINE_LOGGER_LEVEL = ENGINE + ".logger.level";
 
     /** Configuration constant */
-    public static final String ENGINE_INTERCEPTORS = ENGINE + ".interceptors";
+    public static final String ENGINE_EXTENSIONS = ENGINE + ".extensions";
 
     /** Configuration constant */
-    public static final String ENGINE_INTERCEPTORS_INCLUDE_REGEX =
-            ENGINE_INTERCEPTORS + ".include.regex";
+    public static final String ENGINE_EXTENSIONS_INCLUDE_REGEX =
+            ENGINE_EXTENSIONS + ".include.regex";
 
     /** Configuration constant */
-    public static final String ENGINE_INTERCEPTORS_EXCLUDE_REGEX =
-            ENGINE_INTERCEPTORS + ".exclude.regex";
+    public static final String ENGINE_EXTENSIONS_EXCLUDE_REGEX =
+            ENGINE_EXTENSIONS + ".exclude.regex";
 
     /** Configuration constant */
     public static final String ENGINE_TEST_CLASS_SHUFFLE = ENGINE + ".test.class.shuffle";

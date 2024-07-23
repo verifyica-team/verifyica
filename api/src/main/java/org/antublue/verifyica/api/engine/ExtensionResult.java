@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.interceptor;
+package org.antublue.verifyica.api.engine;
 
-import java.util.List;
+/** Enum to implement ExtensionResult */
+public enum ExtensionResult {
 
-/** Interface to implement EngineDiscoveryInterceptorContext */
-public interface EngineDiscoveryInterceptorContext extends EngineInterceptorContext {
-
-    /** Method to get the set of test classes that were discovered */
-    List<Class<?>> getTestClasses();
+    /** Proceed */
+    PROCEED,
+    /** Abort */
+    ABORT
 }

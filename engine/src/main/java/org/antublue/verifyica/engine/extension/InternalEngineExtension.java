@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.interceptor;
+package org.antublue.verifyica.engine.extension;
 
-/** Enum to implement InterceptorResult */
-public enum InterceptorResult {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    /** Proceed */
-    PROCEED,
-    /** Abort */
-    ABORT
-}
+/** InternalEngineExtension annotation */
+@Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface InternalEngineExtension {}

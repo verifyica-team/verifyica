@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.interceptor;
+package org.antublue.verifyica.api.engine;
 
 import org.antublue.verifyica.api.EngineContext;
 
-/** Interface to implement EngineInterceptorContext */
-public interface EngineInterceptorContext {
+/** Interface to implement EngineExtensionContext */
+public interface EngineExtensionContext {
 
     /**
      * Method to get the EngineContext

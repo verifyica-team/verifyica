@@ -36,7 +36,7 @@ public class StoreTest {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 1)
+    @Verifyica.Order(order = 0)
     public void putIntoStores(ArgumentContext argumentContext) throws Throwable {
         System.out.println(
                 format("putIntoStores(%s)", argumentContext.getTestArgument().getPayload()));
@@ -51,7 +51,7 @@ public class StoreTest {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 2)
+    @Verifyica.Order(order = 1)
     public void getOutOfStores(ArgumentContext argumentContext) throws Throwable {
         System.out.println(
                 format("getOutOfStores(%s)", argumentContext.getTestArgument().getPayload()));
@@ -87,9 +87,14 @@ public class StoreTest {
     public static void conclude(ClassContext classContext) {
         System.out.println("conclude()");
 
-        assertThat(classContext.getStore().get(CLASS_CONTEXT_KEY, String.class)).isEqualTo("class");
+        assertThat(classContext.getStore().remove(CLASS_CONTEXT_KEY, String.class))
+                .isEqualTo("class");
 
-        assertThat(classContext.getEngineContext().getStore().get(ENGINE_CONTEXT_KEY, String.class))
+        assertThat(
+                        classContext
+                                .getEngineContext()
+                                .getStore()
+                                .remove(ENGINE_CONTEXT_KEY, String.class))
                 .isEqualTo("engine");
     }
 }
