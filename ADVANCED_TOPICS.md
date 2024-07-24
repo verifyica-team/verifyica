@@ -2,14 +2,14 @@
 
 Every test method accepts a scoped [Context](api/src/main/java/org/antublue/verifyica/api/Context.java) which has a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java).
 
-- `[EngineContext](api/src/main/java/org/antublue/verifyica/api/EngineContext.java)
+- [EngineContext](api/src/main/java/org/antublue/verifyica/api/EngineContext.java)
   - globally scoped to the engine 
 
 
-- `[ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
+- [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
   - scoped to the test instance
 
-- `[ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
+- [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
   - scoped to the test argument
 
 The [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) should be used to maintain any test state to allow parallel test argument execution.
@@ -29,7 +29,7 @@ Example complex locking strategy
         - test 2
       - unlock write
     - test 2
-  - unlock read
+  - unlock readd
 
 - dynamically named locks
   - argument-based
@@ -38,7 +38,7 @@ Example complex locking strategy
 
 Example solution:
 
-- test 1 and test 2 are in a read lock boundary scoped to thee class
+- test 1 and test 2 are in a read lock boundary scoped to the class
 - test 3 is in a write lock boundary scoped to the class
 
 ```java
