@@ -267,7 +267,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                 try {
                                     semaphore.acquire();
                                 } catch (Throwable t) {
-                                    // DO NOTHING
+                                    // INTENTIONALLY BLANK
                                 }
 
                                 Runnable runnable =
@@ -305,7 +305,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
-            // DO NOTHING
+            // INTENTIONALLY BLANK
         }
     }
 

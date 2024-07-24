@@ -125,6 +125,6 @@ public final class Constants {
 
     /** Constructor */
     private Constants() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 }

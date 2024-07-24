@@ -31,7 +31,7 @@ public interface ClassExtension {
      */
     default void beforeInstantiate(
             EngineExtensionContext engineExtensionContext, Class<?> testClass) throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -41,7 +41,7 @@ public interface ClassExtension {
      * @throws Throwable Throwable
      */
     default void beforePrepare(ClassExtensionContext classExtensionContext) throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -52,7 +52,7 @@ public interface ClassExtension {
      */
     default void beforeBeforeAll(ArgumentExtensionContext argumentExtensionContext)
             throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -63,7 +63,7 @@ public interface ClassExtension {
      */
     default void beforeBeforeEach(ArgumentExtensionContext argumentExtensionContext)
             throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -75,7 +75,7 @@ public interface ClassExtension {
      */
     default void beforeTest(ArgumentExtensionContext argumentExtensionContext, Method testMethod)
             throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -104,7 +104,7 @@ public interface ClassExtension {
      */
     default void beforeAfterEach(ArgumentExtensionContext argumentExtensionContext)
             throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -115,7 +115,7 @@ public interface ClassExtension {
      */
     default void beforeAfterAll(ArgumentExtensionContext argumentExtensionContext)
             throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -125,7 +125,7 @@ public interface ClassExtension {
      * @throws Throwable Throwable
      */
     default void beforeConclude(ClassExtensionContext classExtensionContext) throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -135,6 +135,6 @@ public interface ClassExtension {
      * @throws Throwable Throwable
      */
     default void beforeDestroy(ClassExtensionContext classExtensionContext) throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 }

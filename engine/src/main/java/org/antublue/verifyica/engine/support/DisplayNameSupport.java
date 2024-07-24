@@ -24,7 +24,7 @@ public class DisplayNameSupport {
 
     /** Constructor */
     private DisplayNameSupport() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

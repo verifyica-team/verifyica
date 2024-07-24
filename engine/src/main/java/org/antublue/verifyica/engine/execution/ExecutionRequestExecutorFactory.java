@@ -42,7 +42,7 @@ public class ExecutionRequestExecutorFactory {
 
     /** Constructor */
     private ExecutionRequestExecutorFactory() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

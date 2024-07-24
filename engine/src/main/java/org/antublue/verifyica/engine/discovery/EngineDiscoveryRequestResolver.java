@@ -81,7 +81,7 @@ public class EngineDiscoveryRequestResolver {
 
     /** Constructor */
     public EngineDiscoveryRequestResolver() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

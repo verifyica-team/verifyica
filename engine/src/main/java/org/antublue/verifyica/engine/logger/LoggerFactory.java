@@ -28,7 +28,7 @@ public final class LoggerFactory {
 
     /** Constructor */
     private LoggerFactory() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

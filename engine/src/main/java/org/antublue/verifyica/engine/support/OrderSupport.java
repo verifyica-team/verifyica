@@ -26,7 +26,7 @@ public class OrderSupport {
 
     /** Constructor */
     private OrderSupport() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

@@ -30,7 +30,7 @@ public interface EngineExtension {
      * @throws Throwable Throwable
      */
     default void afterInitialize(EngineExtensionContext engineExtensionContext) throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -55,7 +55,7 @@ public interface EngineExtension {
      * @throws Throwable Throwable
      */
     default void beforeExecute(EngineExtensionContext engineExtensionContext) throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -65,6 +65,6 @@ public interface EngineExtension {
      * @throws Throwable Throwable
      */
     default void beforeDestroy(EngineExtensionContext engineExtensionContext) throws Throwable {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 }

@@ -51,6 +51,6 @@ public class MetadataTestDescriptorConstants {
 
     /** Constructor */
     private MetadataTestDescriptorConstants() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 }

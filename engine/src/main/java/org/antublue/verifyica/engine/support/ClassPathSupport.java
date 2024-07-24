@@ -49,7 +49,7 @@ public class ClassPathSupport {
 
     /** Constructor */
     private ClassPathSupport() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

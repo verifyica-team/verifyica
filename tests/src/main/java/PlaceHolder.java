@@ -18,6 +18,6 @@ public class PlaceHolder {
 
     /** Constructor */
     public PlaceHolder() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 }

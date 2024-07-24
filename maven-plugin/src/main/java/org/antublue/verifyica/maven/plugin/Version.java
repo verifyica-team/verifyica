@@ -30,7 +30,7 @@ public class Version {
 
     /** Constructor */
     private Version() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -50,7 +50,7 @@ public class Version {
                 value = properties.getProperty(VERSION).trim();
             }
         } catch (IOException e) {
-            // DO NOTHING
+            // INTENTIONALLY BLANK
         }
 
         return value;

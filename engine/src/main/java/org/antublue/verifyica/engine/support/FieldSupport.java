@@ -29,7 +29,7 @@ public class FieldSupport {
 
     /** Constructor */
     private FieldSupport() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

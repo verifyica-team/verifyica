@@ -140,14 +140,14 @@ public class VirtualThreadsExecutionRequestExecutor implements ExecutionRequestE
                                         thread.setDaemon(true);
                                         thread.start();
                                     } catch (InterruptedException e) {
-                                        // DO NOTHING
+                                        // INTENTIONALLY BLANK
                                     }
                                 });
             } finally {
                 try {
                     countDownLatch.get().await();
                 } catch (InterruptedException e) {
-                    // DO NOTHING
+                    // INTENTIONALLY BLANK
                 }
 
                 engineContext.getStore().clear();
@@ -165,7 +165,7 @@ public class VirtualThreadsExecutionRequestExecutor implements ExecutionRequestE
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
-            // DO NOTHING
+            // INTENTIONALLY BLANK
         }
     }
 }

@@ -38,7 +38,7 @@ public class ShuffleTestClassesEngineExtension implements InternalEngineExtensio
 
     /** Constructor */
     public ShuffleTestClassesEngineExtension() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     @Override

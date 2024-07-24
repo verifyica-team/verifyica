@@ -29,7 +29,7 @@ public class BlockingRejectedExecutionHandler implements RejectedExecutionHandle
 
     /** Constructor */
     public BlockingRejectedExecutionHandler() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     @Override

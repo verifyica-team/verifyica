@@ -24,7 +24,7 @@ public class TagSupport {
 
     /** Constructor */
     private TagSupport() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

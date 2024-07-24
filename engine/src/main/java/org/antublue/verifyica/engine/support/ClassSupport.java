@@ -21,7 +21,7 @@ public class ClassSupport {
 
     /** Constructor */
     private ClassSupport() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

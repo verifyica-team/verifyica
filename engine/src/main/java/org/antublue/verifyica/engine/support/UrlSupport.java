@@ -30,7 +30,7 @@ public class UrlSupport {
 
     /** Constructor */
     private UrlSupport() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

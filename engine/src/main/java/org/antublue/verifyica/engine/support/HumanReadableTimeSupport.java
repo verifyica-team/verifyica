@@ -36,7 +36,7 @@ public final class HumanReadableTimeSupport {
 
     /** Constructor */
     private HumanReadableTimeSupport() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

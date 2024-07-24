@@ -187,7 +187,7 @@ public class Predicates {
 
     /** Constructor */
     private Predicates() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

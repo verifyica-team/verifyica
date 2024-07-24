@@ -28,7 +28,7 @@ public class ObjectSupport {
 
     /** Constructor */
     private ObjectSupport() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

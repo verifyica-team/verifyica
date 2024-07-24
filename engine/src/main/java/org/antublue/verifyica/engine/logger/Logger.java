@@ -74,7 +74,7 @@ public class Logger {
                 level = Level.toLevel(loggerLevel, Level.INFO);
             }
         } catch (Throwable t) {
-            // DO NOTHING
+            // INTENTIONALLY BLANK
         }
     }
 

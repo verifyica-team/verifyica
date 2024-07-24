@@ -29,7 +29,7 @@ public class RandomSupport {
 
     /** Constructor */
     private RandomSupport() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**

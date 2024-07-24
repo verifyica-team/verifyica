@@ -82,7 +82,7 @@ public class VerifyicaEngine implements TestEngine {
 
     /** Constructor */
     public VerifyicaEngine() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     @Override
@@ -195,7 +195,7 @@ public class VerifyicaEngine implements TestEngine {
                 value = properties.getProperty("version").trim();
             }
         } catch (IOException e) {
-            // DO NOTHING
+            // INTENTIONALLY BLANK
         }
 
         return value;

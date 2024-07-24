@@ -145,7 +145,7 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
                 try {
                     countDownLatch.get().await();
                 } catch (InterruptedException e) {
-                    // DO NOTHING
+                    // INTENTIONALLY BLANK
                 }
 
                 engineContext.getStore().clear();
@@ -167,7 +167,7 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
-            // DO NOTHING
+            // INTENTIONALLY BLANK
         }
     }
 }

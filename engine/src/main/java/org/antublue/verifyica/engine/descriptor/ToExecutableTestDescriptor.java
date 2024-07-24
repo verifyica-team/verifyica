@@ -28,7 +28,7 @@ public class ToExecutableTestDescriptor
 
     /** Constructor */
     public ToExecutableTestDescriptor() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     @Override

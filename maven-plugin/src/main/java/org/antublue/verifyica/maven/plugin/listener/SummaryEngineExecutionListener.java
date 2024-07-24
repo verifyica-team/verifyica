@@ -162,7 +162,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                 }
                             default:
                                 {
-                                    // DO NOTHING
+                                    // INTENTIONALLY BLANK
                                     break;
                                 }
                         }
@@ -186,7 +186,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                 }
                             default:
                                 {
-                                    // DO NOTHING
+                                    // INTENTIONALLY BLANK
                                     break;
                                 }
                         }
@@ -210,7 +210,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                 }
                             default:
                                 {
-                                    // DO NOTHING
+                                    // INTENTIONALLY BLANK
                                     break;
                                 }
                         }

@@ -28,7 +28,7 @@ public class MethodSupport {
 
     /** Constructor */
     private MethodSupport() {
-        // DO NOTHING
+        // INTENTIONALLY BLANK
     }
 
     /**
