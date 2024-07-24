@@ -39,6 +39,7 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.TagSupport;
 
 @Verifyica.Order(order = 0)
+@SuppressWarnings("PMD.UnusedPrivateMethod")
 public class FiltersEngineExtension implements InternalEngineExtension {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FiltersEngineExtension.class);

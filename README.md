@@ -38,8 +38,10 @@ for (TestArgument testArgument : TestArguments) {
 - Multi-threaded class / argument testing support
 - Virtual thread support (Java 21+)
 - Properties file driven configuration
-- IntelliJ support
+- Test class extensions
+- Test class / test method filtering
 - Engine extensions for global set up / tear down
+- IntelliJ support
 
 # Design
 
