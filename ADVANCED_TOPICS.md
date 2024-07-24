@@ -1,10 +1,26 @@
+# Shared State
+
+Every test method accepts a scoped [Context](api/src/main/java/org/antublue/verifyica/api/Context.java) which has a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java).
+
+- `[EngineContext](api/src/main/java/org/antublue/verifyica/api/EngineContext.java)
+  - globally scoped to the engine 
+
+
+- `[ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
+  - scoped to the test instance
+
+- `[ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
+  - scoped to the test argument
+
+The [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) should be used to maintain any test state to allow parallel test argument execution.
+
 # Concurrency
 
 ## Locks
 
-There is no `@Verifyica.ResourceLock` annotation be design, because complex locking strategies can't be implemented using a annoation-based approach.
+There is no `@Verifyica.ResourceLock` annotation be design, because complex locking strategies can't be implemented using a annotation-based approach.
 
-Example complex locking tragedies
+Example complex locking strategy
 
 - locking a set of methods (complex lock boundary)
   - lock read
@@ -18,11 +34,12 @@ Example complex locking tragedies
 - dynamically named locks
   - argument-based
 
+---
 
 Example solution:
 
-- test 1 and test 2 are in a read lock boundary
-- test 3 is in a write lock boundary
+- test 1 and test 2 are in a read lock boundary scoped to thee class
+- test 3 is in a write lock boundary scoped to the class
 
 ```java
 import java.util.ArrayList;
@@ -115,9 +132,11 @@ public class ClassContextLockTest {
 
 Maybe you don't need a lock, but a semaphore because a test method generates significant load
 
+---
+
 Example solution:
 
-- test 3 is in a semaphore boundary
+- test 3 is in a semaphore boundary scoped to the class
 
 ```java
 import org.antublue.verifyica.api.Argument;
