@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.exception;
+package org.antublue.verifyica.engine.context;
 
-/** Class to implement EngineConfigurationException */
-public class EngineConfigurationException extends RuntimeException {
+import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.extension.ArgumentExtensionContext;
 
-    /**
-     * Constructor
-     *
-     * @param message message
-     */
-    public EngineConfigurationException(String message) {
-        super(message);
+public class DefaultArgumentExtensionContext implements ArgumentExtensionContext {
+
+    private final ArgumentContext argumentContext;
+
+    public DefaultArgumentExtensionContext(ArgumentContext argumentContext) {
+        this.argumentContext = argumentContext;
     }
 
-    /**
-     * Constructor
-     *
-     * @param message message
-     * @param throwable throwable
-     */
-    public EngineConfigurationException(String message, Throwable throwable) {
-        super(message, throwable);
+    @Override
+    public ArgumentContext getArgumentContext() {
+        return argumentContext;
     }
 }

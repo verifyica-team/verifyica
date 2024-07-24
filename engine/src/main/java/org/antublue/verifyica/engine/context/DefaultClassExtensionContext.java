@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.engine;
+package org.antublue.verifyica.engine.context;
 
-/** Enum to implement ExtensionResult */
-public enum ExtensionResult {
+import org.antublue.verifyica.api.ClassContext;
+import org.antublue.verifyica.api.extension.ClassExtensionContext;
 
-    /** Proceed */
-    PROCEED,
-    /** Abort */
-    ABORT
+public class DefaultClassExtensionContext implements ClassExtensionContext {
+
+    private final ClassContext classContext;
+
+    public DefaultClassExtensionContext(ClassContext classContext) {
+        this.classContext = classContext;
+    }
+
+    @Override
+    public ClassContext getClassContext() {
+        return classContext;
+    }
 }

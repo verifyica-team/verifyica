@@ -13,7 +13,7 @@ Parameterized unit testing is traditionally test first oriented ...
 ```
 for (Test test : Tests) {
    for (TestArgument testArgument : TestArguments) {
-      execute(test, testArgument)
+      test(testArgument)
    }
 }
 ```
@@ -25,7 +25,7 @@ Verifyica swaps the paradigm to be test argument first oriented ...
 ```
 for (TestArgument testArgument : TestArguments) {
    for (Test test : Tests) {
-      execute(test, testArgument)
+      test(testArgument)
    }
 }
 ```
@@ -38,8 +38,10 @@ for (TestArgument testArgument : TestArguments) {
 - Multi-threaded class / argument testing support
 - Virtual thread support (Java 21+)
 - Properties file driven configuration
-- IntelliJ support
+- Test class extensions
+- Test class / test method filtering
 - Engine extensions for global set up / tear down
+- IntelliJ support
 
 # Design
 

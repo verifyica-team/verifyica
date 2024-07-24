@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.discovery;
 
+import static java.lang.String.format;
 import static org.junit.platform.engine.Filter.composeFilters;
 
 import java.lang.reflect.Method;
@@ -25,26 +26,23 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.engine.ExtensionResult;
-import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.api.extension.ClassExtension;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
+import org.antublue.verifyica.engine.exception.TestClassException;
 import org.antublue.verifyica.engine.exception.UncheckedClassNotFoundException;
+import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.extension.EngineExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -52,11 +50,9 @@ import org.antublue.verifyica.engine.support.ClassPathSupport;
 import org.antublue.verifyica.engine.support.DisplayNameSupport;
 import org.antublue.verifyica.engine.support.MethodSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
-import org.antublue.verifyica.engine.support.TagSupport;
 import org.antublue.verifyica.engine.util.StopWatch;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.engine.EngineDiscoveryRequest;
-import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.discovery.ClassNameFilter;
 import org.junit.platform.engine.discovery.ClassSelector;
@@ -72,9 +68,6 @@ public class EngineDiscoveryRequestResolver {
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(EngineDiscoveryRequestResolver.class);
-
-    private static final DefaultEngineContext DEFAULT_ENGINE_CONTEXT =
-            DefaultEngineContext.getInstance();
 
     private static Comparator<Object> getClassComparator() {
         return Comparator.comparing(clazz -> OrderSupport.getOrder((Class<?>) clazz))
@@ -105,24 +98,21 @@ public class EngineDiscoveryRequestResolver {
 
         StopWatch stopWatch = new StopWatch();
 
-        Map<Class<?>, Set<Method>> classMethodMap = new TreeMap<>(getClassComparator());
-        Map<Class<?>, Set<Integer>> classArgumentIndexMap = new TreeMap<>(getClassComparator());
+        Map<Class<?>, Set<Method>> testClassMethodMap = new TreeMap<>(getClassComparator());
+        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new TreeMap<>(getClassComparator());
 
         try {
-            resolveClasspathRootSelectors(engineDiscoveryRequest, classMethodMap);
-            resolvePackageSelectors(engineDiscoveryRequest, classMethodMap);
-            resolveClassSelectors(engineDiscoveryRequest, classMethodMap);
-            resolveMethodSelectors(engineDiscoveryRequest, classMethodMap);
-            resolveUniqueIdSelectors(engineDiscoveryRequest, classMethodMap, classArgumentIndexMap);
+            resolveClasspathRootSelectors(engineDiscoveryRequest, testClassMethodMap);
+            resolvePackageSelectors(engineDiscoveryRequest, testClassMethodMap);
+            resolveClassSelectors(engineDiscoveryRequest, testClassMethodMap);
+            resolveMethodSelectors(engineDiscoveryRequest, testClassMethodMap);
+            resolveUniqueIdSelectors(
+                    engineDiscoveryRequest, testClassMethodMap, testClassArgumentIndexMap);
 
-            invokeEngineExtensions(classMethodMap, classArgumentIndexMap);
+            testClassMethodMap = afterTestDiscovery(testClassMethodMap);
 
-            // TODO move filtering into new class FilterTestClassTestMethodsEngineExtension
-            filterMethodsByName(classMethodMap);
-            filterMethodsByTag(classMethodMap);
-
-            buildEngineDescriptor(engineDescriptor, classMethodMap, classArgumentIndexMap);
-            pruneEngineDescriptor(engineDescriptor);
+            loadClassExtensions(testClassMethodMap.keySet());
+            buildEngineDescriptor(engineDescriptor, testClassMethodMap, testClassArgumentIndexMap);
         } catch (EngineException e) {
             throw e;
         } catch (Throwable t) {
@@ -462,211 +452,66 @@ public class EngineDiscoveryRequestResolver {
     /**
      * Method to invoke engine extensions
      *
-     * @param classMethodMap classMethodMap
-     * @param classArgumentIndexMap classArgumentIndexMap
+     * @param testClassMethodMap testClassMethodMap
+     * @return a Map containing test classes and associated test class methods
      * @throws Throwable Throwable
      */
-    private static void invokeEngineExtensions(
-            Map<Class<?>, Set<Method>> classMethodMap,
-            Map<Class<?>, Set<Integer>> classArgumentIndexMap)
-            throws Throwable {
-        List<Class<?>> testClasses = new ArrayList<>(classMethodMap.keySet());
-        testClasses.addAll(classArgumentIndexMap.keySet());
-
+    private static Map<Class<?>, Set<Method>> afterTestDiscovery(
+            Map<Class<?>, Set<Method>> testClassMethodMap) throws Throwable {
         DefaultEngineExtensionContext defaultEngineExtensionContext =
                 new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
 
-        if (EngineExtensionRegistry.getInstance()
-                        .onTestClassDiscovery(defaultEngineExtensionContext, testClasses)
-                != ExtensionResult.PROCEED) {
-            return;
-        }
+        return EngineExtensionRegistry.getInstance()
+                .afterTestDiscovery(defaultEngineExtensionContext, testClassMethodMap);
+    }
 
-        classMethodMap.entrySet().removeIf(entry -> !testClasses.contains(entry.getKey()));
-
-        classArgumentIndexMap.entrySet().removeIf(entry -> !testClasses.contains(entry.getKey()));
-
+    /**
+     * Method to load test class ClassExtensions
+     *
+     * @param testClasses testClasses
+     * @throws Throwable Throwable
+     */
+    private static void loadClassExtensions(Set<Class<?>> testClasses) throws Throwable {
         for (Class<?> testClass : testClasses) {
-            List<Method> testMethods = new ArrayList<>(classMethodMap.get(testClass));
+            List<Method> extensionSupplierMethods =
+                    MethodSupport.findMethods(
+                            testClass,
+                            Predicates.CLASS_EXTENSION_SUPPLIER,
+                            HierarchyTraversalMode.BOTTOM_UP);
 
-            if (EngineExtensionRegistry.getInstance()
-                            .onTestClassTestClassMethodDiscovery(
-                                    defaultEngineExtensionContext, testClass, testMethods)
-                    != ExtensionResult.PROCEED) {
-                break;
+            if (!extensionSupplierMethods.isEmpty()) {
+                Object object = extensionSupplierMethods.get(0).invoke(null);
+
+                if (object instanceof ClassExtension) {
+                    ClassExtensionRegistry.getInstance()
+                            .register(testClass, (ClassExtension) object);
+                } else if (object instanceof Stream || object instanceof Iterable) {
+                    Iterator<?> iterator;
+
+                    if (object instanceof Stream) {
+                        Stream<?> stream = (Stream<?>) object;
+                        iterator = stream.iterator();
+                    } else {
+                        Iterable<?> iterable = (Iterable<?>) object;
+                        iterator = iterable.iterator();
+                    }
+
+                    while (iterator.hasNext()) {
+                        Object o = iterator.next();
+                        if (o instanceof ClassExtension) {
+                            ClassExtensionRegistry.getInstance()
+                                    .register(testClass, (ClassExtension) o);
+                        } else {
+                            throw new TestClassException(
+                                    format(
+                                            "Invalid argument type [%s] supplied bye test class"
+                                                + " [%s] @Verifyica.ClassExtensionSupplier method",
+                                            o.getClass().getName(), testClass.getName()));
+                        }
+                    }
+                }
             }
-
-            classMethodMap.put(testClass, new LinkedHashSet<>(testMethods));
         }
-    }
-
-    /**
-     * Method to filter methods by method name
-     *
-     * @param classMethodMap classMethodMap
-     */
-    private static void filterMethodsByName(Map<Class<?>, Set<Method>> classMethodMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("filterMethodsByName()");
-        }
-
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_METHOD_INCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(
-                                        " %s [%s]", Constants.TEST_METHOD_INCLUDE_REGEX, value);
-                            }
-
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
-
-                            for (Map.Entry<Class<?>, Set<Method>> classSetEntry :
-                                    classMethodMap.entrySet()) {
-                                Iterator<Method> iterator = classSetEntry.getValue().iterator();
-                                while (iterator.hasNext()) {
-                                    Method testMethod = iterator.next();
-                                    matcher.reset(DisplayNameSupport.getDisplayName(testMethod));
-                                    if (!matcher.find()) {
-                                        if (LOGGER.isTraceEnabled()) {
-                                            LOGGER.trace(
-                                                    "removing testClass [%s] testMethod [%s]",
-                                                    testMethod.getClass().getName(),
-                                                    testMethod.getName());
-                                        }
-                                        iterator.remove();
-                                    }
-                                }
-                            }
-                        });
-
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_METHOD_EXCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(
-                                        " %s [%s]", Constants.TEST_METHOD_EXCLUDE_REGEX, value);
-                            }
-
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
-
-                            for (Map.Entry<Class<?>, Set<Method>> classSetEntry :
-                                    classMethodMap.entrySet()) {
-                                Iterator<Method> iterator = classSetEntry.getValue().iterator();
-                                while (iterator.hasNext()) {
-                                    Method testMethod = iterator.next();
-                                    matcher.reset(DisplayNameSupport.getDisplayName(testMethod));
-                                    if (matcher.find()) {
-                                        if (LOGGER.isTraceEnabled()) {
-                                            LOGGER.trace(
-                                                    "removing testClass [%s] testMethod [%s]",
-                                                    testMethod.getClass().getName(),
-                                                    testMethod.getName());
-                                        }
-                                        iterator.remove();
-                                    }
-                                }
-                            }
-                        });
-    }
-
-    /**
-     * Method to filter methods by tags
-     *
-     * @param classMethodMap classMethodMap
-     */
-    private static void filterMethodsByTag(Map<Class<?>, Set<Method>> classMethodMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("filterMethodsByTag()");
-        }
-
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_METHOD_TAG_INCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(
-                                        "%s [%s]", Constants.TEST_METHOD_TAG_INCLUDE_REGEX, value);
-                            }
-
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
-
-                            for (Map.Entry<Class<?>, Set<Method>> classSetEntry :
-                                    classMethodMap.entrySet()) {
-                                Iterator<Method> iterator = classSetEntry.getValue().iterator();
-                                while (iterator.hasNext()) {
-                                    Method testMethod = iterator.next();
-                                    String tag = TagSupport.getTag(testMethod);
-                                    if (tag == null) {
-                                        if (LOGGER.isTraceEnabled()) {
-                                            LOGGER.trace(
-                                                    "removing testClass [%s] testMethod [%s]",
-                                                    testMethod.getClass().getName(),
-                                                    testMethod.getName());
-                                        }
-                                        iterator.remove();
-                                    } else {
-                                        matcher.reset(tag);
-                                        if (!matcher.find()) {
-                                            if (LOGGER.isTraceEnabled()) {
-                                                LOGGER.trace(
-                                                        "removing testClass [%s] testMethod [%s]",
-                                                        testMethod.getClass().getName(),
-                                                        testMethod.getName());
-                                            }
-                                            iterator.remove();
-                                        }
-                                    }
-                                }
-                            }
-                        });
-
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.TEST_METHOD_TAG_EXCLUDE_REGEX))
-                .ifPresent(
-                        value -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(
-                                        "%s [%s]", Constants.TEST_METHOD_TAG_EXCLUDE_REGEX, value);
-                            }
-
-                            Pattern pattern = Pattern.compile(value);
-                            Matcher matcher = pattern.matcher("");
-
-                            for (Map.Entry<Class<?>, Set<Method>> classSetEntry :
-                                    classMethodMap.entrySet()) {
-                                Iterator<Method> iterator = classSetEntry.getValue().iterator();
-                                while (iterator.hasNext()) {
-                                    Method testMethod = iterator.next();
-                                    String tag = TagSupport.getTag(testMethod);
-                                    if (tag != null) {
-                                        matcher.reset(tag);
-                                        if (matcher.find()) {
-                                            if (LOGGER.isTraceEnabled()) {
-                                                LOGGER.trace(
-                                                        "removing testClass [%s] testMethod"
-                                                                + " [%s]",
-                                                        testMethod.getClass().getName(),
-                                                        testMethod.getName());
-                                            }
-                                            iterator.remove();
-                                        }
-                                    }
-                                }
-                            }
-                        });
     }
 
     /**
@@ -765,43 +610,6 @@ public class EngineDiscoveryRequestResolver {
 
                 argumentIndex++;
             }
-        }
-    }
-
-    /**
-     * Method to prune a test descriptor depth first
-     *
-     * @param testDescriptor testDescriptor
-     */
-    private static void pruneEngineDescriptor(TestDescriptor testDescriptor) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("prune()");
-        }
-
-        recursivePrune(testDescriptor);
-    }
-
-    /**
-     * Method to prune a test descriptor depth first
-     *
-     * @param testDescriptor testDescriptor
-     */
-    private static void recursivePrune(TestDescriptor testDescriptor) {
-        testDescriptor
-                .getChildren()
-                .forEach(
-                        (Consumer<TestDescriptor>)
-                                EngineDiscoveryRequestResolver::pruneEngineDescriptor);
-
-        if (testDescriptor.isRoot()) {
-            return;
-        }
-
-        if (testDescriptor.isContainer() && testDescriptor.getChildren().isEmpty()) {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("pruned testDescriptor [%s]", testDescriptor);
-            }
-            testDescriptor.removeFromHierarchy();
         }
     }
 }

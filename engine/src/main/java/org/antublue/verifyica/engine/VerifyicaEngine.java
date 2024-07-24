@@ -21,9 +21,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import org.antublue.verifyica.api.engine.ExtensionResult;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
@@ -105,16 +103,12 @@ public class VerifyicaEngine implements TestEngine {
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
-        AtomicReference<ExtensionResult> atomicReferenceExtensionResult = new AtomicReference<>();
-
         throwableCollector.execute(
                 () ->
-                        atomicReferenceExtensionResult.set(
-                                EngineExtensionRegistry.getInstance()
-                                        .onInitialize(defaultEngineExtensionContext)));
+                        EngineExtensionRegistry.getInstance()
+                                .afterInitialize(defaultEngineExtensionContext));
 
-        if (atomicReferenceExtensionResult.get() == ExtensionResult.PROCEED
-                && throwableCollector.isEmpty()) {
+        if (throwableCollector.isEmpty()) {
             new EngineDiscoveryRequestResolver()
                     .resolveSelectors(engineDiscoveryRequest, engineDescriptor);
         }
@@ -145,16 +139,12 @@ public class VerifyicaEngine implements TestEngine {
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
-        AtomicReference<ExtensionResult> atomicReferenceExtensionResult = new AtomicReference<>();
-
         throwableCollector.execute(
                 () ->
-                        atomicReferenceExtensionResult.set(
-                                EngineExtensionRegistry.getInstance()
-                                        .onExecute(defaultEngineExtensionContext)));
+                        EngineExtensionRegistry.getInstance()
+                                .beforeExecute(defaultEngineExtensionContext));
 
-        if (atomicReferenceExtensionResult.get() == ExtensionResult.PROCEED
-                && throwableCollector.isEmpty()) {
+        if (throwableCollector.isEmpty()) {
             throwableCollector.execute(
                     () -> {
                         ExecutionRequestExecutor executionRequestExecutor =
@@ -170,7 +160,7 @@ public class VerifyicaEngine implements TestEngine {
                                 .getThrowables()
                                 .addAll(
                                         EngineExtensionRegistry.getInstance()
-                                                .onDestroy(defaultEngineExtensionContext)));
+                                                .beforeDestroy(defaultEngineExtensionContext)));
 
         defaultEngineExtensionContext.getEngineContext().getStore().clear();
 

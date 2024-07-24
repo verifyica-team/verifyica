@@ -16,21 +16,22 @@
 
 package org.antublue.verifyica.engine.extension.internal;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.engine.EngineExtension;
-import org.antublue.verifyica.api.engine.EngineExtensionContext;
-import org.antublue.verifyica.api.engine.ExtensionResult;
+import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.extension.InternalEngineExtension;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement ShuffleTestClassesEngineExtension */
-@InternalEngineExtension
 @Verifyica.Order(order = Integer.MAX_VALUE)
-public class ShuffleTestClassesEngineExtension implements EngineExtension {
+public class ShuffleTestClassesEngineExtension implements InternalEngineExtension {
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(ShuffleTestClassesEngineExtension.class);
@@ -41,11 +42,15 @@ public class ShuffleTestClassesEngineExtension implements EngineExtension {
     }
 
     @Override
-    public ExtensionResult onTestClassDiscovery(
-            EngineExtensionContext engineExtensionContext, List<Class<?>> testClasses) {
+    public Map<Class<?>, Set<Method>> afterTestDiscovery(
+            EngineExtensionContext engineExtensionContext,
+            Map<Class<?>, Set<Method>> testClassMethodMap) {
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("onTestClassDiscovery()");
+            LOGGER.trace("afterTestDiscovery()");
         }
+
+        Map<Class<?>, Set<Method>> workingTestClassMethodMap =
+                new LinkedHashMap<>(testClassMethodMap);
 
         if (Constants.TRUE.equals(
                 engineExtensionContext
@@ -56,14 +61,23 @@ public class ShuffleTestClassesEngineExtension implements EngineExtension {
                 LOGGER.trace("shuffling test class order ...");
             }
 
-            Collections.shuffle(testClasses);
+            workingTestClassMethodMap = shuffleMapKeys(workingTestClassMethodMap);
         }
 
-        if (LOGGER.isTraceEnabled()) {
-            // Print all test classes that were discovered
-            testClasses.forEach(testClass -> LOGGER.trace("test class [%s]", testClass.getName()));
+        return workingTestClassMethodMap;
+    }
+
+    private static Map<Class<?>, Set<Method>> shuffleMapKeys(
+            Map<Class<?>, Set<Method>> originalMap) {
+        List<Class<?>> keys = new ArrayList<>(originalMap.keySet());
+
+        Collections.shuffle(keys);
+
+        Map<Class<?>, Set<Method>> shuffledMap = new LinkedHashMap<>();
+        for (Class<?> key : keys) {
+            shuffledMap.put(key, originalMap.get(key));
         }
 
-        return ExtensionResult.PROCEED;
+        return shuffledMap;
     }
 }
