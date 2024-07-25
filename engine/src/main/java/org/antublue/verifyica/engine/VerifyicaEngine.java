@@ -16,21 +16,20 @@
 
 package org.antublue.verifyica.engine;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.function.Consumer;
+import org.antublue.verifyica.api.EngineContext;
+import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
+import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutor;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutorFactory;
 import org.antublue.verifyica.engine.extension.EngineExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.util.ThrowableCollector;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
@@ -55,7 +54,7 @@ public class VerifyicaEngine implements TestEngine {
     private static final String ARTIFACT_ID = "engine";
 
     /** Configuration constant */
-    public static final String VERSION = version();
+    public static final String VERSION = Version.version();
 
     /** UniqueId constant */
     private static final String UNIQUE_ID = "[engine:" + ID + "]";
@@ -92,26 +91,24 @@ public class VerifyicaEngine implements TestEngine {
             return null;
         }
 
+        LOGGER.trace("discovering test classes and test methods");
+
+        EngineContext engineContext = DefaultEngineContext.getInstance();
+        EngineExtensionContext engineExtensionContext =
+                new DefaultEngineExtensionContext(engineContext);
         EngineDescriptor engineDescriptor = new EngineDescriptor(uniqueId, getId());
 
-        DefaultEngineContext.getInstance();
-
-        LOGGER.trace("discover(" + uniqueId + ")");
-
-        DefaultEngineExtensionContext defaultEngineExtensionContext =
-                new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
-
-        ThrowableCollector throwableCollector = new ThrowableCollector();
-
-        throwableCollector.execute(
-                () ->
-                        EngineExtensionRegistry.getInstance()
-                                .afterInitialize(defaultEngineExtensionContext));
-
-        if (throwableCollector.isEmpty()) {
+        try {
+            EngineExtensionRegistry.getInstance().onInitialize(engineExtensionContext);
             new EngineDiscoveryRequestResolver()
                     .resolveSelectors(engineDiscoveryRequest, engineDescriptor);
+        } catch (EngineException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw new EngineException(t);
         }
+
+        LOGGER.trace("discovery done");
 
         return engineDescriptor;
     }
@@ -122,49 +119,40 @@ public class VerifyicaEngine implements TestEngine {
             return;
         }
 
-        LOGGER.trace(
-                "execute() rootTestDescriptor children [%d]",
-                executionRequest.getRootTestDescriptor().getChildren().size());
+        LOGGER.trace("executing test classes and test methods");
 
         if (LOGGER.isTraceEnabled()) {
             traceEngineDescriptor(executionRequest.getRootTestDescriptor());
         }
 
-        executionRequest
-                .getEngineExecutionListener()
-                .executionStarted(executionRequest.getRootTestDescriptor());
+        EngineContext engineContext = DefaultEngineContext.getInstance();
+        EngineExtensionContext engineExtensionContext =
+                new DefaultEngineExtensionContext(engineContext);
 
-        DefaultEngineExtensionContext defaultEngineExtensionContext =
-                new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
+        Throwable throwable = null;
 
-        ThrowableCollector throwableCollector = new ThrowableCollector();
+        try {
+            EngineExtensionRegistry.getInstance().beforeExecute(engineExtensionContext);
 
-        throwableCollector.execute(
-                () ->
-                        EngineExtensionRegistry.getInstance()
-                                .beforeExecute(defaultEngineExtensionContext));
+            executionRequest
+                    .getEngineExecutionListener()
+                    .executionStarted(executionRequest.getRootTestDescriptor());
 
-        if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        ExecutionRequestExecutor executionRequestExecutor =
-                                ExecutionRequestExecutorFactory.createExecutionRequestExecutor();
-                        executionRequestExecutor.execute(executionRequest);
-                        executionRequestExecutor.await();
-                    });
+            ExecutionRequestExecutor executionRequestExecutor =
+                    ExecutionRequestExecutorFactory.createExecutionRequestExecutor();
+            executionRequestExecutor.execute(executionRequest);
+            executionRequestExecutor.await();
+        } catch (Throwable t) {
+            throwable = t;
+        } finally {
+            try {
+                EngineExtensionRegistry.getInstance().afterExecute(engineExtensionContext);
+            } catch (Throwable t) {
+                t.printStackTrace(System.err);
+            }
         }
 
-        throwableCollector.execute(
-                () ->
-                        throwableCollector
-                                .getThrowables()
-                                .addAll(
-                                        EngineExtensionRegistry.getInstance()
-                                                .beforeDestroy(defaultEngineExtensionContext)));
-
-        defaultEngineExtensionContext.getEngineContext().getStore().clear();
-
-        if (throwableCollector.isEmpty()) {
+        if (throwable != null) {
             executionRequest
                     .getEngineExecutionListener()
                     .executionFinished(
@@ -175,30 +163,10 @@ public class VerifyicaEngine implements TestEngine {
                     .getEngineExecutionListener()
                     .executionFinished(
                             executionRequest.getRootTestDescriptor(),
-                            throwableCollector.toTestExecutionResult());
-        }
-    }
-
-    /**
-     * Method to get the version
-     *
-     * @return the version
-     */
-    public static String version() {
-        String value = "unknown";
-
-        try (InputStream inputStream =
-                VerifyicaEngine.class.getResourceAsStream("/engine.properties")) {
-            if (inputStream != null) {
-                Properties properties = new Properties();
-                properties.load(inputStream);
-                value = properties.getProperty("version").trim();
-            }
-        } catch (IOException e) {
-            // INTENTIONALLY BLANK
+                            TestExecutionResult.aborted(throwable));
         }
 
-        return value;
+        LOGGER.trace("execution done");
     }
 
     /**
@@ -218,6 +186,7 @@ public class VerifyicaEngine implements TestEngine {
      */
     private static void traceTestDescriptor(TestDescriptor testDescriptor, int level) {
         LOGGER.trace(String.join(" ", Collections.nCopies(level, " ")) + testDescriptor);
+
         testDescriptor
                 .getChildren()
                 .forEach(

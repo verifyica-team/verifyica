@@ -16,11 +16,8 @@
 
 package org.antublue.verifyica.engine.descriptor;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.util.StopWatch;
-import org.antublue.verifyica.engine.util.ThrowableCollector;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
@@ -29,9 +26,6 @@ import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
         implements MetadataTestDescriptor {
-
-    /** ThrowableCollector */
-    protected final ThrowableCollector throwableCollector;
 
     /** Metadata */
     protected final Metadata metadata;
@@ -48,7 +42,6 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
     protected ExecutableTestDescriptor(UniqueId uniqueId, String displayName) {
         super(uniqueId, displayName);
 
-        throwableCollector = new ThrowableCollector();
         metadata = new Metadata();
         stopWatch = new StopWatch();
     }
@@ -78,31 +71,4 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
      * @param context context
      */
     public abstract void skip(ExecutionRequest executionRequest, Context context);
-
-    /**
-     * Method to collect all Throwables from parent and children
-     *
-     * @return a List of Throwables
-     */
-    public List<Throwable> collectThrowables() {
-        List<Throwable> throwables = new ArrayList<>();
-
-        if (throwableCollector.isNotEmpty()) {
-            throwables.addAll(throwableCollector.getThrowables());
-        }
-
-        getChildren().stream()
-                .map(ToExecutableTestDescriptor.INSTANCE)
-                .forEach(
-                        executableTestDescriptor -> {
-                            List<Throwable> childThrowables =
-                                    executableTestDescriptor.collectThrowables();
-
-                            if (childThrowables != null) {
-                                throwables.addAll(childThrowables);
-                            }
-                        });
-
-        return throwables;
-    }
 }

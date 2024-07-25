@@ -37,18 +37,18 @@ public class ExampleEngineExtension1 implements EngineExtension {
     public static final String VALUE = UUID.randomUUID().toString();
 
     @Override
-    public void afterInitialize(EngineExtensionContext engineExtensionContext) {
-        System.out.println(format("%s afterInitialize()", getClass().getName()));
+    public void onInitialize(EngineExtensionContext engineExtensionContext) {
+        System.out.println(format("%s onInitialize()", getClass().getName()));
 
         // Add a global string to the EngineContext Store for EngineExtensionTest
         engineExtensionContext.getEngineContext().getStore().put(KEY, VALUE);
     }
 
     @Override
-    public Map<Class<?>, Set<Method>> afterTestDiscovery(
+    public Map<Class<?>, Set<Method>> onTestDiscovery(
             EngineExtensionContext engineExtensionContext,
             Map<Class<?>, Set<Method>> testClassMethodMap) {
-        System.out.println(format("%s afterTestDiscovery()", getClass().getName()));
+        System.out.println(format("%s onTestDiscovery()", getClass().getName()));
 
         Map<Class<?>, Set<Method>> workingTestClassMethodMap =
                 new LinkedHashMap<>(testClassMethodMap);
@@ -73,7 +73,7 @@ public class ExampleEngineExtension1 implements EngineExtension {
     }
 
     @Override
-    public void beforeDestroy(EngineExtensionContext engineExtensionContext) {
-        System.out.println(format("%s beforeDestroy()", getClass().getName()));
+    public void afterExecute(EngineExtensionContext engineExtensionContext) {
+        System.out.println(format("%s afterExecute()", getClass().getName()));
     }
 }

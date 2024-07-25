@@ -59,10 +59,8 @@ public class ExecutionRequestExecutorFactory {
             executionRequestExecutor = new PlatformThreadsExecutionRequestExecutor();
         }
 
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(
-                    "executionRequestExecutor [%s]", executionRequestExecutor.getClass().getName());
-        }
+        LOGGER.trace(
+                "executionRequestExecutor [%s]", executionRequestExecutor.getClass().getName());
 
         return executionRequestExecutor;
     }

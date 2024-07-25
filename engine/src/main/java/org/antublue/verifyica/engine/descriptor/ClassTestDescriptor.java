@@ -19,6 +19,7 @@ package org.antublue.verifyica.engine.descriptor;
 import io.github.thunkware.vt.bridge.ThreadTool;
 import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -32,9 +33,9 @@ import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ObjectSupport;
-import org.antublue.verifyica.engine.util.ThrowableCollector;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
+import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.ClassSource;
@@ -97,9 +98,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
     @Override
     public void execute(ExecutionRequest executionRequest, Context context) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("execute ClassTestDescriptor [%s]", toString());
-        }
+        LOGGER.trace("execute [%s]", toString());
 
         stopWatch.reset();
 
@@ -111,18 +110,40 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        throwableCollector.execute(() -> instantiateTestInstance(defaultClassContext));
-        if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(() -> prepareMethods(defaultClassContext));
-            if (throwableCollector.isEmpty()) {
-                executeChildren(executionRequest, defaultClassContext);
-            } else {
-                skipChildren(executionRequest, defaultClassContext);
-            }
-            throwableCollector.execute(() -> concludeMethods(defaultClassContext));
-        }
+        List<Throwable> throwables = new ArrayList<>();
 
-        destroyTestInstance(defaultClassContext, throwableCollector);
+        try {
+            instantiateTestInstance(defaultClassContext);
+            try {
+                prepare(defaultClassContext);
+                try {
+                    doExecute(executionRequest, defaultClassContext);
+                } catch (Throwable t) {
+                    throwables.add(t);
+                }
+            } catch (Throwable t) {
+                throwables.add(t);
+                try {
+                    doSkip(executionRequest, defaultClassContext);
+                } catch (Throwable tt) {
+                    throwables.add(tt);
+                }
+            } finally {
+                try {
+                    conclude(defaultClassContext);
+                } catch (Throwable t) {
+                    throwables.add(t);
+                }
+            }
+        } catch (Throwable t) {
+            throwables.add(t);
+        } finally {
+            try {
+                destroyTestInstance(defaultClassContext);
+            } catch (Throwable t) {
+                throwables.add(t);
+            }
+        }
 
         stopWatch.stop();
 
@@ -130,27 +151,25 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                 .put(
                         MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
                         stopWatch.elapsedTime());
-
-        List<Throwable> throwables = collectThrowables();
-        throwableCollector.getThrowables().addAll(throwables);
-
         getMetadata()
                 .put(
                         MetadataTestDescriptorConstants.TEST_DESCRIPTOR_STATUS,
-                        throwableCollector.isEmpty()
+                        throwables.isEmpty()
                                 ? MetadataTestDescriptorConstants.PASS
                                 : MetadataTestDescriptorConstants.FAIL);
 
-        executionRequest
-                .getEngineExecutionListener()
-                .executionFinished(this, throwableCollector.toTestExecutionResult());
+        TestExecutionResult testExecutionResult = TestExecutionResult.successful();
+
+        if (!throwables.isEmpty()) {
+            testExecutionResult = TestExecutionResult.failed(throwables.get(0));
+        }
+
+        executionRequest.getEngineExecutionListener().executionFinished(this, testExecutionResult);
     }
 
     @Override
     public void skip(ExecutionRequest executionRequest, Context context) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("skip ClassTestDescriptor [%s]", toString());
-        }
+        LOGGER.trace("skip [%s]", toString());
 
         stopWatch.reset();
 
@@ -210,9 +229,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
      * @throws Throwable Throwable
      */
     private void instantiateTestInstance(DefaultClassContext defaultClassContext) throws Throwable {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("instantiateTestInstance() testClass [%s]", testClass.getName());
-        }
+        LOGGER.trace("instantiateTestInstance() testClass [%s]", testClass.getName());
 
         ClassExtensionRegistry.getInstance()
                 .beforeInstantiate(defaultClassContext.getEngineContext(), testClass);
@@ -230,7 +247,9 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
      * @param defaultClassContext defaultClassContext
      * @throws Throwable Throwable
      */
-    private void prepareMethods(DefaultClassContext defaultClassContext) throws Throwable {
+    private void prepare(DefaultClassContext defaultClassContext) throws Throwable {
+        LOGGER.trace("prepare() testClass [%s]", testClass.getName());
+
         ClassExtensionRegistry.getInstance()
                 .prepare(defaultClassContext.asImmutable(), prepareMethods);
     }
@@ -241,11 +260,9 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
      * @param executionRequest executionRequest
      * @param defaultClassContext defaultClassContext
      */
-    private void executeChildren(
+    private void doExecute(
             ExecutionRequest executionRequest, DefaultClassContext defaultClassContext) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("executeChildren() testClass [%s]", testClass.getName());
-        }
+        LOGGER.trace("doExecute() testClass [%s]", testClass.getName());
 
         Preconditions.notNull(defaultClassContext, "defaultClassContext is null");
         Preconditions.notNull(defaultClassContext.getTestInstance(), "testInstance is null");
@@ -315,11 +332,9 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
      * @param executionRequest executionRequest
      * @param defaultClassContext defaultClassContext
      */
-    private void skipChildren(
+    private void doSkip(
             ExecutionRequest executionRequest, DefaultClassContext defaultClassContext) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("skipChildren() testClass [%s]", testClass.getName());
-        }
+        LOGGER.trace("doSkip() testClass [%s]", testClass.getName());
 
         getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
         getMetadata()
@@ -351,36 +366,30 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
      * @param defaultClassContext defaultClassContext
      * @throws Throwable Throwable
      */
-    private void concludeMethods(DefaultClassContext defaultClassContext) throws Throwable {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("invokeConcludeMethods() testClass [%s]", testClass.getName());
-        }
+    private void conclude(DefaultClassContext defaultClassContext) throws Throwable {
+        LOGGER.trace("conclude() testClass [%s]", testClass.getName());
 
         ClassExtensionRegistry.getInstance()
                 .conclude(defaultClassContext.asImmutable(), concludeMethods);
-
-        defaultClassContext.getStore().clear();
     }
 
     /**
      * Method to destroy the test instance
      *
      * @param defaultClassContext defaultClassContext
+     * @throws Throwable Throwable
      */
-    private void destroyTestInstance(
-            DefaultClassContext defaultClassContext, ThrowableCollector throwableCollector) {
+    private void destroyTestInstance(DefaultClassContext defaultClassContext) throws Throwable {
         Object testInstance = defaultClassContext.getTestInstance();
 
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("destroyTestInstance() testClass [%s]", testClass.getName(), testInstance);
-        }
+        LOGGER.trace("destroyTestInstance() testClass [%s]", testClass.getName(), testInstance);
+
+        Throwable throwable = null;
 
         try {
-            Optional.ofNullable(
-                            ClassExtensionRegistry.getInstance().beforeDestroy(defaultClassContext))
-                    .ifPresent(throwables -> throwableCollector.getThrowables().addAll(throwables));
+            ClassExtensionRegistry.getInstance().beforeDestroy(defaultClassContext);
         } catch (Throwable t) {
-            throwableCollector.getThrowables().add(t);
+            throwable = t;
         }
 
         defaultClassContext.setTestInstance(null);
@@ -389,8 +398,14 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             try {
                 ((AutoCloseable) testInstance).close();
             } catch (Throwable t) {
-                throwableCollector.getThrowables().add(t);
+                if (throwable == null) {
+                    throwable = t;
+                }
             }
+        }
+
+        if (throwable != null) {
+            throw throwable;
         }
     }
 }

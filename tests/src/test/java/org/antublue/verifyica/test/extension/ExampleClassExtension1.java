@@ -145,7 +145,7 @@ public class ExampleClassExtension1 implements ClassExtension {
                         classExtensionContext.getClassContext().getTestClass().getName()));
     }
 
-    public void beforeDestroy(ClassExtensionContext classExtensionContext) throws Throwable {
+    public void onDestroy(ClassExtensionContext classExtensionContext) throws Throwable {
         System.out.println(format("%s beforeDestroy()", getClass().getName()));
     }
 }

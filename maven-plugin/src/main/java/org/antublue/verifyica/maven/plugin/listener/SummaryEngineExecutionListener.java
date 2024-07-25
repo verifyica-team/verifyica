@@ -26,7 +26,7 @@ import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.Metadata;
 import org.antublue.verifyica.engine.descriptor.MetadataTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.MetadataTestDescriptorConstants;
-import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.MethodTestDescriptor;
 import org.antublue.verifyica.engine.support.HumanReadableTimeSupport;
 import org.antublue.verifyica.engine.util.AnsiColor;
 import org.antublue.verifyica.engine.util.AnsiColorStringBuilder;
@@ -142,7 +142,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     String testDescriptorStatus =
                             metadata.get(MetadataTestDescriptorConstants.TEST_DESCRIPTOR_STATUS);
 
-                    if (testDescriptor instanceof TestMethodTestDescriptor) {
+                    if (testDescriptor instanceof MethodTestDescriptor) {
                         methodTestDescriptorFound++;
                         switch (testDescriptorStatus) {
                             case "PASS":

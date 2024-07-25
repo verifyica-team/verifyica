@@ -20,6 +20,7 @@ import static java.lang.String.format;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.antublue.verifyica.api.Argument;
@@ -32,6 +33,7 @@ import org.antublue.verifyica.engine.support.DisplayNameSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
+import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.ClassSource;
@@ -86,9 +88,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
     @Override
     public void execute(ExecutionRequest executionRequest, Context context) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("execute ArgumentTestDescriptor [%s]", toString());
-        }
+        LOGGER.trace("execute ArgumentTestDescriptor [%s]", toString());
 
         DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
 
@@ -113,13 +113,29 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        throwableCollector.execute(() -> beforeAll(defaultArgumentContext));
-        if (throwableCollector.isEmpty()) {
-            executeChildren(executionRequest, defaultArgumentContext);
-        } else {
-            skipChildren(executionRequest, defaultArgumentContext);
+        List<Throwable> throwables = new ArrayList<>();
+
+        try {
+            beforeAll(defaultArgumentContext);
+            try {
+                doExecute(executionRequest, defaultArgumentContext);
+            } catch (Throwable t) {
+                throwables.add(t);
+            }
+        } catch (Throwable t) {
+            throwables.add(t);
+            try {
+                doSkip(executionRequest, defaultArgumentContext);
+            } catch (Throwable tt) {
+                throwables.add(t);
+            }
+        } finally {
+            try {
+                afterAll(defaultArgumentContext);
+            } catch (Throwable t) {
+                throwables.add(t);
+            }
         }
-        throwableCollector.execute(() -> afterAll(defaultArgumentContext));
 
         stopWatch.stop();
 
@@ -127,29 +143,25 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                 .put(
                         MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
                         stopWatch.elapsedTime());
-
-        List<Throwable> throwables = collectThrowables();
-        throwableCollector.getThrowables().addAll(throwables);
-
         getMetadata()
                 .put(
                         MetadataTestDescriptorConstants.TEST_DESCRIPTOR_STATUS,
-                        throwableCollector.isEmpty()
+                        throwables.isEmpty()
                                 ? MetadataTestDescriptorConstants.PASS
                                 : MetadataTestDescriptorConstants.FAIL);
 
-        defaultArgumentContext.setTestArgument(null);
+        TestExecutionResult testExecutionResult = TestExecutionResult.successful();
 
-        executionRequest
-                .getEngineExecutionListener()
-                .executionFinished(this, throwableCollector.toTestExecutionResult());
+        if (!throwables.isEmpty()) {
+            testExecutionResult = TestExecutionResult.failed(throwables.get(0));
+        }
+
+        executionRequest.getEngineExecutionListener().executionFinished(this, testExecutionResult);
     }
 
     @Override
     public void skip(ExecutionRequest executionRequest, Context context) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("skip ArgumentTestDescriptor [%s]", toString());
-        }
+        LOGGER.trace("skip [%s]", toString());
 
         stopWatch.reset();
 
@@ -208,6 +220,10 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @throws Throwable Throwable
      */
     private void beforeAll(DefaultArgumentContext defaultArgumentContext) throws Throwable {
+        LOGGER.trace(
+                "beforeAll() testClass [%s] argument [%s]",
+                testClass.getName(), defaultArgumentContext.getTestArgument().getName());
+
         ClassExtensionRegistry.getInstance().beforeAll(defaultArgumentContext, beforeAllMethods);
     }
 
@@ -217,11 +233,11 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @param executionRequest executionRequest
      * @param defaultArgumentContext defaultArgumentContext
      */
-    private void executeChildren(
+    private void doExecute(
             ExecutionRequest executionRequest, DefaultArgumentContext defaultArgumentContext) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("executeChildren() testClass [%s]", testClass.getName());
-        }
+        LOGGER.trace(
+                "doExecute() testClass [%s] argument [%s]",
+                testClass.getName(), defaultArgumentContext.getTestArgument().getName());
 
         Preconditions.notNull(executionRequest, "executionRequest is null");
 
@@ -239,11 +255,11 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @param executionRequest executionRequest
      * @param defaultArgumentContext defaultArgumentContext
      */
-    private void skipChildren(
+    private void doSkip(
             ExecutionRequest executionRequest, DefaultArgumentContext defaultArgumentContext) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("skipChildren() testClass [%s]", testClass.getName());
-        }
+        LOGGER.trace(
+                "doSkip() testClass [%s] argument [%s]",
+                testClass.getName(), defaultArgumentContext.getTestArgument().getName());
 
         stopWatch.stop();
 
@@ -275,6 +291,10 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @throws Throwable Throwable
      */
     private void afterAll(DefaultArgumentContext defaultArgumentContext) throws Throwable {
+        LOGGER.trace(
+                "afterAll() testClass [%s] argument [%s]",
+                testClass.getName(), defaultArgumentContext.getTestArgument().getName());
+
         ClassExtensionRegistry.getInstance().afterAll(defaultArgumentContext, afterAllMethods);
 
         if (testArgument instanceof AutoCloseable) {

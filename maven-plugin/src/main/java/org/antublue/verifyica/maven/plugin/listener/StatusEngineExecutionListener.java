@@ -277,14 +277,16 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
             TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
         try {
             if (consoleLogPassMessages && testDescriptor instanceof MetadataTestDescriptor) {
-                executionFinished((MetadataTestDescriptor) testDescriptor);
+                executionFinished((MetadataTestDescriptor) testDescriptor, testExecutionResult);
             }
         } catch (Throwable t) {
             t.printStackTrace();
         }
     }
 
-    private void executionFinished(MetadataTestDescriptor metadataTestDescriptor) {
+    private void executionFinished(
+            MetadataTestDescriptor metadataTestDescriptor,
+            TestExecutionResult testExecutionResult) {
         Metadata metadata = metadataTestDescriptor.getMetadata();
 
         Class<?> testClass = metadata.get(MetadataTestDescriptorConstants.TEST_CLASS);
@@ -302,9 +304,6 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
         Duration elapsedTime =
                 metadata.get(MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION);
 
-        String testDescriptorStatus =
-                metadata.get(MetadataTestDescriptorConstants.TEST_DESCRIPTOR_STATUS);
-
         AnsiColorStringBuilder ansiColorStringBuilder =
                 new AnsiColorStringBuilder()
                         .append(INFO)
@@ -313,18 +312,20 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .append(" | ")
                         .append(AnsiColor.TEXT_WHITE_BRIGHT);
 
-        switch (testDescriptorStatus) {
-            case "PASS":
+        TestExecutionResult.Status status = testExecutionResult.getStatus();
+
+        switch (status) {
+            case SUCCESSFUL:
                 {
                     ansiColorStringBuilder.append(consolePassMessage);
                     break;
                 }
-            case "FAIL":
+            case FAILED:
                 {
                     ansiColorStringBuilder.append(consoleFailMessage);
                     break;
                 }
-            case "SKIP":
+            case ABORTED:
                 {
                     ansiColorStringBuilder.append(consoleSkipMessage);
                     break;
@@ -360,6 +361,11 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
         ansiColorStringBuilder.color(AnsiColor.TEXT_RESET);
 
         System.out.println(ansiColorStringBuilder);
+
+        testExecutionResult
+                .getThrowable()
+                .ifPresent(throwable -> throwable.printStackTrace(System.err));
+
         System.out.flush();
     }
 }

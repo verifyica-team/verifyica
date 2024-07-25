@@ -38,7 +38,7 @@ import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
-import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.MethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.exception.TestClassException;
 import org.antublue.verifyica.engine.exception.UncheckedClassNotFoundException;
@@ -92,9 +92,7 @@ public class EngineDiscoveryRequestResolver {
      */
     public void resolveSelectors(
             EngineDiscoveryRequest engineDiscoveryRequest, EngineDescriptor engineDescriptor) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("resolveSelectors()");
-        }
+        LOGGER.trace("resolveSelectors()");
 
         StopWatch stopWatch = new StopWatch();
 
@@ -132,9 +130,7 @@ public class EngineDiscoveryRequestResolver {
     private static void resolveClasspathRootSelectors(
             EngineDiscoveryRequest engineDiscoveryRequest,
             Map<Class<?>, Set<Method>> classMethodMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("resolveClasspathRootSelectors()");
-        }
+        LOGGER.trace("resolveClasspathRootSelectors()");
 
         engineDiscoveryRequest
                 .getSelectorsByType(ClasspathRootSelector.class)
@@ -189,9 +185,7 @@ public class EngineDiscoveryRequestResolver {
     private static void resolvePackageSelectors(
             EngineDiscoveryRequest engineDiscoveryRequest,
             Map<Class<?>, Set<Method>> classMethodMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("resolvePackageSelectors()");
-        }
+        LOGGER.trace("resolvePackageSelectors()");
 
         engineDiscoveryRequest
                 .getSelectorsByType(PackageSelector.class)
@@ -199,9 +193,7 @@ public class EngineDiscoveryRequestResolver {
                         packageSelector -> {
                             String packageName = packageSelector.getPackageName();
 
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace("packageName [%s]", packageName);
-                            }
+                            LOGGER.trace("packageName [%s]", packageName);
 
                             List<Class<?>> testClasses =
                                     ClassPathSupport.findClasses(
@@ -233,9 +225,7 @@ public class EngineDiscoveryRequestResolver {
     private static void resolveClassSelectors(
             EngineDiscoveryRequest engineDiscoveryRequest,
             Map<Class<?>, Set<Method>> classMethodMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("resolveClassSelectors()");
-        }
+        LOGGER.trace("resolveClassSelectors()");
 
         engineDiscoveryRequest
                 .getSelectorsByType(ClassSelector.class)
@@ -266,9 +256,7 @@ public class EngineDiscoveryRequestResolver {
     private static void resolveMethodSelectors(
             EngineDiscoveryRequest engineDiscoveryRequest,
             Map<Class<?>, Set<Method>> classMethodMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("resolveMethodSelectors()");
-        }
+        LOGGER.trace("resolveMethodSelectors()");
 
         engineDiscoveryRequest
                 .getSelectorsByType(MethodSelector.class)
@@ -299,9 +287,7 @@ public class EngineDiscoveryRequestResolver {
             EngineDiscoveryRequest engineDiscoveryRequest,
             Map<Class<?>, Set<Method>> classMethodMap,
             Map<Class<?>, Set<Integer>> argumentIndexMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("resolveUniqueIdSelectors()");
-        }
+        LOGGER.trace("resolveUniqueIdSelectors()");
 
         engineDiscoveryRequest
                 .getSelectorsByType(UniqueIdSelector.class)
@@ -310,9 +296,7 @@ public class EngineDiscoveryRequestResolver {
                             UniqueId uniqueId = uniqueIdSelector.getUniqueId();
                             List<UniqueId.Segment> segments = uniqueId.getSegments();
 
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace("uniqueId [%s]", uniqueId);
-                            }
+                            LOGGER.trace("uniqueId [%s]", uniqueId);
 
                             // Specific argument selected
                             if (segments.size() == 3) {
@@ -389,9 +373,7 @@ public class EngineDiscoveryRequestResolver {
      * @throws Throwable Throwable
      */
     private static List<Argument<?>> getArguments(Class<?> testClass) throws Throwable {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("getArguments() testClass [%s]", testClass.getName());
-        }
+        LOGGER.trace("getArguments() testClass [%s]", testClass.getName());
 
         List<Argument<?>> testArguments = new ArrayList<>();
 
@@ -436,9 +418,7 @@ public class EngineDiscoveryRequestResolver {
      * @return the argument supplier method
      */
     private static Method getArgumentSupplierMethod(Class<?> testClass) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("getArgumentSupplierMethod() testClass [%s]", testClass.getName());
-        }
+        LOGGER.trace("getArgumentSupplierMethod() testClass [%s]", testClass.getName());
 
         List<Method> methods =
                 MethodSupport.findMethods(
@@ -462,7 +442,7 @@ public class EngineDiscoveryRequestResolver {
                 new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
 
         return EngineExtensionRegistry.getInstance()
-                .afterTestDiscovery(defaultEngineExtensionContext, testClassMethodMap);
+                .onTestDiscovery(defaultEngineExtensionContext, testClassMethodMap);
     }
 
     /**
@@ -590,8 +570,8 @@ public class EngineDiscoveryRequestResolver {
                     UniqueId testMethodDescriptorUniqueId =
                             argumentTestDescriptorUniqueId.append("test", method.getName());
 
-                    TestMethodTestDescriptor testMethodTestDescriptor =
-                            new TestMethodTestDescriptor(
+                    MethodTestDescriptor methodTestDescriptor =
+                            new MethodTestDescriptor(
                                     testMethodDescriptorUniqueId,
                                     DisplayNameSupport.getDisplayName(method),
                                     testClass,
@@ -605,7 +585,7 @@ public class EngineDiscoveryRequestResolver {
                                             Predicates.AFTER_EACH_METHOD,
                                             HierarchyTraversalMode.BOTTOM_UP));
 
-                    argumentTestDescriptor.addChild(testMethodTestDescriptor);
+                    argumentTestDescriptor.addChild(methodTestDescriptor);
                 }
 
                 argumentIndex++;

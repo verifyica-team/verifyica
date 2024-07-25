@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.extension.internal;
+package org.antublue.verifyica.engine.extension.internal.engine;
 
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
 
