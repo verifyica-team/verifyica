@@ -16,6 +16,12 @@
 
 package org.antublue.verifyica.engine.descriptor;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.util.StopWatch;
 import org.junit.platform.engine.ExecutionRequest;
@@ -23,9 +29,16 @@ import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 
 /** Abstract class to implement ExecutableTestDescriptor */
-@SuppressWarnings("PMD.EmptyCatchBlock")
+@SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.EmptyCatchBlock"})
 public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
         implements MetadataTestDescriptor {
+
+    private static final Set<String> pruneRegexPatterns = new LinkedHashSet<>();
+
+    static {
+        pruneRegexPatterns.add("com.antublue.verifyica.engine..*");
+        pruneRegexPatterns.add("com\\.antublue\\.verifyica\\.engine\\.extension\\..*");
+    }
 
     /** Metadata */
     protected final Metadata metadata;
@@ -71,4 +84,41 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
      * @param context context
      */
     public abstract void skip(ExecutionRequest executionRequest, Context context);
+
+    protected static void pruneStackTrace(Throwable throwable, Class<?> stopClass) {
+        List<Pattern> patterns = new ArrayList<>();
+        for (String pruneRegexPattern : pruneRegexPatterns) {
+            patterns.add(Pattern.compile(pruneRegexPattern));
+        }
+
+        while (throwable != null) {
+            StackTraceElement[] originalStackTrace = throwable.getStackTrace();
+
+            List<StackTraceElement> filteredStackTrace = new ArrayList<>();
+
+            boolean stopClassEncountered = false;
+            for (StackTraceElement element : originalStackTrace) {
+                if (element.getClassName().equals(stopClass.getName())) {
+                    stopClassEncountered = true;
+                }
+
+                boolean matchesPattern = false;
+                for (Pattern pattern : patterns) {
+                    Matcher matcher = pattern.matcher(element.getClassName());
+                    if (matcher.matches()) {
+                        matchesPattern = true;
+                        break;
+                    }
+                }
+
+                if (!matchesPattern || stopClassEncountered) {
+                    filteredStackTrace.add(element);
+                }
+            }
+
+            throwable.setStackTrace(filteredStackTrace.toArray(new StackTraceElement[0]));
+
+            throwable = throwable.getCause();
+        }
+    }
 }

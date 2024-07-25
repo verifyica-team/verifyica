@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.extension;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -159,6 +160,8 @@ public class ClassExtensionRegistry {
             for (ClassExtension classExtension : getClassExtensions(testClass)) {
                 classExtension.beforeInstantiate(defaultEngineExtensionContext, testClass);
             }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         } catch (Abort e) {
             // INTENTIONALLY BLANK
         }
@@ -183,6 +186,8 @@ public class ClassExtensionRegistry {
             for (Method prepareMethod : prepareMethods) {
                 prepareMethod.invoke(null, classContext);
             }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         } catch (Abort e) {
             // INTENTIONALLY BLANK
         }
@@ -209,6 +214,8 @@ public class ClassExtensionRegistry {
             for (Method beforeAllMethod : beforeAllMethods) {
                 beforeAllMethod.invoke(testInstance, argumentContext);
             }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         } catch (Abort e) {
             // INTENTIONALLY BLANK
         }
@@ -236,6 +243,8 @@ public class ClassExtensionRegistry {
             for (Method beforeEachMethod : beforeEachMethods) {
                 beforeEachMethod.invoke(testInstance, argumentContext);
             }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         } catch (Abort e) {
             // INTENTIONALLY BLANK
         }
@@ -262,6 +271,8 @@ public class ClassExtensionRegistry {
             }
             testMethod.invoke(
                     testInstance, ((DefaultArgumentContext) argumentContext).asImmutable());
+        } catch (InvocationTargetException e) {
+            throwable = e.getCause();
         } catch (Abort e) {
             // INTENTIONALLY BLANK
         } catch (Throwable t) {
@@ -272,6 +283,8 @@ public class ClassExtensionRegistry {
             for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
                 classExtension.afterTest(argumentExtensionContext, testMethod, throwable);
             }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         } catch (Abort e) {
             // INTENTIONALLY BLANK
         }
@@ -299,6 +312,8 @@ public class ClassExtensionRegistry {
             for (Method afterEachMethod : afterEachMethods) {
                 afterEachMethod.invoke(testInstance, argumentContext);
             }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         } catch (Abort e) {
             // INTENTIONALLY BLANK
         }
@@ -326,6 +341,8 @@ public class ClassExtensionRegistry {
             for (Method afterAllMethod : afterAllMethods) {
                 afterAllMethod.invoke(testInstance, argumentContext);
             }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         } catch (Abort e) {
             // INTENTIONALLY BLANK
         }
@@ -351,6 +368,8 @@ public class ClassExtensionRegistry {
             for (Method concludeMethod : concludeMethods) {
                 concludeMethod.invoke(testInstance, classContext);
             }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         } catch (Abort e) {
             // INTENTIONALLY BLANK
         }
@@ -371,6 +390,8 @@ public class ClassExtensionRegistry {
         for (ClassExtension classExtension : getClassExtensions(testClass)) {
             try {
                 classExtension.onDestroy(defaultClassExtensionContext);
+            } catch (InvocationTargetException e) {
+                throwables.add(e.getCause());
             } catch (Abort e) {
                 break;
             } catch (Throwable t) {

@@ -341,7 +341,7 @@ public class DefaultConfiguration implements Configuration {
     /**
      * Check if a String is not null and not blank
      *
-     * @param string object
+     * @param string string
      * @param nullMessage nullMessage
      * @param emptyMessage emptyMessage
      */

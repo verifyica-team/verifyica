@@ -44,9 +44,6 @@ public class MetadataTestDescriptorConstants {
     public static final String TEST_METHOD_DISPLAY_NAME = "testMethod.displayName";
 
     /** Constant */
-    public static final String TEST_DESCRIPTOR_STATUS = "testDescriptorStatus";
-
-    /** Constant */
     public static final String TEST_DESCRIPTOR_DURATION = "testDescriptorDuration";
 
     /** Constructor */

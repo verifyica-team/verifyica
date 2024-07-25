@@ -20,9 +20,9 @@ import static java.lang.String.format;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
@@ -30,6 +30,7 @@ import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.DisplayNameSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
+import org.antublue.verifyica.engine.util.StateTracker;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
@@ -83,7 +84,7 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
 
     @Override
     public void execute(ExecutionRequest executionRequest, Context context) {
-        LOGGER.trace("execute [%s]", toString());
+        LOGGER.trace("execute [%s]", this);
 
         DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
 
@@ -109,42 +110,63 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        List<Throwable> throwables = new ArrayList<>();
+        StateTracker<String> stateTracker = new StateTracker<>();
 
         try {
+            stateTracker.put("beforeEach");
             beforeEach(defaultArgumentContext);
-            try {
-                test(defaultArgumentContext);
-            } catch (Throwable t) {
-                throwables.add(t);
-            }
+            stateTracker.put("beforeEach->SUCCESS");
         } catch (Throwable t) {
-            throwables.add(t);
-        } finally {
+            stateTracker.put("beforeEach->FAILURE", t);
+            t.printStackTrace(System.err);
+        }
+
+        if (stateTracker.contains("beforeEach->SUCCESS")) {
             try {
-                afterEach(defaultArgumentContext);
-            } catch (Throwable tt) {
-                throwables.add(tt);
+                stateTracker.put("test");
+                test(defaultArgumentContext);
+                stateTracker.put("test->SUCCESS");
+            } catch (Throwable t) {
+                stateTracker.put("test->FAILURE", t);
+                t.printStackTrace(System.err);
             }
         }
 
+        try {
+            stateTracker.put("afterEach");
+            afterEach(defaultArgumentContext);
+            stateTracker.put("afterEach->SUCCESS");
+        } catch (Throwable t) {
+            stateTracker.put("afterEach->FAILURE", t);
+            t.printStackTrace(System.err);
+        }
+
         stopWatch.stop();
+
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace(this);
+            stateTracker
+                    .entrySet()
+                    .forEach(
+                            new Consumer<StateTracker.Entry<String>>() {
+                                @Override
+                                public void accept(StateTracker.Entry<String> stateTrackerEntry) {
+                                    LOGGER.trace("%s %s", this, stateTrackerEntry);
+                                }
+                            });
+        }
+
+        StateTracker.Entry<String> entry = stateTracker.getFirstStateEntryWithThrowable();
 
         getMetadata()
                 .put(
                         MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
                         stopWatch.elapsedTime());
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_STATUS,
-                        throwables.isEmpty()
-                                ? MetadataTestDescriptorConstants.PASS
-                                : MetadataTestDescriptorConstants.FAIL);
 
         TestExecutionResult testExecutionResult = TestExecutionResult.successful();
 
-        if (!throwables.isEmpty()) {
-            testExecutionResult = TestExecutionResult.failed(throwables.get(0));
+        if (entry != null) {
+            testExecutionResult = TestExecutionResult.failed(entry.getThrowable());
         }
 
         executionRequest.getEngineExecutionListener().executionFinished(this, testExecutionResult);
@@ -152,7 +174,7 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
 
     @Override
     public void skip(ExecutionRequest executionRequest, Context context) {
-        LOGGER.trace("skip [%s]", toString());
+        LOGGER.trace("skip [%s]", this);
 
         stopWatch.reset();
 
@@ -174,10 +196,12 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
                 .put(
                         MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
                         Duration.ofMillis(0));
+        /*
         getMetadata()
                 .put(
                         MetadataTestDescriptorConstants.TEST_DESCRIPTOR_STATUS,
                         MetadataTestDescriptorConstants.SKIP);
+         */
 
         executionRequest
                 .getEngineExecutionListener()
