@@ -361,11 +361,6 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
         ansiColorStringBuilder.color(AnsiColor.TEXT_RESET);
 
         System.out.println(ansiColorStringBuilder);
-
-        testExecutionResult
-                .getThrowable()
-                .ifPresent(throwable -> throwable.printStackTrace(System.err));
-
         System.out.flush();
     }
 }
