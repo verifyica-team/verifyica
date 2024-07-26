@@ -29,7 +29,7 @@ import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ObjectSupport;
-import org.antublue.verifyica.engine.util.StateTracker;
+import org.antublue.verifyica.engine.util.StateMonitor;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
@@ -122,34 +122,34 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        StateTracker<String> stateTracker = new StateTracker<>();
+        StateMonitor<String> stateMonitor = new StateMonitor<>();
 
         try {
-            stateTracker.put("beforeEach");
+            stateMonitor.put("beforeEach");
             beforeEach(defaultArgumentContext);
-            stateTracker.put("beforeEach->SUCCESS");
+            stateMonitor.put("beforeEach->SUCCESS");
         } catch (Throwable t) {
-            stateTracker.put("beforeEach->FAILURE", t);
+            stateMonitor.put("beforeEach->FAILURE", t);
             t.printStackTrace(System.err);
         }
 
-        if (stateTracker.contains("beforeEach->SUCCESS")) {
+        if (stateMonitor.contains("beforeEach->SUCCESS")) {
             try {
-                stateTracker.put("test");
+                stateMonitor.put("test");
                 test(defaultArgumentContext);
-                stateTracker.put("test->SUCCESS");
+                stateMonitor.put("test->SUCCESS");
             } catch (Throwable t) {
-                stateTracker.put("test->FAILURE", t);
+                stateMonitor.put("test->FAILURE", t);
                 t.printStackTrace(System.err);
             }
         }
 
         try {
-            stateTracker.put("afterEach");
+            stateMonitor.put("afterEach");
             afterEach(defaultArgumentContext);
-            stateTracker.put("afterEach->SUCCESS");
+            stateMonitor.put("afterEach->SUCCESS");
         } catch (Throwable t) {
-            stateTracker.put("afterEach->FAILURE", t);
+            stateMonitor.put("afterEach->FAILURE", t);
             t.printStackTrace(System.err);
         }
 
@@ -157,18 +157,18 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
 
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace(this);
-            stateTracker
+            stateMonitor
                     .entrySet()
                     .forEach(
-                            new Consumer<StateTracker.Entry<String>>() {
+                            new Consumer<StateMonitor.Entry<String>>() {
                                 @Override
-                                public void accept(StateTracker.Entry<String> stateTrackerEntry) {
+                                public void accept(StateMonitor.Entry<String> stateTrackerEntry) {
                                     LOGGER.trace("%s %s", this, stateTrackerEntry);
                                 }
                             });
         }
 
-        StateTracker.Entry<String> entry = stateTracker.getFirstStateEntryWithThrowable();
+        StateMonitor.Entry<String> entry = stateMonitor.getFirstStateEntryWithThrowable();
 
         TestExecutionResult testExecutionResult = TestExecutionResult.successful();
 

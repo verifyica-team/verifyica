@@ -16,21 +16,30 @@
 
 package org.antublue.verifyica.engine;
 
+import static java.lang.String.format;
+
+import io.github.thunkware.vt.bridge.ThreadTool;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
+import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
+import org.antublue.verifyica.engine.descriptor.ExecutableTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.exception.EngineException;
-import org.antublue.verifyica.engine.execution.ExecutionRequestExecutor;
-import org.antublue.verifyica.engine.execution.ExecutionRequestExecutorFactory;
 import org.antublue.verifyica.engine.extension.EngineExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.util.ExecutorServiceFactory;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
@@ -127,8 +136,13 @@ public class VerifyicaEngine implements TestEngine {
         }
 
         EngineContext engineContext = DefaultEngineContext.getInstance();
+
         EngineExtensionContext engineExtensionContext =
                 new DefaultEngineExtensionContext(engineContext);
+
+        ExecutorService executorService = null;
+
+        List<Future<?>> futures = new ArrayList<>();
 
         Throwable throwable = null;
 
@@ -139,13 +153,42 @@ public class VerifyicaEngine implements TestEngine {
                     .getEngineExecutionListener()
                     .executionStarted(executionRequest.getRootTestDescriptor());
 
-            ExecutionRequestExecutor executionRequestExecutor =
-                    ExecutionRequestExecutorFactory.createExecutionRequestExecutor();
-            executionRequestExecutor.execute(executionRequest);
-            executionRequestExecutor.await();
+            executorService =
+                    ExecutorServiceFactory.getInstance()
+                            .newExecutorService(getParallelism(engineContext), "verifyica-");
+
+            for (TestDescriptor testDescriptor :
+                    executionRequest.getRootTestDescriptor().getChildren()) {
+                if (testDescriptor instanceof ExecutableTestDescriptor) {
+                    Future<?> future =
+                            executorService.submit(
+                                    () -> {
+                                        ExecutableTestDescriptor executableTestDescriptor =
+                                                (ExecutableTestDescriptor) testDescriptor;
+                                        executableTestDescriptor.execute(
+                                                executionRequest,
+                                                new DefaultClassContext(engineContext));
+                                    });
+
+                    futures.add(future);
+                }
+            }
+
+            futures.forEach(
+                    future -> {
+                        try {
+                            future.get();
+                        } catch (Exception e) {
+                            // INTENTIONALLY BLANK
+                        }
+                    });
         } catch (Throwable t) {
             throwable = t;
         } finally {
+            if (executorService != null) {
+                executorService.shutdown();
+            }
+
             try {
                 EngineExtensionRegistry.getInstance().afterExecute(engineExtensionContext);
             } catch (Throwable t) {
@@ -163,6 +206,44 @@ public class VerifyicaEngine implements TestEngine {
                 .executionFinished(executionRequest.getRootTestDescriptor(), testExecutionResult);
 
         LOGGER.trace("execution done");
+    }
+
+    /**
+     * Method to get the engine parallelism value
+     *
+     * @param engineContext engineContext
+     * @return the engine parallelism value
+     */
+    private static int getParallelism(EngineContext engineContext) {
+        int maxThreadCount = Math.min(1, Runtime.getRuntime().availableProcessors() - 1);
+
+        if (ThreadTool.hasVirtualThreads()) {
+            maxThreadCount = Runtime.getRuntime().availableProcessors();
+        }
+
+        return Optional.ofNullable(
+                        engineContext.getConfiguration().get(Constants.ENGINE_PARALLELISM))
+                .map(
+                        value -> {
+                            int intValue;
+                            try {
+                                intValue = Integer.parseInt(value);
+                                if (intValue < 1) {
+                                    throw new EngineException(
+                                            format(
+                                                    "Invalid %s value [%d]",
+                                                    Constants.ENGINE_PARALLELISM, intValue));
+                                }
+                                return intValue;
+                            } catch (NumberFormatException e) {
+                                throw new EngineException(
+                                        format(
+                                                "Invalid %s value [%s]",
+                                                Constants.ENGINE_PARALLELISM, value),
+                                        e);
+                            }
+                        })
+                .orElse(maxThreadCount);
     }
 
     /**

@@ -24,20 +24,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-/** Class to implement StateMachine */
+/** Class to implement StateMonitor */
 @SuppressWarnings("PMD.UnusedMethod")
-public class StateTracker<T> {
+public class StateMonitor<T> {
 
     private final Map<T, Entry<T>> map;
     private Entry<T> lastEntry;
 
     /** Constructor */
-    public StateTracker() {
+    public StateMonitor() {
         this(null);
     }
 
     /** Constructor */
-    public StateTracker(T initial) {
+    public StateMonitor(T initial) {
         map = new LinkedHashMap<>();
         if (initial != null) {
             put(initial);

@@ -17,10 +17,11 @@
 package org.antublue.verifyica.engine.descriptor;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
@@ -30,7 +31,7 @@ import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.util.ExecutorServiceFactory;
-import org.antublue.verifyica.engine.util.StateTracker;
+import org.antublue.verifyica.engine.util.StateMonitor;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
@@ -102,68 +103,68 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        StateTracker<String> stateTracker = new StateTracker<>();
+        StateMonitor<String> stateMonitor = new StateMonitor<>();
 
         try {
-            stateTracker.put("instantiateTestInstance");
+            stateMonitor.put("instantiateTestInstance");
             instantiateTestInstance(defaultClassContext);
-            stateTracker.put("instantiateTestInstance->SUCCESS");
+            stateMonitor.put("instantiateTestInstance->SUCCESS");
         } catch (Throwable t) {
-            stateTracker.put("instantiateTestInstance->FAILURE", t);
+            stateMonitor.put("instantiateTestInstance->FAILURE", t);
             t.printStackTrace(System.err);
         }
 
-        if (stateTracker.contains("instantiateTestInstance->SUCCESS")) {
+        if (stateMonitor.contains("instantiateTestInstance->SUCCESS")) {
             try {
-                stateTracker.put("prepare");
+                stateMonitor.put("prepare");
                 prepare(defaultClassContext);
-                stateTracker.put("prepare->SUCCESS");
+                stateMonitor.put("prepare->SUCCESS");
             } catch (Throwable t) {
-                stateTracker.put("prepare->FAILURE", t);
+                stateMonitor.put("prepare->FAILURE", t);
                 t.printStackTrace(System.err);
             }
         }
 
-        if (stateTracker.contains("prepare->SUCCESS")) {
+        if (stateMonitor.contains("prepare->SUCCESS")) {
             try {
-                stateTracker.put("doExecute");
+                stateMonitor.put("doExecute");
                 doExecute(executionRequest, defaultClassContext);
-                stateTracker.put("doExecute->SUCCESS");
+                stateMonitor.put("doExecute->SUCCESS");
             } catch (Throwable t) {
-                stateTracker.put("doExecute->FAILURE", t);
+                stateMonitor.put("doExecute->FAILURE", t);
                 // Don't log the throwable since it's from downstream test descriptors
             }
         }
 
-        if (stateTracker.contains("prepare->FAILURE")) {
+        if (stateMonitor.contains("prepare->FAILURE")) {
             try {
-                stateTracker.put("doSkip");
+                stateMonitor.put("doSkip");
                 doSkip(executionRequest, defaultClassContext);
-                stateTracker.put("doSkip->SUCCESS");
+                stateMonitor.put("doSkip->SUCCESS");
             } catch (Throwable t) {
-                stateTracker.put("doSkip->FAILURE", t);
+                stateMonitor.put("doSkip->FAILURE", t);
                 // Don't log the throwable since it's from downstream test descriptors
             }
         }
 
-        if (stateTracker.contains("prepare")) {
+        if (stateMonitor.contains("prepare")) {
             try {
-                stateTracker.put("conclude");
+                stateMonitor.put("conclude");
                 conclude(defaultClassContext);
-                stateTracker.put("conclude->SUCCESS");
+                stateMonitor.put("conclude->SUCCESS");
             } catch (Throwable t) {
-                stateTracker.put("conclude->FAILURE", t);
+                stateMonitor.put("conclude->FAILURE", t);
                 t.printStackTrace(System.err);
             }
         }
 
-        if (stateTracker.contains("instantiateTestInstance->SUCCESS")) {
+        if (stateMonitor.contains("instantiateTestInstance->SUCCESS")) {
             try {
-                stateTracker.put("destroyTestInstance");
+                stateMonitor.put("destroyTestInstance");
                 destroyTestInstance(defaultClassContext);
-                stateTracker.put("destroyTestInstance->SUCCESS");
+                stateMonitor.put("destroyTestInstance->SUCCESS");
             } catch (Throwable t) {
-                stateTracker.put("destroyTestInstance->FAILURE", t);
+                stateMonitor.put("destroyTestInstance->FAILURE", t);
                 t.printStackTrace(System.err);
             }
         }
@@ -172,18 +173,18 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace(this);
-            stateTracker
+            stateMonitor
                     .entrySet()
                     .forEach(
-                            new Consumer<StateTracker.Entry<String>>() {
+                            new Consumer<StateMonitor.Entry<String>>() {
                                 @Override
-                                public void accept(StateTracker.Entry<String> stateTrackerEntry) {
+                                public void accept(StateMonitor.Entry<String> stateTrackerEntry) {
                                     LOGGER.trace("%s %s", this, stateTrackerEntry);
                                 }
                             });
         }
 
-        StateTracker.Entry<String> entry = stateTracker.getFirstStateEntryWithThrowable();
+        StateMonitor.Entry<String> entry = stateMonitor.getFirstStateEntryWithThrowable();
 
         TestExecutionResult testExecutionResult = TestExecutionResult.successful();
 
@@ -280,14 +281,12 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         ExecutorService executorService = null;
 
         try {
-            if (parallelism > 1) {
-                executorService =
-                        ExecutorServiceFactory.getInstance()
-                                .newExecutorService(
-                                        parallelism, Thread.currentThread().getName() + "/");
-            }
+            executorService =
+                    ExecutorServiceFactory.getInstance()
+                            .newExecutorService(
+                                    parallelism, Thread.currentThread().getName() + "/");
 
-            CountDownLatch countDownLatch = new CountDownLatch(getChildren().size());
+            List<Future<?>> futures = new ArrayList<>();
 
             for (TestDescriptor testDescriptor : getChildren()) {
                 if (testDescriptor instanceof ExecutableTestDescriptor) {
@@ -299,32 +298,23 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
                     defaultArgumentContext.setTestInstance(defaultClassContext.getTestInstance());
 
-                    if (parallelism > 1) {
-                        executorService.submit(
-                                () -> {
-                                    try {
-                                        executableTestDescriptor.execute(
-                                                executionRequest, defaultArgumentContext);
-                                    } finally {
-                                        countDownLatch.countDown();
-                                    }
-                                });
-                    } else {
-                        try {
-                            executableTestDescriptor.execute(
-                                    executionRequest, defaultArgumentContext);
-                        } finally {
-                            countDownLatch.countDown();
-                        }
-                    }
+                    Future<?> future =
+                            executorService.submit(
+                                    () ->
+                                            executableTestDescriptor.execute(
+                                                    executionRequest, defaultArgumentContext));
+                    futures.add(future);
                 }
             }
 
-            try {
-                countDownLatch.await();
-            } catch (InterruptedException e) {
-                // INTENTIONALLY BLANK
-            }
+            futures.forEach(
+                    future -> {
+                        try {
+                            future.get();
+                        } catch (Exception e) {
+                            // INTENTIONALLY BLANK
+                        }
+                    });
         } finally {
             if (executorService != null) {
                 executorService.shutdown();

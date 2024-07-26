@@ -29,7 +29,7 @@ import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ObjectSupport;
-import org.antublue.verifyica.engine.util.StateTracker;
+import org.antublue.verifyica.engine.util.StateMonitor;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
@@ -118,45 +118,45 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        StateTracker<String> stateTracker = new StateTracker<>();
+        StateMonitor<String> stateMonitor = new StateMonitor<>();
 
         try {
-            stateTracker.put("beforeAll");
+            stateMonitor.put("beforeAll");
             beforeAll(defaultArgumentContext);
-            stateTracker.put("beforeAll->SUCCESS");
+            stateMonitor.put("beforeAll->SUCCESS");
         } catch (Throwable t) {
-            stateTracker.put("beforeAll->FAILURE", t);
+            stateMonitor.put("beforeAll->FAILURE", t);
             t.printStackTrace(System.err);
         }
 
-        if (stateTracker.contains("beforeAll->SUCCESS")) {
+        if (stateMonitor.contains("beforeAll->SUCCESS")) {
             try {
-                stateTracker.put("doExecute");
+                stateMonitor.put("doExecute");
                 doExecute(executionRequest, defaultArgumentContext);
-                stateTracker.put("doExecute->SUCCESS");
+                stateMonitor.put("doExecute->SUCCESS");
             } catch (Throwable t) {
-                stateTracker.put("doExecute->FAILURE", t);
+                stateMonitor.put("doExecute->FAILURE", t);
                 // Don't log the throwable since it's from downstream test descriptors
             }
         }
 
-        if (stateTracker.contains("beforeAll->FAILURE")) {
+        if (stateMonitor.contains("beforeAll->FAILURE")) {
             try {
-                stateTracker.put("doSkip");
+                stateMonitor.put("doSkip");
                 doSkip(executionRequest, defaultArgumentContext);
-                stateTracker.put("doSkip->SUCCESS");
+                stateMonitor.put("doSkip->SUCCESS");
             } catch (Throwable t) {
-                stateTracker.put("doSkip->FAILURE", t);
+                stateMonitor.put("doSkip->FAILURE", t);
                 // Don't log the throwable since it's from downstream test descriptors
             }
         }
 
         try {
-            stateTracker.put("afterAll");
+            stateMonitor.put("afterAll");
             afterAll(defaultArgumentContext);
-            stateTracker.put("afterAll->SUCCESS");
+            stateMonitor.put("afterAll->SUCCESS");
         } catch (Throwable t) {
-            stateTracker.put("afterAll->FAILURE", t);
+            stateMonitor.put("afterAll->FAILURE", t);
             t.printStackTrace(System.err);
         }
 
@@ -164,18 +164,18 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace(this);
-            stateTracker
+            stateMonitor
                     .entrySet()
                     .forEach(
-                            new Consumer<StateTracker.Entry<String>>() {
+                            new Consumer<StateMonitor.Entry<String>>() {
                                 @Override
-                                public void accept(StateTracker.Entry<String> stateTrackerEntry) {
+                                public void accept(StateMonitor.Entry<String> stateTrackerEntry) {
                                     LOGGER.trace("%s %s", this, stateTrackerEntry);
                                 }
                             });
         }
 
-        StateTracker.Entry<String> entry = stateTracker.getFirstStateEntryWithThrowable();
+        StateMonitor.Entry<String> entry = stateMonitor.getFirstStateEntryWithThrowable();
 
         TestExecutionResult testExecutionResult = TestExecutionResult.successful();
 
