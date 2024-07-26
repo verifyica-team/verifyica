@@ -241,9 +241,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                     .incrementAndGet();
                             break;
                         }
-                    default: {
-                        // INTENTIONALLY BLANK
-                    }
+                    default:
+                        {
+                            // INTENTIONALLY BLANK
+                        }
                 }
             }
 
@@ -277,9 +278,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                     .incrementAndGet();
                             break;
                         }
-                    default: {
-                        // INTENTIONALLY BLANK
-                    }
+                    default:
+                        {
+                            // INTENTIONALLY BLANK
+                        }
                 }
             }
 
@@ -313,9 +315,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                     .incrementAndGet();
                             break;
                         }
-                    default: {
-                        // INTENTIONALLY BLANK
-                    }
+                    default:
+                        {
+                            // INTENTIONALLY BLANK
+                        }
                 }
             }
 

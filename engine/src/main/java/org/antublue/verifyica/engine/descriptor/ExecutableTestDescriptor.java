@@ -16,13 +16,9 @@
 
 package org.antublue.verifyica.engine.descriptor;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.util.StopWatch;
 import org.junit.platform.engine.ExecutionRequest;
@@ -95,7 +91,7 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
      * @param context context
      */
     public abstract void skip(ExecutionRequest executionRequest, Context context);
-    
+
     /** Class to implement ToExecutableTestDescriptor */
     public static class ToExecutableTestDescriptor
             implements Function<TestDescriptor, ExecutableTestDescriptor> {
