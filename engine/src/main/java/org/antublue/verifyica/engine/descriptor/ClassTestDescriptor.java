@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
@@ -286,6 +287,12 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                             .newExecutorService(
                                     parallelism, Thread.currentThread().getName() + "/");
 
+            Semaphore semaphore = null;
+            if (ExecutorServiceFactory.usingVirtualThreads()) {
+                semaphore = new Semaphore(parallelism);
+            }
+            final Semaphore finalSemaphore = semaphore;
+
             List<Future<?>> futures = new ArrayList<>();
 
             for (TestDescriptor testDescriptor : getChildren()) {
@@ -300,9 +307,21 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
                     Future<?> future =
                             executorService.submit(
-                                    () ->
+                                    () -> {
+                                        try {
+                                            if (finalSemaphore != null) {
+                                                finalSemaphore.acquire();
+                                            }
                                             executableTestDescriptor.execute(
-                                                    executionRequest, defaultArgumentContext));
+                                                    executionRequest, defaultArgumentContext);
+                                        } catch (Throwable t) {
+                                            t.printStackTrace(System.err);
+                                        } finally {
+                                            if (finalSemaphore != null) {
+                                                finalSemaphore.release();
+                                            }
+                                        }
+                                    });
                     futures.add(future);
                 }
             }

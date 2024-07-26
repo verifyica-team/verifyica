@@ -41,10 +41,8 @@ public class ExecutorServiceFactory {
 
         if (ThreadTool.hasVirtualThreads()) {
             executorService =
-                    new SemaphoreExecutorService(
-                            ExecutorTool.newVirtualThreadPerTaskExecutor(
-                                    ThreadCustomizer.withNamePrefix(threadNamePrefix)),
-                            threads);
+                    ExecutorTool.newVirtualThreadPerTaskExecutor(
+                            ThreadCustomizer.withNamePrefix(threadNamePrefix));
         } else {
             executorService =
                     Executors.newFixedThreadPool(
@@ -56,6 +54,10 @@ public class ExecutorServiceFactory {
 
     public static ExecutorServiceFactory getInstance() {
         return SingletonHolder.SINGLETON;
+    }
+
+    public static boolean usingVirtualThreads() {
+        return ThreadTool.hasVirtualThreads();
     }
 
     /** Class to hold the singleton instance */

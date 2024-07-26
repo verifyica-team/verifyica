@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
@@ -153,9 +154,18 @@ public class VerifyicaEngine implements TestEngine {
                     .getEngineExecutionListener()
                     .executionStarted(executionRequest.getRootTestDescriptor());
 
+            int parallelism = getParallelism(engineContext);
+
             executorService =
                     ExecutorServiceFactory.getInstance()
-                            .newExecutorService(getParallelism(engineContext), "verifyica-");
+                            .newExecutorService(parallelism, "verifyica-");
+
+            Semaphore semaphore = null;
+            if (ExecutorServiceFactory.usingVirtualThreads()) {
+                semaphore = new Semaphore(parallelism);
+            }
+
+            final Semaphore finalSemaphore = semaphore;
 
             for (TestDescriptor testDescriptor :
                     executionRequest.getRootTestDescriptor().getChildren()) {
@@ -163,11 +173,21 @@ public class VerifyicaEngine implements TestEngine {
                     Future<?> future =
                             executorService.submit(
                                     () -> {
-                                        ExecutableTestDescriptor executableTestDescriptor =
-                                                (ExecutableTestDescriptor) testDescriptor;
-                                        executableTestDescriptor.execute(
-                                                executionRequest,
-                                                new DefaultClassContext(engineContext));
+                                        try {
+                                            if (finalSemaphore != null) {
+                                                finalSemaphore.acquire();
+                                            }
+                                            ((ExecutableTestDescriptor) testDescriptor)
+                                                    .execute(
+                                                            executionRequest,
+                                                            new DefaultClassContext(engineContext));
+                                        } catch (Throwable t) {
+                                            t.printStackTrace(System.err);
+                                        } finally {
+                                            if (finalSemaphore != null) {
+                                                finalSemaphore.release();
+                                            }
+                                        }
                                     });
 
                     futures.add(future);
