@@ -18,7 +18,6 @@ package org.antublue.verifyica.engine;
 
 import static java.lang.String.format;
 
-import io.github.thunkware.vt.bridge.ThreadTool;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -235,11 +234,7 @@ public class VerifyicaEngine implements TestEngine {
      * @return the engine parallelism value
      */
     private static int getParallelism(EngineContext engineContext) {
-        int maxThreadCount = Math.min(1, Runtime.getRuntime().availableProcessors() - 1);
-
-        if (ThreadTool.hasVirtualThreads()) {
-            maxThreadCount = Runtime.getRuntime().availableProcessors();
-        }
+        int maxThreadCount = Runtime.getRuntime().availableProcessors();
 
         return Optional.ofNullable(
                         engineContext.getConfiguration().get(Constants.ENGINE_PARALLELISM))
