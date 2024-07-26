@@ -68,20 +68,20 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     static {
         counterKeyToMessageDisplayStringMap.put("test.class.count", "TEST CLASSES  ");
-        counterKeyToMessageDisplayStringMap.put("test.class.count.successful", "PASSED     ");
-        counterKeyToMessageDisplayStringMap.put("test.class.count.failed", "FAILED     ");
-        counterKeyToMessageDisplayStringMap.put("test.class.count.aborted", "ABORTED     ");
-        counterKeyToMessageDisplayStringMap.put("test.class.count.skipped", "SKIPPED     ");
+        counterKeyToMessageDisplayStringMap.put("test.class.count.successful", "PASSED");
+        counterKeyToMessageDisplayStringMap.put("test.class.count.failed", "FAILED");
+        counterKeyToMessageDisplayStringMap.put("test.class.count.aborted", "ABORTED");
+        counterKeyToMessageDisplayStringMap.put("test.class.count.skipped", "SKIPPED");
         counterKeyToMessageDisplayStringMap.put("test.argument.count", "TEST ARGUMENTS");
-        counterKeyToMessageDisplayStringMap.put("test.argument.count.successful", "PASSED     ");
-        counterKeyToMessageDisplayStringMap.put("test.argument.count.failed", "FAILED     ");
-        counterKeyToMessageDisplayStringMap.put("test.argument.count.aborted", "ABORTED     ");
-        counterKeyToMessageDisplayStringMap.put("test.argument.count.skipped", "SKIPPED     ");
+        counterKeyToMessageDisplayStringMap.put("test.argument.count.successful", "PASSED");
+        counterKeyToMessageDisplayStringMap.put("test.argument.count.failed", "FAILED");
+        counterKeyToMessageDisplayStringMap.put("test.argument.count.aborted", "ABORTED");
+        counterKeyToMessageDisplayStringMap.put("test.argument.count.skipped", "SKIPPED");
         counterKeyToMessageDisplayStringMap.put("test.method.count", "TEST METHODS  ");
-        counterKeyToMessageDisplayStringMap.put("test.method.count.successful", "PASSED     ");
-        counterKeyToMessageDisplayStringMap.put("test.method.count.failed", "FAILED     ");
-        counterKeyToMessageDisplayStringMap.put("test.method.count.aborted", "ABORTED     ");
-        counterKeyToMessageDisplayStringMap.put("test.method.count.skipped", "SKIPPED     ");
+        counterKeyToMessageDisplayStringMap.put("test.method.count.successful", "PASSED");
+        counterKeyToMessageDisplayStringMap.put("test.method.count.failed", "FAILED");
+        counterKeyToMessageDisplayStringMap.put("test.method.count.aborted", "ABORTED");
+        counterKeyToMessageDisplayStringMap.put("test.method.count.skipped", "SKIPPED");
     }
 
     private boolean initialized;
@@ -336,17 +336,20 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             }
 
             for (String key : keys) {
+                StringBuilder stringBuilder = new StringBuilder();
+
                 key += ".count";
-                println(
+                stringBuilder.append(
                         INFO
                                 + AnsiColor.TEXT_WHITE_BRIGHT.wrap(
                                         counterKeyToMessageDisplayStringMap.get(key))
                                 + " : "
-                                + pad(
-                                        counterMap
-                                                .computeIfAbsent(key, o -> new AtomicLong())
-                                                .get(),
-                                        padding));
+                                + AnsiColor.TEXT_WHITE_BRIGHT.wrap(
+                                        pad(
+                                                counterMap
+                                                        .computeIfAbsent(key, o -> new AtomicLong())
+                                                        .get(),
+                                                padding)));
 
                 String[] subKeys = {
                     key + ".successful", key + ".failed", key + ".aborted", key + ".skipped"
@@ -377,8 +380,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                         countDisplayString = AnsiColor.TEXT_WHITE_BOLD.wrap(pad(count, padding));
                     }
 
-                    println(INFO + "  " + messageDisplayString + " : " + countDisplayString);
+                    stringBuilder.append(", " + messageDisplayString + " : " + countDisplayString);
                 }
+
+                println(stringBuilder.toString());
             }
 
             println(INFO + SEPARATOR);
