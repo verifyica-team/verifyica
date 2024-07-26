@@ -44,7 +44,7 @@ public class StatusEngineDescriptor extends EngineDescriptor {
      *
      * @return true if the test descriptor has failures, else false
      */
-    public boolean getHasFailures() {
+    public boolean hasFailures() {
         return hasFailures;
     }
 }

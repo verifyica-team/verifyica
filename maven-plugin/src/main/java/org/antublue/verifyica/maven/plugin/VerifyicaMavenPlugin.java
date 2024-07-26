@@ -229,7 +229,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
             engine.execute(executionRequest);
 
-            if (((StatusEngineDescriptor) testDescriptor).getHasFailures()) {
+            if (((StatusEngineDescriptor) testDescriptor).hasFailures()) {
                 throw new MojoFailureException("");
             }
         } catch (MojoFailureException e) {
