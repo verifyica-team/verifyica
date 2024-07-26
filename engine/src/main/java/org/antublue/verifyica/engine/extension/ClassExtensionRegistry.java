@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import org.antublue.verifyica.api.Abort;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
@@ -162,8 +161,6 @@ public class ClassExtensionRegistry {
             }
         } catch (InvocationTargetException e) {
             throw e.getCause();
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
         }
     }
 
@@ -188,8 +185,6 @@ public class ClassExtensionRegistry {
             }
         } catch (InvocationTargetException e) {
             throw e.getCause();
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
         }
     }
 
@@ -216,8 +211,6 @@ public class ClassExtensionRegistry {
             }
         } catch (InvocationTargetException e) {
             throw e.getCause();
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
         }
     }
 
@@ -245,8 +238,6 @@ public class ClassExtensionRegistry {
             }
         } catch (InvocationTargetException e) {
             throw e.getCause();
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
         }
     }
 
@@ -273,8 +264,6 @@ public class ClassExtensionRegistry {
                     testInstance, ((DefaultArgumentContext) argumentContext).asImmutable());
         } catch (InvocationTargetException e) {
             throwable = e.getCause();
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
         } catch (Throwable t) {
             throwable = t;
         }
@@ -285,8 +274,6 @@ public class ClassExtensionRegistry {
             }
         } catch (InvocationTargetException e) {
             throw e.getCause();
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
         }
     }
 
@@ -314,8 +301,6 @@ public class ClassExtensionRegistry {
             }
         } catch (InvocationTargetException e) {
             throw e.getCause();
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
         }
     }
 
@@ -343,8 +328,6 @@ public class ClassExtensionRegistry {
             }
         } catch (InvocationTargetException e) {
             throw e.getCause();
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
         }
     }
 
@@ -370,8 +353,6 @@ public class ClassExtensionRegistry {
             }
         } catch (InvocationTargetException e) {
             throw e.getCause();
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
         }
     }
 
@@ -392,8 +373,6 @@ public class ClassExtensionRegistry {
                 classExtension.onDestroy(defaultClassExtensionContext);
             } catch (InvocationTargetException e) {
                 throwables.add(e.getCause());
-            } catch (Abort e) {
-                break;
             } catch (Throwable t) {
                 throwables.add(t);
             }

@@ -554,6 +554,7 @@ public class EngineDiscoveryRequestResolver {
                                 argumentTestDescriptorUniqueId,
                                 argument.getName(),
                                 testClass,
+                                argument,
                                 MethodSupport.findMethods(
                                         testClass,
                                         Predicates.BEFORE_ALL_METHOD,
@@ -561,8 +562,7 @@ public class EngineDiscoveryRequestResolver {
                                 MethodSupport.findMethods(
                                         testClass,
                                         Predicates.AFTER_ALL_METHOD,
-                                        HierarchyTraversalMode.BOTTOM_UP),
-                                argument);
+                                        HierarchyTraversalMode.BOTTOM_UP));
 
                 classTestDescriptor.addChild(argumentTestDescriptor);
 
@@ -575,6 +575,7 @@ public class EngineDiscoveryRequestResolver {
                                     testMethodDescriptorUniqueId,
                                     DisplayNameSupport.getDisplayName(method),
                                     testClass,
+                                    argument,
                                     MethodSupport.findMethods(
                                             testClass,
                                             Predicates.BEFORE_EACH_METHOD,

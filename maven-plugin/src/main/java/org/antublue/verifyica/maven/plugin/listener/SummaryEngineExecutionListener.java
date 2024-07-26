@@ -25,6 +25,7 @@ import org.antublue.verifyica.engine.VerifyicaEngine;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.MethodTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.support.HumanReadableTimeSupport;
 import org.antublue.verifyica.engine.util.AnsiColor;
 import org.antublue.verifyica.engine.util.AnsiColorStringBuilder;
@@ -66,50 +67,74 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     private static final Map<String, String> counterKeyToMessageDisplayStringMap = new HashMap<>();
 
     static {
-        counterKeyToMessageDisplayStringMap.put("test.class.count", "TEST CLASSES");
-        counterKeyToMessageDisplayStringMap.put("test.class.count.successful", "PASSED");
-        counterKeyToMessageDisplayStringMap.put("test.class.count.failed", "FAILED");
-        counterKeyToMessageDisplayStringMap.put("test.class.count.aborted", "ABORTED");
-        counterKeyToMessageDisplayStringMap.put("test.class.count.skipped", "SKIPPED");
+        counterKeyToMessageDisplayStringMap.put("test.class.count", "TEST CLASSES  ");
+        counterKeyToMessageDisplayStringMap.put("test.class.count.successful", "PASSED     ");
+        counterKeyToMessageDisplayStringMap.put("test.class.count.failed", "FAILED     ");
+        counterKeyToMessageDisplayStringMap.put("test.class.count.aborted", "ABORTED     ");
+        counterKeyToMessageDisplayStringMap.put("test.class.count.skipped", "SKIPPED     ");
         counterKeyToMessageDisplayStringMap.put("test.argument.count", "TEST ARGUMENTS");
-        counterKeyToMessageDisplayStringMap.put("test.argument.count.successful", "PASSED");
-        counterKeyToMessageDisplayStringMap.put("test.argument.count.failed", "FAILED");
-        counterKeyToMessageDisplayStringMap.put("test.argument.count.aborted", "ABORTED");
-        counterKeyToMessageDisplayStringMap.put("test.argument.count.skipped", "SKIPPED");
-        counterKeyToMessageDisplayStringMap.put("test.method.count", "TEST METHODS");
-        counterKeyToMessageDisplayStringMap.put("test.method.count.successful", "PASSED");
-        counterKeyToMessageDisplayStringMap.put("test.method.count.failed", "FAILED");
-        counterKeyToMessageDisplayStringMap.put("test.method.count.aborted", "ABORTED");
-        counterKeyToMessageDisplayStringMap.put("test.method.count.skipped", "SKIPPED");
+        counterKeyToMessageDisplayStringMap.put("test.argument.count.successful", "PASSED     ");
+        counterKeyToMessageDisplayStringMap.put("test.argument.count.failed", "FAILED     ");
+        counterKeyToMessageDisplayStringMap.put("test.argument.count.aborted", "ABORTED     ");
+        counterKeyToMessageDisplayStringMap.put("test.argument.count.skipped", "SKIPPED     ");
+        counterKeyToMessageDisplayStringMap.put("test.method.count", "TEST METHODS  ");
+        counterKeyToMessageDisplayStringMap.put("test.method.count.successful", "PASSED     ");
+        counterKeyToMessageDisplayStringMap.put("test.method.count.failed", "FAILED     ");
+        counterKeyToMessageDisplayStringMap.put("test.method.count.aborted", "ABORTED     ");
+        counterKeyToMessageDisplayStringMap.put("test.method.count.skipped", "SKIPPED     ");
     }
 
+    private boolean initialized;
     private boolean hasTests;
     private boolean hasFailures;
 
-    private final Map<TestDescriptor, TestExecutionResult> testDescriptorTestExecutionResultMap;
-    private final Map<TestDescriptor, String> testDescriptorsSkippedMap;
+    private final Map<ClassTestDescriptor, TestExecutionResult>
+            classTestDescriptorTestExecutionResultMap;
+
+    private final Map<ClassTestDescriptor, String> classTestDescriptorSkippedMap;
+
+    private final Map<ArgumentTestDescriptor, TestExecutionResult>
+            argumentTestDescriptorTestExecutionResultMap;
+
+    private final Map<ArgumentTestDescriptor, String> argumentTestDescriptorSkippedMap;
+
+    private final Map<MethodTestDescriptor, TestExecutionResult>
+            methodTestDescriptorTestExecutionResultMap;
+
+    private final Map<MethodTestDescriptor, String> methodTestDescriptorSkippedMap;
+
     private final Map<String, AtomicLong> counterMap;
     private final StopWatch stopWatch;
 
     /** Constructor */
     public SummaryEngineExecutionListener() {
-        testDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
-        testDescriptorsSkippedMap = new ConcurrentHashMap<>();
+        classTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
+        classTestDescriptorSkippedMap = new ConcurrentHashMap<>();
+
+        argumentTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
+        argumentTestDescriptorSkippedMap = new ConcurrentHashMap<>();
+
+        methodTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
+        methodTestDescriptorSkippedMap = new ConcurrentHashMap<>();
+
         counterMap = new ConcurrentHashMap<>();
         stopWatch = new StopWatch();
     }
 
-    /** Method to begin the summary output */
-    public void begin() {
-        stopWatch.reset();
-
-        println(INFO + SEPARATOR);
-        println(INFO + BANNER);
-        println(INFO + SEPARATOR);
-    }
-
     @Override
     public void executionStarted(TestDescriptor testDescriptor) {
+        synchronized (this) {
+            if (!initialized) {
+                stopWatch.reset();
+
+                println(INFO + SEPARATOR);
+                println(INFO + BANNER);
+                println(INFO + SEPARATOR);
+
+                initialized = true;
+            }
+        }
+
         if (!testDescriptor.isRoot()) {
             hasTests = true;
         }
@@ -117,70 +142,147 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     @Override
     public void executionSkipped(TestDescriptor testDescriptor, String reason) {
-        testDescriptorsSkippedMap.put(testDescriptor, reason);
+        if (testDescriptor instanceof ClassTestDescriptor) {
+            classTestDescriptorSkippedMap.put((ClassTestDescriptor) testDescriptor, reason);
+        } else if (testDescriptor instanceof ArgumentTestDescriptor) {
+            argumentTestDescriptorSkippedMap.put((ArgumentTestDescriptor) testDescriptor, reason);
+        } else if (testDescriptor instanceof MethodTestDescriptor) {
+            methodTestDescriptorSkippedMap.put((MethodTestDescriptor) testDescriptor, reason);
+        }
     }
 
     @Override
     public void executionFinished(
             TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
-        testDescriptorTestExecutionResultMap.put(testDescriptor, testExecutionResult);
+        if (testDescriptor instanceof ClassTestDescriptor) {
+            classTestDescriptorTestExecutionResultMap.put(
+                    (ClassTestDescriptor) testDescriptor, testExecutionResult);
+        } else if (testDescriptor instanceof ArgumentTestDescriptor) {
+            argumentTestDescriptorTestExecutionResultMap.put(
+                    (ArgumentTestDescriptor) testDescriptor, testExecutionResult);
+        } else if (testDescriptor instanceof MethodTestDescriptor) {
+            methodTestDescriptorTestExecutionResultMap.put(
+                    (MethodTestDescriptor) testDescriptor, testExecutionResult);
+        }
 
         if (!testDescriptor.isRoot()
-                && testExecutionResult.getStatus() == TestExecutionResult.Status.FAILED) {
+                && testExecutionResult.getStatus() != TestExecutionResult.Status.SUCCESSFUL) {
             hasFailures = true;
+        }
+
+        if (testDescriptor instanceof StatusEngineDescriptor) {
+            if (hasFailures) {
+                ((StatusEngineDescriptor) testDescriptor).setHasFailures();
+            }
+
+            summary();
         }
     }
 
-    /**
-     * Method to end the summary output
-     *
-     * @param message message
-     */
-    public void end(String message) {
+    /** Method to print the summary */
+    private void summary() {
         try {
             stopWatch.stop();
 
-            for (Map.Entry<TestDescriptor, String> mapEntry :
-                    testDescriptorsSkippedMap.entrySet()) {
-                TestDescriptor testDescriptor = mapEntry.getKey();
-                String reason = mapEntry.getValue();
-
-                String key = null;
-                if (testDescriptor instanceof ClassTestDescriptor) {
-                    key = "test.class";
-                } else if (testDescriptor instanceof ArgumentTestDescriptor) {
-                    key = "test.argument";
-                } else if (testDescriptor instanceof MethodTestDescriptor) {
-                    key = "test.method";
-                } else {
-                    continue;
-                }
-
-                key += ".count";
+            for (int i = 0; i < classTestDescriptorSkippedMap.size(); i++) {
+                String key = "test.class.count";
                 counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
+
                 counterMap
                         .computeIfAbsent(key + ".skipped", o -> new AtomicLong())
                         .incrementAndGet();
             }
 
-            for (Map.Entry<TestDescriptor, TestExecutionResult> mapEntry :
-                    testDescriptorTestExecutionResultMap.entrySet()) {
-                TestDescriptor testDescriptor = mapEntry.getKey();
+            for (int i = 0; i < argumentTestDescriptorSkippedMap.size(); i++) {
+                String key = "test.argument.count";
+                counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
+
+                counterMap
+                        .computeIfAbsent(key + ".skipped", o -> new AtomicLong())
+                        .incrementAndGet();
+            }
+
+            for (int i = 0; i < methodTestDescriptorSkippedMap.size(); i++) {
+                String key = "test.method.count";
+                counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
+
+                counterMap
+                        .computeIfAbsent(key + ".skipped", o -> new AtomicLong())
+                        .incrementAndGet();
+            }
+
+            for (Map.Entry<ClassTestDescriptor, TestExecutionResult> mapEntry :
+                    classTestDescriptorTestExecutionResultMap.entrySet()) {
                 TestExecutionResult testExecutionResult = mapEntry.getValue();
                 TestExecutionResult.Status status = testExecutionResult.getStatus();
-                String key = null;
+                String key = "test.class.count";
 
-                if (testDescriptor instanceof ClassTestDescriptor) {
-                    key = "test.class";
-                } else if (testDescriptor instanceof ArgumentTestDescriptor) {
-                    key = "test.argument";
-                } else if (testDescriptor instanceof MethodTestDescriptor) {
-                    key = "test.method";
-                } else {
-                    continue;
+                counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
+
+                switch (status) {
+                    case SUCCESSFUL:
+                        {
+                            counterMap
+                                    .computeIfAbsent(key + ".successful", o -> new AtomicLong())
+                                    .incrementAndGet();
+                            break;
+                        }
+                    case FAILED:
+                        {
+                            counterMap
+                                    .computeIfAbsent(key + ".failed", o -> new AtomicLong())
+                                    .incrementAndGet();
+                            break;
+                        }
+                    case ABORTED:
+                        {
+                            counterMap
+                                    .computeIfAbsent(key + ".aborted", o -> new AtomicLong())
+                                    .incrementAndGet();
+                            break;
+                        }
                 }
+            }
 
-                key += ".count";
+            for (Map.Entry<ArgumentTestDescriptor, TestExecutionResult> mapEntry :
+                    argumentTestDescriptorTestExecutionResultMap.entrySet()) {
+                TestExecutionResult testExecutionResult = mapEntry.getValue();
+                TestExecutionResult.Status status = testExecutionResult.getStatus();
+                String key = "test.argument.count";
+
+                counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
+
+                switch (status) {
+                    case SUCCESSFUL:
+                        {
+                            counterMap
+                                    .computeIfAbsent(key + ".successful", o -> new AtomicLong())
+                                    .incrementAndGet();
+                            break;
+                        }
+                    case FAILED:
+                        {
+                            counterMap
+                                    .computeIfAbsent(key + ".failed", o -> new AtomicLong())
+                                    .incrementAndGet();
+                            break;
+                        }
+                    case ABORTED:
+                        {
+                            counterMap
+                                    .computeIfAbsent(key + ".aborted", o -> new AtomicLong())
+                                    .incrementAndGet();
+                            break;
+                        }
+                }
+            }
+
+            for (Map.Entry<MethodTestDescriptor, TestExecutionResult> mapEntry :
+                    methodTestDescriptorTestExecutionResultMap.entrySet()) {
+                TestExecutionResult testExecutionResult = mapEntry.getValue();
+                TestExecutionResult.Status status = testExecutionResult.getStatus();
+                String key = "test.method.count";
+
                 counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
 
                 switch (status) {
@@ -240,7 +342,11 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                 + AnsiColor.TEXT_WHITE_BRIGHT.wrap(
                                         counterKeyToMessageDisplayStringMap.get(key))
                                 + " : "
-                                + counterMap.computeIfAbsent(key, o -> new AtomicLong()).get());
+                                + pad(
+                                        counterMap
+                                                .computeIfAbsent(key, o -> new AtomicLong())
+                                                .get(),
+                                        padding));
 
                 String[] subKeys = {
                     key + ".successful", key + ".failed", key + ".aborted", key + ".skipped"
@@ -275,120 +381,15 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 }
             }
 
-            /*
-            int columnWidthFound =
-                    getColumnWith(
-                            classTestDescriptorFound,
-                            argumentTestDescriptorFound,
-                            methodTestDescriptorFound);
-
-            int columnWidthSuccess =
-                    getColumnWith(
-                            classTestDescriptorSuccess,
-                            argumentTestDescriptorSuccess,
-                            methodTestDescriptorSuccess);
-
-            int columnWidthFailure =
-                    getColumnWith(
-                            classTestDescriptorFailure,
-                            argumentTestDescriptorFailure,
-                            methodTestDescriptorFailure);
-
-            int columnWidthSkipped =
-                    getColumnWith(
-                            classTestDescriptorSkipped,
-                            argumentTestDescriptorSkipped,
-                            methodTestDescriptorSkipped);
-
-            if (hasTests) {
-                println(INFO + SEPARATOR);
-                println(INFO + SUMMARY_BANNER);
-                println(INFO + SEPARATOR);
-
-                println(
-                        new AnsiColorStringBuilder()
-                                .append(INFO)
-                                .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                .append("Test Classes   : ")
-                                .append(pad(classTestDescriptorFound, columnWidthFound))
-                                .append(", ")
-                                .color(AnsiColor.TEXT_GREEN_BRIGHT)
-                                .append("PASSED")
-                                .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                .append(" : ")
-                                .append(pad(classTestDescriptorSuccess, columnWidthSuccess))
-                                .append(", ")
-                                .color(AnsiColor.TEXT_RED_BRIGHT)
-                                .append("FAILED")
-                                .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                .append(" : ")
-                                .append(pad(classTestDescriptorFailure, columnWidthFailure))
-                                .append(", ")
-                                .color(AnsiColor.TEXT_YELLOW_BRIGHT)
-                                .append("SKIPPED")
-                                .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                .append(" : ")
-                                .append(pad(classTestDescriptorSkipped, columnWidthSkipped))
-                                .append(AnsiColor.TEXT_RESET));
-
-                if (argumentTestDescriptorFound > 0) {
-                    println(
-                            new AnsiColorStringBuilder()
-                                    .append(INFO)
-                                    .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                    .append("Test Arguments : ")
-                                    .append(pad(argumentTestDescriptorFound, columnWidthFound))
-                                    .append(", ")
-                                    .color(AnsiColor.TEXT_GREEN_BRIGHT)
-                                    .append("PASSED")
-                                    .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                    .append(" : ")
-                                    .append(pad(argumentTestDescriptorSuccess, columnWidthSuccess))
-                                    .append(", ")
-                                    .color(AnsiColor.TEXT_RED_BRIGHT)
-                                    .append("FAILED")
-                                    .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                    .append(" : ")
-                                    .append(pad(argumentTestDescriptorFailure, columnWidthFailure))
-                                    .append(", ")
-                                    .color(AnsiColor.TEXT_YELLOW_BRIGHT)
-                                    .append("SKIPPED")
-                                    .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                    .append(" : ")
-                                    .append(pad(argumentTestDescriptorSkipped, columnWidthSkipped))
-                                    .append(AnsiColor.TEXT_RESET));
-                }
-
-                println(
-                        new AnsiColorStringBuilder()
-                                .append(INFO)
-                                .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                .append("Test Methods   : ")
-                                .append(pad(methodTestDescriptorFound, columnWidthFound))
-                                .append(", ")
-                                .color(AnsiColor.TEXT_GREEN_BRIGHT)
-                                .append("PASSED")
-                                .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                .append(" : ")
-                                .append(pad(methodTestDescriptorSuccess, columnWidthSuccess))
-                                .append(", ")
-                                .color(AnsiColor.TEXT_RED_BRIGHT)
-                                .append("FAILED")
-                                .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                .append(" : ")
-                                .append(pad(methodTestDescriptorFailure, columnWidthFailure))
-                                .append(", ")
-                                .color(AnsiColor.TEXT_YELLOW_BRIGHT)
-                                .append("SKIPPED")
-                                .color(AnsiColor.TEXT_WHITE_BRIGHT)
-                                .append(" : ")
-                                .append(pad(methodTestDescriptorSkipped, columnWidthSkipped))
-                                .append(AnsiColor.TEXT_RESET));
-                println(INFO + SEPARATOR);
-            }
-            */
-
             println(INFO + SEPARATOR);
+
+            String message;
+            if (hasFailures) {
+                message = AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("TESTS FAILED");
+            } else {
+                message = AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("TESTS PASSED");
+            }
+
             println(INFO + message);
             println(INFO + SEPARATOR);
 
@@ -420,7 +421,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 println(INFO + SEPARATOR);
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            t.printStackTrace(System.err);
         }
     }
 

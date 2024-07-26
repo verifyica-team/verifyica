@@ -25,11 +25,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
-import org.antublue.verifyica.engine.descriptor.ToExecutableTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.ExecutableTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutor;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -37,10 +38,8 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.util.BlockingRejectedExecutionHandler;
 import org.antublue.verifyica.engine.util.NamedThreadFactory;
 import org.junit.platform.engine.ConfigurationParameters;
-import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
-import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement PlatformThreadsExecutionRequestExecutor */
 @SuppressWarnings("PMD.EmptyCatchBlock")
@@ -65,9 +64,6 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
             LOGGER.trace(
                     "execute() children [%d]",
                     executionRequest.getRootTestDescriptor().getChildren().size());
-
-            EngineExecutionListener engineExecutionListener =
-                    executionRequest.getEngineExecutionListener();
 
             TestDescriptor rootTestDescriptor = executionRequest.getRootTestDescriptor();
 
@@ -125,7 +121,9 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
                 final ExecutorService finalExecutorService = executorService;
 
                 testDescriptors.stream()
-                        .map(ToExecutableTestDescriptor.INSTANCE)
+                        .map(
+                                (Function<TestDescriptor, ExecutableTestDescriptor>)
+                                        testDescriptor -> (ExecutableTestDescriptor) testDescriptor)
                         .forEach(
                                 executableTestDescriptor ->
                                         finalExecutorService.submit(
@@ -154,9 +152,6 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
                     executorService.shutdown();
                 }
             }
-
-            engineExecutionListener.executionFinished(
-                    rootTestDescriptor, TestExecutionResult.successful());
         } finally {
             countDownLatch.countDown();
         }

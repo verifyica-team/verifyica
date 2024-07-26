@@ -18,7 +18,6 @@ package org.antublue.verifyica.engine.descriptor;
 
 import io.github.thunkware.vt.bridge.ThreadTool;
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -98,16 +97,17 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     }
 
     @Override
+    public Class<?> getTestClass() {
+        return testClass;
+    }
+
+    @Override
     public void execute(ExecutionRequest executionRequest, Context context) {
         LOGGER.trace("execute [%s]", this);
 
-        stopWatch.reset();
+        getStopWatch().reset();
 
         DefaultClassContext defaultClassContext = (DefaultClassContext) context;
-
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
-        getMetadata()
-                .put(MetadataTestDescriptorConstants.TEST_CLASS_DISPLAY_NAME, getDisplayName());
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
@@ -177,7 +177,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             }
         }
 
-        stopWatch.stop();
+        getStopWatch().stop();
 
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace(this);
@@ -194,11 +194,6 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
         StateTracker.Entry<String> entry = stateTracker.getFirstStateEntryWithThrowable();
 
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
-                        stopWatch.elapsedTime());
-
         TestExecutionResult testExecutionResult = TestExecutionResult.successful();
 
         if (entry != null) {
@@ -212,31 +207,18 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     public void skip(ExecutionRequest executionRequest, Context context) {
         LOGGER.trace("skip [%s]", this);
 
-        stopWatch.reset();
+        getStopWatch().reset();
 
         DefaultClassContext defaultClassContext = (DefaultClassContext) context;
 
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
-        getMetadata()
-                .put(MetadataTestDescriptorConstants.TEST_CLASS_DISPLAY_NAME, getDisplayName());
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
-                        stopWatch.elapsedTime());
-
         getChildren().stream()
-                .map(ToExecutableTestDescriptor.INSTANCE)
+                .map(TO_EXECUTABLE_TEST_DESCRIPTOR)
                 .forEach(
                         executableTestDescriptor ->
                                 executableTestDescriptor.skip(
                                         executionRequest, defaultClassContext));
 
-        stopWatch.stop();
-
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
-                        stopWatch.elapsedTime());
+        getStopWatch().stop();
 
         executionRequest.getEngineExecutionListener().executionSkipped(this, "Skipped");
     }
@@ -308,7 +290,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         Semaphore semaphore = new Semaphore(parallelism);
 
         getChildren().stream()
-                .map(ToExecutableTestDescriptor.INSTANCE)
+                .map(TO_EXECUTABLE_TEST_DESCRIPTOR)
                 .forEach(
                         executableTestDescriptor -> {
                             DefaultArgumentContext defaultArgumentContext =
@@ -373,18 +355,10 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             ExecutionRequest executionRequest, DefaultClassContext defaultClassContext) {
         LOGGER.trace("doSkip() testClass [%s]", testClass.getName());
 
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
-        getMetadata()
-                .put(MetadataTestDescriptorConstants.TEST_CLASS_DISPLAY_NAME, getDisplayName());
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
-                        Duration.ofMillis(0));
-
         executionRequest.getEngineExecutionListener().executionSkipped(this, "Skipped");
 
         getChildren().stream()
-                .map(ToExecutableTestDescriptor.INSTANCE)
+                .map(TO_EXECUTABLE_TEST_DESCRIPTOR)
                 .forEach(
                         executableTestDescriptor -> {
                             DefaultArgumentContext defaultArgumentContext =

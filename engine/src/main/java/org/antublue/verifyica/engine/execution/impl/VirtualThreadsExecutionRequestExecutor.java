@@ -24,20 +24,19 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
-import org.antublue.verifyica.engine.descriptor.ToExecutableTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.ExecutableTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.ConfigurationParameters;
-import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
-import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement VirtualThreadsExecutionRequestExecutor */
 @SuppressWarnings("PMD.EmptyCatchBlock")
@@ -61,9 +60,6 @@ public class VirtualThreadsExecutionRequestExecutor implements ExecutionRequestE
             LOGGER.trace(
                     "execute() children [%d]",
                     executionRequest.getRootTestDescriptor().getChildren().size());
-
-            EngineExecutionListener engineExecutionListener =
-                    executionRequest.getEngineExecutionListener();
 
             TestDescriptor rootTestDescriptor = executionRequest.getRootTestDescriptor();
 
@@ -99,8 +95,6 @@ public class VirtualThreadsExecutionRequestExecutor implements ExecutionRequestE
 
                 LOGGER.trace("%s = [%d]", Constants.ENGINE_PARALLELISM, threadCount);
 
-                engineExecutionListener.executionStarted(executionRequest.getRootTestDescriptor());
-
                 Set<? extends TestDescriptor> testDescriptors = rootTestDescriptor.getChildren();
 
                 LOGGER.trace("test descriptor count [%d]", testDescriptors.size());
@@ -110,7 +104,9 @@ public class VirtualThreadsExecutionRequestExecutor implements ExecutionRequestE
                 AtomicInteger threadId = new AtomicInteger(1);
 
                 testDescriptors.stream()
-                        .map(ToExecutableTestDescriptor.INSTANCE)
+                        .map(
+                                (Function<TestDescriptor, ExecutableTestDescriptor>)
+                                        testDescriptor -> (ExecutableTestDescriptor) testDescriptor)
                         .forEach(
                                 executableTestDescriptor -> {
                                     try {
@@ -152,9 +148,6 @@ public class VirtualThreadsExecutionRequestExecutor implements ExecutionRequestE
 
                 engineContext.getStore().clear();
             }
-
-            engineExecutionListener.executionFinished(
-                    rootTestDescriptor, TestExecutionResult.successful());
         } finally {
             countDownLatch.countDown();
         }

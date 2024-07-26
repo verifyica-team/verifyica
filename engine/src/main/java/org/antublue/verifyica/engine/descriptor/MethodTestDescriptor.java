@@ -19,16 +19,15 @@ package org.antublue.verifyica.engine.descriptor;
 import static java.lang.String.format;
 
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.support.DisplayNameSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.util.StateTracker;
 import org.junit.platform.commons.util.Preconditions;
@@ -44,6 +43,7 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodTestDescriptor.class);
 
     private final Class<?> testClass;
+    private final Argument<?> testArgument;
     private final List<Method> beforeEachMethods;
     private final Method testMethod;
     private final List<Method> afterEachMethods;
@@ -54,6 +54,7 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
      * @param uniqueId uniqueId
      * @param displayName displayName
      * @param testClass testClass
+     * @param testArgument testArgument
      * @param beforeEachMethods beforeEachMethods
      * @param testMethod testMethod
      * @param afterEachMethods afterEachMethods
@@ -62,11 +63,13 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
             UniqueId uniqueId,
             String displayName,
             Class<?> testClass,
+            Argument<?> testArgument,
             List<Method> beforeEachMethods,
             Method testMethod,
             List<Method> afterEachMethods) {
         super(uniqueId, displayName);
         this.testClass = testClass;
+        this.testArgument = testArgument;
         this.beforeEachMethods = beforeEachMethods;
         this.testMethod = testMethod;
         this.afterEachMethods = afterEachMethods;
@@ -83,6 +86,29 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
     }
 
     @Override
+    public Class<?> getTestClass() {
+        return testClass;
+    }
+
+    /**
+     * Method to get the test argument
+     *
+     * @return the test argument
+     */
+    public Argument<?> getTestArgument() {
+        return testArgument;
+    }
+
+    /**
+     * Method to get the test method
+     *
+     * @return the test argument
+     */
+    public Method getTestMethod() {
+        return testMethod;
+    }
+
+    @Override
     public void execute(ExecutionRequest executionRequest, Context context) {
         LOGGER.trace("execute [%s]", this);
 
@@ -92,21 +118,7 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
         Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
         Preconditions.notNull(defaultArgumentContext.getTestArgument(), "testArgument is null");
 
-        stopWatch.reset();
-
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_CLASS_DISPLAY_NAME,
-                        getParent().get().getParent().get().getDisplayName());
-
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_ARGUMENT,
-                        defaultArgumentContext.getTestArgument());
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_METHOD, testMethod);
-        getMetadata()
-                .put(MetadataTestDescriptorConstants.TEST_METHOD_DISPLAY_NAME, getDisplayName());
+        getStopWatch().reset();
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
@@ -141,7 +153,7 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
             t.printStackTrace(System.err);
         }
 
-        stopWatch.stop();
+        getStopWatch().stop();
 
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace(this);
@@ -158,11 +170,6 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
 
         StateTracker.Entry<String> entry = stateTracker.getFirstStateEntryWithThrowable();
 
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
-                        stopWatch.elapsedTime());
-
         TestExecutionResult testExecutionResult = TestExecutionResult.successful();
 
         if (entry != null) {
@@ -176,32 +183,9 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
     public void skip(ExecutionRequest executionRequest, Context context) {
         LOGGER.trace("skip [%s]", this);
 
-        stopWatch.reset();
+        getStopWatch().reset();
 
         DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
-
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_CLASS_DISPLAY_NAME,
-                        DisplayNameSupport.getDisplayName(testClass));
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_ARGUMENT,
-                        defaultArgumentContext.getTestArgument());
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_METHOD, testMethod);
-        getMetadata()
-                .put(MetadataTestDescriptorConstants.TEST_METHOD_DISPLAY_NAME, getDisplayName());
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
-                        Duration.ofMillis(0));
-        /*
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_STATUS,
-                        MetadataTestDescriptorConstants.SKIP);
-         */
 
         executionRequest
                 .getEngineExecutionListener()

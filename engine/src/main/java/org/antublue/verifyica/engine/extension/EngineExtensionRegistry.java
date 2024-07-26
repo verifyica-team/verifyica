@@ -28,7 +28,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.antublue.verifyica.api.Abort;
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.configuration.Constants;
@@ -121,20 +120,15 @@ public class EngineExtensionRegistry {
      * @throws Throwable Throwable
      */
     public void onInitialize(EngineExtensionContext engineExtensionContext) throws Throwable {
-        try {
-            for (EngineExtension engineExtension : getEngineExtensions()) {
-                LOGGER.trace(
-                        "engine extension [%s] onInitialize()",
-                        engineExtension.getClass().getName());
+        for (EngineExtension engineExtension : getEngineExtensions()) {
+            LOGGER.trace(
+                    "engine extension [%s] onInitialize()", engineExtension.getClass().getName());
 
-                engineExtension.onInitialize(engineExtensionContext);
+            engineExtension.onInitialize(engineExtensionContext);
 
-                LOGGER.trace(
-                        "engine extension [%s] onInitialize() success",
-                        engineExtension.getClass().getName());
-            }
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
+            LOGGER.trace(
+                    "engine extension [%s] onInitialize() success",
+                    engineExtension.getClass().getName());
         }
     }
 
@@ -153,22 +147,18 @@ public class EngineExtensionRegistry {
 
         Map<Class<?>, Set<Method>> workingTestClassMethodMap = testClassMethodMap;
 
-        try {
-            for (EngineExtension engineExtension : getEngineExtensions()) {
-                LOGGER.trace(
-                        "engine extension [%s] onTestDiscovery()",
-                        engineExtension.getClass().getName());
+        for (EngineExtension engineExtension : getEngineExtensions()) {
+            LOGGER.trace(
+                    "engine extension [%s] onTestDiscovery()",
+                    engineExtension.getClass().getName());
 
-                workingTestClassMethodMap =
-                        engineExtension.onTestDiscovery(
-                                engineExtensionContext, workingTestClassMethodMap);
+            workingTestClassMethodMap =
+                    engineExtension.onTestDiscovery(
+                            engineExtensionContext, workingTestClassMethodMap);
 
-                LOGGER.trace(
-                        "engine extension [%s] onTestDiscovery()" + " success",
-                        engineExtension.getClass().getName());
-            }
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
+            LOGGER.trace(
+                    "engine extension [%s] onTestDiscovery()" + " success",
+                    engineExtension.getClass().getName());
         }
 
         return workingTestClassMethodMap;
@@ -181,20 +171,15 @@ public class EngineExtensionRegistry {
      * @throws Throwable Throwable
      */
     public void beforeExecute(EngineExtensionContext engineExtensionContext) throws Throwable {
-        try {
-            for (EngineExtension engineExtension : getEngineExtensions()) {
-                LOGGER.trace(
-                        "engine extension [%s] beforeExecute()",
-                        engineExtension.getClass().getName());
+        for (EngineExtension engineExtension : getEngineExtensions()) {
+            LOGGER.trace(
+                    "engine extension [%s] beforeExecute()", engineExtension.getClass().getName());
 
-                engineExtension.beforeExecute(engineExtensionContext);
+            engineExtension.beforeExecute(engineExtensionContext);
 
-                LOGGER.trace(
-                        "engine extension [%s] beforeExecute() success",
-                        engineExtension.getClass().getName());
-            }
-        } catch (Abort e) {
-            // INTENTIONALLY BLANK
+            LOGGER.trace(
+                    "engine extension [%s] beforeExecute() success",
+                    engineExtension.getClass().getName());
         }
     }
 
@@ -206,15 +191,10 @@ public class EngineExtensionRegistry {
      */
     public void afterExecute(EngineExtensionContext engineExtensionContext) throws Throwable {
         for (EngineExtension engineExtension : getEngineExtensionsReverse()) {
-            try {
-                LOGGER.trace(
-                        "engine extension [%s] beforeDestroy()",
-                        engineExtension.getClass().getName());
+            LOGGER.trace(
+                    "engine extension [%s] beforeDestroy()", engineExtension.getClass().getName());
 
-                engineExtension.afterExecute(engineExtensionContext);
-            } catch (Abort e) {
-                break;
-            }
+            engineExtension.afterExecute(engineExtensionContext);
         }
     }
 

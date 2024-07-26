@@ -20,18 +20,22 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.util.StopWatch;
 import org.junit.platform.engine.ExecutionRequest;
+import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 
 /** Abstract class to implement ExecutableTestDescriptor */
 @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.EmptyCatchBlock"})
-public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
-        implements MetadataTestDescriptor {
+public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
+
+    protected static final ToExecutableTestDescriptor TO_EXECUTABLE_TEST_DESCRIPTOR =
+            new ToExecutableTestDescriptor();
 
     private static final Set<String> pruneRegexPatterns = new LinkedHashSet<>();
 
@@ -40,11 +44,8 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
         pruneRegexPatterns.add("com\\.antublue\\.verifyica\\.engine\\.extension\\..*");
     }
 
-    /** Metadata */
-    protected final Metadata metadata;
-
     /** Stopwatch */
-    protected final StopWatch stopWatch;
+    private final StopWatch stopWatch;
 
     /**
      * Constructor
@@ -55,13 +56,23 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
     protected ExecutableTestDescriptor(UniqueId uniqueId, String displayName) {
         super(uniqueId, displayName);
 
-        metadata = new Metadata();
         stopWatch = new StopWatch();
     }
 
-    @Override
-    public Metadata getMetadata() {
-        return metadata;
+    /**
+     * Method to get the test class
+     *
+     * @return the test class
+     */
+    public abstract Class<?> getTestClass();
+
+    /**
+     * Method to get the StopWatch
+     *
+     * @return the StopWatch
+     */
+    public StopWatch getStopWatch() {
+        return stopWatch;
     }
 
     @Override
@@ -119,6 +130,23 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
             throwable.setStackTrace(filteredStackTrace.toArray(new StackTraceElement[0]));
 
             throwable = throwable.getCause();
+        }
+    }
+
+    /** Class to implement ToExecutableTestDescriptor */
+    public static class ToExecutableTestDescriptor
+            implements Function<TestDescriptor, ExecutableTestDescriptor> {
+
+        /** Constructor */
+        public ToExecutableTestDescriptor() {
+            // INTENTIONALLY BLANK
+        }
+
+        @Override
+        public ExecutableTestDescriptor apply(TestDescriptor testDescriptor) {
+            return testDescriptor instanceof ExecutableTestDescriptor
+                    ? (ExecutableTestDescriptor) testDescriptor
+                    : null;
         }
     }
 }

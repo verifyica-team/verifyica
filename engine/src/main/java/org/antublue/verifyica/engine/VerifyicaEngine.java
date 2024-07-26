@@ -23,6 +23,7 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
+import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.execution.ExecutionRequestExecutor;
@@ -96,7 +97,7 @@ public class VerifyicaEngine implements TestEngine {
         EngineContext engineContext = DefaultEngineContext.getInstance();
         EngineExtensionContext engineExtensionContext =
                 new DefaultEngineExtensionContext(engineContext);
-        EngineDescriptor engineDescriptor = new EngineDescriptor(uniqueId, getId());
+        EngineDescriptor engineDescriptor = new StatusEngineDescriptor(uniqueId, getId());
 
         try {
             EngineExtensionRegistry.getInstance().onInitialize(engineExtensionContext);
@@ -152,19 +153,14 @@ public class VerifyicaEngine implements TestEngine {
             }
         }
 
-        if (throwable != null) {
-            executionRequest
-                    .getEngineExecutionListener()
-                    .executionFinished(
-                            executionRequest.getRootTestDescriptor(),
-                            TestExecutionResult.successful());
-        } else {
-            executionRequest
-                    .getEngineExecutionListener()
-                    .executionFinished(
-                            executionRequest.getRootTestDescriptor(),
-                            TestExecutionResult.aborted(throwable));
-        }
+        TestExecutionResult testExecutionResult =
+                throwable != null
+                        ? TestExecutionResult.successful()
+                        : TestExecutionResult.failed(throwable);
+
+        executionRequest
+                .getEngineExecutionListener()
+                .executionFinished(executionRequest.getRootTestDescriptor(), testExecutionResult);
 
         LOGGER.trace("execution done");
     }
