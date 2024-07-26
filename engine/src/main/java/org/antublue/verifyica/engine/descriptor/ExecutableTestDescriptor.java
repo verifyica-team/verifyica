@@ -95,44 +95,7 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
      * @param context context
      */
     public abstract void skip(ExecutionRequest executionRequest, Context context);
-
-    protected static void pruneStackTrace(Throwable throwable, Class<?> stopClass) {
-        List<Pattern> patterns = new ArrayList<>();
-        for (String pruneRegexPattern : pruneRegexPatterns) {
-            patterns.add(Pattern.compile(pruneRegexPattern));
-        }
-
-        while (throwable != null) {
-            StackTraceElement[] originalStackTrace = throwable.getStackTrace();
-
-            List<StackTraceElement> filteredStackTrace = new ArrayList<>();
-
-            boolean stopClassEncountered = false;
-            for (StackTraceElement element : originalStackTrace) {
-                if (element.getClassName().equals(stopClass.getName())) {
-                    stopClassEncountered = true;
-                }
-
-                boolean matchesPattern = false;
-                for (Pattern pattern : patterns) {
-                    Matcher matcher = pattern.matcher(element.getClassName());
-                    if (matcher.matches()) {
-                        matchesPattern = true;
-                        break;
-                    }
-                }
-
-                if (!matchesPattern || stopClassEncountered) {
-                    filteredStackTrace.add(element);
-                }
-            }
-
-            throwable.setStackTrace(filteredStackTrace.toArray(new StackTraceElement[0]));
-
-            throwable = throwable.getCause();
-        }
-    }
-
+    
     /** Class to implement ToExecutableTestDescriptor */
     public static class ToExecutableTestDescriptor
             implements Function<TestDescriptor, ExecutableTestDescriptor> {
