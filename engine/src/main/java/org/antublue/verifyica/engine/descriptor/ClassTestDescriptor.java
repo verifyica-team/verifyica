@@ -285,7 +285,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             executorService =
                     ExecutorServiceFactory.getInstance()
                             .newExecutorService(
-                                    parallelism, Thread.currentThread().getName() + "/");
+                                    Thread.currentThread().getName() + "/", parallelism);
 
             Semaphore semaphore = null;
             if (ExecutorServiceFactory.usingVirtualThreads()) {

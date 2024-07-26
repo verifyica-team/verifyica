@@ -21,22 +21,33 @@ import io.github.thunkware.vt.bridge.ThreadCustomizer;
 import io.github.thunkware.vt.bridge.ThreadTool;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+/** Class to implement ExecutorServiceFactory */
 public class ExecutorServiceFactory {
 
+    /** Constructor */
     private ExecutorServiceFactory() {
         // INTENTIONALLY BLANK
     }
 
-    public ExecutorService newExecutorService(int threads, String threadNamePrefix) {
+    /**
+     * Method to create a new ExecutorService. If virtual threads are supported, threadCount is
+     * ignored
+     *
+     * @param threadNamePrefix threadNamePrefix
+     * @param threadCount threadCount
+     * @return an ExecutorService
+     */
+    public ExecutorService newExecutorService(String threadNamePrefix, int threadCount) {
         ExecutorService executorService;
 
         if (ThreadTool.hasVirtualThreads()) {
@@ -45,17 +56,33 @@ public class ExecutorServiceFactory {
                             ThreadCustomizer.withNamePrefix(threadNamePrefix));
         } else {
             executorService =
-                    Executors.newFixedThreadPool(
-                            threads, new NamedThreadFactory(threadNamePrefix + "%d"));
+                    new ThreadPoolExecutor(
+                            threadCount,
+                            threadCount,
+                            60L,
+                            TimeUnit.SECONDS,
+                            new ArrayBlockingQueue<>(threadCount * 10),
+                            new NamedThreadFactory(threadNamePrefix + "%d"),
+                            new BlockingRejectedExecutionHandler());
         }
 
         return executorService;
     }
 
+    /**
+     * Method to get a singleton instance
+     *
+     * @return the singleton instance
+     */
     public static ExecutorServiceFactory getInstance() {
         return SingletonHolder.SINGLETON;
     }
 
+    /**
+     * Method to return if using virtual threads
+     *
+     * @return true if using virtual threads, else false
+     */
     public static boolean usingVirtualThreads() {
         return ThreadTool.hasVirtualThreads();
     }

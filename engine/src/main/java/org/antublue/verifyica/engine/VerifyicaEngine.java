@@ -157,7 +157,7 @@ public class VerifyicaEngine implements TestEngine {
 
             executorService =
                     ExecutorServiceFactory.getInstance()
-                            .newExecutorService(parallelism, "verifyica-");
+                            .newExecutorService("verifyica-", parallelism);
 
             Semaphore semaphore = null;
             if (ExecutorServiceFactory.usingVirtualThreads()) {

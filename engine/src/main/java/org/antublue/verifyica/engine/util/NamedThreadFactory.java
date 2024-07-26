@@ -41,7 +41,7 @@ public final class NamedThreadFactory implements ThreadFactory {
      * Method to create a new Thread
      *
      * @param runnable a runnable to be executed by new thread instance
-     * @return the Thread
+     * @return a Thread
      */
     @Override
     public Thread newThread(Runnable runnable) {
