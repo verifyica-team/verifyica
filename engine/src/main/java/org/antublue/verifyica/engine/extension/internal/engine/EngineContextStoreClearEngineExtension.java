@@ -21,11 +21,16 @@ import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement ClearEngineContextEngineExtension */
+/** Class to implement EngineContextStoreClearEngineExtension */
 public class EngineContextStoreClearEngineExtension implements InternalEngineExtension {
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(EngineContextStoreClearEngineExtension.class);
+
+    /** Constructor */
+    public EngineContextStoreClearEngineExtension() {
+        // INTENTIONALLY BLANK
+    }
 
     @Override
     public void afterExecute(EngineExtensionContext engineExtensionContext) {

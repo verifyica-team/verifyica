@@ -24,7 +24,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-/** Class to implement StateMonitor */
+/**
+ * Class to implement StateMonitor
+ *
+ * @param <T> the type
+ */
 @SuppressWarnings("PMD.UnusedMethod")
 public class StateMonitor<T> {
 
@@ -36,7 +40,11 @@ public class StateMonitor<T> {
         this(null);
     }
 
-    /** Constructor */
+    /**
+     * Constructor
+     *
+     * @param initial initial
+     */
     public StateMonitor(T initial) {
         map = new LinkedHashMap<>();
         if (initial != null) {
@@ -139,13 +147,21 @@ public class StateMonitor<T> {
         }
     }
 
-    /** Class to implement Entry */
+    /**
+     * Class to implement Entry
+     *
+     * @param <T> the type
+     */
     public static class Entry<T> {
 
         private final T state;
         private final Throwable throwable;
 
-        /** Constructor */
+        /**
+         * Constructor
+         *
+         * @param state state
+         */
         public Entry(T state) {
             this.state = state;
             this.throwable = null;
@@ -155,7 +171,7 @@ public class StateMonitor<T> {
          * Constructor
          *
          * @param state state
-         * @param throwable throwble
+         * @param throwable throwable
          */
         public Entry(T state, Throwable throwable) {
             this.state = state;

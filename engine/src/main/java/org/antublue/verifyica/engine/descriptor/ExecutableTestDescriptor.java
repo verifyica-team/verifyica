@@ -30,6 +30,7 @@ import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.EmptyCatchBlock"})
 public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
 
+    /** ToExecutableTestDescriptor */
     protected static final ToExecutableTestDescriptor TO_EXECUTABLE_TEST_DESCRIPTOR =
             new ToExecutableTestDescriptor();
 

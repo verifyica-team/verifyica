@@ -63,15 +63,20 @@ public class ShuffleTestClassesEngineExtension implements InternalEngineExtensio
         return workingTestClassMethodMap;
     }
 
-    private static Map<Class<?>, Set<Method>> shuffleMapKeys(
-            Map<Class<?>, Set<Method>> originalMap) {
-        List<Class<?>> keys = new ArrayList<>(originalMap.keySet());
+    /**
+     * Method to shuffle a Map's keys
+     *
+     * @param map map
+     * @return a Map with shuffled keys
+     */
+    private static Map<Class<?>, Set<Method>> shuffleMapKeys(Map<Class<?>, Set<Method>> map) {
+        List<Class<?>> keys = new ArrayList<>(map.keySet());
 
         Collections.shuffle(keys);
 
         Map<Class<?>, Set<Method>> shuffledMap = new LinkedHashMap<>();
         for (Class<?> key : keys) {
-            shuffledMap.put(key, originalMap.get(key));
+            shuffledMap.put(key, map.get(key));
         }
 
         return shuffledMap;

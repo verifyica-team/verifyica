@@ -27,6 +27,11 @@ public class ClassContextStoreClearEngineExtension implements InternalClassExten
     private static final Logger LOGGER =
             LoggerFactory.getLogger(ClassContextStoreClearEngineExtension.class);
 
+    /** Constructor */
+    public ClassContextStoreClearEngineExtension() {
+        // INTENTIONALLY BLANK
+    }
+
     @Override
     public void onDestroy(ClassExtensionContext classExtensionContext) {
         LOGGER.trace("onDestroy()");

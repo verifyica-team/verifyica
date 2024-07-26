@@ -19,10 +19,16 @@ package org.antublue.verifyica.engine.context;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.extension.ClassExtensionContext;
 
+/** Class to implement DefaultClassExtensionContext */
 public class DefaultClassExtensionContext implements ClassExtensionContext {
 
     private final ClassContext classContext;
 
+    /**
+     * Constructor
+     *
+     * @param classContext classContext
+     */
     public DefaultClassExtensionContext(ClassContext classContext) {
         this.classContext = classContext;
     }

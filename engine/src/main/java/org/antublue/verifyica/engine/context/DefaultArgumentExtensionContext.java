@@ -19,10 +19,16 @@ package org.antublue.verifyica.engine.context;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.extension.ArgumentExtensionContext;
 
+/** Class to implement DefaultArgumentExtensionContext */
 public class DefaultArgumentExtensionContext implements ArgumentExtensionContext {
 
     private final ArgumentContext argumentContext;
 
+    /**
+     * Constructor
+     *
+     * @param argumentContext argumentContext
+     */
     public DefaultArgumentExtensionContext(ArgumentContext argumentContext) {
         this.argumentContext = argumentContext;
     }
