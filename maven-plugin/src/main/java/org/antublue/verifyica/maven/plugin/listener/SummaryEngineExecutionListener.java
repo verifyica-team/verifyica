@@ -443,24 +443,6 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to get whether tests were executed
-     *
-     * @return true if there were tests executed, otherwise false
-     */
-    public boolean hasTests() {
-        return hasTests;
-    }
-
-    /**
-     * Method to get whether failures were encountered
-     *
-     * @return true if there were failures, otherwise false
-     */
-    public boolean hasFailures() {
-        return hasFailures;
-    }
-
-    /**
      * Method to println an Object
      *
      * @param object object
@@ -468,22 +450,6 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     private static void println(Object object) {
         System.out.println(object);
         System.out.flush();
-    }
-
-    /**
-     * Method to column width of long values as Strings
-     *
-     * @param values values
-     * @return the return value
-     */
-    private static int getColumnWith(long... values) {
-        int width = 0;
-
-        for (long value : values) {
-            width = Math.max(String.valueOf(value).length(), width);
-        }
-
-        return width;
     }
 
     /**
