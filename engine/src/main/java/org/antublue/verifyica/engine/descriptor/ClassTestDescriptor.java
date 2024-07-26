@@ -16,25 +16,24 @@
 
 package org.antublue.verifyica.engine.descriptor;
 
-import io.github.thunkware.vt.bridge.ThreadTool;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import org.antublue.verifyica.api.Context;
-import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ObjectSupport;
+import org.antublue.verifyica.engine.util.ExecutorServiceFactory;
 import org.antublue.verifyica.engine.util.StateTracker;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
+import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
@@ -45,14 +44,6 @@ import org.junit.platform.engine.support.descriptor.ClassSource;
 public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptor.class);
-
-    private static final boolean useVirtualThreads =
-            ThreadTool.hasVirtualThreads()
-                    && "virtual"
-                            .equalsIgnoreCase(
-                                    DefaultEngineContext.getInstance()
-                                            .getConfiguration()
-                                            .get(Constants.ENGINE_EXECUTOR_TYPE));
 
     private final Class<?> testClass;
     private final int parallelism;
@@ -286,62 +277,58 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         Preconditions.notNull(defaultClassContext, "defaultClassContext is null");
         Preconditions.notNull(defaultClassContext.getTestInstance(), "testInstance is null");
 
-        CountDownLatch countDownLatch = new CountDownLatch(getChildren().size());
-        Semaphore semaphore = new Semaphore(parallelism);
-
-        getChildren().stream()
-                .map(TO_EXECUTABLE_TEST_DESCRIPTOR)
-                .forEach(
-                        executableTestDescriptor -> {
-                            DefaultArgumentContext defaultArgumentContext =
-                                    new DefaultArgumentContext(defaultClassContext);
-
-                            defaultArgumentContext.setTestInstance(
-                                    defaultClassContext.getTestInstance());
-
-                            if (parallelism > 1) {
-                                try {
-                                    semaphore.acquire();
-                                } catch (Throwable t) {
-                                    // INTENTIONALLY BLANK
-                                }
-
-                                Runnable runnable =
-                                        () -> {
-                                            try {
-                                                executableTestDescriptor.execute(
-                                                        executionRequest, defaultArgumentContext);
-                                            } finally {
-                                                semaphore.release();
-                                                countDownLatch.countDown();
-                                            }
-                                        };
-
-                                Thread thread;
-
-                                if (useVirtualThreads) {
-                                    thread = ThreadTool.unstartedVirtualThread(runnable);
-                                } else {
-                                    thread = new Thread(runnable);
-                                }
-
-                                thread.setDaemon(true);
-                                thread.setName(Thread.currentThread().getName());
-                                thread.start();
-                            } else {
-                                try {
-                                    executableTestDescriptor.execute(
-                                            executionRequest, defaultArgumentContext);
-                                } finally {
-                                    countDownLatch.countDown();
-                                }
-                            }
-                        });
+        ExecutorService executorService = null;
 
         try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            // INTENTIONALLY BLANK
+            if (parallelism > 1) {
+                executorService =
+                        ExecutorServiceFactory.getInstance()
+                                .newExecutorService(
+                                        parallelism, Thread.currentThread().getName() + "/");
+            }
+
+            CountDownLatch countDownLatch = new CountDownLatch(getChildren().size());
+
+            for (TestDescriptor testDescriptor : getChildren()) {
+                if (testDescriptor instanceof ExecutableTestDescriptor) {
+                    ExecutableTestDescriptor executableTestDescriptor =
+                            (ExecutableTestDescriptor) testDescriptor;
+
+                    DefaultArgumentContext defaultArgumentContext =
+                            new DefaultArgumentContext(defaultClassContext);
+
+                    defaultArgumentContext.setTestInstance(defaultClassContext.getTestInstance());
+
+                    if (parallelism > 1) {
+                        executorService.submit(
+                                () -> {
+                                    try {
+                                        executableTestDescriptor.execute(
+                                                executionRequest, defaultArgumentContext);
+                                    } finally {
+                                        countDownLatch.countDown();
+                                    }
+                                });
+                    } else {
+                        try {
+                            executableTestDescriptor.execute(
+                                    executionRequest, defaultArgumentContext);
+                        } finally {
+                            countDownLatch.countDown();
+                        }
+                    }
+                }
+            }
+
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                // INTENTIONALLY BLANK
+            }
+        } finally {
+            if (executorService != null) {
+                executorService.shutdown();
+            }
         }
     }
 

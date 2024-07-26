@@ -123,16 +123,14 @@ public class VirtualThreadsExecutionRequestExecutor implements ExecutionRequestE
                                                             } catch (Throwable t) {
                                                                 t.printStackTrace(System.err);
                                                             } finally {
-                                                                countDownLatch.get().countDown();
                                                                 threadId.decrementAndGet();
+                                                                countDownLatch.get().countDown();
                                                                 semaphore.release();
                                                             }
                                                         });
 
                                         thread.setName(
-                                                format(
-                                                        "verifyica-%02d",
-                                                        threadId.getAndIncrement()));
+                                                format("verifyica-%d", threadId.getAndIncrement()));
                                         thread.setDaemon(true);
                                         thread.start();
                                     } catch (InterruptedException e) {

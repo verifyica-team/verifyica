@@ -107,7 +107,7 @@ public class PlatformThreadsExecutionRequestExecutor implements ExecutionRequest
                                 60L,
                                 TimeUnit.SECONDS,
                                 new ArrayBlockingQueue<>(threadCount * 10),
-                                new NamedThreadFactory("verifyica-%02d"),
+                                new NamedThreadFactory("verifyica-%d"),
                                 new BlockingRejectedExecutionHandler());
 
                 executionRequest.getRootTestDescriptor();
