@@ -18,6 +18,7 @@ package org.antublue.verifyica.engine.extension;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
 
 /** Class to implement EngineExtensionRegistry */
+@SuppressWarnings("PMD.EmptyCatchBlock")
 public class EngineExtensionRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EngineExtensionRegistry.class);
@@ -56,7 +58,7 @@ public class EngineExtensionRegistry {
         readWriteLock = new ReentrantReadWriteLock(true);
         engineExtensions = new ArrayList<>();
 
-        load();
+        loadEngineExtensions();
     }
 
     /**
@@ -112,37 +114,33 @@ public class EngineExtensionRegistry {
     }
 
     /**
-     * Method to invoke engine extensions
+     * Method to call engine extensions
      *
      * @param engineExtensionContext engineExtensionContext
      * @throws Throwable Throwable
      */
-    public void afterInitialize(EngineExtensionContext engineExtensionContext) throws Throwable {
+    public void onInitialize(EngineExtensionContext engineExtensionContext) throws Throwable {
         for (EngineExtension engineExtension : getEngineExtensions()) {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(
-                        "engine extension [%s] afterInitialize()",
-                        engineExtension.getClass().getName());
-            }
+            LOGGER.trace(
+                    "engine extension [%s] onInitialize()", engineExtension.getClass().getName());
 
-            engineExtension.afterInitialize(engineExtensionContext);
+            engineExtension.onInitialize(engineExtensionContext);
 
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(
-                        "engine extension [%s] afterInitialize() success",
-                        engineExtension.getClass().getName());
-            }
+            LOGGER.trace(
+                    "engine extension [%s] onInitialize() success",
+                    engineExtension.getClass().getName());
         }
     }
 
     /**
-     * Method to invoke engine extensions
+     * Method to call engine extensions
      *
      * @param engineExtensionContext engineExtensionContext
      * @param testClassMethodMap testClassMethodMap
+     * @return a Map of test classes with test methods
      * @throws Throwable Throwable
      */
-    public Map<Class<?>, Set<Method>> afterTestDiscovery(
+    public Map<Class<?>, Set<Method>> onTestDiscovery(
             EngineExtensionContext engineExtensionContext,
             Map<Class<?>, Set<Method>> testClassMethodMap)
             throws Throwable {
@@ -150,73 +148,54 @@ public class EngineExtensionRegistry {
         Map<Class<?>, Set<Method>> workingTestClassMethodMap = testClassMethodMap;
 
         for (EngineExtension engineExtension : getEngineExtensions()) {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(
-                        "engine extension [%s] afterTestClassTestClassMethodDiscovery()",
-                        engineExtension.getClass().getName());
-            }
+            LOGGER.trace(
+                    "engine extension [%s] onTestDiscovery()",
+                    engineExtension.getClass().getName());
 
             workingTestClassMethodMap =
-                    engineExtension.afterTestDiscovery(
+                    engineExtension.onTestDiscovery(
                             engineExtensionContext, workingTestClassMethodMap);
 
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(
-                        "engine extension [%s] afterTestClassTestClassMethodDiscovery() success",
-                        engineExtension.getClass().getName());
-            }
+            LOGGER.trace(
+                    "engine extension [%s] onTestDiscovery()" + " success",
+                    engineExtension.getClass().getName());
         }
 
         return workingTestClassMethodMap;
     }
 
     /**
-     * Method to invoke engine extensions
+     * Method to call engine extension
      *
      * @param engineExtensionContext engineExtensionContext
      * @throws Throwable Throwable
      */
     public void beforeExecute(EngineExtensionContext engineExtensionContext) throws Throwable {
         for (EngineExtension engineExtension : getEngineExtensions()) {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(
-                        "engine extension [%s] beforeExecute()",
-                        engineExtension.getClass().getName());
-            }
+            LOGGER.trace(
+                    "engine extension [%s] beforeExecute()", engineExtension.getClass().getName());
 
             engineExtension.beforeExecute(engineExtensionContext);
 
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(
-                        "engine extension [%s] beforeExecute() success",
-                        engineExtension.getClass().getName());
-            }
+            LOGGER.trace(
+                    "engine extension [%s] beforeExecute() success",
+                    engineExtension.getClass().getName());
         }
     }
 
     /**
-     * Method to invoke all engine extensions (capturing any Throwable exceptions)
+     * Method to call engine extension
      *
      * @param engineExtensionContext engineExtensionContext
-     * @return a List of Throwables
+     * @throws Throwable Throwable
      */
-    public List<Throwable> beforeDestroy(EngineExtensionContext engineExtensionContext) {
-        List<Throwable> throwables = new ArrayList<>();
+    public void afterExecute(EngineExtensionContext engineExtensionContext) throws Throwable {
+        for (EngineExtension engineExtension : getEngineExtensionsReverse()) {
+            LOGGER.trace(
+                    "engine extension [%s] beforeDestroy()", engineExtension.getClass().getName());
 
-        for (EngineExtension engineExtension : getEngineExtensions()) {
-            try {
-                if (LOGGER.isTraceEnabled()) {
-                    LOGGER.trace(
-                            "engine extension [%s] beforeDestroy()",
-                            engineExtension.getClass().getName());
-                }
-                engineExtension.beforeDestroy(engineExtensionContext);
-            } catch (Throwable t) {
-                throwables.add(t);
-            }
+            engineExtension.afterExecute(engineExtensionContext);
         }
-
-        return throwables;
     }
 
     /**
@@ -234,6 +213,22 @@ public class EngineExtensionRegistry {
     }
 
     /**
+     * Method to get a COPY of the List of EngineExtensions in reverse
+     *
+     * @return a COPY of the List of EngineExtensions in reverse
+     */
+    private List<EngineExtension> getEngineExtensionsReverse() {
+        try {
+            getReadWriteLock().readLock().lock();
+            List<EngineExtension> list = new ArrayList<>(engineExtensions);
+            Collections.reverse(list);
+            return list;
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    /**
      * Method to get the ReadWriteLock
      *
      * @return the ReadWriteLock
@@ -243,14 +238,12 @@ public class EngineExtensionRegistry {
     }
 
     /** Method to load test engine extensions */
-    private void load() {
+    private void loadEngineExtensions() {
         try {
             getReadWriteLock().writeLock().lock();
 
             if (!initialized) {
-                if (LOGGER.isTraceEnabled()) {
-                    LOGGER.trace("load()");
-                }
+                LOGGER.trace("loading engine extensions");
 
                 // Load internal engine extensions
                 List<Class<?>> internalEngineExtensionsClasses =
@@ -276,22 +269,18 @@ public class EngineExtensionRegistry {
                         new ArrayList<>(internalEngineExtensionsClasses);
                 engineExtensionClasses.addAll(externalEngineExtensionsClasses);
 
-                if (LOGGER.isTraceEnabled()) {
-                    LOGGER.trace("engine extension count [%d]", engineExtensions.size());
-                }
+                LOGGER.trace("engine extension count [%d]", engineExtensions.size());
 
                 for (Class<?> engineExtensionClass : engineExtensionClasses) {
-                    if (LOGGER.isTraceEnabled()) {
-                        engineExtensions.forEach(
-                                engineExtension ->
-                                        LOGGER.trace(
-                                                "engine extension [%s]",
-                                                engineExtension.getClass().getName()));
-                    }
-
                     try {
+                        LOGGER.trace(
+                                "loading engine extension [%s]", engineExtensionClass.getName());
+
                         Object object = ObjectSupport.createObject(engineExtensionClass);
                         engineExtensions.add((EngineExtension) object);
+
+                        LOGGER.trace(
+                                "engine extension [%s] loaded", engineExtensionClass.getName());
                     } catch (EngineException e) {
                         throw e;
                     } catch (Throwable t) {
@@ -327,11 +316,8 @@ public class EngineExtensionRegistry {
                                 .get(Constants.ENGINE_EXTENSIONS_INCLUDE_REGEX))
                 .ifPresent(
                         regex -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(
-                                        "%s [%s]",
-                                        Constants.ENGINE_EXTENSIONS_INCLUDE_REGEX, regex);
-                            }
+                            LOGGER.trace(
+                                    "%s [%s]", Constants.ENGINE_EXTENSIONS_INCLUDE_REGEX, regex);
 
                             Pattern pattern = Pattern.compile(regex);
                             Matcher matcher = pattern.matcher("");
@@ -341,10 +327,7 @@ public class EngineExtensionRegistry {
                                 Class<?> clazz = iterator.next();
                                 matcher.reset(clazz.getName());
                                 if (!matcher.find()) {
-                                    if (LOGGER.isTraceEnabled()) {
-                                        LOGGER.trace(
-                                                "removing engine extension [%s]", clazz.getName());
-                                    }
+                                    LOGGER.trace("removing engine extension [%s]", clazz.getName());
                                     iterator.remove();
                                 }
                             }
@@ -356,11 +339,8 @@ public class EngineExtensionRegistry {
                                 .get(Constants.ENGINE_EXTENSIONS_EXCLUDE_REGEX))
                 .ifPresent(
                         regex -> {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(
-                                        "%s [%s]",
-                                        Constants.ENGINE_EXTENSIONS_EXCLUDE_REGEX, regex);
-                            }
+                            LOGGER.trace(
+                                    "%s [%s]", Constants.ENGINE_EXTENSIONS_EXCLUDE_REGEX, regex);
 
                             Pattern pattern = Pattern.compile(regex);
                             Matcher matcher = pattern.matcher("");
@@ -370,10 +350,8 @@ public class EngineExtensionRegistry {
                                 Class<?> clazz = iterator.next();
                                 matcher.reset(clazz.getName());
                                 if (matcher.find()) {
-                                    if (LOGGER.isTraceEnabled()) {
-                                        LOGGER.trace(
-                                                "removing engine extension [%s]", clazz.getName());
-                                    }
+                                    LOGGER.trace("removing engine extension [%s]", clazz.getName());
+
                                     iterator.remove();
                                 }
                             }

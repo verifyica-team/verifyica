@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.extension.internal;
+package org.antublue.verifyica.engine.extension.internal.engine;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement ShuffleTestClassesEngineExtension */
-@Verifyica.Order(order = Integer.MAX_VALUE)
+@Verifyica.Order(order = 1)
 public class ShuffleTestClassesEngineExtension implements InternalEngineExtension {
 
     private static final Logger LOGGER =
@@ -42,12 +42,10 @@ public class ShuffleTestClassesEngineExtension implements InternalEngineExtensio
     }
 
     @Override
-    public Map<Class<?>, Set<Method>> afterTestDiscovery(
+    public Map<Class<?>, Set<Method>> onTestDiscovery(
             EngineExtensionContext engineExtensionContext,
             Map<Class<?>, Set<Method>> testClassMethodMap) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("afterTestDiscovery()");
-        }
+        LOGGER.trace("onTestDiscovery()");
 
         Map<Class<?>, Set<Method>> workingTestClassMethodMap =
                 new LinkedHashMap<>(testClassMethodMap);
@@ -57,9 +55,7 @@ public class ShuffleTestClassesEngineExtension implements InternalEngineExtensio
                         .getEngineContext()
                         .getConfiguration()
                         .getOrDefault(Constants.ENGINE_TEST_CLASS_SHUFFLE, Constants.FALSE))) {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("shuffling test class order ...");
-            }
+            LOGGER.trace("shuffling test class order");
 
             workingTestClassMethodMap = shuffleMapKeys(workingTestClassMethodMap);
         }

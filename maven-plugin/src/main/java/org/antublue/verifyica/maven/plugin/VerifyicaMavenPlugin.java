@@ -35,8 +35,8 @@ import org.antublue.verifyica.engine.VerifyicaEngine;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
-import org.antublue.verifyica.engine.util.AnsiColor;
-import org.antublue.verifyica.maven.plugin.listener.DelegatingEngineExecutionListener;
+import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
+import org.antublue.verifyica.maven.plugin.listener.ChainedEngineExecutionListener;
 import org.antublue.verifyica.maven.plugin.listener.StatusEngineExecutionListener;
 import org.antublue.verifyica.maven.plugin.listener.SummaryEngineExecutionListener;
 import org.antublue.verifyica.maven.plugin.logger.Logger;
@@ -201,14 +201,10 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
             Thread.currentThread().setContextClassLoader(classLoader);
 
-            SummaryEngineExecutionListener summaryEngineExecutionListener =
-                    new SummaryEngineExecutionListener();
-
-            String summaryMessage = null;
-
-            DelegatingEngineExecutionListener delegatingEngineExecutionListener =
-                    new DelegatingEngineExecutionListener(
-                            summaryEngineExecutionListener, new StatusEngineExecutionListener());
+            ChainedEngineExecutionListener chainedEngineExecutionListener =
+                    new ChainedEngineExecutionListener(
+                            new StatusEngineExecutionListener(),
+                            new SummaryEngineExecutionListener());
 
             LauncherConfig launcherConfig = LauncherConfig.builder().build();
 
@@ -220,53 +216,20 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                             .build();
 
             VerifyicaEngine engine = new VerifyicaEngine();
-            TestDescriptor testDescriptor = null;
 
-            try {
-                summaryEngineExecutionListener.begin();
+            TestDescriptor testDescriptor =
+                    engine.discover(launcherDiscoveryRequest, UniqueId.forEngine(engine.getId()));
 
-                testDescriptor =
-                        engine.discover(
-                                launcherDiscoveryRequest, UniqueId.forEngine(engine.getId()));
-            } catch (Throwable t) {
-                summaryMessage = AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("EXCEPTION DURING DISCOVERY");
+            ExecutionRequest executionRequest =
+                    new ExecutionRequest(
+                            testDescriptor,
+                            chainedEngineExecutionListener,
+                            new DefaultConfigurationParameters(
+                                    DefaultEngineContext.getInstance().getConfiguration()));
 
-                t.printStackTrace(System.err);
-                System.err.flush();
-            }
+            engine.execute(executionRequest);
 
-            if (testDescriptor != null) {
-                try {
-                    ExecutionRequest executionRequest =
-                            new ExecutionRequest(
-                                    testDescriptor,
-                                    delegatingEngineExecutionListener,
-                                    new DefaultConfigurationParameters(
-                                            DefaultEngineContext.getInstance().getConfiguration()));
-
-                    engine.execute(executionRequest);
-
-                    if (summaryEngineExecutionListener.hasTests()) {
-                        if (summaryEngineExecutionListener.hasFailures()) {
-                            summaryMessage = AnsiColor.TEXT_RED_BOLD.wrap("FAIL");
-                        } else {
-                            summaryMessage = AnsiColor.TEXT_GREEN_BOLD.wrap("PASS");
-                        }
-                    } else {
-                        summaryMessage = AnsiColor.TEXT_RED_BOLD.wrap("FAIL / NO TESTS EXECUTED");
-                    }
-                } catch (Throwable t) {
-                    summaryMessage =
-                            AnsiColor.TEXT_RED_BOLD.wrap("FAIL / EXCEPTION DURING EXECUTION");
-                    t.printStackTrace(System.err);
-                    System.err.flush();
-                }
-            }
-
-            summaryEngineExecutionListener.end(summaryMessage);
-
-            if (!summaryEngineExecutionListener.hasTests()
-                    || summaryEngineExecutionListener.hasFailures()) {
+            if (((StatusEngineDescriptor) testDescriptor).getHasFailures()) {
                 throw new MojoFailureException("");
             }
         } catch (MojoFailureException e) {

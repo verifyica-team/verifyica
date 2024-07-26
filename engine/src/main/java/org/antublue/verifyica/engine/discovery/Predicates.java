@@ -20,8 +20,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.extension.ClassExtension;
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
-import org.antublue.verifyica.engine.extension.internal.InternalEngineExtension;
+import org.antublue.verifyica.engine.extension.internal.InternalClassExtension;
+import org.antublue.verifyica.engine.extension.internal.engine.InternalEngineExtension;
 import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.MethodSupport;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
@@ -53,6 +55,19 @@ public class Predicates {
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
                         && !InternalEngineExtension.class.isAssignableFrom(clazz)
                         && EngineExtension.class.isAssignableFrom(clazz);
+            };
+
+    /** Predicate to filter class internal extension classes */
+    public static final Predicate<Class<?>> CLASS_INTERNAL_EXTENSION_CLASS =
+            clazz -> {
+                int modifiers = clazz.getModifiers();
+                return Modifier.isPublic(modifiers)
+                        && !Modifier.isAbstract(modifiers)
+                        && !Modifier.isStatic(modifiers)
+                        && ClassSupport.hasDefaultConstructor(clazz)
+                        && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
+                        && InternalClassExtension.class.isAssignableFrom(clazz)
+                        && ClassExtension.class.isAssignableFrom(clazz);
             };
 
     /** Predicate to filter class extension supplier methods */

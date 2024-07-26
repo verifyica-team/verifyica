@@ -24,24 +24,24 @@ import java.util.Set;
 public interface EngineExtension {
 
     /**
-     * Engine afterInitialize callback
+     * Engine onInitialize callback
      *
      * @param engineExtensionContext engineExtensionContext
      * @throws Throwable Throwable
      */
-    default void afterInitialize(EngineExtensionContext engineExtensionContext) throws Throwable {
+    default void onInitialize(EngineExtensionContext engineExtensionContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
     /**
-     * Engine afterTestDiscovery callback
+     * Engine onTestDiscovery callback
      *
      * @param engineExtensionContext engineExtensionContext
      * @param testClassMethodMap testClassMethodMap
      * @return a Map containing test classes and associated test class methods
      * @throws Throwable Throwable
      */
-    default Map<Class<?>, Set<Method>> afterTestDiscovery(
+    default Map<Class<?>, Set<Method>> onTestDiscovery(
             EngineExtensionContext engineExtensionContext,
             Map<Class<?>, Set<Method>> testClassMethodMap)
             throws Throwable {
@@ -64,7 +64,7 @@ public interface EngineExtension {
      * @param engineExtensionContext engineExtensionContext
      * @throws Throwable Throwable
      */
-    default void beforeDestroy(EngineExtensionContext engineExtensionContext) throws Throwable {
+    default void afterExecute(EngineExtensionContext engineExtensionContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 }

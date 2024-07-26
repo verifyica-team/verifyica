@@ -255,7 +255,7 @@ public class DefaultConfiguration implements Configuration {
         }
 
         if (IS_TRACE_ENABLED) {
-            trace("configuration properties...");
+            trace("configuration properties");
             map.keySet().forEach((key) -> trace("  [" + key + "] = [" + map.get(key) + "]"));
         }
     }
@@ -341,7 +341,7 @@ public class DefaultConfiguration implements Configuration {
     /**
      * Check if a String is not null and not blank
      *
-     * @param string object
+     * @param string string
      * @param nullMessage nullMessage
      * @param emptyMessage emptyMessage
      */

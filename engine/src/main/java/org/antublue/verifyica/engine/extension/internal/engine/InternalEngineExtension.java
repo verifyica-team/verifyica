@@ -14,31 +14,12 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.extension;
+package org.antublue.verifyica.engine.extension.internal.engine;
 
-/** Class to implement AbortExtension */
-public class AbortExtension extends RuntimeException {
+import org.antublue.verifyica.api.extension.engine.EngineExtension;
 
-    /**
-     * Constructor
-     *
-     * @param message message
-     */
-    public AbortExtension(String message) {
-        super(message);
-    }
+/** Interface to implement InternalEngineExtension */
+public interface InternalEngineExtension extends EngineExtension {
 
-    /**
-     * Constructor
-     *
-     * @param message message
-     * @param throwable throwable
-     */
-    public AbortExtension(String message, Throwable throwable) {
-        super(message, throwable);
-    }
-
-    public void propagate() throws AbortExtension {
-        throw this;
-    }
+    // MARKER INTERFACE
 }

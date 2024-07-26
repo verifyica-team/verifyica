@@ -17,27 +17,35 @@
 package org.antublue.verifyica.engine.descriptor;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.util.StopWatch;
-import org.antublue.verifyica.engine.util.ThrowableCollector;
 import org.junit.platform.engine.ExecutionRequest;
+import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 
 /** Abstract class to implement ExecutableTestDescriptor */
-@SuppressWarnings("PMD.EmptyCatchBlock")
-public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
-        implements MetadataTestDescriptor {
+@SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.EmptyCatchBlock"})
+public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
 
-    /** ThrowableCollector */
-    protected final ThrowableCollector throwableCollector;
+    protected static final ToExecutableTestDescriptor TO_EXECUTABLE_TEST_DESCRIPTOR =
+            new ToExecutableTestDescriptor();
 
-    /** Metadata */
-    protected final Metadata metadata;
+    private static final Set<String> pruneRegexPatterns = new LinkedHashSet<>();
+
+    static {
+        pruneRegexPatterns.add("com.antublue.verifyica.engine..*");
+        pruneRegexPatterns.add("com\\.antublue\\.verifyica\\.engine\\.extension\\..*");
+    }
 
     /** Stopwatch */
-    protected final StopWatch stopWatch;
+    private final StopWatch stopWatch;
 
     /**
      * Constructor
@@ -48,14 +56,23 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
     protected ExecutableTestDescriptor(UniqueId uniqueId, String displayName) {
         super(uniqueId, displayName);
 
-        throwableCollector = new ThrowableCollector();
-        metadata = new Metadata();
         stopWatch = new StopWatch();
     }
 
-    @Override
-    public Metadata getMetadata() {
-        return metadata;
+    /**
+     * Method to get the test class
+     *
+     * @return the test class
+     */
+    public abstract Class<?> getTestClass();
+
+    /**
+     * Method to get the StopWatch
+     *
+     * @return the StopWatch
+     */
+    public StopWatch getStopWatch() {
+        return stopWatch;
     }
 
     @Override
@@ -78,31 +95,21 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor
      * @param context context
      */
     public abstract void skip(ExecutionRequest executionRequest, Context context);
+    
+    /** Class to implement ToExecutableTestDescriptor */
+    public static class ToExecutableTestDescriptor
+            implements Function<TestDescriptor, ExecutableTestDescriptor> {
 
-    /**
-     * Method to collect all Throwables from parent and children
-     *
-     * @return a List of Throwables
-     */
-    public List<Throwable> collectThrowables() {
-        List<Throwable> throwables = new ArrayList<>();
-
-        if (throwableCollector.isNotEmpty()) {
-            throwables.addAll(throwableCollector.getThrowables());
+        /** Constructor */
+        public ToExecutableTestDescriptor() {
+            // INTENTIONALLY BLANK
         }
 
-        getChildren().stream()
-                .map(ToExecutableTestDescriptor.INSTANCE)
-                .forEach(
-                        executableTestDescriptor -> {
-                            List<Throwable> childThrowables =
-                                    executableTestDescriptor.collectThrowables();
-
-                            if (childThrowables != null) {
-                                throwables.addAll(childThrowables);
-                            }
-                        });
-
-        return throwables;
+        @Override
+        public ExecutableTestDescriptor apply(TestDescriptor testDescriptor) {
+            return testDescriptor instanceof ExecutableTestDescriptor
+                    ? (ExecutableTestDescriptor) testDescriptor
+                    : null;
+        }
     }
 }

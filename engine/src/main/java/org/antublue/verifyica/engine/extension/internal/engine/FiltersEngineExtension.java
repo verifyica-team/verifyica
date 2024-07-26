@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.extension.internal;
+package org.antublue.verifyica.engine.extension.internal.engine;
 
 import static java.lang.String.format;
 
@@ -57,17 +57,15 @@ public class FiltersEngineExtension implements InternalEngineExtension {
         includeClassMethodTagTuplePredicates = new ArrayList<>();
         excludeClassMethodTagTuplePredicates = new ArrayList<>();
 
-        load();
+        loadFilterDefinitions();
     }
 
     @Override
-    public Map<Class<?>, Set<Method>> afterTestDiscovery(
+    public Map<Class<?>, Set<Method>> onTestDiscovery(
             EngineExtensionContext engineExtensionContext,
             Map<Class<?>, Set<Method>> testClassMethodMap)
             throws Throwable {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("afterTestDiscovery()");
-        }
+        LOGGER.trace("onTestDiscovery()");
 
         Iterator<Class<?>> testClassesIterator = testClassMethodMap.keySet().iterator();
         while (testClassesIterator.hasNext()) {
@@ -118,10 +116,9 @@ public class FiltersEngineExtension implements InternalEngineExtension {
         return testClassMethodMap;
     }
 
-    private void load() {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("load()");
-        }
+    /** Method to load filter definitions */
+    private void loadFilterDefinitions() {
+        LOGGER.trace("loading filter definitions");
 
         String filtersFilename =
                 DefaultEngineContext.getInstance()
@@ -138,10 +135,6 @@ public class FiltersEngineExtension implements InternalEngineExtension {
                     }
 
                     if (!line.startsWith("#")) {
-                        if (LOGGER.isTraceEnabled()) {
-                            LOGGER.trace("filter entry [%s]", line);
-                        }
-
                         String[] tokens = splitQuotedString(line);
                         if (tokens.length == 3) {
                             if ("".equals(tokens[1])) {
@@ -151,9 +144,8 @@ public class FiltersEngineExtension implements InternalEngineExtension {
                                 tokens[2] = ".*";
                             }
 
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace("%s [%s] [%s]", tokens[0], tokens[1], tokens[2]);
-                            }
+                            LOGGER.trace(
+                                    "filter entry [%s] [%s] [%s]", tokens[0], tokens[1], tokens[2]);
 
                             if ("includeClass".equals(tokens[0])) {
                                 includeClassMethodTuplePredicates.add(

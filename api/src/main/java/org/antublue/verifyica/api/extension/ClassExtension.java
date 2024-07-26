@@ -129,12 +129,12 @@ public interface ClassExtension {
     }
 
     /**
-     * Class beforeDestroy callback
+     * Class onDestroy callback
      *
      * @param classExtensionContext classExtensionContext
      * @throws Throwable Throwable
      */
-    default void beforeDestroy(ClassExtensionContext classExtensionContext) throws Throwable {
+    default void onDestroy(ClassExtensionContext classExtensionContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 }

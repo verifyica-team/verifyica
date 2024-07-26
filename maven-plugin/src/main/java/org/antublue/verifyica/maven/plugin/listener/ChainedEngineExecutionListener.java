@@ -24,8 +24,8 @@ import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
 
-/** Class to implement DelegatingEngineExecutionListener */
-public class DelegatingEngineExecutionListener implements EngineExecutionListener {
+/** Class to implement ChainedEngineExecutionListener */
+public class ChainedEngineExecutionListener implements EngineExecutionListener {
 
     private final List<EngineExecutionListener> engineExecutionListeners;
 
@@ -34,7 +34,7 @@ public class DelegatingEngineExecutionListener implements EngineExecutionListene
      *
      * @param engineExecutionListeners engineExecutionListeners
      */
-    public DelegatingEngineExecutionListener(EngineExecutionListener... engineExecutionListeners) {
+    public ChainedEngineExecutionListener(EngineExecutionListener... engineExecutionListeners) {
         this.engineExecutionListeners = new ArrayList<>();
         this.engineExecutionListeners.addAll(Arrays.asList(engineExecutionListeners));
     }

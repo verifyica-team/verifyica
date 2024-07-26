@@ -16,21 +16,30 @@
 
 package org.antublue.verifyica.engine;
 
-import java.io.IOException;
-import java.io.InputStream;
+import static java.lang.String.format;
+
+import io.github.thunkware.vt.bridge.ThreadTool;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import org.antublue.verifyica.api.EngineContext;
+import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
+import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
+import org.antublue.verifyica.engine.descriptor.ExecutableTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
-import org.antublue.verifyica.engine.execution.ExecutionRequestExecutor;
-import org.antublue.verifyica.engine.execution.ExecutionRequestExecutorFactory;
+import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.extension.EngineExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.util.ThrowableCollector;
+import org.antublue.verifyica.engine.util.ExecutorServiceFactory;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
@@ -55,7 +64,7 @@ public class VerifyicaEngine implements TestEngine {
     private static final String ARTIFACT_ID = "engine";
 
     /** Configuration constant */
-    public static final String VERSION = version();
+    public static final String VERSION = Version.version();
 
     /** UniqueId constant */
     private static final String UNIQUE_ID = "[engine:" + ID + "]";
@@ -92,26 +101,24 @@ public class VerifyicaEngine implements TestEngine {
             return null;
         }
 
-        EngineDescriptor engineDescriptor = new EngineDescriptor(uniqueId, getId());
+        LOGGER.trace("discovering test classes and test methods");
 
-        DefaultEngineContext.getInstance();
+        EngineContext engineContext = DefaultEngineContext.getInstance();
+        EngineExtensionContext engineExtensionContext =
+                new DefaultEngineExtensionContext(engineContext);
+        EngineDescriptor engineDescriptor = new StatusEngineDescriptor(uniqueId, getId());
 
-        LOGGER.trace("discover(" + uniqueId + ")");
-
-        DefaultEngineExtensionContext defaultEngineExtensionContext =
-                new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
-
-        ThrowableCollector throwableCollector = new ThrowableCollector();
-
-        throwableCollector.execute(
-                () ->
-                        EngineExtensionRegistry.getInstance()
-                                .afterInitialize(defaultEngineExtensionContext));
-
-        if (throwableCollector.isEmpty()) {
+        try {
+            EngineExtensionRegistry.getInstance().onInitialize(engineExtensionContext);
             new EngineDiscoveryRequestResolver()
                     .resolveSelectors(engineDiscoveryRequest, engineDescriptor);
+        } catch (EngineException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw new EngineException(t);
         }
+
+        LOGGER.trace("discovery done");
 
         return engineDescriptor;
     }
@@ -122,83 +129,121 @@ public class VerifyicaEngine implements TestEngine {
             return;
         }
 
-        LOGGER.trace(
-                "execute() rootTestDescriptor children [%d]",
-                executionRequest.getRootTestDescriptor().getChildren().size());
+        LOGGER.trace("executing test classes and test methods");
 
         if (LOGGER.isTraceEnabled()) {
             traceEngineDescriptor(executionRequest.getRootTestDescriptor());
         }
 
+        EngineContext engineContext = DefaultEngineContext.getInstance();
+
+        EngineExtensionContext engineExtensionContext =
+                new DefaultEngineExtensionContext(engineContext);
+
+        ExecutorService executorService = null;
+
+        List<Future<?>> futures = new ArrayList<>();
+
+        Throwable throwable = null;
+
+        try {
+            EngineExtensionRegistry.getInstance().beforeExecute(engineExtensionContext);
+
+            executionRequest
+                    .getEngineExecutionListener()
+                    .executionStarted(executionRequest.getRootTestDescriptor());
+
+            executorService =
+                    ExecutorServiceFactory.getInstance()
+                            .newExecutorService(getParallelism(engineContext), "verifyica-");
+
+            for (TestDescriptor testDescriptor :
+                    executionRequest.getRootTestDescriptor().getChildren()) {
+                if (testDescriptor instanceof ExecutableTestDescriptor) {
+                    Future<?> future =
+                            executorService.submit(
+                                    () -> {
+                                        ExecutableTestDescriptor executableTestDescriptor =
+                                                (ExecutableTestDescriptor) testDescriptor;
+                                        executableTestDescriptor.execute(
+                                                executionRequest,
+                                                new DefaultClassContext(engineContext));
+                                    });
+
+                    futures.add(future);
+                }
+            }
+
+            futures.forEach(
+                    future -> {
+                        try {
+                            future.get();
+                        } catch (Exception e) {
+                            // INTENTIONALLY BLANK
+                        }
+                    });
+        } catch (Throwable t) {
+            throwable = t;
+        } finally {
+            if (executorService != null) {
+                executorService.shutdown();
+            }
+
+            try {
+                EngineExtensionRegistry.getInstance().afterExecute(engineExtensionContext);
+            } catch (Throwable t) {
+                t.printStackTrace(System.err);
+            }
+        }
+
+        TestExecutionResult testExecutionResult =
+                throwable != null
+                        ? TestExecutionResult.successful()
+                        : TestExecutionResult.failed(throwable);
+
         executionRequest
                 .getEngineExecutionListener()
-                .executionStarted(executionRequest.getRootTestDescriptor());
+                .executionFinished(executionRequest.getRootTestDescriptor(), testExecutionResult);
 
-        DefaultEngineExtensionContext defaultEngineExtensionContext =
-                new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
-
-        ThrowableCollector throwableCollector = new ThrowableCollector();
-
-        throwableCollector.execute(
-                () ->
-                        EngineExtensionRegistry.getInstance()
-                                .beforeExecute(defaultEngineExtensionContext));
-
-        if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        ExecutionRequestExecutor executionRequestExecutor =
-                                ExecutionRequestExecutorFactory.createExecutionRequestExecutor();
-                        executionRequestExecutor.execute(executionRequest);
-                        executionRequestExecutor.await();
-                    });
-        }
-
-        throwableCollector.execute(
-                () ->
-                        throwableCollector
-                                .getThrowables()
-                                .addAll(
-                                        EngineExtensionRegistry.getInstance()
-                                                .beforeDestroy(defaultEngineExtensionContext)));
-
-        defaultEngineExtensionContext.getEngineContext().getStore().clear();
-
-        if (throwableCollector.isEmpty()) {
-            executionRequest
-                    .getEngineExecutionListener()
-                    .executionFinished(
-                            executionRequest.getRootTestDescriptor(),
-                            TestExecutionResult.successful());
-        } else {
-            executionRequest
-                    .getEngineExecutionListener()
-                    .executionFinished(
-                            executionRequest.getRootTestDescriptor(),
-                            throwableCollector.toTestExecutionResult());
-        }
+        LOGGER.trace("execution done");
     }
 
     /**
-     * Method to get the version
+     * Method to get the engine parallelism value
      *
-     * @return the version
+     * @param engineContext engineContext
+     * @return the engine parallelism value
      */
-    public static String version() {
-        String value = "unknown";
+    private static int getParallelism(EngineContext engineContext) {
+        int maxThreadCount = Math.min(1, Runtime.getRuntime().availableProcessors() - 1);
 
-        try (InputStream inputStream =
-                VerifyicaEngine.class.getResourceAsStream("/engine.properties")) {
-            if (inputStream != null) {
-                Properties properties = new Properties();
-                properties.load(inputStream);
-                value = properties.getProperty("version").trim();
-            }
-        } catch (IOException e) {
-            // INTENTIONALLY BLANK
+        if (ThreadTool.hasVirtualThreads()) {
+            maxThreadCount = Runtime.getRuntime().availableProcessors();
         }
 
-        return value;
+        return Optional.ofNullable(
+                        engineContext.getConfiguration().get(Constants.ENGINE_PARALLELISM))
+                .map(
+                        value -> {
+                            int intValue;
+                            try {
+                                intValue = Integer.parseInt(value);
+                                if (intValue < 1) {
+                                    throw new EngineException(
+                                            format(
+                                                    "Invalid %s value [%d]",
+                                                    Constants.ENGINE_PARALLELISM, intValue));
+                                }
+                                return intValue;
+                            } catch (NumberFormatException e) {
+                                throw new EngineException(
+                                        format(
+                                                "Invalid %s value [%s]",
+                                                Constants.ENGINE_PARALLELISM, value),
+                                        e);
+                            }
+                        })
+                .orElse(maxThreadCount);
     }
 
     /**
@@ -218,6 +263,7 @@ public class VerifyicaEngine implements TestEngine {
      */
     private static void traceTestDescriptor(TestDescriptor testDescriptor, int level) {
         LOGGER.trace(String.join(" ", Collections.nCopies(level, " ")) + testDescriptor);
+
         testDescriptor
                 .getChildren()
                 .forEach(

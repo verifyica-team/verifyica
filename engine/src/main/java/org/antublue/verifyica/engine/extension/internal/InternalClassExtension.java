@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.descriptor;
+package org.antublue.verifyica.engine.extension.internal;
 
-/** Interface to implement MetadataTestDescriptor */
-public interface MetadataTestDescriptor {
+import org.antublue.verifyica.api.extension.ClassExtension;
 
-    /**
-     * Method to get Metadata
-     *
-     * @return Metadata
-     */
-    Metadata getMetadata();
+/** Interface to implement GlobalClassExtension */
+public interface InternalClassExtension extends ClassExtension {
+
+    // MARKER INTERFACE
 }

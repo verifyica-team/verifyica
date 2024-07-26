@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.extension;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,19 +34,32 @@ import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.context.DefaultArgumentExtensionContext;
 import org.antublue.verifyica.engine.context.DefaultClassExtensionContext;
 import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
+import org.antublue.verifyica.engine.discovery.Predicates;
+import org.antublue.verifyica.engine.exception.EngineException;
+import org.antublue.verifyica.engine.logger.Logger;
+import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.ClassPathSupport;
+import org.antublue.verifyica.engine.support.ObjectSupport;
+import org.antublue.verifyica.engine.support.OrderSupport;
 
 /** Class to implement ClassExtensionRegistry */
+@SuppressWarnings("PMD.EmptyCatchBlock")
 public class ClassExtensionRegistry {
 
-    private static final List<ClassExtension> EMPTY_CLASS_EXTENSIONS = new ArrayList<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassExtensionRegistry.class);
 
     private final ReadWriteLock readWriteLock;
-    private final Map<Class<?>, List<ClassExtension>> map;
+    private final List<ClassExtension> internalClassExtensions;
+    private final Map<Class<?>, List<ClassExtension>> mappedClassExtensions;
+    private boolean initialized;
 
     /** Constructor */
     private ClassExtensionRegistry() {
         readWriteLock = new ReentrantReadWriteLock(true);
-        map = new LinkedHashMap<>();
+        internalClassExtensions = new ArrayList<>();
+        mappedClassExtensions = new LinkedHashMap<>();
+
+        load();
     }
 
     /**
@@ -60,10 +74,12 @@ public class ClassExtensionRegistry {
         notNull(classExtension, "classExtension is null");
 
         try {
-            getLock().writeLock().lock();
-            map.computeIfAbsent(testClass, c -> new ArrayList<>()).add(classExtension);
+            getReadWriteLock().writeLock().lock();
+            mappedClassExtensions
+                    .computeIfAbsent(testClass, c -> new ArrayList<>())
+                    .add(classExtension);
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
 
         return this;
@@ -81,10 +97,10 @@ public class ClassExtensionRegistry {
         notNull(classExtension, "classExtension is null");
 
         try {
-            getLock().writeLock().lock();
-            map.get(testClass).remove(classExtension);
+            getReadWriteLock().writeLock().lock();
+            mappedClassExtensions.get(testClass).remove(classExtension);
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
 
         return this;
@@ -100,10 +116,11 @@ public class ClassExtensionRegistry {
         notNull(testClass, "testClass is null");
 
         try {
-            getLock().readLock().lock();
-            return map.getOrDefault(testClass, EMPTY_CLASS_EXTENSIONS).size();
+            getReadWriteLock().readLock().lock();
+            List<ClassExtension> classExtensions = mappedClassExtensions.get(testClass);
+            return classExtensions != null ? classExtensions.size() : 0;
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -117,10 +134,10 @@ public class ClassExtensionRegistry {
         notNull(testClass, "testClass is null");
 
         try {
-            getLock().writeLock().lock();
-            map.remove(testClass);
+            getReadWriteLock().writeLock().lock();
+            mappedClassExtensions.remove(testClass);
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
 
         return this;
@@ -137,10 +154,13 @@ public class ClassExtensionRegistry {
             throws Throwable {
         DefaultEngineExtensionContext defaultEngineExtensionContext =
                 new DefaultEngineExtensionContext(engineContext);
-        List<ClassExtension> classExtensions = getClassExtensions(testClass);
 
-        for (ClassExtension classExtension : classExtensions) {
-            classExtension.beforeInstantiate(defaultEngineExtensionContext, testClass);
+        try {
+            for (ClassExtension classExtension : getClassExtensions(testClass)) {
+                classExtension.beforeInstantiate(defaultEngineExtensionContext, testClass);
+            }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         }
     }
 
@@ -153,16 +173,18 @@ public class ClassExtensionRegistry {
      */
     public void prepare(ClassContext classContext, List<Method> prepareMethods) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
-        List<ClassExtension> classExtensions = getClassExtensions(testClass);
         DefaultClassExtensionContext defaultClassExtensionContext =
                 new DefaultClassExtensionContext(classContext);
 
-        for (ClassExtension classExtension : classExtensions) {
-            classExtension.beforePrepare(defaultClassExtensionContext);
-        }
-
-        for (Method prepareMethod : prepareMethods) {
-            prepareMethod.invoke(null, classContext);
+        try {
+            for (ClassExtension classExtension : getClassExtensions(testClass)) {
+                classExtension.beforePrepare(defaultClassExtensionContext);
+            }
+            for (Method prepareMethod : prepareMethods) {
+                prepareMethod.invoke(null, classContext);
+            }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         }
     }
 
@@ -178,16 +200,17 @@ public class ClassExtensionRegistry {
         ClassContext classContext = argumentContext.getClassContext();
         Class<?> testClass = classContext.getTestClass();
         Object testInstance = classContext.getTestInstance();
-        List<ClassExtension> classExtensions = getClassExtensions(testClass);
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
-
-        for (ClassExtension classExtension : classExtensions) {
-            classExtension.beforeBeforeAll(defaultArgumentExtensionContext);
-        }
-
-        for (Method beforeAllMethod : beforeAllMethods) {
-            beforeAllMethod.invoke(testInstance, argumentContext);
+        try {
+            for (ClassExtension classExtension : getClassExtensions(testClass)) {
+                classExtension.beforeBeforeAll(defaultArgumentExtensionContext);
+            }
+            for (Method beforeAllMethod : beforeAllMethods) {
+                beforeAllMethod.invoke(testInstance, argumentContext);
+            }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         }
     }
 
@@ -203,16 +226,18 @@ public class ClassExtensionRegistry {
         ClassContext classContext = argumentContext.getClassContext();
         Class<?> testClass = classContext.getTestClass();
         Object testInstance = classContext.getTestInstance();
-        List<ClassExtension> classExtensions = getClassExtensions(testClass);
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
 
-        for (ClassExtension classExtension : classExtensions) {
-            classExtension.beforeBeforeEach(defaultArgumentExtensionContext);
-        }
-
-        for (Method beforeEachMethod : beforeEachMethods) {
-            beforeEachMethod.invoke(testInstance, argumentContext);
+        try {
+            for (ClassExtension classExtension : getClassExtensions(testClass)) {
+                classExtension.beforeBeforeEach(defaultArgumentExtensionContext);
+            }
+            for (Method beforeEachMethod : beforeEachMethods) {
+                beforeEachMethod.invoke(testInstance, argumentContext);
+            }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         }
     }
 
@@ -227,24 +252,28 @@ public class ClassExtensionRegistry {
         ClassContext classContext = argumentContext.getClassContext();
         Class<?> testClass = classContext.getTestClass();
         Object testInstance = classContext.getTestInstance();
-        List<ClassExtension> classExtensions = getClassExtensions(testClass);
         ArgumentExtensionContext argumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
         Throwable throwable = null;
 
         try {
-            for (ClassExtension classExtension : classExtensions) {
+            for (ClassExtension classExtension : getClassExtensions(testClass)) {
                 classExtension.beforeTest(argumentExtensionContext, testMethod);
             }
-
             testMethod.invoke(
                     testInstance, ((DefaultArgumentContext) argumentContext).asImmutable());
+        } catch (InvocationTargetException e) {
+            throwable = e.getCause();
         } catch (Throwable t) {
             throwable = t;
         }
 
-        for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
-            classExtension.afterTest(argumentExtensionContext, testMethod, throwable);
+        try {
+            for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
+                classExtension.afterTest(argumentExtensionContext, testMethod, throwable);
+            }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         }
     }
 
@@ -260,16 +289,18 @@ public class ClassExtensionRegistry {
         ClassContext classContext = argumentContext.getClassContext();
         Class<?> testClass = classContext.getTestClass();
         Object testInstance = classContext.getTestInstance();
-        List<ClassExtension> classExtensions = getClassExtensions(testClass);
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
 
-        for (ClassExtension classExtension : classExtensions) {
-            classExtension.beforeAfterEach(defaultArgumentExtensionContext);
-        }
-
-        for (Method afterEachMethod : afterEachMethods) {
-            afterEachMethod.invoke(testInstance, argumentContext);
+        try {
+            for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
+                classExtension.beforeAfterEach(defaultArgumentExtensionContext);
+            }
+            for (Method afterEachMethod : afterEachMethods) {
+                afterEachMethod.invoke(testInstance, argumentContext);
+            }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         }
     }
 
@@ -285,16 +316,18 @@ public class ClassExtensionRegistry {
         ClassContext classContext = argumentContext.getClassContext();
         Class<?> testClass = classContext.getTestClass();
         Object testInstance = classContext.getTestInstance();
-        List<ClassExtension> classExtensions = getClassExtensions(testClass);
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
 
-        for (ClassExtension classExtension : classExtensions) {
-            classExtension.beforeAfterAll(defaultArgumentExtensionContext);
-        }
-
-        for (Method afterAllMethod : afterAllMethods) {
-            afterAllMethod.invoke(testInstance, argumentContext);
+        try {
+            for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
+                classExtension.beforeAfterAll(defaultArgumentExtensionContext);
+            }
+            for (Method afterAllMethod : afterAllMethods) {
+                afterAllMethod.invoke(testInstance, argumentContext);
+            }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         }
     }
 
@@ -308,16 +341,18 @@ public class ClassExtensionRegistry {
     public void conclude(ClassContext classContext, List<Method> concludeMethods) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
         Object testInstance = classContext.getTestInstance();
-        List<ClassExtension> classExtensions = getClassExtensions(testClass);
         DefaultClassExtensionContext defaultClassExtensionContext =
                 new DefaultClassExtensionContext(classContext);
 
-        for (ClassExtension classExtension : classExtensions) {
-            classExtension.beforeConclude(defaultClassExtensionContext);
-        }
-
-        for (Method concludeMethod : concludeMethods) {
-            concludeMethod.invoke(testInstance, classContext);
+        try {
+            for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
+                classExtension.beforeConclude(defaultClassExtensionContext);
+            }
+            for (Method concludeMethod : concludeMethods) {
+                concludeMethod.invoke(testInstance, classContext);
+            }
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         }
     }
 
@@ -329,14 +364,15 @@ public class ClassExtensionRegistry {
      */
     public List<Throwable> beforeDestroy(ClassContext classContext) {
         Class<?> testClass = classContext.getTestClass();
-        List<ClassExtension> classExtensions = getClassExtensions(testClass);
         DefaultClassExtensionContext defaultClassExtensionContext =
                 new DefaultClassExtensionContext(classContext);
         List<Throwable> throwables = new ArrayList<>();
 
-        for (ClassExtension classExtension : classExtensions) {
+        for (ClassExtension classExtension : getClassExtensions(testClass)) {
             try {
-                classExtension.beforeDestroy(defaultClassExtensionContext);
+                classExtension.onDestroy(defaultClassExtensionContext);
+            } catch (InvocationTargetException e) {
+                throwables.add(e.getCause());
             } catch (Throwable t) {
                 throwables.add(t);
             }
@@ -346,30 +382,28 @@ public class ClassExtensionRegistry {
     }
 
     /**
-     * Method to get a COPY of the List of ClassExtensions
+     * Method to get a COPY of the List of ClassExtensions (internal + class specific)
      *
      * @param testClass testClass
-     * @return a COPY of the List of ClassExtensions
+     * @return a COPY of the List of ClassExtensions (internal + class specific)
      */
     private List<ClassExtension> getClassExtensions(Class<?> testClass) {
         try {
-            getLock().readLock().lock();
-            List<ClassExtension> classExtensions = map.get(testClass);
-            if (classExtensions != null) {
-                return new ArrayList<>(classExtensions);
-            } else {
-                return EMPTY_CLASS_EXTENSIONS;
-            }
+            getReadWriteLock().writeLock().lock();
+            List<ClassExtension> classExtensions = new ArrayList<>(internalClassExtensions);
+            classExtensions.addAll(
+                    mappedClassExtensions.computeIfAbsent(testClass, o -> new ArrayList<>()));
+            return classExtensions;
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
     /**
-     * Method to get a COPY of List of ClassExtensions in reverse
+     * Method to get a COPY of List of ClassExtensions in reverse (internal + class specific)
      *
      * @param testClass testClass
-     * @return a COPY of the List of ClassExtensions in reverse
+     * @return a COPY of the List of ClassExtensions in reverse (internal + class specific)
      */
     private List<ClassExtension> getClassExtensionsReversed(Class<?> testClass) {
         List<ClassExtension> classExtensions = getClassExtensions(testClass);
@@ -382,8 +416,53 @@ public class ClassExtensionRegistry {
      *
      * @return the ReadWriteLock
      */
-    private ReadWriteLock getLock() {
+    private ReadWriteLock getReadWriteLock() {
         return readWriteLock;
+    }
+
+    /** Method to load test engine extensions */
+    private void load() {
+        try {
+            getReadWriteLock().writeLock().lock();
+
+            if (!initialized) {
+                LOGGER.trace("load()");
+
+                // Load class extensions
+                List<Class<?>> internalClassExtensionClasses =
+                        new ArrayList<>(
+                                ClassPathSupport.findClasses(
+                                        Predicates.CLASS_INTERNAL_EXTENSION_CLASS));
+
+                // Order extensions
+                OrderSupport.order(internalClassExtensionClasses);
+
+                LOGGER.trace(
+                        "internal class extension count [%d]",
+                        internalClassExtensionClasses.size());
+
+                for (Class<?> classExtensionClass : internalClassExtensionClasses) {
+                    try {
+                        LOGGER.trace(
+                                "loading global class extension [%s]",
+                                classExtensionClass.getName());
+                        Object object = ObjectSupport.createObject(classExtensionClass);
+                        internalClassExtensions.add((ClassExtension) object);
+                        LOGGER.trace(
+                                "global class extension [%s] loaded",
+                                classExtensionClass.getName());
+                    } catch (EngineException e) {
+                        throw e;
+                    } catch (Throwable t) {
+                        throw new EngineException(t);
+                    }
+                }
+
+                initialized = true;
+            }
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
     }
 
     /**

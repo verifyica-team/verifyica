@@ -19,19 +19,20 @@ package org.antublue.verifyica.engine.descriptor;
 import static java.lang.String.format;
 
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.support.DisplayNameSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
+import org.antublue.verifyica.engine.util.StateMonitor;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
+import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.ClassSource;
@@ -52,17 +53,17 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @param uniqueId uniqueId
      * @param displayName displayName
      * @param testClass testClass
+     * @param testArgument testArgument
      * @param beforeAllMethods beforeAllMethods
      * @param afterAllMethods afterAllMethods
-     * @param testArgument testArgument
      */
     public ArgumentTestDescriptor(
             UniqueId uniqueId,
             String displayName,
             Class<?> testClass,
+            Argument<?> testArgument,
             List<Method> beforeAllMethods,
-            List<Method> afterAllMethods,
-            Argument<?> testArgument) {
+            List<Method> afterAllMethods) {
         super(uniqueId, displayName);
 
         Preconditions.notNull(testClass, "testClass is null");
@@ -85,10 +86,22 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
     }
 
     @Override
+    public Class<?> getTestClass() {
+        return testClass;
+    }
+
+    /**
+     * Method to get the test argument
+     *
+     * @return the test argument
+     */
+    public Argument<?> getTestArgument() {
+        return testArgument;
+    }
+
+    @Override
     public void execute(ExecutionRequest executionRequest, Context context) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("execute ArgumentTestDescriptor [%s]", toString());
-        }
+        LOGGER.trace("execute ArgumentTestDescriptor [%s]", this);
 
         DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
 
@@ -96,87 +109,100 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
         Preconditions.notNull(defaultArgumentContext, "defaultArgumentContext is null");
         Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
 
-        stopWatch.reset();
+        getStopWatch().reset();
 
         defaultArgumentContext.setTestArgument(testArgument);
 
         Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
         Preconditions.notNull(defaultArgumentContext.getTestArgument(), "testArgument is null");
 
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_CLASS_DISPLAY_NAME,
-                        getParent().get().getDisplayName());
-
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_ARGUMENT, testArgument);
-
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        throwableCollector.execute(() -> beforeAll(defaultArgumentContext));
-        if (throwableCollector.isEmpty()) {
-            executeChildren(executionRequest, defaultArgumentContext);
-        } else {
-            skipChildren(executionRequest, defaultArgumentContext);
+        StateMonitor<String> stateMonitor = new StateMonitor<>();
+
+        try {
+            stateMonitor.put("beforeAll");
+            beforeAll(defaultArgumentContext);
+            stateMonitor.put("beforeAll->SUCCESS");
+        } catch (Throwable t) {
+            stateMonitor.put("beforeAll->FAILURE", t);
+            t.printStackTrace(System.err);
         }
-        throwableCollector.execute(() -> afterAll(defaultArgumentContext));
 
-        stopWatch.stop();
+        if (stateMonitor.contains("beforeAll->SUCCESS")) {
+            try {
+                stateMonitor.put("doExecute");
+                doExecute(executionRequest, defaultArgumentContext);
+                stateMonitor.put("doExecute->SUCCESS");
+            } catch (Throwable t) {
+                stateMonitor.put("doExecute->FAILURE", t);
+                // Don't log the throwable since it's from downstream test descriptors
+            }
+        }
 
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
-                        stopWatch.elapsedTime());
+        if (stateMonitor.contains("beforeAll->FAILURE")) {
+            try {
+                stateMonitor.put("doSkip");
+                doSkip(executionRequest, defaultArgumentContext);
+                stateMonitor.put("doSkip->SUCCESS");
+            } catch (Throwable t) {
+                stateMonitor.put("doSkip->FAILURE", t);
+                // Don't log the throwable since it's from downstream test descriptors
+            }
+        }
 
-        List<Throwable> throwables = collectThrowables();
-        throwableCollector.getThrowables().addAll(throwables);
+        try {
+            stateMonitor.put("afterAll");
+            afterAll(defaultArgumentContext);
+            stateMonitor.put("afterAll->SUCCESS");
+        } catch (Throwable t) {
+            stateMonitor.put("afterAll->FAILURE", t);
+            t.printStackTrace(System.err);
+        }
 
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_STATUS,
-                        throwableCollector.isEmpty()
-                                ? MetadataTestDescriptorConstants.PASS
-                                : MetadataTestDescriptorConstants.FAIL);
+        getStopWatch().stop();
 
-        defaultArgumentContext.setTestArgument(null);
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace(this);
+            stateMonitor
+                    .entrySet()
+                    .forEach(
+                            new Consumer<StateMonitor.Entry<String>>() {
+                                @Override
+                                public void accept(StateMonitor.Entry<String> stateTrackerEntry) {
+                                    LOGGER.trace("%s %s", this, stateTrackerEntry);
+                                }
+                            });
+        }
 
-        executionRequest
-                .getEngineExecutionListener()
-                .executionFinished(this, throwableCollector.toTestExecutionResult());
+        StateMonitor.Entry<String> entry = stateMonitor.getFirstStateEntryWithThrowable();
+
+        TestExecutionResult testExecutionResult = TestExecutionResult.successful();
+
+        if (entry != null) {
+            testExecutionResult = TestExecutionResult.failed(entry.getThrowable());
+        }
+
+        executionRequest.getEngineExecutionListener().executionFinished(this, testExecutionResult);
     }
 
     @Override
     public void skip(ExecutionRequest executionRequest, Context context) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("skip ArgumentTestDescriptor [%s]", toString());
-        }
+        LOGGER.trace("skip [%s]", this);
 
-        stopWatch.reset();
+        getStopWatch().reset();
 
         DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
         defaultArgumentContext.setTestArgument(testArgument);
 
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
-        getMetadata()
-                .put(MetadataTestDescriptorConstants.TEST_CLASS_DISPLAY_NAME, getDisplayName());
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_STATUS,
-                        MetadataTestDescriptorConstants.SKIP);
-
         getChildren().stream()
-                .map(ToExecutableTestDescriptor.INSTANCE)
+                .map(TO_EXECUTABLE_TEST_DESCRIPTOR)
                 .forEach(
                         executableTestDescriptor ->
                                 executableTestDescriptor.skip(
                                         executionRequest, defaultArgumentContext));
 
-        stopWatch.stop();
-
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
-                        stopWatch.elapsedTime());
+        getStopWatch().stop();
 
         executionRequest
                 .getEngineExecutionListener()
@@ -208,6 +234,10 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @throws Throwable Throwable
      */
     private void beforeAll(DefaultArgumentContext defaultArgumentContext) throws Throwable {
+        LOGGER.trace(
+                "beforeAll() testClass [%s] argument [%s]",
+                testClass.getName(), defaultArgumentContext.getTestArgument().getName());
+
         ClassExtensionRegistry.getInstance().beforeAll(defaultArgumentContext, beforeAllMethods);
     }
 
@@ -217,16 +247,16 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @param executionRequest executionRequest
      * @param defaultArgumentContext defaultArgumentContext
      */
-    private void executeChildren(
+    private void doExecute(
             ExecutionRequest executionRequest, DefaultArgumentContext defaultArgumentContext) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("executeChildren() testClass [%s]", testClass.getName());
-        }
+        LOGGER.trace(
+                "doExecute() testClass [%s] argument [%s]",
+                testClass.getName(), defaultArgumentContext.getTestArgument().getName());
 
         Preconditions.notNull(executionRequest, "executionRequest is null");
 
         getChildren().stream()
-                .map(ToExecutableTestDescriptor.INSTANCE)
+                .map(TO_EXECUTABLE_TEST_DESCRIPTOR)
                 .forEach(
                         executableTestDescriptor ->
                                 executableTestDescriptor.execute(
@@ -239,33 +269,18 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @param executionRequest executionRequest
      * @param defaultArgumentContext defaultArgumentContext
      */
-    private void skipChildren(
+    private void doSkip(
             ExecutionRequest executionRequest, DefaultArgumentContext defaultArgumentContext) {
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("skipChildren() testClass [%s]", testClass.getName());
-        }
-
-        stopWatch.stop();
+        LOGGER.trace(
+                "doSkip() testClass [%s] argument [%s]",
+                testClass.getName(), defaultArgumentContext.getTestArgument().getName());
 
         getChildren().stream()
-                .map(ToExecutableTestDescriptor.INSTANCE)
+                .map(TO_EXECUTABLE_TEST_DESCRIPTOR)
                 .forEach(
                         executableTestDescriptor -> {
                             executableTestDescriptor.skip(executionRequest, defaultArgumentContext);
                         });
-
-        stopWatch.reset();
-
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_CLASS, testClass);
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_CLASS_DISPLAY_NAME,
-                        DisplayNameSupport.getDisplayName(testClass));
-        getMetadata()
-                .put(
-                        MetadataTestDescriptorConstants.TEST_DESCRIPTOR_DURATION,
-                        Duration.ofMillis(0));
-        getMetadata().put(MetadataTestDescriptorConstants.TEST_ARGUMENT, testArgument);
     }
 
     /**
@@ -275,6 +290,10 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @throws Throwable Throwable
      */
     private void afterAll(DefaultArgumentContext defaultArgumentContext) throws Throwable {
+        LOGGER.trace(
+                "afterAll() testClass [%s] argument [%s]",
+                testClass.getName(), defaultArgumentContext.getTestArgument().getName());
+
         ClassExtensionRegistry.getInstance().afterAll(defaultArgumentContext, afterAllMethods);
 
         if (testArgument instanceof AutoCloseable) {

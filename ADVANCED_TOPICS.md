@@ -12,7 +12,7 @@ Every test method accepts a scoped [Context](api/src/main/java/org/antublue/veri
 - [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
   - scoped to the test argument
 
-The [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) should be used to maintain any test state to allow parallel test argument execution.
+The [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) should be used to maintain any test stateTracker to allow parallel test argument execution.
 
 `AutoCloseable` object values in a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) are automatically closed.
 
