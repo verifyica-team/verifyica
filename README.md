@@ -47,7 +47,7 @@ for (TestArgument testArgument : TestArguments) {
 - Test class extensions
 - Test class / test method filtering
 - Engine extensions for global set up / tear down
-- IntelliJ support
+- [IntelliJ](https://www.jetbrains.com/idea/) support
 
 # Design
 
