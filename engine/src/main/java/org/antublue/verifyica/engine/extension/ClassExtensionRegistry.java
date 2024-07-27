@@ -176,10 +176,11 @@ public class ClassExtensionRegistry {
         DefaultClassExtensionContext defaultClassExtensionContext =
                 new DefaultClassExtensionContext(classContext);
 
+        for (ClassExtension classExtension : getClassExtensions(testClass)) {
+            classExtension.beforePrepare(defaultClassExtensionContext);
+        }
+
         try {
-            for (ClassExtension classExtension : getClassExtensions(testClass)) {
-                classExtension.beforePrepare(defaultClassExtensionContext);
-            }
             for (Method prepareMethod : prepareMethods) {
                 prepareMethod.invoke(null, classContext);
             }
@@ -202,10 +203,12 @@ public class ClassExtensionRegistry {
         Object testInstance = classContext.getTestInstance();
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
+
+        for (ClassExtension classExtension : getClassExtensions(testClass)) {
+            classExtension.beforeBeforeAll(defaultArgumentExtensionContext);
+        }
+
         try {
-            for (ClassExtension classExtension : getClassExtensions(testClass)) {
-                classExtension.beforeBeforeAll(defaultArgumentExtensionContext);
-            }
             for (Method beforeAllMethod : beforeAllMethods) {
                 beforeAllMethod.invoke(testInstance, argumentContext);
             }
@@ -229,10 +232,11 @@ public class ClassExtensionRegistry {
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
 
+        for (ClassExtension classExtension : getClassExtensions(testClass)) {
+            classExtension.beforeBeforeEach(defaultArgumentExtensionContext);
+        }
+
         try {
-            for (ClassExtension classExtension : getClassExtensions(testClass)) {
-                classExtension.beforeBeforeEach(defaultArgumentExtensionContext);
-            }
             for (Method beforeEachMethod : beforeEachMethods) {
                 beforeEachMethod.invoke(testInstance, argumentContext);
             }
@@ -260,11 +264,16 @@ public class ClassExtensionRegistry {
             for (ClassExtension classExtension : getClassExtensions(testClass)) {
                 classExtension.beforeTest(argumentExtensionContext, testMethod);
             }
-            testMethod.invoke(testInstance, ImmutableArgumentContext.wrap(argumentContext));
-        } catch (InvocationTargetException e) {
-            throwable = e.getCause();
         } catch (Throwable t) {
             throwable = t;
+        }
+
+        if (throwable == null) {
+            try {
+                testMethod.invoke(testInstance, ImmutableArgumentContext.wrap(argumentContext));
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
+            }
         }
 
         try {
@@ -291,10 +300,11 @@ public class ClassExtensionRegistry {
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
 
+        for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
+            classExtension.beforeAfterEach(defaultArgumentExtensionContext);
+        }
+
         try {
-            for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
-                classExtension.beforeAfterEach(defaultArgumentExtensionContext);
-            }
             for (Method afterEachMethod : afterEachMethods) {
                 afterEachMethod.invoke(testInstance, argumentContext);
             }
@@ -318,10 +328,11 @@ public class ClassExtensionRegistry {
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
 
+        for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
+            classExtension.beforeAfterAll(defaultArgumentExtensionContext);
+        }
+
         try {
-            for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
-                classExtension.beforeAfterAll(defaultArgumentExtensionContext);
-            }
             for (Method afterAllMethod : afterAllMethods) {
                 afterAllMethod.invoke(testInstance, argumentContext);
             }
@@ -343,10 +354,11 @@ public class ClassExtensionRegistry {
         DefaultClassExtensionContext defaultClassExtensionContext =
                 new DefaultClassExtensionContext(classContext);
 
+        for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
+            classExtension.beforeConclude(defaultClassExtensionContext);
+        }
+
         try {
-            for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
-                classExtension.beforeConclude(defaultClassExtensionContext);
-            }
             for (Method concludeMethod : concludeMethods) {
                 concludeMethod.invoke(testInstance, classContext);
             }
