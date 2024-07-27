@@ -58,13 +58,17 @@ public class Locks {
         notNull(key, "key is null");
         notNull(runnable, "runnable is null");
 
+        boolean lockSuccessful = false;
         LockReference lockReference = getLock(key);
 
         try {
             lockReference.lock();
+            lockSuccessful = true;
             runnable.run();
         } finally {
-            lockReference.unlock();
+            if (lockSuccessful) {
+                lockReference.unlock();
+            }
         }
     }
 
@@ -78,11 +82,16 @@ public class Locks {
         notNull(lock, "lock is null");
         notNull(runnable, "runnable is null");
 
+        boolean lockSuccessful = false;
+
         try {
             lock.lock();
+            lockSuccessful = true;
             runnable.run();
         } finally {
-            lock.unlock();
+            if (lockSuccessful) {
+                lock.unlock();
+            }
         }
     }
 
@@ -96,11 +105,16 @@ public class Locks {
         notNull(readWriteLock, "readWriteLock is null");
         notNull(runnable, "runnable is null");
 
+        boolean lockSuccessful = false;
+
         try {
             readWriteLock.writeLock().lock();
+            lockSuccessful = true;
             runnable.run();
         } finally {
-            readWriteLock.writeLock().unlock();
+            if (lockSuccessful) {
+                readWriteLock.writeLock().unlock();
+            }
         }
     }
 
@@ -114,11 +128,16 @@ public class Locks {
         notNull(lockProvider, "lockProvider is null");
         notNull(runnable, "runnable is null");
 
+        boolean lockSuccessful = false;
+
         try {
             lockProvider.getLock().lock();
+            lockSuccessful = true;
             runnable.run();
         } finally {
-            lockProvider.getLock().unlock();
+            if (lockSuccessful) {
+                lockProvider.getLock().unlock();
+            }
         }
     }
 
@@ -134,13 +153,17 @@ public class Locks {
         notNull(key, "key is null");
         notNull(callable, "callable is null");
 
+        boolean lockSuccessful = false;
         LockReference lockReference = getLock(key);
 
         try {
             lockReference.lock();
+            lockSuccessful = true;
             return callable.call();
         } finally {
-            lockReference.unlock();
+            if (lockSuccessful) {
+                lockReference.unlock();
+            }
         }
     }
 
@@ -156,11 +179,16 @@ public class Locks {
         notNull(lock, "lock is null");
         notNull(callable, "callable is null");
 
+        boolean lockSuccessful = false;
+
         try {
             lock.lock();
+            lockSuccessful = true;
             return callable.call();
         } finally {
-            lock.unlock();
+            if (lockSuccessful) {
+                lock.unlock();
+            }
         }
     }
 
@@ -177,11 +205,16 @@ public class Locks {
         notNull(readWriteLock, "readWriteLock is null");
         notNull(callable, "callable is null");
 
+        boolean lockSuccessful = false;
+
         try {
             readWriteLock.writeLock().lock();
+            lockSuccessful = true;
             return callable.call();
         } finally {
-            readWriteLock.writeLock().unlock();
+            if (lockSuccessful) {
+                readWriteLock.writeLock().unlock();
+            }
         }
     }
 
@@ -198,11 +231,16 @@ public class Locks {
         notNull(readWriteLockProvider, "readWriteLockProvider is null");
         notNull(callable, "callable is null");
 
+        boolean lockSuccessful = false;
+
         try {
             readWriteLockProvider.getReadWriteLock().writeLock().lock();
+            lockSuccessful = true;
             return callable.call();
         } finally {
-            readWriteLockProvider.getReadWriteLock().writeLock().unlock();
+            if (lockSuccessful) {
+                readWriteLockProvider.getReadWriteLock().writeLock().unlock();
+            }
         }
     }
 
@@ -299,10 +337,12 @@ public class Locks {
          * @param key key
          */
         void lock(Object key) {
+            boolean lockSuccessful = false;
             LockHolder lockHolder;
 
             try {
                 lock.lock();
+                lockSuccessful = true;
 
                 lockHolder =
                         map.compute(
@@ -316,16 +356,21 @@ public class Locks {
 
                 lockHolder.increaseLockCount();
             } finally {
-                lock.unlock();
+                if (lockSuccessful) {
+                    lock.unlock();
+                }
             }
 
             lockHolder.getReentrantLock().lock();
         }
 
         void tryLock(Object key, long time, TimeUnit timeUnit) throws InterruptedException {
+            boolean lockSuccessful = false;
             LockHolder lockHolder;
+
             try {
                 lock.lock();
+                lockSuccessful = true;
 
                 lockHolder =
                         map.compute(
@@ -339,7 +384,9 @@ public class Locks {
 
                 lockHolder.increaseLockCount();
             } finally {
-                lock.unlock();
+                if (lockSuccessful) {
+                    lock.unlock();
+                }
             }
 
             lockHolder.getReentrantLock().tryLock(time, timeUnit);
@@ -351,8 +398,11 @@ public class Locks {
          * @param key key
          */
         void unlock(Object key) {
+            boolean lockSuccessful = false;
+
             try {
                 lock.lock();
+                lockSuccessful = true;
 
                 LockHolder lockHolder = map.get(key);
                 if (lockHolder == null) {
@@ -372,7 +422,9 @@ public class Locks {
                     map.remove(key);
                 }
             } finally {
-                lock.unlock();
+                if (lockSuccessful) {
+                    lock.unlock();
+                }
             }
         }
     }
