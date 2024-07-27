@@ -6,7 +6,7 @@
 | Engine       | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/engine/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/engine)  |
 | Maven Plugin | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/maven-plugin)  |
 
-# Verifyica
+[Verifyica](https://github.com/antublue/verifyica/blob/main/verifyica.png)
 
 A Java annotation-based, multi-threaded test engine for integration testing built on JUnit platform.
 
