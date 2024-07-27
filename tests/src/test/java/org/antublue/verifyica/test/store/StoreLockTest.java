@@ -50,7 +50,7 @@ public class StoreLockTest {
 
             System.out.println("test()");
 
-            Thread.sleep(2000);
+            Thread.sleep(500);
         } finally {
             System.out.println(
                     format(

@@ -30,10 +30,10 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.extension.ArgumentExtensionContext;
 import org.antublue.verifyica.api.extension.ClassExtension;
-import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.context.DefaultArgumentExtensionContext;
 import org.antublue.verifyica.engine.context.DefaultClassExtensionContext;
 import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
+import org.antublue.verifyica.engine.context.ImmutableArgumentContext;
 import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -260,8 +260,7 @@ public class ClassExtensionRegistry {
             for (ClassExtension classExtension : getClassExtensions(testClass)) {
                 classExtension.beforeTest(argumentExtensionContext, testMethod);
             }
-            testMethod.invoke(
-                    testInstance, ((DefaultArgumentContext) argumentContext).asImmutable());
+            testMethod.invoke(testInstance, ImmutableArgumentContext.wrap(argumentContext));
         } catch (InvocationTargetException e) {
             throwable = e.getCause();
         } catch (Throwable t) {

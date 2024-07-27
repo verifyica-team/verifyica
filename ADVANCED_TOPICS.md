@@ -22,6 +22,78 @@ The [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) should be u
 
 There is no `@Verifyica.ResourceLock` annotation be design, because complex locking strategies can't be implemented using a annotation-based approach.
 
+### Simple method locking
+
+Example solution:
+
+- test 1 is not in a lock boundary
+- test 2 is in exclusively lock boundary
+
+```java
+import org.antublue.verifyica.api.Argument;
+import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.Locks;
+import org.antublue.verifyica.api.Verifyica;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
+
+/** Example test */
+public class LocksTest2 {
+
+  private static final String LOCK_KEY = LocksTest2.class.getName() + ".lockKey";
+
+  @Verifyica.ArgumentSupplier(parallelism = 10)
+  public static Collection<Argument<String>> arguments() {
+    Collection<Argument<String>> collection = new ArrayList<>();
+
+    for (int i = 0; i < 10; i++) {
+      collection.add(Argument.ofString("String " + i));
+    }
+
+    return collection;
+  }
+
+  @Verifyica.Test
+  public void test1(ArgumentContext argumentContext) throws Throwable {
+    System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
+
+    assertThat(argumentContext).isNotNull();
+    assertThat(argumentContext.getStore()).isNotNull();
+    assertThat(argumentContext.getTestArgument()).isNotNull();
+  }
+
+  @Verifyica.Test
+  public void test2(ArgumentContext argumentContext) throws Throwable {
+    Locks.execute(
+            argumentContext.getClassContext(),
+            (Locks.ThrowableRunnable)
+                    () -> {
+                      System.out.println(
+                              format("test2(%s) locked", argumentContext.getTestArgument()));
+
+                      System.out.println(
+                              format("test2(%s)", argumentContext.getTestArgument()));
+
+                      assertThat(argumentContext).isNotNull();
+                      assertThat(argumentContext.getStore()).isNotNull();
+                      assertThat(argumentContext.getTestArgument()).isNotNull();
+
+                      Thread.sleep(500);
+
+                      System.out.println(
+                              format("test2(%s) unlocked", argumentContext.getTestArgument()));
+
+                    });
+  }
+}
+```
+
+----
+
 Example complex locking strategy
 
 - locking a set of methods (complex lock boundary)

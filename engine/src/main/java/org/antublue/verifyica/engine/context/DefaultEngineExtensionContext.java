@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.context;
 
+import java.util.Objects;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.junit.platform.commons.util.Preconditions;
@@ -39,5 +40,23 @@ public class DefaultEngineExtensionContext implements EngineExtensionContext {
     @Override
     public EngineContext getEngineContext() {
         return engineContext;
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultEngineExtensionContext{" + "engineContext=" + engineContext + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultEngineExtensionContext that = (DefaultEngineExtensionContext) o;
+        return Objects.equals(engineContext, that.engineContext);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(engineContext);
     }
 }

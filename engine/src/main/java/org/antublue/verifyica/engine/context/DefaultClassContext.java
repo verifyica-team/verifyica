@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.context;
 
+import java.util.Objects;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
@@ -26,7 +27,6 @@ public class DefaultClassContext implements ClassContext {
 
     private final EngineContext engineContext;
     private final Store store;
-    private final ImmutableClassContext immutableClassContext;
 
     private Class<?> testClass;
     private Object testInstance;
@@ -39,7 +39,6 @@ public class DefaultClassContext implements ClassContext {
     public DefaultClassContext(EngineContext engineContext) {
         this.engineContext = engineContext;
         this.store = new DefaultStore();
-        this.immutableClassContext = new ImmutableClassContext(this);
     }
 
     @Override
@@ -95,12 +94,33 @@ public class DefaultClassContext implements ClassContext {
         return type.cast(getTestInstance());
     }
 
-    /**
-     * Method to get an immutable version
-     *
-     * @return an immutable version
-     */
-    public ClassContext asImmutable() {
-        return immutableClassContext;
+    @Override
+    public String toString() {
+        return "DefaultClassContext{"
+                + "engineContext="
+                + engineContext
+                + ", store="
+                + store
+                + ", testClass="
+                + testClass
+                + ", testInstance="
+                + testInstance
+                + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultClassContext that = (DefaultClassContext) o;
+        return Objects.equals(engineContext, that.engineContext)
+                && Objects.equals(store, that.store)
+                && Objects.equals(testClass, that.testClass)
+                && Objects.equals(testInstance, that.testInstance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(engineContext, store, testClass, testInstance);
     }
 }

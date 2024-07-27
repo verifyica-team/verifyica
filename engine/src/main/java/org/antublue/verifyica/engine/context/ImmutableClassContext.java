@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.context;
 
+import java.util.Objects;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
@@ -30,7 +31,7 @@ public class ImmutableClassContext implements ClassContext {
      *
      * @param classContext classContext
      */
-    public ImmutableClassContext(ClassContext classContext) {
+    private ImmutableClassContext(ClassContext classContext) {
         this.classContext = classContext;
     }
 
@@ -62,5 +63,33 @@ public class ImmutableClassContext implements ClassContext {
     @Override
     public <T> T getTestInstance(Class<T> type) {
         return classContext.getTestInstance(type);
+    }
+
+    @Override
+    public String toString() {
+        return "ImmutableClassContext{" + "classContext=" + classContext + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ImmutableClassContext that = (ImmutableClassContext) o;
+        return Objects.equals(classContext, that.classContext);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(classContext);
+    }
+
+    /**
+     * Method to wrap a ClassContext
+     *
+     * @param classContext classContext
+     * @return an ImmutableClassContext
+     */
+    public static ClassContext wrap(ClassContext classContext) {
+        return new ImmutableClassContext(classContext);
     }
 }

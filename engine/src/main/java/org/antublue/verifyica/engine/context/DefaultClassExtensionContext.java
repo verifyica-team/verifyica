@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.context;
 
+import java.util.Objects;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.extension.ClassExtensionContext;
 
@@ -36,5 +37,23 @@ public class DefaultClassExtensionContext implements ClassExtensionContext {
     @Override
     public ClassContext getClassContext() {
         return classContext;
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultClassExtensionContext{" + "classContext=" + classContext + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultClassExtensionContext that = (DefaultClassExtensionContext) o;
+        return Objects.equals(classContext, that.classContext);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(classContext);
     }
 }

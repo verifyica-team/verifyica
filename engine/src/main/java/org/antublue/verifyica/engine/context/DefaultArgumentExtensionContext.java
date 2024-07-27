@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.context;
 
+import java.util.Objects;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.extension.ArgumentExtensionContext;
 
@@ -36,5 +37,23 @@ public class DefaultArgumentExtensionContext implements ArgumentExtensionContext
     @Override
     public ArgumentContext getArgumentContext() {
         return argumentContext;
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultArgumentExtensionContext{" + "argumentContext=" + argumentContext + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultArgumentExtensionContext that = (DefaultArgumentExtensionContext) o;
+        return Objects.equals(argumentContext, that.argumentContext);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(argumentContext);
     }
 }

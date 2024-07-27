@@ -54,7 +54,7 @@ public class StoreComputeIfAbsentTest1 {
 
             System.out.println(format("test(%s)", argumentContext.getTestArgument().getPayload()));
 
-            Thread.sleep(2000);
+            Thread.sleep(500);
         } finally {
             lock.unlock();
             argumentContext.getClassContext().getStore().remove(KEY);

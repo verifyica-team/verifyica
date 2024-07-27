@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
+import org.antublue.verifyica.engine.context.ImmutableClassContext;
 import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -265,7 +266,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         LOGGER.trace("prepare() testClass [%s]", testClass.getName());
 
         ClassExtensionRegistry.getInstance()
-                .prepare(defaultClassContext.asImmutable(), prepareMethods);
+                .prepare(ImmutableClassContext.wrap(defaultClassContext), prepareMethods);
     }
 
     /**
@@ -428,7 +429,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         LOGGER.trace("conclude() testClass [%s]", testClass.getName());
 
         ClassExtensionRegistry.getInstance()
-                .conclude(defaultClassContext.asImmutable(), concludeMethods);
+                .conclude(ImmutableClassContext.wrap(defaultClassContext), concludeMethods);
     }
 
     /**

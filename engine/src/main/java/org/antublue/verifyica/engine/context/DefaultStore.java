@@ -236,20 +236,30 @@ public class DefaultStore implements Store {
 
     @Override
     public String toString() {
-        return "Store{map=" + map + '}';
+        return "DefaultStore{map=" + map + '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DefaultStore that = (DefaultStore) o;
-        return Objects.equals(map, that.map);
+        try {
+            getLock().readLock().lock();
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            DefaultStore that = (DefaultStore) o;
+            return Objects.equals(map, that.map);
+        } finally {
+            getLock().readLock().unlock();
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(map);
+        try {
+            getLock().readLock().lock();
+            return Objects.hash(map);
+        } finally {
+            getLock().readLock().unlock();
+        }
     }
 
     /**

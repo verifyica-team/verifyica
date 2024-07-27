@@ -16,27 +16,26 @@
 
 package org.antublue.verifyica.engine.context;
 
+import java.util.Objects;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
 
 /** Class to implement ImmutableArgumentContext */
-@SuppressWarnings("deprecated")
 public class ImmutableArgumentContext implements ArgumentContext {
 
-    private final ClassContext classContext;
     private final ArgumentContext argumentContext;
+    private final ClassContext classContext;
 
     /**
      * Constructor
      *
-     * @param classContext classContext
      * @param argumentContext argumentContext
      */
-    public ImmutableArgumentContext(ClassContext classContext, ArgumentContext argumentContext) {
-        this.classContext = classContext;
+    private ImmutableArgumentContext(ArgumentContext argumentContext) {
         this.argumentContext = argumentContext;
+        this.classContext = ImmutableClassContext.wrap(argumentContext.getClassContext());
     }
 
     @Override
@@ -58,6 +57,40 @@ public class ImmutableArgumentContext implements ArgumentContext {
     @Override
     public Store getStore() {
         return argumentContext.getStore();
+    }
+
+    @Override
+    public String toString() {
+        return "ImmutableArgumentContext{"
+                + "argumentContext="
+                + argumentContext
+                + ", classContext="
+                + classContext
+                + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ImmutableArgumentContext that = (ImmutableArgumentContext) o;
+        return Objects.equals(argumentContext, that.argumentContext)
+                && Objects.equals(classContext, that.classContext);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(argumentContext, classContext);
+    }
+
+    /**
+     * Method to wrap a ClassContext
+     *
+     * @param argumentContext argumentContext
+     * @return an ImmutableClassContext
+     */
+    public static ArgumentContext wrap(ArgumentContext argumentContext) {
+        return new ImmutableArgumentContext(argumentContext);
     }
 
     /**

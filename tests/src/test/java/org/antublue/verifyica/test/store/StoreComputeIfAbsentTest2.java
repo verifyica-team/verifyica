@@ -53,7 +53,7 @@ public class StoreComputeIfAbsentTest2 {
 
             System.out.println(format("test(%s)", argumentContext.getTestArgument().getPayload()));
 
-            Thread.sleep(2000);
+            Thread.sleep(500);
         } finally {
             semaphore.release();
             argumentContext.getClassContext().getStore().remove(KEY);

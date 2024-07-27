@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.context;
 
+import java.util.Objects;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
@@ -26,7 +27,6 @@ public class DefaultArgumentContext implements ArgumentContext {
 
     private final DefaultClassContext defaultClassContext;
     private final Store store;
-    private final ImmutableArgumentContext immutableArgumentContext;
 
     private Object testInstance;
     private Argument<?> argument;
@@ -39,8 +39,6 @@ public class DefaultArgumentContext implements ArgumentContext {
     public DefaultArgumentContext(DefaultClassContext defaultClassContext) {
         this.defaultClassContext = defaultClassContext;
         this.store = new DefaultStore();
-        this.immutableArgumentContext =
-                new ImmutableArgumentContext(defaultClassContext.asImmutable(), this);
     }
 
     @Override
@@ -91,13 +89,34 @@ public class DefaultArgumentContext implements ArgumentContext {
         this.argument = argument;
     }
 
-    /**
-     * Method to get an immutable version
-     *
-     * @return an immutable version
-     */
-    public ArgumentContext asImmutable() {
-        return immutableArgumentContext;
+    @Override
+    public String toString() {
+        return "DefaultArgumentContext{"
+                + "defaultClassContext="
+                + defaultClassContext
+                + ", store="
+                + store
+                + ", testInstance="
+                + testInstance
+                + ", argument="
+                + argument
+                + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultArgumentContext that = (DefaultArgumentContext) o;
+        return Objects.equals(defaultClassContext, that.defaultClassContext)
+                && Objects.equals(store, that.store)
+                && Objects.equals(testInstance, that.testInstance)
+                && Objects.equals(argument, that.argument);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(defaultClassContext, store, testInstance, argument);
     }
 
     /**
