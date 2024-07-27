@@ -148,6 +148,7 @@ public class Locks {
      * @param callable callable
      * @return the callable result
      * @throws Throwable Throwable
+     * @param <V> the type
      */
     public static <V> V execute(Object key, Callable<V> callable) throws Throwable {
         notNull(key, "key is null");
@@ -174,6 +175,7 @@ public class Locks {
      * @param callable callable
      * @return the callable result
      * @throws Throwable Throwable
+     * @param <V> the type
      */
     public static <V> V execute(Lock lock, Callable<V> callable) throws Throwable {
         notNull(lock, "lock is null");
@@ -199,6 +201,7 @@ public class Locks {
      * @param callable callable
      * @return the callable result
      * @throws Throwable Throwable
+     * @param <V> the type
      */
     public static <V> V execute(ReadWriteLock readWriteLock, Callable<V> callable)
             throws Throwable {
@@ -225,6 +228,7 @@ public class Locks {
      * @param callable callable
      * @return the callable result
      * @throws Throwable Throwable
+     * @param <V> the type
      */
     public static <V> V execute(ReadWriteLockProvider readWriteLockProvider, Callable<V> callable)
             throws Throwable {
