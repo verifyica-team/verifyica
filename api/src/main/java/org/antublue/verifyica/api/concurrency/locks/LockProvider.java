@@ -18,7 +18,13 @@ package org.antublue.verifyica.api.concurrency.locks;
 
 import java.util.concurrent.locks.Lock;
 
+/** Interface to implement LockProvider */
 public interface LockProvider {
 
+    /**
+     * Returns the Lock
+     *
+     * @return the Lock
+     */
     Lock getLock();
 }

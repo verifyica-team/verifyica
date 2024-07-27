@@ -18,7 +18,13 @@ package org.antublue.verifyica.api.concurrency.locks;
 
 import java.util.concurrent.locks.ReadWriteLock;
 
+/** Interface to implement ReadWriteLockProvider */
 public interface ReadWriteLockProvider {
 
+    /**
+     * Return the ReadWriteLock
+     *
+     * @return the ReadWriteLock
+     */
     ReadWriteLock getReadWriteLock();
 }

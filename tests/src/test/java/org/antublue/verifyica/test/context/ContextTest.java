@@ -96,4 +96,30 @@ public class ContextTest {
 
         assertThat(ContextTest.value).isEqualTo(10);
     }
+
+    @Verifyica.Test
+    public void test4(ArgumentContext argumentContext) throws Throwable {
+        assertThat(argumentContext.getLock()).isEqualTo(argumentContext.getStore().getLock());
+        assertThat(argumentContext.getReadWriteLock())
+
+                .isEqualTo(argumentContext.getStore().getReadWriteLock());
+
+        assertThat(argumentContext.getClassContext().getLock())
+                .isEqualTo(argumentContext.getClassContext().getStore().getLock());
+        assertThat(argumentContext.getClassContext().getReadWriteLock())
+
+                .isEqualTo(argumentContext.getClassContext().getStore().getReadWriteLock());
+
+        assertThat(argumentContext.getClassContext().getEngineContext().getLock())
+                .isEqualTo(
+                        argumentContext.getClassContext().getEngineContext().getStore().getLock());
+
+        assertThat(argumentContext.getClassContext().getEngineContext().getReadWriteLock())
+                .isEqualTo(
+                        argumentContext
+                                .getClassContext()
+                                .getEngineContext()
+                                .getStore()
+                                .getReadWriteLock());
+    }
 }

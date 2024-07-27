@@ -16,8 +16,13 @@
 
 package org.antublue.verifyica.api;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import org.antublue.verifyica.api.concurrency.locks.LockProvider;
+import org.antublue.verifyica.api.concurrency.locks.ReadWriteLockProvider;
+
 /** Interface to implement Context */
-public interface Context {
+public interface Context extends ReadWriteLockProvider, LockProvider {
 
     /**
      * Returns the Store
@@ -25,4 +30,14 @@ public interface Context {
      * @return the Store
      */
     Store getStore();
+
+    @Override
+    default Lock getLock() {
+        return getReadWriteLock().writeLock();
+    }
+
+    @Override
+    default ReadWriteLock getReadWriteLock() {
+        return getStore().getReadWriteLock();
+    }
 }
