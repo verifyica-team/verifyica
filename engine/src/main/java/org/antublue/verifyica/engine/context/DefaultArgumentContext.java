@@ -109,14 +109,12 @@ public class DefaultArgumentContext implements ArgumentContext {
         if (o == null || getClass() != o.getClass()) return false;
         DefaultArgumentContext that = (DefaultArgumentContext) o;
         return Objects.equals(defaultClassContext, that.defaultClassContext)
-                && Objects.equals(store, that.store)
-                && Objects.equals(testInstance, that.testInstance)
-                && Objects.equals(argument, that.argument);
+                && Objects.equals(testInstance, that.testInstance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(defaultClassContext, store, testInstance, argument);
+        return Objects.hash(defaultClassContext, testInstance);
     }
 
     /**

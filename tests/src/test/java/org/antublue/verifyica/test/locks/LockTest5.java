@@ -21,15 +21,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.Callable;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Locks;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.concurrency.locks.Locks;
 
 /** Example test */
-public class LocksUsingStringTest {
-
-    private static final String LOCK_KEY = LocksUsingStringTest.class.getName() + ".lockKey";
+public class LockTest5 {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -54,8 +53,8 @@ public class LocksUsingStringTest {
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
         Locks.execute(
-                LOCK_KEY,
-                (Locks.ThrowableRunnable)
+                argumentContext.getClassContext().getStore(),
+                (Callable<Void>)
                         () -> {
                             System.out.println(
                                     format("test2(%s) locked", argumentContext.getTestArgument()));
@@ -73,6 +72,8 @@ public class LocksUsingStringTest {
                                     format(
                                             "test2(%s) unlocked",
                                             argumentContext.getTestArgument()));
+
+                            return null;
                         });
     }
 }

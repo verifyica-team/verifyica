@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.engine.context;
 
-import java.util.Objects;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
@@ -59,20 +58,6 @@ public class DefaultEngineContext implements EngineContext {
                 + ", store="
                 + store
                 + '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DefaultEngineContext that = (DefaultEngineContext) o;
-        return Objects.equals(configuration, that.configuration)
-                && Objects.equals(store, that.store);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(configuration, store);
     }
 
     /**

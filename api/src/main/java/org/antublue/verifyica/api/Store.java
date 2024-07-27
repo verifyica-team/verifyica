@@ -18,11 +18,14 @@ package org.antublue.verifyica.api;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
+import org.antublue.verifyica.api.concurrency.locks.LockProvider;
+import org.antublue.verifyica.api.concurrency.locks.ReadWriteLockProvider;
 
 /** Class to implement Store */
-public interface Store {
+public interface Store extends ReadWriteLockProvider, LockProvider {
 
     /**
      * Put a key-value pair
@@ -150,9 +153,20 @@ public interface Store {
     Store duplicate();
 
     /**
+     * Get the Lock
+     *
+     * @return the Lock
+     */
+    @Override
+    default Lock getLock() {
+        return getReadWriteLock().writeLock();
+    }
+
+    /**
      * Get the ReadWriteLock
      *
      * @return the ReadWriteLock
      */
-    ReadWriteLock getLock();
+    @Override
+    ReadWriteLock getReadWriteLock();
 }

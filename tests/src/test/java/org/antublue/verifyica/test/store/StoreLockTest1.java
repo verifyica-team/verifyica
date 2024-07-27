@@ -25,7 +25,7 @@ import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class StoreLockTest {
+public class StoreLockTest1 {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<String> arguments() {
@@ -42,7 +42,7 @@ public class StoreLockTest {
     public void test(ArgumentContext argumentContext) throws Throwable {
         Store classContextStore = argumentContext.getClassContext().getStore();
         try {
-            classContextStore.getLock().writeLock().lock();
+            classContextStore.getLock().lock();
             System.out.println(
                     format(
                             "%s test() locked class context store",
@@ -56,7 +56,7 @@ public class StoreLockTest {
                     format(
                             "%s test() unlocked class context",
                             argumentContext.getTestArgument(String.class).getName()));
-            classContextStore.getLock().writeLock().unlock();
+            classContextStore.getLock().unlock();
         }
     }
 }

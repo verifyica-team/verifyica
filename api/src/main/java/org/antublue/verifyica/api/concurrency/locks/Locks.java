@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api;
+package org.antublue.verifyica.api.concurrency.locks;
 
 import static java.lang.String.format;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /** Class to implement Locks */
@@ -53,50 +53,157 @@ public class Locks {
      *
      * @param key key
      * @param runnable runnable
-     * @return the elapsed time in millisecond
      */
-    public static long execute(Object key, Runnable runnable) {
+    public static void execute(Object key, Runnable runnable) {
         notNull(key, "key is null");
-        toStringNotEmpty(key, "key toString() is empty");
         notNull(runnable, "runnable is null");
 
-        long t0 = System.currentTimeMillis();
-
-        try {
-            getLock(key.toString()).lock();
-            runnable.run();
-        } finally {
-            getLock(key.toString()).unlock();
-        }
-
-        return System.currentTimeMillis() - t0;
-    }
-
-    /**
-     * Execute an Executable in a lock
-     *
-     * @param key key
-     * @param throwableRunnable executable
-     * @return the Duration
-     * @throws Throwable Throwable
-     */
-    public static Duration execute(Object key, ThrowableRunnable throwableRunnable)
-            throws Throwable {
-        notNull(key, "key is null");
-        toStringNotEmpty(key, "key toString() is empty");
-        notNull(throwableRunnable, "executable is null");
-
-        long t0 = System.nanoTime();
-        LockReference lockReference = getLock(key.toString());
+        LockReference lockReference = getLock(key);
 
         try {
             lockReference.lock();
-            throwableRunnable.run();
+            runnable.run();
         } finally {
             lockReference.unlock();
         }
+    }
 
-        return Duration.of(System.nanoTime() - t0, ChronoUnit.NANOS);
+    /**
+     * Execute a Runnable in a lock
+     *
+     * @param lock lock
+     * @param runnable runnable
+     */
+    public static void execute(Lock lock, Runnable runnable) {
+        notNull(lock, "lock is null");
+        notNull(runnable, "runnable is null");
+
+        try {
+            lock.lock();
+            runnable.run();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Execute a Runnable in a lock
+     *
+     * @param readWriteLock readWriteLock
+     * @param runnable runnable
+     */
+    public static void execute(ReadWriteLock readWriteLock, Runnable runnable) {
+        notNull(readWriteLock, "readWriteLock is null");
+        notNull(runnable, "runnable is null");
+
+        try {
+            readWriteLock.writeLock().lock();
+            runnable.run();
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Execute a Runnable in a lock
+     *
+     * @param lockProvider lockProvider
+     * @param runnable runnable
+     */
+    public static void execute(LockProvider lockProvider, Runnable runnable) {
+        notNull(lockProvider, "lockProvider is null");
+        notNull(runnable, "runnable is null");
+
+        try {
+            lockProvider.getLock().lock();
+            runnable.run();
+        } finally {
+            lockProvider.getLock().unlock();
+        }
+    }
+
+    /**
+     * Execute a Callable in a lock
+     *
+     * @param key key
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     */
+    public static <V> V execute(Object key, Callable<V> callable) throws Throwable {
+        notNull(key, "key is null");
+        notNull(callable, "callable is null");
+
+        LockReference lockReference = getLock(key);
+
+        try {
+            lockReference.lock();
+            return callable.call();
+        } finally {
+            lockReference.unlock();
+        }
+    }
+
+    /**
+     * Execute a Callable in a lock
+     *
+     * @param lock lock
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     */
+    public static <V> V execute(Lock lock, Callable<V> callable) throws Throwable {
+        notNull(lock, "lock is null");
+        notNull(callable, "callable is null");
+
+        try {
+            lock.lock();
+            return callable.call();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Execute a Callable in a lock
+     *
+     * @param readWriteLock readWriteLock
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     */
+    public static <V> V execute(ReadWriteLock readWriteLock, Callable<V> callable)
+            throws Throwable {
+        notNull(readWriteLock, "readWriteLock is null");
+        notNull(callable, "callable is null");
+
+        try {
+            readWriteLock.writeLock().lock();
+            return callable.call();
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Execute a Callable in a lock
+     *
+     * @param readWriteLockProvider readWriteLockProvider
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     */
+    public static <V> V execute(ReadWriteLockProvider readWriteLockProvider, Callable<V> callable)
+            throws Throwable {
+        notNull(readWriteLockProvider, "readWriteLockProvider is null");
+        notNull(callable, "callable is null");
+
+        try {
+            readWriteLockProvider.getReadWriteLock().writeLock().lock();
+            return callable.call();
+        } finally {
+            readWriteLockProvider.getReadWriteLock().writeLock().unlock();
+        }
     }
 
     /**
@@ -107,18 +214,6 @@ public class Locks {
      */
     private static void notNull(Object object, String message) {
         if (object == null) {
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    /**
-     * Check if an Object toString is not empty
-     *
-     * @param object object
-     * @param message message
-     */
-    private static void toStringNotEmpty(Object object, String message) {
-        if (object.toString().trim().isEmpty()) {
             throw new IllegalArgumentException(message);
         }
     }
@@ -147,17 +242,6 @@ public class Locks {
 
         /** Method to unlock the Lock */
         void unlock();
-    }
-
-    /** Interface to implement ThrowableRunnable */
-    public interface ThrowableRunnable {
-
-        /**
-         * Method to implement run
-         *
-         * @throws Throwable Throwable
-         */
-        void run() throws Throwable;
     }
 
     /** Class to implement DefaultLockReference */
