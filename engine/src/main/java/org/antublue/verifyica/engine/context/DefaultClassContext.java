@@ -114,13 +114,12 @@ public class DefaultClassContext implements ClassContext {
         if (o == null || getClass() != o.getClass()) return false;
         DefaultClassContext that = (DefaultClassContext) o;
         return Objects.equals(engineContext, that.engineContext)
-                && Objects.equals(store, that.store)
                 && Objects.equals(testClass, that.testClass)
                 && Objects.equals(testInstance, that.testInstance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(engineContext, store, testClass, testInstance);
+        return Objects.hash(engineContext, testClass, testInstance);
     }
 }

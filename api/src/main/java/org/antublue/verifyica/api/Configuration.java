@@ -18,11 +18,14 @@ package org.antublue.verifyica.api;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
+import org.antublue.verifyica.api.concurrency.locks.LockProvider;
+import org.antublue.verifyica.api.concurrency.locks.ReadWriteLockProvider;
 
 /** Interface to implement Configuration */
-public interface Configuration {
+public interface Configuration extends ReadWriteLockProvider, LockProvider {
 
     /**
      * Put a key-value mapping
@@ -111,10 +114,11 @@ public interface Configuration {
      */
     Set<String> keySet();
 
-    /**
-     * Return the ReadWriteLock
-     *
-     * @return the ReadWriteLock
-     */
-    ReadWriteLock getLock();
+    @Override
+    default Lock getLock() {
+        return getReadWriteLock().writeLock();
+    }
+
+    @Override
+    ReadWriteLock getReadWriteLock();
 }

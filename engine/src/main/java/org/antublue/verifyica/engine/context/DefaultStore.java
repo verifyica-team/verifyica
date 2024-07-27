@@ -55,10 +55,10 @@ public class DefaultStore implements Store {
         notNull(key, "key is null");
 
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             return (T) map.put(key, value);
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -67,14 +67,14 @@ public class DefaultStore implements Store {
         notNull(store, "store is null");
 
         try {
-            store.getLock().readLock().lock();
-            getLock().writeLock().lock();
+            store.getReadWriteLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
             clear();
             merge(store);
             return this;
         } finally {
-            getLock().writeLock().unlock();
-            store.getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
+            store.getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -84,10 +84,10 @@ public class DefaultStore implements Store {
         notNull(function, "function is null");
 
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             return (T) map.computeIfAbsent(key, function);
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -96,15 +96,15 @@ public class DefaultStore implements Store {
         notNull(store, "store is null");
 
         try {
-            store.getLock().readLock().lock();
-            getLock().writeLock().lock();
+            store.getReadWriteLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
 
             store.keySet().forEach(key -> put(key, store.get(key)));
 
             return this;
         } finally {
-            getLock().writeLock().unlock();
-            store.getLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
+            store.getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -113,11 +113,11 @@ public class DefaultStore implements Store {
         notNull(map, "map is null");
 
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             this.map.putAll(map);
             return this;
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -126,10 +126,10 @@ public class DefaultStore implements Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return (T) map.get(key);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -139,10 +139,10 @@ public class DefaultStore implements Store {
         notNull(type, "type is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return type.cast(map.get(key));
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -151,10 +151,10 @@ public class DefaultStore implements Store {
         notNull(key, "key is null");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return map.containsKey(key);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -163,10 +163,10 @@ public class DefaultStore implements Store {
         notNull(key, "key is null");
 
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             return (T) map.remove(key);
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -176,20 +176,20 @@ public class DefaultStore implements Store {
         notNull(type, "type is null");
 
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             return type.cast(map.remove(key));
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
     @Override
     public int size() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return map.size();
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -201,36 +201,36 @@ public class DefaultStore implements Store {
     @Override
     public Store clear() {
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             map.clear();
             return this;
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
     @Override
     public Store duplicate() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return new DefaultStore(this.map);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
     @Override
     public Set<Object> keySet() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return new TreeSet<>(map.keySet());
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
     @Override
-    public ReadWriteLock getLock() {
+    public ReadWriteLock getReadWriteLock() {
         return readWriteLock;
     }
 
@@ -241,25 +241,15 @@ public class DefaultStore implements Store {
 
     @Override
     public boolean equals(Object o) {
-        try {
-            getLock().readLock().lock();
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            DefaultStore that = (DefaultStore) o;
-            return Objects.equals(map, that.map);
-        } finally {
-            getLock().readLock().unlock();
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultStore that = (DefaultStore) o;
+        return Objects.equals(map, that.map);
     }
 
     @Override
     public int hashCode() {
-        try {
-            getLock().readLock().lock();
-            return Objects.hash(map);
-        } finally {
-            getLock().readLock().unlock();
-        }
+        return Objects.hashCode(map);
     }
 
     /**

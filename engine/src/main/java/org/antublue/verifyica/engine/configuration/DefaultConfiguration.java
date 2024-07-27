@@ -68,10 +68,10 @@ public class DefaultConfiguration implements Configuration {
         notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             return map.put(key, value);
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -80,10 +80,10 @@ public class DefaultConfiguration implements Configuration {
         notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return map.get(key);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -92,10 +92,10 @@ public class DefaultConfiguration implements Configuration {
         notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return map.getOrDefault(key, defaultValue);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -104,11 +104,11 @@ public class DefaultConfiguration implements Configuration {
         notNull(map, "map is null");
 
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             this.map.putAll(map);
             return this;
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -118,10 +118,10 @@ public class DefaultConfiguration implements Configuration {
         notNull(function, "functio is null");
 
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             return map.computeIfAbsent(key, function);
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -130,10 +130,10 @@ public class DefaultConfiguration implements Configuration {
         notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return map.containsKey(key);
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -142,20 +142,20 @@ public class DefaultConfiguration implements Configuration {
         notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             return map.remove(key);
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
     @Override
     public int size() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return map.size();
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
@@ -167,26 +167,26 @@ public class DefaultConfiguration implements Configuration {
     @Override
     public Configuration clear() {
         try {
-            getLock().writeLock().lock();
+            getReadWriteLock().writeLock().lock();
             map.clear();
             return this;
         } finally {
-            getLock().writeLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
     @Override
     public Set<String> keySet() {
         try {
-            getLock().readLock().lock();
+            getReadWriteLock().readLock().lock();
             return new TreeSet<>(map.keySet());
         } finally {
-            getLock().readLock().unlock();
+            getReadWriteLock().readLock().unlock();
         }
     }
 
     @Override
-    public ReadWriteLock getLock() {
+    public ReadWriteLock getReadWriteLock() {
         return readWriteLock;
     }
 
