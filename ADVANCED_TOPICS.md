@@ -70,7 +70,7 @@ public class LocksTest2 {
   public void test2(ArgumentContext argumentContext) throws Throwable {
     Locks.execute(
             argumentContext.getClassContext(),
-            (Locks.ThrowableRunnable)
+            (Callable<Void>)
                     () -> {
                       System.out.println(
                               format("test2(%s) locked", argumentContext.getTestArgument()));
@@ -86,7 +86,8 @@ public class LocksTest2 {
 
                       System.out.println(
                               format("test2(%s) unlocked", argumentContext.getTestArgument()));
-
+                      
+                      return null;
                     });
   }
 }
