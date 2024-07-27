@@ -8,7 +8,7 @@
 
 # Verifyica
 
-A Java annotation-based, multithreaded test engine for integration testing built on JUnit Platform.
+A Java annotation-based, multithreaded test engine for integration testing built on [JUnit](https://junit.org/junit5/) Platform.
 
 # Purpose
 
