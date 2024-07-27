@@ -1,4 +1,10 @@
-[![Build](https://github.com/antublue/verifyica/actions/workflows/build.yml/badge.svg)](https://github.com/antublue/verifyica/actions/workflows/build.yml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/016a73debd6041cb91e53abda16e76ac)](https://app.codacy.com/gh/antublue/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) **API** [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/api) **Engine** [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/engine/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/engine) **Maven Plugin** [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/maven-plugin)
+[![Build](https://github.com/antublue/verifyica/actions/workflows/build.yml/badge.svg)](https://github.com/antublue/verifyica/actions/workflows/build.yml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/016a73debd6041cb91e53abda16e76ac)](https://app.codacy.com/gh/antublue/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
+|              |   |
+|--------------|---|
+| API          | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/api) |
+| Engine       | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/engine/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/engine)  |
+| Maven Plugin | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/maven-plugin)  |
 
 # Verifyica
 
@@ -275,7 +281,7 @@ public class EnvironmentTest {
 
 Example tests using [testcontainers-java](https://java.testcontainers.org/)
 
-- [TestContainerTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/TestContainerTest.java))
+- [TestContainerTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/TestContainerTest.java)
   - Generic example showing multi-threaded argument testing
 
 Examples using real test containers ...
