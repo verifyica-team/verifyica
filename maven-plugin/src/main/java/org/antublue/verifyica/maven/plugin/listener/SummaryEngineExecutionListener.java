@@ -18,9 +18,11 @@ package org.antublue.verifyica.maven.plugin.listener;
 
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import org.antublue.verifyica.engine.VerifyicaEngine;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
@@ -328,25 +330,42 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 println(INFO + SEPARATOR);
             }
 
+            int countPad =
+                    getPad(
+                            counterMap.entrySet().stream()
+                                    .filter(mapEntry -> mapEntry.getKey().endsWith(".count"))
+                                    .map(Map.Entry::getValue)
+                                    .collect(Collectors.toList()));
+
+            int successPad =
+                    getPad(
+                            counterMap.entrySet().stream()
+                                    .filter(mapEntry -> mapEntry.getKey().endsWith(".successful"))
+                                    .map(Map.Entry::getValue)
+                                    .collect(Collectors.toList()));
+
+            int failedPad =
+                    getPad(
+                            counterMap.entrySet().stream()
+                                    .filter(mapEntry -> mapEntry.getKey().endsWith(".failed"))
+                                    .map(Map.Entry::getValue)
+                                    .collect(Collectors.toList()));
+
+            int abortedPad =
+                    getPad(
+                            counterMap.entrySet().stream()
+                                    .filter(mapEntry -> mapEntry.getKey().endsWith(".aborted"))
+                                    .map(Map.Entry::getValue)
+                                    .collect(Collectors.toList()));
+
+            int skipPad =
+                    getPad(
+                            counterMap.entrySet().stream()
+                                    .filter(mapEntry -> mapEntry.getKey().endsWith(".skipped"))
+                                    .map(Map.Entry::getValue)
+                                    .collect(Collectors.toList()));
+
             String[] keys = {"test.class", "test.argument", "test.method"};
-
-            int padding = 0;
-            for (String key : keys) {
-                key += ".count";
-
-                long count = counterMap.computeIfAbsent(key, o -> new AtomicLong()).get();
-                padding = Math.max(padding, String.valueOf(count).length());
-
-                String[] subKeys = {
-                    key + ".successful", key + ".failed", key + ".aborted", key + ".skipped"
-                };
-
-                for (String subKey : subKeys) {
-                    count = counterMap.computeIfAbsent(subKey, o -> new AtomicLong()).get();
-                    padding = Math.max(padding, String.valueOf(count).length());
-                }
-            }
-
             for (String key : keys) {
                 StringBuilder stringBuilder = new StringBuilder();
 
@@ -361,7 +380,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                                 counterMap
                                                         .computeIfAbsent(key, o -> new AtomicLong())
                                                         .get(),
-                                                padding)));
+                                                countPad)));
 
                 String[] subKeys = {
                     key + ".successful", key + ".failed", key + ".aborted", key + ".skipped"
@@ -374,22 +393,22 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
                     if (subKey.endsWith(".successful")) {
                         messageDisplayString =
-                                AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(messageDisplayString) + " ";
+                                AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(messageDisplayString);
                         countDisplayString =
-                                AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(pad(count, padding));
+                                AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(pad(count, successPad));
                     } else if (subKey.endsWith(".failed")) {
                         messageDisplayString =
-                                AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(messageDisplayString) + " ";
+                                AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(messageDisplayString);
                         countDisplayString =
-                                AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(pad(count, padding));
+                                AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(pad(count, failedPad));
                     } else if (subKey.endsWith(".aborted")) {
                         messageDisplayString =
                                 AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(messageDisplayString);
                         countDisplayString =
-                                AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(pad(count, padding));
+                                AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(pad(count, abortedPad));
                     } else {
                         messageDisplayString = AnsiColor.TEXT_WHITE_BOLD.wrap(messageDisplayString);
-                        countDisplayString = AnsiColor.TEXT_WHITE_BOLD.wrap(pad(count, padding));
+                        countDisplayString = AnsiColor.TEXT_WHITE_BOLD.wrap(pad(count, skipPad));
                     }
 
                     stringBuilder.append(", " + messageDisplayString + " : " + countDisplayString);
@@ -453,6 +472,22 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
+     * Method to get the pad for a list of values
+     *
+     * @param atomicLongs atomicLongs
+     * @return the return pad
+     */
+    private static int getPad(List<AtomicLong> atomicLongs) {
+        int pad = 0;
+
+        for (AtomicLong atomicLong : atomicLongs) {
+            pad = Math.max(pad, String.valueOf(atomicLong.get()).length());
+        }
+
+        return pad;
+    }
+
+    /**
      * Method to get a String that is the value passed to a specific width
      *
      * @param value value
@@ -462,6 +497,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     private static String pad(long value, long width) {
         String string = String.valueOf(value);
         StringBuilder stringBuilder = new StringBuilder();
+
         while ((stringBuilder.length() + string.length()) < width) {
             stringBuilder.append(" ");
         }
