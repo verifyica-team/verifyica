@@ -172,19 +172,39 @@ public class VerifyicaEngine implements TestEngine {
                     Future<?> future =
                             executorService.submit(
                                     () -> {
-                                        try {
-                                            if (finalSemaphore != null) {
-                                                finalSemaphore.acquire();
+                                        if (!testDescriptor.getChildren().isEmpty()) {
+                                            try {
+                                                if (finalSemaphore != null) {
+                                                    finalSemaphore.acquire();
+                                                }
+                                                ((ExecutableTestDescriptor) testDescriptor)
+                                                        .execute(
+                                                                executionRequest,
+                                                                new DefaultClassContext(
+                                                                        engineContext));
+                                            } catch (Throwable t) {
+                                                t.printStackTrace(System.err);
+                                            } finally {
+                                                if (finalSemaphore != null) {
+                                                    finalSemaphore.release();
+                                                }
                                             }
-                                            ((ExecutableTestDescriptor) testDescriptor)
-                                                    .execute(
-                                                            executionRequest,
-                                                            new DefaultClassContext(engineContext));
-                                        } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
-                                        } finally {
-                                            if (finalSemaphore != null) {
-                                                finalSemaphore.release();
+                                        } else {
+                                            try {
+                                                if (finalSemaphore != null) {
+                                                    finalSemaphore.acquire();
+                                                }
+                                                ((ExecutableTestDescriptor) testDescriptor)
+                                                        .skip(
+                                                                executionRequest,
+                                                                new DefaultClassContext(
+                                                                        engineContext));
+                                            } catch (Throwable t) {
+                                                t.printStackTrace(System.err);
+                                            } finally {
+                                                if (finalSemaphore != null) {
+                                                    finalSemaphore.release();
+                                                }
                                             }
                                         }
                                     });
