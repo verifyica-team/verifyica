@@ -20,7 +20,9 @@ The [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) should be u
 
 ## Locks
 
-There is no `@Verifyica.ResourceLock` annotation be design, because complex locking strategies can't be implemented using a annotation-based approach.
+There is no `@Verifyica.ResourceLock` annotation be design, because complex locking strategies can't be implemented using an annotation-based approach.
+
+[Locks.java](api/src/main/java/org/antublue/verifyica/api/concurrency/locks/Locks/java) provides programmatic way to control locking.
 
 ### Simple method locking
 
