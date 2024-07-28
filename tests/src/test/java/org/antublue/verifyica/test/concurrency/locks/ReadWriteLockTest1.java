@@ -16,17 +16,16 @@
 
 package org.antublue.verifyica.test.concurrency.locks;
 
-import org.antublue.verifyica.api.Argument;
-import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.concurrency.locks.Locks;
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
-
-import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.antublue.verifyica.api.Argument;
+import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.concurrency.locks.Locks;
 
 /** Example test */
 public class ReadWriteLockTest1 {
@@ -60,7 +59,9 @@ public class ReadWriteLockTest1 {
                 (Callable<Void>)
                         () -> {
                             System.out.println(
-                                    format("test2(%s) write locked", argumentContext.getTestArgument()));
+                                    format(
+                                            "test2(%s) write locked",
+                                            argumentContext.getTestArgument()));
 
                             System.out.println(
                                     format("test2(%s)", argumentContext.getTestArgument()));
@@ -89,7 +90,8 @@ public class ReadWriteLockTest1 {
             assertThat(argumentContext.getStore()).isNotNull();
             assertThat(argumentContext.getTestArgument()).isNotNull();
 
-            System.out.println(format("test1(%s) read unlocked", argumentContext.getTestArgument()));
+            System.out.println(
+                    format("test1(%s) read unlocked", argumentContext.getTestArgument()));
         } finally {
             argumentContext.getClassContext().getReadWriteLock().readLock().unlock();
         }

@@ -76,7 +76,15 @@ public interface Configuration extends ReadWriteLockProvider, LockProvider {
      * @param key key
      * @return the value
      */
-    Optional<String> remove(String key);
+    String remove(String key);
+
+    /**
+     * Remove a key-value pair
+     *
+     * @param key key
+     * @return the value
+     */
+    Optional<String> removeOptional(String key);
 
     /**
      * Clear

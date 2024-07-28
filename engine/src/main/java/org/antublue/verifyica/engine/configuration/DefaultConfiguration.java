@@ -135,7 +135,19 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public Optional<String> remove(String key) {
+    public String remove(String key) {
+        notNullOrEmpty(key, "key is null", "key is empty");
+
+        try {
+            getReadWriteLock().writeLock().lock();
+            return map.remove(key);
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
+    }
+
+    @Override
+    public Optional<String> removeOptional(String key) {
         notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
