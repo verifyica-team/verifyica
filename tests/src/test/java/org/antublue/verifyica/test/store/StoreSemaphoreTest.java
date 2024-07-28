@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.concurrency.locks;
+package org.antublue.verifyica.test.store;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.concurrency.locks.Locks;
 
 /** Example test */
-public class LockTest10 {
+public class StoreSemaphoreTest {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -54,11 +51,9 @@ public class LockTest10 {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        boolean acquired = false;
         Semaphore semaphore = getSemaphore(argumentContext);
         try {
             semaphore.acquire();
-            acquired = true;
 
             System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
 
@@ -67,11 +62,8 @@ public class LockTest10 {
             assertThat(argumentContext.getTestArgument()).isNotNull();
 
             Thread.sleep(500);
-
         } finally {
-            if (acquired) {
-                semaphore.release();
-            }
+            semaphore.release();
         }
     }
 
@@ -92,19 +84,9 @@ public class LockTest10 {
      * @throws Throwable Throwable
      */
     private Semaphore getSemaphore(ArgumentContext argumentContext) throws Throwable {
-        Store classStore = argumentContext.getClassContext().getStore();
-        return Locks.execute(
-                classStore,
-                () -> {
-                    Optional<Semaphore> optional =
-                            classStore.getOptional("semaphore", Semaphore.class);
-                    if (optional.isPresent()) {
-                        return optional.get();
-                    } else {
-                        Semaphore s = new Semaphore(2);
-                        classStore.put("semaphore", s);
-                        return s;
-                    }
-                });
+        return argumentContext
+                .getClassContext()
+                .getStore()
+                .computeIfAbsent("semaphore", key -> new Semaphore(2), Semaphore.class);
     }
 }
