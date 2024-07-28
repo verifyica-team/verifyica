@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.locks;
+package org.antublue.verifyica.test.concurrency.locks;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
