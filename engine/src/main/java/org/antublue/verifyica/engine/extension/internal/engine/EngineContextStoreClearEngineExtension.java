@@ -39,7 +39,7 @@ public class EngineContextStoreClearEngineExtension implements InternalEngineExt
         Store store = engineExtensionContext.getEngineContext().getStore();
 
         for (Object key : store.keySet()) {
-            Object value = store.get(key);
+            Object value = store.getOptional(key);
             if (value instanceof AutoCloseable) {
                 try {
                     ((AutoCloseable) value).close();

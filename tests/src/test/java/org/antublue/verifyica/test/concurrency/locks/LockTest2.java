@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.locks;
+package org.antublue.verifyica.test.concurrency.locks;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,9 +28,7 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.locks.Locks;
 
 /** Example test */
-public class LockTest1 {
-
-    private static final String LOCK_KEY = LockTest1.class.getName() + ".lockKey";
+public class LockTest2 {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -55,7 +53,7 @@ public class LockTest1 {
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
         Locks.execute(
-                LOCK_KEY,
+                argumentContext.getClassContext().getEngineContext(),
                 (Callable<Void>)
                         () -> {
                             System.out.println(
@@ -77,5 +75,14 @@ public class LockTest1 {
 
                             return null;
                         });
+    }
+
+    @Verifyica.Test
+    public void test3(ArgumentContext argumentContext) throws Throwable {
+        System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
+
+        assertThat(argumentContext).isNotNull();
+        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 }

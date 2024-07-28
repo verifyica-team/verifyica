@@ -29,7 +29,7 @@ There is no `@Verifyica.ResourceLock` annotation be design, because complex lock
 Example solution:
 
 - test 1 is not in a lock boundary
-- test 2 is in exclusively lock boundary
+- test 2 is in write lock boundary
 
 ```java
 import org.antublue.verifyica.api.Argument;
@@ -92,6 +92,15 @@ public class LocksTest2 {
                       return null;
                     });
   }
+
+  @Verifyica.Test
+  public void test3(ArgumentContext argumentContext) throws Throwable {
+    System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
+
+    assertThat(argumentContext).isNotNull();
+    assertThat(argumentContext.getStore()).isNotNull();
+    assertThat(argumentContext.getTestArgument()).isNotNull();
+  }
 }
 ```
 
@@ -106,7 +115,7 @@ Example complex locking strategy
         - test 2
       - unlock write
     - test 2
-  - unlock readd
+  - unlock read
 
 - dynamically named locks
   - argument-based
@@ -116,92 +125,87 @@ Example complex locking strategy
 Example solution:
 
 - test 1 and test 2 are in a read lock boundary scoped to the class
-- test 3 is in a write lock boundary scoped to the class
+- test 3 is in the read lock boundary and a write lock boundary
 
 ```java
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.concurrency.locks.Locks;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /** Example test */
-@SuppressWarnings("unchecked")
-public class ClassContextLockTest {
+public class ReadWriteLockTest1 {
 
-    private static final String READ_LOCK_KEY = "readLockKey";
-    private static final String WRITE_LOCK_KEY = "writeLockKey";
+  @Verifyica.ArgumentSupplier(parallelism = 10)
+  public static Collection<Argument<String>> arguments() {
+    Collection<Argument<String>> collection = new ArrayList<>();
 
-    @Verifyica.ArgumentSupplier(parallelism = 10)
-    public static Collection<Argument<String>> arguments() {
-        Collection<Argument<String>> collection = new ArrayList<>();
-
-        for (int i = 0; i < 10; i++) {
-            collection.add(Argument.ofString("String " + i));
-        }
-
-        return collection;
+    for (int i = 0; i < 10; i++) {
+      collection.add(Argument.ofString("String " + i));
     }
 
-    @Verifyica.BeforeAll
-    public void beforeAll(ArgumentContext argumentContext) {
-        lockReadLock(argumentContext, READ_LOCK_KEY);
+    return collection;
+  }
+
+  @Verifyica.Test
+  public void test1(ArgumentContext argumentContext) throws Throwable {
+    argumentContext.getClassContext().getReadWriteLock().readLock().lock();
+
+    System.out.println(format("test1(%s) read locked", argumentContext.getTestArgument()));
+
+    assertThat(argumentContext).isNotNull();
+    assertThat(argumentContext.getStore()).isNotNull();
+    assertThat(argumentContext.getTestArgument()).isNotNull();
+  }
+
+  @Verifyica.Test
+  public void test2(ArgumentContext argumentContext) throws Throwable {
+    Locks.execute(
+            "writeLock",
+            (Callable<Void>)
+                    () -> {
+                      System.out.println(
+                              format("test2(%s) write locked", argumentContext.getTestArgument()));
+
+                      System.out.println(
+                              format("test2(%s)", argumentContext.getTestArgument()));
+
+                      assertThat(argumentContext).isNotNull();
+                      assertThat(argumentContext.getStore()).isNotNull();
+                      assertThat(argumentContext.getTestArgument()).isNotNull();
+
+                      Thread.sleep(500);
+
+                      System.out.println(
+                              format(
+                                      "test2(%s) write unlocked",
+                                      argumentContext.getTestArgument()));
+
+                      return null;
+                    });
+  }
+
+  @Verifyica.Test
+  public void test3(ArgumentContext argumentContext) throws Throwable {
+    try {
+      System.out.println(format("test3(%s) read locked", argumentContext.getTestArgument()));
+
+      assertThat(argumentContext).isNotNull();
+      assertThat(argumentContext.getStore()).isNotNull();
+      assertThat(argumentContext.getTestArgument()).isNotNull();
+
+      System.out.println(format("test1(%s) read unlocked", argumentContext.getTestArgument()));
+    } finally {
+      argumentContext.getClassContext().getReadWriteLock().readLock().unlock();
     }
-
-    @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
-        // ... test 1 code ...
-
-        Thread.sleep(1000);
-    }
-
-    @Verifyica.Test
-    public void test2(ArgumentContext argumentContext) throws Throwable {
-        // ... test 2 code ...
-
-        Thread.sleep(1000);
-    }
-
-    @Verifyica.Test
-    public void test3(ArgumentContext argumentContext) throws Throwable {
-        // ... test 3 code ...
-
-        try {
-            lockWriteLock(argumentContext, WRITE_LOCK_KEY);
-            Thread.sleep(1000);
-        } finally {
-            unlockWriteLock(argumentContext, WRITE_LOCK_KEY);
-        }
-    }
-
-    @Verifyica.AfterAll
-    public void afterAll(ArgumentContext argumentContext) {
-        unlockReadLock(argumentContext, READ_LOCK_KEY);
-    }
-
-    private static void lockReadLock(ArgumentContext argumentContext, String lockKey) {
-        ReentrantReadWriteLock.class.cast(argumentContext
-                .getClassContext()
-                .getStore()
-                .computeIfAbsent(lockKey, o -> new ReentrantReadWriteLock(true))).readLock().lock();
-    }
-
-    private static void unlockReadLock(ArgumentContext argumentContext, String lockKey) {
-        argumentContext.getClassContext().getStore().get(lockKey, ReentrantReadWriteLock.class).readLock().unlock();
-    }
-
-    private static void lockWriteLock(ArgumentContext argumentContext, String lockKey) {
-        ReentrantReadWriteLock.class.cast(argumentContext
-                .getClassContext()
-                .getStore()
-                .computeIfAbsent(lockKey, o -> new ReentrantReadWriteLock(true))).writeLock().lock();
-    }
-
-    private static void unlockWriteLock(ArgumentContext argumentContext, String lockKey) {
-        argumentContext.getClassContext().getStore().get(lockKey, ReentrantReadWriteLock.class).writeLock().unlock();
-    }
+  }
 }
 ```
 
@@ -216,71 +220,78 @@ Example solution:
 - test 3 is in a semaphore boundary scoped to the class
 
 ```java
-import org.antublue.verifyica.api.Argument;
-import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Verifyica;
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Semaphore;
+import org.antublue.verifyica.api.Argument;
+import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-@SuppressWarnings("unchecked")
-public class ClassContextSemaphoreTest {
+public class StoreSemaphoreTest {
 
-    private static final String SEMAPHORE_KEY = "semaphoreKey";
+  @Verifyica.ArgumentSupplier(parallelism = 10)
+  public static Collection<Argument<String>> arguments() {
+    Collection<Argument<String>> collection = new ArrayList<>();
 
-    @Verifyica.ArgumentSupplier(parallelism = 10)
-    public static Collection<Argument<String>> arguments() {
-        Collection<Argument<String>> collection = new ArrayList<>();
-
-        for (int i = 0; i < 10; i++) {
-            collection.add(Argument.ofString("String " + i));
-        }
-
-        return collection;
+    for (int i = 0; i < 10; i++) {
+      collection.add(Argument.ofString("String " + i));
     }
 
-    @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
-        // ... test 1 code ...
+    return collection;
+  }
 
-        Thread.sleep(1000);
+  @Verifyica.Test
+  public void test1(ArgumentContext argumentContext) throws Throwable {
+    System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
+
+    assertThat(argumentContext).isNotNull();
+    assertThat(argumentContext.getStore()).isNotNull();
+    assertThat(argumentContext.getTestArgument()).isNotNull();
+  }
+
+  @Verifyica.Test
+  public void test2(ArgumentContext argumentContext) throws Throwable {
+    Semaphore semaphore = getSemaphore(argumentContext);
+    try {
+      semaphore.acquire();
+
+      System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
+
+      assertThat(argumentContext).isNotNull();
+      assertThat(argumentContext.getStore()).isNotNull();
+      assertThat(argumentContext.getTestArgument()).isNotNull();
+
+      Thread.sleep(500);
+    } finally {
+      semaphore.release();
     }
+  }
 
-    @Verifyica.Test
-    public void test2(ArgumentContext argumentContext) throws Throwable {
-        try {
-            acquireSemaphore(argumentContext, SEMAPHORE_KEY);
-            // ... test 2 code ...
-            Thread.sleep(1000);
-        } finally {
-            releaseSemaphore(argumentContext, SEMAPHORE_KEY);
-        }
-    }
+  @Verifyica.Test
+  public void test3(ArgumentContext argumentContext) throws Throwable {
+    System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
 
-    @Verifyica.Test
-    public void test3(ArgumentContext argumentContext) throws Throwable {
-        // ... test 3 code ...
+    assertThat(argumentContext).isNotNull();
+    assertThat(argumentContext.getStore()).isNotNull();
+    assertThat(argumentContext.getTestArgument()).isNotNull();
+  }
 
-        Thread.sleep(1000);
-    }
-
-    private static void acquireSemaphore(ArgumentContext argumentContext, String semaphoreKey) throws Throwable {
-        Semaphore.class
-                .cast(
-                        argumentContext
-                                .getClassContext()
-                                .getStore()
-                                .computeIfAbsent(semaphoreKey, o -> new Semaphore(1))).acquire();
-    }
-
-    private static void releaseSemaphore(ArgumentContext argumentContext, String semaphoreKey) {
-        argumentContext
-                .getClassContext()
-                .getStore()
-                .get(semaphoreKey, Semaphore.class)
-                .release();
-    }
+  /**
+   * Method to get or create a class level Semaphore
+   *
+   * @param argumentContext argumentContext
+   * @return a Semaphore
+   * @throws Throwable Throwable
+   */
+  private Semaphore getSemaphore(ArgumentContext argumentContext) throws Throwable {
+    return argumentContext
+            .getClassContext()
+            .getStore()
+            .computeIfAbsent("semaphore", key -> new Semaphore(2), Semaphore.class);
+  }
 }
 ```

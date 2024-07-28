@@ -31,7 +31,7 @@ public class DefaultEngineContext implements EngineContext {
 
     /** Constructor */
     private DefaultEngineContext() {
-        configuration = new DefaultConfiguration();
+        configuration = DefaultConfiguration.getInstance();
         store = new DefaultStore();
     }
 

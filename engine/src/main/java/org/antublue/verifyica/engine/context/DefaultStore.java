@@ -18,6 +18,7 @@ package org.antublue.verifyica.engine.context;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -51,90 +52,31 @@ public class DefaultStore implements Store {
     }
 
     @Override
-    public <T> T put(Object key, Object value) {
+    public void put(Object key, Object value) {
         notNull(key, "key is null");
 
         try {
             getReadWriteLock().writeLock().lock();
-            return (T) map.put(key, value);
+            map.put(key, value);
         } finally {
             getReadWriteLock().writeLock().unlock();
         }
     }
 
     @Override
-    public Store replace(Store store) {
-        notNull(store, "store is null");
-
-        try {
-            store.getReadWriteLock().readLock().lock();
-            getReadWriteLock().writeLock().lock();
-            clear();
-            merge(store);
-            return this;
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-            store.getReadWriteLock().readLock().unlock();
-        }
-    }
-
-    @Override
-    public <T> T computeIfAbsent(Object key, Function<Object, Object> function) {
-        notNull(key, "key is null");
-        notNull(function, "function is null");
-
-        try {
-            getReadWriteLock().writeLock().lock();
-            return (T) map.computeIfAbsent(key, function);
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public Store merge(Store store) {
-        notNull(store, "store is null");
-
-        try {
-            store.getReadWriteLock().readLock().lock();
-            getReadWriteLock().writeLock().lock();
-
-            store.keySet().forEach(key -> put(key, store.get(key)));
-
-            return this;
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-            store.getReadWriteLock().readLock().unlock();
-        }
-    }
-
-    @Override
-    public Store merge(Map<Object, Object> map) {
-        notNull(map, "map is null");
-
-        try {
-            getReadWriteLock().writeLock().lock();
-            this.map.putAll(map);
-            return this;
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public <T> T get(Object key) {
+    public Object get(Object key) {
         notNull(key, "key is null");
 
         try {
             getReadWriteLock().readLock().lock();
-            return (T) map.get(key);
+            return map.get(key);
         } finally {
             getReadWriteLock().readLock().unlock();
         }
     }
 
     @Override
-    public <T> T get(Object key, Class<T> type) {
+    public <V> V get(Object key, Class<V> type) {
         notNull(key, "key is null");
         notNull(type, "type is null");
 
@@ -143,6 +85,79 @@ public class DefaultStore implements Store {
             return type.cast(map.get(key));
         } finally {
             getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    @Override
+    public Optional<Object> getOptional(Object key) {
+        notNull(key, "key is null");
+
+        try {
+            getReadWriteLock().readLock().lock();
+            return Optional.ofNullable(map.get(key));
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    @Override
+    public <V> Optional<V> getOptional(Object key, Class<V> type) {
+        notNull(key, "key is null");
+        notNull(type, "type is null");
+
+        try {
+            getReadWriteLock().readLock().lock();
+            return Optional.ofNullable(type.cast(map.get(key)));
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    @Override
+    public Object getOrDefault(Object key, Object defaultValue) {
+        Object value = get(key);
+        if (value != null) {
+            return value;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    @Override
+    public <V> V getOrDefault(Object key, V defaultValue, Class<V> type) {
+        Object value = get(key);
+        if (value != null) {
+            return (V) value;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    @Override
+    public Object computeIfAbsent(Object key, Function<Object, Object> function) {
+        try {
+            getReadWriteLock().writeLock().lock();
+            Object value = get(key);
+            if (value == null) {
+                value = function.apply(key);
+            }
+            return value;
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
+    }
+
+    @Override
+    public <V> V computeIfAbsent(Object key, Function<Object, V> function, Class<V> type) {
+        try {
+            getReadWriteLock().writeLock().lock();
+            Object value = get(key);
+            if (value == null) {
+                value = function.apply(key);
+            }
+            return (V) value;
+        } finally {
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -159,25 +174,49 @@ public class DefaultStore implements Store {
     }
 
     @Override
-    public <T> T remove(Object key) {
+    public Object remove(Object key) {
         notNull(key, "key is null");
 
         try {
             getReadWriteLock().writeLock().lock();
-            return (T) map.remove(key);
+            return map.remove(key);
         } finally {
             getReadWriteLock().writeLock().unlock();
         }
     }
 
     @Override
-    public <T> T remove(Object key, Class<T> type) {
+    public <V> V remove(Object key, Class<V> type) {
+        notNull(key, "key is null");
+
+        try {
+            getReadWriteLock().writeLock().lock();
+            return type.cast(map.remove(key));
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
+    }
+
+    @Override
+    public Optional<Object> removeOptional(Object key) {
+        notNull(key, "key is null");
+
+        try {
+            getReadWriteLock().writeLock().lock();
+            return Optional.ofNullable(map.remove(key));
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
+    }
+
+    @Override
+    public <V> Optional<V> removeOptional(Object key, Class<V> type) {
         notNull(key, "key is null");
         notNull(type, "type is null");
 
         try {
             getReadWriteLock().writeLock().lock();
-            return type.cast(map.remove(key));
+            return Optional.ofNullable(type.cast(map.remove(key)));
         } finally {
             getReadWriteLock().writeLock().unlock();
         }
@@ -210,10 +249,68 @@ public class DefaultStore implements Store {
     }
 
     @Override
+    public Store replace(Map<Object, Object> map) {
+        notNull(map, "map is null");
+
+        try {
+            getReadWriteLock().writeLock().lock();
+            clear();
+            merge(map);
+            return this;
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
+    }
+
+    @Override
+    public Store replace(Store store) {
+        notNull(store, "store is null");
+
+        try {
+            store.getReadWriteLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
+            clear();
+            merge(store);
+            return this;
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+            store.getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    @Override
+    public Store merge(Map<Object, Object> map) {
+        notNull(map, "map is null");
+
+        try {
+            getReadWriteLock().writeLock().lock();
+            this.map.putAll(map);
+            return this;
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
+    }
+
+    @Override
+    public Store merge(Store store) {
+        notNull(store, "store is null");
+
+        try {
+            store.getReadWriteLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
+            store.keySet().forEach(key -> put(key, store.get(key)));
+            return this;
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+            store.getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    @Override
     public Store duplicate() {
         try {
             getReadWriteLock().readLock().lock();
-            return new DefaultStore(this.map);
+            return new DefaultStore(new TreeMap<>(this.map));
         } finally {
             getReadWriteLock().readLock().unlock();
         }

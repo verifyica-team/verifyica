@@ -97,7 +97,7 @@ public class MongoDBTest {
     @Verifyica.Order(order = 2)
     public void testQuery(ArgumentContext argumentContext) {
         info("testing testQuery() ...");
-        String name = argumentContext.getStore().get("name");
+        String name = argumentContext.getStore().getOptional("name", String.class).get();
         info("name [%s]", name);
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
@@ -129,10 +129,10 @@ public class MongoDBTest {
 
         argumentContext.getTestArgument(MongoDBTestEnvironment.class).getPayload().destroy();
 
-        Network network = argumentContext.getStore().remove(NETWORK);
-        if (network != null) {
-            network.close();
-        }
+        argumentContext
+                .getStore()
+                .removeOptional("network", Network.class)
+                .ifPresent(network -> network.close());
     }
 
     /** Class to implement a TestContext */

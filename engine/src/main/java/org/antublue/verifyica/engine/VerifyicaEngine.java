@@ -256,8 +256,9 @@ public class VerifyicaEngine implements TestEngine {
     private static int getParallelism(EngineContext engineContext) {
         int maxThreadCount = Runtime.getRuntime().availableProcessors();
 
-        return Optional.ofNullable(
-                        engineContext.getConfiguration().get(Constants.ENGINE_PARALLELISM))
+        return engineContext
+                .getConfiguration()
+                .getOptional(Constants.ENGINE_PARALLELISM)
                 .map(
                         value -> {
                             int intValue;

@@ -17,6 +17,7 @@
 package org.antublue.verifyica.api;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -32,63 +33,84 @@ public interface Store extends ReadWriteLockProvider, LockProvider {
      *
      * @param key key
      * @param value value
-     * @return the existing value, or null
-     * @param <T> the return type
      */
-    <T> T put(Object key, Object value);
+    void put(Object key, Object value);
 
     /**
-     * Replace the contents
+     * Get a value
      *
-     * @param store store
-     * @return this
+     * @param key key
+     * @return the value
      */
-    Store replace(Store store);
+    Object get(Object key);
 
     /**
-     * Get the value or use the function to create a value
+     * Get a value
+     *
+     * @param key key
+     * @param returnType returnType
+     * @return the value
+     * @param <V> the return type
+     */
+    <V> V get(Object key, Class<V> returnType);
+
+    /**
+     * Get a value
+     *
+     * @param key key
+     * @param defaultValue defaultValue
+     * @return the value
+     */
+    Object getOrDefault(Object key, Object defaultValue);
+
+    /**
+     * Get a value
+     *
+     * @param key key
+     * @param defaultValue defaultValue
+     * @param returnType returnType
+     * @return the value
+     * @param <V> the return type
+     */
+    <V> V getOrDefault(Object key, V defaultValue, Class<V> returnType);
+
+    /**
+     * Get or compute if absent
      *
      * @param key key
      * @param function function
      * @return the value
-     * @param <T> the return type
      */
-    <T> T computeIfAbsent(Object key, Function<Object, Object> function);
+    Object computeIfAbsent(Object key, Function<Object, Object> function);
 
     /**
-     * Merge a Store
+     * Get or computer if absent
      *
-     * @param store store
-     * @return this
+     * @param key key
+     * @param function function
+     * @param returnType returnType
+     * @return the value
+     * @param <V> the return type
      */
-    Store merge(Store store);
-
-    /**
-     * Merge a Map
-     *
-     * @param map map
-     * @return this
-     */
-    Store merge(Map<Object, Object> map);
+    <V> V computeIfAbsent(Object key, Function<Object, V> function, Class<V> returnType);
 
     /**
      * Get a value
      *
      * @param key key
      * @return the value
-     * @param <T> the return type
      */
-    <T> T get(Object key);
+    Optional<Object> getOptional(Object key);
 
     /**
      * Get a value
      *
      * @param key key
-     * @param type the return type
+     * @param returnType returnType
      * @return the value
-     * @param <T> the return type
+     * @param <V> the return type
      */
-    <T> T get(Object key, Class<T> type);
+    <V> Optional<V> getOptional(Object key, Class<V> returnType);
 
     /**
      * Return if a key exists
@@ -103,19 +125,36 @@ public interface Store extends ReadWriteLockProvider, LockProvider {
      *
      * @param key key
      * @return the value
-     * @param <T> the return type
      */
-    <T> T remove(Object key);
+    Object remove(Object key);
 
     /**
      * Remove a key-value pair
      *
      * @param key key
-     * @param type type
+     * @param returnType returnType
      * @return the value
-     * @param <T> the return type
+     * @param <V> the return type
      */
-    <T> T remove(Object key, Class<T> type);
+    <V> V remove(Object key, Class<V> returnType);
+
+    /**
+     * Remove a key-value pair
+     *
+     * @param key key
+     * @return the value
+     */
+    Optional<Object> removeOptional(Object key);
+
+    /**
+     * Remove a key-value pair
+     *
+     * @param key key
+     * @param returnType returnType
+     * @return the value
+     * @param <V> the return type
+     */
+    <V> Optional<V> removeOptional(Object key, Class<V> returnType);
 
     /**
      * Clear
@@ -144,6 +183,38 @@ public interface Store extends ReadWriteLockProvider, LockProvider {
      * @return a COPY of the keySet
      */
     Set<Object> keySet();
+
+    /**
+     * Replace the contents
+     *
+     * @param map map
+     * @return this
+     */
+    Store replace(Map<Object, Object> map);
+
+    /**
+     * Replace the contents
+     *
+     * @param store store
+     * @return this
+     */
+    Store replace(Store store);
+
+    /**
+     * Merge a Map
+     *
+     * @param map map
+     * @return this
+     */
+    Store merge(Map<Object, Object> map);
+
+    /**
+     * Merge a Store
+     *
+     * @param store store
+     * @return this
+     */
+    Store merge(Store store);
 
     /**
      * Duplicate

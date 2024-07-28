@@ -25,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antublue.verifyica.engine.configuration.Constants;
@@ -54,17 +53,15 @@ public class Logger {
         this.level = Level.INFO;
 
         String loggerLevel =
-                Optional.ofNullable(
-                                DEFAULT_ENGINE_CONTEXT
-                                        .getConfiguration()
-                                        .get(Constants.ENGINE_LOGGER_LEVEL))
+                DEFAULT_ENGINE_CONTEXT
+                        .getConfiguration()
+                        .getOptional(Constants.ENGINE_LOGGER_LEVEL)
                         .orElse(Level.INFO.toString());
 
         String regex =
-                Optional.ofNullable(
-                                DEFAULT_ENGINE_CONTEXT
-                                        .getConfiguration()
-                                        .get(Constants.ENGINE_LOGGER_REGEX))
+                DEFAULT_ENGINE_CONTEXT
+                        .getConfiguration()
+                        .getOptional(Constants.ENGINE_LOGGER_REGEX)
                         .orElse(".*");
 
         try {

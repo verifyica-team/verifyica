@@ -43,7 +43,7 @@ public class DefaultConfigurationParameters implements ConfigurationParameters {
         Preconditions.notNull(key, "key is null");
         Preconditions.condition(!key.trim().isEmpty(), "key is empty");
 
-        return Optional.ofNullable(configuration.get(key));
+        return configuration.getOptional(key);
     }
 
     @Override

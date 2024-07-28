@@ -50,11 +50,15 @@ public class ShuffleTestClassesEngineExtension implements InternalEngineExtensio
         Map<Class<?>, Set<Method>> workingTestClassMethodMap =
                 new LinkedHashMap<>(testClassMethodMap);
 
-        if (Constants.TRUE.equals(
+        boolean shuffleTestClasses =
                 engineExtensionContext
                         .getEngineContext()
                         .getConfiguration()
-                        .getOrDefault(Constants.ENGINE_TEST_CLASS_SHUFFLE, Constants.FALSE))) {
+                        .getOptional(Constants.ENGINE_TEST_CLASS_SHUFFLE)
+                        .map(Constants.TRUE::equals)
+                        .orElse(false);
+
+        if (shuffleTestClasses) {
             LOGGER.trace("shuffling test class order");
 
             workingTestClassMethodMap = shuffleMapKeys(workingTestClassMethodMap);

@@ -24,7 +24,7 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class StoreTest {
+public class StoreTest1 {
 
     private static final String ARGUMENT_CONTEXT_KEY = "argument.context.key";
     private static final String CLASS_CONTEXT_KEY = "class.context.key";
