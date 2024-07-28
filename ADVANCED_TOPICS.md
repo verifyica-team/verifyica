@@ -1,3 +1,5 @@
+# Work In Progress - check tests
+
 # Shared State
 
 Every test method accepts a scoped [Context](api/src/main/java/org/antublue/verifyica/api/Context.java) which has a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java).
