@@ -28,7 +28,7 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.locks.Locks;
 
 /** Example test */
-public class LockTest8 {
+public class LockTest7 {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -75,5 +75,14 @@ public class LockTest8 {
 
                             return null;
                         });
+    }
+
+    @Verifyica.Test
+    public void test3(ArgumentContext argumentContext) throws Throwable {
+        System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
+
+        assertThat(argumentContext).isNotNull();
+        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 }

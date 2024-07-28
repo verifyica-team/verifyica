@@ -56,20 +56,30 @@ public class DefaultConfiguration implements Configuration {
     private final ReadWriteLock readWriteLock;
 
     /** Constructor */
-    public DefaultConfiguration() {
+    private DefaultConfiguration() {
         map = new TreeMap<>();
         readWriteLock = new ReentrantReadWriteLock(true);
 
         load();
     }
 
+    /**
+     * Constructor
+     *
+     * @param map map
+     */
+    private DefaultConfiguration(TreeMap<String, String> map) {
+        this.map = map;
+        readWriteLock = new ReentrantReadWriteLock(true);
+    }
+
     @Override
-    public String put(String key, String value) {
+    public Optional<String> put(String key, String value) {
         notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
             getReadWriteLock().writeLock().lock();
-            return map.put(key, value);
+            return Optional.ofNullable(map.put(key, value));
         } finally {
             getReadWriteLock().writeLock().unlock();
         }
@@ -88,38 +98,25 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public String getOrDefault(String key, String defaultValue) {
+    public Optional<String> getOptional(String key) {
         notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
             getReadWriteLock().readLock().lock();
-            return map.getOrDefault(key, defaultValue);
+            return Optional.ofNullable(map.get(key));
         } finally {
             getReadWriteLock().readLock().unlock();
         }
     }
 
     @Override
-    public Configuration merge(Map<String, String> map) {
-        notNull(map, "map is null");
-
-        try {
-            getReadWriteLock().writeLock().lock();
-            this.map.putAll(map);
-            return this;
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public String computeIfAbsent(String key, Function<String, String> function) {
+    public Optional<String> computeIfAbsent(String key, Function<String, String> function) {
         notNullOrEmpty(key, "key is null", "key is empty");
-        notNull(function, "functio is null");
+        notNull(function, "function is null");
 
         try {
             getReadWriteLock().writeLock().lock();
-            return map.computeIfAbsent(key, function);
+            return Optional.ofNullable(map.computeIfAbsent(key, function));
         } finally {
             getReadWriteLock().writeLock().unlock();
         }
@@ -138,12 +135,12 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public String remove(String key) {
+    public Optional<String> remove(String key) {
         notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
             getReadWriteLock().writeLock().lock();
-            return map.remove(key);
+            return Optional.ofNullable(map.remove(key));
         } finally {
             getReadWriteLock().writeLock().unlock();
         }
@@ -186,6 +183,84 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
+    public Configuration merge(Map<String, String> map) {
+        notNull(map, "map is null");
+
+        try {
+            getReadWriteLock().writeLock().lock();
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                if (key != null && !key.trim().isEmpty()) {
+                    this.map.put(key, value);
+                }
+            }
+            return this;
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
+    }
+
+    @Override
+    public Configuration merge(Configuration configuration) {
+        notNull(configuration, "configuration is null");
+
+        try {
+            configuration.getReadWriteLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
+            configuration
+                    .keySet()
+                    .forEach(
+                            key ->
+                                    configuration
+                                            .getOptional(key)
+                                            .ifPresent(value -> map.put(key, value)));
+            return this;
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+            configuration.getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    @Override
+    public Configuration replace(Map<String, String> map) {
+        notNull(map, "map is null");
+
+        try {
+            getReadWriteLock().writeLock().lock();
+            clear();
+            return merge(map);
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
+    }
+
+    @Override
+    public Configuration replace(Configuration configuration) {
+        notNull(configuration, "configuration is null");
+
+        try {
+            configuration.getReadWriteLock().readLock().lock();
+            getReadWriteLock().writeLock().lock();
+            clear();
+            return merge(configuration);
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+            configuration.getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    @Override
+    public Configuration duplicate() {
+        try {
+            getReadWriteLock().readLock().lock();
+            return new DefaultConfiguration(new TreeMap<>(map));
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    @Override
     public ReadWriteLock getReadWriteLock() {
         return readWriteLock;
     }
@@ -206,6 +281,17 @@ public class DefaultConfiguration implements Configuration {
     @Override
     public int hashCode() {
         return Objects.hashCode(map);
+    }
+
+    public static DefaultConfiguration getInstance() {
+        return SingletonHolder.SINGLETON;
+    }
+
+    /** Class to hold the singleton instance */
+    private static class SingletonHolder {
+
+        /** The singleton instance */
+        private static final DefaultConfiguration SINGLETON = new DefaultConfiguration();
     }
 
     /** Method to load configuration */

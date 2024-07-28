@@ -124,7 +124,8 @@ public class FiltersEngineExtension implements InternalEngineExtension {
         String filtersFilename =
                 DefaultEngineContext.getInstance()
                         .getConfiguration()
-                        .get(Constants.ENGINE_FILTERS_FILENAME);
+                        .getOptional(Constants.ENGINE_FILTERS_FILENAME)
+                        .orElse(null);
 
         if (filtersFilename != null && !filtersFilename.trim().isEmpty()) {
             try (BufferedReader bufferedReader =

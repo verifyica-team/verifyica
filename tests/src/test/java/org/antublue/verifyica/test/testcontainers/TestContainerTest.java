@@ -126,11 +126,10 @@ public class TestContainerTest {
         argument.getPayload().destroy();
 
         // Remove the network
-        Network network = argumentContext.getStore().remove(NETWORK);
-        if (network != null) {
-            // Close the network
-            network.close();
-        }
+        argumentContext
+                .getStore()
+                .removeOptional("network", Network.class)
+                .ifPresent(network -> network.close());
 
         System.out.println("[" + argument.getName() + "] destroyed");
     }

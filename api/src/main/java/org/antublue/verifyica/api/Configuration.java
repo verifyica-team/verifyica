@@ -17,6 +17,7 @@
 package org.antublue.verifyica.api;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -28,30 +29,13 @@ import org.antublue.verifyica.api.concurrency.locks.ReadWriteLockProvider;
 public interface Configuration extends ReadWriteLockProvider, LockProvider {
 
     /**
-     * Put a key-value mapping
+     * Put a key-value pair
      *
      * @param key key
      * @param value value
      * @return the existing value, or null
      */
-    String put(String key, String value);
-
-    /**
-     * Get a value
-     *
-     * @param key value
-     * @return the value
-     */
-    String get(String key);
-
-    /**
-     * Get a value
-     *
-     * @param key key
-     * @param defaultValue defaultValue
-     * @return the value if it exists, else the default value
-     */
-    String getOrDefault(String key, String defaultValue);
+    Optional<String> put(String key, String value);
 
     /**
      * Get the value or use the function to create a value
@@ -60,15 +44,23 @@ public interface Configuration extends ReadWriteLockProvider, LockProvider {
      * @param function function
      * @return the value
      */
-    String computeIfAbsent(String key, Function<String, String> function);
+    Optional<String> computeIfAbsent(String key, Function<String, String> function);
 
     /**
-     * Merge a Map
+     * Get a value
      *
-     * @param map map
-     * @return this
+     * @param key key
+     * @return the value
      */
-    Configuration merge(Map<String, String> map);
+    String get(String key);
+
+    /**
+     * Get a value
+     *
+     * @param key key
+     * @return the value
+     */
+    Optional<String> getOptional(String key);
 
     /**
      * Return if a key exists
@@ -84,7 +76,14 @@ public interface Configuration extends ReadWriteLockProvider, LockProvider {
      * @param key key
      * @return the value
      */
-    String remove(String key);
+    Optional<String> remove(String key);
+
+    /**
+     * Clear
+     *
+     * @return this
+     */
+    Configuration clear();
 
     /**
      * Return the size
@@ -101,24 +100,66 @@ public interface Configuration extends ReadWriteLockProvider, LockProvider {
     boolean isEmpty();
 
     /**
-     * Clear
-     *
-     * @return this
-     */
-    Configuration clear();
-
-    /**
      * Return a COPY of the keySet
      *
      * @return a COPY of the keySet
      */
     Set<String> keySet();
 
+    /**
+     * Replace the contents
+     *
+     * @param map map
+     * @return this
+     */
+    Configuration replace(Map<String, String> map);
+
+    /**
+     * Replace the contents
+     *
+     * @param Configuration Configuration
+     * @return this
+     */
+    Configuration replace(Configuration Configuration);
+
+    /**
+     * Merge a Map
+     *
+     * @param map map
+     * @return this
+     */
+    Configuration merge(Map<String, String> map);
+
+    /**
+     * Merge a Configuration
+     *
+     * @param Configuration Configuration
+     * @return this
+     */
+    Configuration merge(Configuration Configuration);
+
+    /**
+     * Duplicate
+     *
+     * @return a duplicate Configuration
+     */
+    Configuration duplicate();
+
+    /**
+     * Get the Lock
+     *
+     * @return the Lock
+     */
     @Override
     default Lock getLock() {
         return getReadWriteLock().writeLock();
     }
 
+    /**
+     * Get the ReadWriteLock
+     *
+     * @return the ReadWriteLock
+     */
     @Override
     ReadWriteLock getReadWriteLock();
 }

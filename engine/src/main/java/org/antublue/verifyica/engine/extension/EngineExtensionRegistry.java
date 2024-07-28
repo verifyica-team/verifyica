@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -310,10 +309,9 @@ public class EngineExtensionRegistry {
      * @param classes classes
      */
     private static void filter(List<Class<?>> classes) {
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.ENGINE_EXTENSIONS_INCLUDE_REGEX))
+        DEFAULT_ENGINE_CONTEXT
+                .getConfiguration()
+                .getOptional(Constants.ENGINE_EXTENSIONS_INCLUDE_REGEX)
                 .ifPresent(
                         regex -> {
                             LOGGER.trace(
@@ -333,10 +331,9 @@ public class EngineExtensionRegistry {
                             }
                         });
 
-        Optional.ofNullable(
-                        DEFAULT_ENGINE_CONTEXT
-                                .getConfiguration()
-                                .get(Constants.ENGINE_EXTENSIONS_EXCLUDE_REGEX))
+        DEFAULT_ENGINE_CONTEXT
+                .getConfiguration()
+                .getOptional(Constants.ENGINE_EXTENSIONS_EXCLUDE_REGEX)
                 .ifPresent(
                         regex -> {
                             LOGGER.trace(

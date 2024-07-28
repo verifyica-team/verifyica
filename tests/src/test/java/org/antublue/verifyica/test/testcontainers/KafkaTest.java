@@ -111,7 +111,7 @@ public class KafkaTest {
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
-        String message = argumentContext.getStore().get("message");
+        String message = argumentContext.getStore().getOptional("message", String.class).get();
 
         info("consuming message from [%s] ...", bootstrapServers);
 
@@ -155,7 +155,7 @@ public class KafkaTest {
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
-        String message = argumentContext.getStore().get("message");
+        String message = argumentContext.getStore().getOptional("message", String.class).get();
 
         info("consuming message from [%s] ...", bootstrapServers);
 
@@ -195,10 +195,10 @@ public class KafkaTest {
 
         argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload().destroy();
 
-        Network network = argumentContext.getStore().remove("network");
-        if (network != null) {
-            network.close();
-        }
+        argumentContext
+                .getStore()
+                .removeOptional("network", Network.class)
+                .ifPresent(network -> network.close());
     }
 
     /** Class to implement a TestContext */

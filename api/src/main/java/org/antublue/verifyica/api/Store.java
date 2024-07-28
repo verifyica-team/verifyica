@@ -17,10 +17,10 @@
 package org.antublue.verifyica.api;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.function.Function;
 import org.antublue.verifyica.api.concurrency.locks.LockProvider;
 import org.antublue.verifyica.api.concurrency.locks.ReadWriteLockProvider;
 
@@ -35,41 +35,7 @@ public interface Store extends ReadWriteLockProvider, LockProvider {
      * @return the existing value, or null
      * @param <T> the return type
      */
-    <T> T put(Object key, Object value);
-
-    /**
-     * Replace the contents
-     *
-     * @param store store
-     * @return this
-     */
-    Store replace(Store store);
-
-    /**
-     * Get the value or use the function to create a value
-     *
-     * @param key key
-     * @param function function
-     * @return the value
-     * @param <T> the return type
-     */
-    <T> T computeIfAbsent(Object key, Function<Object, Object> function);
-
-    /**
-     * Merge a Store
-     *
-     * @param store store
-     * @return this
-     */
-    Store merge(Store store);
-
-    /**
-     * Merge a Map
-     *
-     * @param map map
-     * @return this
-     */
-    Store merge(Map<Object, Object> map);
+    <T> Optional<T> put(Object key, Object value);
 
     /**
      * Get a value
@@ -84,11 +50,29 @@ public interface Store extends ReadWriteLockProvider, LockProvider {
      * Get a value
      *
      * @param key key
-     * @param type the return type
      * @return the value
      * @param <T> the return type
      */
     <T> T get(Object key, Class<T> type);
+
+    /**
+     * Get a value
+     *
+     * @param key key
+     * @return the value
+     * @param <T> the return type
+     */
+    <T> Optional<T> getOptional(Object key);
+
+    /**
+     * Get a value
+     *
+     * @param key key
+     * @param type the return type
+     * @return the value
+     * @param <T> the return type
+     */
+    <T> Optional<T> getOptional(Object key, Class<T> type);
 
     /**
      * Return if a key exists
@@ -111,11 +95,29 @@ public interface Store extends ReadWriteLockProvider, LockProvider {
      * Remove a key-value pair
      *
      * @param key key
-     * @param type type
      * @return the value
      * @param <T> the return type
      */
     <T> T remove(Object key, Class<T> type);
+
+    /**
+     * Remove a key-value pair
+     *
+     * @param key key
+     * @return the value
+     * @param <T> the return type
+     */
+    <T> Optional<T> removeOptional(Object key);
+
+    /**
+     * Remove a key-value pair
+     *
+     * @param key key
+     * @param type type
+     * @return the value
+     * @param <T> the return type
+     */
+    <T> Optional<T> removeOptional(Object key, Class<T> type);
 
     /**
      * Clear
@@ -144,6 +146,38 @@ public interface Store extends ReadWriteLockProvider, LockProvider {
      * @return a COPY of the keySet
      */
     Set<Object> keySet();
+
+    /**
+     * Replace the contents
+     *
+     * @param map map
+     * @return this
+     */
+    Store replace(Map<Object, Object> map);
+
+    /**
+     * Replace the contents
+     *
+     * @param store store
+     * @return this
+     */
+    Store replace(Store store);
+
+    /**
+     * Merge a Map
+     *
+     * @param map map
+     * @return this
+     */
+    Store merge(Map<Object, Object> map);
+
+    /**
+     * Merge a Store
+     *
+     * @param store store
+     * @return this
+     */
+    Store merge(Store store);
 
     /**
      * Duplicate
