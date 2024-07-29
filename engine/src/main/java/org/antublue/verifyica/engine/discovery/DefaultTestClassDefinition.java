@@ -1,0 +1,87 @@
+/*
+ * Copyright (C) 2024 The Verifyica project authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.antublue.verifyica.engine.discovery;
+
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Objects;
+import org.antublue.verifyica.api.Argument;
+import org.antublue.verifyica.api.extension.TestClassDefinition;
+
+/** Class to implement DefaultTestClassDefinition */
+public class DefaultTestClassDefinition implements TestClassDefinition {
+
+    private final Class<?> testClass;
+    private final List<Method> testMethods;
+    private final List<Argument<?>> testArguments;
+
+    /**
+     * Constructor
+     *
+     * @param testClass testClass
+     * @param testMethods testMethods
+     * @param testArguments testArguments
+     */
+    public DefaultTestClassDefinition(
+            Class<?> testClass, List<Method> testMethods, List<Argument<?>> testArguments) {
+        this.testClass = testClass;
+        this.testMethods = testMethods;
+        this.testArguments = testArguments;
+    }
+
+    @Override
+    public Class<?> getTestClass() {
+        return testClass;
+    }
+
+    @Override
+    public List<Method> getTestMethods() {
+        return testMethods;
+    }
+
+    @Override
+    public List<Argument<?>> getTestArguments() {
+        return testArguments;
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultTestClassDefinition{"
+                + "testClass="
+                + testClass
+                + ", testMethods="
+                + testMethods
+                + ", testArguments="
+                + testArguments
+                + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultTestClassDefinition that = (DefaultTestClassDefinition) o;
+        return Objects.equals(testClass, that.testClass)
+                && Objects.equals(testMethods, that.testMethods)
+                && Objects.equals(testArguments, that.testArguments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(testClass, testMethods, testArguments);
+    }
+}

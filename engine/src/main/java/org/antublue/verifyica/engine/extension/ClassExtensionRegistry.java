@@ -446,7 +446,7 @@ public class ClassExtensionRegistry {
                                         Predicates.CLASS_INTERNAL_EXTENSION_CLASS));
 
                 // Order extensions
-                OrderSupport.order(internalClassExtensionClasses);
+                OrderSupport.orderClasses(internalClassExtensionClasses);
 
                 LOGGER.trace(
                         "internal class extension count [%d]",
