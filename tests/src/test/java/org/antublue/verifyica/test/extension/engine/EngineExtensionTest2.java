@@ -16,18 +16,16 @@
 
 package org.antublue.verifyica.test.extension.engine;
 
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+
+import java.util.List;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.extension.TestClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
-
-import java.util.Collections;
-import java.util.List;
-
-import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 /** Example test */
 public class EngineExtensionTest2 implements EngineExtension {
@@ -39,9 +37,7 @@ public class EngineExtensionTest2 implements EngineExtension {
         System.out.println(format("%s onTestDiscovery()", getClass().getName()));
 
         for (TestClassDefinition testClassDefinition : testClassDefinitions) {
-            if (testClassDefinition
-                    .getTestClass()
-                    == EngineExtensionTest2.class) {
+            if (testClassDefinition.getTestClass() == EngineExtensionTest2.class) {
                 // Filter test method "test4"
                 testClassDefinition
                         .getTestMethods()
@@ -131,31 +127,30 @@ public class EngineExtensionTest2 implements EngineExtension {
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.println(format("test4(%s)", argumentContext.getTestArgument().getPayload()));
 
-
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
         assertThat(
-                argumentContext.getClassContext().getEngineContext()
-                        == argumentContext.getClassContext().getEngineContext())
+                        argumentContext.getClassContext().getEngineContext()
+                                == argumentContext.getClassContext().getEngineContext())
                 .isTrue();
 
         // Validate that the extension added a global String to the EngineContext Store
         assertThat(
-                (Object)
+                        (Object)
+                                argumentContext
+                                        .getClassContext()
+                                        .getEngineContext()
+                                        .getStore()
+                                        .get(ExampleEngineExtension1.KEY))
+                .isNotNull();
+
+        assertThat(
                         argumentContext
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleEngineExtension1.KEY))
-                .isNotNull();
-
-        assertThat(
-                argumentContext
-                        .getClassContext()
-                        .getEngineContext()
-                        .getStore()
-                        .get(ExampleEngineExtension1.KEY, String.class))
+                                .get(ExampleEngineExtension1.KEY, String.class))
                 .isEqualTo(ExampleEngineExtension1.VALUE);
     }
 }

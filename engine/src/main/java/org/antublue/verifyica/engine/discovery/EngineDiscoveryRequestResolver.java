@@ -372,6 +372,8 @@ public class EngineDiscoveryRequestResolver {
             Map<Class<?>, List<Method>> testClassMethodMap,
             Map<Class<?>, List<Argument<?>>> testClassArgumentMap)
             throws Throwable {
+        LOGGER.trace("resolveTestArguments()");
+
         for (Class<?> testClass : testClassMethodMap.keySet()) {
             List<Argument<?>> testArguments = getArguments(testClass);
             testClassArgumentMap.put(testClass, testArguments);
@@ -450,6 +452,8 @@ public class EngineDiscoveryRequestResolver {
      */
     private static void afterTestDiscovery(List<TestClassDefinition> testClassDefinitions)
             throws Throwable {
+        LOGGER.trace("afterTestDiscovery()");
+
         DefaultEngineExtensionContext defaultEngineExtensionContext =
                 new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
 
@@ -463,6 +467,8 @@ public class EngineDiscoveryRequestResolver {
      * @param testClassDefinitions testClassDefinitions
      */
     private static void prune(List<TestClassDefinition> testClassDefinitions) {
+        LOGGER.trace("prune()");
+
         Iterator<TestClassDefinition> testClassDefinitionIterator = testClassDefinitions.iterator();
         while (testClassDefinitionIterator.hasNext()) {
             TestClassDefinition testClassDefinition = testClassDefinitionIterator.next();
@@ -481,6 +487,8 @@ public class EngineDiscoveryRequestResolver {
      */
     private static void loadClassExtensions(List<TestClassDefinition> testClassDefinitions)
             throws Throwable {
+        LOGGER.trace("loadClassExtensions()");
+
         for (TestClassDefinition testClassDefinition : testClassDefinitions) {
             Class<?> testClass = testClassDefinition.getTestClass();
 
@@ -535,13 +543,12 @@ public class EngineDiscoveryRequestResolver {
     private static void buildEngineDescriptor(
             EngineDescriptor engineDescriptor, List<TestClassDefinition> testClassDefinitions)
             throws Throwable {
+        LOGGER.trace("buildEngineDescriptor()");
+
         for (TestClassDefinition testClassDefinition : testClassDefinitions) {
             Class<?> testClass = testClassDefinition.getTestClass();
 
-            Method argumentSupplierMethod = getArgumentSupplierMethod(testClass);
-            Verifyica.ArgumentSupplier annotation =
-                    argumentSupplierMethod.getAnnotation(Verifyica.ArgumentSupplier.class);
-            int parallelism = Math.max(annotation.parallelism(), 1);
+            int parallelism = getParallelism(testClass);
 
             UniqueId classTestDescriptorUniqueId =
                     engineDescriptor.getUniqueId().append("class", testClass.getName());
@@ -612,5 +619,20 @@ public class EngineDiscoveryRequestResolver {
                 argumentIndex++;
             }
         }
+    }
+
+    /**
+     * Method to get test class parallelism
+     *
+     * @param testClass testClass
+     * @return test class parallelism
+     */
+    private static int getParallelism(Class<?> testClass) {
+        LOGGER.trace("getParallelism() testClass [%s]", testClass.getName());
+
+        Method argumentSupplierMethod = getArgumentSupplierMethod(testClass);
+        Verifyica.ArgumentSupplier annotation =
+                argumentSupplierMethod.getAnnotation(Verifyica.ArgumentSupplier.class);
+        return Math.max(annotation.parallelism(), 1);
     }
 }
