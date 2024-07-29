@@ -48,12 +48,12 @@ public class NoArgumentsTest {
         throw new IllegalStateException("Should not be executed");
     }
 
-    @Verifyica.Test
+    @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) throws Throwable {
         throw new IllegalStateException("Should not be executed");
     }
 
-    @Verifyica.Test
+    @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) throws Throwable {
         throw new IllegalStateException("Should not be executed");
     }
