@@ -16,9 +16,8 @@
 
 package org.antublue.verifyica.api.extension.engine;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
+import org.antublue.verifyica.api.extension.TestClassDefinition;
 
 /** Interface to implement EngineExtension */
 public interface EngineExtension {
@@ -34,18 +33,17 @@ public interface EngineExtension {
     }
 
     /**
-     * Engine onTestDiscovery callback
+     * Engine on onTestDiscovery callback
      *
      * @param engineExtensionContext engineExtensionContext
-     * @param testClassMethodMap testClassMethodMap
-     * @return a Map containing test classes and associated test class methods
+     * @param testClassDefinitions testClassDefinitions
      * @throws Throwable Throwable
      */
-    default Map<Class<?>, Set<Method>> onTestDiscovery(
+    default void onTestDiscovery(
             EngineExtensionContext engineExtensionContext,
-            Map<Class<?>, Set<Method>> testClassMethodMap)
+            List<TestClassDefinition> testClassDefinitions)
             throws Throwable {
-        return testClassMethodMap;
+        // INTENTIONALLY BLANK
     }
 
     /**

@@ -16,17 +16,15 @@
 
 package org.antublue.verifyica.engine.extension;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.antublue.verifyica.api.extension.TestClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.configuration.Constants;
@@ -135,32 +133,25 @@ public class EngineExtensionRegistry {
      * Method to call engine extensions
      *
      * @param engineExtensionContext engineExtensionContext
-     * @param testClassMethodMap testClassMethodMap
-     * @return a Map of test classes with test methods
+     * @param testClassDefinitions testClassDefinitions
      * @throws Throwable Throwable
      */
-    public Map<Class<?>, Set<Method>> onTestDiscovery(
+    public void onTestDiscovery(
             EngineExtensionContext engineExtensionContext,
-            Map<Class<?>, Set<Method>> testClassMethodMap)
+            List<TestClassDefinition> testClassDefinitions)
             throws Throwable {
-
-        Map<Class<?>, Set<Method>> workingTestClassMethodMap = testClassMethodMap;
 
         for (EngineExtension engineExtension : getEngineExtensions()) {
             LOGGER.trace(
                     "engine extension [%s] onTestDiscovery()",
                     engineExtension.getClass().getName());
 
-            workingTestClassMethodMap =
-                    engineExtension.onTestDiscovery(
-                            engineExtensionContext, workingTestClassMethodMap);
+            engineExtension.onTestDiscovery(engineExtensionContext, testClassDefinitions);
 
             LOGGER.trace(
                     "engine extension [%s] onTestDiscovery()" + " success",
                     engineExtension.getClass().getName());
         }
-
-        return workingTestClassMethodMap;
     }
 
     /**
@@ -260,8 +251,8 @@ public class EngineExtensionRegistry {
                 filter(externalEngineExtensionsClasses);
 
                 // Order engine extensions
-                OrderSupport.order(internalEngineExtensionsClasses);
-                OrderSupport.order(externalEngineExtensionsClasses);
+                OrderSupport.orderClasses(internalEngineExtensionsClasses);
+                OrderSupport.orderClasses(externalEngineExtensionsClasses);
 
                 // Combine both internal and external engine extensions
                 List<Class<?>> engineExtensionClasses =

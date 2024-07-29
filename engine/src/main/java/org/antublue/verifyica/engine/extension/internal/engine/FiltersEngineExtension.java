@@ -24,18 +24,19 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.extension.TestClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.DisplayNameSupport;
 import org.antublue.verifyica.engine.support.TagSupport;
 
 /** Class to implement FiltersEngineExtension */
@@ -62,16 +63,18 @@ public class FiltersEngineExtension implements InternalEngineExtension {
     }
 
     @Override
-    public Map<Class<?>, Set<Method>> onTestDiscovery(
+    public void onTestDiscovery(
             EngineExtensionContext engineExtensionContext,
-            Map<Class<?>, Set<Method>> testClassMethodMap)
+            List<TestClassDefinition> testClassDefinitions)
             throws Throwable {
         LOGGER.trace("onTestDiscovery()");
 
-        Iterator<Class<?>> testClassesIterator = testClassMethodMap.keySet().iterator();
-        while (testClassesIterator.hasNext()) {
-            Class<?> testClass = testClassesIterator.next();
-            Iterator<Method> testMethodsIterator = testClassMethodMap.get(testClass).iterator();
+        Iterator<TestClassDefinition> testClassDefinitionIterator = testClassDefinitions.iterator();
+        while (testClassDefinitionIterator.hasNext()) {
+            TestClassDefinition testClassDefinition = testClassDefinitionIterator.next();
+            Class<?> testClass = testClassDefinition.getTestClass();
+            List<Method> testClassMethods = testClassDefinition.getTestMethods();
+            Iterator<Method> testMethodsIterator = testClassMethods.iterator();
             while (testMethodsIterator.hasNext()) {
                 Method testMethod = testMethodsIterator.next();
 
@@ -97,24 +100,30 @@ public class FiltersEngineExtension implements InternalEngineExtension {
                 */
             }
 
-            if (testClassMethodMap.containsKey(testClass)
-                    && testClassMethodMap.get(testClass).isEmpty()) {
-                testClassesIterator.remove();
+            if (testClassMethods.isEmpty()) {
+                testClassDefinitionIterator.remove();
             }
         }
 
+        // Print filtered information
         if (LOGGER.isTraceEnabled()) {
-            // Print all test classes that were discovered
-            testClassMethodMap.forEach(
-                    (key, value) -> {
-                        LOGGER.trace("test class [%s]", key.getName());
-                        value.forEach(
-                                testMethod ->
-                                        LOGGER.trace("  test method [%s]", testMethod.getName()));
-                    });
-        }
+            LOGGER.trace("filtered test classes ...");
+            for (TestClassDefinition testClassDefinition : testClassDefinitions) {
+                Class<?> testClass = testClassDefinition.getTestClass();
+                LOGGER.trace(
+                        " test class [%s] (%s)",
+                        testClass.getName(), DisplayNameSupport.getDisplayName(testClass));
 
-        return testClassMethodMap;
+                for (Argument<?> testArgument : testClassDefinition.getTestArguments()) {
+                    LOGGER.trace("  argument [%s]", testArgument.getName());
+                }
+
+                for (Method testMethod : testClassDefinition.getTestMethods())
+                    LOGGER.trace(
+                            "   test method [%s] (%s)",
+                            testMethod.getName(), DisplayNameSupport.getDisplayName(testMethod));
+            }
+        }
     }
 
     /** Method to load filter definitions */

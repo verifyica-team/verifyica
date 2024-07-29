@@ -18,6 +18,7 @@ package org.antublue.verifyica.test.extension.engine;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
@@ -124,5 +125,12 @@ public class EngineExtensionTest {
                                 .getStore()
                                 .get(ExampleEngineExtension1.KEY, String.class))
                 .isEqualTo(ExampleEngineExtension1.VALUE);
+    }
+
+    @Verifyica.Test
+    public void test4(ArgumentContext argumentContext) throws Throwable {
+        System.out.println(format("test4(%s)", argumentContext.getTestArgument().getPayload()));
+
+        fail("Should not execute... filtered by extension");
     }
 }

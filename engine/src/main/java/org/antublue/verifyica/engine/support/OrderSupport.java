@@ -30,11 +30,11 @@ public class OrderSupport {
     }
 
     /**
-     * Method to order a List of Classes by Order annotation then display name
+     * Method to order a List of Classes by display name then Order annotation
      *
      * @param classes classes
      */
-    public static void order(List<Class<?>> classes) {
+    public static void orderClasses(List<Class<?>> classes) {
         classes.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
         classes.sort(Comparator.comparingInt(OrderSupport::getOrder));
     }
@@ -54,6 +54,16 @@ public class OrderSupport {
         }
 
         return order;
+    }
+
+    /**
+     * Method to order a List of Methods by display name then Order annotation
+     *
+     * @param methods methods
+     */
+    public static void orderMethods(List<Method> methods) {
+        methods.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
+        methods.sort(Comparator.comparingInt(OrderSupport::getOrder));
     }
 
     /**

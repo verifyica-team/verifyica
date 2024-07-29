@@ -18,15 +18,10 @@ package org.antublue.verifyica.test.extension.engine;
 
 import static java.lang.String.format;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
+import org.antublue.verifyica.api.extension.TestClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 
@@ -45,26 +40,25 @@ public class ExampleEngineExtension1 implements EngineExtension {
     }
 
     @Override
-    public Map<Class<?>, Set<Method>> onTestDiscovery(
+    public void onTestDiscovery(
             EngineExtensionContext engineExtensionContext,
-            Map<Class<?>, Set<Method>> testClassMethodMap) {
+            List<TestClassDefinition> testClassDefinitions) {
         System.out.println(format("%s onTestDiscovery()", getClass().getName()));
 
-        Map<Class<?>, Set<Method>> workingTestClassMethodMap =
-                new LinkedHashMap<>(testClassMethodMap);
-
-        for (Map.Entry<Class<?>, Set<Method>> mapEntry : testClassMethodMap.entrySet()) {
-            Class<?> testClazz = mapEntry.getKey();
-            if (testClazz
+        for (TestClassDefinition testClassDefinition : testClassDefinitions) {
+            if (testClassDefinition
+                    .getTestClass()
                     .getName()
                     .equals("org.antublue.verifyica.test.extension.engine.EngineExtensionTest")) {
-                List<Method> testMethods = new ArrayList<>(mapEntry.getValue());
-                Collections.reverse(testMethods);
-                workingTestClassMethodMap.put(testClazz, new LinkedHashSet<>(testMethods));
+                // Reverse test methods
+                Collections.reverse(testClassDefinition.getTestMethods());
+
+                // Filter test method "test4"
+                testClassDefinition
+                        .getTestMethods()
+                        .removeIf(method -> method.getName().equals("test4"));
             }
         }
-
-        return workingTestClassMethodMap;
     }
 
     @Override
