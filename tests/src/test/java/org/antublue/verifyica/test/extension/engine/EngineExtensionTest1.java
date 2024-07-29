@@ -24,7 +24,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class EngineExtensionTest {
+public class EngineExtensionTest1 {
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
