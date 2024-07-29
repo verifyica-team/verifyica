@@ -129,7 +129,7 @@ public class TestContainerTest {
         argumentContext
                 .getStore()
                 .removeOptional("network", Network.class)
-                .ifPresent(network -> network.close());
+                .ifPresent(Network::close);
 
         System.out.println("[" + argument.getName() + "] destroyed");
     }

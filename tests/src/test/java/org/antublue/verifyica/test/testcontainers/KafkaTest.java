@@ -198,7 +198,7 @@ public class KafkaTest {
         argumentContext
                 .getStore()
                 .removeOptional("network", Network.class)
-                .ifPresent(network -> network.close());
+                .ifPresent(Network::close);
     }
 
     /** Class to implement a TestContext */
