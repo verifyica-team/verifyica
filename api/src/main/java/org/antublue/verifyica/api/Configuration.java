@@ -42,7 +42,8 @@ public interface Configuration extends ReadWriteLockProvider, LockProvider {
      *
      * @param key key
      * @param function function
-     * @return an Optional containing the existing value, or an Optional of the value returned by the function
+     * @return an Optional containing the existing value, or an Optional of the value returned by
+     *     the function
      */
     Optional<String> computeIfAbsent(String key, Function<String, String> function);
 
@@ -82,7 +83,7 @@ public interface Configuration extends ReadWriteLockProvider, LockProvider {
      * Remove a key-value pair
      *
      * @param key key
-     * @return  an Optional containing the value, or an empty Optional
+     * @return an Optional containing the value, or an empty Optional
      */
     Optional<String> removeOptional(String key);
 
@@ -147,7 +148,7 @@ public interface Configuration extends ReadWriteLockProvider, LockProvider {
     Configuration merge(Configuration Configuration);
 
     /**
-     * Duplicate
+     * Duplicate the Configuration
      *
      * @return a duplicate Configuration
      */
