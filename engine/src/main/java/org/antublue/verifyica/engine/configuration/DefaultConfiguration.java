@@ -295,6 +295,11 @@ public class DefaultConfiguration implements Configuration {
         return Objects.hashCode(map);
     }
 
+    /**
+     * Method to get a singleton instance
+     *
+     * @return the singleton instance
+     */
     public static DefaultConfiguration getInstance() {
         return SingletonHolder.SINGLETON;
     }
