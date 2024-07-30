@@ -110,6 +110,19 @@ public @interface Verifyica {
         String tag();
     }
 
+    /** Tags annotation */
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Tags {
+
+        /**
+         * Tag values
+         *
+         * @return the tags
+         */
+        Tag[] value();
+    }
+
     /** DisplayName annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)

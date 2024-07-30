@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test;
+package org.antublue.verifyica.test.extension.engine;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,11 +25,25 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.extension.TestClassDefinition;
+import org.antublue.verifyica.api.extension.engine.EngineExtension;
+import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
+import org.antublue.verifyica.engine.support.RandomSupport;
 
 /** Example test */
-public class BasicTest {
+public class EngineExtensionTest3 implements EngineExtension {
 
-    @Verifyica.ArgumentSupplier
+    @Override
+    public void onTestDiscovery(
+            EngineExtensionContext engineExtensionContext,
+            TestClassDefinition testClassDefinition) {
+        if (testClassDefinition.getTestClass() == EngineExtensionTest3.class) {
+            // Change test argument parallelism
+            testClassDefinition.setTestArgumentParallelism(1);
+        }
+    }
+
+    @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Collection<Argument<String>> arguments() {
         Collection<Argument<String>> collection = new ArrayList<>();
 
@@ -73,6 +87,8 @@ public class BasicTest {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
+
+        Thread.sleep(RandomSupport.randomInt(0, 1000));
     }
 
     @Verifyica.Test
@@ -82,15 +98,8 @@ public class BasicTest {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
-    }
 
-    @Verifyica.Test
-    public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
-
-        assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        Thread.sleep(RandomSupport.randomInt(0, 1000));
     }
 
     @Verifyica.AfterEach

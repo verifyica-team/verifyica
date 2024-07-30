@@ -16,22 +16,22 @@
 
 package org.antublue.verifyica.test.inheritance;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import org.antublue.verifyica.api.Argument;
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class ConcreteTest2 extends AbstractTest1 {
+public abstract class AbstractTest2 {
 
-    @Verifyica.ArgumentSupplier
-    public static Collection<Argument<String>> arguments() {
-        Collection<Argument<String>> collection = new ArrayList<>();
+    @Verifyica.Test
+    @Verifyica.Order(order = 1)
+    public final void test1(ArgumentContext argumentContext) {
+        System.out.println(format("AbstractTest2 test1(%s)", argumentContext.getTestArgument()));
 
-        collection.add(Argument.ofString("String 0"));
-        collection.add(Argument.ofString("String 1"));
-        collection.add(Argument.ofString("String 3"));
-
-        return collection;
+        assertThat(argumentContext).isNotNull();
+        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 }

@@ -17,6 +17,11 @@
 package org.antublue.verifyica.engine.support;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Class to implement TagSupport */
@@ -33,16 +38,43 @@ public class TagSupport {
      * @param clazz clazz
      * @return a tag
      */
-    public static String getTag(Class<?> clazz) {
+    public static Optional<String> getTag(Class<?> clazz) {
         Verifyica.Tag annotation = clazz.getAnnotation(Verifyica.Tag.class);
         if (annotation != null) {
             String value = annotation.tag();
             if (value != null && !value.trim().isEmpty()) {
-                return value;
+                return Optional.of(value);
             }
         }
 
-        return null;
+        return Optional.empty();
+    }
+
+    /**
+     * Method to get a List of tags for a Class
+     *
+     * @param clazz clazz
+     * @return a List of tags
+     */
+    public static List<String> getTags(Class<?> clazz) {
+        Set<String> tags = new HashSet<>();
+
+        getTag(clazz).ifPresent(tags::add);
+
+        Verifyica.Tags tagsAnnotation = clazz.getAnnotation(Verifyica.Tags.class);
+        if (tagsAnnotation != null) {
+            Verifyica.Tag[] tagAnnotations = tagsAnnotation.value();
+            if (tagAnnotations != null) {
+                for (Verifyica.Tag tagAnnotation : tagAnnotations) {
+                    String value = tagAnnotation.tag();
+                    if (value != null && !value.trim().isEmpty()) {
+                        tags.add(value);
+                    }
+                }
+            }
+        }
+
+        return new ArrayList<>(tags);
     }
 
     /**
@@ -51,15 +83,42 @@ public class TagSupport {
      * @param method method
      * @return a tag
      */
-    public static String getTag(Method method) {
+    public static Optional<String> getTag(Method method) {
         Verifyica.Tag annotation = method.getAnnotation(Verifyica.Tag.class);
         if (annotation != null) {
             String value = annotation.tag();
             if (value != null && !value.trim().isEmpty()) {
-                return value;
+                return Optional.of(value);
             }
         }
 
-        return null;
+        return Optional.empty();
+    }
+
+    /**
+     * Method to get a List of tags for a Method
+     *
+     * @param method method
+     * @return a List of tags
+     */
+    public static List<String> getTags(Method method) {
+        Set<String> tags = new HashSet<>();
+
+        getTag(method).ifPresent(tags::add);
+
+        Verifyica.Tags tagsAnnotation = method.getAnnotation(Verifyica.Tags.class);
+        if (tagsAnnotation != null) {
+            Verifyica.Tag[] tagAnnotations = tagsAnnotation.value();
+            if (tagAnnotations != null) {
+                for (Verifyica.Tag tagAnnotation : tagAnnotations) {
+                    String value = tagAnnotation.tag();
+                    if (value != null && !value.trim().isEmpty()) {
+                        tags.add(value);
+                    }
+                }
+            }
+        }
+
+        return new ArrayList<>(tags);
     }
 }

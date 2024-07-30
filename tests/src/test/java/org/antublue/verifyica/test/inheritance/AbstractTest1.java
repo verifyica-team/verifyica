@@ -24,11 +24,11 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public abstract class AbstractTest {
+public abstract class AbstractTest1 {
 
     @Verifyica.Prepare
     public static void prepare(ClassContext classContext) {
-        System.out.println(format("AbstractTest prepare()"));
+        System.out.println(format("AbstractTest1 prepare()"));
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();
@@ -39,7 +39,8 @@ public abstract class AbstractTest {
 
     @Verifyica.BeforeAll
     public final void beforeAll(ArgumentContext argumentContext) {
-        System.out.println(format("AbstractTest beforeAll(%s)", argumentContext.getTestArgument()));
+        System.out.println(
+                format("AbstractTest1 beforeAll(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -55,7 +56,7 @@ public abstract class AbstractTest {
     @Verifyica.BeforeEach
     public final void beforeEach(ArgumentContext argumentContext) {
         System.out.println(
-                format("AbstractTest beforeEach(%s)", argumentContext.getTestArgument()));
+                format("AbstractTest1 beforeEach(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -64,7 +65,7 @@ public abstract class AbstractTest {
 
     @Verifyica.Test
     public final void test1(ArgumentContext argumentContext) {
-        System.out.println(format("AbstractTest test1(%s)", argumentContext.getTestArgument()));
+        System.out.println(format("AbstractTest1 test1(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -73,7 +74,8 @@ public abstract class AbstractTest {
 
     @Verifyica.AfterEach
     public final void afterEach(ArgumentContext argumentContext) {
-        System.out.println(format("AbstractTest afterEach(%s)", argumentContext.getTestArgument()));
+        System.out.println(
+                format("AbstractTest1 afterEach(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -82,7 +84,7 @@ public abstract class AbstractTest {
 
     @Verifyica.AfterAll
     public final void afterAll(ArgumentContext argumentContext) {
-        System.out.println(format("AbstractTest afterAll(%s)", argumentContext.getTestArgument()));
+        System.out.println(format("AbstractTest1 afterAll(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -91,7 +93,7 @@ public abstract class AbstractTest {
 
     @Verifyica.Conclude
     public static void conclude(ClassContext classContext) {
-        System.out.println(format("AbstractTest conclude()"));
+        System.out.println(format("AbstractTest1 conclude()"));
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();

@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.inheritance;
+package org.antublue.verifyica.engine.extension.internal.engine.filter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import org.antublue.verifyica.api.Argument;
-import org.antublue.verifyica.api.Verifyica;
+public interface Filter {
 
-/** Example test */
-public class ConcreteTest2 extends AbstractTest1 {
-
-    @Verifyica.ArgumentSupplier
-    public static Collection<Argument<String>> arguments() {
-        Collection<Argument<String>> collection = new ArrayList<>();
-
-        collection.add(Argument.ofString("String 0"));
-        collection.add(Argument.ofString("String 1"));
-        collection.add(Argument.ofString("String 3"));
-
-        return collection;
+    enum Type {
+        GLOBAL_CLASS_FILTER,
+        SPECIFIC_CLASS_FILTER
     }
+
+    Type getType();
 }

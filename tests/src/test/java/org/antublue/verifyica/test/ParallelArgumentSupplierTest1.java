@@ -28,7 +28,7 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.engine.support.RandomSupport;
 
 /** Example test */
-public class ParallelArgumentSupplierTest {
+public class ParallelArgumentSupplierTest1 {
 
     @Verifyica.ArgumentSupplier(parallelism = 2)
     public static Collection<Argument<String>> arguments() {

@@ -27,7 +27,7 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class ConcreteTest1 extends AbstractTest {
+public class ConcreteTest1 extends AbstractTest1 {
 
     @Verifyica.ArgumentSupplier
     public static Collection<Argument<String>> arguments() {
@@ -42,7 +42,7 @@ public class ConcreteTest1 extends AbstractTest {
 
     @Verifyica.Prepare
     public static void prepare2(ClassContext classContext) {
-        System.out.println(format("    ConcreteTest prepare2()"));
+        System.out.println(format("    ConcreteTest1 prepare2()"));
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();
@@ -51,7 +51,7 @@ public class ConcreteTest1 extends AbstractTest {
     @Verifyica.BeforeAll
     public void beforeAll2(ArgumentContext argumentContext) {
         System.out.println(
-                format("    ConcreteTest beforeAll2(%s)", argumentContext.getTestArgument()));
+                format("    ConcreteTest1 beforeAll2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -61,7 +61,7 @@ public class ConcreteTest1 extends AbstractTest {
     @Verifyica.BeforeEach
     public void beforeEach2(ArgumentContext argumentContext) {
         System.out.println(
-                format("    ConcreteTest beforeEach2(%s)", argumentContext.getTestArgument()));
+                format("    ConcreteTest1 beforeEach2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -70,7 +70,8 @@ public class ConcreteTest1 extends AbstractTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
-        System.out.println(format("    ConcreteTest test2(%s)", argumentContext.getTestArgument()));
+        System.out.println(
+                format("    ConcreteTest1 test2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -80,7 +81,7 @@ public class ConcreteTest1 extends AbstractTest {
     @Verifyica.AfterEach
     public void afterEach2(ArgumentContext argumentContext) {
         System.out.println(
-                format("    ConcreteTest afterEach2(%s)", argumentContext.getTestArgument()));
+                format("    ConcreteTest1 afterEach2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -90,7 +91,7 @@ public class ConcreteTest1 extends AbstractTest {
     @Verifyica.AfterAll
     public void afterAll2(ArgumentContext argumentContext) {
         System.out.println(
-                format("    ConcreteTest afterAll2(%s)", argumentContext.getTestArgument()));
+                format("    ConcreteTest1 afterAll2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -99,7 +100,7 @@ public class ConcreteTest1 extends AbstractTest {
 
     @Verifyica.Conclude
     public static void conclude2(ClassContext classContext) {
-        System.out.println(format("    ConcreteTest conclude2()"));
+        System.out.println(format("    ConcreteTest1 conclude2()"));
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();

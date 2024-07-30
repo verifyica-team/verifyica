@@ -47,6 +47,19 @@ public interface EngineExtension {
     }
 
     /**
+     * Engine on onTestDiscovery callback
+     *
+     * @param engineExtensionContext engineExtensionContext
+     * @param testClassDefinition testClassDefinition
+     * @throws Throwable Throwable
+     */
+    default void onTestDiscovery(
+            EngineExtensionContext engineExtensionContext, TestClassDefinition testClassDefinition)
+            throws Throwable {
+        // INTENTIONALLY BLANK
+    }
+
+    /**
      * Engine beforeExecute callback
      *
      * @param engineExtensionContext engineExtensionContext

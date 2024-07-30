@@ -49,7 +49,7 @@ public class ExampleEngineExtension1 implements EngineExtension {
             if (testClassDefinition
                     .getTestClass()
                     .getName()
-                    .equals("org.antublue.verifyica.test.extension.engine.EngineExtensionTest")) {
+                    .equals("org.antublue.verifyica.test.extension.engine.EngineExtensionTest1")) {
                 // Reverse test methods
                 Collections.reverse(testClassDefinition.getTestMethods());
 

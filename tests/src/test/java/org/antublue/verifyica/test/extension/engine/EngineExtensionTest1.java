@@ -46,12 +46,11 @@ public class EngineExtensionTest1 {
 
         // Validate that the extension added a global String to the EngineContext Store
         assertThat(
-                        (Object)
-                                argumentContext
-                                        .getClassContext()
-                                        .getEngineContext()
-                                        .getStore()
-                                        .get(ExampleEngineExtension1.KEY))
+                        argumentContext
+                                .getClassContext()
+                                .getEngineContext()
+                                .getStore()
+                                .get(ExampleEngineExtension1.KEY))
                 .isNotNull();
 
         assertThat(
@@ -78,12 +77,11 @@ public class EngineExtensionTest1 {
 
         // Validate that the extension added a global String to the EngineContext Store
         assertThat(
-                        (Object)
-                                argumentContext
-                                        .getClassContext()
-                                        .getEngineContext()
-                                        .getStore()
-                                        .get(ExampleEngineExtension1.KEY))
+                        argumentContext
+                                .getClassContext()
+                                .getEngineContext()
+                                .getStore()
+                                .get(ExampleEngineExtension1.KEY))
                 .isNotNull();
 
         assertThat(
@@ -110,12 +108,11 @@ public class EngineExtensionTest1 {
 
         // Validate that the extension added a global String to the EngineContext Store
         assertThat(
-                        (Object)
-                                argumentContext
-                                        .getClassContext()
-                                        .getEngineContext()
-                                        .getStore()
-                                        .get(ExampleEngineExtension1.KEY))
+                        argumentContext
+                                .getClassContext()
+                                .getEngineContext()
+                                .getStore()
+                                .get(ExampleEngineExtension1.KEY))
                 .isNotNull();
 
         assertThat(

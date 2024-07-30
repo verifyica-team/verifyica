@@ -155,6 +155,33 @@ public class EngineExtensionRegistry {
     }
 
     /**
+     * Method to call engine extensions
+     *
+     * @param engineExtensionContext engineExtensionContext
+     * @param testClassDefinition testClassDefinition
+     * @throws Throwable Throwable
+     */
+    public void onTestDiscovery(
+            EngineExtensionContext engineExtensionContext, TestClassDefinition testClassDefinition)
+            throws Throwable {
+
+        for (EngineExtension engineExtension : getEngineExtensions()) {
+            LOGGER.trace(
+                    "engine extension [%s] onTestDiscovery() testClassDefinition testClass [%s]",
+                    engineExtension.getClass().getName(),
+                    testClassDefinition.getTestClass().getName());
+
+            engineExtension.onTestDiscovery(engineExtensionContext, testClassDefinition);
+
+            LOGGER.trace(
+                    "engine extension [%s] onTestDiscovery() testClassDefinition testClass [%s]"
+                            + " success",
+                    engineExtension.getClass().getName(),
+                    testClassDefinition.getTestClass().getName());
+        }
+    }
+
+    /**
      * Method to call engine extension
      *
      * @param engineExtensionContext engineExtensionContext

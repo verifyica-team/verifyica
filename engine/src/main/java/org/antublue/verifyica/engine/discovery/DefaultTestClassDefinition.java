@@ -21,13 +21,18 @@ import java.util.List;
 import java.util.Objects;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.extension.TestClassDefinition;
+import org.antublue.verifyica.engine.logger.Logger;
+import org.antublue.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement DefaultTestClassDefinition */
 public class DefaultTestClassDefinition implements TestClassDefinition {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTestClassDefinition.class);
+
     private final Class<?> testClass;
     private final List<Method> testMethods;
     private final List<Argument<?>> testArguments;
+    private int testArgumentParallelism;
 
     /**
      * Constructor
@@ -37,10 +42,14 @@ public class DefaultTestClassDefinition implements TestClassDefinition {
      * @param testArguments testArguments
      */
     public DefaultTestClassDefinition(
-            Class<?> testClass, List<Method> testMethods, List<Argument<?>> testArguments) {
+            Class<?> testClass,
+            List<Method> testMethods,
+            List<Argument<?>> testArguments,
+            int testArgumentParallelism) {
         this.testClass = testClass;
         this.testMethods = testMethods;
         this.testArguments = testArguments;
+        this.testArgumentParallelism = testArgumentParallelism;
     }
 
     @Override
@@ -56,6 +65,22 @@ public class DefaultTestClassDefinition implements TestClassDefinition {
     @Override
     public List<Argument<?>> getTestArguments() {
         return testArguments;
+    }
+
+    @Override
+    public int getTestArgumentParallelism() {
+        return testArgumentParallelism;
+    }
+
+    @Override
+    public void setTestArgumentParallelism(int testArgumentParallelism) {
+        if (testArgumentParallelism < 1) {
+            LOGGER.warn(
+                    "Test class [%s] test argument parallelism [%d] is invalid, defaulting to [1]",
+                    testClass.getName(), testArgumentParallelism);
+        }
+
+        this.testArgumentParallelism = Math.max(testArgumentParallelism, 1);
     }
 
     @Override

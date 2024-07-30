@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.tag;
+package org.antublue.verifyica.test.inheritance;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,41 +26,24 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class TagTest2 {
+public class ConcreteTest3 extends AbstractTest2 {
 
     @Verifyica.ArgumentSupplier
     public static Collection<Argument<String>> arguments() {
         Collection<Argument<String>> collection = new ArrayList<>();
 
-        for (int i = 0; i < 1; i++) {
-            collection.add(Argument.ofString("String " + i));
-        }
+        collection.add(Argument.ofString("String 0"));
+        collection.add(Argument.ofString("String 1"));
+        collection.add(Argument.ofString("String 3"));
 
         return collection;
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
-
-        assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
-    }
-
-    @Verifyica.Test
-    @Verifyica.Tag(tag = "Tagged")
-    public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
-
-        assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
-    }
-
-    @Verifyica.Test
-    public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
+    @Verifyica.Order(order = 0)
+    public void test2(ArgumentContext argumentContext) {
+        System.out.println(
+                format("    ConcreteTest3 test2(%s)", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
