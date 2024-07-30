@@ -45,7 +45,6 @@ for (TestArgument testArgument : TestArguments) {
 - Virtual thread support (Java 21+)
 - Properties file driven configuration
 - Test class extensions
-- Test class filtering
 - Engine extensions for global set up / tear down
 - [IntelliJ](https://www.jetbrains.com/idea/) support
 

@@ -238,6 +238,12 @@
                                         <exclude>META-INF/MANIFEST.MF</exclude>
                                     </excludes>
                                 </filter>
+                                <filter>
+                                    <artifact>org.yaml:snakeyaml</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/MANIFEST.MF</exclude>
+                                    </excludes>
+                                </filter>
                             </filters>
                             <!-- Relocate common classes and version specific classes to the same package -->
                             <relocations>
@@ -250,6 +256,11 @@
                                     <pattern>META-INF/versions/21/io.github.thunkware</pattern>
                                     <!-- Prefix is an MD5 hash "io.github.thunkware" -->
                                     <shadedPattern>48ebc8ca020a5ac33af85257ea798591.io.github.thunkware</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.yaml</pattern>
+                                    <!-- Prefix is an MD5 hash "org.yaml" -->
+                                    <shadedPattern>5cc12ba67c9049c5f8b7e1142926a663.org.yaml</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -347,6 +358,11 @@
             <groupId>io.github.thunkware</groupId>
             <artifactId>virtual-threads-bridge</artifactId>
             <version>0.0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.2</version>
         </dependency>
     </dependencies>
 
