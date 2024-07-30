@@ -31,7 +31,7 @@ import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement FiltersEngineExtension */
-// @Verifyica.Disabled
+@Verifyica.Disabled
 @Verifyica.Order(order = 0)
 @SuppressWarnings("PMD.UnusedPrivateMethod")
 public class FilterEngineExtension implements InternalEngineExtension {
@@ -58,71 +58,27 @@ public class FilterEngineExtension implements InternalEngineExtension {
                 testClassDefinitions.stream()
                         .map(
                                 (Function<TestClassDefinition, Class<?>>)
-                                        testClassDefinition -> testClassDefinition.getTestClass())
+                                        TestClassDefinition::getTestClass)
                         .collect(Collectors.toList());
-        ;
 
-        for (Filter filter : filters) {
-            if (filter.getType() == Filter.Type.GLOBAL_CLASS_FILTER) {
-                ((GlobalClassFilter) filter).filterClasses(testClasses);
-            }
-        }
+        filters.stream()
+                .filter(filter -> filter.getType() == Filter.Type.GLOBAL_CLASS_FILTER)
+                .map(filter -> (GlobalClassFilter) filter)
+                .forEach(globalClassFilter -> globalClassFilter.filterClasses(testClasses));
 
         testClassDefinitions.removeIf(
                 testClassDefinition -> !testClasses.contains(testClassDefinition.getTestClass()));
 
-        /*
-        Iterator<TestClassDefinition> testClassDefinitionIterator = testClassDefinitions.iterator();
-        while (testClassDefinitionIterator.hasNext()) {
-            TestClassDefinition testClassDefinition = testClassDefinitionIterator.next();
-            Class<?> testClass = testClassDefinition.getTestClass();
-            List<Class<?>> testClasses = new ArrayList<>();
-            testClasses.add(testClass);
-
-            List<Method> testMethods = testClassDefinition.getTestMethods();
-
-            for (Filter filter : filters) {
-                if (filter.getType() == Filter.Type.GLOBAL_CLASS_FILTER) {
-                    ((GlobalClassFilter) filter).filterClasses(testClasses);
-                }
-            }
-
-            if (testClasses.isEmpty()) {
-                testClassDefinitionIterator.remove();
-                continue;
-            }
-
-            for (Filter filter : filters) {
-                if (filter.getType() == Filter.Type.SPECIFIC_CLASS_FILTER) {
-                    ((SpecificClassFilter) filter).process(testClass, testMethods);
-                }
-            }
-
-            if (testMethods.isEmpty()) {
-                testClassDefinitionIterator.remove();
-            }
-        }
-
-        // Print filtered information
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("filtered test classes ...");
-            for (TestClassDefinition testClassDefinition : testClassDefinitions) {
-                Class<?> testClass = testClassDefinition.getTestClass();
-                LOGGER.trace(
-                        " test class [%s] (%s)",
-                        testClass.getName(), DisplayNameSupport.getDisplayName(testClass));
-
-                for (Argument<?> testArgument : testClassDefinition.getTestArguments()) {
-                    LOGGER.trace("  argument [%s]", testArgument.getName());
-                }
-
-                for (Method testMethod : testClassDefinition.getTestMethods())
-                    LOGGER.trace(
-                            "   test method [%s] (%s)",
-                            testMethod.getName(), DisplayNameSupport.getDisplayName(testMethod));
-            }
-        }
-        */
+        filters.stream()
+                .filter(filter -> filter.getType() == Filter.Type.SPECIFIC_CLASS_FILTER)
+                .map(filter -> (SpecificClassFilter) filter)
+                .forEach(
+                        specificClassFilter ->
+                                testClassDefinitions.forEach(
+                                        testClassDefinition ->
+                                                specificClassFilter.filterTestMethods(
+                                                        testClassDefinition.getTestClass(),
+                                                        testClassDefinition.getTestMethods())));
     }
 
     /**

@@ -21,11 +21,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.antublue.verifyica.engine.logger.Logger;
+import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.TagSupport;
 
 public class SpecificClassFilter implements Filter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalClassFilter.class);
 
     private final String testClassName;
     private final String includeNameRegex;
@@ -40,30 +43,12 @@ public class SpecificClassFilter implements Filter {
             String includeTagRegex,
             String excludeTagRegex) {
         this.testClassName = testClassName;
+        this.includeNameRegex = cleanInclude(includeNameRegex);
+        this.excludeNameRegex = cleanExclude(excludeNameRegex);
+        this.includeTagRegex = cleanInclude(includeTagRegex);
+        this.excludeTagRegex = cleanExclude(excludeTagRegex);
 
-        if (includeNameRegex == null || includeNameRegex.trim().isEmpty()) {
-            this.includeNameRegex = ".*";
-        } else {
-            this.includeNameRegex = includeNameRegex.trim();
-        }
-
-        if (excludeNameRegex == null || excludeNameRegex.trim().isEmpty()) {
-            this.excludeNameRegex = "a^";
-        } else {
-            this.excludeNameRegex = excludeNameRegex.trim();
-        }
-
-        if (includeTagRegex == null || includeTagRegex.trim().isEmpty()) {
-            this.includeTagRegex = ".*";
-        } else {
-            this.includeTagRegex = includeTagRegex.trim();
-        }
-
-        if (excludeTagRegex == null || excludeTagRegex.trim().isEmpty()) {
-            this.excludeTagRegex = "a^";
-        } else {
-            this.excludeTagRegex = excludeTagRegex.trim();
-        }
+        LOGGER.trace(this);
     }
 
     @Override
@@ -71,62 +56,80 @@ public class SpecificClassFilter implements Filter {
         return Type.SPECIFIC_CLASS_FILTER;
     }
 
-    public void process(Class<?> testClass, List<Method> testMethods) {
+    public void filterTestMethods(Class<?> testClass, List<Method> testMethods) {
+        LOGGER.trace("filterTestMethods() testClass [%s]", testClass.getName());
+
         if (!testClassName.equals(testClass.getName())) {
             return;
         }
 
-        Pattern includeNamePattern = Pattern.compile(includeNameRegex);
-        Pattern excludeNamePattern = Pattern.compile(excludeNameRegex);
-        Pattern includeTagPattern = Pattern.compile(includeTagRegex);
-        Pattern excludeTagPattern = Pattern.compile(excludeTagRegex);
+        Set<Method> includeMethodSet = new LinkedHashSet<>();
+        Set<Method> excludeMethodSet = new LinkedHashSet<>();
 
-        Set<Method> keepTestMethods = new LinkedHashSet<>();
-
-        for (Method testMethod : testMethods) {
-            boolean keep = false;
-            Matcher includeNameMatcher = includeNamePattern.matcher(testMethod.getName());
-
-            if (includeNameMatcher.find()) {
-                keep = true;
-            } else {
-                List<String> testClassTags = TagSupport.getTags(testMethod);
-                for (String testClassTag : testClassTags) {
-                    Matcher includeTagMatcher = includeTagPattern.matcher(testClassTag);
-                    if (includeTagMatcher.find()) {
-                        keep = true;
-                    }
-                }
-            }
-
-            if (keep) {
-                keepTestMethods.add(testMethod);
-            }
+        if (includeNameRegex != null) {
+            Pattern pattern = Pattern.compile(includeNameRegex);
+            testMethods.forEach(
+                    method -> {
+                        if (pattern.matcher(method.getName()).find()) {
+                            includeMethodSet.add(method);
+                        }
+                    });
         }
 
-        for (Method testMethod : testMethods) {
-            boolean keep = true;
-            Matcher excludeNameMatcher = excludeNamePattern.matcher(testMethod.getName());
+        LOGGER.trace(
+                "phase 1 - includeMethodSet size [%d] excludeMethodSet size [%d]",
+                includeMethodSet.size(), excludeMethodSet.size());
 
-            if (excludeNameMatcher.find()) {
-                keep = false;
-            } else {
-                List<String> testClassTags = TagSupport.getTags(testMethod);
-                for (String testClassTag : testClassTags) {
-                    Matcher excludeTagMatcher = excludeTagPattern.matcher(testClassTag);
-                    if (excludeTagMatcher.find()) {
-                        keep = false;
-                    }
-                }
-            }
-
-            if (!keep) {
-                keepTestMethods.remove(testMethod);
-            }
+        if (excludeNameRegex != null) {
+            Pattern pattern = Pattern.compile(excludeNameRegex);
+            testMethods.forEach(
+                    method -> {
+                        if (pattern.matcher(method.getName()).find()) {
+                            excludeMethodSet.add(method);
+                        }
+                    });
         }
 
-        testMethods.clear();
-        testMethods.addAll(keepTestMethods);
+        LOGGER.trace(
+                "phase 2 - includeMethodSet size [%d] excludeMethodSet size [%d]",
+                includeMethodSet.size(), excludeMethodSet.size());
+
+        if (includeTagRegex != null) {
+            Pattern pattern = Pattern.compile(includeTagRegex);
+            testMethods.forEach(
+                    method ->
+                            TagSupport.getTags(method)
+                                    .forEach(
+                                            tag -> {
+                                                if (pattern.matcher(tag).find()) {
+                                                    includeMethodSet.add(method);
+                                                }
+                                            }));
+        }
+
+        LOGGER.trace(
+                "phase 3 - includeMethodSet size [%d] excludeMethodSet size [%d]",
+                includeMethodSet.size(), excludeMethodSet.size());
+
+        if (excludeTagRegex != null) {
+            Pattern pattern = Pattern.compile(excludeTagRegex);
+            testMethods.forEach(
+                    method ->
+                            TagSupport.getTags(method)
+                                    .forEach(
+                                            tag -> {
+                                                if (pattern.matcher(tag).find()) {
+                                                    excludeMethodSet.add(method);
+                                                }
+                                            }));
+        }
+
+        LOGGER.trace(
+                "phase 4 - includeMethodSet size [%d] excludeMethodSet size [%d]",
+                includeMethodSet.size(), excludeMethodSet.size());
+
+        testMethods.removeIf(
+                method -> !includeMethodSet.contains(method) || excludeMethodSet.contains(method));
     }
 
     @Override
@@ -169,5 +172,21 @@ public class SpecificClassFilter implements Filter {
                 excludeNameRegex,
                 includeTagRegex,
                 excludeTagRegex);
+    }
+
+    private String cleanInclude(String regex) {
+        if (regex == null || regex.trim().isEmpty()) {
+            return ".*";
+        } else {
+            return regex.trim();
+        }
+    }
+
+    private String cleanExclude(String regex) {
+        if (regex == null || regex.trim().isEmpty()) {
+            return "a^";
+        } else {
+            return regex.trim();
+        }
     }
 }
