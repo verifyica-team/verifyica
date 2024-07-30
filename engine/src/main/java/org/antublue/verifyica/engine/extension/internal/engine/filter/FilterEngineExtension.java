@@ -17,11 +17,10 @@
 package org.antublue.verifyica.engine.extension.internal.engine.filter;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import org.antublue.verifyica.api.Argument;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.extension.TestClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
@@ -30,10 +29,9 @@ import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.extension.internal.engine.InternalEngineExtension;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.support.DisplayNameSupport;
 
 /** Class to implement FiltersEngineExtension */
-@Verifyica.Disabled
+// @Verifyica.Disabled
 @Verifyica.Order(order = 0)
 @SuppressWarnings("PMD.UnusedPrivateMethod")
 public class FilterEngineExtension implements InternalEngineExtension {
@@ -56,6 +54,24 @@ public class FilterEngineExtension implements InternalEngineExtension {
 
         loadFilters();
 
+        List<Class<?>> testClasses =
+                testClassDefinitions.stream()
+                        .map(
+                                (Function<TestClassDefinition, Class<?>>)
+                                        testClassDefinition -> testClassDefinition.getTestClass())
+                        .collect(Collectors.toList());
+        ;
+
+        for (Filter filter : filters) {
+            if (filter.getType() == Filter.Type.GLOBAL_CLASS_FILTER) {
+                ((GlobalClassFilter) filter).filterClasses(testClasses);
+            }
+        }
+
+        testClassDefinitions.removeIf(
+                testClassDefinition -> !testClasses.contains(testClassDefinition.getTestClass()));
+
+        /*
         Iterator<TestClassDefinition> testClassDefinitionIterator = testClassDefinitions.iterator();
         while (testClassDefinitionIterator.hasNext()) {
             TestClassDefinition testClassDefinition = testClassDefinitionIterator.next();
@@ -67,7 +83,7 @@ public class FilterEngineExtension implements InternalEngineExtension {
 
             for (Filter filter : filters) {
                 if (filter.getType() == Filter.Type.GLOBAL_CLASS_FILTER) {
-                    ((GlobalClassFilter) filter).process(testClasses);
+                    ((GlobalClassFilter) filter).filterClasses(testClasses);
                 }
             }
 
@@ -106,6 +122,7 @@ public class FilterEngineExtension implements InternalEngineExtension {
                             testMethod.getName(), DisplayNameSupport.getDisplayName(testMethod));
             }
         }
+        */
     }
 
     /**

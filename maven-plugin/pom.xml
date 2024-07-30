@@ -220,7 +220,7 @@
                     <version>2.43.0</version>
                     <configuration>
                         <licenseHeader>
-                            <file>${project.basedir}/../license-header.txt</file>
+                            <file>${project.basedir}/../assets/license-header.txt</file>
                         </licenseHeader>
                         <java>
                             <googleJavaFormat>

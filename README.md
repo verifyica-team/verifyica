@@ -303,9 +303,9 @@ Alternatively, tests can be performed on an external environment. Ideally the ex
 
 See [Contributing](CONTRIBUTING.md) for details.
 
-# Licensing
+# License
 
-[Apache-2.0](LICENSE.txt)
+Apache License 2.0, see [LICENSE](LICENSE).
 
 # Code of Conduct
 

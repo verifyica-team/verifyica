@@ -264,7 +264,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <configLocation>${project.basedir}/../google_checks.xml</configLocation>
+                    <configLocation>${project.basedir}/../assets/google_checks.xml</configLocation>
                 </configuration>
                 <executions>
                     <execution>
@@ -288,7 +288,7 @@
                 <version>2.43.0</version>
                 <configuration>
                     <licenseHeader>
-                        <file>${project.basedir}/../license-header.txt</file>
+                        <file>${project.basedir}/../assets/license-header.txt</file>
                     </licenseHeader>
                     <java>
                         <googleJavaFormat>

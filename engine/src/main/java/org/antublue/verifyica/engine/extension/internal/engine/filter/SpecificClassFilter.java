@@ -17,9 +17,10 @@
 package org.antublue.verifyica.engine.extension.internal.engine.filter;
 
 import java.lang.reflect.Method;
-import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antublue.verifyica.engine.support.TagSupport;
@@ -75,49 +76,57 @@ public class SpecificClassFilter implements Filter {
             return;
         }
 
-        Iterator<Method> testMethodIterator = testMethods.iterator();
-
         Pattern includeNamePattern = Pattern.compile(includeNameRegex);
         Pattern excludeNamePattern = Pattern.compile(excludeNameRegex);
         Pattern includeTagPattern = Pattern.compile(includeTagRegex);
         Pattern excludeTagPattern = Pattern.compile(excludeTagRegex);
 
-        while (testMethodIterator.hasNext()) {
-            Method testMethod = testMethodIterator.next();
+        Set<Method> keepTestMethods = new LinkedHashSet<>();
 
+        for (Method testMethod : testMethods) {
+            boolean keep = false;
             Matcher includeNameMatcher = includeNamePattern.matcher(testMethod.getName());
-            if (!includeNameMatcher.find()) {
-                testMethodIterator.remove();
-                continue;
-            }
 
-            Matcher excludeNameMatcher = excludeNamePattern.matcher(testMethod.getName());
-            if (excludeNameMatcher.find()) {
-                testMethodIterator.remove();
-                continue;
-            }
-
-            List<String> testClassTags = TagSupport.getTags(testMethod);
-
-            if (testClassTags.isEmpty()) {
-                if (!includeTagRegex.equals(".*")) {
-                    testMethodIterator.remove();
-                }
+            if (includeNameMatcher.find()) {
+                keep = true;
             } else {
+                List<String> testClassTags = TagSupport.getTags(testMethod);
                 for (String testClassTag : testClassTags) {
                     Matcher includeTagMatcher = includeTagPattern.matcher(testClassTag);
-                    if (!includeTagMatcher.find()) {
-                        testMethodIterator.remove();
-                        continue;
-                    }
-
-                    Matcher excludeTagMatcher = excludeTagPattern.matcher(testClassTag);
-                    if (excludeTagMatcher.find()) {
-                        testMethodIterator.remove();
+                    if (includeTagMatcher.find()) {
+                        keep = true;
                     }
                 }
             }
+
+            if (keep) {
+                keepTestMethods.add(testMethod);
+            }
         }
+
+        for (Method testMethod : testMethods) {
+            boolean keep = true;
+            Matcher excludeNameMatcher = excludeNamePattern.matcher(testMethod.getName());
+
+            if (excludeNameMatcher.find()) {
+                keep = false;
+            } else {
+                List<String> testClassTags = TagSupport.getTags(testMethod);
+                for (String testClassTag : testClassTags) {
+                    Matcher excludeTagMatcher = excludeTagPattern.matcher(testClassTag);
+                    if (excludeTagMatcher.find()) {
+                        keep = false;
+                    }
+                }
+            }
+
+            if (!keep) {
+                keepTestMethods.remove(testMethod);
+            }
+        }
+
+        testMethods.clear();
+        testMethods.addAll(keepTestMethods);
     }
 
     @Override

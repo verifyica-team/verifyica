@@ -16,12 +16,9 @@
 
 package org.antublue.verifyica.engine.extension.internal.engine.filter;
 
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antublue.verifyica.engine.support.TagSupport;
 
@@ -32,34 +29,23 @@ public class GlobalClassFilter implements Filter {
     private final String includeTagRegex;
     private final String excludeTagRegex;
 
+    /**
+     * Constructor
+     *
+     * @param includeNameRegex includeNameRegex
+     * @param excludeNameRegex excludeNameRegex
+     * @param includeTagRegex includeTagRegex
+     * @param excludeTagRegex excludeTagRegex
+     */
     public GlobalClassFilter(
             String includeNameRegex,
             String excludeNameRegex,
             String includeTagRegex,
             String excludeTagRegex) {
-        if (includeNameRegex == null || includeNameRegex.trim().isEmpty()) {
-            this.includeNameRegex = ".*";
-        } else {
-            this.includeNameRegex = includeNameRegex.trim();
-        }
-
-        if (excludeNameRegex == null || excludeNameRegex.trim().isEmpty()) {
-            this.excludeNameRegex = "a^";
-        } else {
-            this.excludeNameRegex = excludeNameRegex.trim();
-        }
-
-        if (includeTagRegex == null || includeTagRegex.trim().isEmpty()) {
-            this.includeTagRegex = ".*";
-        } else {
-            this.includeTagRegex = includeTagRegex.trim();
-        }
-
-        if (excludeTagRegex == null || excludeTagRegex.trim().isEmpty()) {
-            this.excludeTagRegex = "a^";
-        } else {
-            this.excludeTagRegex = excludeTagRegex.trim();
-        }
+        this.includeNameRegex = clean(includeNameRegex);
+        this.excludeNameRegex = clean(excludeNameRegex);
+        this.includeTagRegex = clean(includeTagRegex);
+        this.excludeTagRegex = clean(excludeTagRegex);
     }
 
     @Override
@@ -67,94 +53,78 @@ public class GlobalClassFilter implements Filter {
         return Type.GLOBAL_CLASS_FILTER;
     }
 
-    public void process(List<Class<?>> testClasses) {
-        Set<Class<?>> testClassSet = new LinkedHashSet<>();
+    /**
+     * Method to filter test classes
+     *
+     * @param testClasses testClasses
+     */
+    public void filterClasses(List<Class<?>> testClasses) {
+        Set<Class<?>> includeClassSet = new LinkedHashSet<>();
+        Set<Class<?>> excludeClassSet = new LinkedHashSet<>();
 
-        Iterator<Class<?>> testClassesIterator = testClasses.iterator();
-
-        Pattern includeNamePattern = Pattern.compile(includeNameRegex);
-        Pattern excludeNamePattern = Pattern.compile(excludeNameRegex);
-        Pattern includeTagPattern = Pattern.compile(includeTagRegex);
-        Pattern excludeTagPattern = Pattern.compile(excludeTagRegex);
-
-        while (testClassesIterator.hasNext()) {
-            Class<?> testClass = testClassesIterator.next();
-
-            Matcher includeNameMatcher = includeNamePattern.matcher(testClass.getName());
-            if (!includeNameMatcher.find()) {
-                testClassesIterator.remove();
-                continue;
-            }
-
-            Matcher excludeNameMatcher = excludeNamePattern.matcher(testClass.getName());
-            if (excludeNameMatcher.find()) {
-                testClassesIterator.remove();
-                continue;
-            }
-
-            testClassSet.add(testClass);
+        if (includeNameRegex != null) {
+            Pattern pattern = Pattern.compile(includeNameRegex);
+            testClasses.forEach(
+                    clazz -> {
+                        if (pattern.matcher(clazz.getName()).find()) {
+                            includeClassSet.add(clazz);
+                        }
+                    });
         }
 
-        testClassesIterator = testClasses.iterator();
-        while (testClassesIterator.hasNext()) {
-            Class<?> testClass = testClassesIterator.next();
+        if (excludeNameRegex != null) {
+            Pattern pattern = Pattern.compile(excludeNameRegex);
+            testClasses.forEach(
+                    clazz -> {
+                        if (pattern.matcher(clazz.getName()).find()) {
+                            excludeClassSet.add(clazz);
+                        }
+                    });
+        }
 
-            List<String> testClassTags = TagSupport.getTags(testClass);
+        if (includeTagRegex != null) {
+            Pattern pattern = Pattern.compile(includeTagRegex);
+            testClasses.forEach(
+                    clazz ->
+                            TagSupport.getTags(clazz)
+                                    .forEach(
+                                            tag -> {
+                                                if (pattern.matcher(tag).find()) {
+                                                    includeClassSet.add(clazz);
+                                                }
+                                            }));
+        }
 
-            if (testClassTags.isEmpty() && !includeTagRegex.equals(".*")) {
-                testClassesIterator.remove();
-                continue;
-            } else {
-                for (String testClassTag : testClassTags) {
-                    Matcher includeTagMatcher = includeTagPattern.matcher(testClassTag);
-                    if (!includeTagMatcher.find()) {
-                        testClassesIterator.remove();
-                        continue;
-                    }
+        if (excludeTagRegex != null) {
+            Pattern pattern = Pattern.compile(excludeTagRegex);
+            testClasses.forEach(
+                    clazz ->
+                            TagSupport.getTags(clazz)
+                                    .forEach(
+                                            tag -> {
+                                                if (pattern.matcher(tag).find()) {
+                                                    excludeClassSet.add(clazz);
+                                                }
+                                            }));
+        }
 
-                    Matcher excludeTagMatcher = excludeTagPattern.matcher(testClassTag);
-                    if (excludeTagMatcher.find()) {
-                        testClassesIterator.remove();
-                        continue;
-                    }
-                }
-            }
-
-            testClassSet.add(testClass);
+        if (includeClassSet.isEmpty() && excludeClassSet.isEmpty()) {
+            // INTENTIONALLY BLANK
+        } else if (!includeClassSet.isEmpty() && excludeClassSet.isEmpty()) {
+            testClasses.removeIf(clazz -> !includeClassSet.contains(clazz));
+        } else if (includeClassSet.isEmpty()) {
+            testClasses.removeIf(clazz -> excludeClassSet.contains(clazz));
+        } else {
+            includeClassSet.removeIf(clazz -> excludeClassSet.contains(clazz));
+            testClasses.removeIf(clazz -> !includeClassSet.contains(clazz));
         }
     }
 
-    @Override
-    public String toString() {
-        return "GlobalClassFilter{"
-                + "includeNameRegex='"
-                + includeNameRegex
-                + '\''
-                + ", excludeNameRegex='"
-                + excludeNameRegex
-                + '\''
-                + ", includeTagRegex='"
-                + includeTagRegex
-                + '\''
-                + ", excludeTagRegex='"
-                + excludeTagRegex
-                + '\''
-                + '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GlobalClassFilter that = (GlobalClassFilter) o;
-        return Objects.equals(includeNameRegex, that.includeNameRegex)
-                && Objects.equals(excludeNameRegex, that.excludeNameRegex)
-                && Objects.equals(includeTagRegex, that.includeTagRegex)
-                && Objects.equals(excludeTagRegex, that.excludeTagRegex);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(includeNameRegex, excludeNameRegex, includeTagRegex, excludeTagRegex);
+    private String clean(String regex) {
+        if (regex == null || regex.trim().isEmpty()) {
+            return null;
+        } else {
+            return regex.trim();
+        }
     }
 }
