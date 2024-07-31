@@ -16,15 +16,14 @@
 
 package org.antublue.verifyica.test.tag;
 
-import org.antublue.verifyica.api.Argument;
-import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Verifyica;
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.antublue.verifyica.api.Argument;
+import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
 @Verifyica.Tag(tag = "Tag1")
