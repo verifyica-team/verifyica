@@ -99,7 +99,10 @@ public class RandomSupport {
             return minimum;
         }
 
-        return randomBigDecimal(BigDecimal.valueOf(minimum), BigDecimal.valueOf(maximum))
+        float realMinimum = Math.min(minimum, maximum);
+        float realMaximum = Math.max(minimum, maximum);
+
+        return randomBigDecimal(BigDecimal.valueOf(realMinimum), BigDecimal.valueOf(realMaximum))
                 .floatValue();
     }
 
@@ -115,7 +118,10 @@ public class RandomSupport {
             return minimum;
         }
 
-        return randomBigDecimal(BigDecimal.valueOf(minimum), BigDecimal.valueOf(maximum))
+        double realMinimum = Math.min(minimum, maximum);
+        double realMaximum = Math.max(minimum, maximum);
+
+        return randomBigDecimal(BigDecimal.valueOf(realMinimum), BigDecimal.valueOf(realMaximum))
                 .doubleValue();
     }
 
@@ -128,11 +134,11 @@ public class RandomSupport {
      */
     public static BigInteger randomBigInteger(String minimum, String maximum) {
         if (minimum.contains(".")) {
-            throw new NumberFormatException(format("BigInteger minimum [%s] is invalid ", minimum));
+            throw new IllegalArgumentException(format("Invalid minimum [%s] ", minimum));
         }
 
         if (maximum.contains(".")) {
-            throw new NumberFormatException(format("BigInteger maximum [%s] is invalid", maximum));
+            throw new IllegalArgumentException(format("Invalid maximum [%s]", maximum));
         }
 
         BigInteger minimumBigInteger;
@@ -141,20 +147,20 @@ public class RandomSupport {
         try {
             minimumBigInteger = new BigInteger(minimum);
         } catch (NumberFormatException e) {
-            throw new NumberFormatException(format("BigDecimal minimum [%s] is invalid", minimum));
+            throw new IllegalArgumentException(format("Invalid minimum [%s]", minimum));
         }
 
         try {
             maximumBigInteger = new BigInteger(maximum);
         } catch (NumberFormatException e) {
-            throw new NumberFormatException(format("BigDecimal maximum [%s] is invalid", maximum));
+            throw new IllegalArgumentException(format("Invalid maximum [%s]", maximum));
         }
 
         if (minimumBigInteger.equals(maximumBigInteger)) {
             return new BigInteger(minimum);
         }
 
-        if (maximumBigInteger.subtract(minimumBigInteger).abs().equals(BigDecimal.ONE)) {
+        if (maximumBigInteger.subtract(minimumBigInteger).abs().equals(BigInteger.ONE)) {
             if (ThreadLocalRandom.current().nextBoolean()) {
                 return new BigInteger(minimum);
             } else {
@@ -196,13 +202,13 @@ public class RandomSupport {
         try {
             minimumBigDecimal = new BigDecimal(minimum);
         } catch (NumberFormatException e) {
-            throw new NumberFormatException(format("BigDecimal minimum [%s] is invalid", minimum));
+            throw new IllegalArgumentException(format("Invalid minimum [%s]", minimum));
         }
 
         try {
             maximummBigDecimal = new BigDecimal(maximum);
         } catch (NumberFormatException e) {
-            throw new NumberFormatException(format("BigDecimal maximum [%s] is invalid", maximum));
+            throw new IllegalArgumentException(format("Invalid maximum [%s]", maximum));
         }
 
         return randomBigDecimal(minimumBigDecimal, maximummBigDecimal);
