@@ -79,7 +79,7 @@ public class DefaultTestClassDefinition implements TestClassDefinition {
     public void setTestArgumentParallelism(int parallelism) {
         if (parallelism < 1) {
             LOGGER.warn(
-                    "Test class [%s] test argument parallelism [%d] is invalid, defaulting to [1]",
+                    "Invalid test class [%s] test argument parallelism [%d], defaulting to [1]",
                     testClass.getName(), parallelism);
         }
 
