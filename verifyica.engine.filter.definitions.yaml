@@ -4,18 +4,18 @@
 
 # Remove all test classes and test methods
 - type: Exclude
-  enabled: true
+  enabled: false
   classRegex: ".*"
   methodRegex: ".*"
 
-# Include a specific package of tests classes and all test method
+# Include a specific package of tests classes and all test methods
 - type: Include
-  enabled: true
+  enabled: false
   classRegex: "org.antublue.verifyica.test.argument"
   methodRegex: ".*"
 
 # Include a specific test class and all test method
 - type: Include
-  enabled: true
+  enabled: false
   classRegex: "BasicTest"
   methodRegex: "test1"
