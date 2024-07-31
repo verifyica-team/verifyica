@@ -27,22 +27,22 @@
   enabled: false
   classTagRegex: ".*"
 
-# Include classes tags with "Foo"
+# Include classes tagged with "Foo"
 - type: IncludeTaggedClass
   enabled: false
   classTagRegex: "Foo"
 
-# Include classes tags with "Bar"
+# Include classes tagged with "Bar"
 - type: IncludeTaggedClass
   enabled: false
   classTagRegex: "Bar"
 
-# Exclude classes tags with "Bar"
+# Exclude classes tagged with "Bar"
 - type: ExcludeTaggedClass
   enabled: false
   classTagRegex: "Bar"
 
-# Include classes tags with "Tag1" or "Tag2"
+# Include classes tagged with "Tag1" or "Tag2"
 - type: IncludeTaggedClass
   enabled: false
   classTagRegex: "Tag1|Tag2"
