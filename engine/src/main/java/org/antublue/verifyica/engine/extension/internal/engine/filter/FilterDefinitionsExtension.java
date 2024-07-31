@@ -21,6 +21,7 @@ import java.util.List;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.extension.TestClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
+import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.antublue.verifyica.engine.extension.internal.engine.InternalEngineExtension;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -32,11 +33,9 @@ public class FilterDefinitionsExtension implements InternalEngineExtension {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FilterDefinitionsExtension.class);
 
-    private final List<FilterDefinition> filterDefinitions;
-
     /** Constructor */
     public FilterDefinitionsExtension() {
-        filterDefinitions = new ArrayList<>();
+        // INTENTIONALLY BLANK
     }
 
     @Override
@@ -81,6 +80,9 @@ public class FilterDefinitionsExtension implements InternalEngineExtension {
                                                 }
                                                 break;
                                             }
+                                        default: {
+                                            throw new EngineConfigurationException("Undefined filter definition type");
+                                        }
                                     }
                                 }));
 
