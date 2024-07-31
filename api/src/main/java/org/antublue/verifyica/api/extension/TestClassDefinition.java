@@ -18,6 +18,7 @@ package org.antublue.verifyica.api.extension;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 import org.antublue.verifyica.api.Argument;
 
 /** Class to implement TestClassDefinition */
@@ -35,7 +36,7 @@ public interface TestClassDefinition {
      *
      * @return the test methods
      */
-    List<Method> getTestMethods();
+    Set<Method> getTestMethods();
 
     /**
      * Get the test arguments
