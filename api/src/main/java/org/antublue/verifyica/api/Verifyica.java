@@ -17,6 +17,7 @@
 package org.antublue.verifyica.api;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -98,8 +99,9 @@ public @interface Verifyica {
     @interface Disabled {}
 
     /** Tag annotation */
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
+    @Repeatable(Tags.class)
     @interface Tag {
 
         /**
@@ -111,7 +113,7 @@ public @interface Verifyica {
     }
 
     /** Tags annotation */
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Tags {
 

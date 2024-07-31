@@ -79,20 +79,44 @@ public class FiltersExtension implements InternalEngineExtension {
                                             for (Filter filter : filters) {
                                                 Class<?> testClass =
                                                         testClassDefinition.getTestClass();
-                                                if (filter instanceof IncludeFilter
-                                                        && filter.matches(testClass, testMethod)) {
-                                                    workingClassMethodMap
-                                                            .computeIfAbsent(
-                                                                    testClass,
-                                                                    m -> new LinkedHashMap<>())
-                                                            .put(testMethod.getName(), testMethod);
-                                                } else if (filter instanceof ExcludeFilter
-                                                        && filter.matches(testClass, testMethod)) {
-                                                    workingClassMethodMap
-                                                            .computeIfAbsent(
-                                                                    testClass,
-                                                                    m -> new LinkedHashMap<>())
-                                                            .remove(testMethod.getName());
+                                                switch (filter.getType()) {
+                                                    case INCLUDE_CLASS:
+                                                    case INCLUDE_TAGGED_CLASS:
+                                                        {
+                                                            if (filter.matches(
+                                                                    testClass, testMethod)) {
+                                                                workingClassMethodMap
+                                                                        .computeIfAbsent(
+                                                                                testClass,
+                                                                                m ->
+                                                                                        new LinkedHashMap<>())
+                                                                        .put(
+                                                                                testMethod
+                                                                                        .getName(),
+                                                                                testMethod);
+                                                            }
+                                                            break;
+                                                        }
+                                                    case EXCLUDE_CLASS:
+                                                    case EXCLUDE_TAGGED_CLASS:
+                                                        {
+                                                            if (filter.matches(
+                                                                    testClass, testMethod)) {
+                                                                workingClassMethodMap
+                                                                        .computeIfAbsent(
+                                                                                testClass,
+                                                                                m ->
+                                                                                        new LinkedHashMap<>())
+                                                                        .remove(
+                                                                                testMethod
+                                                                                        .getName());
+                                                            }
+                                                            break;
+                                                        }
+                                                    default:
+                                                        {
+                                                            // INTENTIONALLY BLANK
+                                                        }
                                                 }
                                             }
                                         }));

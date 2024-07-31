@@ -16,18 +16,20 @@
 
 package org.antublue.verifyica.test.tag;
 
-import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.Collection;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
+
 /** Example test */
-@Verifyica.Tag(tag = "Foo")
-public class TagTest1 {
+@Verifyica.Tag(tag = "Tag1")
+@Verifyica.Tag(tag = "Tag2")
+public class RepeatableTagTest {
 
     @Verifyica.ArgumentSupplier
     public static Collection<Argument<String>> arguments() {

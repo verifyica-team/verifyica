@@ -21,6 +21,25 @@ import java.lang.reflect.Method;
 /** Interface to implement Filter */
 public interface Filter {
 
+    /** Filter type */
+    enum Type {
+        /** IncludeClass */
+        INCLUDE_CLASS,
+        /** ExcludeClass */
+        EXCLUDE_CLASS,
+        /** IncludeTaggedClass */
+        INCLUDE_TAGGED_CLASS,
+        /** ExcludeTaggedClass */
+        EXCLUDE_TAGGED_CLASS
+    }
+
+    /**
+     * Method to get the Filter Type
+     *
+     * @return the Filter Type
+     */
+    Type getType();
+
     /**
      * Method to return if a Filter matches a Class and Method
      *
