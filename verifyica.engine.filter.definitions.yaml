@@ -1,16 +1,18 @@
 ###########################################################
 # All test classes / test methods are included by default #
+#                                                         #
+# Filters are executed in order                           #
 ###########################################################
 
 # Remove all test classes and test methods
 - type: Exclude
-  enabled: false
+  enabled: true
   classRegex: ".*"
   methodRegex: ".*"
 
 # Include a specific package of tests classes and all test methods
 - type: Include
-  enabled: false
+  enabled: true
   classRegex: "org.antublue.verifyica.test.argument"
   methodRegex: ".*"
 
