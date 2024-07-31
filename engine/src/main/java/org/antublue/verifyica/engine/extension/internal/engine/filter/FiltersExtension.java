@@ -51,6 +51,8 @@ public class FiltersExtension implements InternalEngineExtension {
     }
 
     private static void applyFilters(List<TestClassDefinition> testClassDefinitions) {
+        LOGGER.trace("applyFilters()");
+        
         List<Filter> filters = FilterFactory.getInstance().loadFilters();
 
         Map<Class<?>, Map<String, Method>> workingClassMethodMap = new LinkedHashMap<>();
