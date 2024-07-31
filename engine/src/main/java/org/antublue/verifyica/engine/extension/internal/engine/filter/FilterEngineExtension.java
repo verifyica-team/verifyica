@@ -19,8 +19,6 @@ package org.antublue.verifyica.engine.extension.internal.engine.filter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.extension.TestClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
@@ -30,8 +28,7 @@ import org.antublue.verifyica.engine.extension.internal.engine.InternalEngineExt
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement FiltersEngineExtension */
-@Verifyica.Disabled
+/** Class to implement FilterEngineExtension */
 @Verifyica.Order(order = 0)
 @SuppressWarnings("PMD.UnusedPrivateMethod")
 public class FilterEngineExtension implements InternalEngineExtension {
@@ -54,31 +51,42 @@ public class FilterEngineExtension implements InternalEngineExtension {
 
         loadFilters();
 
-        List<Class<?>> testClasses =
-                testClassDefinitions.stream()
-                        .map(
-                                (Function<TestClassDefinition, Class<?>>)
-                                        TestClassDefinition::getTestClass)
-                        .collect(Collectors.toList());
+        List<TestClassDefinition> workingTestClassDefinitions =
+                new ArrayList<>(testClassDefinitions);
 
-        filters.stream()
-                .filter(filter -> filter.getType() == Filter.Type.GLOBAL_CLASS_FILTER)
-                .map(filter -> (GlobalClassFilter) filter)
-                .forEach(globalClassFilter -> globalClassFilter.filterClasses(testClasses));
+        testClassDefinitions.forEach(
+                testClassDefinition ->
+                        filters.forEach(
+                                filter -> {
+                                    Class<?> testClass = testClassDefinition.getTestClass();
+                                    String testClassName = testClass.getName();
 
-        testClassDefinitions.removeIf(
-                testClassDefinition -> !testClasses.contains(testClassDefinition.getTestClass()));
+                                    switch (filter.getType()) {
+                                        case INCLUDE_CLASS_NAME_FILTER:
+                                            {
+                                                if (filter.getPattern()
+                                                        .matcher(testClassName)
+                                                        .find()) {
+                                                    workingTestClassDefinitions.add(
+                                                            testClassDefinition);
+                                                }
+                                                break;
+                                            }
+                                        case EXCLUDE_CLASS_NAME_FILTER:
+                                            {
+                                                if (filter.getPattern()
+                                                        .matcher(testClassName)
+                                                        .find()) {
+                                                    workingTestClassDefinitions.remove(
+                                                            testClassDefinition);
+                                                }
+                                                break;
+                                            }
+                                    }
+                                }));
 
-        filters.stream()
-                .filter(filter -> filter.getType() == Filter.Type.SPECIFIC_CLASS_FILTER)
-                .map(filter -> (SpecificClassFilter) filter)
-                .forEach(
-                        specificClassFilter ->
-                                testClassDefinitions.forEach(
-                                        testClassDefinition ->
-                                                specificClassFilter.filterTestMethods(
-                                                        testClassDefinition.getTestClass(),
-                                                        testClassDefinition.getTestMethods())));
+        testClassDefinitions.clear();
+        testClassDefinitions.addAll(workingTestClassDefinitions);
     }
 
     /**

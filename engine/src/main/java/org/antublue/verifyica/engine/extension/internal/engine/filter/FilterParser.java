@@ -16,6 +16,8 @@
 
 package org.antublue.verifyica.engine.extension.internal.engine.filter;
 
+import static java.lang.String.format;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -25,11 +27,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.yaml.snakeyaml.Yaml;
 
 @SuppressWarnings("unchecked")
 public class FilterParser {
 
+    /** Constructor */
     private FilterParser() {
         // INTENTIONALLY BLANK
     }
@@ -39,75 +43,45 @@ public class FilterParser {
      *
      * @param yamlFile yamlFile
      * @return a List of Filters
-     * @throws Throwable Throwable
+     * @throws IOException IOException
      */
-    public static List<Filter> parse(File yamlFile) throws Throwable {
+    public static List<Filter> parse(File yamlFile) throws IOException {
         return parse(loadContents(yamlFile));
     }
 
-    public static List<Filter> parse(String yamlString) throws Throwable {
+    /**
+     * Method to parse a List of Filters from a String
+     *
+     * @param yamlString yamlString
+     * @return a List of Filters
+     */
+    public static List<Filter> parse(String yamlString) {
         List<Filter> filters = new ArrayList<>();
 
         List<Object> objects = new Yaml().load(yamlString);
-
         for (Object object : objects) {
             Map<Object, Object> filterMap = (Map<Object, Object>) object;
             String type = (String) filterMap.get("type");
-
             boolean enabled = Boolean.TRUE.equals(filterMap.get("enabled"));
+            String regex = (String) filterMap.get("regex");
+
+            if (type != null) {
+                type = type.trim();
+            }
 
             if (enabled) {
-                if (type.equals("GlobalClassFilter")) {
-                    parseClassGlobal(filterMap, filters);
-                } else if (type.equals("SpecificClassFilter")) {
-                    parseClassSpecific(filterMap, filters);
+                if (type.equals("IncludeClassNameFilter")) {
+                    filters.add(new IncludeClassNameFilter(regex));
+                } else if (type.equals("ExcludeClassNameFilter")) {
+                    filters.add(new ExcludeClassNameFilter(regex));
+                } else {
+                    throw new EngineConfigurationException(
+                            format("Invalid filter type [%s]", type));
                 }
             }
         }
 
         return filters;
-    }
-
-    private static void parseClassGlobal(Map<Object, Object> filterMap, List<Filter> filters)
-            throws Throwable {
-        Map<Object, Object> nameMap = (Map<Object, Object>) filterMap.get("name");
-
-        String includeNameRegex = (String) nameMap.get("include");
-        String excludeNameRegex = (String) nameMap.get("exclude");
-
-        Map<Object, Object> tagMap = (Map<Object, Object>) filterMap.get("tag");
-
-        String includeTagRegex = (String) tagMap.get("include");
-        String excludeTagRegex = (String) tagMap.get("exclude");
-
-        filters.add(
-                new GlobalClassFilter(
-                        includeNameRegex, excludeNameRegex, includeTagRegex, excludeTagRegex));
-    }
-
-    private static void parseClassSpecific(Map<Object, Object> filterMap, List<Filter> filters)
-            throws Throwable {
-        String className = (String) filterMap.get("className");
-
-        Map<Object, Object> methodMap = (Map<Object, Object>) filterMap.get("method");
-
-        Map<Object, Object> nameMap = (Map<Object, Object>) methodMap.get("name");
-
-        String includeNameRegex = (String) nameMap.get("include");
-        String excludeNameRegex = (String) nameMap.get("exclude");
-
-        Map<Object, Object> tagMap = (Map<Object, Object>) methodMap.get("tag");
-
-        String includeTagRegex = (String) tagMap.get("include");
-        String excludeTagRegex = (String) tagMap.get("exclude");
-
-        filters.add(
-                new SpecificClassFilter(
-                        className,
-                        includeNameRegex,
-                        excludeNameRegex,
-                        includeTagRegex,
-                        excludeTagRegex));
     }
 
     private static String loadContents(File file) throws IOException {
