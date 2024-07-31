@@ -18,8 +18,8 @@ package org.antublue.verifyica.engine.extension.internal.engine.filter;
 
 import java.lang.reflect.Method;
 
-/** Class to implement ExcludeFilter */
-public class ExcludeFilter extends AbstractFilter {
+/** Class to implement IncludeFilter */
+public class IncludeFilter extends AbstractFilter {
 
     /**
      * Constructor
@@ -27,24 +27,24 @@ public class ExcludeFilter extends AbstractFilter {
      * @param classNameRegex classNameRegex
      * @param methodNameRegex methodNameRegex
      */
-    private ExcludeFilter(String classNameRegex, String methodNameRegex) {
+    private IncludeFilter(String classNameRegex, String methodNameRegex) {
         super(classNameRegex, methodNameRegex);
     }
 
     @Override
-    public boolean matches(Class<?> clazz, Method method) {
-        return getClassNamePattern().matcher(clazz.getName()).find()
-                && getMethodNamePattern().matcher(method.getName()).find();
+    public boolean matches(Class<?> testClass, Method testMethod) {
+        return getClassNamePattern().matcher(testClass.getName()).find()
+                && getMethodNamePattern().matcher(testMethod.getName()).find();
     }
 
     /**
-     * Method to create an ExcludeFilter
+     * Method to create an IncludeFilter
      *
      * @param classRegex classRegex
      * @param methodRegex methodRegex
-     * @return an ExcludeFilter
+     * @return an IncludeFilter
      */
-    public static ExcludeFilter create(String classRegex, String methodRegex) {
-        return new ExcludeFilter(classRegex, methodRegex);
+    public static IncludeFilter create(String classRegex, String methodRegex) {
+        return new IncludeFilter(classRegex, methodRegex);
     }
 }

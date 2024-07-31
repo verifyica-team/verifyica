@@ -18,7 +18,6 @@ package org.antublue.verifyica.api;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import org.junit.platform.commons.util.Preconditions;
 
 /**
  * {@code Argument} is a container that associates a name with a given payload.
@@ -161,7 +160,7 @@ public interface Argument<T> {
      * @param <T> type T
      */
     static <T> Argument<T> of(String name, T payload) {
-        Preconditions.notBlank(name, "name must not be null or blank");
+        notNullOrEmpty(name, "name is null", "name is empty");
 
         return new Argument<T>() {
             @Override
@@ -194,4 +193,21 @@ public interface Argument<T> {
      * @return the Argument payload
      */
     T getPayload();
+
+    /**
+     * Check if a String is not null and not blank
+     *
+     * @param string string
+     * @param nullMessage nullMessage
+     * @param emptyMessage emptyMessage
+     */
+    static void notNullOrEmpty(String string, String nullMessage, String emptyMessage) {
+        if (string == null) {
+            throw new IllegalArgumentException(nullMessage);
+        }
+
+        if (string.trim().isEmpty()) {
+            throw new IllegalArgumentException(emptyMessage);
+        }
+    }
 }
