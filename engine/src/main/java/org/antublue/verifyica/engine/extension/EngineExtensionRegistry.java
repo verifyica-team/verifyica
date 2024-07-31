@@ -282,6 +282,7 @@ public class EngineExtensionRegistry {
                 // Combine both internal and external engine extensions
                 List<Class<?>> engineExtensionClasses =
                         new ArrayList<>(internalEngineExtensionsClasses);
+
                 engineExtensionClasses.addAll(externalEngineExtensionsClasses);
 
                 LOGGER.trace("engine extension count [%d]", engineExtensions.size());

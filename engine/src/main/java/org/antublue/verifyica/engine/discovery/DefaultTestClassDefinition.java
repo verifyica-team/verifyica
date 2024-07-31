@@ -17,8 +17,10 @@
 package org.antublue.verifyica.engine.discovery;
 
 import java.lang.reflect.Method;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.extension.TestClassDefinition;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -30,7 +32,7 @@ public class DefaultTestClassDefinition implements TestClassDefinition {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTestClassDefinition.class);
 
     private final Class<?> testClass;
-    private final List<Method> testMethods;
+    private final Set<Method> testMethods;
     private final List<Argument<?>> testArguments;
     private int testArgumentParallelism;
 
@@ -47,7 +49,7 @@ public class DefaultTestClassDefinition implements TestClassDefinition {
             List<Argument<?>> testArguments,
             int testArgumentParallelism) {
         this.testClass = testClass;
-        this.testMethods = testMethods;
+        this.testMethods = new LinkedHashSet<>(testMethods);
         this.testArguments = testArguments;
         this.testArgumentParallelism = testArgumentParallelism;
     }
@@ -58,7 +60,7 @@ public class DefaultTestClassDefinition implements TestClassDefinition {
     }
 
     @Override
-    public List<Method> getTestMethods() {
+    public Set<Method> getTestMethods() {
         return testMethods;
     }
 

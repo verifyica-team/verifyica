@@ -16,29 +16,17 @@
 
 package org.antublue.verifyica.engine.extension.internal.engine.filter;
 
-import java.util.regex.Pattern;
+import java.lang.reflect.Method;
 
-/** Class to implement IncludeClassNameFilterDefinition */
-public class IncludeClassNameFilterDefinition implements FilterDefinition {
-
-    private final Pattern pattern;
+/** Interface to implement Filter */
+public interface Filter {
 
     /**
-     * Constructor
+     * Method to return if a Filter matches a Class and Method
      *
-     * @param regex regex
+     * @param testClass testClass
+     * @param testMethod testMethod
+     * @return true if the test class and test method match, else false
      */
-    public IncludeClassNameFilterDefinition(String regex) {
-        this.pattern = Pattern.compile(regex);
-    }
-
-    @Override
-    public Type getType() {
-        return Type.INCLUDE_CLASS_NAME;
-    }
-
-    @Override
-    public Pattern getPattern() {
-        return pattern;
-    }
+    boolean matches(Class<?> testClass, Method testMethod);
 }

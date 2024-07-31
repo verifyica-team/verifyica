@@ -18,8 +18,11 @@ package org.antublue.verifyica.test.extension.engine;
 
 import static java.lang.String.format;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.antublue.verifyica.api.extension.TestClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
@@ -50,8 +53,9 @@ public class ExampleEngineExtension1 implements EngineExtension {
                     .getTestClass()
                     .getName()
                     .equals("org.antublue.verifyica.test.extension.engine.EngineExtensionTest1")) {
+
                 // Reverse test methods
-                Collections.reverse(testClassDefinition.getTestMethods());
+                reverseMethods(testClassDefinition.getTestMethods());
 
                 // Filter test method "test4"
                 testClassDefinition
@@ -69,5 +73,17 @@ public class ExampleEngineExtension1 implements EngineExtension {
     @Override
     public void afterExecute(EngineExtensionContext engineExtensionContext) {
         System.out.println(format("%s afterExecute()", getClass().getName()));
+    }
+
+    /**
+     * Method to reverse a Set of Methods
+     *
+     * @param methods methods
+     */
+    private static void reverseMethods(Set<Method> methods) {
+        List<Method> list = new ArrayList<>(methods);
+        Collections.reverse(list);
+        methods.clear();
+        methods.addAll(list);
     }
 }
