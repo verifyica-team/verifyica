@@ -16,14 +16,11 @@
 
 package org.antublue.verifyica.engine.extension.internal.engine.filter;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.extension.TestClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
-import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.extension.internal.engine.InternalEngineExtension;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -31,15 +28,15 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 /** Class to implement FilterEngineExtension */
 @Verifyica.Order(order = 0)
 @SuppressWarnings("PMD.UnusedPrivateMethod")
-public class FilterEngineExtension implements InternalEngineExtension {
+public class FilterDefinitionsExtension implements InternalEngineExtension {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FilterEngineExtension.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FilterDefinitionsExtension.class);
 
-    private final List<Filter> filters;
+    private final List<FilterDefinition> filterDefinitions;
 
     /** Constructor */
-    public FilterEngineExtension() {
-        filters = new ArrayList<>();
+    public FilterDefinitionsExtension() {
+        filterDefinitions = new ArrayList<>();
     }
 
     @Override
@@ -49,22 +46,23 @@ public class FilterEngineExtension implements InternalEngineExtension {
             throws Throwable {
         LOGGER.trace("onTestDiscovery()");
 
-        loadFilters();
-
+        List<FilterDefinition> filterDefinitions =
+                FilterDefinitionFactory.getInstance().loadFilterDefinitions();
         List<TestClassDefinition> workingTestClassDefinitions =
                 new ArrayList<>(testClassDefinitions);
 
         testClassDefinitions.forEach(
                 testClassDefinition ->
-                        filters.forEach(
-                                filter -> {
+                        filterDefinitions.forEach(
+                                filterDefinition -> {
                                     Class<?> testClass = testClassDefinition.getTestClass();
                                     String testClassName = testClass.getName();
 
-                                    switch (filter.getType()) {
-                                        case INCLUDE_CLASS_NAME_FILTER:
+                                    switch (filterDefinition.getType()) {
+                                        case INCLUDE_CLASS_NAME:
                                             {
-                                                if (filter.getPattern()
+                                                if (filterDefinition
+                                                        .getPattern()
                                                         .matcher(testClassName)
                                                         .find()) {
                                                     workingTestClassDefinitions.add(
@@ -72,9 +70,10 @@ public class FilterEngineExtension implements InternalEngineExtension {
                                                 }
                                                 break;
                                             }
-                                        case EXCLUDE_CLASS_NAME_FILTER:
+                                        case EXCLUDE_CLASS_NAME:
                                             {
-                                                if (filter.getPattern()
+                                                if (filterDefinition
+                                                        .getPattern()
                                                         .matcher(testClassName)
                                                         .find()) {
                                                     workingTestClassDefinitions.remove(
@@ -87,24 +86,5 @@ public class FilterEngineExtension implements InternalEngineExtension {
 
         testClassDefinitions.clear();
         testClassDefinitions.addAll(workingTestClassDefinitions);
-    }
-
-    /**
-     * Method to load filters
-     *
-     * @throws Throwable Throwable
-     */
-    private void loadFilters() throws Throwable {
-        LOGGER.trace("loadFilters()");
-
-        String filtersFilename =
-                DefaultEngineContext.getInstance()
-                        .getConfiguration()
-                        .getOptional(Constants.ENGINE_FILTERS_FILENAME)
-                        .orElse(null);
-
-        if (filtersFilename != null && !filtersFilename.trim().isEmpty()) {
-            filters.addAll(FilterParser.parse(new File(filtersFilename)));
-        }
     }
 }

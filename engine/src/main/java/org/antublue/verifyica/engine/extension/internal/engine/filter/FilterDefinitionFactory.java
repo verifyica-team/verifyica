@@ -27,66 +27,106 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.yaml.snakeyaml.Yaml;
 
 @SuppressWarnings("unchecked")
-public class ProcessorFactory {
+public class FilterDefinitionFactory {
 
     /** Constructor */
-    private ProcessorFactory() {
+    private FilterDefinitionFactory() {
         // INTENTIONALLY BLANK
     }
 
     /**
-     * Method to parse a List of Filters from a file
+     * Method to load FilterDefinitions
      *
-     * @param yamlFile yamlFile
-     * @return a List of Filters
-     * @throws IOException IOException
+     * @return a List of FilterDefinitions
      */
-    public static List<Processor> createProcessors(File yamlFile) throws IOException {
-        return parse(loadContents(yamlFile));
-    }
+    public List<FilterDefinition> loadFilterDefinitions() throws Throwable {
+        List<FilterDefinition> filterDefinitions = new ArrayList<>();
 
-    /**
-     * Method to parse a List of Filters from a String
-     *
-     * @param yamlString yamlString
-     * @return a List of Filters
-     */
-    public static List<Processor> parse(String yamlString) {
-        List<Processor> processors = new ArrayList<>();
+        String filterDefinitionsFilename =
+                DefaultEngineContext.getInstance()
+                        .getConfiguration()
+                        .getOptional(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME)
+                        .orElse(null);
 
-        List<Object> objects = new Yaml().load(yamlString);
-        for (Object object : objects) {
-            Map<Object, Object> filterMap = (Map<Object, Object>) object;
-            String type = (String) filterMap.get("type");
-            boolean enabled = Boolean.TRUE.equals(filterMap.get("enabled"));
-            String regex = (String) filterMap.get("regex");
+        if (filterDefinitionsFilename != null && !filterDefinitionsFilename.trim().isEmpty()) {
+            List<Object> objects =
+                    new Yaml().load(loadContents(new File(filterDefinitionsFilename)));
+            for (Object object : objects) {
+                Map<Object, Object> filterMap = (Map<Object, Object>) object;
+                String type = (String) filterMap.get("type");
+                boolean enabled = Boolean.TRUE.equals(filterMap.get("enabled"));
+                String regex = (String) filterMap.get("regex");
 
-            if (type != null) {
-                type = type.trim();
-            }
-
-            if (enabled) {
-                if (type.equals("IncludeClassNameFilter")) {
-                    processors.add(new IncludeClassNameProcessor(regex));
-                } else if (type.equals("ExcludeClassNameFilter")) {
-                    processors.add(new ExcludeClassNameProcessor(regex));
-                } else {
+                if (type == null) {
                     throw new EngineConfigurationException(
-                            format("Invalid filter type [%s]", type));
+                            "Invalid filter definition, missing \"type\"");
+                }
+
+                if (regex == null) {
+                    throw new EngineConfigurationException(
+                            "Invalid filter definition, missing \"regex\"");
+                }
+
+                type = type.trim();
+                if (type.isEmpty()) {
+                    throw new EngineConfigurationException(
+                            "Invalid filter definition, \"type\" is empty");
+                }
+
+                regex = regex.trim();
+                if (regex.isEmpty()) {
+                    throw new EngineConfigurationException(
+                            "Invalid filter definition, \"regex\" is empty");
+                }
+
+                if (enabled) {
+                    if (type.equals("IncludeClassName")) {
+                        filterDefinitions.add(new IncludeClassNameFilterDefinition(regex));
+                    } else if (type.equals("ExcludeClassName")) {
+                        filterDefinitions.add(new ExcludeClassNameFilterDefinition(regex));
+                    } else {
+                        throw new EngineConfigurationException(
+                                format("Invalid filter definition type [%s]", type));
+                    }
                 }
             }
         }
 
-        return processors;
+        return filterDefinitions;
     }
 
+    /**
+     * Method to get a singleton instance
+     *
+     * @return the singleton instance
+     */
+    public static FilterDefinitionFactory getInstance() {
+        return SingletonHolder.SINGLETON;
+    }
+
+    /**
+     * Method to load a File contents
+     *
+     * @param file file
+     * @return the files contents
+     * @throws IOException IOException
+     */
     private static String loadContents(File file) throws IOException {
         Path path = Paths.get(file.getAbsolutePath());
         byte[] bytes = Files.readAllBytes(path);
         return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    /** Class to hold the singleton instance */
+    private static class SingletonHolder {
+
+        /** The singleton instance */
+        private static final FilterDefinitionFactory SINGLETON = new FilterDefinitionFactory();
     }
 }

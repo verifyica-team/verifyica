@@ -19,14 +19,14 @@ package org.antublue.verifyica.engine.extension.internal.engine.filter;
 import java.util.regex.Pattern;
 
 /** Interface to implement Filter */
-public interface Processor {
+public interface FilterDefinition {
 
     /** Filter type */
     enum Type {
-        /** IncludeClassNameFilter */
-        INCLUDE_CLASS_NAME_FILTER,
-        /** ExcludeClassNameFilter */
-        EXCLUDE_CLASS_NAME_FILTER
+        /** IncludeClassName */
+        INCLUDE_CLASS_NAME,
+        /** ExcludeClassName */
+        EXCLUDE_CLASS_NAME
     }
 
     /**

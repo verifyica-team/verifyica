@@ -18,8 +18,8 @@ package org.antublue.verifyica.engine.extension.internal.engine.filter;
 
 import java.util.regex.Pattern;
 
-/** Class to implement IncludeClassFilter */
-public class IncludeClassNameProcessor implements Processor {
+/** Class to implement IncludeClassNameFilterDefinition */
+public class IncludeClassNameFilterDefinition implements FilterDefinition {
 
     private final Pattern pattern;
 
@@ -28,13 +28,13 @@ public class IncludeClassNameProcessor implements Processor {
      *
      * @param regex regex
      */
-    public IncludeClassNameProcessor(String regex) {
+    public IncludeClassNameFilterDefinition(String regex) {
         this.pattern = Pattern.compile(regex);
     }
 
     @Override
     public Type getType() {
-        return Type.INCLUDE_CLASS_NAME_FILTER;
+        return Type.INCLUDE_CLASS_NAME;
     }
 
     @Override

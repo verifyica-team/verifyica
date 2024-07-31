@@ -60,29 +60,14 @@ public final class Constants {
             ENGINE_EXTENSIONS + ".exclude.regex";
 
     /** Configuration constant */
-    public static final String ENGINE_TEST_CLASS_SHUFFLE = ENGINE + ".test.class.shuffle";
+    public static final String ENGINE_FILTER = ENGINE + ".filter";
 
     /** Configuration constant */
-    public static final String ENGINE_FILTERS = ENGINE + ".filters";
+    public static final String ENGINE_FILTER_DEFINITIONS = ENGINE_FILTER + ".definitions";
 
     /** Configuration constant */
-    public static final String ENGINE_FILTERS_FILENAME = ENGINE_FILTERS + ".filename";
-
-    /** Configuration constant */
-    public static final String ENGINE_TEST_CLASS_TAG_INCLUDE_REGEX =
-            ENGINE + ".test.class.tag.include.regex";
-
-    /** Configuration constant */
-    public static final String ENGINE_TEST_CLASS_TAG_EXCLUDE_REGEX =
-            ENGINE + ".test.class.tag.exclude.regex";
-
-    /** Configuration constant */
-    public static final String TEST_METHOD_TAG_INCLUDE_REGEX =
-            PREFIX + ".test.method.tag.include.regex";
-
-    /** Configuration constant */
-    public static final String TEST_METHOD_TAG_EXCLUDE_REGEX =
-            PREFIX + ".test.method.tag.exclude.regex";
+    public static final String ENGINE_FILTER_DEFINITIONS_FILENAME =
+            ENGINE_FILTER_DEFINITIONS + ".filename";
 
     /** Configuration constant */
     public static final String MAVEN_PLUGIN = PREFIX + ".maven.plugin";

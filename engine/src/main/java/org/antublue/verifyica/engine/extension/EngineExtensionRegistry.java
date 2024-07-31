@@ -140,7 +140,6 @@ public class EngineExtensionRegistry {
             EngineExtensionContext engineExtensionContext,
             List<TestClassDefinition> testClassDefinitions)
             throws Throwable {
-
         for (EngineExtension engineExtension : getEngineExtensions()) {
             LOGGER.trace(
                     "engine extension [%s] onTestDiscovery()",
@@ -164,7 +163,6 @@ public class EngineExtensionRegistry {
     public void onTestDiscovery(
             EngineExtensionContext engineExtensionContext, TestClassDefinition testClassDefinition)
             throws Throwable {
-
         for (EngineExtension engineExtension : getEngineExtensions()) {
             LOGGER.trace(
                     "engine extension [%s] onTestDiscovery() testClassDefinition testClass [%s]",
