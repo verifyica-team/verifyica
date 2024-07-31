@@ -1,0 +1,15 @@
+############################################
+# All test classes are included by default #
+############################################
+# Remove all test classes
+- type: ExcludeClassNameFilter
+  enabled: true
+  regex: ".*"
+# Include a specific package of tests classes
+- type: IncludeClassNameFilter
+  enabled: true
+  regex: "org.antublue.verifyica.test.argument"
+# Include a specific test class
+- type: IncludeClassNameFilter
+  enabled: true
+  regex: "BasicTest"
