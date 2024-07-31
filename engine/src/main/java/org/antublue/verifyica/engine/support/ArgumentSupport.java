@@ -16,18 +16,34 @@
 
 package org.antublue.verifyica.engine.support;
 
+/** Class to implement ArgumentSupport */
 public class ArgumentSupport {
 
+    /** Constructor */
     private ArgumentSupport() {
         // INTENTIONALLY BLANK
     }
 
+    /**
+     * Method to validate an Object is not nul, throwing an IllegalArgumentException if it's null
+     *
+     * @param object object
+     * @param message message
+     */
     public static void notNull(Object object, String message) {
         if (object == null) {
             throw new IllegalArgumentException(message);
         }
     }
 
+    /**
+     * Method to validate a String is not null and not empty, throwing an IllegalArgumentException
+     * if it's null or empty
+     *
+     * @param string string
+     * @param nullMessage nullMessage
+     * @param emptyMessage emptyMessage
+     */
     public static void notNullOrEmpty(String string, String nullMessage, String emptyMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);

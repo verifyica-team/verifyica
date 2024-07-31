@@ -42,6 +42,7 @@ public class DefaultTestClassDefinition implements TestClassDefinition {
      * @param testClass testClass
      * @param testMethods testMethods
      * @param testArguments testArguments
+     * @param testArgumentParallelism testArgumentParallelism
      */
     public DefaultTestClassDefinition(
             Class<?> testClass,
@@ -75,14 +76,14 @@ public class DefaultTestClassDefinition implements TestClassDefinition {
     }
 
     @Override
-    public void setTestArgumentParallelism(int testArgumentParallelism) {
-        if (testArgumentParallelism < 1) {
+    public void setTestArgumentParallelism(int parallelism) {
+        if (parallelism < 1) {
             LOGGER.warn(
                     "Test class [%s] test argument parallelism [%d] is invalid, defaulting to [1]",
-                    testClass.getName(), testArgumentParallelism);
+                    testClass.getName(), parallelism);
         }
 
-        this.testArgumentParallelism = Math.max(testArgumentParallelism, 1);
+        this.testArgumentParallelism = Math.max(this.testArgumentParallelism, 1);
     }
 
     @Override
