@@ -28,9 +28,9 @@ import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.util.StateMonitor;
-import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
@@ -66,8 +66,8 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
             List<Method> afterAllMethods) {
         super(uniqueId, displayName);
 
-        Preconditions.notNull(testClass, "testClass is null");
-        Preconditions.notNull(testArgument, "testArgument is null");
+        ArgumentSupport.notNull(testClass, "testClass is null");
+        ArgumentSupport.notNull(testArgument, "testArgument is null");
 
         this.testClass = testClass;
         this.beforeAllMethods = beforeAllMethods;
@@ -105,16 +105,16 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
         DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
 
-        Preconditions.notNull(executionRequest, "executionRequest is null");
-        Preconditions.notNull(defaultArgumentContext, "defaultArgumentContext is null");
-        Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
+        ArgumentSupport.notNull(executionRequest, "executionRequest is null");
+        ArgumentSupport.notNull(defaultArgumentContext, "defaultArgumentContext is null");
+        ArgumentSupport.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
 
         getStopWatch().reset();
 
         defaultArgumentContext.setTestArgument(testArgument);
 
-        Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
-        Preconditions.notNull(defaultArgumentContext.getTestArgument(), "testArgument is null");
+        ArgumentSupport.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
+        ArgumentSupport.notNull(defaultArgumentContext.getTestArgument(), "testArgument is null");
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
@@ -253,7 +253,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                 "doExecute() testClass [%s] argument [%s]",
                 testClass.getName(), defaultArgumentContext.getTestArgument().getName());
 
-        Preconditions.notNull(executionRequest, "executionRequest is null");
+        ArgumentSupport.notNull(executionRequest, "executionRequest is null");
 
         getChildren().stream()
                 .map(TO_EXECUTABLE_TEST_DESCRIPTOR)

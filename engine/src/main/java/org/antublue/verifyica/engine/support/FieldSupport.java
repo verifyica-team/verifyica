@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
-import org.junit.platform.commons.util.Preconditions;
 
 /** Class to implement FieldSupport */
 public class FieldSupport {
@@ -57,7 +56,7 @@ public class FieldSupport {
      * @throws Throwable Throwable
      */
     public static void setField(Object object, Field field, Object value) throws Throwable {
-        Preconditions.notNull(field, "field is null");
+        ArgumentSupport.notNull(field, "field is null");
 
         if (value == null) {
             Class<?> fieldType = field.getType();

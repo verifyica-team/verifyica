@@ -28,9 +28,9 @@ import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.util.StateMonitor;
-import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
@@ -114,9 +114,9 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
 
         DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
 
-        Preconditions.notNull(executionRequest, "executionRequest is null");
-        Preconditions.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
-        Preconditions.notNull(defaultArgumentContext.getTestArgument(), "testArgument is null");
+        ArgumentSupport.notNull(executionRequest, "executionRequest is null");
+        ArgumentSupport.notNull(defaultArgumentContext.getTestInstance(), "testInstance is null");
+        ArgumentSupport.notNull(defaultArgumentContext.getTestArgument(), "testArgument is null");
 
         getStopWatch().reset();
 

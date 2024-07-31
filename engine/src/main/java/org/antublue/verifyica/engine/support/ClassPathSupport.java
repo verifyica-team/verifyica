@@ -38,7 +38,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 import org.junit.platform.commons.support.ReflectionSupport;
-import org.junit.platform.commons.util.Preconditions;
 
 /** Class to implement ClassPathSupport */
 @SuppressWarnings("deprecated")
@@ -126,7 +125,7 @@ public class ClassPathSupport {
      * @throws IOException IOException
      */
     public static List<URL> findResources(String regex) throws IOException {
-        Preconditions.notNull(regex, "regex is null");
+        ArgumentSupport.notNull(regex, "regex is null");
 
         Pattern pattern = Pattern.compile(regex);
         List<URL> resourceUrls = new ArrayList<>();

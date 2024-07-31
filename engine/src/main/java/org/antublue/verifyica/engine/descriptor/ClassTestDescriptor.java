@@ -31,11 +31,11 @@ import org.antublue.verifyica.engine.context.ImmutableClassContext;
 import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 import org.antublue.verifyica.engine.support.HashSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.util.ExecutorServiceFactory;
 import org.antublue.verifyica.engine.util.StateMonitor;
-import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
@@ -73,7 +73,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             int parallelism) {
         super(uniqueId, displayName);
 
-        Preconditions.notNull(testClass, "testClass is null");
+        ArgumentSupport.notNull(testClass, "testClass is null");
 
         this.testClass = testClass;
         this.prepareMethods = prepareMethods;
@@ -278,8 +278,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             ExecutionRequest executionRequest, DefaultClassContext defaultClassContext) {
         LOGGER.trace("doExecute() testClass [%s]", testClass.getName());
 
-        Preconditions.notNull(defaultClassContext, "defaultClassContext is null");
-        Preconditions.notNull(defaultClassContext.getTestInstance(), "testInstance is null");
+        ArgumentSupport.notNull(defaultClassContext, "defaultClassContext is null");
+        ArgumentSupport.notNull(defaultClassContext.getTestInstance(), "testInstance is null");
 
         ExecutorService executorService = null;
 

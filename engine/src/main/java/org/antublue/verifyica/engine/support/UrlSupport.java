@@ -23,7 +23,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import org.junit.platform.commons.util.Preconditions;
 
 /** Class to implement UrlSupport */
 public class UrlSupport {
@@ -41,7 +40,7 @@ public class UrlSupport {
      * @throws IOException IOException
      */
     public static InputStream createInputStream(URL url) throws IOException {
-        Preconditions.notNull(url, "url is null");
+        ArgumentSupport.notNull(url, "url is null");
 
         URLConnection connection = url.openConnection();
         connection.connect();
@@ -56,7 +55,7 @@ public class UrlSupport {
      * @throws IOException IOException
      */
     public static BufferedReader createBufferedReader(URL url) throws IOException {
-        Preconditions.notNull(url, "url is null");
+        ArgumentSupport.notNull(url, "url is null");
 
         return new BufferedReader(
                 new InputStreamReader(createInputStream(url), StandardCharsets.UTF_8));

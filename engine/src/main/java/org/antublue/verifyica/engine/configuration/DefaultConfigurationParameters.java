@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import org.antublue.verifyica.api.Configuration;
-import org.junit.platform.commons.util.Preconditions;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 import org.junit.platform.engine.ConfigurationParameters;
 
 /** Class to implement DefaultConfigurationParameters */
@@ -40,25 +40,22 @@ public class DefaultConfigurationParameters implements ConfigurationParameters {
 
     @Override
     public Optional<String> get(String key) {
-        Preconditions.notNull(key, "key is null");
-        Preconditions.condition(!key.trim().isEmpty(), "key is empty");
+        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
         return configuration.getOptional(key);
     }
 
     @Override
     public Optional<Boolean> getBoolean(String key) {
-        Preconditions.notNull(key, "key is null");
-        Preconditions.condition(!key.trim().isEmpty(), "key is empty");
+        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
         return Optional.ofNullable(configuration.get(key)).map("true"::equals);
     }
 
     @Override
     public <T> Optional<T> get(String key, Function<String, T> transformer) {
-        Preconditions.notNull(key, "key is null");
-        Preconditions.condition(!key.trim().isEmpty(), "key is empty");
-        Preconditions.notNull(transformer, "transformer is null");
+        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
+        ArgumentSupport.notNull(transformer, "transformer is null");
 
         String value = configuration.get(key);
         return value != null ? Optional.ofNullable(transformer.apply(value)) : Optional.empty();
