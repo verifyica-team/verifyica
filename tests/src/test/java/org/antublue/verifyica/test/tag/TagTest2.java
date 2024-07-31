@@ -26,6 +26,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
+@Verifyica.Tag(tag = "Bar")
 public class TagTest2 {
 
     @Verifyica.ArgumentSupplier
@@ -49,7 +50,6 @@ public class TagTest2 {
     }
 
     @Verifyica.Test
-    @Verifyica.Tag(tag = "Tagged")
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
 

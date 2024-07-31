@@ -5,19 +5,44 @@
 ###########################################################
 
 # Remove all test classes and test methods
-- type: Exclude
+- type: ExcludeClass
   enabled: false
   classRegex: ".*"
   methodRegex: ".*"
 
 # Include a specific package of tests classes and all test methods
-- type: Include
+- type: IncludeClass
   enabled: false
   classRegex: "org.antublue.verifyica.test.argument"
   methodRegex: ".*"
 
-# Include a specific test class and all test method
-- type: Include
+# Include a specific test class and all test methods
+- type: IncludeClass
   enabled: false
-  classRegex: "BasicTest"
-  methodRegex: "test1"
+  classRegex: "TagTest"
+  methodRegex: ".*"
+
+# Include all tagged classes
+- type: IncludeTaggedClass
+  enabled: false
+  classTagRegex: ".*"
+
+# Include classes tags with "Foo"
+- type: IncludeTaggedClass
+  enabled: false
+  classTagRegex: "Foo"
+
+# Include classes tags with "Bar"
+- type: IncludeTaggedClass
+  enabled: false
+  classTagRegex: "Bar"
+
+# Exclude classes tags with "Bar"
+- type: ExcludeTaggedClass
+  enabled: false
+  classTagRegex: "Bar"
+
+# Include classes tags with "Tag1" or "Tag2"
+- type: IncludeTaggedClass
+  enabled: false
+  classTagRegex: "Tag1|Tag2"

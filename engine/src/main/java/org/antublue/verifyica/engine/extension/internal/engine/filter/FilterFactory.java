@@ -63,17 +63,25 @@ public class FilterFactory {
                     Map<Object, Object> filterMap = (Map<Object, Object>) object;
                     String type = (String) filterMap.get("type");
                     boolean enabled = Boolean.TRUE.equals(filterMap.get("enabled"));
-                    String classRegex = (String) filterMap.get("classRegex");
-                    String methodRegex = (String) filterMap.get("methodRegex");
 
                     if (enabled) {
-                        if (type.equals("Include")) {
-                            filters.add(IncludeFilter.create(classRegex, methodRegex));
-                        } else if (type.equals("Exclude")) {
-                            filters.add(ExcludeFilter.create(classRegex, methodRegex));
+                        if (type.equals("IncludeClass")) {
+                            String classRegex = (String) filterMap.get("classRegex");
+                            String methodRegex = (String) filterMap.get("methodRegex");
+                            filters.add(IncludeClassFilter.create(classRegex, methodRegex));
+                        } else if (type.equals("ExcludeClass")) {
+                            String classRegex = (String) filterMap.get("classRegex");
+                            String methodRegex = (String) filterMap.get("methodRegex");
+                            filters.add(ExcludeClassFilter.create(classRegex, methodRegex));
+                        } else if (type.equals("IncludeTaggedClass")) {
+                            String classTagRegex = (String) filterMap.get("classTagRegex");
+                            filters.add(IncludeTaggedClassFilter.create(classTagRegex));
+                        } else if (type.equals("ExcludeTaggedClass")) {
+                            String classTagRegex = (String) filterMap.get("classTagRegex");
+                            filters.add(ExcludeTaggedClassFilter.create(classTagRegex));
                         } else {
                             throw new EngineConfigurationException(
-                                    format("Invalid filter definition type [%s]", type));
+                                    format("Invalid filter type [%s]", type));
                         }
                     }
                 }
@@ -83,7 +91,7 @@ public class FilterFactory {
         } catch (EngineConfigurationException e) {
             throw e;
         } catch (Throwable t) {
-            throw new EngineConfigurationException("Invalid filter definitions", t);
+            throw new EngineConfigurationException("Invalid filter", t);
         }
     }
 

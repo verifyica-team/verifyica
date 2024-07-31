@@ -18,8 +18,8 @@ package org.antublue.verifyica.engine.extension.internal.engine.filter;
 
 import java.lang.reflect.Method;
 
-/** Class to implement ExcludeFilter */
-public class ExcludeFilter extends AbstractFilter {
+/** Class to implement ExcludeClassFilter */
+public class ExcludeClassFilter extends AbstractFilter {
 
     /**
      * Constructor
@@ -27,8 +27,13 @@ public class ExcludeFilter extends AbstractFilter {
      * @param classNameRegex classNameRegex
      * @param methodNameRegex methodNameRegex
      */
-    private ExcludeFilter(String classNameRegex, String methodNameRegex) {
+    private ExcludeClassFilter(String classNameRegex, String methodNameRegex) {
         super(classNameRegex, methodNameRegex);
+    }
+
+    @Override
+    public Type getType() {
+        return Type.EXCLUDE_CLASS;
     }
 
     @Override
@@ -44,7 +49,7 @@ public class ExcludeFilter extends AbstractFilter {
      * @param methodRegex methodRegex
      * @return an ExcludeFilter
      */
-    public static ExcludeFilter create(String classRegex, String methodRegex) {
-        return new ExcludeFilter(classRegex, methodRegex);
+    public static ExcludeClassFilter create(String classRegex, String methodRegex) {
+        return new ExcludeClassFilter(classRegex, methodRegex);
     }
 }
