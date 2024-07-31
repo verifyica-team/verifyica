@@ -19,7 +19,7 @@ package org.antublue.verifyica.engine.extension.internal.engine.filter;
 import java.util.regex.Pattern;
 
 /** Class to implement ExcludeClassFilter */
-public class ExcludeClassNameFilter implements Filter {
+public class ExcludeClassNameProcessor implements Processor {
 
     private final Pattern pattern;
 
@@ -28,7 +28,7 @@ public class ExcludeClassNameFilter implements Filter {
      *
      * @param regex regex
      */
-    public ExcludeClassNameFilter(String regex) {
+    public ExcludeClassNameProcessor(String regex) {
         this.pattern = Pattern.compile(regex);
     }
 

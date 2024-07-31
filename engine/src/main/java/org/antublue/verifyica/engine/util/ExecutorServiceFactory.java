@@ -17,7 +17,6 @@
 package org.antublue.verifyica.engine.util;
 
 import io.github.thunkware.vt.bridge.ExecutorTool;
-import io.github.thunkware.vt.bridge.ThreadCustomizer;
 import io.github.thunkware.vt.bridge.ThreadTool;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -36,17 +35,14 @@ public class ExecutorServiceFactory {
      * Method to create a new ExecutorService. If virtual threads are supported, threadCount is
      * ignored
      *
-     * @param threadNamePrefix threadNamePrefix
      * @param threadCount threadCount
      * @return an ExecutorService
      */
-    public ExecutorService newExecutorService(String threadNamePrefix, int threadCount) {
+    public ExecutorService newExecutorService(int threadCount) {
         ExecutorService executorService;
 
         if (ThreadTool.hasVirtualThreads()) {
-            executorService =
-                    ExecutorTool.newVirtualThreadPerTaskExecutor(
-                            ThreadCustomizer.withNamePrefix(threadNamePrefix));
+            executorService = ExecutorTool.newVirtualThreadPerTaskExecutor();
         } else {
             executorService =
                     new ThreadPoolExecutor(
@@ -55,7 +51,6 @@ public class ExecutorServiceFactory {
                             60L,
                             TimeUnit.SECONDS,
                             new ArrayBlockingQueue<>(threadCount * 10),
-                            new NamedThreadFactory(threadNamePrefix + "%d"),
                             new BlockingRejectedExecutionHandler());
         }
 

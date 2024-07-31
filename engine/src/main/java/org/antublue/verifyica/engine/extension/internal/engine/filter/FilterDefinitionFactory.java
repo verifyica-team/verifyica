@@ -31,10 +31,10 @@ import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.yaml.snakeyaml.Yaml;
 
 @SuppressWarnings("unchecked")
-public class FilterParser {
+public class ProcessorFactory {
 
     /** Constructor */
-    private FilterParser() {
+    private ProcessorFactory() {
         // INTENTIONALLY BLANK
     }
 
@@ -45,7 +45,7 @@ public class FilterParser {
      * @return a List of Filters
      * @throws IOException IOException
      */
-    public static List<Filter> parse(File yamlFile) throws IOException {
+    public static List<Processor> createProcessors(File yamlFile) throws IOException {
         return parse(loadContents(yamlFile));
     }
 
@@ -55,8 +55,8 @@ public class FilterParser {
      * @param yamlString yamlString
      * @return a List of Filters
      */
-    public static List<Filter> parse(String yamlString) {
-        List<Filter> filters = new ArrayList<>();
+    public static List<Processor> parse(String yamlString) {
+        List<Processor> processors = new ArrayList<>();
 
         List<Object> objects = new Yaml().load(yamlString);
         for (Object object : objects) {
@@ -71,9 +71,9 @@ public class FilterParser {
 
             if (enabled) {
                 if (type.equals("IncludeClassNameFilter")) {
-                    filters.add(new IncludeClassNameFilter(regex));
+                    processors.add(new IncludeClassNameProcessor(regex));
                 } else if (type.equals("ExcludeClassNameFilter")) {
-                    filters.add(new ExcludeClassNameFilter(regex));
+                    processors.add(new ExcludeClassNameProcessor(regex));
                 } else {
                     throw new EngineConfigurationException(
                             format("Invalid filter type [%s]", type));
@@ -81,7 +81,7 @@ public class FilterParser {
             }
         }
 
-        return filters;
+        return processors;
     }
 
     private static String loadContents(File file) throws IOException {

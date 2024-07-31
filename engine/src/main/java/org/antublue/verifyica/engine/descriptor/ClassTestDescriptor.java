@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.engine.descriptor;
 
-import io.github.thunkware.vt.bridge.ThreadTool;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -285,10 +284,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         ExecutorService executorService = null;
 
         try {
-            executorService =
-                    ExecutorServiceFactory.getInstance()
-                            .newExecutorService(
-                                    Thread.currentThread().getName() + "/", parallelism);
+            executorService = ExecutorServiceFactory.getInstance().newExecutorService(parallelism);
 
             if (parallelism > 1) {
                 // Usage an ExecutorService
@@ -300,7 +296,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
                 final Semaphore finalSemaphore = semaphore;
 
-                final String threadName = Thread.currentThread().getName();
+                final String baseThreadName = Thread.currentThread().getName();
 
                 List<Future<?>> futures = new ArrayList<>();
 
@@ -318,15 +314,14 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                         Future<?> future =
                                 executorService.submit(
                                         () -> {
-                                            if (ThreadTool.hasVirtualThreads()) {
-                                                Thread.currentThread()
-                                                        .setName(
-                                                                threadName
-                                                                        + "/"
-                                                                        + HashSupport
-                                                                                .limitedAlphaNumericHash(
-                                                                                        4));
-                                            }
+                                            Thread.currentThread()
+                                                    .setName(
+                                                            baseThreadName
+                                                                    + "/"
+                                                                    + HashSupport
+                                                                            .limitedAlphaNumericHash(
+                                                                                    4));
+
                                             try {
                                                 if (finalSemaphore != null) {
                                                     finalSemaphore.acquire();

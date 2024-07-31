@@ -39,6 +39,7 @@ import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.extension.EngineExtensionRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.HashSupport;
 import org.antublue.verifyica.engine.util.ExecutorServiceFactory;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.ExecutionRequest;
@@ -155,9 +156,7 @@ public class VerifyicaEngine implements TestEngine {
 
             int parallelism = getParallelism(engineContext);
 
-            executorService =
-                    ExecutorServiceFactory.getInstance()
-                            .newExecutorService("verifyica-", parallelism);
+            executorService = ExecutorServiceFactory.getInstance().newExecutorService(parallelism);
 
             Semaphore semaphore = null;
             if (ExecutorServiceFactory.usingVirtualThreads()) {
@@ -172,6 +171,12 @@ public class VerifyicaEngine implements TestEngine {
                     Future<?> future =
                             executorService.submit(
                                     () -> {
+                                        Thread.currentThread()
+                                                .setName(
+                                                        "verifyica-"
+                                                                + HashSupport
+                                                                        .limitedAlphaNumericHash(
+                                                                                4));
                                         if (!testDescriptor.getChildren().isEmpty()) {
                                             try {
                                                 if (finalSemaphore != null) {
