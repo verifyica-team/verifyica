@@ -16,8 +16,6 @@
 
 package org.antublue.verifyica.engine.extension.internal.engine.filter;
 
-import static java.lang.String.format;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.antublue.verifyica.engine.configuration.Constants;
@@ -35,6 +34,16 @@ import org.yaml.snakeyaml.Yaml;
 /** Class to implement FilterFactory */
 @SuppressWarnings("unchecked")
 public class FilterFactory {
+
+    private static final Map<String, Filter.Type> filterTypeMap;
+
+    static {
+        filterTypeMap = new HashMap<>();
+        filterTypeMap.put("IncludeClass", Filter.Type.INCLUDE_CLASS);
+        filterTypeMap.put("ExcludeClass", Filter.Type.EXCLUDE_CLASS);
+        filterTypeMap.put("IncludeTaggedClass", Filter.Type.INCLUDE_TAGGED_CLASS);
+        filterTypeMap.put("ExcludeTaggedClass", Filter.Type.EXCLUDE_TAGGED_CLASS);
+    }
 
     /** Constructor */
     private FilterFactory() {
@@ -65,23 +74,38 @@ public class FilterFactory {
                     boolean enabled = Boolean.TRUE.equals(filterMap.get("enabled"));
 
                     if (enabled) {
-                        if (type.equals("IncludeClass")) {
-                            String classRegex = (String) filterMap.get("classRegex");
-                            String methodRegex = (String) filterMap.get("methodRegex");
-                            filters.add(IncludeClassFilter.create(classRegex, methodRegex));
-                        } else if (type.equals("ExcludeClass")) {
-                            String classRegex = (String) filterMap.get("classRegex");
-                            String methodRegex = (String) filterMap.get("methodRegex");
-                            filters.add(ExcludeClassFilter.create(classRegex, methodRegex));
-                        } else if (type.equals("IncludeTaggedClass")) {
-                            String classTagRegex = (String) filterMap.get("classTagRegex");
-                            filters.add(IncludeTaggedClassFilter.create(classTagRegex));
-                        } else if (type.equals("ExcludeTaggedClass")) {
-                            String classTagRegex = (String) filterMap.get("classTagRegex");
-                            filters.add(ExcludeTaggedClassFilter.create(classTagRegex));
-                        } else {
-                            throw new EngineConfigurationException(
-                                    format("Invalid filter type [%s]", type));
+                        Filter.Type decodedType =
+                                filterTypeMap.getOrDefault(type, Filter.Type.UNKNOWN);
+                        switch (decodedType) {
+                            case INCLUDE_CLASS:
+                                {
+                                    String classRegex = (String) filterMap.get("classRegex");
+                                    String methodRegex = (String) filterMap.get("methodRegex");
+                                    filters.add(IncludeClassFilter.create(classRegex, methodRegex));
+                                    break;
+                                }
+                            case EXCLUDE_CLASS:
+                                {
+                                    String classRegex = (String) filterMap.get("classRegex");
+                                    String methodRegex = (String) filterMap.get("methodRegex");
+                                    filters.add(ExcludeClassFilter.create(classRegex, methodRegex));
+                                    break;
+                                }
+                            case INCLUDE_TAGGED_CLASS:
+                                {
+                                    String classTagRegex = (String) filterMap.get("classTagRegex");
+                                    filters.add(IncludeTaggedClassFilter.create(classTagRegex));
+                                    break;
+                                }
+                            case EXCLUDE_TAGGED_CLASS:
+                                {
+                                    String classTagRegex = (String) filterMap.get("classTagRegex");
+                                    filters.add(ExcludeTaggedClassFilter.create(classTagRegex));
+                                }
+                            default:
+                                {
+                                    throw new EngineConfigurationException("Invalid filter type");
+                                }
                         }
                     }
                 }

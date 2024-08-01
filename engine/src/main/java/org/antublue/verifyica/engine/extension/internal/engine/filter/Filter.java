@@ -23,6 +23,8 @@ public interface Filter {
 
     /** Filter type */
     enum Type {
+        /** Unknown */
+        UNKNOWN,
         /** IncludeClass */
         INCLUDE_CLASS,
         /** ExcludeClass */
