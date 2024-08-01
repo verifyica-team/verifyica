@@ -23,7 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.extension.ClassDefinition;
+import org.antublue.verifyica.api.extension.engine.ClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.extension.internal.engine.InternalEngineExtension;
 import org.antublue.verifyica.engine.logger.Logger;

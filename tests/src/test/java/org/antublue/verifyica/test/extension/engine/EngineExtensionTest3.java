@@ -25,7 +25,7 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.extension.ClassDefinition;
+import org.antublue.verifyica.api.extension.engine.ClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.support.RandomSupport;

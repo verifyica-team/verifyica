@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.extension;
+package org.antublue.verifyica.api.extension.engine;
 
 import java.lang.reflect.Method;
 import java.util.List;

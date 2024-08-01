@@ -17,7 +17,6 @@
 package org.antublue.verifyica.api.extension.engine;
 
 import java.util.List;
-import org.antublue.verifyica.api.extension.ClassDefinition;
 
 /** Interface to implement EngineExtension */
 public interface EngineExtension {
