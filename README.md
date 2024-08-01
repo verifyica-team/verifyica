@@ -50,7 +50,7 @@ for (TestArgument testArgument : TestArguments) {
 - Engine interceptors (extensions)
 - [IntelliJ](https://www.jetbrains.com/idea/) support
 
-# Design
+# High Level Design
 
 ```
 for (TestClass testClass : TestClasses) {
