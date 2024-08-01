@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.context;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,12 +33,12 @@ import org.antublue.verifyica.engine.support.ArgumentSupport;
 @SuppressWarnings("unchecked")
 public class DefaultStore implements Store {
 
-    private final TreeMap<Object, Object> map;
+    private final Map<Object, Object> map;
     private final ReadWriteLock readWriteLock;
 
     /** Constructor */
     public DefaultStore() {
-        this(new TreeMap<>());
+        this(new HashMap<>());
     }
 
     /**
@@ -45,7 +46,7 @@ public class DefaultStore implements Store {
      *
      * @param map map
      */
-    private DefaultStore(TreeMap<Object, Object> map) {
+    private DefaultStore(Map<Object, Object> map) {
         ArgumentSupport.notNull(map, "map is null");
 
         this.map = map;
