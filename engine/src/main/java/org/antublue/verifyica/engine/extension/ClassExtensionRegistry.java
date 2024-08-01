@@ -235,17 +235,27 @@ public class ClassExtensionRegistry {
         Object testInstance = classContext.getTestInstance();
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
-
-        for (ClassExtension classExtension : getClassExtensions(testClass)) {
-            classExtension.beforeBeforeAll(defaultArgumentExtensionContext);
-        }
+        List<Throwable> throwables = new ArrayList<>();
 
         try {
-            for (Method beforeAllMethod : beforeAllMethods) {
-                beforeAllMethod.invoke(testInstance, argumentContext);
+            for (ClassExtension classExtension : getClassExtensions(testClass)) {
+                classExtension.beforeBeforeAll(defaultArgumentExtensionContext);
             }
-        } catch (InvocationTargetException e) {
-            throw e.getCause();
+            try {
+                for (Method beforeAllMethod : beforeAllMethods) {
+                    beforeAllMethod.invoke(testInstance, argumentContext);
+                }
+            } catch (InvocationTargetException e) {
+                throwables.add(e.getCause());
+            }
+        } catch (Throwable t) {
+            throwables.add(t);
+        } finally {
+            for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
+                classExtension.afterBeforeAll(
+                        defaultArgumentExtensionContext,
+                        !throwables.isEmpty() ? throwables.get(0) : null);
+            }
         }
     }
 
@@ -263,17 +273,27 @@ public class ClassExtensionRegistry {
         Object testInstance = classContext.getTestInstance();
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
-
-        for (ClassExtension classExtension : getClassExtensions(testClass)) {
-            classExtension.beforeBeforeEach(defaultArgumentExtensionContext);
-        }
+        List<Throwable> throwables = new ArrayList<>();
 
         try {
-            for (Method beforeEachMethod : beforeEachMethods) {
-                beforeEachMethod.invoke(testInstance, argumentContext);
+            for (ClassExtension classExtension : getClassExtensions(testClass)) {
+                classExtension.beforeBeforeEach(defaultArgumentExtensionContext);
             }
-        } catch (InvocationTargetException e) {
-            throw e.getCause();
+            try {
+                for (Method beforEachMethod : beforeEachMethods) {
+                    beforEachMethod.invoke(testInstance, argumentContext);
+                }
+            } catch (InvocationTargetException e) {
+                throwables.add(e.getCause());
+            }
+        } catch (Throwable t) {
+            throwables.add(t);
+        } finally {
+            for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
+                classExtension.afterBeforeEach(
+                        defaultArgumentExtensionContext,
+                        !throwables.isEmpty() ? throwables.get(0) : null);
+            }
         }
     }
 
@@ -327,17 +347,27 @@ public class ClassExtensionRegistry {
         Object testInstance = classContext.getTestInstance();
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
-
-        for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
-            classExtension.beforeAfterEach(defaultArgumentExtensionContext);
-        }
+        List<Throwable> throwables = new ArrayList<>();
 
         try {
-            for (Method afterEachMethod : afterEachMethods) {
-                afterEachMethod.invoke(testInstance, argumentContext);
+            for (ClassExtension classExtension : getClassExtensions(testClass)) {
+                classExtension.beforeAfterEach(defaultArgumentExtensionContext);
             }
-        } catch (InvocationTargetException e) {
-            throw e.getCause();
+            try {
+                for (Method afterEachMethod : afterEachMethods) {
+                    afterEachMethod.invoke(testInstance, argumentContext);
+                }
+            } catch (InvocationTargetException e) {
+                throwables.add(e.getCause());
+            }
+        } catch (Throwable t) {
+            throwables.add(t);
+        } finally {
+            for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
+                classExtension.afterAfterEach(
+                        defaultArgumentExtensionContext,
+                        !throwables.isEmpty() ? throwables.get(0) : null);
+            }
         }
     }
 
@@ -355,17 +385,27 @@ public class ClassExtensionRegistry {
         Object testInstance = classContext.getTestInstance();
         DefaultArgumentExtensionContext defaultArgumentExtensionContext =
                 new DefaultArgumentExtensionContext(argumentContext);
-
-        for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
-            classExtension.beforeAfterAll(defaultArgumentExtensionContext);
-        }
+        List<Throwable> throwables = new ArrayList<>();
 
         try {
-            for (Method afterAllMethod : afterAllMethods) {
-                afterAllMethod.invoke(testInstance, argumentContext);
+            for (ClassExtension classExtension : getClassExtensions(testClass)) {
+                classExtension.beforeAfterAll(defaultArgumentExtensionContext);
             }
-        } catch (InvocationTargetException e) {
-            throw e.getCause();
+            try {
+                for (Method afterAllMethod : afterAllMethods) {
+                    afterAllMethod.invoke(testInstance, argumentContext);
+                }
+            } catch (InvocationTargetException e) {
+                throwables.add(e.getCause());
+            }
+        } catch (Throwable t) {
+            throwables.add(t);
+        } finally {
+            for (ClassExtension classExtension : getClassExtensionsReversed(testClass)) {
+                classExtension.afterAfterAll(
+                        defaultArgumentExtensionContext,
+                        !throwables.isEmpty() ? throwables.get(0) : null);
+            }
         }
     }
 
@@ -378,7 +418,6 @@ public class ClassExtensionRegistry {
      */
     public void conclude(ClassContext classContext, List<Method> concludeMethods) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
-        Object testInstance = classContext.getTestInstance();
         DefaultClassExtensionContext defaultClassExtensionContext =
                 new DefaultClassExtensionContext(classContext);
 

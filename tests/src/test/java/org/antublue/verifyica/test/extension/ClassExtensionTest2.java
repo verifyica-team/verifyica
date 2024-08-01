@@ -143,6 +143,36 @@ public class ClassExtensionTest2 {
         }
 
         @Override
+        public void beforeBeforeAll(ArgumentExtensionContext argumentExtensionContext)
+                throws Throwable {
+            System.out.println(format("%s beforeBeforeAll()", getClass().getName()));
+        }
+
+        @Override
+        public void afterBeforeAll(
+                ArgumentExtensionContext argumentExtensionContext, Throwable throwable)
+                throws Throwable {
+            System.out.println(format("%s afterBeforeAll()", getClass().getName()));
+
+            assertThat(throwable).isNull();
+        }
+
+        @Override
+        public void beforeBeforeEach(ArgumentExtensionContext argumentExtensionContext)
+                throws Throwable {
+            System.out.println(format("%s beforeBeforeEach()", getClass().getName()));
+        }
+
+        @Override
+        public void afterBeforeEach(
+                ArgumentExtensionContext argumentExtensionContext, Throwable throwable)
+                throws Throwable {
+            System.out.println(format("%s afterBeforeEach()", getClass().getName()));
+
+            assertThat(throwable).isNull();
+        }
+
+        @Override
         public void beforeTest(ArgumentExtensionContext argumentExtensionContext, Method testMethod)
                 throws Throwable {
             System.out.println(format("%s beforeTest()", getClass().getName()));
@@ -155,6 +185,36 @@ public class ClassExtensionTest2 {
                 Throwable throwable)
                 throws Throwable {
             System.out.println(format("%s afterTest()", getClass().getName()));
+
+            assertThat(throwable).isNull();
+        }
+
+        @Override
+        public void beforeAfterEach(ArgumentExtensionContext argumentExtensionContext)
+                throws Throwable {
+            System.out.println(format("%s beforeAfterEach()", getClass().getName()));
+        }
+
+        @Override
+        public void afterAfterEach(
+                ArgumentExtensionContext argumentExtensionContext, Throwable throwable)
+                throws Throwable {
+            System.out.println(format("%s afterAfterEach()", getClass().getName()));
+
+            assertThat(throwable).isNull();
+        }
+
+        @Override
+        public void beforeAfterAll(ArgumentExtensionContext argumentExtensionContext)
+                throws Throwable {
+            System.out.println(format("%s beforeAfterAll()", getClass().getName()));
+        }
+
+        @Override
+        public void afterAfterAll(
+                ArgumentExtensionContext argumentExtensionContext, Throwable throwable)
+                throws Throwable {
+            System.out.println(format("%s afterAfterAll()", getClass().getName()));
 
             assertThat(throwable).isNull();
         }
