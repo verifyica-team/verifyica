@@ -41,11 +41,11 @@ public interface Configuration extends ReadWriteLockProvider, LockProvider {
      * Get the value or use the function to create a value
      *
      * @param key key
-     * @param function function
+     * @param transformer transformer
      * @return an Optional containing the existing value, or an Optional of the value returned by
-     *     the function
+     *     the transformer
      */
-    Optional<String> computeIfAbsent(String key, Function<String, String> function);
+    Optional<String> computeIfAbsent(String key, Function<String, String> transformer);
 
     /**
      * Get a value
