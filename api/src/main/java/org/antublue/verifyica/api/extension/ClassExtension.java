@@ -35,6 +35,26 @@ public interface ClassExtension {
     }
 
     /**
+     * Class afterInstantiate
+     *
+     * @param engineExtensionContext engineExtensionContext
+     * @param testClass testClass
+     * @param testInstance testInstance
+     * @param throwable throwable
+     * @throws Throwable Throwable
+     */
+    default void afterInstantiate(
+            EngineExtensionContext engineExtensionContext,
+            Class<?> testClass,
+            Object testInstance,
+            Throwable throwable)
+            throws Throwable {
+        if (throwable != null) {
+            throw throwable;
+        }
+    }
+
+    /**
      * Class beforePrepare callback
      *
      * @param classExtensionContext classExtensionContext
@@ -42,6 +62,20 @@ public interface ClassExtension {
      */
     default void beforePrepare(ClassExtensionContext classExtensionContext) throws Throwable {
         // INTENTIONALLY BLANK
+    }
+
+    /**
+     * Class afterPrepare callback
+     *
+     * @param classExtensionContext classExtensionContext
+     * @param throwable throwable
+     * @throws Throwable Throwable
+     */
+    default void afterPrepare(ClassExtensionContext classExtensionContext, Throwable throwable)
+            throws Throwable {
+        if (throwable != null) {
+            throw throwable;
+        }
     }
 
     /**
@@ -56,6 +90,21 @@ public interface ClassExtension {
     }
 
     /**
+     * Class afterBeforeAll callback
+     *
+     * @param argumentExtensionContext argumentExtensionContext
+     * @param throwable throwable
+     * @throws Throwable Throwable
+     */
+    default void afterBeforeAll(
+            ArgumentExtensionContext argumentExtensionContext, Throwable throwable)
+            throws Throwable {
+        if (throwable != null) {
+            throw throwable;
+        }
+    }
+
+    /**
      * Class beforeBeforeEach callback
      *
      * @param argumentExtensionContext argumentExtensionContext
@@ -64,6 +113,21 @@ public interface ClassExtension {
     default void beforeBeforeEach(ArgumentExtensionContext argumentExtensionContext)
             throws Throwable {
         // INTENTIONALLY BLANK
+    }
+
+    /**
+     * Class afterBeforeEach callback
+     *
+     * @param argumentExtensionContext argumentExtensionContext
+     * @param throwable throwable
+     * @throws Throwable Throwable
+     */
+    default void afterBeforeEach(
+            ArgumentExtensionContext argumentExtensionContext, Throwable throwable)
+            throws Throwable {
+        if (throwable != null) {
+            throw throwable;
+        }
     }
 
     /**
@@ -108,6 +172,21 @@ public interface ClassExtension {
     }
 
     /**
+     * Class afterAfterEach callback
+     *
+     * @param argumentExtensionContext argumentExtensionContext
+     * @param throwable throwable
+     * @throws Throwable Throwable
+     */
+    default void afterAfterEach(
+            ArgumentExtensionContext argumentExtensionContext, Throwable throwable)
+            throws Throwable {
+        if (throwable != null) {
+            throw throwable;
+        }
+    }
+
+    /**
      * Class beforeAfterAll callback
      *
      * @param argumentExtensionContext argumentExtensionContext
@@ -119,6 +198,21 @@ public interface ClassExtension {
     }
 
     /**
+     * Class afterAfterAll callback
+     *
+     * @param argumentExtensionContext argumentExtensionContext
+     * @param throwable throwable
+     * @throws Throwable Throwable
+     */
+    default void afterAfterAll(
+            ArgumentExtensionContext argumentExtensionContext, Throwable throwable)
+            throws Throwable {
+        if (throwable != null) {
+            throw throwable;
+        }
+    }
+
+    /**
      * Class beforeConclude callback
      *
      * @param classExtensionContext classExtensionContext
@@ -126,6 +220,20 @@ public interface ClassExtension {
      */
     default void beforeConclude(ClassExtensionContext classExtensionContext) throws Throwable {
         // INTENTIONALLY BLANK
+    }
+
+    /**
+     * Class afterConclude callback
+     *
+     * @param classExtensionContext classExtensionContext
+     * @param throwable throwable
+     * @throws Throwable Throwable
+     */
+    default void afterConclude(ClassExtensionContext classExtensionContext, Throwable throwable)
+            throws Throwable {
+        if (throwable != null) {
+            throw throwable;
+        }
     }
 
     /**

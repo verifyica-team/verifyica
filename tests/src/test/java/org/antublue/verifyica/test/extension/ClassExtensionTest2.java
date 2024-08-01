@@ -19,11 +19,14 @@ package org.antublue.verifyica.test.extension;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.Method;
 import java.util.UUID;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.extension.ArgumentExtensionContext;
 import org.antublue.verifyica.api.extension.ClassExtension;
+import org.antublue.verifyica.api.extension.ClassExtensionContext;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 
@@ -106,9 +109,67 @@ public class ClassExtensionTest2 {
         public void beforeInstantiate(
                 EngineExtensionContext engineExtensionContext, Class<?> testClass)
                 throws Throwable {
-            System.out.println(format("%s beforeInitialize()", getClass().getName()));
+            System.out.println(format("%s beforeInstantiate()", getClass().getName()));
 
             testClass.getField("value").set(null, UUID.randomUUID().toString());
+        }
+
+        @Override
+        public void afterInstantiate(
+                EngineExtensionContext engineExtensionContext,
+                Class<?> testClass,
+                Object testInstance,
+                Throwable throwable)
+                throws Throwable {
+            System.out.println(format("%s afterInstantiate()", getClass().getName()));
+
+            assertThat(testClass).isNotNull();
+            assertThat(testInstance).isNotNull();
+            assertThat(testInstance).isInstanceOf(ClassExtensionTest2.class);
+            assertThat(throwable).isNull();
+        }
+
+        @Override
+        public void beforePrepare(ClassExtensionContext classExtensionContext) throws Throwable {
+            System.out.println(format("%s beforePrepare()", getClass().getName()));
+        }
+
+        @Override
+        public void afterPrepare(ClassExtensionContext classExtensionContext, Throwable throwable)
+                throws Throwable {
+            System.out.println(format("%s afterPrepare()", getClass().getName()));
+
+            assertThat(throwable).isNull();
+        }
+
+        @Override
+        public void beforeTest(ArgumentExtensionContext argumentExtensionContext, Method testMethod)
+                throws Throwable {
+            System.out.println(format("%s beforeTest()", getClass().getName()));
+        }
+
+        @Override
+        public void afterTest(
+                ArgumentExtensionContext argumentExtensionContext,
+                Method testMethod,
+                Throwable throwable)
+                throws Throwable {
+            System.out.println(format("%s afterTest()", getClass().getName()));
+
+            assertThat(throwable).isNull();
+        }
+
+        @Override
+        public void beforeConclude(ClassExtensionContext classExtensionContext) throws Throwable {
+            System.out.println(format("%s beforeConclude()", getClass().getName()));
+        }
+
+        @Override
+        public void afterConclude(ClassExtensionContext classExtensionContext, Throwable throwable)
+                throws Throwable {
+            System.out.println(format("%s afterConclude()", getClass().getName()));
+
+            assertThat(throwable).isNull();
         }
     }
 }

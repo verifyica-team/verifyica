@@ -245,14 +245,27 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     private void instantiateTestInstance(DefaultClassContext defaultClassContext) throws Throwable {
         LOGGER.trace("instantiateTestInstance() testClass [%s]", testClass.getName());
 
+        Throwable throwable = null;
+        Object testInstance = null;
+
+        try {
+            ClassExtensionRegistry.getInstance()
+                    .beforeInstantiate(defaultClassContext.getEngineContext(), testClass);
+
+            testInstance =
+                    testClass
+                            .getDeclaredConstructor((Class<?>[]) null)
+                            .newInstance((Object[]) null);
+
+            defaultClassContext.setTestClass(testClass);
+            defaultClassContext.setTestInstance(testInstance);
+        } catch (Throwable t) {
+            throwable = t;
+        }
+
         ClassExtensionRegistry.getInstance()
-                .beforeInstantiate(defaultClassContext.getEngineContext(), testClass);
-
-        Object testInstance =
-                testClass.getDeclaredConstructor((Class<?>[]) null).newInstance((Object[]) null);
-
-        defaultClassContext.setTestClass(testClass);
-        defaultClassContext.setTestInstance(testInstance);
+                .afterInstantiate(
+                        defaultClassContext.getEngineContext(), testClass, testInstance, throwable);
     }
 
     /**
