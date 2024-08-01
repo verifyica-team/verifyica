@@ -38,6 +38,7 @@ import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 import org.antublue.verifyica.engine.support.ClassPathSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
@@ -70,8 +71,8 @@ public class ClassExtensionRegistry {
      * @return this ClassExtensionRegistry
      */
     public ClassExtensionRegistry register(Class<?> testClass, ClassExtension classExtension) {
-        notNull(testClass, "testClass is null");
-        notNull(classExtension, "classExtension is null");
+        ArgumentSupport.notNull(testClass, "testClass is null");
+        ArgumentSupport.notNull(classExtension, "classExtension is null");
 
         try {
             getReadWriteLock().writeLock().lock();
@@ -93,8 +94,8 @@ public class ClassExtensionRegistry {
      * @return this ClassExtensionRegistry
      */
     public ClassExtensionRegistry unregister(Class<?> testClass, ClassExtension classExtension) {
-        notNull(testClass, "testClass is null");
-        notNull(classExtension, "classExtension is null");
+        ArgumentSupport.notNull(testClass, "testClass is null");
+        ArgumentSupport.notNull(classExtension, "classExtension is null");
 
         try {
             getReadWriteLock().writeLock().lock();
@@ -113,7 +114,7 @@ public class ClassExtensionRegistry {
      * @return the number of class extensions
      */
     public int size(Class<?> testClass) {
-        notNull(testClass, "testClass is null");
+        ArgumentSupport.notNull(testClass, "testClass is null");
 
         try {
             getReadWriteLock().readLock().lock();
@@ -131,7 +132,7 @@ public class ClassExtensionRegistry {
      * @return this ClassExtensionRegistry
      */
     public ClassExtensionRegistry clear(Class<?> testClass) {
-        notNull(testClass, "testClass is null");
+        ArgumentSupport.notNull(testClass, "testClass is null");
 
         try {
             getReadWriteLock().writeLock().lock();
@@ -483,18 +484,6 @@ public class ClassExtensionRegistry {
      */
     public static ClassExtensionRegistry getInstance() {
         return SingletonHolder.SINGLETON;
-    }
-
-    /**
-     * Check if a Object is not null
-     *
-     * @param object object
-     * @param message message
-     */
-    private static void notNull(Object object, String message) {
-        if (object == null) {
-            throw new IllegalArgumentException(message);
-        }
     }
 
     /** Class to hold the singleton instance */

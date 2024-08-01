@@ -43,14 +43,42 @@ public class ArgumentSupport {
      * @param string string
      * @param nullMessage nullMessage
      * @param emptyMessage emptyMessage
+     * @return a trimmed String
      */
-    public static void notNullOrEmpty(String string, String nullMessage, String emptyMessage) {
+    public static String notNullOrEmpty(String string, String nullMessage, String emptyMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }
 
-        if (string.trim().isEmpty()) {
+        String trimmedString = string.trim();
+        if (trimmedString.isEmpty()) {
             throw new IllegalArgumentException(emptyMessage);
+        }
+
+        return trimmedString;
+    }
+
+    /**
+     * Method to valid a condition is true, throwing an IllegalArgumentException it is false
+     *
+     * @param condition condition
+     * @param message message
+     */
+    public static void isTrue(boolean condition, String message) {
+        if (!condition) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    /**
+     * Method to valid a condition is false, throwing an IllegalArgumentException it is true
+     *
+     * @param condition condition
+     * @param message message
+     */
+    public static void isFalse(boolean condition, String message) {
+        if (condition) {
+            throw new IllegalArgumentException(message);
         }
     }
 }

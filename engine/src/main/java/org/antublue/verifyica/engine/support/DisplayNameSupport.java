@@ -34,6 +34,8 @@ public class DisplayNameSupport {
      * @return the display name
      */
     public static String getDisplayName(Class<?> clazz) {
+        ArgumentSupport.notNull(clazz, "clazz is null");
+
         String displayName = clazz.getName();
 
         Verifyica.DisplayName annotation = clazz.getAnnotation(Verifyica.DisplayName.class);
@@ -54,6 +56,8 @@ public class DisplayNameSupport {
      * @return the display name
      */
     public static String getDisplayName(Method method) {
+        ArgumentSupport.notNull(method, "method is null");
+
         String displayName = method.getName();
 
         Verifyica.DisplayName annotation = method.getAnnotation(Verifyica.DisplayName.class);

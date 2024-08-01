@@ -19,6 +19,7 @@ package org.antublue.verifyica.engine.logger;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement LoggerFactory */
 @SuppressWarnings("PMD.EmptyCatchBlock")
@@ -38,6 +39,7 @@ public final class LoggerFactory {
      * @return the return value
      */
     private Logger createLogger(String name) {
+        ArgumentSupport.notNullOrEmpty(name, "name is null", "name is empty");
         return loggerMap.computeIfAbsent(name, Logger::new);
     }
 
@@ -48,6 +50,7 @@ public final class LoggerFactory {
      * @return the return value
      */
     public static Logger getLogger(Class<?> clazz) {
+        ArgumentSupport.notNull(clazz, "clazz is null");
         return getLogger(clazz.getName());
     }
 
@@ -58,6 +61,8 @@ public final class LoggerFactory {
      * @return the return value
      */
     public static Logger getLogger(String name) {
+        ArgumentSupport.notNullOrEmpty(name, "name is null", "name is empty");
+
         synchronized (DefaultEngineContext.getInstance()) {
             return SingletonHolder.SINGLETON.createLogger(name);
         }

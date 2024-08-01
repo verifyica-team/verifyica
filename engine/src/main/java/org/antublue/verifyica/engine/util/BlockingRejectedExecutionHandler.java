@@ -20,6 +20,7 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement BlockingRejectedExecutionHandler */
 public class BlockingRejectedExecutionHandler implements RejectedExecutionHandler {
@@ -34,6 +35,9 @@ public class BlockingRejectedExecutionHandler implements RejectedExecutionHandle
 
     @Override
     public void rejectedExecution(Runnable runnable, ThreadPoolExecutor executor) {
+        ArgumentSupport.notNull(runnable, "runnable is null");
+        ArgumentSupport.notNull(executor, "executor is null");
+
         if (!executor.isShutdown()) {
             try {
                 executor.getQueue().put(runnable);

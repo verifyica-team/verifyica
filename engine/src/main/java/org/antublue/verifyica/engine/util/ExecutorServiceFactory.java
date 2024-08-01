@@ -22,6 +22,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement ExecutorServiceFactory */
 public class ExecutorServiceFactory {
@@ -39,6 +40,8 @@ public class ExecutorServiceFactory {
      * @return an ExecutorService
      */
     public ExecutorService newExecutorService(int threadCount) {
+        ArgumentSupport.isTrue(threadCount > 0, "thread count is less than 1");
+
         ExecutorService executorService;
 
         if (ThreadTool.hasVirtualThreads()) {

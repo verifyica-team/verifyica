@@ -83,6 +83,8 @@ public class ClassPathSupport {
      * @return a List of Classes
      */
     public static List<Class<?>> findClasses(Predicate<Class<?>> predicate) {
+        ArgumentSupport.notNull(predicate, "predicate is null");
+
         Set<Class<?>> set = new LinkedHashSet<>();
         for (URI uri : getClasspathURIs()) {
             set.addAll(
@@ -99,6 +101,9 @@ public class ClassPathSupport {
      * @return a List of Classes
      */
     public static List<Class<?>> findClasses(URI uri, Predicate<Class<?>> predicate) {
+        ArgumentSupport.notNull(uri, "uri is null");
+        ArgumentSupport.notNull(predicate, "predicate is null");
+
         return new ArrayList<>(
                 ReflectionSupport.findAllClassesInClasspathRoot(uri, predicate, className -> true));
     }
@@ -112,9 +117,12 @@ public class ClassPathSupport {
      * @return a List of Classes
      */
     public static List<Class<?>> findClasses(String packageName, Predicate<Class<?>> predicate) {
+        ArgumentSupport.notNullOrEmpty(packageName, "packageName is null", "packageName is empty");
+        ArgumentSupport.notNull(predicate, "predicate is null");
+
         return new ArrayList<>(
                 ReflectionSupport.findAllClassesInPackage(
-                        packageName, predicate, className -> true));
+                        packageName.trim(), predicate, className -> true));
     }
 
     /**
@@ -125,9 +133,9 @@ public class ClassPathSupport {
      * @throws IOException IOException
      */
     public static List<URL> findResources(String regex) throws IOException {
-        ArgumentSupport.notNull(regex, "regex is null");
+        ArgumentSupport.notNullOrEmpty(regex, "regex is null", "regex is empty");
 
-        Pattern pattern = Pattern.compile(regex);
+        Pattern pattern = Pattern.compile(regex.trim());
         List<URL> resourceUrls = new ArrayList<>();
 
         for (URI uri : getClasspathURIs()) {
@@ -138,6 +146,7 @@ public class ClassPathSupport {
                 scanJarFile(pattern, path, resourceUrls);
             }
         }
+
         return resourceUrls;
     }
 

@@ -31,6 +31,8 @@ public class ClassSupport {
      * @return true if the Class has a default (empty) constructor, else false
      */
     public static boolean hasDefaultConstructor(Class<?> clazz) {
+        ArgumentSupport.notNull(clazz, "clazz is null");
+
         try {
             clazz.getDeclaredConstructor();
             return true;

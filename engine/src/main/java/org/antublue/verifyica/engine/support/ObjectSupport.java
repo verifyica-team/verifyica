@@ -40,6 +40,8 @@ public class ObjectSupport {
      * @throws Throwable Throwable
      */
     public static <T> T createObject(Class<?> clazz) throws Throwable {
+        ArgumentSupport.notNull(clazz, "clazz is null");
+
         return (T) clazz.getConstructor().newInstance();
     }
 
@@ -50,6 +52,10 @@ public class ObjectSupport {
      * @return a String representation of the Methods
      */
     public static String toString(Method... methods) {
+        if (methods == null) {
+            throw new IllegalArgumentException("methods is null");
+        }
+
         return toString(Arrays.stream(methods).collect(Collectors.toList()));
     }
 
@@ -60,6 +66,8 @@ public class ObjectSupport {
      * @return a String representation of the Methods
      */
     public static String toString(List<Method> methods) {
+        ArgumentSupport.notNull(methods, "methods is null");
+
         StringBuilder stringBuilder = new StringBuilder();
 
         if (methods != null) {

@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement Logger */
 @SuppressWarnings("PMD.EmptyCatchBlock")
@@ -126,9 +127,8 @@ public class Logger {
      * @param level level
      */
     public void setLevel(Level level) {
-        if (level != null) {
-            this.level = level;
-        }
+        ArgumentSupport.notNull(name, "level is null");
+        this.level = level;
     }
 
     /**
@@ -138,6 +138,7 @@ public class Logger {
      * @return the return value
      */
     public boolean isEnabled(Level level) {
+        ArgumentSupport.notNull(name, "level is null");
         return this.level.toInt() >= level.toInt();
     }
 
@@ -159,6 +160,8 @@ public class Logger {
      * @param object object
      */
     public void trace(String format, Object object) {
+        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+
         if (isTraceEnabled()) {
             trace(format, new Object[] {object});
         }
@@ -171,8 +174,9 @@ public class Logger {
      * @param objects objects
      */
     public void trace(String format, Object... objects) {
+        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+
         if (isTraceEnabled()) {
-            Objects.requireNonNull(format);
             log(System.out, createMessage(Level.TRACE, format(format, objects)));
         }
     }
@@ -207,6 +211,8 @@ public class Logger {
      * @param object object
      */
     public void debug(String format, Object object) {
+        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+
         if (isDebugEnabled()) {
             debug(format, new Object[] {object});
         }
@@ -219,6 +225,8 @@ public class Logger {
      * @param objects objects
      */
     public void debug(String format, Object... objects) {
+        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+
         if (isDebugEnabled()) {
             Objects.requireNonNull(format);
             log(System.out, createMessage(Level.DEBUG, format(format, objects)));
@@ -255,6 +263,8 @@ public class Logger {
      * @param object object
      */
     public void info(String format, Object object) {
+        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+
         if (isInfoEnabled()) {
             info(format, new Object[] {object});
         }
@@ -267,8 +277,9 @@ public class Logger {
      * @param objects objects
      */
     public void info(String format, Object... objects) {
+        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+
         if (isInfoEnabled()) {
-            Objects.requireNonNull(format);
             log(System.out, createMessage(Level.INFO, format(format, objects)));
         }
     }
@@ -303,6 +314,8 @@ public class Logger {
      * @param object object
      */
     public void warn(String format, Object object) {
+        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+
         if (isWarnEnabled()) {
             warn(format, new Object[] {object});
         }
@@ -315,8 +328,9 @@ public class Logger {
      * @param objects objects
      */
     public void warn(String format, Object... objects) {
+        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+
         if (isWarnEnabled()) {
-            Objects.requireNonNull(format);
             log(System.out, createMessage(Level.WARN, format(format, objects)));
         }
     }
@@ -351,6 +365,8 @@ public class Logger {
      * @param object object
      */
     public void error(String format, Object object) {
+        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+
         if (isErrorEnabled()) {
             error(format, new Object[] {object});
         }
@@ -363,6 +379,8 @@ public class Logger {
      * @param objects objects
      */
     public void error(String format, Object... objects) {
+        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+
         if (isErrorEnabled()) {
             Objects.requireNonNull(format);
             log(System.out, createMessage(Level.ERROR, format(format, objects)));

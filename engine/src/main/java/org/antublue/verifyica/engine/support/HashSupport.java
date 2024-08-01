@@ -38,6 +38,8 @@ public class HashSupport {
      * @return a limited alphanumeric hash
      */
     public static String limitedAlphaNumericHash(int length) {
+        ArgumentSupport.isTrue(length > 0, "length is less than 1");
+
         StringBuilder stringBuilder = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
             stringBuilder.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));

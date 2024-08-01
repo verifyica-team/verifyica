@@ -57,6 +57,8 @@ public final class HumanReadableTimeSupport {
      * @return the return value
      */
     public static String toHumanReadable(long nanoseconds, Format format) {
+        ArgumentSupport.notNull(format, "format is null");
+
         long nanosecondsPositive = nanoseconds > 0 ? nanoseconds : -nanoseconds;
         long millisecondsDuration = (long) ((double) nanosecondsPositive / 1e+6d);
         long hours = TimeUnit.MILLISECONDS.toHours(millisecondsDuration);

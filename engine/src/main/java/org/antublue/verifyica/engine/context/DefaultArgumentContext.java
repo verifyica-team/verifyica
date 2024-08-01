@@ -21,6 +21,7 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement DefaultArgumentContext */
 public class DefaultArgumentContext implements ArgumentContext {
@@ -37,6 +38,8 @@ public class DefaultArgumentContext implements ArgumentContext {
      * @param defaultClassContext classContextImpl
      */
     public DefaultArgumentContext(DefaultClassContext defaultClassContext) {
+        ArgumentSupport.notNull(defaultClassContext, "defaultClassContext null");
+
         this.defaultClassContext = defaultClassContext;
         this.store = new DefaultStore();
     }
@@ -53,7 +56,8 @@ public class DefaultArgumentContext implements ArgumentContext {
 
     @Override
     public <T> Argument<T> getTestArgument(Class<T> type) {
-        notNull(type, "type is null");
+        ArgumentSupport.notNull(type, "type is null;");
+
         return Argument.of(argument.getName(), type.cast(argument.getPayload()));
     }
 
@@ -68,6 +72,8 @@ public class DefaultArgumentContext implements ArgumentContext {
      * @param testInstance testInstance
      */
     public void setTestInstance(Object testInstance) {
+        ArgumentSupport.notNull(testInstance, "testInstance is null");
+
         this.testInstance = testInstance;
     }
 
@@ -86,6 +92,8 @@ public class DefaultArgumentContext implements ArgumentContext {
      * @param argument argument
      */
     public void setTestArgument(Argument<?> argument) {
+        ArgumentSupport.notNull(argument, "argument is null");
+
         this.argument = argument;
     }
 
@@ -115,17 +123,5 @@ public class DefaultArgumentContext implements ArgumentContext {
     @Override
     public int hashCode() {
         return Objects.hash(defaultClassContext, testInstance);
-    }
-
-    /**
-     * Checks if an Object is not null, throwing an IllegalArgumentException if the Object is null.
-     *
-     * @param object object
-     * @param message message
-     */
-    private static void notNull(Object object, String message) {
-        if (object == null) {
-            throw new IllegalArgumentException(message);
-        }
     }
 }

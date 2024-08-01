@@ -43,6 +43,10 @@ public class FieldSupport {
             Class<?> clazz,
             Predicate<Field> predicate,
             HierarchyTraversalMode hierarchyTraversalMode) {
+        ArgumentSupport.notNull(clazz, "clazz is null");
+        ArgumentSupport.notNull(predicate, "predicate is null");
+        ArgumentSupport.notNull(hierarchyTraversalMode, "hierarchyTraversalMode is null");
+
         return new ArrayList<>(
                 ReflectionSupport.findFields(clazz, predicate, hierarchyTraversalMode));
     }

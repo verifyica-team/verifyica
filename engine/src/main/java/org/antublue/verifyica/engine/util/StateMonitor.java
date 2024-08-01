@@ -23,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /**
  * Class to implement StateMonitor
@@ -58,7 +59,7 @@ public class StateMonitor<T> {
      * @param state state
      */
     public void put(T state) {
-        notNull(state, "state is null");
+        ArgumentSupport.notNull(state, "state is null");
 
         if (map.containsKey(state)) {
             throw new IllegalStateException(
@@ -77,8 +78,8 @@ public class StateMonitor<T> {
      * @param throwable throwable
      */
     public void put(T state, Throwable throwable) {
-        notNull(state, "state is null");
-        notNull(throwable, "throwable is null");
+        ArgumentSupport.notNull(state, "state is null");
+        ArgumentSupport.notNull(throwable, "throwable is null");
 
         if (map.containsKey(state)) {
             throw new IllegalStateException(
@@ -97,7 +98,7 @@ public class StateMonitor<T> {
      * @return true if the state exists, else false
      */
     public boolean contains(T state) {
-        notNull(state, "state is null");
+        ArgumentSupport.notNull(state, "state is null");
         return map.containsKey(state);
     }
 
@@ -133,18 +134,6 @@ public class StateMonitor<T> {
      */
     public Set<Entry<T>> entrySet() {
         return new LinkedHashSet<>(map.values());
-    }
-
-    /**
-     * Check if an Object is not null
-     *
-     * @param object object
-     * @param message message
-     */
-    private static void notNull(Object object, String message) {
-        if (object == null) {
-            throw new IllegalArgumentException(message);
-        }
     }
 
     /**

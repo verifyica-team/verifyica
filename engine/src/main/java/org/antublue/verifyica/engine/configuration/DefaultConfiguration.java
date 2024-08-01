@@ -38,6 +38,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement DefaultConfiguration */
 public class DefaultConfiguration implements Configuration {
@@ -75,11 +76,11 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Optional<String> put(String key, String value) {
-        notNullOrEmpty(key, "key is null", "key is empty");
+        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
             getReadWriteLock().writeLock().lock();
-            return Optional.ofNullable(map.put(key, value));
+            return Optional.ofNullable(map.put(key.trim(), value));
         } finally {
             getReadWriteLock().writeLock().unlock();
         }
@@ -87,11 +88,11 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public String get(String key) {
-        notNullOrEmpty(key, "key is null", "key is empty");
+        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
             getReadWriteLock().readLock().lock();
-            return map.get(key);
+            return map.get(key.trim());
         } finally {
             getReadWriteLock().readLock().unlock();
         }
@@ -99,24 +100,24 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Optional<String> getOptional(String key) {
-        notNullOrEmpty(key, "key is null", "key is empty");
+        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
             getReadWriteLock().readLock().lock();
-            return Optional.ofNullable(map.get(key));
+            return Optional.ofNullable(map.get(key.trim()));
         } finally {
             getReadWriteLock().readLock().unlock();
         }
     }
 
     @Override
-    public Optional<String> computeIfAbsent(String key, Function<String, String> function) {
-        notNullOrEmpty(key, "key is null", "key is empty");
-        notNull(function, "function is null");
+    public Optional<String> computeIfAbsent(String key, Function<String, String> transformer) {
+        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
+        ArgumentSupport.notNull(transformer, "transformer is null");
 
         try {
             getReadWriteLock().writeLock().lock();
-            return Optional.ofNullable(map.computeIfAbsent(key, function));
+            return Optional.ofNullable(map.computeIfAbsent(key.trim(), transformer));
         } finally {
             getReadWriteLock().writeLock().unlock();
         }
@@ -124,11 +125,11 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public boolean containsKey(String key) {
-        notNullOrEmpty(key, "key is null", "key is empty");
+        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
             getReadWriteLock().readLock().lock();
-            return map.containsKey(key);
+            return map.containsKey(key.trim());
         } finally {
             getReadWriteLock().readLock().unlock();
         }
@@ -136,11 +137,11 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public String remove(String key) {
-        notNullOrEmpty(key, "key is null", "key is empty");
+        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
             getReadWriteLock().writeLock().lock();
-            return map.remove(key);
+            return map.remove(key.trim());
         } finally {
             getReadWriteLock().writeLock().unlock();
         }
@@ -148,11 +149,11 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Optional<String> removeOptional(String key) {
-        notNullOrEmpty(key, "key is null", "key is empty");
+        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
         try {
             getReadWriteLock().writeLock().lock();
-            return Optional.ofNullable(map.remove(key));
+            return Optional.ofNullable(map.remove(key.trim()));
         } finally {
             getReadWriteLock().writeLock().unlock();
         }
@@ -196,15 +197,15 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Configuration merge(Map<String, String> map) {
-        notNull(map, "map is null");
+        ArgumentSupport.notNull(map, "map is null");
 
         try {
             getReadWriteLock().writeLock().lock();
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
-                if (key != null && !key.trim().isEmpty()) {
-                    this.map.put(key, value);
+                if (key != null && !key.trim().isEmpty() && value != null && !value.trim().isEmpty()) {
+                    this.map.put(key.trim(), value.trim());
                 }
             }
             return this;
@@ -215,7 +216,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Configuration merge(Configuration configuration) {
-        notNull(configuration, "configuration is null");
+        ArgumentSupport.notNull(configuration, "configuration is null");
 
         try {
             configuration.getReadWriteLock().readLock().lock();
@@ -236,7 +237,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Configuration replace(Map<String, String> map) {
-        notNull(map, "map is null");
+        ArgumentSupport.notNull(map, "map is null");
 
         try {
             getReadWriteLock().writeLock().lock();
@@ -249,7 +250,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Configuration replace(Configuration configuration) {
-        notNull(configuration, "configuration is null");
+        ArgumentSupport.notNull(configuration, "configuration is null");
 
         try {
             configuration.getReadWriteLock().readLock().lock();
@@ -426,35 +427,6 @@ public class DefaultConfiguration implements Configuration {
                             + " | "
                             + message
                             + " ");
-        }
-    }
-
-    /**
-     * Check if a Object is not null
-     *
-     * @param object object
-     * @param message message
-     */
-    private static void notNull(Object object, String message) {
-        if (object == null) {
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    /**
-     * Check if a String is not null and not blank
-     *
-     * @param string string
-     * @param nullMessage nullMessage
-     * @param emptyMessage emptyMessage
-     */
-    private static void notNullOrEmpty(String string, String nullMessage, String emptyMessage) {
-        if (string == null) {
-            throw new IllegalArgumentException(nullMessage);
-        }
-
-        if (string.trim().isEmpty()) {
-            throw new IllegalArgumentException(emptyMessage);
         }
     }
 }

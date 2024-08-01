@@ -17,6 +17,7 @@
 package org.antublue.verifyica.engine.util;
 
 import java.util.Objects;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement ANSIColor */
 public class AnsiColor {
@@ -249,6 +250,8 @@ public class AnsiColor {
      * @param escapeSequence sequence
      */
     private AnsiColor(String escapeSequence) {
+        ArgumentSupport.notNull(escapeSequence, "escapeSequence is null");
+
         this.escapeSequence = escapeSequence;
     }
 

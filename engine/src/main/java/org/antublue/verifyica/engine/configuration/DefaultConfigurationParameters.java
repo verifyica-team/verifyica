@@ -35,6 +35,8 @@ public class DefaultConfigurationParameters implements ConfigurationParameters {
      * @param configuration configuration
      */
     public DefaultConfigurationParameters(Configuration configuration) {
+        ArgumentSupport.notNull(configuration, "configuration is null");
+
         this.configuration = configuration;
     }
 
@@ -42,14 +44,14 @@ public class DefaultConfigurationParameters implements ConfigurationParameters {
     public Optional<String> get(String key) {
         ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
-        return configuration.getOptional(key);
+        return configuration.getOptional(key.trim());
     }
 
     @Override
     public Optional<Boolean> getBoolean(String key) {
         ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
-        return Optional.ofNullable(configuration.get(key)).map("true"::equals);
+        return Optional.ofNullable(configuration.get(key.trim())).map("true"::equals);
     }
 
     @Override
@@ -57,7 +59,7 @@ public class DefaultConfigurationParameters implements ConfigurationParameters {
         ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
         ArgumentSupport.notNull(transformer, "transformer is null");
 
-        String value = configuration.get(key);
+        String value = configuration.get(key.trim());
         return value != null ? Optional.ofNullable(transformer.apply(value)) : Optional.empty();
     }
 

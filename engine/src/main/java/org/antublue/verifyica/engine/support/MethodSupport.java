@@ -43,6 +43,10 @@ public class MethodSupport {
             Class<?> clazz,
             Predicate<Method> predicate,
             HierarchyTraversalMode hierarchyTraversalMode) {
+        ArgumentSupport.notNull(clazz, "clazz is null");
+        ArgumentSupport.notNull(predicate, "predicate is null");
+        ArgumentSupport.notNull(hierarchyTraversalMode, "hierarchyTraversalMode is null");
+
         return new ArrayList<>(
                 ReflectionSupport.findMethods(clazz, predicate, hierarchyTraversalMode));
     }

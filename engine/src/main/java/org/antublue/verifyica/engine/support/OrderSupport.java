@@ -35,6 +35,8 @@ public class OrderSupport {
      * @param classes classes
      */
     public static void orderClasses(List<Class<?>> classes) {
+        ArgumentSupport.notNull(classes, "classes is null");
+
         classes.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
         classes.sort(Comparator.comparingInt(OrderSupport::getOrder));
     }
@@ -46,6 +48,8 @@ public class OrderSupport {
      * @return the order annotation value
      */
     public static int getOrder(Class<?> clazz) {
+        ArgumentSupport.notNull(clazz, "clazz is null");
+
         int order = Integer.MAX_VALUE;
 
         Verifyica.Order annotation = clazz.getAnnotation(Verifyica.Order.class);
@@ -62,6 +66,8 @@ public class OrderSupport {
      * @param methods methods
      */
     public static void orderMethods(List<Method> methods) {
+        ArgumentSupport.notNull(methods, "methods is null");
+
         methods.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
         methods.sort(Comparator.comparingInt(OrderSupport::getOrder));
     }
@@ -73,6 +79,8 @@ public class OrderSupport {
      * @return the order annotation value
      */
     public static int getOrder(Method method) {
+        ArgumentSupport.notNull(method, "method is null");
+
         int order = Integer.MAX_VALUE;
 
         Verifyica.Order annotation = method.getAnnotation(Verifyica.Order.class);

@@ -33,6 +33,7 @@ import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 import org.antublue.verifyica.engine.support.ClassPathSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
@@ -65,7 +66,7 @@ public class EngineExtensionRegistry {
      * @return this EngineExtensionRegistry
      */
     public EngineExtensionRegistry register(EngineExtension engineExtension) {
-        notNull(engineExtension, "engineExtension is null");
+        ArgumentSupport.notNull(engineExtension, "engineExtension is null");
 
         try {
             getReadWriteLock().writeLock().lock();
@@ -84,7 +85,7 @@ public class EngineExtensionRegistry {
      * @return this EngineExtensionRegistry
      */
     public EngineExtensionRegistry unregister(EngineExtension engineExtension) {
-        notNull(engineExtension, "testClass is null");
+        ArgumentSupport.notNull(engineExtension, "testClass is null");
 
         try {
             getReadWriteLock().writeLock().lock();
@@ -117,6 +118,8 @@ public class EngineExtensionRegistry {
      * @throws Throwable Throwable
      */
     public void onInitialize(EngineExtensionContext engineExtensionContext) throws Throwable {
+        ArgumentSupport.notNull(engineExtensionContext, "engineExtensionContext is null");
+
         for (EngineExtension engineExtension : getEngineExtensions()) {
             LOGGER.trace(
                     "engine extension [%s] onInitialize()", engineExtension.getClass().getName());
@@ -140,6 +143,9 @@ public class EngineExtensionRegistry {
             EngineExtensionContext engineExtensionContext,
             List<TestClassDefinition> testClassDefinitions)
             throws Throwable {
+        ArgumentSupport.notNull(engineExtensionContext, "engineExtensionContext is null");
+        ArgumentSupport.notNull(testClassDefinitions, "testClassDefinitions is null");
+
         for (EngineExtension engineExtension : getEngineExtensions()) {
             LOGGER.trace(
                     "engine extension [%s] onTestDiscovery()",
@@ -163,6 +169,9 @@ public class EngineExtensionRegistry {
     public void onTestDiscovery(
             EngineExtensionContext engineExtensionContext, TestClassDefinition testClassDefinition)
             throws Throwable {
+        ArgumentSupport.notNull(engineExtensionContext, "engineExtensionContext is null");
+        ArgumentSupport.notNull(testClassDefinition, "testClassDefinition is null");
+
         for (EngineExtension engineExtension : getEngineExtensions()) {
             LOGGER.trace(
                     "engine extension [%s] onTestDiscovery() testClassDefinition testClass [%s]",
@@ -186,6 +195,8 @@ public class EngineExtensionRegistry {
      * @throws Throwable Throwable
      */
     public void beforeExecute(EngineExtensionContext engineExtensionContext) throws Throwable {
+        ArgumentSupport.notNull(engineExtensionContext, "engineExtensionContext is null");
+
         for (EngineExtension engineExtension : getEngineExtensions()) {
             LOGGER.trace(
                     "engine extension [%s] beforeExecute()", engineExtension.getClass().getName());
@@ -205,6 +216,8 @@ public class EngineExtensionRegistry {
      * @throws Throwable Throwable
      */
     public void afterExecute(EngineExtensionContext engineExtensionContext) throws Throwable {
+        ArgumentSupport.notNull(engineExtensionContext, "engineExtensionContext is null");
+
         for (EngineExtension engineExtension : getEngineExtensionsReverse()) {
             LOGGER.trace(
                     "engine extension [%s] beforeDestroy()", engineExtension.getClass().getName());
@@ -370,18 +383,6 @@ public class EngineExtensionRegistry {
                                 }
                             }
                         });
-    }
-
-    /**
-     * Check if a Object is not null
-     *
-     * @param object object
-     * @param message message
-     */
-    private static void notNull(Object object, String message) {
-        if (object == null) {
-            throw new IllegalArgumentException(message);
-        }
     }
 
     /** Class to hold the singleton instance */
