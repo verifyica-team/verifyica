@@ -32,18 +32,18 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.extension.ClassExtension;
-import org.antublue.verifyica.api.extension.engine.ClassDefinition;
+import org.antublue.verifyica.api.interceptor.ClassInterceptor;
+import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
-import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
+import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.MethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.exception.TestClassException;
 import org.antublue.verifyica.engine.exception.UncheckedClassNotFoundException;
-import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
-import org.antublue.verifyica.engine.extension.EngineExtensionRegistry;
+import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
+import org.antublue.verifyica.engine.interceptor.internal.engine.EngineInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ClassPathSupport;
@@ -128,7 +128,7 @@ public class EngineDiscoveryRequestResolver {
             afterTestDiscovery(classDefinitions);
 
             prune(classDefinitions);
-            loadClassExtensions(classDefinitions);
+            loadClassInterceptors(classDefinitions);
             buildEngineDescriptor(engineDescriptor, classDefinitions);
         } catch (EngineException e) {
             throw e;
@@ -454,7 +454,7 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
-     * Method to invoke engine extensions
+     * Method to invoke engine interceptors
      *
      * @param classDefinitions classDefinitions
      * @throws Throwable Throwable
@@ -463,15 +463,15 @@ public class EngineDiscoveryRequestResolver {
             throws Throwable {
         LOGGER.trace("afterTestDiscovery()");
 
-        DefaultEngineExtensionContext defaultEngineExtensionContext =
-                new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
+        DefaultEngineInterceptorContext defaultEngineInterceptorContext =
+                new DefaultEngineInterceptorContext(DefaultEngineContext.getInstance());
 
-        EngineExtensionRegistry.getInstance()
-                .onTestDiscovery(defaultEngineExtensionContext, classDefinitions);
+        EngineInterceptorRegistry.getInstance()
+                .onTestDiscovery(defaultEngineInterceptorContext, classDefinitions);
 
         for (ClassDefinition classDefinition : classDefinitions) {
-            EngineExtensionRegistry.getInstance()
-                    .onTestDiscovery(defaultEngineExtensionContext, classDefinition);
+            EngineInterceptorRegistry.getInstance()
+                    .onTestDiscovery(defaultEngineInterceptorContext, classDefinition);
         }
     }
 
@@ -490,30 +490,30 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
-     * Method to load test class ClassExtensions
+     * Method to load test class ClassInterceptors
      *
      * @param classDefinitions classDefinitions
      * @throws Throwable Throwable
      */
-    private static void loadClassExtensions(List<ClassDefinition> classDefinitions)
+    private static void loadClassInterceptors(List<ClassDefinition> classDefinitions)
             throws Throwable {
-        LOGGER.trace("loadClassExtensions()");
+        LOGGER.trace("loadClassInterceptors()");
 
         for (ClassDefinition classDefinition : classDefinitions) {
             Class<?> testClass = classDefinition.getTestClass();
 
-            List<Method> extensionSupplierMethods =
+            List<Method> classInterceptorSupplierMethods =
                     MethodSupport.findMethods(
                             testClass,
-                            Predicates.CLASS_EXTENSION_SUPPLIER,
+                            Predicates.CLASS_INTERCEPTOR_SUPPLIER,
                             HierarchyTraversalMode.BOTTOM_UP);
 
-            if (!extensionSupplierMethods.isEmpty()) {
-                Object object = extensionSupplierMethods.get(0).invoke(null);
+            if (!classInterceptorSupplierMethods.isEmpty()) {
+                Object object = classInterceptorSupplierMethods.get(0).invoke(null);
 
-                if (object instanceof ClassExtension) {
-                    ClassExtensionRegistry.getInstance()
-                            .register(testClass, (ClassExtension) object);
+                if (object instanceof ClassInterceptor) {
+                    ClassInterceptorRegistry.getInstance()
+                            .register(testClass, (ClassInterceptor) object);
                 } else if (object instanceof Stream || object instanceof Iterable) {
                     Iterator<?> iterator;
 
@@ -527,14 +527,15 @@ public class EngineDiscoveryRequestResolver {
 
                     while (iterator.hasNext()) {
                         Object o = iterator.next();
-                        if (o instanceof ClassExtension) {
-                            ClassExtensionRegistry.getInstance()
-                                    .register(testClass, (ClassExtension) o);
+                        if (o instanceof ClassInterceptor) {
+                            ClassInterceptorRegistry.getInstance()
+                                    .register(testClass, (ClassInterceptor) o);
                         } else {
                             throw new TestClassException(
                                     format(
                                             "Invalid argument type [%s] supplied bye test class"
-                                                + " [%s] @Verifyica.ClassExtensionSupplier method",
+                                                    + " [%s] @Verifyica.ClassInterceptorSupplier"
+                                                    + " method",
                                             o.getClass().getName(), testClass.getName()));
                         }
                     }

@@ -20,10 +20,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.extension.ClassExtension;
-import org.antublue.verifyica.api.extension.engine.EngineExtension;
-import org.antublue.verifyica.engine.extension.internal.InternalClassExtension;
-import org.antublue.verifyica.engine.extension.internal.engine.InternalEngineExtension;
+import org.antublue.verifyica.api.interceptor.ClassInterceptor;
+import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
+import org.antublue.verifyica.engine.interceptor.internal.InternalClassInterceptor;
+import org.antublue.verifyica.engine.interceptor.internal.engine.InternalEngineInterceptor;
 import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.MethodSupport;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
@@ -31,8 +31,8 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 /** Class to implement Predicates */
 public class Predicates {
 
-    /** Predicate to filter test engine internal extension classes */
-    public static final Predicate<Class<?>> ENGINE_INTERNAL_EXTENSION_CLASS =
+    /** Predicate to filter internal engine interceptors classes */
+    public static final Predicate<Class<?>> ENGINE_INTERNAL_INTERCEPTOR_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
@@ -40,12 +40,12 @@ public class Predicates {
                         && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && InternalEngineExtension.class.isAssignableFrom(clazz)
-                        && EngineExtension.class.isAssignableFrom(clazz);
+                        && InternalEngineInterceptor.class.isAssignableFrom(clazz)
+                        && EngineInterceptor.class.isAssignableFrom(clazz);
             };
 
-    /** Predicate to filter test engine extension classes */
-    public static final Predicate<Class<?>> ENGINE_EXTERNAL_EXTENSION_CLASS =
+    /** Predicate to filter engine interceptors classes */
+    public static final Predicate<Class<?>> ENGINE_INTERCEPTOR_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
@@ -53,12 +53,12 @@ public class Predicates {
                         && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && !InternalEngineExtension.class.isAssignableFrom(clazz)
-                        && EngineExtension.class.isAssignableFrom(clazz);
+                        && !InternalEngineInterceptor.class.isAssignableFrom(clazz)
+                        && EngineInterceptor.class.isAssignableFrom(clazz);
             };
 
-    /** Predicate to filter class internal extension classes */
-    public static final Predicate<Class<?>> CLASS_INTERNAL_EXTENSION_CLASS =
+    /** Predicate to filter internal class interceptor classes */
+    public static final Predicate<Class<?>> INTERNAL_CLASS_INTERCEPTOR_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
@@ -66,12 +66,12 @@ public class Predicates {
                         && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && InternalClassExtension.class.isAssignableFrom(clazz)
-                        && ClassExtension.class.isAssignableFrom(clazz);
+                        && InternalClassInterceptor.class.isAssignableFrom(clazz)
+                        && ClassInterceptor.class.isAssignableFrom(clazz);
             };
 
-    /** Predicate to filter class extension supplier methods */
-    public static final Predicate<Method> CLASS_EXTENSION_SUPPLIER =
+    /** Predicate to filter class interceptor supplier methods */
+    public static final Predicate<Method> CLASS_INTERCEPTOR_SUPPLIER =
             method -> {
                 int modifiers = method.getModifiers();
 
@@ -79,7 +79,7 @@ public class Predicates {
                         && Modifier.isStatic(modifiers)
                         // TODO check return type
                         && method.getParameterCount() == 0
-                        && method.isAnnotationPresent(Verifyica.ClassExtensionSupplier.class);
+                        && method.isAnnotationPresent(Verifyica.ClassInterceptorSupplier.class);
             };
 
     /** Predicate to filter argument supplier methods */

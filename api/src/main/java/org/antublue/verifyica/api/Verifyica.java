@@ -26,10 +26,10 @@ import org.junit.platform.commons.annotation.Testable;
 /** Interface that contains all Verifyica annotations */
 public @interface Verifyica {
 
-    /** ExtensionSupplier annotation */
+    /** ClassInterceptorSupplier annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface ClassExtensionSupplier {}
+    @interface ClassInterceptorSupplier {}
 
     /** ArgumentSupplier annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})

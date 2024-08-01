@@ -28,7 +28,7 @@ import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.ImmutableClassContext;
-import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
+import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
@@ -249,7 +249,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         Object testInstance = null;
 
         try {
-            ClassExtensionRegistry.getInstance()
+            ClassInterceptorRegistry.getInstance()
                     .beforeInstantiate(defaultClassContext.getEngineContext(), testClass);
 
             testInstance =
@@ -263,7 +263,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             throwable = t;
         }
 
-        ClassExtensionRegistry.getInstance()
+        ClassInterceptorRegistry.getInstance()
                 .afterInstantiate(
                         defaultClassContext.getEngineContext(), testClass, testInstance, throwable);
     }
@@ -277,7 +277,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     private void prepare(DefaultClassContext defaultClassContext) throws Throwable {
         LOGGER.trace("prepare() testClass [%s]", testClass.getName());
 
-        ClassExtensionRegistry.getInstance()
+        ClassInterceptorRegistry.getInstance()
                 .prepare(ImmutableClassContext.wrap(defaultClassContext), prepareMethods);
     }
 
@@ -432,7 +432,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     private void conclude(DefaultClassContext defaultClassContext) throws Throwable {
         LOGGER.trace("conclude() testClass [%s]", testClass.getName());
 
-        ClassExtensionRegistry.getInstance()
+        ClassInterceptorRegistry.getInstance()
                 .conclude(ImmutableClassContext.wrap(defaultClassContext), concludeMethods);
     }
 
@@ -450,7 +450,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         Throwable throwable = null;
 
         try {
-            ClassExtensionRegistry.getInstance().beforeDestroy(defaultClassContext);
+            ClassInterceptorRegistry.getInstance().beforeDestroy(defaultClassContext);
         } catch (Throwable t) {
             throwable = t;
         }
