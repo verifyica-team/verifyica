@@ -174,9 +174,7 @@ public class VerifyicaEngine implements TestEngine {
                                         Thread.currentThread()
                                                 .setName(
                                                         "verifyica-"
-                                                                + HashSupport
-                                                                        .limitedAlphaNumericHash(
-                                                                                4));
+                                                                + HashSupport.alphaNumericHash(4));
                                         if (!testDescriptor.getChildren().isEmpty()) {
                                             try {
                                                 if (finalSemaphore != null) {

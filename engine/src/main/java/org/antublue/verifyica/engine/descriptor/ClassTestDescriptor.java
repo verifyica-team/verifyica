@@ -318,9 +318,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                                     .setName(
                                                             baseThreadName
                                                                     + "/"
-                                                                    + HashSupport
-                                                                            .limitedAlphaNumericHash(
-                                                                                    4));
+                                                                    + HashSupport.alphaNumericHash(
+                                                                            4));
 
                                             try {
                                                 if (finalSemaphore != null) {
@@ -357,10 +356,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                     for (TestDescriptor testDescriptor : getChildren()) {
                         if (testDescriptor instanceof ExecutableTestDescriptor) {
                             Thread.currentThread()
-                                    .setName(
-                                            threadName
-                                                    + "/"
-                                                    + HashSupport.limitedAlphaNumericHash(4));
+                                    .setName(threadName + "/" + HashSupport.alphaNumericHash(4));
 
                             ExecutableTestDescriptor executableTestDescriptor =
                                     (ExecutableTestDescriptor) testDescriptor;

@@ -24,6 +24,7 @@ public class HashSupport {
 
     private static final String CHARACTERS =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz" + "0123456789";
+
     private static final Random RANDOM = new SecureRandom();
 
     /** Constructor */
@@ -32,18 +33,19 @@ public class HashSupport {
     }
 
     /**
-     * Method to generate a limited alphanumeric hash
+     * Method to generate an alphanumeric hash
      *
      * @param length length
-     * @return a limited alphanumeric hash
+     * @return an alphanumeric hash
      */
-    public static String limitedAlphaNumericHash(int length) {
+    public static String alphaNumericHash(int length) {
         ArgumentSupport.isTrue(length > 0, "length is less than 1");
 
         StringBuilder stringBuilder = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
             stringBuilder.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
         }
+
         return stringBuilder.toString();
     }
 }

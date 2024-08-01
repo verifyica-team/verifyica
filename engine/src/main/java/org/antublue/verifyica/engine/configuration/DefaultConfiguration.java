@@ -204,7 +204,10 @@ public class DefaultConfiguration implements Configuration {
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
-                if (key != null && !key.trim().isEmpty() && value != null && !value.trim().isEmpty()) {
+                if (key != null
+                        && !key.trim().isEmpty()
+                        && value != null
+                        && !value.trim().isEmpty()) {
                     this.map.put(key.trim(), value.trim());
                 }
             }
