@@ -53,7 +53,8 @@ public class KafkaTest {
     public static Stream<KafkaTestEnvironment> arguments() {
         return Stream.of(
                 new KafkaTestEnvironment("apache/kafka:3.7.0"),
-                new KafkaTestEnvironment("apache/kafka:3.7.1"));
+                new KafkaTestEnvironment("apache/kafka:3.7.1"),
+                new KafkaTestEnvironment("apache/kafka:3.8.0"));
     }
 
     @Verifyica.BeforeAll

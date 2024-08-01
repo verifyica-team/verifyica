@@ -19,39 +19,25 @@ package org.antublue.verifyica.engine.util;
 import static java.lang.String.format;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /**
- * Class to implement StateMonitor
+ * Class to implement StateTracker
  *
- * @param <T> the type
+ * @param <T> the state type
  */
 @SuppressWarnings("PMD.UnusedMethod")
-public class StateMonitor<T> {
+public class StateTracker<T> {
 
     private final Map<T, Entry<T>> map;
     private Entry<T> lastEntry;
 
     /** Constructor */
-    public StateMonitor() {
-        this(null);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param initial initial
-     */
-    public StateMonitor(T initial) {
+    public StateTracker() {
         map = new LinkedHashMap<>();
-        if (initial != null) {
-            put(initial);
-        }
     }
 
     /**
@@ -104,15 +90,6 @@ public class StateMonitor<T> {
     }
 
     /**
-     * Method to get the last State entry
-     *
-     * @return the last State entry, possibly null
-     */
-    public Optional<Entry<T>> getLastStateEntry() {
-        return Optional.ofNullable(lastEntry);
-    }
-
-    /**
      * Method to get the state containing the first Throwable
      *
      * @return the state containing the first Throwable
@@ -128,13 +105,22 @@ public class StateMonitor<T> {
         return Optional.empty();
     }
 
-    /**
-     * Method to get the Set of entries
-     *
-     * @return the Set of entries
-     */
-    public Set<Entry<T>> entrySet() {
-        return new LinkedHashSet<>(map.values());
+    @Override
+    public String toString() {
+        return "StateTracker{" + "map=" + map + ", lastEntry=" + lastEntry + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StateTracker<?> that = (StateTracker<?>) o;
+        return Objects.equals(map, that.map) && Objects.equals(lastEntry, that.lastEntry);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(map, lastEntry);
     }
 
     /**

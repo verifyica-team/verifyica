@@ -21,7 +21,6 @@ import static java.lang.String.format;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
@@ -29,8 +28,7 @@ import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
-import org.antublue.verifyica.engine.support.ObjectSupport;
-import org.antublue.verifyica.engine.util.StateMonitor;
+import org.antublue.verifyica.engine.util.StateTracker;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
@@ -101,7 +99,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
     @Override
     public void execute(ExecutionRequest executionRequest, Context context) {
-        LOGGER.trace("execute ArgumentTestDescriptor [%s]", this);
+        LOGGER.trace("execute [%s]", this);
 
         DefaultArgumentContext defaultArgumentContext = (DefaultArgumentContext) context;
 
@@ -118,65 +116,54 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        StateMonitor<String> stateMonitor = new StateMonitor<>();
+        StateTracker<String> stateTracker = new StateTracker<>();
 
         try {
-            stateMonitor.put("beforeAll");
+            stateTracker.put("beforeAll");
             beforeAll(defaultArgumentContext);
-            stateMonitor.put("beforeAll->SUCCESS");
+            stateTracker.put("beforeAll->SUCCESS");
         } catch (Throwable t) {
-            stateMonitor.put("beforeAll->FAILURE", t);
+            stateTracker.put("beforeAll->FAILURE", t);
             t.printStackTrace(System.err);
         }
 
-        if (stateMonitor.contains("beforeAll->SUCCESS")) {
+        if (stateTracker.contains("beforeAll->SUCCESS")) {
             try {
-                stateMonitor.put("doExecute");
+                stateTracker.put("doExecute");
                 doExecute(executionRequest, defaultArgumentContext);
-                stateMonitor.put("doExecute->SUCCESS");
+                stateTracker.put("doExecute->SUCCESS");
             } catch (Throwable t) {
-                stateMonitor.put("doExecute->FAILURE", t);
+                stateTracker.put("doExecute->FAILURE", t);
                 // Don't log the throwable since it's from downstream test descriptors
             }
         }
 
-        if (stateMonitor.contains("beforeAll->FAILURE")) {
+        if (stateTracker.contains("beforeAll->FAILURE")) {
             try {
-                stateMonitor.put("doSkip");
+                stateTracker.put("doSkip");
                 doSkip(executionRequest, defaultArgumentContext);
-                stateMonitor.put("doSkip->SUCCESS");
+                stateTracker.put("doSkip->SUCCESS");
             } catch (Throwable t) {
-                stateMonitor.put("doSkip->FAILURE", t);
+                stateTracker.put("doSkip->FAILURE", t);
                 // Don't log the throwable since it's from downstream test descriptors
             }
         }
 
         try {
-            stateMonitor.put("afterAll");
+            stateTracker.put("afterAll");
             afterAll(defaultArgumentContext);
-            stateMonitor.put("afterAll->SUCCESS");
+            stateTracker.put("afterAll->SUCCESS");
         } catch (Throwable t) {
-            stateMonitor.put("afterAll->FAILURE", t);
+            stateTracker.put("afterAll->FAILURE", t);
             t.printStackTrace(System.err);
         }
 
         getStopWatch().stop();
 
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(this);
-            stateMonitor
-                    .entrySet()
-                    .forEach(
-                            new Consumer<StateMonitor.Entry<String>>() {
-                                @Override
-                                public void accept(StateMonitor.Entry<String> stateTrackerEntry) {
-                                    LOGGER.trace("%s %s", this, stateTrackerEntry);
-                                }
-                            });
-        }
+        LOGGER.trace("state monitor [%s]", stateTracker);
 
         TestExecutionResult testExecutionResult =
-                stateMonitor
+                stateTracker
                         .getFirstStateEntryWithThrowable()
                         .map(entry -> TestExecutionResult.failed(entry.getThrowable()))
                         .orElse(TestExecutionResult.successful());
@@ -209,20 +196,18 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()
-                + " "
+        return "ArgumentTestDescriptor{"
+                + "uniqueId="
                 + getUniqueId()
-                + " {"
-                + " testClass ["
-                + testClass.getName()
-                + "]"
-                + " beforeAllMethods ["
-                + ObjectSupport.toString(beforeAllMethods)
-                + "]"
-                + " afterAllMethods ["
-                + ObjectSupport.toString(afterAllMethods)
-                + "] "
-                + "}";
+                + ", testClass="
+                + testClass
+                + ", testArgument="
+                + testArgument
+                + ", beforeAllMethods="
+                + beforeAllMethods
+                + ", afterAllMethods="
+                + afterAllMethods
+                + '}';
     }
 
     /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.maven.plugin.listener;
+package org.antublue.verifyica.engine.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.maven.plugin.listener;
+package org.antublue.verifyica.engine.listener;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -43,7 +43,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             new AnsiColorStringBuilder()
                     .color(AnsiColor.TEXT_WHITE_BRIGHT)
                     .append("Verifyica ")
-                    .append(VerifyicaEngine.VERSION)
+                    .append(VerifyicaEngine.staticGetVersion())
                     .color(AnsiColor.TEXT_RESET)
                     .toString();
 

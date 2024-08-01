@@ -21,7 +21,6 @@ import static java.lang.String.format;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
@@ -29,8 +28,7 @@ import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
-import org.antublue.verifyica.engine.support.ObjectSupport;
-import org.antublue.verifyica.engine.util.StateMonitor;
+import org.antublue.verifyica.engine.util.StateTracker;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
@@ -122,54 +120,43 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
 
         executionRequest.getEngineExecutionListener().executionStarted(this);
 
-        StateMonitor<String> stateMonitor = new StateMonitor<>();
+        StateTracker<String> stateTracker = new StateTracker<>();
 
         try {
-            stateMonitor.put("beforeEach");
+            stateTracker.put("beforeEach");
             beforeEach(defaultArgumentContext);
-            stateMonitor.put("beforeEach->SUCCESS");
+            stateTracker.put("beforeEach->SUCCESS");
         } catch (Throwable t) {
-            stateMonitor.put("beforeEach->FAILURE", t);
+            stateTracker.put("beforeEach->FAILURE", t);
             t.printStackTrace(System.err);
         }
 
-        if (stateMonitor.contains("beforeEach->SUCCESS")) {
+        if (stateTracker.contains("beforeEach->SUCCESS")) {
             try {
-                stateMonitor.put("test");
+                stateTracker.put("test");
                 test(defaultArgumentContext);
-                stateMonitor.put("test->SUCCESS");
+                stateTracker.put("test->SUCCESS");
             } catch (Throwable t) {
-                stateMonitor.put("test->FAILURE", t);
+                stateTracker.put("test->FAILURE", t);
                 t.printStackTrace(System.err);
             }
         }
 
         try {
-            stateMonitor.put("afterEach");
+            stateTracker.put("afterEach");
             afterEach(defaultArgumentContext);
-            stateMonitor.put("afterEach->SUCCESS");
+            stateTracker.put("afterEach->SUCCESS");
         } catch (Throwable t) {
-            stateMonitor.put("afterEach->FAILURE", t);
+            stateTracker.put("afterEach->FAILURE", t);
             t.printStackTrace(System.err);
         }
 
         getStopWatch().stop();
 
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(this);
-            stateMonitor
-                    .entrySet()
-                    .forEach(
-                            new Consumer<StateMonitor.Entry<String>>() {
-                                @Override
-                                public void accept(StateMonitor.Entry<String> stateTrackerEntry) {
-                                    LOGGER.trace("%s %s", this, stateTrackerEntry);
-                                }
-                            });
-        }
+        LOGGER.trace("state monitor [%s]", stateTracker);
 
         TestExecutionResult testExecutionResult =
-                stateMonitor
+                stateTracker
                         .getFirstStateEntryWithThrowable()
                         .map(entry -> TestExecutionResult.failed(entry.getThrowable()))
                         .orElse(TestExecutionResult.successful());
@@ -197,22 +184,20 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()
-                + " "
+        return "MethodTestDescriptor{"
+                + "uniqueId="
                 + getUniqueId()
-                + " { "
-                + "testClass ["
-                + testClass.getName()
-                + "]"
-                + " beforeEachMethods ["
-                + ObjectSupport.toString(beforeEachMethods)
-                + "]"
-                + " testMethod ["
-                + testMethod.getName()
-                + "] afterEachMethods ["
-                + ObjectSupport.toString(afterEachMethods)
-                + "] "
-                + "}";
+                + ", testClass="
+                + testClass
+                + ", testArgument="
+                + testArgument
+                + ", beforeEachMethods="
+                + beforeEachMethods
+                + ", testMethod="
+                + testMethod
+                + ", afterEachMethods="
+                + afterEachMethods
+                + '}';
     }
 
     /**

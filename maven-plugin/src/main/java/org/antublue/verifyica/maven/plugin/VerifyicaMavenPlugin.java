@@ -16,9 +16,12 @@
 
 package org.antublue.verifyica.maven.plugin;
 
+import static java.lang.String.format;
 import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNamePatterns;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
@@ -28,6 +31,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.antublue.verifyica.api.Configuration;
@@ -36,15 +41,15 @@ import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
-import org.antublue.verifyica.maven.plugin.listener.ChainedEngineExecutionListener;
-import org.antublue.verifyica.maven.plugin.listener.StatusEngineExecutionListener;
-import org.antublue.verifyica.maven.plugin.listener.SummaryEngineExecutionListener;
-import org.antublue.verifyica.maven.plugin.logger.Logger;
+import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
+import org.antublue.verifyica.engine.listener.StatusEngineExecutionListener;
+import org.antublue.verifyica.engine.listener.SummaryEngineExecutionListener;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
@@ -53,7 +58,6 @@ import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
-import org.junit.platform.launcher.core.LauncherConfig;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 
 /** Class to implement VerifyicaMavenPlugin */
@@ -64,16 +68,29 @@ import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
         requiresDependencyResolution = ResolutionScope.TEST)
 public class VerifyicaMavenPlugin extends AbstractMojo {
 
+    /** Constant */
+    private static final String MAVEN_PLUGIN_PROPERTIES_RESOURCE = "/maven-plugin.properties";
+
+    /** Constant */
+    private static final String MAVEN_PLUGIN_VERSION_KEY = "version";
+
+    /** Constant */
+    private static final String UNKNOWN_VERSION = "unknown";
+
+    /** Constant */
     private static final String INTERACTIVE = "interactive";
 
+    /** Constant */
     private static final String BATCH = "batch";
 
+    /** Constant */
     private static final String GROUP_ID = "org.antublue.verifyica";
 
+    /** Constant */
     private static final String ARTIFACT_ID = "maven-plugin";
 
-    /** Version */
-    public static final String VERSION = Version.version();
+    /** Constant */
+    public static final String VERSION = version();
 
     @Parameter(defaultValue = "${session}", required = true, readonly = true)
     private MavenSession mavenSession;
@@ -87,6 +104,15 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     /** Constructor */
     public VerifyicaMavenPlugin() {
         super();
+    }
+
+    /**
+     * Method to get the version
+     *
+     * @return the version
+     */
+    public Optional<String> getVersion() {
+        return Optional.of(VERSION);
     }
 
     /**
@@ -206,8 +232,6 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                             new StatusEngineExecutionListener(),
                             new SummaryEngineExecutionListener());
 
-            LauncherConfig launcherConfig = LauncherConfig.builder().build();
-
             LauncherDiscoveryRequest launcherDiscoveryRequest =
                     LauncherDiscoveryRequestBuilder.request()
                             .selectors(DiscoverySelectors.selectClasspathRoots(artifactPaths))
@@ -239,11 +263,76 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         }
     }
 
+    /**
+     * Method to build a String representing the class path
+     *
+     * @param urls urls
+     * @return a String representing the class path
+     */
     private static String buildClasspath(Collection<URL> urls) {
         StringJoiner stringJoiner = new StringJoiner(File.pathSeparator);
         for (URL url : urls) {
             stringJoiner.add(url.getPath());
         }
         return stringJoiner.toString();
+    }
+
+    /**
+     * Method to return the version
+     *
+     * @return the version
+     */
+    private static String version() {
+        String value = UNKNOWN_VERSION;
+
+        try (InputStream inputStream =
+                VerifyicaMavenPlugin.class.getResourceAsStream(MAVEN_PLUGIN_PROPERTIES_RESOURCE)) {
+            if (inputStream != null) {
+                Properties properties = new Properties();
+                properties.load(inputStream);
+                value = properties.getProperty(MAVEN_PLUGIN_VERSION_KEY).trim();
+            }
+        } catch (IOException e) {
+            // INTENTIONALLY BLANK
+        }
+
+        return value;
+    }
+
+    /** Class to implement Logger */
+    private static class Logger {
+
+        private final Log log;
+
+        /**
+         * Constructor
+         *
+         * @param log log
+         */
+        private Logger(Log log) {
+            this.log = log;
+        }
+
+        /**
+         * Method to log a DEBUG message
+         *
+         * @param format format
+         * @param objects object
+         */
+        public void debug(String format, Object... objects) {
+            if (log.isDebugEnabled()) {
+                log.debug(format(format, objects));
+            }
+        }
+
+        /**
+         * Method to create a Logger from a Maven Log
+         *
+         * @param log log
+         * @return a Logger
+         */
+        public static Logger from(Log log) {
+            return new Logger(log);
+        }
     }
 }

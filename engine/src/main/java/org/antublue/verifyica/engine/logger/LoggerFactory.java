@@ -18,14 +18,14 @@ package org.antublue.verifyica.engine.logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement LoggerFactory */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public final class LoggerFactory {
 
-    private final Map<String, Logger> loggerMap = new ConcurrentHashMap<>();
+    private static final Logger ROOT_LOGGER = new Logger("ROOT");
+
+    private final Map<String, Logger> loggers = new ConcurrentHashMap<>();
 
     /** Constructor */
     private LoggerFactory() {
@@ -33,39 +33,39 @@ public final class LoggerFactory {
     }
 
     /**
-     * Method to create a Logger
+     * Method to get or create a Logger
      *
      * @param name name
-     * @return the return value
+     * @return a Logger
      */
-    private Logger createLogger(String name) {
-        ArgumentSupport.notNullOrEmpty(name, "name is null", "name is empty");
-        return loggerMap.computeIfAbsent(name, Logger::new);
+    private Logger getOrCreateLogger(String name) {
+        return loggers.computeIfAbsent(name, Logger::new);
     }
 
     /**
-     * Method to get a Logger by Class name
+     * Method to get a Logger for a Class
      *
      * @param clazz clazz
-     * @return the return value
+     * @return a Logger
      */
     public static Logger getLogger(Class<?> clazz) {
-        ArgumentSupport.notNull(clazz, "clazz is null");
-        return getLogger(clazz.getName());
+        return clazz != null ? getLogger(clazz.getName()) : ROOT_LOGGER;
     }
 
     /**
      * Method to get a Logger by name
      *
      * @param name name
-     * @return the return value
+     * @return a Logger
      */
     public static Logger getLogger(String name) {
-        ArgumentSupport.notNullOrEmpty(name, "name is null", "name is empty");
+        Logger logger = null;
 
-        synchronized (DefaultEngineContext.getInstance()) {
-            return SingletonHolder.SINGLETON.createLogger(name);
+        if (name != null && !name.trim().isEmpty()) {
+            logger = SingletonHolder.SINGLETON.getOrCreateLogger(name.trim());
         }
+
+        return logger != null ? logger : ROOT_LOGGER;
     }
 
     /** Class to hold the singleton instance */

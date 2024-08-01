@@ -18,10 +18,13 @@ package org.antublue.verifyica.engine;
 
 import static java.lang.String.format;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
@@ -55,19 +58,28 @@ public class VerifyicaEngine implements TestEngine {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VerifyicaEngine.class);
 
-    /** Configuration constant */
-    public static final String ID = "verifyica";
+    /** Constant */
+    private static final String ENGINE_PROPERTIES_RESOURCE = "/engine.properties";
 
-    /** Configuration constant */
+    /** Constant */
+    private static final String ENGINE_PROPERTIES_VERSION_KEY = "version";
+
+    /** Constant */
+    private static final String UNKNOWN_VERSION = "unknown";
+
+    /** Constant */
+    private static final String ID = "verifyica";
+
+    /** Constant */
     private static final String GROUP_ID = "org.antublue.verifyica";
 
-    /** Configuration constant */
+    /** Constant */
     private static final String ARTIFACT_ID = "engine";
 
-    /** Configuration constant */
-    public static final String VERSION = Version.version();
+    /** Constant */
+    private static final String VERSION = version();
 
-    /** UniqueId constant */
+    /** Constant */
     private static final String UNIQUE_ID = "[engine:" + ID + "]";
 
     @Override
@@ -88,6 +100,15 @@ public class VerifyicaEngine implements TestEngine {
     @Override
     public Optional<String> getVersion() {
         return Optional.of(VERSION);
+    }
+
+    /**
+     * Method to return the version
+     *
+     * @return the version
+     */
+    public static String staticGetVersion() {
+        return VERSION;
     }
 
     /** Constructor */
@@ -111,6 +132,7 @@ public class VerifyicaEngine implements TestEngine {
 
         try {
             EngineInterceptorRegistry.getInstance().onInitialize(engineInterceptorContext);
+
             new EngineDiscoveryRequestResolver()
                     .resolveSelectors(engineDiscoveryRequest, engineDescriptor);
         } catch (EngineException e) {
@@ -283,6 +305,28 @@ public class VerifyicaEngine implements TestEngine {
                             }
                         })
                 .orElse(maxThreadCount);
+    }
+
+    /**
+     * Method to return the version
+     *
+     * @return the version
+     */
+    private static String version() {
+        String value = UNKNOWN_VERSION;
+
+        try (InputStream inputStream =
+                VerifyicaEngine.class.getResourceAsStream(ENGINE_PROPERTIES_RESOURCE)) {
+            if (inputStream != null) {
+                Properties properties = new Properties();
+                properties.load(inputStream);
+                value = properties.getProperty(ENGINE_PROPERTIES_VERSION_KEY).trim();
+            }
+        } catch (IOException e) {
+            // INTENTIONALLY BLANK
+        }
+
+        return value;
     }
 
     /**

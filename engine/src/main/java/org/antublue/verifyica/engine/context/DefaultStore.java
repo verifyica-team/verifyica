@@ -17,12 +17,12 @@
 package org.antublue.verifyica.engine.context;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
@@ -323,7 +323,7 @@ public class DefaultStore implements Store {
     public Set<Object> keySet() {
         try {
             getReadWriteLock().readLock().lock();
-            return new TreeSet<>(map.keySet());
+            return new HashSet<>(map.keySet());
         } finally {
             getReadWriteLock().readLock().unlock();
         }

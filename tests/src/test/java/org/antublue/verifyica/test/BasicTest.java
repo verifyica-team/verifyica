@@ -42,7 +42,11 @@ public class BasicTest {
 
     @Verifyica.Prepare
     public static void prepare(ClassContext classContext) {
-        System.out.println(format("prepare()"));
+        System.out.println("prepare()");
+        System.out.println(
+                format(
+                        "test argument parallelism [%d]",
+                        classContext.getTestArgumentParallelism()));
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();
@@ -113,7 +117,7 @@ public class BasicTest {
 
     @Verifyica.Conclude
     public static void conclude(ClassContext classContext) {
-        System.out.println(format("conclude()"));
+        System.out.println("conclude()");
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();

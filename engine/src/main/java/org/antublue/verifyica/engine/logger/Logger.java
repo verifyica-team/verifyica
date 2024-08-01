@@ -19,24 +19,21 @@ package org.antublue.verifyica.engine.logger;
 import static java.lang.String.format;
 
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement Logger */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class Logger {
 
-    private static final DefaultEngineContext DEFAULT_ENGINE_CONTEXT =
-            DefaultEngineContext.getInstance();
+    private static final Configuration CONFIGURATION = DefaultConfiguration.getInstance();
 
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
@@ -54,22 +51,17 @@ public class Logger {
         this.level = Level.INFO;
 
         String loggerLevel =
-                DEFAULT_ENGINE_CONTEXT
-                        .getConfiguration()
+                CONFIGURATION
                         .getOptional(Constants.ENGINE_LOGGER_LEVEL)
                         .orElse(Level.INFO.toString());
 
-        String regex =
-                DEFAULT_ENGINE_CONTEXT
-                        .getConfiguration()
-                        .getOptional(Constants.ENGINE_LOGGER_REGEX)
-                        .orElse(".*");
+        String regex = CONFIGURATION.getOptional(Constants.ENGINE_LOGGER_REGEX).orElse(".*");
 
         try {
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(name);
             if (matcher.find()) {
-                level = Level.toLevel(loggerLevel, Level.INFO);
+                level = Level.decode(loggerLevel);
             }
         } catch (Throwable t) {
             // INTENTIONALLY BLANK
@@ -147,23 +139,9 @@ public class Logger {
      *
      * @param message message
      */
-    public void trace(Object message) {
+    public void trace(String message) {
         if (isTraceEnabled()) {
-            log(System.out, createMessage(Level.TRACE, message));
-        }
-    }
-
-    /**
-     * Method to log a TRACE message
-     *
-     * @param format format
-     * @param object object
-     */
-    public void trace(String format, Object object) {
-        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
-
-        if (isTraceEnabled()) {
-            trace(format, new Object[] {object});
+            log(System.out, Level.TRACE, "%s", message);
         }
     }
 
@@ -177,19 +155,7 @@ public class Logger {
         ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
 
         if (isTraceEnabled()) {
-            log(System.out, createMessage(Level.TRACE, format(format, objects)));
-        }
-    }
-
-    /**
-     * Method to log a TRACE message
-     *
-     * @param message message
-     * @param throwable throwable
-     */
-    public void trace(Object message, Throwable throwable) {
-        if (isTraceEnabled()) {
-            log(System.out, createMessage(Level.TRACE, createMessage(message, throwable)));
+            log(System.out, Level.TRACE, format, objects);
         }
     }
 
@@ -198,23 +164,9 @@ public class Logger {
      *
      * @param message message
      */
-    public void debug(Object message) {
+    public void debug(String message) {
         if (isDebugEnabled()) {
-            log(System.out, createMessage(Level.DEBUG, message));
-        }
-    }
-
-    /**
-     * Method to log a DEBUG message
-     *
-     * @param format format
-     * @param object object
-     */
-    public void debug(String format, Object object) {
-        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
-
-        if (isDebugEnabled()) {
-            debug(format, new Object[] {object});
+            log(System.out, Level.DEBUG, "%s", message);
         }
     }
 
@@ -228,20 +180,7 @@ public class Logger {
         ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
 
         if (isDebugEnabled()) {
-            Objects.requireNonNull(format);
-            log(System.out, createMessage(Level.DEBUG, format(format, objects)));
-        }
-    }
-
-    /**
-     * Method to log a DEBUG message
-     *
-     * @param message message
-     * @param throwable throwable
-     */
-    public void debug(Object message, Throwable throwable) {
-        if (isDebugEnabled()) {
-            log(System.out, createMessage(Level.DEBUG, createMessage(message, throwable)));
+            log(System.out, Level.DEBUG, format, objects);
         }
     }
 
@@ -250,23 +189,10 @@ public class Logger {
      *
      * @param message message
      */
-    public void info(Object message) {
-        if (isInfoEnabled()) {
-            log(System.out, createMessage(Level.INFO, message));
-        }
-    }
-
-    /**
-     * Method to log an INFO message
-     *
-     * @param format format
-     * @param object object
-     */
-    public void info(String format, Object object) {
-        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+    public void info(String message) {
 
         if (isInfoEnabled()) {
-            info(format, new Object[] {object});
+            log(System.out, Level.INFO, "%s", message);
         }
     }
 
@@ -280,19 +206,7 @@ public class Logger {
         ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
 
         if (isInfoEnabled()) {
-            log(System.out, createMessage(Level.INFO, format(format, objects)));
-        }
-    }
-
-    /**
-     * Method to log an INFO message
-     *
-     * @param message message
-     * @param throwable throwable
-     */
-    public void info(Object message, Throwable throwable) {
-        if (isInfoEnabled()) {
-            log(System.out, createMessage(Level.INFO, createMessage(message, throwable)));
+            log(System.out, Level.INFO, format, objects);
         }
     }
 
@@ -301,23 +215,9 @@ public class Logger {
      *
      * @param message message
      */
-    public void warn(Object message) {
+    public void warn(String message) {
         if (isWarnEnabled()) {
-            log(System.out, createMessage(Level.WARN, message));
-        }
-    }
-
-    /**
-     * Method to log an WARN message
-     *
-     * @param format format
-     * @param object object
-     */
-    public void warn(String format, Object object) {
-        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
-
-        if (isWarnEnabled()) {
-            warn(format, new Object[] {object});
+            log(System.out, Level.WARN, "%s", message);
         }
     }
 
@@ -331,19 +231,7 @@ public class Logger {
         ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
 
         if (isWarnEnabled()) {
-            log(System.out, createMessage(Level.WARN, format(format, objects)));
-        }
-    }
-
-    /**
-     * Method to log an WARN message
-     *
-     * @param message message
-     * @param throwable throwable
-     */
-    public void warn(Object message, Throwable throwable) {
-        if (isWarnEnabled()) {
-            log(System.out, createMessage(Level.WARN, createMessage(message, throwable)));
+            log(System.out, Level.WARN, format, objects);
         }
     }
 
@@ -352,23 +240,9 @@ public class Logger {
      *
      * @param message message
      */
-    public void error(Object message) {
+    public void error(String message) {
         if (isErrorEnabled()) {
-            log(System.err, createMessage(Level.ERROR, message));
-        }
-    }
-
-    /**
-     * Method to log an ERROR message
-     *
-     * @param format format
-     * @param object object
-     */
-    public void error(String format, Object object) {
-        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
-
-        if (isErrorEnabled()) {
-            error(format, new Object[] {object});
+            log(System.err, Level.ERROR, "%s", message);
         }
     }
 
@@ -382,75 +256,36 @@ public class Logger {
         ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
 
         if (isErrorEnabled()) {
-            Objects.requireNonNull(format);
-            log(System.out, createMessage(Level.ERROR, format(format, objects)));
+            log(System.err, Level.ERROR, format, objects);
         }
     }
 
     /**
-     * Method to log an ERROR message
+     * Method to log a message
      *
-     * @param message message
-     * @param throwable throwable
-     */
-    public void error(Object message, Throwable throwable) {
-        if (isErrorEnabled()) {
-            log(System.out, createMessage(Level.ERROR, createMessage(message, throwable)));
-        }
-    }
-
-    /**
-     * Method to create a log message
-     *
+     * @param printStream printStream
      * @param level level
-     * @param message message
-     * @return the return value
+     * @param format format
+     * @param objects objects
      */
-    private String createMessage(Level level, Object message) {
+    private void log(PrintStream printStream, Level level, String format, Object... objects) {
         String dateTime;
 
         synchronized (SIMPLE_DATE_FORMAT) {
             dateTime = SIMPLE_DATE_FORMAT.format(new Date());
         }
 
-        return dateTime
-                + " | "
-                + Thread.currentThread().getName()
-                + " | "
-                + level.toString()
-                + " | "
-                + name
-                + " | "
-                + message
-                + " ";
-    }
+        printStream.println(
+                dateTime
+                        + " | "
+                        + Thread.currentThread().getName()
+                        + " | "
+                        + level.toString()
+                        + " | "
+                        + name
+                        + " | "
+                        + format(format, objects));
 
-    /**
-     * Method to create a log message
-     *
-     * @param message message
-     * @param throwable throwable
-     * @return the return value
-     */
-    private String createMessage(Object message, Throwable throwable) {
-        StringWriter stringWriter = new StringWriter();
-        try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
-            printWriter.println(message);
-            if (throwable != null) {
-                throwable.printStackTrace(printWriter);
-            }
-        }
-        return stringWriter.toString();
-    }
-
-    /**
-     * Method to log to a PrintStream
-     *
-     * @param printStream printStream
-     * @param message message
-     */
-    private void log(PrintStream printStream, Object message) {
-        printStream.println(message);
         printStream.flush();
     }
 }

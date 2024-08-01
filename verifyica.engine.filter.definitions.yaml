@@ -46,3 +46,8 @@
 - type: IncludeTaggedClass
   enabled: false
   classTagRegex: "Tag1|Tag2"
+
+- type: IncludeClass
+  enabled: false
+  classRegex: "EngineInterceptorTest2"
+  methodRegex: ".*"

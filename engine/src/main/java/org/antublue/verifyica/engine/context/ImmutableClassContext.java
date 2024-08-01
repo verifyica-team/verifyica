@@ -66,6 +66,11 @@ public class ImmutableClassContext implements ClassContext {
     }
 
     @Override
+    public int getTestArgumentParallelism() {
+        return classContext.getTestArgumentParallelism();
+    }
+
+    @Override
     public String toString() {
         return "ImmutableClassContext{" + "classContext=" + classContext + '}';
     }

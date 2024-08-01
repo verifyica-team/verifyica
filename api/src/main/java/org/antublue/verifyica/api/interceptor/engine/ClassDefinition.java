@@ -46,14 +46,14 @@ public interface ClassDefinition {
     List<Argument<?>> getTestArguments();
 
     /**
-     * Get test argument parallelism
+     * Get the test argument parallelism
      *
-     * @return test argument parallelism
+     * @return the test argument parallelism
      */
     int getTestArgumentParallelism();
 
     /**
-     * Set test argument parallelism
+     * Set the test argument parallelism
      *
      * @param parallelism parallelism
      */

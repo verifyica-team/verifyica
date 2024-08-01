@@ -57,4 +57,11 @@ public interface ClassContext extends Context {
      * @param <T> the type
      */
     <T> T getTestInstance(Class<T> type);
+
+    /**
+     * Get the test argument parallelism
+     *
+     * @return the test argument parallelism
+     */
+    int getTestArgumentParallelism();
 }

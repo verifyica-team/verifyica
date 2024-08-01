@@ -43,9 +43,10 @@ public class MongoDBTest {
     @Verifyica.ArgumentSupplier(parallelism = 2)
     public static Stream<MongoDBTestEnvironment> arguments() {
         return Stream.of(
-                new MongoDBTestEnvironment("mongo:4.0.8"),
-                new MongoDBTestEnvironment("mongo:4.0.9"),
-                new MongoDBTestEnvironment("mongo:4.0.10"));
+                new MongoDBTestEnvironment("mongo:4.4"),
+                new MongoDBTestEnvironment("mongo:5.0"),
+                new MongoDBTestEnvironment("mongo:6.0"),
+                new MongoDBTestEnvironment("mongo:7.0"));
     }
 
     @Verifyica.BeforeAll

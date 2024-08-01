@@ -18,7 +18,6 @@ package org.antublue.verifyica.engine.logger;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement Level */
 public final class Level {
@@ -69,16 +68,16 @@ public final class Level {
     /**
      * Method to get the Level as an int
      *
-     * @return the return value
+     * @return the Level as an int
      */
     public int toInt() {
         return level;
     }
 
     /**
-     * Method to get the Level string
+     * Method to get the Level as a String
      *
-     * @return the return value
+     * @return the level as a String
      */
     @Override
     public String toString() {
@@ -86,16 +85,18 @@ public final class Level {
     }
 
     /**
-     * Method to map a Level string to a Level
+     * Method to map a Level String to a Level
      *
      * @param string string
-     * @param defaultLevel defaultLevel
-     * @return the return value
+     * @return the decoded Level, or INFO
      */
-    public static Level toLevel(String string, Level defaultLevel) {
-        ArgumentSupport.notNullOrEmpty(string, "string is null", "string is empty");
-        ArgumentSupport.notNull(defaultLevel, "defaultLevel is null");
+    static Level decode(String string) {
+        Level level = null;
 
-        return LEVEL_MAP.getOrDefault(string.trim(), defaultLevel);
+        if (string != null && !string.trim().isEmpty()) {
+            level = LEVEL_MAP.get(string.trim());
+        }
+
+        return level != null ? level : INFO;
     }
 }

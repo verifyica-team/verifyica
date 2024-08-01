@@ -29,6 +29,7 @@ public class DefaultClassContext implements ClassContext {
     private final Store store;
 
     private Class<?> testClass;
+    private int testArgumentParallelism = 1;
     private Object testInstance;
 
     /**
@@ -92,6 +93,20 @@ public class DefaultClassContext implements ClassContext {
     @Override
     public <T> T getTestInstance(Class<T> type) {
         return type.cast(getTestInstance());
+    }
+
+    /**
+     * Method to set the test argument parallelims
+     *
+     * @param testArgumentParallelism testArgumentParallelism
+     */
+    public void setTestArgumentParallelism(int testArgumentParallelism) {
+        this.testArgumentParallelism = testArgumentParallelism;
+    }
+
+    @Override
+    public int getTestArgumentParallelism() {
+        return testArgumentParallelism;
     }
 
     @Override

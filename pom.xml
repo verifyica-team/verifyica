@@ -78,6 +78,7 @@
         <module>api</module>
         <module>engine</module>
         <module>maven-plugin</module>
+        <!-- <module>standalone</module> -->
         <module>tests</module>
     </modules>
 

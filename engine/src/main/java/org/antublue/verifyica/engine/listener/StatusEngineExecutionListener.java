@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.maven.plugin.listener;
+package org.antublue.verifyica.engine.listener;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
@@ -57,7 +57,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     private final String consoleLogTimingUnits;
     private final boolean consoleLogMessagesStarted;
     private final String consoleTestMessage;
-    private final boolean consoleLogMessaagesSkipped;
+    private final boolean consoleLogMessagesSkipped;
     private final String consoleSkipMessage;
     private final boolean consoleLogMessagesFinished;
     private final String consolePassMessage;
@@ -101,14 +101,14 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 "configuration [%s] = [%b]",
                 Constants.MAVEN_PLUGIN_LOG_MESSAGES_FINISHED, consoleLogMessagesFinished);
 
-        consoleLogMessaagesSkipped =
+        consoleLogMessagesSkipped =
                 Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_LOG_MESSAGES_SKIPPED))
                         .map(Boolean::parseBoolean)
                         .orElse(true);
 
         LOGGER.trace(
                 "configuration [%s] = [%b]",
-                Constants.MAVEN_PLUGIN_LOG_MESSAGES_SKIPPED, consoleLogMessaagesSkipped);
+                Constants.MAVEN_PLUGIN_LOG_MESSAGES_SKIPPED, consoleLogMessagesSkipped);
 
         consoleTestMessage =
                 new AnsiColorStringBuilder()
@@ -214,7 +214,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     @Override
     public void executionSkipped(TestDescriptor testDescriptor, String reason) {
-        if (consoleLogMessaagesSkipped && testDescriptor instanceof ExecutableTestDescriptor) {
+        if (consoleLogMessagesSkipped && testDescriptor instanceof ExecutableTestDescriptor) {
             try {
                 ExecutableTestDescriptor executableTestDescriptor =
                         (ExecutableTestDescriptor) testDescriptor;
