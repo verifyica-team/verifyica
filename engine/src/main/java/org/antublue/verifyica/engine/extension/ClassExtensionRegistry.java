@@ -87,13 +87,13 @@ public class ClassExtensionRegistry {
     }
 
     /**
-     * Method to unregister a class extension
+     * Method to remove a class extension
      *
      * @param testClass testClass
      * @param classExtension classExtension
      * @return this ClassExtensionRegistry
      */
-    public ClassExtensionRegistry unregister(Class<?> testClass, ClassExtension classExtension) {
+    public ClassExtensionRegistry remove(Class<?> testClass, ClassExtension classExtension) {
         ArgumentSupport.notNull(testClass, "testClass is null");
         ArgumentSupport.notNull(classExtension, "classExtension is null");
 
@@ -412,7 +412,7 @@ public class ClassExtensionRegistry {
     }
 
     /**
-     * Method to get a COPY of List of ClassExtensions in reverse (internal + class specific)
+     * Method to get a COPY of the List of ClassExtensions in reverse (internal + class specific)
      *
      * @param testClass testClass
      * @return a COPY of the List of ClassExtensions in reverse (internal + class specific)
