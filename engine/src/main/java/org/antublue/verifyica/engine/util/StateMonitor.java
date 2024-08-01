@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
 
@@ -103,12 +104,12 @@ public class StateMonitor<T> {
     }
 
     /**
-     * Method to get the last state entry
+     * Method to get the last State entry
      *
-     * @return the last state entry, possibly null
+     * @return the last State entry, possibly null
      */
-    public Entry<T> getLastStateEntry() {
-        return lastEntry;
+    public Optional<Entry<T>> getLastStateEntry() {
+        return Optional.ofNullable(lastEntry);
     }
 
     /**
@@ -116,15 +117,15 @@ public class StateMonitor<T> {
      *
      * @return the state containing the first Throwable
      */
-    public Entry<T> getFirstStateEntryWithThrowable() {
+    public Optional<Entry<T>> getFirstStateEntryWithThrowable() {
         for (Map.Entry<T, Entry<T>> mapEntry : map.entrySet()) {
             Entry<T> entry = mapEntry.getValue();
             if (entry.hasThrowable()) {
-                return entry;
+                return Optional.of(entry);
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**

@@ -187,13 +187,11 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                             });
         }
 
-        StateMonitor.Entry<String> entry = stateMonitor.getFirstStateEntryWithThrowable();
-
-        TestExecutionResult testExecutionResult = TestExecutionResult.successful();
-
-        if (entry != null) {
-            testExecutionResult = TestExecutionResult.failed(entry.getThrowable());
-        }
+        TestExecutionResult testExecutionResult =
+                stateMonitor
+                        .getFirstStateEntryWithThrowable()
+                        .map(entry -> TestExecutionResult.failed(entry.getThrowable()))
+                        .orElse(TestExecutionResult.successful());
 
         executionRequest.getEngineExecutionListener().executionFinished(this, testExecutionResult);
     }
