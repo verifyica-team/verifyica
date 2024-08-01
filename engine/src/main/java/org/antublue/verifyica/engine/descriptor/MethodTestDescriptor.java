@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
-import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
+import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
@@ -168,13 +168,11 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
                             });
         }
 
-        StateMonitor.Entry<String> entry = stateMonitor.getFirstStateEntryWithThrowable();
-
-        TestExecutionResult testExecutionResult = TestExecutionResult.successful();
-
-        if (entry != null) {
-            testExecutionResult = TestExecutionResult.failed(entry.getThrowable());
-        }
+        TestExecutionResult testExecutionResult =
+                stateMonitor
+                        .getFirstStateEntryWithThrowable()
+                        .map(entry -> TestExecutionResult.failed(entry.getThrowable()))
+                        .orElse(TestExecutionResult.successful());
 
         executionRequest.getEngineExecutionListener().executionFinished(this, testExecutionResult);
     }
@@ -230,7 +228,8 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
                 testMethod.getName(),
                 defaultArgumentContext.getTestArgument().getName());
 
-        ClassExtensionRegistry.getInstance().beforeEach(defaultArgumentContext, beforeEachMethods);
+        ClassInterceptorRegistry.getInstance()
+                .beforeEach(defaultArgumentContext, beforeEachMethods);
     }
 
     /**
@@ -246,7 +245,7 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
                 testMethod.getName(),
                 defaultArgumentContext.getTestArgument().getName());
 
-        ClassExtensionRegistry.getInstance().test(defaultArgumentContext, testMethod);
+        ClassInterceptorRegistry.getInstance().test(defaultArgumentContext, testMethod);
     }
 
     /**
@@ -262,6 +261,6 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
                 testMethod.getName(),
                 defaultArgumentContext.getTestArgument().getName());
 
-        ClassExtensionRegistry.getInstance().afterEach(defaultArgumentContext, afterEachMethods);
+        ClassInterceptorRegistry.getInstance().afterEach(defaultArgumentContext, afterEachMethods);
     }
 }

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import org.antublue.verifyica.api.Argument;
-import org.antublue.verifyica.api.extension.engine.ClassDefinition;
+import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 

@@ -27,16 +27,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import org.antublue.verifyica.api.EngineContext;
-import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
+import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
-import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
+import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ExecutableTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.exception.EngineException;
-import org.antublue.verifyica.engine.extension.EngineExtensionRegistry;
+import org.antublue.verifyica.engine.interceptor.internal.engine.EngineInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.HashSupport;
@@ -105,12 +105,12 @@ public class VerifyicaEngine implements TestEngine {
         LOGGER.trace("discovering test classes and test methods");
 
         EngineContext engineContext = DefaultEngineContext.getInstance();
-        EngineExtensionContext engineExtensionContext =
-                new DefaultEngineExtensionContext(engineContext);
+        EngineInterceptorContext engineInterceptorContext =
+                new DefaultEngineInterceptorContext(engineContext);
         EngineDescriptor engineDescriptor = new StatusEngineDescriptor(uniqueId, getId());
 
         try {
-            EngineExtensionRegistry.getInstance().onInitialize(engineExtensionContext);
+            EngineInterceptorRegistry.getInstance().onInitialize(engineInterceptorContext);
             new EngineDiscoveryRequestResolver()
                     .resolveSelectors(engineDiscoveryRequest, engineDescriptor);
         } catch (EngineException e) {
@@ -138,8 +138,8 @@ public class VerifyicaEngine implements TestEngine {
 
         EngineContext engineContext = DefaultEngineContext.getInstance();
 
-        EngineExtensionContext engineExtensionContext =
-                new DefaultEngineExtensionContext(engineContext);
+        EngineInterceptorContext engineInterceptorContext =
+                new DefaultEngineInterceptorContext(engineContext);
 
         ExecutorService executorService = null;
 
@@ -148,7 +148,7 @@ public class VerifyicaEngine implements TestEngine {
         Throwable throwable = null;
 
         try {
-            EngineExtensionRegistry.getInstance().beforeExecute(engineExtensionContext);
+            EngineInterceptorRegistry.getInstance().beforeExecute(engineInterceptorContext);
 
             executionRequest
                     .getEngineExecutionListener()
@@ -232,7 +232,7 @@ public class VerifyicaEngine implements TestEngine {
             }
 
             try {
-                EngineExtensionRegistry.getInstance().afterExecute(engineExtensionContext);
+                EngineInterceptorRegistry.getInstance().afterExecute(engineInterceptorContext);
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
             }

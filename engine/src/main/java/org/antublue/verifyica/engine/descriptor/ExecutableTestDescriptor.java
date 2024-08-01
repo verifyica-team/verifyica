@@ -38,7 +38,7 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
 
     static {
         pruneRegexPatterns.add("com.antublue.verifyica.engine..*");
-        pruneRegexPatterns.add("com\\.antublue\\.verifyica\\.engine\\.extension\\..*");
+        pruneRegexPatterns.add("com\\.antublue\\.verifyica\\.engine\\.interceptor\\..*");
     }
 
     /** Stopwatch */

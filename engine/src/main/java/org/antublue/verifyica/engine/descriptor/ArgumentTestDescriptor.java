@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
-import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
+import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
@@ -175,13 +175,11 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                             });
         }
 
-        StateMonitor.Entry<String> entry = stateMonitor.getFirstStateEntryWithThrowable();
-
-        TestExecutionResult testExecutionResult = TestExecutionResult.successful();
-
-        if (entry != null) {
-            testExecutionResult = TestExecutionResult.failed(entry.getThrowable());
-        }
+        TestExecutionResult testExecutionResult =
+                stateMonitor
+                        .getFirstStateEntryWithThrowable()
+                        .map(entry -> TestExecutionResult.failed(entry.getThrowable()))
+                        .orElse(TestExecutionResult.successful());
 
         executionRequest.getEngineExecutionListener().executionFinished(this, testExecutionResult);
     }
@@ -238,7 +236,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                 "beforeAll() testClass [%s] argument [%s]",
                 testClass.getName(), defaultArgumentContext.getTestArgument().getName());
 
-        ClassExtensionRegistry.getInstance().beforeAll(defaultArgumentContext, beforeAllMethods);
+        ClassInterceptorRegistry.getInstance().beforeAll(defaultArgumentContext, beforeAllMethods);
     }
 
     /**
@@ -294,7 +292,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                 "afterAll() testClass [%s] argument [%s]",
                 testClass.getName(), defaultArgumentContext.getTestArgument().getName());
 
-        ClassExtensionRegistry.getInstance().afterAll(defaultArgumentContext, afterAllMethods);
+        ClassInterceptorRegistry.getInstance().afterAll(defaultArgumentContext, afterAllMethods);
 
         if (testArgument instanceof AutoCloseable) {
             ((AutoCloseable) testArgument).close();

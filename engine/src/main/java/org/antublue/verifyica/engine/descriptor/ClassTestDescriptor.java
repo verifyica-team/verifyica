@@ -28,7 +28,7 @@ import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.ImmutableClassContext;
-import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
+import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
@@ -187,13 +187,11 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                             });
         }
 
-        StateMonitor.Entry<String> entry = stateMonitor.getFirstStateEntryWithThrowable();
-
-        TestExecutionResult testExecutionResult = TestExecutionResult.successful();
-
-        if (entry != null) {
-            testExecutionResult = TestExecutionResult.failed(entry.getThrowable());
-        }
+        TestExecutionResult testExecutionResult =
+                stateMonitor
+                        .getFirstStateEntryWithThrowable()
+                        .map(entry -> TestExecutionResult.failed(entry.getThrowable()))
+                        .orElse(TestExecutionResult.successful());
 
         executionRequest.getEngineExecutionListener().executionFinished(this, testExecutionResult);
     }
@@ -245,14 +243,27 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     private void instantiateTestInstance(DefaultClassContext defaultClassContext) throws Throwable {
         LOGGER.trace("instantiateTestInstance() testClass [%s]", testClass.getName());
 
-        ClassExtensionRegistry.getInstance()
-                .beforeInstantiate(defaultClassContext.getEngineContext(), testClass);
+        Throwable throwable = null;
+        Object testInstance = null;
 
-        Object testInstance =
-                testClass.getDeclaredConstructor((Class<?>[]) null).newInstance((Object[]) null);
+        try {
+            ClassInterceptorRegistry.getInstance()
+                    .beforeInstantiate(defaultClassContext.getEngineContext(), testClass);
 
-        defaultClassContext.setTestClass(testClass);
-        defaultClassContext.setTestInstance(testInstance);
+            testInstance =
+                    testClass
+                            .getDeclaredConstructor((Class<?>[]) null)
+                            .newInstance((Object[]) null);
+
+            defaultClassContext.setTestClass(testClass);
+            defaultClassContext.setTestInstance(testInstance);
+        } catch (Throwable t) {
+            throwable = t;
+        }
+
+        ClassInterceptorRegistry.getInstance()
+                .afterInstantiate(
+                        defaultClassContext.getEngineContext(), testClass, testInstance, throwable);
     }
 
     /**
@@ -264,7 +275,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     private void prepare(DefaultClassContext defaultClassContext) throws Throwable {
         LOGGER.trace("prepare() testClass [%s]", testClass.getName());
 
-        ClassExtensionRegistry.getInstance()
+        ClassInterceptorRegistry.getInstance()
                 .prepare(ImmutableClassContext.wrap(defaultClassContext), prepareMethods);
     }
 
@@ -419,7 +430,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     private void conclude(DefaultClassContext defaultClassContext) throws Throwable {
         LOGGER.trace("conclude() testClass [%s]", testClass.getName());
 
-        ClassExtensionRegistry.getInstance()
+        ClassInterceptorRegistry.getInstance()
                 .conclude(ImmutableClassContext.wrap(defaultClassContext), concludeMethods);
     }
 
@@ -437,7 +448,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         Throwable throwable = null;
 
         try {
-            ClassExtensionRegistry.getInstance().beforeDestroy(defaultClassContext);
+            ClassInterceptorRegistry.getInstance().beforeDestroy(defaultClassContext);
         } catch (Throwable t) {
             throwable = t;
         }

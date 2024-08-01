@@ -46,8 +46,8 @@ for (TestArgument testArgument : TestArguments) {
 - Properties file driven configuration
 - Test class / test method filtering
 - Test class tags
-- Test class extensions
-- Engine extensions
+- Test class interceptors (extensions)
+- Engine interceptors (extensions)
 - [IntelliJ](https://www.jetbrains.com/idea/) support
 
 # Design
