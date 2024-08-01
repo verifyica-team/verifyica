@@ -339,7 +339,7 @@
                         <phase>compile</phase>
                     </execution>
                 </executions>
-            </plugin>g
+            </plugin>
         </plugins>
     </build>
 
