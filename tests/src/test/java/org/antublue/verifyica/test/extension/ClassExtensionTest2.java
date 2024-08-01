@@ -17,26 +17,27 @@
 package org.antublue.verifyica.test.extension;
 
 import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.UUID;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.extension.ClassExtension;
+import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
+import org.antublue.verifyica.engine.extension.ClassExtensionRegistry;
 
 /** Example test */
-public class ClassExtensionTest1 {
+public class ClassExtensionTest2 {
 
-    @Verifyica.ClassExtensionSupplier
-    public static Collection<ClassExtension> classExtensions() {
-        Collection<ClassExtension> collection = new ArrayList<>();
-
-        collection.add(new ExampleClassExtension1());
-        collection.add(new ExampleClassExtension2());
-
-        return collection;
+    static {
+        // Directly register an extension
+        ClassExtensionRegistry.getInstance()
+                .register(ClassExtensionTest2.class, new ConcreteClasExtension1());
     }
+
+    // Anti-pattern, but used for testing
+    public static String value;
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
@@ -46,6 +47,10 @@ public class ClassExtensionTest1 {
     @Verifyica.Prepare
     public static void prepare(ClassContext classContext) throws Throwable {
         System.out.println(format("  %s prepare()", classContext.getTestClass().getName()));
+        System.out.println(format("  %s value [%s]", ClassExtensionTest2.class.getName(), value));
+
+        assertThat(value).isNotNull();
+        assertThat(value).isNotEmpty();
     }
 
     @Verifyica.BeforeAll
@@ -93,5 +98,17 @@ public class ClassExtensionTest1 {
     @Verifyica.Conclude
     public static void conclude(ClassContext classContext) throws Throwable {
         System.out.println(format("  %s conclude()", classContext.getTestClass().getName()));
+    }
+
+    public static class ConcreteClasExtension1 implements ClassExtension {
+
+        @Override
+        public void beforeInstantiate(
+                EngineExtensionContext engineExtensionContext, Class<?> testClass)
+                throws Throwable {
+            System.out.println(format("%s beforeInitialize()", getClass().getName()));
+
+            testClass.getField("value").set(null, UUID.randomUUID().toString());
+        }
     }
 }
