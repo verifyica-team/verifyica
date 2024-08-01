@@ -5,3 +5,6 @@ engines:
     config:
       languages:
         - "java"
+  markdownlint:
+    exclude_paths:
+      - "**/*.md"
