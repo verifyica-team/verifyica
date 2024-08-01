@@ -25,7 +25,7 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.extension.TestClassDefinition;
+import org.antublue.verifyica.api.extension.ClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.support.RandomSupport;
@@ -35,11 +35,10 @@ public class EngineExtensionTest3 implements EngineExtension {
 
     @Override
     public void onTestDiscovery(
-            EngineExtensionContext engineExtensionContext,
-            TestClassDefinition testClassDefinition) {
-        if (testClassDefinition.getTestClass() == EngineExtensionTest3.class) {
+            EngineExtensionContext engineExtensionContext, ClassDefinition classDefinition) {
+        if (classDefinition.getTestClass() == EngineExtensionTest3.class) {
             // Change test argument parallelism
-            testClassDefinition.setTestArgumentParallelism(1);
+            classDefinition.setTestArgumentParallelism(1);
         }
     }
 

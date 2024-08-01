@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import org.antublue.verifyica.api.Argument;
-import org.antublue.verifyica.api.extension.TestClassDefinition;
+import org.antublue.verifyica.api.extension.ClassDefinition;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement DefaultTestClassDefinition */
-public class DefaultTestClassDefinition implements TestClassDefinition {
+/** Class to implement DefaultClassDefinition */
+public class DefaultClassDefinition implements ClassDefinition {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTestClassDefinition.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClassDefinition.class);
 
     private final Class<?> testClass;
     private final Set<Method> testMethods;
@@ -44,7 +44,7 @@ public class DefaultTestClassDefinition implements TestClassDefinition {
      * @param testArguments testArguments
      * @param testArgumentParallelism testArgumentParallelism
      */
-    public DefaultTestClassDefinition(
+    public DefaultClassDefinition(
             Class<?> testClass,
             List<Method> testMethods,
             List<Argument<?>> testArguments,
@@ -88,7 +88,7 @@ public class DefaultTestClassDefinition implements TestClassDefinition {
 
     @Override
     public String toString() {
-        return "DefaultTestClassDefinition{"
+        return "DefaultClassDefinition{"
                 + "testClass="
                 + testClass
                 + ", testMethods="
@@ -102,7 +102,7 @@ public class DefaultTestClassDefinition implements TestClassDefinition {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DefaultTestClassDefinition that = (DefaultTestClassDefinition) o;
+        DefaultClassDefinition that = (DefaultClassDefinition) o;
         return Objects.equals(testClass, that.testClass)
                 && Objects.equals(testMethods, that.testMethods)
                 && Objects.equals(testArguments, that.testArguments);

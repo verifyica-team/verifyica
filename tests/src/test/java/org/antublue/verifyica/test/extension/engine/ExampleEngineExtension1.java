@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import org.antublue.verifyica.api.extension.TestClassDefinition;
+import org.antublue.verifyica.api.extension.ClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 
@@ -44,21 +44,20 @@ public class ExampleEngineExtension1 implements EngineExtension {
 
     @Override
     public void onTestDiscovery(
-            EngineExtensionContext engineExtensionContext,
-            List<TestClassDefinition> testClassDefinitions) {
+            EngineExtensionContext engineExtensionContext, List<ClassDefinition> classDefinitions) {
         System.out.println(format("%s onTestDiscovery()", getClass().getName()));
 
-        for (TestClassDefinition testClassDefinition : testClassDefinitions) {
-            if (testClassDefinition
+        for (ClassDefinition classDefinition : classDefinitions) {
+            if (classDefinition
                     .getTestClass()
                     .getName()
                     .equals("org.antublue.verifyica.test.extension.engine.EngineExtensionTest1")) {
 
                 // Reverse test methods
-                reverseMethods(testClassDefinition.getTestMethods());
+                reverseMethods(classDefinition.getTestMethods());
 
                 // Filter test method "test4"
-                testClassDefinition
+                classDefinition
                         .getTestMethods()
                         .removeIf(method -> method.getName().equals("test4"));
             }

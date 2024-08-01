@@ -17,7 +17,7 @@
 package org.antublue.verifyica.api.extension.engine;
 
 import java.util.List;
-import org.antublue.verifyica.api.extension.TestClassDefinition;
+import org.antublue.verifyica.api.extension.ClassDefinition;
 
 /** Interface to implement EngineExtension */
 public interface EngineExtension {
@@ -36,12 +36,11 @@ public interface EngineExtension {
      * Engine on onTestDiscovery callback
      *
      * @param engineExtensionContext engineExtensionContext
-     * @param testClassDefinitions testClassDefinitions
+     * @param classDefinitions classDefinitions
      * @throws Throwable Throwable
      */
     default void onTestDiscovery(
-            EngineExtensionContext engineExtensionContext,
-            List<TestClassDefinition> testClassDefinitions)
+            EngineExtensionContext engineExtensionContext, List<ClassDefinition> classDefinitions)
             throws Throwable {
         // INTENTIONALLY BLANK
     }
@@ -50,11 +49,11 @@ public interface EngineExtension {
      * Engine on onTestDiscovery callback
      *
      * @param engineExtensionContext engineExtensionContext
-     * @param testClassDefinition testClassDefinition
+     * @param classDefinition classDefinition
      * @throws Throwable Throwable
      */
     default void onTestDiscovery(
-            EngineExtensionContext engineExtensionContext, TestClassDefinition testClassDefinition)
+            EngineExtensionContext engineExtensionContext, ClassDefinition classDefinition)
             throws Throwable {
         // INTENTIONALLY BLANK
     }

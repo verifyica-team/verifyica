@@ -24,7 +24,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.antublue.verifyica.api.extension.TestClassDefinition;
+import org.antublue.verifyica.api.extension.ClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.configuration.Constants;
@@ -136,22 +136,21 @@ public class EngineExtensionRegistry {
      * Method to call engine extensions
      *
      * @param engineExtensionContext engineExtensionContext
-     * @param testClassDefinitions testClassDefinitions
+     * @param classDefinitions classDefinitions
      * @throws Throwable Throwable
      */
     public void onTestDiscovery(
-            EngineExtensionContext engineExtensionContext,
-            List<TestClassDefinition> testClassDefinitions)
+            EngineExtensionContext engineExtensionContext, List<ClassDefinition> classDefinitions)
             throws Throwable {
         ArgumentSupport.notNull(engineExtensionContext, "engineExtensionContext is null");
-        ArgumentSupport.notNull(testClassDefinitions, "testClassDefinitions is null");
+        ArgumentSupport.notNull(classDefinitions, "classDefinitions is null");
 
         for (EngineExtension engineExtension : getEngineExtensions()) {
             LOGGER.trace(
                     "engine extension [%s] onTestDiscovery()",
                     engineExtension.getClass().getName());
 
-            engineExtension.onTestDiscovery(engineExtensionContext, testClassDefinitions);
+            engineExtension.onTestDiscovery(engineExtensionContext, classDefinitions);
 
             LOGGER.trace(
                     "engine extension [%s] onTestDiscovery()" + " success",
@@ -163,28 +162,26 @@ public class EngineExtensionRegistry {
      * Method to call engine extensions
      *
      * @param engineExtensionContext engineExtensionContext
-     * @param testClassDefinition testClassDefinition
+     * @param classDefinition classDefinition
      * @throws Throwable Throwable
      */
     public void onTestDiscovery(
-            EngineExtensionContext engineExtensionContext, TestClassDefinition testClassDefinition)
+            EngineExtensionContext engineExtensionContext, ClassDefinition classDefinition)
             throws Throwable {
         ArgumentSupport.notNull(engineExtensionContext, "engineExtensionContext is null");
-        ArgumentSupport.notNull(testClassDefinition, "testClassDefinition is null");
+        ArgumentSupport.notNull(classDefinition, "classDefinition is null");
 
         for (EngineExtension engineExtension : getEngineExtensions()) {
             LOGGER.trace(
-                    "engine extension [%s] onTestDiscovery() testClassDefinition testClass [%s]",
-                    engineExtension.getClass().getName(),
-                    testClassDefinition.getTestClass().getName());
+                    "engine extension [%s] onTestDiscovery() classDefinition testClass [%s]",
+                    engineExtension.getClass().getName(), classDefinition.getTestClass().getName());
 
-            engineExtension.onTestDiscovery(engineExtensionContext, testClassDefinition);
+            engineExtension.onTestDiscovery(engineExtensionContext, classDefinition);
 
             LOGGER.trace(
-                    "engine extension [%s] onTestDiscovery() testClassDefinition testClass [%s]"
+                    "engine extension [%s] onTestDiscovery() classDefinition testClass [%s]"
                             + " success",
-                    engineExtension.getClass().getName(),
-                    testClassDefinition.getTestClass().getName());
+                    engineExtension.getClass().getName(), classDefinition.getTestClass().getName());
         }
     }
 

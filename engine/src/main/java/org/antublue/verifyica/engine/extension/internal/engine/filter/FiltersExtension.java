@@ -23,7 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.extension.TestClassDefinition;
+import org.antublue.verifyica.api.extension.ClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 import org.antublue.verifyica.engine.extension.internal.engine.InternalEngineExtension;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -43,24 +43,23 @@ public class FiltersExtension implements InternalEngineExtension {
 
     @Override
     public void onTestDiscovery(
-            EngineExtensionContext engineExtensionContext,
-            List<TestClassDefinition> testClassDefinitions) {
+            EngineExtensionContext engineExtensionContext, List<ClassDefinition> classDefinitions) {
         LOGGER.trace("onTestDiscovery()");
 
-        applyFilters(testClassDefinitions);
+        applyFilters(classDefinitions);
     }
 
-    private static void applyFilters(List<TestClassDefinition> testClassDefinitions) {
+    private static void applyFilters(List<ClassDefinition> classDefinitions) {
         LOGGER.trace("applyFilters()");
 
         List<Filter> filters = FilterFactory.getInstance().loadFilters();
 
         Map<Class<?>, Map<String, Method>> workingClassMethodMap = new LinkedHashMap<>();
 
-        testClassDefinitions.forEach(
-                testClassDefinition -> {
-                    Class<?> testClass = testClassDefinition.getTestClass();
-                    testClassDefinition
+        classDefinitions.forEach(
+                classDefinition -> {
+                    Class<?> testClass = classDefinition.getTestClass();
+                    classDefinition
                             .getTestMethods()
                             .forEach(
                                     testMethod ->
@@ -70,15 +69,14 @@ public class FiltersExtension implements InternalEngineExtension {
                                                     .put(testMethod.getName(), testMethod));
                 });
 
-        testClassDefinitions.forEach(
-                testClassDefinition ->
-                        testClassDefinition
+        classDefinitions.forEach(
+                classDefinition ->
+                        classDefinition
                                 .getTestMethods()
                                 .forEach(
                                         testMethod -> {
                                             for (Filter filter : filters) {
-                                                Class<?> testClass =
-                                                        testClassDefinition.getTestClass();
+                                                Class<?> testClass = classDefinition.getTestClass();
                                                 switch (filter.getType()) {
                                                     case INCLUDE_CLASS:
                                                     case INCLUDE_TAGGED_CLASS:
@@ -123,15 +121,15 @@ public class FiltersExtension implements InternalEngineExtension {
 
         workingClassMethodMap.entrySet().removeIf(entry -> entry.getValue().isEmpty());
 
-        Iterator<TestClassDefinition> testClassDefinitionIterator = testClassDefinitions.iterator();
-        while (testClassDefinitionIterator.hasNext()) {
-            TestClassDefinition testClassDefinition = testClassDefinitionIterator.next();
-            Class<?> testClass = testClassDefinition.getTestClass();
+        Iterator<ClassDefinition> classDefinitionsIterator = classDefinitions.iterator();
+        while (classDefinitionsIterator.hasNext()) {
+            ClassDefinition classDefinition = classDefinitionsIterator.next();
+            Class<?> testClass = classDefinition.getTestClass();
             if (!workingClassMethodMap.containsKey(testClass)) {
-                testClassDefinitionIterator.remove();
+                classDefinitionsIterator.remove();
             } else {
-                testClassDefinition.getTestMethods().clear();
-                testClassDefinition
+                classDefinition.getTestMethods().clear();
+                classDefinition
                         .getTestMethods()
                         .addAll(new LinkedHashSet<>(workingClassMethodMap.get(testClass).values()));
             }

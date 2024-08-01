@@ -32,8 +32,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.extension.ClassDefinition;
 import org.antublue.verifyica.api.extension.ClassExtension;
-import org.antublue.verifyica.api.extension.TestClassDefinition;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineExtensionContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
@@ -106,7 +106,7 @@ public class EngineDiscoveryRequestResolver {
 
             resolveTestArguments(testClassMethodMap, testClassArgumentMap);
 
-            List<TestClassDefinition> testClassDefinitions = new ArrayList<>();
+            List<ClassDefinition> classDefinitions = new ArrayList<>();
             testClassMethodMap
                     .keySet()
                     .forEach(
@@ -117,19 +117,19 @@ public class EngineDiscoveryRequestResolver {
                                 int testArgumentParallelism = getTestArgumentParallelism(testClass);
                                 OrderSupport.orderMethods(testMethods);
 
-                                testClassDefinitions.add(
-                                        new DefaultTestClassDefinition(
+                                classDefinitions.add(
+                                        new DefaultClassDefinition(
                                                 testClass,
                                                 testMethods,
                                                 testArguments,
                                                 testArgumentParallelism));
                             });
 
-            afterTestDiscovery(testClassDefinitions);
+            afterTestDiscovery(classDefinitions);
 
-            prune(testClassDefinitions);
-            loadClassExtensions(testClassDefinitions);
-            buildEngineDescriptor(engineDescriptor, testClassDefinitions);
+            prune(classDefinitions);
+            loadClassExtensions(classDefinitions);
+            buildEngineDescriptor(engineDescriptor, classDefinitions);
         } catch (EngineException e) {
             throw e;
         } catch (Throwable t) {
@@ -456,10 +456,10 @@ public class EngineDiscoveryRequestResolver {
     /**
      * Method to invoke engine extensions
      *
-     * @param testClassDefinitions testClassDefinitions
+     * @param classDefinitions classDefinitions
      * @throws Throwable Throwable
      */
-    private static void afterTestDiscovery(List<TestClassDefinition> testClassDefinitions)
+    private static void afterTestDiscovery(List<ClassDefinition> classDefinitions)
             throws Throwable {
         LOGGER.trace("afterTestDiscovery()");
 
@@ -467,40 +467,40 @@ public class EngineDiscoveryRequestResolver {
                 new DefaultEngineExtensionContext(DefaultEngineContext.getInstance());
 
         EngineExtensionRegistry.getInstance()
-                .onTestDiscovery(defaultEngineExtensionContext, testClassDefinitions);
+                .onTestDiscovery(defaultEngineExtensionContext, classDefinitions);
 
-        for (TestClassDefinition testClassDefinition : testClassDefinitions) {
+        for (ClassDefinition classDefinition : classDefinitions) {
             EngineExtensionRegistry.getInstance()
-                    .onTestDiscovery(defaultEngineExtensionContext, testClassDefinition);
+                    .onTestDiscovery(defaultEngineExtensionContext, classDefinition);
         }
     }
 
     /**
      * Method to prune test classes without arguments or test methods
      *
-     * @param testClassDefinitions testClassDefinitions
+     * @param classDefinitions classDefinitions
      */
-    private static void prune(List<TestClassDefinition> testClassDefinitions) {
+    private static void prune(List<ClassDefinition> classDefinitions) {
         LOGGER.trace("prune()");
 
-        testClassDefinitions.removeIf(
-                testClassDefinition ->
-                        testClassDefinition.getTestArguments().isEmpty()
-                                || testClassDefinition.getTestMethods().isEmpty());
+        classDefinitions.removeIf(
+                classDefinition ->
+                        classDefinition.getTestArguments().isEmpty()
+                                || classDefinition.getTestMethods().isEmpty());
     }
 
     /**
      * Method to load test class ClassExtensions
      *
-     * @param testClassDefinitions testClassDefinitions
+     * @param classDefinitions classDefinitions
      * @throws Throwable Throwable
      */
-    private static void loadClassExtensions(List<TestClassDefinition> testClassDefinitions)
+    private static void loadClassExtensions(List<ClassDefinition> classDefinitions)
             throws Throwable {
         LOGGER.trace("loadClassExtensions()");
 
-        for (TestClassDefinition testClassDefinition : testClassDefinitions) {
-            Class<?> testClass = testClassDefinition.getTestClass();
+        for (ClassDefinition classDefinition : classDefinitions) {
+            Class<?> testClass = classDefinition.getTestClass();
 
             List<Method> extensionSupplierMethods =
                     MethodSupport.findMethods(
@@ -547,16 +547,16 @@ public class EngineDiscoveryRequestResolver {
      * Method to build the EngineDescriptor
      *
      * @param engineDescriptor engineDescriptor
-     * @param testClassDefinitions testClassDefinitions
+     * @param classDefinitions classDefinitions
      * @throws Throwable Throwable
      */
     private static void buildEngineDescriptor(
-            EngineDescriptor engineDescriptor, List<TestClassDefinition> testClassDefinitions)
+            EngineDescriptor engineDescriptor, List<ClassDefinition> classDefinitions)
             throws Throwable {
         LOGGER.trace("buildEngineDescriptor()");
 
-        for (TestClassDefinition testClassDefinition : testClassDefinitions) {
-            Class<?> testClass = testClassDefinition.getTestClass();
+        for (ClassDefinition classDefinition : classDefinitions) {
+            Class<?> testClass = classDefinition.getTestClass();
 
             UniqueId classTestDescriptorUniqueId =
                     engineDescriptor.getUniqueId().append("class", testClass.getName());
@@ -574,12 +574,12 @@ public class EngineDiscoveryRequestResolver {
                                     testClass,
                                     Predicates.CONCLUDE_METHOD,
                                     HierarchyTraversalMode.BOTTOM_UP),
-                            testClassDefinition.getTestArgumentParallelism());
+                            classDefinition.getTestArgumentParallelism());
 
             engineDescriptor.addChild(classTestDescriptor);
 
             int argumentIndex = 0;
-            for (Argument<?> testArgument : testClassDefinition.getTestArguments()) {
+            for (Argument<?> testArgument : classDefinition.getTestArguments()) {
                 UniqueId argumentTestDescriptorUniqueId =
                         classTestDescriptorUniqueId.append(
                                 "argument", String.valueOf(argumentIndex));
@@ -601,7 +601,7 @@ public class EngineDiscoveryRequestResolver {
 
                 classTestDescriptor.addChild(argumentTestDescriptor);
 
-                for (Method method : testClassDefinition.getTestMethods()) {
+                for (Method method : classDefinition.getTestMethods()) {
                     UniqueId testMethodDescriptorUniqueId =
                             argumentTestDescriptorUniqueId.append("test", method.getName());
 

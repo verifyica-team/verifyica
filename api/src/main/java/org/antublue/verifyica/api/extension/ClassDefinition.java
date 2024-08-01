@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Set;
 import org.antublue.verifyica.api.Argument;
 
-/** Class to implement TestClassDefinition */
-public interface TestClassDefinition {
+/** Class to implement ClassDefinition */
+public interface ClassDefinition {
 
     /**
      * Get the test class

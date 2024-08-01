@@ -23,7 +23,7 @@ import static org.junit.Assert.fail;
 import java.util.List;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.extension.TestClassDefinition;
+import org.antublue.verifyica.api.extension.ClassDefinition;
 import org.antublue.verifyica.api.extension.engine.EngineExtension;
 import org.antublue.verifyica.api.extension.engine.EngineExtensionContext;
 
@@ -32,14 +32,13 @@ public class EngineExtensionTest2 implements EngineExtension {
 
     @Override
     public void onTestDiscovery(
-            EngineExtensionContext engineExtensionContext,
-            List<TestClassDefinition> testClassDefinitions) {
+            EngineExtensionContext engineExtensionContext, List<ClassDefinition> classDefinitions) {
         System.out.println(format("%s onTestDiscovery()", getClass().getName()));
 
-        for (TestClassDefinition testClassDefinition : testClassDefinitions) {
-            if (testClassDefinition.getTestClass() == EngineExtensionTest2.class) {
+        for (ClassDefinition classDefinition : classDefinitions) {
+            if (classDefinition.getTestClass() == EngineExtensionTest2.class) {
                 // Filter test method "test4"
-                testClassDefinition
+                classDefinition
                         .getTestMethods()
                         .removeIf(method -> method.getName().equals("test2"));
             }
