@@ -300,7 +300,7 @@ public class EngineInterceptorRegistry {
 
                 engineInterceptorClasses.addAll(externalEngineInterceptorsClasses);
 
-                LOGGER.trace("engine interceptor count [%d]", engineInterceptors.size());
+                LOGGER.trace("engine interceptor count [%d]", engineInterceptorClasses.size());
 
                 for (Class<?> engineInterceptorClass : engineInterceptorClasses) {
                     try {
