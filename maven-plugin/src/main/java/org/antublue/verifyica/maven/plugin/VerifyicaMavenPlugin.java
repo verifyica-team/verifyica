@@ -152,6 +152,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             Set<Path> artifactPaths = new LinkedHashSet<>();
 
             List<String> classpathElements = mavenProject.getCompileClasspathElements();
+
             if (classpathElements != null) {
                 for (String classpathElement : classpathElements) {
                     Path path = new File(classpathElement).toPath();
@@ -213,6 +214,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             }
 
             Map<String, URL> urls = new LinkedHashMap<>();
+
             for (Path path : artifactPaths) {
                 URL url = path.toUri().toURL();
                 urls.putIfAbsent(url.getPath(), url);
