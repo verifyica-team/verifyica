@@ -159,15 +159,13 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             }
         }
 
-        if (stateTracker.contains("instantiateTestInstance->SUCCESS")) {
-            try {
-                stateTracker.put("destroyTestInstance");
-                destroyTestInstance(defaultClassContext);
-                stateTracker.put("destroyTestInstance->SUCCESS");
-            } catch (Throwable t) {
-                stateTracker.put("destroyTestInstance->FAILURE", t);
-                t.printStackTrace(System.err);
-            }
+        try {
+            stateTracker.put("destroyTestInstance");
+            destroyTestInstance(defaultClassContext);
+            stateTracker.put("destroyTestInstance->SUCCESS");
+        } catch (Throwable t) {
+            stateTracker.put("destroyTestInstance->FAILURE", t);
+            t.printStackTrace(System.err);
         }
 
         getStopWatch().stop();
