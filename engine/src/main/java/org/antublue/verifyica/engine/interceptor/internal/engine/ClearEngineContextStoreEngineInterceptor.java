@@ -21,7 +21,7 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement EngineContextStoreClearEngineInterceptor */
+/** Class to implement ClearEngineContextStoreEngineInterceptor */
 public class ClearEngineContextStoreEngineInterceptor implements InternalEngineInterceptor {
 
     private static final Logger LOGGER =
