@@ -229,22 +229,27 @@ public class Locks {
         void lock();
 
         /**
-         * Method to try to lock the Lock
+         * Method to try to acquire the Lock
          *
-         * @throws InterruptedException InterruptedException
+         * @return true if the lock was acquired, else false
          */
-        void tryLock() throws InterruptedException;
+        boolean tryLock();
 
         /**
-         * Method to try to lock the Lock
+         * Method to try to acquire the Lock
          *
          * @param time time
          * @param timeUnit timeUnit
+         * @return true if the lock was acquired, else false
          * @throws InterruptedException InterruptedException
          */
-        void tryLock(long time, TimeUnit timeUnit) throws InterruptedException;
+        boolean tryLock(long time, TimeUnit timeUnit) throws InterruptedException;
 
-        /** Method to unlock the Lock */
+        /**
+         * Method to unlock the Lock
+         *
+         * @throws IllegalMonitorStateException if the current thread does not hold this lock
+         */
         void unlock();
     }
 
@@ -270,14 +275,14 @@ public class Locks {
         }
 
         @Override
-        public void tryLock() throws InterruptedException {
-            tryLock(Long.MAX_VALUE, TimeUnit.DAYS);
+        public boolean tryLock() {
+            return lockManager.tryLock(key);
         }
 
         @Override
-        public void tryLock(long time, TimeUnit timeUnit) throws InterruptedException {
+        public boolean tryLock(long time, TimeUnit timeUnit) throws InterruptedException {
             notNull(timeUnit, "timeUnit it null");
-            lockManager.tryLock(key, time, timeUnit);
+            return lockManager.tryLock(key, time, timeUnit);
         }
 
         @Override
@@ -298,7 +303,7 @@ public class Locks {
         private final Map<Object, LockHolder> map = new HashMap<>();
 
         /**
-         * Acquires a lock
+         * Acquires a Lock
          *
          * @param key key
          */
@@ -326,7 +331,13 @@ public class Locks {
             lockHolder.getReentrantLock().lock();
         }
 
-        void tryLock(Object key, long time, TimeUnit timeUnit) throws InterruptedException {
+        /**
+         * Trys to acquire a Lock
+         *
+         * @param key key
+         * @return rue if the lock was acquired, else false
+         */
+        boolean tryLock(Object key) {
             LockHolder lockHolder;
 
             try {
@@ -347,13 +358,46 @@ public class Locks {
                 lock.unlock();
             }
 
-            lockHolder.getReentrantLock().tryLock(time, timeUnit);
+            return lockHolder.getReentrantLock().tryLock();
         }
 
         /**
-         * Releases a lock
+         * Trys to acquire a Lock
          *
          * @param key key
+         * @param time time
+         * @param timeUnit timeUnit
+         * @return true if the lock was acquired, else false
+         * @throws InterruptedException InterruptedException
+         */
+        boolean tryLock(Object key, long time, TimeUnit timeUnit) throws InterruptedException {
+            LockHolder lockHolder;
+
+            try {
+                lock.lock();
+
+                lockHolder =
+                        map.compute(
+                                key,
+                                (k, lh) -> {
+                                    if (lh == null) {
+                                        lh = new LockHolder();
+                                    }
+                                    return lh;
+                                });
+
+                lockHolder.increaseLockCount();
+            } finally {
+                lock.unlock();
+            }
+
+            return lockHolder.getReentrantLock().tryLock(time, timeUnit);
+        }
+
+        /**
+         * Releases a Lock
+         *
+         * @throws IllegalMonitorStateException if the current thread does not hold the Lock
          */
         void unlock(Object key) {
             try {
