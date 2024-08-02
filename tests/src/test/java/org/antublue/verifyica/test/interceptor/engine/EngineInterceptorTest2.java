@@ -38,7 +38,7 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
 
         for (ClassDefinition classDefinition : classDefinitions) {
             if (classDefinition.getTestClass() == EngineInterceptorTest2.class) {
-                // Filter test method "test4"
+                // Filter test method "test2"
                 classDefinition
                         .getTestMethods()
                         .removeIf(method -> method.getName().equals("test2"));
