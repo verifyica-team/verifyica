@@ -19,6 +19,7 @@ package org.antublue.verifyica.engine.descriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -112,7 +113,6 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             stateTracker.put("instantiateTestInstance->SUCCESS");
         } catch (Throwable t) {
             stateTracker.put("instantiateTestInstance->FAILURE", t);
-            t.printStackTrace(System.err);
         }
 
         if (stateTracker.contains("instantiateTestInstance->SUCCESS")) {
@@ -121,8 +121,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                 prepare(defaultClassContext);
                 stateTracker.put("prepare->SUCCESS");
             } catch (Throwable t) {
-                stateTracker.put("prepare->FAILURE", t);
                 t.printStackTrace(System.err);
+                stateTracker.put("prepare->FAILURE", t);
             }
         }
 
@@ -132,8 +132,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                 doExecute(executionRequest, defaultClassContext);
                 stateTracker.put("doExecute->SUCCESS");
             } catch (Throwable t) {
+                t.printStackTrace(System.err);
                 stateTracker.put("doExecute->FAILURE", t);
-                // Don't log the throwable since it's from downstream test descriptors
             }
         }
 
@@ -143,8 +143,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                 doSkip(executionRequest, defaultClassContext);
                 stateTracker.put("doSkip->SUCCESS");
             } catch (Throwable t) {
+                t.printStackTrace(System.err);
                 stateTracker.put("doSkip->FAILURE", t);
-                // Don't log the throwable since it's from downstream test descriptors
             }
         }
 
@@ -154,8 +154,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                 conclude(defaultClassContext);
                 stateTracker.put("conclude->SUCCESS");
             } catch (Throwable t) {
-                stateTracker.put("conclude->FAILURE", t);
                 t.printStackTrace(System.err);
+                stateTracker.put("conclude->FAILURE", t);
             }
         }
 
@@ -164,8 +164,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             destroyTestInstance(defaultClassContext);
             stateTracker.put("destroyTestInstance->SUCCESS");
         } catch (Throwable t) {
-            stateTracker.put("destroyTestInstance->FAILURE", t);
             t.printStackTrace(System.err);
+            stateTracker.put("destroyTestInstance->FAILURE", t);
         }
 
         getStopWatch().stop();
@@ -270,13 +270,16 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
      * @param defaultClassContext defaultClassContext
      */
     private void doExecute(
-            ExecutionRequest executionRequest, DefaultClassContext defaultClassContext) {
+            ExecutionRequest executionRequest, DefaultClassContext defaultClassContext)
+            throws Throwable {
         LOGGER.trace("doExecute() testClass [%s]", testClass.getName());
 
         ArgumentSupport.notNull(defaultClassContext, "defaultClassContext is null");
         ArgumentSupport.notNull(defaultClassContext.getTestInstance(), "testInstance is null");
 
         ExecutorService executorService = null;
+
+        List<Throwable> throwables = new ArrayList<>();
 
         try {
             executorService = ExecutorServiceFactory.getInstance().newExecutorService(parallelism);
@@ -293,7 +296,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
                 final String baseThreadName = Thread.currentThread().getName();
 
-                List<Future<?>> futures = new ArrayList<>();
+                List<Future<Throwable>> futures = new ArrayList<>();
 
                 for (TestDescriptor testDescriptor : getChildren()) {
                     if (testDescriptor instanceof ExecutableTestDescriptor) {
@@ -306,9 +309,11 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                         defaultArgumentContext.setTestInstance(
                                 defaultClassContext.getTestInstance());
 
-                        Future<?> future =
+                        Future<Throwable> future =
                                 executorService.submit(
                                         () -> {
+                                            Throwable throwable = null;
+
                                             Thread.currentThread()
                                                     .setName(
                                                             baseThreadName
@@ -324,12 +329,15 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                                 executableTestDescriptor.execute(
                                                         executionRequest, defaultArgumentContext);
                                             } catch (Throwable t) {
+                                                throwable = t;
                                                 t.printStackTrace(System.err);
                                             } finally {
                                                 if (finalSemaphore != null) {
                                                     finalSemaphore.release();
                                                 }
                                             }
+
+                                            return throwable;
                                         });
                         futures.add(future);
                     }
@@ -338,7 +346,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                 futures.forEach(
                         future -> {
                             try {
-                                future.get();
+                                throwables.add(future.get());
                             } catch (Exception e) {
                                 // INTENTIONALLY BLANK
                             }
@@ -367,6 +375,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                         }
                     }
                 } catch (Throwable t) {
+                    throwables.add(t);
                     t.printStackTrace(System.err);
                 } finally {
                     Thread.currentThread().setName(threadName);
@@ -376,6 +385,11 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             if (executorService != null) {
                 executorService.shutdown();
             }
+        }
+
+        throwables.removeIf(Objects::isNull);
+        if (!throwables.isEmpty()) {
+            throw throwables.get(0);
         }
     }
 

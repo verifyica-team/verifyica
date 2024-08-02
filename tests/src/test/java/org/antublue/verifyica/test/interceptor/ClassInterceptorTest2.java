@@ -272,6 +272,7 @@ public class ClassInterceptorTest2 {
         @Override
         public void onDestroy(ClassInterceptorContext classInterceptorContext) throws Throwable {
             List<String> expected = new ArrayList<>();
+
             expected.add("preInstantiate");
             expected.add("postInstantiate");
 

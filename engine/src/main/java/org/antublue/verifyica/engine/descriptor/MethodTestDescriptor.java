@@ -127,8 +127,8 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
             beforeEach(defaultArgumentContext);
             stateTracker.put("beforeEach->SUCCESS");
         } catch (Throwable t) {
-            stateTracker.put("beforeEach->FAILURE", t);
             t.printStackTrace(System.err);
+            stateTracker.put("beforeEach->FAILURE", t);
         }
 
         if (stateTracker.contains("beforeEach->SUCCESS")) {
@@ -137,8 +137,8 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
                 test(defaultArgumentContext);
                 stateTracker.put("test->SUCCESS");
             } catch (Throwable t) {
-                stateTracker.put("test->FAILURE", t);
                 t.printStackTrace(System.err);
+                stateTracker.put("test->FAILURE", t);
             }
         }
 
@@ -147,8 +147,8 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
             afterEach(defaultArgumentContext);
             stateTracker.put("afterEach->SUCCESS");
         } catch (Throwable t) {
-            stateTracker.put("afterEach->FAILURE", t);
             t.printStackTrace(System.err);
+            stateTracker.put("afterEach->FAILURE", t);
         }
 
         getStopWatch().stop();

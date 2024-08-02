@@ -123,8 +123,8 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
             beforeAll(defaultArgumentContext);
             stateTracker.put("beforeAll->SUCCESS");
         } catch (Throwable t) {
-            stateTracker.put("beforeAll->FAILURE", t);
             t.printStackTrace(System.err);
+            stateTracker.put("beforeAll->FAILURE", t);
         }
 
         if (stateTracker.contains("beforeAll->SUCCESS")) {
@@ -133,8 +133,8 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                 doExecute(executionRequest, defaultArgumentContext);
                 stateTracker.put("doExecute->SUCCESS");
             } catch (Throwable t) {
+                t.printStackTrace(System.err);
                 stateTracker.put("doExecute->FAILURE", t);
-                // Don't log the throwable since it's from downstream test descriptors
             }
         }
 
@@ -144,8 +144,8 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                 doSkip(executionRequest, defaultArgumentContext);
                 stateTracker.put("doSkip->SUCCESS");
             } catch (Throwable t) {
+                t.printStackTrace(System.err);
                 stateTracker.put("doSkip->FAILURE", t);
-                // Don't log the throwable since it's from downstream test descriptors
             }
         }
 
@@ -154,8 +154,8 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
             afterAll(defaultArgumentContext);
             stateTracker.put("afterAll->SUCCESS");
         } catch (Throwable t) {
-            stateTracker.put("afterAll->FAILURE", t);
             t.printStackTrace(System.err);
+            stateTracker.put("afterAll->FAILURE", t);
         }
 
         getStopWatch().stop();

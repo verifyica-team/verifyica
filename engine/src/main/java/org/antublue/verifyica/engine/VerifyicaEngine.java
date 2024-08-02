@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -165,9 +166,9 @@ public class VerifyicaEngine implements TestEngine {
 
         ExecutorService executorService = null;
 
-        List<Future<?>> futures = new ArrayList<>();
+        List<Future<Throwable>> futures = new ArrayList<>();
 
-        Throwable throwable = null;
+        List<Throwable> throwables = new ArrayList<>();
 
         try {
             EngineInterceptorRegistry.getInstance().beforeExecute(engineInterceptorContext);
@@ -180,27 +181,27 @@ public class VerifyicaEngine implements TestEngine {
 
             executorService = ExecutorServiceFactory.getInstance().newExecutorService(parallelism);
 
-            Semaphore semaphore = null;
-            if (ExecutorServiceFactory.usingVirtualThreads()) {
-                semaphore = new Semaphore(parallelism);
-            }
-
-            final Semaphore finalSemaphore = semaphore;
+            final Semaphore semaphore =
+                    ExecutorServiceFactory.usingVirtualThreads()
+                            ? new Semaphore(parallelism)
+                            : null;
 
             for (TestDescriptor testDescriptor :
                     executionRequest.getRootTestDescriptor().getChildren()) {
                 if (testDescriptor instanceof ExecutableTestDescriptor) {
-                    Future<?> future =
+                    Future<Throwable> future =
                             executorService.submit(
                                     () -> {
+                                        Throwable throwable = null;
+
                                         Thread.currentThread()
                                                 .setName(
                                                         "verifyica-"
                                                                 + HashSupport.alphaNumericHash(4));
                                         if (!testDescriptor.getChildren().isEmpty()) {
                                             try {
-                                                if (finalSemaphore != null) {
-                                                    finalSemaphore.acquire();
+                                                if (semaphore != null) {
+                                                    semaphore.acquire();
                                                 }
                                                 ((ExecutableTestDescriptor) testDescriptor)
                                                         .execute(
@@ -208,16 +209,17 @@ public class VerifyicaEngine implements TestEngine {
                                                                 new DefaultClassContext(
                                                                         engineContext));
                                             } catch (Throwable t) {
+                                                throwable = t;
                                                 t.printStackTrace(System.err);
                                             } finally {
-                                                if (finalSemaphore != null) {
-                                                    finalSemaphore.release();
+                                                if (semaphore != null) {
+                                                    semaphore.release();
                                                 }
                                             }
                                         } else {
                                             try {
-                                                if (finalSemaphore != null) {
-                                                    finalSemaphore.acquire();
+                                                if (semaphore != null) {
+                                                    semaphore.acquire();
                                                 }
                                                 ((ExecutableTestDescriptor) testDescriptor)
                                                         .skip(
@@ -225,13 +227,16 @@ public class VerifyicaEngine implements TestEngine {
                                                                 new DefaultClassContext(
                                                                         engineContext));
                                             } catch (Throwable t) {
+                                                throwable = t;
                                                 t.printStackTrace(System.err);
                                             } finally {
-                                                if (finalSemaphore != null) {
-                                                    finalSemaphore.release();
+                                                if (semaphore != null) {
+                                                    semaphore.release();
                                                 }
                                             }
                                         }
+
+                                        return throwable;
                                     });
 
                     futures.add(future);
@@ -241,13 +246,13 @@ public class VerifyicaEngine implements TestEngine {
             futures.forEach(
                     future -> {
                         try {
-                            future.get();
+                            throwables.add(future.get());
                         } catch (Exception e) {
                             // INTENTIONALLY BLANK
                         }
                     });
         } catch (Throwable t) {
-            throwable = t;
+            throwables.add(t);
         } finally {
             if (executorService != null) {
                 executorService.shutdown();
@@ -256,14 +261,16 @@ public class VerifyicaEngine implements TestEngine {
             try {
                 EngineInterceptorRegistry.getInstance().afterExecute(engineInterceptorContext);
             } catch (Throwable t) {
-                t.printStackTrace(System.err);
+                throwables.add(t);
             }
         }
 
+        throwables.removeIf(Objects::isNull);
+
         TestExecutionResult testExecutionResult =
-                throwable != null
-                        ? TestExecutionResult.successful()
-                        : TestExecutionResult.failed(throwable);
+                !throwables.isEmpty()
+                        ? TestExecutionResult.failed(throwables.get(0))
+                        : TestExecutionResult.successful();
 
         executionRequest
                 .getEngineExecutionListener()
