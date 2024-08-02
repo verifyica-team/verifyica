@@ -39,7 +39,7 @@ public class EngineInterceptorTest3 implements AutoDiscoverableEngineInterceptor
         if (classDefinition.getTestClass() == EngineInterceptorTest3.class) {
             // Change test argument parallelism
             int testArgumentParallelism = classDefinition.getTestArgumentParallelism();
-            classDefinition.setTestArgumentParallelism(-10);
+            classDefinition.setTestArgumentParallelism(1);
 
             System.out.println(
                     format(
