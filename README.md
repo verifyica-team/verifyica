@@ -12,14 +12,17 @@ A Java annotation-based, multithreaded test engine for integration testing built
 
 # Purpose
 
-Parameterized unit testing is traditionally test first oriented ...
+Parameterized testing is traditionally test first oriented ...
 
 - Given a set of tests (methods), execute each test using a set of arguments.
 
 ```
 for (Test test : Tests) {
    for (TestArgument testArgument : TestArguments) {
-      test(testArgument)
+      test1(testArgument)
+   }   
+   for (TestArgument testArgument : TestArguments) {
+      test2(testArgument)
    }
 }
 ```
@@ -31,7 +34,8 @@ Verifyica swaps the paradigm to be test argument first oriented ...
 ```
 for (TestArgument testArgument : TestArguments) {
    for (Test test : Tests) {
-      test(testArgument)
+      test1(testArgument)
+      test2(testArgument);
    }
 }
 ```
