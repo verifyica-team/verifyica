@@ -25,20 +25,26 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.interceptor.engine.AutoDiscoverableEngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
-import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.support.RandomSupport;
 
 /** Example test */
-public class EngineInterceptorTest3 implements EngineInterceptor {
+public class EngineInterceptorTest3 implements AutoDiscoverableEngineInterceptor {
 
     @Override
     public void onTestDiscovery(
             EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
         if (classDefinition.getTestClass() == EngineInterceptorTest3.class) {
             // Change test argument parallelism
-            classDefinition.setTestArgumentParallelism(1);
+            int testArgumentParallelism = classDefinition.getTestArgumentParallelism();
+            classDefinition.setTestArgumentParallelism(-10);
+
+            System.out.println(
+                    format(
+                            "changing test argument parallelism from [%d] to [%d]",
+                            testArgumentParallelism, classDefinition.getTestArgumentParallelism()));
         }
     }
 
