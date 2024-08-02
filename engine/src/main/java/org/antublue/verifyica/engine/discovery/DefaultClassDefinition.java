@@ -76,14 +76,14 @@ public class DefaultClassDefinition implements ClassDefinition {
     }
 
     @Override
-    public void setTestArgumentParallelism(int parallelism) {
-        if (parallelism < 1) {
+    public void setTestArgumentParallelism(int testArgumentParallelism) {
+        if (testArgumentParallelism < 1) {
             LOGGER.warn(
-                    "Invalid test class [%s] test argument parallelism [%d], defaulting to [1]",
-                    testClass.getName(), parallelism);
+                    "Test class [%s] test argument parallelism [%d] less than [1], defaulting to [1]",
+                    testClass.getName(), testArgumentParallelism);
         }
 
-        this.testArgumentParallelism = Math.max(this.testArgumentParallelism, 1);
+        this.testArgumentParallelism = Math.max(testArgumentParallelism, 1);
     }
 
     @Override
