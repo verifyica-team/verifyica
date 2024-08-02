@@ -18,7 +18,6 @@ package org.antublue.verifyica.test.interceptor.engine;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
@@ -128,6 +127,6 @@ public class EngineInterceptorTest1 {
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.println(format("test4(%s)", argumentContext.getTestArgument().getPayload()));
 
-        fail("Should not execute... filtered by interceptor");
+        assertThat(1).isEqualTo(2);
     }
 }
