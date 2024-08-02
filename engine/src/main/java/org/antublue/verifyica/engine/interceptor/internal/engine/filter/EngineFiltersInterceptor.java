@@ -29,15 +29,15 @@ import org.antublue.verifyica.engine.interceptor.internal.engine.InternalEngineI
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement FiltersInterceptor */
+/** Class to implement EngineFiltersInterceptor */
 @Verifyica.Order(order = 0)
 @SuppressWarnings("PMD.UnusedPrivateMethod")
-public class FiltersInterceptor implements InternalEngineInterceptor {
+public class EngineFiltersInterceptor implements InternalEngineInterceptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FiltersInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EngineFiltersInterceptor.class);
 
     /** Constructor */
-    public FiltersInterceptor() {
+    public EngineFiltersInterceptor() {
         // INTENTIONALLY BLANK
     }
 
