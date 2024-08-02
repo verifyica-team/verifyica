@@ -21,7 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
-import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
+import org.antublue.verifyica.api.interceptor.engine.AutoDiscoverableEngineInterceptor;
 import org.antublue.verifyica.engine.interceptor.internal.InternalClassInterceptor;
 import org.antublue.verifyica.engine.interceptor.internal.engine.InternalEngineInterceptor;
 import org.antublue.verifyica.engine.support.ClassSupport;
@@ -40,12 +40,11 @@ public class Predicates {
                         && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && InternalEngineInterceptor.class.isAssignableFrom(clazz)
-                        && EngineInterceptor.class.isAssignableFrom(clazz);
+                        && InternalEngineInterceptor.class.isAssignableFrom(clazz);
             };
 
     /** Predicate to filter engine interceptors classes */
-    public static final Predicate<Class<?>> ENGINE_INTERCEPTOR_CLASS =
+    public static final Predicate<Class<?>> AUTO_DISCOVERABLE_ENGINE_INTERCEPTOR_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
@@ -53,8 +52,7 @@ public class Predicates {
                         && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && !InternalEngineInterceptor.class.isAssignableFrom(clazz)
-                        && EngineInterceptor.class.isAssignableFrom(clazz);
+                        && AutoDiscoverableEngineInterceptor.class.isAssignableFrom(clazz);
             };
 
     /** Predicate to filter internal class interceptor classes */

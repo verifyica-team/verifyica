@@ -23,12 +23,12 @@ import static org.junit.Assert.fail;
 import java.util.List;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.interceptor.engine.AutoDiscoverableEngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
-import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
 /** Example test */
-public class EngineInterceptorTest2 implements EngineInterceptor {
+public class EngineInterceptorTest2 implements AutoDiscoverableEngineInterceptor {
 
     @Override
     public void onTestDiscovery(
