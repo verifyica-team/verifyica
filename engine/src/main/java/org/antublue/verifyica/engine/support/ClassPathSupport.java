@@ -67,7 +67,6 @@ public class ClassPathSupport {
                 for (String path : paths) {
                     uriSet.add(new File(path).toURI());
                 }
-
                 URIS = new ArrayList<>(uriSet);
             }
             return URIS;
@@ -86,10 +85,13 @@ public class ClassPathSupport {
         ArgumentSupport.notNull(predicate, "predicate is null");
 
         Set<Class<?>> set = new LinkedHashSet<>();
-        for (URI uri : getClasspathURIs()) {
-            set.addAll(
-                    ReflectionSupport.findAllClassesInClasspathRoot(uri, predicate, name -> true));
-        }
+        getClasspathURIs()
+                .forEach(
+                        uri ->
+                                set.addAll(
+                                        ReflectionSupport.findAllClassesInClasspathRoot(
+                                                uri, predicate, name -> true)));
+
         return new ArrayList<>(set);
     }
 
