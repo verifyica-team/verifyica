@@ -24,10 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
 import org.antublue.verifyica.api.interceptor.engine.AutoDiscoverableEngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
-import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
 /** Class to implement ExampleEngineInterceptor1 */

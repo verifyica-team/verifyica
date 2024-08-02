@@ -79,7 +79,8 @@ public class DefaultClassDefinition implements ClassDefinition {
     public void setTestArgumentParallelism(int testArgumentParallelism) {
         if (testArgumentParallelism < 1) {
             LOGGER.warn(
-                    "Test class [%s] test argument parallelism [%d] less than [1], defaulting to [1]",
+                    "Test class [%s] test argument parallelism [%d] less than [1], defaulting to"
+                            + " [1]",
                     testClass.getName(), testArgumentParallelism);
         }
 

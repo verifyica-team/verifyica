@@ -285,7 +285,8 @@ public class EngineInterceptorRegistry {
                 // Load external auto discoverable engine interceptors
                 List<Class<?>> externalEngineInterceptorsClasses =
                         new ArrayList<>(
-                                ClassPathSupport.findClasses(Predicates.AUTO_DISCOVERABLE_ENGINE_INTERCEPTOR_CLASS));
+                                ClassPathSupport.findClasses(
+                                        Predicates.AUTO_DISCOVERABLE_ENGINE_INTERCEPTOR_CLASS));
 
                 // Filter external engine interceptors
                 filter(externalEngineInterceptorsClasses);
