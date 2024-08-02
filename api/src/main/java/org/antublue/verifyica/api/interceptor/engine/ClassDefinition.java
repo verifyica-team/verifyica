@@ -55,7 +55,7 @@ public interface ClassDefinition {
     /**
      * Set the test argument parallelism
      *
-     * @param parallelism parallelism
+     * @param testArgumentParallelism testArgumentParallelism
      */
-    void setTestArgumentParallelism(int parallelism);
+    void setTestArgumentParallelism(int testArgumentParallelism);
 }
