@@ -450,25 +450,15 @@ public class ClassInterceptorRegistry {
      * Method to execute class interceptors
      *
      * @param classContext classContext
-     * @return a List of Throwables
+     * @throws Throwable Throwable
      */
-    public List<Throwable> beforeDestroy(ClassContext classContext) {
+    public void onDestroy(ClassContext classContext) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
         DefaultClassInterceptorContext defaultClassInterceptorContext =
                 new DefaultClassInterceptorContext(classContext);
-        List<Throwable> throwables = new ArrayList<>();
-
         for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
-            try {
-                classInterceptor.onDestroy(defaultClassInterceptorContext);
-            } catch (InvocationTargetException e) {
-                throwables.add(e.getCause());
-            } catch (Throwable t) {
-                throwables.add(t);
-            }
+            classInterceptor.onDestroy(defaultClassInterceptorContext);
         }
-
-        return throwables;
     }
 
     /**

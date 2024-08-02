@@ -432,7 +432,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         Throwable throwable = null;
 
         try {
-            ClassInterceptorRegistry.getInstance().beforeDestroy(defaultClassContext);
+            ClassInterceptorRegistry.getInstance().onDestroy(defaultClassContext);
         } catch (Throwable t) {
             throwable = t;
         }
