@@ -62,7 +62,6 @@ public class Predicates {
 
                 return Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
-                        // TODO check return type
                         && method.getParameterCount() == 0
                         && method.isAnnotationPresent(Verifyica.ClassInterceptorSupplier.class);
             };
@@ -74,7 +73,6 @@ public class Predicates {
 
                 return Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
-                        // TODO check return type
                         && method.getParameterCount() == 0
                         && method.isAnnotationPresent(Verifyica.ArgumentSupplier.class);
             };
@@ -87,7 +85,6 @@ public class Predicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
-                        // && acceptsContext(method)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.Test.class);
             };
@@ -115,7 +112,6 @@ public class Predicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
-                        // && acceptsContext(method)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.Prepare.class);
             };
@@ -128,7 +124,6 @@ public class Predicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
-                        // && acceptsContext(method)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.BeforeAll.class);
             };
@@ -141,7 +136,6 @@ public class Predicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
-                        // && acceptsContext(method)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.BeforeEach.class);
             };
@@ -154,7 +148,6 @@ public class Predicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
-                        // && acceptsContext(method)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.AfterEach.class);
             };
@@ -167,7 +160,6 @@ public class Predicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
-                        // && acceptsContext(method)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.AfterAll.class);
             };
@@ -180,7 +172,6 @@ public class Predicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
-                        // && acceptsContext(method)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.Conclude.class);
             };
