@@ -511,25 +511,29 @@ public class ClassInterceptorRegistry {
             if (!initialized) {
                 LOGGER.trace("loadClassInterceptors()");
 
-                List<Class<?>> autoLoadClassInterceptors =
+                List<Class<?>> autowiredClassInterceptors =
                         new ArrayList<>(
                                 ClassPathSupport.findClasses(
-                                        Predicates.AUTO_LOAD_CLASS_INTERCEPTOR_CLASS));
+                                        Predicates.AUTOWIRED_CLASS_INTERCEPTOR_CLASS));
 
-                OrderSupport.orderClasses(autoLoadClassInterceptors);
+                OrderSupport.orderClasses(autowiredClassInterceptors);
 
-                LOGGER.trace("class interceptor count [%d]", autoLoadClassInterceptors.size());
+                LOGGER.trace(
+                        "autowired class interceptor count [%d]",
+                        autowiredClassInterceptors.size());
 
-                for (Class<?> classInterceptorClass : autoLoadClassInterceptors) {
+                for (Class<?> classInterceptorClass : autowiredClassInterceptors) {
                     try {
                         LOGGER.trace(
-                                "loading class interceptor [%s]", classInterceptorClass.getName());
+                                "loading autowired class interceptor [%s]",
+                                classInterceptorClass.getName());
 
                         Object object = ObjectSupport.createObject(classInterceptorClass);
                         classInterceptors.add((ClassInterceptor) object);
 
                         LOGGER.trace(
-                                "class interceptor [%s] loaded", classInterceptorClass.getName());
+                                "autowired class interceptor [%s] loaded",
+                                classInterceptorClass.getName());
                     } catch (EngineException e) {
                         throw e;
                     } catch (Throwable t) {

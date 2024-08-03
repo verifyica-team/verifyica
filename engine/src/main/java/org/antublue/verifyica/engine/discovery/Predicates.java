@@ -30,7 +30,7 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 public class Predicates {
 
     /** Predicate to filter discoverable engine interceptors classes */
-    public static final Predicate<Class<?>> AUTO_LOAD_ENGINE_INTERCEPTOR_CLASS =
+    public static final Predicate<Class<?>> AUTOWIRED_ENGINE_INTERCEPTOR_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
@@ -43,7 +43,7 @@ public class Predicates {
             };
 
     /** Predicate to filter discoverable class interceptor classes */
-    public static final Predicate<Class<?>> AUTO_LOAD_CLASS_INTERCEPTOR_CLASS =
+    public static final Predicate<Class<?>> AUTOWIRED_CLASS_INTERCEPTOR_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)

@@ -280,28 +280,31 @@ public class EngineInterceptorRegistry {
             if (!initialized) {
                 LOGGER.trace("loading engine interceptors");
 
-                List<Class<?>> autoLoadEngineInterceptors =
+                List<Class<?>> autowiredEngineInterceptors =
                         new ArrayList<>(
                                 ClassPathSupport.findClasses(
-                                        Predicates.AUTO_LOAD_ENGINE_INTERCEPTOR_CLASS));
+                                        Predicates.AUTOWIRED_ENGINE_INTERCEPTOR_CLASS));
 
-                filter(autoLoadEngineInterceptors);
+                filter(autowiredEngineInterceptors);
 
-                OrderSupport.orderClasses(autoLoadEngineInterceptors);
+                OrderSupport.orderClasses(autowiredEngineInterceptors);
 
-                LOGGER.trace("engine interceptor count [%d]", autoLoadEngineInterceptors.size());
+                LOGGER.trace(
+                        "autowired engine interceptor count [%d]",
+                        autowiredEngineInterceptors.size());
 
-                for (Class<?> engineInterceptorClass : autoLoadEngineInterceptors) {
+                for (Class<?> engineInterceptorClass : autowiredEngineInterceptors) {
                     try {
                         LOGGER.trace(
-                                "loading engine interceptor [%s]",
+                                "loading autowired engine interceptor [%s]",
                                 engineInterceptorClass.getName());
 
                         Object object = ObjectSupport.createObject(engineInterceptorClass);
                         engineInterceptors.add((EngineInterceptor) object);
 
                         LOGGER.trace(
-                                "engine interceptor [%s] loaded", engineInterceptorClass.getName());
+                                "autowired engine interceptor [%s] loaded",
+                                engineInterceptorClass.getName());
                     } catch (EngineException e) {
                         throw e;
                     } catch (Throwable t) {
