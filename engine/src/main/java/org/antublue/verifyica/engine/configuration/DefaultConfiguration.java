@@ -392,7 +392,7 @@ public class DefaultConfiguration implements Configuration {
                 if (!currentPathString.endsWith("/")) {
                     currentPathString += "/";
                 }
-                
+
                 if (IS_TRACE_ENABLED) {
                     trace("searching path [" + currentPathString + "]");
                 }
