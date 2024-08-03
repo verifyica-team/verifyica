@@ -247,15 +247,15 @@
                             <relocations>
                                 <relocation>
                                     <pattern>io.github.thunkware</pattern>
-                                    <shadedPattern>2e59886ba12a0bbe1c169dd0175acc3d.io.github.thunkware</shadedPattern>
+                                    <shadedPattern>6bc6660d778dec84d62bc72b295ffd7b.io.github.thunkware</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>META-INF/versions/21/io.github.thunkware</pattern>
-                                    <shadedPattern>2e59886ba12a0bbe1c169dd0175acc3d.io.github.thunkware</shadedPattern>
+                                    <shadedPattern>6bc6660d778dec84d62bc72b295ffd7b.io.github.thunkware</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.yaml</pattern>
-                                    <shadedPattern>2e59886ba12a0bbe1c169dd0175acc3d.org.yaml</shadedPattern>
+                                    <shadedPattern>6bc6660d778dec84d62bc72b295ffd7b.org.yaml</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
