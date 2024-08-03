@@ -533,7 +533,7 @@ public class EngineDiscoveryRequestResolver {
                         } else {
                             throw new TestClassException(
                                     format(
-                                            "Invalid argument type [%s] supplied bye test class"
+                                            "Invalid argument type [%s] supplied by test class"
                                                     + " [%s] @Verifyica.ClassInterceptorSupplier"
                                                     + " method",
                                             o.getClass().getName(), testClass.getName()));
