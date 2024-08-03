@@ -73,14 +73,15 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .orElse(true);
 
         LOGGER.trace(
-                "configuration [%s] = [%b]", Constants.MAVEN_PLUGIN_LOG_TIMING, consoleLogTiming);
+                "configuration property [%s] = [%b]",
+                Constants.MAVEN_PLUGIN_LOG_TIMING, consoleLogTiming);
 
         consoleLogTimingUnits =
                 Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_TIMING_UNITS))
                         .orElse("milliseconds");
 
         LOGGER.trace(
-                "configuration [%s] = [%s]",
+                "configuration property [%s] = [%s]",
                 Constants.MAVEN_PLUGIN_TIMING_UNITS, consoleLogTimingUnits);
 
         consoleLogMessagesStarted =
@@ -89,7 +90,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .orElse(true);
 
         LOGGER.trace(
-                "configuration [%s] = [%b]",
+                "configuration property [%s] = [%b]",
                 Constants.MAVEN_PLUGIN_LOG_MESSAGES_STARTED, consoleLogMessagesStarted);
 
         consoleLogMessagesFinished =
@@ -98,7 +99,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .orElse(true);
 
         LOGGER.trace(
-                "configuration [%s] = [%b]",
+                "configuration property [%s] = [%b]",
                 Constants.MAVEN_PLUGIN_LOG_MESSAGES_FINISHED, consoleLogMessagesFinished);
 
         consoleLogMessagesSkipped =
@@ -107,7 +108,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .orElse(true);
 
         LOGGER.trace(
-                "configuration [%s] = [%b]",
+                "configuration property [%s] = [%b]",
                 Constants.MAVEN_PLUGIN_LOG_MESSAGES_SKIPPED, consoleLogMessagesSkipped);
 
         consoleTestMessage =
