@@ -49,7 +49,7 @@ public class EngineInterceptorTest1 {
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY))
+                                .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
         assertThat(
@@ -57,8 +57,8 @@ public class EngineInterceptorTest1 {
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY, String.class))
-                .isEqualTo(ExampleAutoLoadEngineInterceptor1.VALUE);
+                                .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+                .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
     @Verifyica.Test
@@ -80,7 +80,7 @@ public class EngineInterceptorTest1 {
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY))
+                                .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
         assertThat(
@@ -88,8 +88,8 @@ public class EngineInterceptorTest1 {
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY, String.class))
-                .isEqualTo(ExampleAutoLoadEngineInterceptor1.VALUE);
+                                .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+                .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
     @Verifyica.Test
@@ -111,7 +111,7 @@ public class EngineInterceptorTest1 {
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY))
+                                .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
         assertThat(
@@ -119,8 +119,8 @@ public class EngineInterceptorTest1 {
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY, String.class))
-                .isEqualTo(ExampleAutoLoadEngineInterceptor1.VALUE);
+                                .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+                .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
     @Verifyica.Test

@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.test.interceptor.engine.ExampleAutoLoadEngineInterceptor1;
+import org.antublue.verifyica.test.interceptor.engine.ExampleAutowiredEngineInterceptor1;
 
 /** Example test */
 public class ExampleInheritanceCassInterceptorTest implements ExampleInheritanceClassInterceptor {
@@ -50,7 +50,7 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY))
+                                .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
         assertThat(
@@ -58,8 +58,8 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY, String.class))
-                .isEqualTo(ExampleAutoLoadEngineInterceptor1.VALUE);
+                                .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+                .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
     @Verifyica.Test
@@ -81,7 +81,7 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY))
+                                .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
         assertThat(
@@ -89,8 +89,8 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY, String.class))
-                .isEqualTo(ExampleAutoLoadEngineInterceptor1.VALUE);
+                                .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+                .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
     @Verifyica.Test
@@ -112,7 +112,7 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY))
+                                .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
         assertThat(
@@ -120,7 +120,7 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
                                 .getClassContext()
                                 .getEngineContext()
                                 .getStore()
-                                .get(ExampleAutoLoadEngineInterceptor1.KEY, String.class))
-                .isEqualTo(ExampleAutoLoadEngineInterceptor1.VALUE);
+                                .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+                .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 }

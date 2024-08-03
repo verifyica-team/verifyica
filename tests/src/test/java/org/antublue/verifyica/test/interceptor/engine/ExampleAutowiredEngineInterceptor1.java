@@ -29,11 +29,11 @@ import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-/** Class to implement ExampleAutoLoadEngineInterceptor1 */
+/** Class to implement ExampleAutowiredEngineInterceptor1 */
 @Verifyica.AutowiredInterceptor
-public class ExampleAutoLoadEngineInterceptor1 implements EngineInterceptor {
+public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
 
-    public static final String KEY = ExampleAutoLoadEngineInterceptor1.class.getName() + ".key";
+    public static final String KEY = ExampleAutowiredEngineInterceptor1.class.getName() + ".key";
     public static final String VALUE = UUID.randomUUID().toString();
 
     @Override

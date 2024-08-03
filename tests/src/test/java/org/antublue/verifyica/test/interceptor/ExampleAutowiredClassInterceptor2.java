@@ -25,12 +25,12 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-/** Class to implement ExampleAutoLoadClassInterceptor2 */
+/** Class to implement ExampleAutowiredClassInterceptor2 */
 @Verifyica.AutowiredInterceptor
-public class ExampleAutoLoadClassInterceptor2 implements ClassInterceptor {
+public class ExampleAutowiredClassInterceptor2 implements ClassInterceptor {
 
     /** Constructor */
-    public ExampleAutoLoadClassInterceptor2() {
+    public ExampleAutowiredClassInterceptor2() {
         System.out.println(format("%s constructor", getClass().getName()));
     }
 
