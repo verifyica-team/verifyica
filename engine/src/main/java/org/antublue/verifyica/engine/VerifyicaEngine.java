@@ -124,7 +124,7 @@ public class VerifyicaEngine implements TestEngine {
             return null;
         }
 
-        LOGGER.trace("discovering test classes and test methods");
+        LOGGER.trace("discovering test classes and test methods ...");
 
         EngineContext engineContext = DefaultEngineContext.getInstance();
         EngineInterceptorContext engineInterceptorContext =
@@ -142,7 +142,7 @@ public class VerifyicaEngine implements TestEngine {
             throw new EngineException(t);
         }
 
-        LOGGER.trace("discovery done");
+        LOGGER.trace("discovered [%d] test classes", engineDescriptor.getChildren().size());
 
         return engineDescriptor;
     }
@@ -198,11 +198,13 @@ public class VerifyicaEngine implements TestEngine {
                                                 .setName(
                                                         "verifyica-"
                                                                 + HashSupport.alphaNumericHash(4));
+
                                         if (!testDescriptor.getChildren().isEmpty()) {
                                             try {
                                                 if (semaphore != null) {
                                                     semaphore.acquire();
                                                 }
+
                                                 ((ExecutableTestDescriptor) testDescriptor)
                                                         .execute(
                                                                 executionRequest,
@@ -221,6 +223,7 @@ public class VerifyicaEngine implements TestEngine {
                                                 if (semaphore != null) {
                                                     semaphore.acquire();
                                                 }
+
                                                 ((ExecutableTestDescriptor) testDescriptor)
                                                         .skip(
                                                                 executionRequest,
@@ -247,8 +250,8 @@ public class VerifyicaEngine implements TestEngine {
                     future -> {
                         try {
                             throwables.add(future.get());
-                        } catch (Exception e) {
-                            // INTENTIONALLY BLANK
+                        } catch (Throwable t) {
+                            t.printStackTrace(System.err);
                         }
                     });
         } catch (Throwable t) {
