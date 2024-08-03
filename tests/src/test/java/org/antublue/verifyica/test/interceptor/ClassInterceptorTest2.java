@@ -40,7 +40,7 @@ public class ClassInterceptorTest2 {
                 .register(ClassInterceptorTest2.class, new ConcreteClasInterceptor());
     }
 
-    // Anti-pattern, but used for testing
+    // Antipattern, but used for testing
     public static List<String> actual = new ArrayList<>();
 
     @Verifyica.ArgumentSupplier
@@ -271,6 +271,8 @@ public class ClassInterceptorTest2 {
 
         @Override
         public void onDestroy(ClassInterceptorContext classInterceptorContext) throws Throwable {
+            System.out.println(format("%s onDestroy()", getClass().getName()));
+
             List<String> expected = new ArrayList<>();
 
             expected.add("preInstantiate");
@@ -320,9 +322,11 @@ public class ClassInterceptorTest2 {
             for (int i = 0; i < expected.size(); i++) {
                 System.out.println(
                         format(
-                                "expected [%" + pad + "s] / actual [%" + pad + "s]",
+                                "expected [%-" + pad + "s] actual [%-" + pad + "s]",
                                 expected.get(i),
                                 actual.get(i)));
+
+                assertThat(actual.get(i)).isEqualTo(expected.get(i));
             }
         }
     }

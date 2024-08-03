@@ -36,6 +36,7 @@ import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
 import org.antublue.verifyica.engine.context.ImmutableArgumentContext;
 import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
+import org.antublue.verifyica.engine.interceptor.internal.ClearClassContextStoreClassStoreInterceptor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
@@ -50,15 +51,17 @@ public class ClassInterceptorRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
 
     private final ReadWriteLock readWriteLock;
-    private final List<ClassInterceptor> internalClassInterceptors;
+    private final List<ClassInterceptor> classInterceptors;
     private final Map<Class<?>, List<ClassInterceptor>> mappedClassInterceptors;
     private boolean initialized;
 
     /** Constructor */
     private ClassInterceptorRegistry() {
         readWriteLock = new ReentrantReadWriteLock(true);
-        internalClassInterceptors = new ArrayList<>();
+        classInterceptors = new ArrayList<>();
         mappedClassInterceptors = new LinkedHashMap<>();
+
+        classInterceptors.add(new ClearClassContextStoreClassStoreInterceptor());
 
         loadClassInterceptors();
     }
@@ -456,7 +459,7 @@ public class ClassInterceptorRegistry {
         Class<?> testClass = classContext.getTestClass();
         DefaultClassInterceptorContext defaultClassInterceptorContext =
                 new DefaultClassInterceptorContext(classContext);
-        for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
+        for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
             classInterceptor.onDestroy(defaultClassInterceptorContext);
         }
     }
@@ -470,7 +473,7 @@ public class ClassInterceptorRegistry {
     private List<ClassInterceptor> getClassInterceptors(Class<?> testClass) {
         try {
             getReadWriteLock().writeLock().lock();
-            List<ClassInterceptor> classInterceptors = new ArrayList<>(internalClassInterceptors);
+            List<ClassInterceptor> classInterceptors = new ArrayList<>(this.classInterceptors);
             classInterceptors.addAll(
                     mappedClassInterceptors.computeIfAbsent(testClass, o -> new ArrayList<>()));
             return classInterceptors;
@@ -508,29 +511,25 @@ public class ClassInterceptorRegistry {
             if (!initialized) {
                 LOGGER.trace("loadClassInterceptors()");
 
-                // Load class interceptors
-                List<Class<?>> internalClassInterceptorClasses =
+                List<Class<?>> autoLoadClassInterceptors =
                         new ArrayList<>(
                                 ClassPathSupport.findClasses(
-                                        Predicates.INTERNAL_CLASS_INTERCEPTOR_CLASS));
+                                        Predicates.AUTO_LOAD_CLASS_INTERCEPTOR_CLASS));
 
-                // Order class interceptors
-                OrderSupport.orderClasses(internalClassInterceptorClasses);
+                OrderSupport.orderClasses(autoLoadClassInterceptors);
 
-                LOGGER.trace(
-                        "internal class interceptor count [%d]",
-                        internalClassInterceptorClasses.size());
+                LOGGER.trace("class interceptor count [%d]", autoLoadClassInterceptors.size());
 
-                for (Class<?> classInterceptorClass : internalClassInterceptorClasses) {
+                for (Class<?> classInterceptorClass : autoLoadClassInterceptors) {
                     try {
                         LOGGER.trace(
-                                "loading global class interceptor [%s]",
-                                classInterceptorClass.getName());
+                                "loading class interceptor [%s]", classInterceptorClass.getName());
+
                         Object object = ObjectSupport.createObject(classInterceptorClass);
-                        internalClassInterceptors.add((ClassInterceptor) object);
+                        classInterceptors.add((ClassInterceptor) object);
+
                         LOGGER.trace(
-                                "global class interceptor [%s] loaded",
-                                classInterceptorClass.getName());
+                                "class interceptor [%s] loaded", classInterceptorClass.getName());
                     } catch (EngineException e) {
                         throw e;
                     } catch (Throwable t) {

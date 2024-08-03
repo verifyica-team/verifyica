@@ -31,6 +31,7 @@ import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
+import org.antublue.verifyica.engine.interceptor.internal.engine.filter.EngineFiltersInterceptor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
@@ -55,6 +56,9 @@ public class EngineInterceptorRegistry {
     private EngineInterceptorRegistry() {
         readWriteLock = new ReentrantReadWriteLock(true);
         engineInterceptors = new ArrayList<>();
+
+        engineInterceptors.add(new EngineFiltersInterceptor());
+        engineInterceptors.add(new ClearEngineContextStoreEngineInterceptor());
 
         loadEngineInterceptors();
     }
@@ -276,34 +280,18 @@ public class EngineInterceptorRegistry {
             if (!initialized) {
                 LOGGER.trace("loading engine interceptors");
 
-                // Load internal engine interceptors
-                List<Class<?>> internalEngineInterceptorsClasses =
+                List<Class<?>> autoLoadEngineInterceptors =
                         new ArrayList<>(
                                 ClassPathSupport.findClasses(
-                                        Predicates.ENGINE_INTERNAL_INTERCEPTOR_CLASS));
+                                        Predicates.AUTO_LOAD_ENGINE_INTERCEPTOR_CLASS));
 
-                // Load external auto discoverable engine interceptors
-                List<Class<?>> externalEngineInterceptorsClasses =
-                        new ArrayList<>(
-                                ClassPathSupport.findClasses(
-                                        Predicates.AUTO_DISCOVERABLE_ENGINE_INTERCEPTOR_CLASS));
+                filter(autoLoadEngineInterceptors);
 
-                // Filter external engine interceptors
-                filter(externalEngineInterceptorsClasses);
+                OrderSupport.orderClasses(autoLoadEngineInterceptors);
 
-                // Order engine interceptors
-                OrderSupport.orderClasses(internalEngineInterceptorsClasses);
-                OrderSupport.orderClasses(externalEngineInterceptorsClasses);
+                LOGGER.trace("engine interceptor count [%d]", autoLoadEngineInterceptors.size());
 
-                // Combine both internal and external engine interceptors
-                List<Class<?>> engineInterceptorClasses =
-                        new ArrayList<>(internalEngineInterceptorsClasses);
-
-                engineInterceptorClasses.addAll(externalEngineInterceptorsClasses);
-
-                LOGGER.trace("engine interceptor count [%d]", engineInterceptorClasses.size());
-
-                for (Class<?> engineInterceptorClass : engineInterceptorClasses) {
+                for (Class<?> engineInterceptorClass : autoLoadEngineInterceptors) {
                     try {
                         LOGGER.trace(
                                 "loading engine interceptor [%s]",

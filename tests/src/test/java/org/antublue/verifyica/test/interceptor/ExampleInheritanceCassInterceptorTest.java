@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.interceptor.engine;
+package org.antublue.verifyica.test.interceptor;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.test.interceptor.engine.ExampleAutoLoadEngineInterceptor1;
 
 /** Example test */
-public class EngineInterceptorTest1 {
+public class ExampleInheritanceCassInterceptorTest implements ExampleInheritanceClassInterceptor {
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
@@ -121,12 +122,5 @@ public class EngineInterceptorTest1 {
                                 .getStore()
                                 .get(ExampleAutoLoadEngineInterceptor1.KEY, String.class))
                 .isEqualTo(ExampleAutoLoadEngineInterceptor1.VALUE);
-    }
-
-    @Verifyica.Test
-    public void test4(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test4(%s)", argumentContext.getTestArgument().getPayload()));
-
-        assertThat(1).isEqualTo(2);
     }
 }

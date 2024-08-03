@@ -137,4 +137,9 @@ public @interface Verifyica {
          */
         String name();
     }
+
+    /** AutowiredInterceptor annotation */
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface AutowiredInterceptor {}
 }

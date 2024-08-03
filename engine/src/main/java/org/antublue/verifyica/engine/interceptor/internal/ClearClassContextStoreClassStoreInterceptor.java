@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.interceptor.internal.engine;
+package org.antublue.verifyica.engine.interceptor.internal;
 
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
-import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
-import org.antublue.verifyica.engine.interceptor.internal.InternalClassInterceptor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement ClearClassContextStoreEngineInterceptor */
-public class ClearClassContextStoreEngineInterceptor implements ClassInterceptor {
+public class ClearClassContextStoreClassStoreInterceptor implements ClassInterceptor {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(ClearClassContextStoreEngineInterceptor.class);
+            LoggerFactory.getLogger(ClearClassContextStoreClassStoreInterceptor.class);
 
     /** Constructor */
-    public ClearClassContextStoreEngineInterceptor() {
+    public ClearClassContextStoreClassStoreInterceptor() {
         // INTENTIONALLY BLANK
     }
 

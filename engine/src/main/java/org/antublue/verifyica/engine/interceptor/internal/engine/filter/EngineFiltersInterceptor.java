@@ -22,17 +22,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
+import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
-import org.antublue.verifyica.engine.interceptor.internal.engine.InternalEngineInterceptor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement EngineFiltersInterceptor */
-@Verifyica.Order(order = 0)
 @SuppressWarnings("PMD.UnusedPrivateMethod")
-public class EngineFiltersInterceptor implements InternalEngineInterceptor {
+public class EngineFiltersInterceptor implements EngineInterceptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EngineFiltersInterceptor.class);
 

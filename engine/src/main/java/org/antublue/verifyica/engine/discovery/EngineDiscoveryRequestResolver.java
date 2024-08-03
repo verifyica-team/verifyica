@@ -508,8 +508,8 @@ public class EngineDiscoveryRequestResolver {
                             Predicates.CLASS_INTERCEPTOR_SUPPLIER,
                             HierarchyTraversalMode.BOTTOM_UP);
 
-            if (!classInterceptorSupplierMethods.isEmpty()) {
-                Object object = classInterceptorSupplierMethods.get(0).invoke(null);
+            for (Method classInterceptorMethod : classInterceptorSupplierMethods) {
+                Object object = classInterceptorMethod.invoke(null);
 
                 if (object instanceof ClassInterceptor) {
                     ClassInterceptorRegistry.getInstance()

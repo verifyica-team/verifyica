@@ -17,12 +17,13 @@
 package org.antublue.verifyica.engine.interceptor.internal.engine;
 
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement ClearEngineContextStoreEngineInterceptor */
-public class ClearEngineContextStoreEngineInterceptor implements InternalEngineInterceptor {
+public class ClearEngineContextStoreEngineInterceptor implements EngineInterceptor {
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(ClearEngineContextStoreEngineInterceptor.class);

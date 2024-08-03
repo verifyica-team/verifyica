@@ -21,9 +21,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
-import org.antublue.verifyica.api.interceptor.engine.AutoDiscoverableEngineInterceptor;
-import org.antublue.verifyica.engine.interceptor.internal.InternalClassInterceptor;
-import org.antublue.verifyica.engine.interceptor.internal.engine.InternalEngineInterceptor;
+import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.MethodSupport;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
@@ -31,41 +29,30 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 /** Class to implement Predicates */
 public class Predicates {
 
-    /** Predicate to filter internal engine interceptors classes */
-    public static final Predicate<Class<?>> ENGINE_INTERNAL_INTERCEPTOR_CLASS =
+    /** Predicate to filter discoverable engine interceptors classes */
+    public static final Predicate<Class<?>> AUTO_LOAD_ENGINE_INTERCEPTOR_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
                         && !Modifier.isAbstract(modifiers)
                         && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
+                        && EngineInterceptor.class.isAssignableFrom(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && InternalEngineInterceptor.class.isAssignableFrom(clazz);
+                        && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class);
             };
 
-    /** Predicate to filter engine interceptors classes */
-    public static final Predicate<Class<?>> AUTO_DISCOVERABLE_ENGINE_INTERCEPTOR_CLASS =
+    /** Predicate to filter discoverable class interceptor classes */
+    public static final Predicate<Class<?>> AUTO_LOAD_CLASS_INTERCEPTOR_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
                         && !Modifier.isAbstract(modifiers)
                         && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
+                        && ClassInterceptor.class.isAssignableFrom(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && AutoDiscoverableEngineInterceptor.class.isAssignableFrom(clazz);
-            };
-
-    /** Predicate to filter internal class interceptor classes */
-    public static final Predicate<Class<?>> INTERNAL_CLASS_INTERCEPTOR_CLASS =
-            clazz -> {
-                int modifiers = clazz.getModifiers();
-                return Modifier.isPublic(modifiers)
-                        && !Modifier.isAbstract(modifiers)
-                        && !Modifier.isStatic(modifiers)
-                        && ClassSupport.hasDefaultConstructor(clazz)
-                        && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && InternalClassInterceptor.class.isAssignableFrom(clazz)
-                        && ClassInterceptor.class.isAssignableFrom(clazz);
+                        && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class);
             };
 
     /** Predicate to filter class interceptor supplier methods */
@@ -202,20 +189,4 @@ public class Predicates {
     private Predicates() {
         // INTENTIONALLY BLANK
     }
-
-    /**
-     * Method to return if a Method accepts a Context
-     *
-     * @param method method
-     * @return true if the Method accepts Context, else false
-     */
-    /*
-    private static boolean acceptsContext(Method method) {
-        if (method.getParameterCount() != 1) {
-            return false;
-        }
-
-        return method.getParameters()[0].getType().equals(Context.class);
-    }
-    */
 }

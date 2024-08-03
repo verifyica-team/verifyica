@@ -24,14 +24,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-/** Class to implement ExampleEngineInterceptor1 */
-public class ExampleEngineInterceptor1 implements EngineInterceptor {
+/** Class to implement ExampleAutoLoadEngineInterceptor1 */
+@Verifyica.AutowiredInterceptor
+public class ExampleAutoLoadEngineInterceptor1 implements EngineInterceptor {
 
-    public static final String KEY = ExampleEngineInterceptor1.class.getName() + ".key";
+    public static final String KEY = ExampleAutoLoadEngineInterceptor1.class.getName() + ".key";
     public static final String VALUE = UUID.randomUUID().toString();
 
     @Override
