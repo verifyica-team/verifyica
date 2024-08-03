@@ -285,14 +285,10 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             executorService = ExecutorServiceFactory.getInstance().newExecutorService(parallelism);
 
             if (parallelism > 1) {
-                // Usage an ExecutorService
-                Semaphore semaphore = null;
-
-                if (ExecutorServiceFactory.usingVirtualThreads()) {
-                    semaphore = new Semaphore(parallelism);
-                }
-
-                final Semaphore finalSemaphore = semaphore;
+                final Semaphore semaphore =
+                        ExecutorServiceFactory.usingVirtualThreads()
+                                ? new Semaphore(parallelism)
+                                : null;
 
                 final String baseThreadName = Thread.currentThread().getName();
 
@@ -322,8 +318,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                                                             4));
 
                                             try {
-                                                if (finalSemaphore != null) {
-                                                    finalSemaphore.acquire();
+                                                if (semaphore != null) {
+                                                    semaphore.acquire();
                                                 }
 
                                                 executableTestDescriptor.execute(
@@ -332,13 +328,14 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                                 throwable = t;
                                                 t.printStackTrace(System.err);
                                             } finally {
-                                                if (finalSemaphore != null) {
-                                                    finalSemaphore.release();
+                                                if (semaphore != null) {
+                                                    semaphore.release();
                                                 }
                                             }
 
                                             return throwable;
                                         });
+
                         futures.add(future);
                     }
                 }
@@ -347,8 +344,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                         future -> {
                             try {
                                 throwables.add(future.get());
-                            } catch (Exception e) {
-                                // INTENTIONALLY BLANK
+                            } catch (Throwable t) {
+                                t.printStackTrace(System.err);
                             }
                         });
             } else {
