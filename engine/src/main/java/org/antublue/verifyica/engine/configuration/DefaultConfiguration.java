@@ -61,7 +61,7 @@ public class DefaultConfiguration implements Configuration {
         map = new TreeMap<>();
         readWriteLock = new ReentrantReadWriteLock(true);
 
-        load();
+        loadConfiguration();
     }
 
     /**
@@ -316,9 +316,9 @@ public class DefaultConfiguration implements Configuration {
     }
 
     /** Method to load configuration */
-    private void load() {
+    private void loadConfiguration() {
         if (IS_TRACE_ENABLED) {
-            trace("load()");
+            trace("loadConfiguration()");
         }
 
         try {
@@ -354,16 +354,24 @@ public class DefaultConfiguration implements Configuration {
                 map.put(VERIFYICA_PROPERTIES_FILENAME, optional.get().getAbsolutePath());
             } else {
                 if (IS_TRACE_ENABLED) {
-                    trace("no properties file found");
+                    trace("no configuration properties file found");
                 }
             }
         } catch (IOException e) {
-            throw new EngineConfigurationException("Exception loading properties", e);
+            throw new EngineConfigurationException("Exception loading configuration properties", e);
         }
 
         if (IS_TRACE_ENABLED) {
-            trace("configuration properties");
-            map.keySet().forEach((key) -> trace("  [" + key + "] = [" + map.get(key) + "]"));
+            trace("configuration properties ...");
+            map.keySet()
+                    .forEach(
+                            (key) ->
+                                    trace(
+                                            "configuration property ["
+                                                    + key
+                                                    + "] = ["
+                                                    + map.get(key)
+                                                    + "]"));
         }
     }
 
@@ -384,7 +392,10 @@ public class DefaultConfiguration implements Configuration {
                 if (!currentPathString.endsWith("/")) {
                     currentPathString += "/";
                 }
-                trace("searching path [" + currentPathString + "]");
+                
+                if (IS_TRACE_ENABLED) {
+                    trace("searching path [" + currentPathString + "]");
+                }
             }
 
             File file = new File(currentPath.toAbsolutePath() + File.separator + filename);

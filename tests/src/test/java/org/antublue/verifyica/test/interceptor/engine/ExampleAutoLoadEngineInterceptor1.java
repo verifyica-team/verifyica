@@ -24,12 +24,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import org.antublue.verifyica.api.interceptor.engine.AutoDiscoverableEngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
+import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
 /** Class to implement ExampleEngineInterceptor1 */
-public class ExampleEngineInterceptor1 implements AutoDiscoverableEngineInterceptor {
+public class ExampleEngineInterceptor1 implements EngineInterceptor {
 
     public static final String KEY = ExampleEngineInterceptor1.class.getName() + ".key";
     public static final String VALUE = UUID.randomUUID().toString();
