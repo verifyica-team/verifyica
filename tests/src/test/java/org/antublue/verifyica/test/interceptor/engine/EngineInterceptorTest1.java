@@ -127,6 +127,6 @@ public class EngineInterceptorTest1 {
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.println(format("test4(%s)", argumentContext.getTestArgument().getPayload()));
 
-        assertThat(1).isEqualTo(2);
+        throw new RuntimeException("Should not execute... filtered by interceptor");
     }
 }
