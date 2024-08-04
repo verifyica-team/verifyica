@@ -25,10 +25,10 @@ import java.util.concurrent.Callable;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.concurrency.locks.Locks;
+import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 /** Example test */
-public class LockTest9 {
+public class ReadWriteLockTest1 {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -43,7 +43,9 @@ public class LockTest9 {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
+        argumentContext.getClassContext().getReadWriteLock().readLock().lock();
+
+        System.out.println(format("test1(%s) read locked", argumentContext.getTestArgument()));
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -52,12 +54,14 @@ public class LockTest9 {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Locks.execute(
-                argumentContext.getClassContext().getEngineContext(),
+        ConcurrencySupport.executeInLock(
+                "writeLock",
                 (Callable<Void>)
                         () -> {
                             System.out.println(
-                                    format("test2(%s) locked", argumentContext.getTestArgument()));
+                                    format(
+                                            "test2(%s) write locked",
+                                            argumentContext.getTestArgument()));
 
                             System.out.println(
                                     format("test2(%s)", argumentContext.getTestArgument()));
@@ -70,7 +74,7 @@ public class LockTest9 {
 
                             System.out.println(
                                     format(
-                                            "test2(%s) unlocked",
+                                            "test2(%s) write unlocked",
                                             argumentContext.getTestArgument()));
 
                             return null;
@@ -79,10 +83,17 @@ public class LockTest9 {
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
+        try {
+            System.out.println(format("test3(%s) read locked", argumentContext.getTestArgument()));
 
-        assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+            assertThat(argumentContext).isNotNull();
+            assertThat(argumentContext.getStore()).isNotNull();
+            assertThat(argumentContext.getTestArgument()).isNotNull();
+
+            System.out.println(
+                    format("test1(%s) read unlocked", argumentContext.getTestArgument()));
+        } finally {
+            argumentContext.getClassContext().getReadWriteLock().readLock().unlock();
+        }
     }
 }

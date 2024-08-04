@@ -25,10 +25,10 @@ import java.util.concurrent.Callable;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.concurrency.locks.Locks;
+import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 /** Example test */
-public class LockTest8 {
+public class LockTest3 {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -52,8 +52,8 @@ public class LockTest8 {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Locks.execute(
-                argumentContext.getClassContext(),
+        ConcurrencySupport.executeInLock(
+                argumentContext.getClassContext().getEngineContext().getStore().getLock(),
                 (Callable<Void>)
                         () -> {
                             System.out.println(

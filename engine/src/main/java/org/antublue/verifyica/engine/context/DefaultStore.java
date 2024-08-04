@@ -117,6 +117,8 @@ public class DefaultStore implements Store {
 
     @Override
     public Object getOrDefault(Object key, Object defaultValue) {
+        ArgumentSupport.notNull(key, "key is null");
+
         Object value = get(key);
         if (value != null) {
             return value;
@@ -127,6 +129,9 @@ public class DefaultStore implements Store {
 
     @Override
     public <V> V getOrDefault(Object key, V defaultValue, Class<V> type) {
+        ArgumentSupport.notNull(key, "key is null");
+        ArgumentSupport.notNull(type, "type is null");
+
         Object value = get(key);
         if (value != null) {
             return (V) value;
@@ -137,11 +142,18 @@ public class DefaultStore implements Store {
 
     @Override
     public Object computeIfAbsent(Object key, Function<Object, Object> function) {
+        ArgumentSupport.notNull(key, "key is null");
+        ArgumentSupport.notNull(function, "function is null");
+
         try {
             getReadWriteLock().writeLock().lock();
             Object value = get(key);
             if (value == null) {
                 value = function.apply(key);
+                if (value == null) {
+                    throw new IllegalStateException("Function returned a null value");
+                }
+                put(key, value);
             }
             return value;
         } finally {
@@ -151,11 +163,19 @@ public class DefaultStore implements Store {
 
     @Override
     public <V> V computeIfAbsent(Object key, Function<Object, V> function, Class<V> type) {
+        ArgumentSupport.notNull(key, "key is null");
+        ArgumentSupport.notNull(function, "function is null");
+        ArgumentSupport.notNull(type, "type is null");
+
         try {
             getReadWriteLock().writeLock().lock();
             Object value = get(key);
             if (value == null) {
                 value = function.apply(key);
+                if (value == null) {
+                    throw new IllegalStateException("Function returned a null value");
+                }
+                put(key, value);
             }
             return (V) value;
         } finally {
