@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.store;
+package org.antublue.verifyica.test.concurrency.lock;
 
-import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
+
 /** Example test */
-public class StoreSemaphoreTest {
+public class StoreLockTest {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -42,7 +45,7 @@ public class StoreSemaphoreTest {
         return collection;
     }
 
-    // @Verifyica.Test
+    @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
 
@@ -53,10 +56,10 @@ public class StoreSemaphoreTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Semaphore semaphore = getSemaphore(argumentContext);
+        Lock lock = getLock(argumentContext);
 
-        ConcurrencySupport.executeInSemaphore(
-                semaphore,
+        ConcurrencySupport.executeInLock(
+                lock,
                 (Callable<Void>)
                         () -> {
                             System.out.println(
@@ -82,7 +85,7 @@ public class StoreSemaphoreTest {
                         });
     }
 
-    // @Verifyica.Test
+    @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
 
@@ -92,16 +95,16 @@ public class StoreSemaphoreTest {
     }
 
     /**
-     * Method to get or create a class level Semaphore
+     * Method to get or create a class level Lock
      *
      * @param argumentContext argumentContext
-     * @return a Semaphore
+     * @return a Lock
      * @throws Throwable Throwable
      */
-    private Semaphore getSemaphore(ArgumentContext argumentContext) throws Throwable {
+    private Lock getLock(ArgumentContext argumentContext) throws Throwable {
         return argumentContext
                 .getClassContext()
                 .getStore()
-                .computeIfAbsent("semaphore", key -> new Semaphore(2), Semaphore.class);
+                .computeIfAbsent("lock", key -> new ReentrantLock(true), Lock.class);
     }
 }
