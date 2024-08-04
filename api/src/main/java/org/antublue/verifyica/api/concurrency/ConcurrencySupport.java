@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.concurrency.locks;
+package org.antublue.verifyica.api.concurrency;
 
 import static java.lang.String.format;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.antublue.verifyica.api.concurrency.lock.LockProvider;
+import org.antublue.verifyica.api.concurrency.lock.ReadWriteLockProvider;
+import org.antublue.verifyica.api.concurrency.semaphore.SemaphoreProvider;
 
-/** Class to implement Locks */
-public class Locks {
+/** Class to implement ConcurrencySupport */
+public class ConcurrencySupport {
 
     private static final LockManager LOCK_MANAGER = new LockManager();
 
     /** Constructor */
-    private Locks() {
+    private ConcurrencySupport() {
         // INTENTIONALLY BLANK
     }
 
@@ -54,7 +58,7 @@ public class Locks {
      * @param key key
      * @param runnable runnable
      */
-    public static void execute(Object key, Runnable runnable) {
+    public static void executeInLock(Object key, Runnable runnable) {
         notNull(key, "key is null");
         notNull(runnable, "runnable is null");
 
@@ -74,7 +78,7 @@ public class Locks {
      * @param lock lock
      * @param runnable runnable
      */
-    public static void execute(Lock lock, Runnable runnable) {
+    public static void executeInLock(Lock lock, Runnable runnable) {
         notNull(lock, "lock is null");
         notNull(runnable, "runnable is null");
 
@@ -92,7 +96,7 @@ public class Locks {
      * @param readWriteLock readWriteLock
      * @param runnable runnable
      */
-    public static void execute(ReadWriteLock readWriteLock, Runnable runnable) {
+    public static void executeInLock(ReadWriteLock readWriteLock, Runnable runnable) {
         notNull(readWriteLock, "readWriteLock is null");
         notNull(runnable, "runnable is null");
 
@@ -110,15 +114,18 @@ public class Locks {
      * @param lockProvider lockProvider
      * @param runnable runnable
      */
-    public static void execute(LockProvider lockProvider, Runnable runnable) {
+    public static void executeInLock(LockProvider lockProvider, Runnable runnable) {
         notNull(lockProvider, "lockProvider is null");
         notNull(runnable, "runnable is null");
 
+        Lock lock = lockProvider.getLock();
+        notNull(lock, "lockProvider.getLock() is null");
+
         try {
-            lockProvider.getLock().lock();
+            lock.lock();
             runnable.run();
         } finally {
-            lockProvider.getLock().unlock();
+            lock.unlock();
         }
     }
 
@@ -131,7 +138,7 @@ public class Locks {
      * @throws Throwable Throwable
      * @param <V> the type
      */
-    public static <V> V execute(Object key, Callable<V> callable) throws Throwable {
+    public static <V> V executeInLock(Object key, Callable<V> callable) throws Throwable {
         notNull(key, "key is null");
         notNull(callable, "callable is null");
 
@@ -154,7 +161,7 @@ public class Locks {
      * @throws Throwable Throwable
      * @param <V> the type
      */
-    public static <V> V execute(Lock lock, Callable<V> callable) throws Throwable {
+    public static <V> V executeInLock(Lock lock, Callable<V> callable) throws Throwable {
         notNull(lock, "lock is null");
         notNull(callable, "callable is null");
 
@@ -175,7 +182,7 @@ public class Locks {
      * @throws Throwable Throwable
      * @param <V> the type
      */
-    public static <V> V execute(ReadWriteLock readWriteLock, Callable<V> callable)
+    public static <V> V executeInLock(ReadWriteLock readWriteLock, Callable<V> callable)
             throws Throwable {
         notNull(readWriteLock, "readWriteLock is null");
         notNull(callable, "callable is null");
@@ -197,16 +204,108 @@ public class Locks {
      * @throws Throwable Throwable
      * @param <V> the type
      */
-    public static <V> V execute(ReadWriteLockProvider readWriteLockProvider, Callable<V> callable)
-            throws Throwable {
+    public static <V> V executeInLock(
+            ReadWriteLockProvider readWriteLockProvider, Callable<V> callable) throws Throwable {
         notNull(readWriteLockProvider, "readWriteLockProvider is null");
         notNull(callable, "callable is null");
 
+        ReadWriteLock readWriteLock = readWriteLockProvider.getReadWriteLock();
+        notNull(readWriteLock, "readWriteLockProvider.getLock() is null");
+
         try {
-            readWriteLockProvider.getReadWriteLock().writeLock().lock();
+            readWriteLock.writeLock().lock();
             return callable.call();
         } finally {
-            readWriteLockProvider.getReadWriteLock().writeLock().unlock();
+            readWriteLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Execute a Runnable in a Semaphore
+     *
+     * @param semaphore semaphore
+     * @param runnable runnable
+     * @throws Throwable Throwable
+     */
+    public static void executeInSemaphore(Semaphore semaphore, Runnable runnable) throws Throwable {
+        notNull(semaphore, "semaphore is null");
+        notNull(runnable, "runnable is null");
+
+        try {
+            semaphore.acquire();
+            runnable.run();
+        } finally {
+            semaphore.release();
+        }
+    }
+
+    /**
+     * Execute a Runnable in a Semaphore
+     *
+     * @param semaphoreProvider semaphoreProvider
+     * @param runnable runnable
+     * @throws Throwable Throwable
+     */
+    public static void executeInSemaphore(SemaphoreProvider semaphoreProvider, Runnable runnable)
+            throws Throwable {
+        notNull(semaphoreProvider, "semaphoreProvider is null");
+        notNull(runnable, "runnable is null");
+
+        Semaphore semaphore = semaphoreProvider.getSemaphore();
+        notNull(semaphore, "semaphoreProvider.getSemaphore() is null");
+
+        try {
+            semaphore.acquire();
+            runnable.run();
+        } finally {
+            semaphore.release();
+        }
+    }
+
+    /**
+     * Execute a Callback in a Semaphore
+     *
+     * @param semaphore semaphore
+     * @param callable callable
+     * @return the callable result
+     * @param <V> the callback result type
+     * @throws Throwable Throwable
+     */
+    public static <V> V executeInSemaphore(Semaphore semaphore, Callable<V> callable)
+            throws Throwable {
+        notNull(semaphore, "semaphore is null");
+        notNull(callable, "callable is null");
+
+        try {
+            semaphore.acquire();
+            return callable.call();
+        } finally {
+            semaphore.release();
+        }
+    }
+
+    /**
+     * Execute a Callback in a Semaphore
+     *
+     * @param semaphoreProvider semaphoreProvider
+     * @param callable callable
+     * @return the callable result
+     * @param <V> the callback result type
+     * @throws Throwable Throwable
+     */
+    public static <V> V executeInSemaphore(
+            SemaphoreProvider semaphoreProvider, Callable<V> callable) throws Throwable {
+        notNull(semaphoreProvider, "semaphoreProvider is null");
+        notNull(callable, "callable is null");
+
+        Semaphore semaphore = semaphoreProvider.getSemaphore();
+        notNull(semaphore, "semaphoreProvider.getSemaphore() is null");
+
+        try {
+            semaphore.acquire();
+            return callable.call();
+        } finally {
+            semaphore.release();
         }
     }
 

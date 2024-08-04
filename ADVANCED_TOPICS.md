@@ -18,11 +18,11 @@ The [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) should be u
 
 # Concurrency
 
-## Locks
+## ConcurrencySupport
 
 There is no `@Verifyica.ResourceLock` annotation be design, because complex locking strategies can't be implemented using an annotation-based approach.
 
-[Locks.java](api/src/main/java/org/antublue/verifyica/api/concurrency/locks/Locks/java) provides programmatic way to control locking.
+[ConcurrencySupport.java](api/src/main/java/org/antublue/verifyica/api/concurrency/ConcurrencySupport.java) provides programmatic execute code in a Lock or Semaphore
 
 ### Simple method locking
 
@@ -34,7 +34,7 @@ Example solution:
 ```java
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Locks;
+import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 import org.antublue.verifyica.api.Verifyica;
 
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class LocksTest2 {
 
   @Verifyica.Test
   public void test2(ArgumentContext argumentContext) throws Throwable {
-    Locks.execute(
+    ConcurrencySupport.executeWithLock(
             argumentContext.getClassContext(),
             (Callable<Void>)
                     () -> {
@@ -131,7 +131,7 @@ Example solution:
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.concurrency.locks.Locks;
+import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -167,7 +167,7 @@ public class ReadWriteLockTest1 {
 
   @Verifyica.Test
   public void test2(ArgumentContext argumentContext) throws Throwable {
-    Locks.execute(
+    ConcurrencySupport.executeWithLock(
             "writeLock",
             (Callable<Void>)
                     () -> {
@@ -225,10 +225,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 /** Example test */
 public class StoreSemaphoreTest {
@@ -256,19 +258,20 @@ public class StoreSemaphoreTest {
   @Verifyica.Test
   public void test2(ArgumentContext argumentContext) throws Throwable {
     Semaphore semaphore = getSemaphore(argumentContext);
-    try {
-      semaphore.acquire();
 
-      System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
+    ConcurrencySupport.executeInSemaphore(
+            semaphore,
+            (Callable<Void>) () -> {
+              System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
 
-      assertThat(argumentContext).isNotNull();
-      assertThat(argumentContext.getStore()).isNotNull();
-      assertThat(argumentContext.getTestArgument()).isNotNull();
+              assertThat(argumentContext).isNotNull();
+              assertThat(argumentContext.getStore()).isNotNull();
+              assertThat(argumentContext.getTestArgument()).isNotNull();
 
-      Thread.sleep(500);
-    } finally {
-      semaphore.release();
-    }
+              Thread.sleep(500);
+
+              return null;
+            });
   }
 
   @Verifyica.Test
@@ -291,7 +294,7 @@ public class StoreSemaphoreTest {
     return argumentContext
             .getClassContext()
             .getStore()
-            .computeIfAbsent("semaphore", key -> new Semaphore(2), Semaphore.class);
+            .computeIfAbsent("semaphore", key -> new Semaphore(1), Semaphore.class);
   }
 }
 ```

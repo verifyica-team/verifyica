@@ -22,8 +22,8 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
-import org.antublue.verifyica.api.concurrency.locks.LockProvider;
-import org.antublue.verifyica.api.concurrency.locks.ReadWriteLockProvider;
+import org.antublue.verifyica.api.concurrency.lock.LockProvider;
+import org.antublue.verifyica.api.concurrency.lock.ReadWriteLockProvider;
 
 /** Class to implement Store */
 public interface Store extends ReadWriteLockProvider, LockProvider {

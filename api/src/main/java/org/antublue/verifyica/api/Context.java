@@ -18,8 +18,8 @@ package org.antublue.verifyica.api;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import org.antublue.verifyica.api.concurrency.locks.LockProvider;
-import org.antublue.verifyica.api.concurrency.locks.ReadWriteLockProvider;
+import org.antublue.verifyica.api.concurrency.lock.LockProvider;
+import org.antublue.verifyica.api.concurrency.lock.ReadWriteLockProvider;
 
 /** Interface to implement Context */
 public interface Context extends ReadWriteLockProvider, LockProvider {

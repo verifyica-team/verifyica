@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.concurrency.locks;
+package org.antublue.verifyica.test.concurrency.lock;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,7 +66,7 @@ public class LockTest3 {
                             assertThat(argumentContext.getStore()).isNotNull();
                             assertThat(argumentContext.getTestArgument()).isNotNull();
 
-                            Thread.sleep(500);
+                            Thread.sleep(1000);
 
                             System.out.println(
                                     format(

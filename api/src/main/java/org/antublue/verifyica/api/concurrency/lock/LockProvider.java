@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.concurrency.locks;
+package org.antublue.verifyica.api.concurrency.lock;
 
 import java.util.concurrent.locks.Lock;
 

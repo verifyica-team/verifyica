@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.concurrency.lock;
+package org.antublue.verifyica.api.concurrency.semaphore;
 
-import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.Semaphore;
 
-/** Interface to implement ReadWriteLockProvider */
-public interface ReadWriteLockProvider {
+/** Interface to implement SemaphoreProvider */
+public interface SemaphoreProvider {
 
     /**
-     * Return the ReadWriteLock
+     * Returns the Semaphore
      *
-     * @return the ReadWriteLock
+     * @return the Lock
      */
-    ReadWriteLock getReadWriteLock();
+    Semaphore getSemaphore();
 }

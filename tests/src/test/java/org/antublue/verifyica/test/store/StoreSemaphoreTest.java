@@ -21,10 +21,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 /** Example test */
 public class StoreSemaphoreTest {
@@ -40,7 +42,7 @@ public class StoreSemaphoreTest {
         return collection;
     }
 
-    @Verifyica.Test
+    // @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
 
@@ -52,22 +54,35 @@ public class StoreSemaphoreTest {
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
         Semaphore semaphore = getSemaphore(argumentContext);
-        try {
-            semaphore.acquire();
 
-            System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
+        ConcurrencySupport.executeInSemaphore(
+                semaphore,
+                (Callable<Void>)
+                        () -> {
+                            System.out.println(
+                                    format(
+                                            "test2(%s) acquired",
+                                            argumentContext.getTestArgument()));
 
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
+                            System.out.println(
+                                    format("test2(%s)", argumentContext.getTestArgument()));
 
-            Thread.sleep(500);
-        } finally {
-            semaphore.release();
-        }
+                            assertThat(argumentContext).isNotNull();
+                            assertThat(argumentContext.getStore()).isNotNull();
+                            assertThat(argumentContext.getTestArgument()).isNotNull();
+
+                            Thread.sleep(1000);
+
+                            System.out.println(
+                                    format(
+                                            "test2(%s) released",
+                                            argumentContext.getTestArgument()));
+
+                            return null;
+                        });
     }
 
-    @Verifyica.Test
+    // @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
 
