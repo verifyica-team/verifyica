@@ -54,7 +54,8 @@ public class KafkaTest {
         return Stream.of(
                 new KafkaTestEnvironment("apache/kafka:3.7.0"),
                 new KafkaTestEnvironment("apache/kafka:3.7.1"),
-                new KafkaTestEnvironment("apache/kafka:3.8.0"));
+                new KafkaTestEnvironment("apache/kafka:3.8.0"),
+                new KafkaTestEnvironment("apache/kafka-native:3.8.0"));
     }
 
     @Verifyica.BeforeAll
@@ -245,7 +246,7 @@ public class KafkaTest {
         public void initialize(Network network) {
             info("initialize test environment [%s] ...", dockerImageName);
 
-            kafkaContainer = new KafkaContainer(DockerImageName.parse(dockerImageName));
+            kafkaContainer = new KafkaContainer(DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"));
             kafkaContainer.withNetwork(network);
             kafkaContainer.start();
 

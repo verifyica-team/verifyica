@@ -97,11 +97,14 @@ public class ConcurrencySupport {
         notNull(readWriteLock, "readWriteLock is null");
         notNull(runnable, "runnable is null");
 
+        Lock lock = readWriteLock.writeLock();
+        notNull(lock, "readWriteLock.writeLock() is null");
+
         try {
-            readWriteLock.writeLock().lock();
+            lock.lock();
             runnable.run();
         } finally {
-            readWriteLock.writeLock().unlock();
+            lock.unlock();
         }
     }
 
@@ -184,11 +187,14 @@ public class ConcurrencySupport {
         notNull(readWriteLock, "readWriteLock is null");
         notNull(callable, "callable is null");
 
+        Lock lock = readWriteLock.writeLock();
+        notNull(lock, "readWriteLock.writeLock() is null");
+
         try {
-            readWriteLock.writeLock().lock();
+            lock.lock();
             return callable.call();
         } finally {
-            readWriteLock.writeLock().unlock();
+            lock.unlock();
         }
     }
 
@@ -209,11 +215,14 @@ public class ConcurrencySupport {
         ReadWriteLock readWriteLock = readWriteLockProvider.getReadWriteLock();
         notNull(readWriteLock, "readWriteLockProvider.getLock() is null");
 
+        Lock lock = readWriteLock.writeLock();
+        notNull(lock, "readWriteLockProvider.getLock().writeLock() is null");
+
         try {
-            readWriteLock.writeLock().lock();
+            lock.lock();
             return callable.call();
         } finally {
-            readWriteLock.writeLock().unlock();
+            lock.unlock();
         }
     }
 

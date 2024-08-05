@@ -28,7 +28,7 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
-import org.antublue.verifyica.test.RandomSupport;
+import org.antublue.verifyica.test.support.RandomSupport;
 
 /** Example test */
 public class EngineInterceptorTest3 implements EngineInterceptor {

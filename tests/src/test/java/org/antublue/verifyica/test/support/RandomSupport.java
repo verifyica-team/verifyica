@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test;
+package org.antublue.verifyica.test.support;
+
+import static java.lang.String.format;
 
 import java.util.Random;
 
@@ -27,6 +29,15 @@ public class RandomSupport {
     }
 
     public static long randomLong(long minimum, long maximum) {
-        return RANDOM.nextLong(maximum - minimum + 1) + minimum;
+        if (minimum == maximum) {
+            return minimum;
+        }
+
+        if (minimum > maximum) {
+            throw new IllegalArgumentException(
+                    format("Minimum [%d] is greater than maximum [%d]", minimum, maximum));
+        }
+
+        return (long) (RANDOM.nextDouble() * (maximum - minimum + 1)) + minimum;
     }
 }
