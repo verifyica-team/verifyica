@@ -448,16 +448,7 @@ public class ConcurrencySupport {
             try {
                 lock.lock();
 
-                lockHolder =
-                        map.compute(
-                                key,
-                                (k, lh) -> {
-                                    if (lh == null) {
-                                        lh = new LockHolder();
-                                    }
-                                    return lh;
-                                });
-
+                lockHolder = map.computeIfAbsent(key, lh -> new LockHolder());
                 lockHolder.increaseLockCount();
             } finally {
                 lock.unlock();
@@ -481,16 +472,7 @@ public class ConcurrencySupport {
             try {
                 lock.lock();
 
-                lockHolder =
-                        map.compute(
-                                key,
-                                (k, lh) -> {
-                                    if (lh == null) {
-                                        lh = new LockHolder();
-                                    }
-                                    return lh;
-                                });
-
+                lockHolder = map.computeIfAbsent(key, lh -> new LockHolder());
                 lockHolder.increaseLockCount();
             } finally {
                 lock.unlock();
@@ -509,6 +491,7 @@ public class ConcurrencySupport {
                 lock.lock();
 
                 LockHolder lockHolder = map.get(key);
+
                 if (lockHolder == null) {
                     throw new IllegalMonitorStateException(
                             format("LockReference [%s] not locked", key));
