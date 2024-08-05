@@ -30,6 +30,8 @@ import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 /** Example test */
 public class ReadWriteLockTest1 {
 
+    private static final String LOCK_KEY = ReadWriteLockTest1.class.getName() + ".lockKey";
+
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
         Collection<Argument<String>> collection = new ArrayList<>();
@@ -54,8 +56,9 @@ public class ReadWriteLockTest1 {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
+
         ConcurrencySupport.executeInLock(
-                "writeLock",
+                LOCK_KEY,
                 (Callable<Void>)
                         () -> {
                             System.out.println(
