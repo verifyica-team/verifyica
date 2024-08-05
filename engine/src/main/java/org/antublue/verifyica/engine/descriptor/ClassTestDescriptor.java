@@ -305,7 +305,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                         defaultArgumentContext.setTestInstance(
                                 defaultClassContext.getTestInstance());
 
-                        Future<Throwable> future =
+                        futures.add(
                                 executorService.submit(
                                         () -> {
                                             Throwable throwable = null;
@@ -322,28 +322,35 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                                     semaphore.acquire();
                                                 }
 
-                                                executableTestDescriptor.execute(
-                                                        executionRequest, defaultArgumentContext);
-                                            } catch (Throwable t) {
-                                                throwable = t;
-                                                t.printStackTrace(System.err);
-                                            } finally {
-                                                if (semaphore != null) {
-                                                    semaphore.release();
+                                                try {
+                                                    executableTestDescriptor.execute(
+                                                            executionRequest,
+                                                            defaultArgumentContext);
+                                                } catch (Throwable t) {
+                                                    throwable = t;
+                                                    t.printStackTrace(System.err);
+                                                } finally {
+                                                    if (semaphore != null) {
+                                                        semaphore.release();
+                                                    }
                                                 }
+                                            } catch (Throwable outerT) {
+                                                throwable = outerT;
+                                                outerT.printStackTrace(System.err);
                                             }
 
                                             return throwable;
-                                        });
-
-                        futures.add(future);
+                                        }));
                     }
                 }
 
                 futures.forEach(
                         future -> {
                             try {
-                                throwables.add(future.get());
+                                Throwable throwable = future.get();
+                                if (throwable != null) {
+                                    throwables.add(throwable);
+                                }
                             } catch (Throwable t) {
                                 t.printStackTrace(System.err);
                             }

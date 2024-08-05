@@ -189,7 +189,7 @@ public class VerifyicaEngine implements TestEngine {
             for (TestDescriptor testDescriptor :
                     executionRequest.getRootTestDescriptor().getChildren()) {
                 if (testDescriptor instanceof ExecutableTestDescriptor) {
-                    Future<Throwable> future =
+                    futures.add(
                             executorService.submit(
                                     () -> {
                                         Throwable throwable = null;
@@ -199,12 +199,12 @@ public class VerifyicaEngine implements TestEngine {
                                                         "verifyica-"
                                                                 + HashSupport.alphaNumericHash(4));
 
-                                        if (!testDescriptor.getChildren().isEmpty()) {
-                                            try {
-                                                if (semaphore != null) {
-                                                    semaphore.acquire();
-                                                }
+                                        try {
+                                            if (semaphore != null) {
+                                                semaphore.acquire();
+                                            }
 
+                                            try {
                                                 ((ExecutableTestDescriptor) testDescriptor)
                                                         .execute(
                                                                 executionRequest,
@@ -218,38 +218,23 @@ public class VerifyicaEngine implements TestEngine {
                                                     semaphore.release();
                                                 }
                                             }
-                                        } else {
-                                            try {
-                                                if (semaphore != null) {
-                                                    semaphore.acquire();
-                                                }
-
-                                                ((ExecutableTestDescriptor) testDescriptor)
-                                                        .skip(
-                                                                executionRequest,
-                                                                new DefaultClassContext(
-                                                                        engineContext));
-                                            } catch (Throwable t) {
-                                                throwable = t;
-                                                t.printStackTrace(System.err);
-                                            } finally {
-                                                if (semaphore != null) {
-                                                    semaphore.release();
-                                                }
-                                            }
+                                        } catch (Throwable outerT) {
+                                            throwable = outerT;
+                                            outerT.printStackTrace(System.err);
                                         }
 
                                         return throwable;
-                                    });
-
-                    futures.add(future);
+                                    }));
                 }
             }
 
             futures.forEach(
                     future -> {
                         try {
-                            throwables.add(future.get());
+                            Throwable throwable = future.get();
+                            if (throwable != null) {
+                                throwables.add(throwable);
+                            }
                         } catch (Throwable t) {
                             t.printStackTrace(System.err);
                         }
