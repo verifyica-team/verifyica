@@ -37,6 +37,10 @@ public class ConcurrencySupport {
         // INTENTIONALLY BLANK
     }
 
+    public static int getLockCount() {
+        return LOCK_MANAGER.getLockCount();
+    }
+
     /**
      * Method to get a LockReference
      *
@@ -46,7 +50,7 @@ public class ConcurrencySupport {
     public static LockReference getLock(Object key) {
         notNull(key, "key is null");
 
-        return new DefaultLockReference(LOCK_MANAGER, key.toString());
+        return new DefaultLockReference(LOCK_MANAGER, key);
     }
 
     /**
@@ -61,9 +65,32 @@ public class ConcurrencySupport {
 
         LockReference lockReference = getLock(key);
 
+        lockReference.lock();
         try {
-            lockReference.lock();
             runnable.run();
+        } finally {
+            lockReference.unlock();
+        }
+    }
+
+    /**
+     * Execute a Callable in a lock
+     *
+     * @param key key
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     * @param <V> the type
+     */
+    public static <V> V executeInLock(Object key, Callable<V> callable) throws Throwable {
+        notNull(key, "key is null");
+        notNull(callable, "callable is null");
+
+        LockReference lockReference = getLock(key);
+
+        lockReference.lock();
+        try {
+            return callable.call();
         } finally {
             lockReference.unlock();
         }
@@ -79,29 +106,8 @@ public class ConcurrencySupport {
         notNull(lock, "lock is null");
         notNull(runnable, "runnable is null");
 
+        lock.lock();
         try {
-            lock.lock();
-            runnable.run();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * Execute a Runnable in a lock
-     *
-     * @param readWriteLock readWriteLock
-     * @param runnable runnable
-     */
-    public static void executeInLock(ReadWriteLock readWriteLock, Runnable runnable) {
-        notNull(readWriteLock, "readWriteLock is null");
-        notNull(runnable, "runnable is null");
-
-        Lock lock = readWriteLock.writeLock();
-        notNull(lock, "readWriteLock.writeLock() is null");
-
-        try {
-            lock.lock();
             runnable.run();
         } finally {
             lock.unlock();
@@ -121,35 +127,23 @@ public class ConcurrencySupport {
         Lock lock = lockProvider.getLock();
         notNull(lock, "lockProvider.getLock() is null");
 
-        try {
-            lock.lock();
-            runnable.run();
-        } finally {
-            lock.unlock();
-        }
+        executeInLock(lock, runnable);
     }
 
     /**
-     * Execute a Callable in a lock
+     * Execute a Runnable in a lock
      *
-     * @param key key
-     * @param callable callable
-     * @return the callable result
-     * @throws Throwable Throwable
-     * @param <V> the type
+     * @param readWriteLock readWriteLock
+     * @param runnable runnable
      */
-    public static <V> V executeInLock(Object key, Callable<V> callable) throws Throwable {
-        notNull(key, "key is null");
-        notNull(callable, "callable is null");
+    public static void executeInLock(ReadWriteLock readWriteLock, Runnable runnable) {
+        notNull(readWriteLock, "readWriteLock is null");
+        notNull(runnable, "runnable is null");
 
-        LockReference lockReference = getLock(key);
+        Lock lock = readWriteLock.writeLock();
+        notNull(lock, "readWriteLock.writeLock() is null");
 
-        try {
-            lockReference.lock();
-            return callable.call();
-        } finally {
-            lockReference.unlock();
-        }
+        executeInLock(lock, runnable);
     }
 
     /**
@@ -165,8 +159,8 @@ public class ConcurrencySupport {
         notNull(lock, "lock is null");
         notNull(callable, "callable is null");
 
+        lock.lock();
         try {
-            lock.lock();
             return callable.call();
         } finally {
             lock.unlock();
@@ -190,40 +184,27 @@ public class ConcurrencySupport {
         Lock lock = readWriteLock.writeLock();
         notNull(lock, "readWriteLock.writeLock() is null");
 
-        try {
-            lock.lock();
-            return callable.call();
-        } finally {
-            lock.unlock();
-        }
+        return executeInLock(lock, callable);
     }
 
     /**
      * Execute a Callable in a lock
      *
-     * @param readWriteLockProvider readWriteLockProvider
+     * @param lockProvider lockProvider
      * @param callable callable
      * @return the callable result
      * @throws Throwable Throwable
      * @param <V> the type
      */
-    public static <V> V executeInLock(
-            ReadWriteLockProvider readWriteLockProvider, Callable<V> callable) throws Throwable {
-        notNull(readWriteLockProvider, "readWriteLockProvider is null");
+    public static <V> V executeInLock(LockProvider lockProvider, Callable<V> callable)
+            throws Throwable {
+        notNull(lockProvider, "lockProvider is null");
         notNull(callable, "callable is null");
 
-        ReadWriteLock readWriteLock = readWriteLockProvider.getReadWriteLock();
-        notNull(readWriteLock, "readWriteLockProvider.getLock() is null");
+        Lock lock = lockProvider.getLock();
+        notNull(lock, "lockProvider.getLock() is null");
 
-        Lock lock = readWriteLock.writeLock();
-        notNull(lock, "readWriteLockProvider.getLock().writeLock() is null");
-
-        try {
-            lock.lock();
-            return callable.call();
-        } finally {
-            lock.unlock();
-        }
+        return executeInLock(lock, callable);
     }
 
     /**
@@ -231,14 +212,15 @@ public class ConcurrencySupport {
      *
      * @param semaphore semaphore
      * @param runnable runnable
-     * @throws Throwable Throwable
+     * @throws InterruptedException InterruptedException
      */
-    public static void executeInSemaphore(Semaphore semaphore, Runnable runnable) throws Throwable {
+    public static void executeInSemaphore(Semaphore semaphore, Runnable runnable)
+            throws InterruptedException {
         notNull(semaphore, "semaphore is null");
         notNull(runnable, "runnable is null");
 
+        semaphore.acquire();
         try {
-            semaphore.acquire();
             runnable.run();
         } finally {
             semaphore.release();
@@ -246,44 +228,21 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Runnable in a Semaphore
-     *
-     * @param semaphoreProvider semaphoreProvider
-     * @param runnable runnable
-     * @throws Throwable Throwable
-     */
-    public static void executeInSemaphore(SemaphoreProvider semaphoreProvider, Runnable runnable)
-            throws Throwable {
-        notNull(semaphoreProvider, "semaphoreProvider is null");
-        notNull(runnable, "runnable is null");
-
-        Semaphore semaphore = semaphoreProvider.getSemaphore();
-        notNull(semaphore, "semaphoreProvider.getSemaphore() is null");
-
-        try {
-            semaphore.acquire();
-            runnable.run();
-        } finally {
-            semaphore.release();
-        }
-    }
-
-    /**
-     * Execute a Callback in a Semaphore
+     * Execute a Callable in a Semaphore
      *
      * @param semaphore semaphore
      * @param callable callable
      * @return the callable result
-     * @param <V> the callback result type
-     * @throws Throwable Throwable
+     * @param <V> the callable result type
+     * @throws Exception Exception
      */
     public static <V> V executeInSemaphore(Semaphore semaphore, Callable<V> callable)
-            throws Throwable {
+            throws Exception {
         notNull(semaphore, "semaphore is null");
         notNull(callable, "callable is null");
 
+        semaphore.acquire();
         try {
-            semaphore.acquire();
             return callable.call();
         } finally {
             semaphore.release();
@@ -291,28 +250,41 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Callback in a Semaphore
+     * Execute a Runnable in a Semaphore
+     *
+     * @param semaphoreProvider semaphoreProvider
+     * @param runnable runnable
+     * @throws InterruptedException InterruptedException
+     */
+    public static void executeInSemaphore(SemaphoreProvider semaphoreProvider, Runnable runnable)
+            throws InterruptedException {
+        notNull(semaphoreProvider, "semaphoreProvider is null");
+        notNull(runnable, "runnable is null");
+
+        Semaphore semaphore = semaphoreProvider.getSemaphore();
+        notNull(semaphore, "semaphoreProvider.getSemaphore() is null");
+
+        executeInSemaphore(semaphore, runnable);
+    }
+
+    /**
+     * Execute a Callable in a Semaphore
      *
      * @param semaphoreProvider semaphoreProvider
      * @param callable callable
      * @return the callable result
-     * @param <V> the callback result type
-     * @throws Throwable Throwable
+     * @param <V> the callable result type
+     * @throws Exception Exception
      */
     public static <V> V executeInSemaphore(
-            SemaphoreProvider semaphoreProvider, Callable<V> callable) throws Throwable {
+            SemaphoreProvider semaphoreProvider, Callable<V> callable) throws Exception {
         notNull(semaphoreProvider, "semaphoreProvider is null");
         notNull(callable, "callable is null");
 
         Semaphore semaphore = semaphoreProvider.getSemaphore();
         notNull(semaphore, "semaphoreProvider.getSemaphore() is null");
 
-        try {
-            semaphore.acquire();
-            return callable.call();
-        } finally {
-            semaphore.release();
-        }
+        return executeInSemaphore(semaphore, callable);
     }
 
     /**
@@ -337,18 +309,19 @@ public class ConcurrencySupport {
          * Method to try to acquire the Lock
          *
          * @return true if the lock was acquired, else false
+         * @throws InterruptedException InterruptedException
          */
-        boolean tryLock();
+        boolean tryLock() throws InterruptedException;
 
         /**
          * Method to try to acquire the Lock
          *
-         * @param time time
+         * @param timeout timeout
          * @param timeUnit timeUnit
          * @return true if the lock was acquired, else false
          * @throws InterruptedException InterruptedException
          */
-        boolean tryLock(long time, TimeUnit timeUnit) throws InterruptedException;
+        boolean tryLock(long timeout, TimeUnit timeUnit) throws InterruptedException;
 
         /**
          * Method to unlock the Lock
@@ -385,9 +358,9 @@ public class ConcurrencySupport {
         }
 
         @Override
-        public boolean tryLock(long time, TimeUnit timeUnit) throws InterruptedException {
+        public boolean tryLock(long timeout, TimeUnit timeUnit) throws InterruptedException {
             notNull(timeUnit, "timeUnit it null");
-            return lockManager.tryLock(key, time, timeUnit);
+            return lockManager.tryLock(key, timeout, timeUnit);
         }
 
         @Override
@@ -404,153 +377,177 @@ public class ConcurrencySupport {
     /** Class to implement LockManager */
     private static class LockManager {
 
-        private final Lock lock = new ReentrantLock(true);
-        private final Map<Object, LockHolder> map = new HashMap<>();
+        private final ReentrantLock lockManagerLock;
+        private final Map<Object, ReentrantLock> lockMap;
+        private final Map<Object, Counter> lockCounterMap;
 
-        /**
-         * Acquires a Lock
-         *
-         * @param key key
-         */
-        void lock(Object key) {
-            LockHolder lockHolder;
+        /** Constructor */
+        public LockManager() {
+            lockManagerLock = new ReentrantLock(true);
+            lockMap = new HashMap<>();
+            lockCounterMap = new HashMap<>();
+        }
+
+        public int getLockCount() {
+            lockManagerLock.lock();
 
             try {
-                lock.lock();
-
-                lockHolder =
-                        map.compute(
-                                key,
-                                (k, lh) -> {
-                                    if (lh == null) {
-                                        lh = new LockHolder();
-                                    }
-                                    return lh;
-                                });
-
-                lockHolder.increaseLockCount();
+                return Math.max(lockMap.size(), lockCounterMap.size());
             } finally {
-                lock.unlock();
+                lockManagerLock.unlock();
             }
-
-            lockHolder.getReentrantLock().lock();
         }
 
         /**
-         * Trys to acquire a Lock
+         * Lock a lock
          *
          * @param key key
-         * @return rue if the lock was acquired, else false
          */
-        boolean tryLock(Object key) {
-            LockHolder lockHolder;
+        public void lock(Object key) {
+            ReentrantLock lock;
+            Counter counter;
+
+            lockManagerLock.lock();
 
             try {
-                lock.lock();
-
-                lockHolder = map.computeIfAbsent(key, lh -> new LockHolder());
-                lockHolder.increaseLockCount();
+                lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock(true));
+                counter = lockCounterMap.computeIfAbsent(key, k -> new Counter());
+                counter.increment();
             } finally {
-                lock.unlock();
+                lockManagerLock.unlock();
             }
 
-            return lockHolder.getReentrantLock().tryLock();
+            lock.lock();
         }
 
         /**
-         * Trys to acquire a Lock
+         * Try to lock a Lock
          *
          * @param key key
-         * @param time time
+         * @return true if the Lock was locked, else false
+         */
+        public boolean tryLock(Object key) {
+            ReentrantLock lock;
+            Counter counter;
+
+            lockManagerLock.lock();
+
+            try {
+                lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock(true));
+
+                counter = lockCounterMap.computeIfAbsent(key, k -> new Counter());
+                counter.increment();
+
+                if (lock.tryLock()) {
+                    return true;
+                } else {
+                    if (counter.decrement() == 0) {
+                        lockMap.remove(key);
+                        lockCounterMap.remove(key);
+                    }
+                    return false;
+                }
+            } finally {
+                lockManagerLock.unlock();
+            }
+        }
+
+        /**
+         * Try to lock a Lock
+         *
+         * @param key key
+         * @param timeout timeout
          * @param timeUnit timeUnit
-         * @return true if the lock was acquired, else false
+         * @return true if the Lock was locked, else false
          * @throws InterruptedException InterruptedException
          */
-        boolean tryLock(Object key, long time, TimeUnit timeUnit) throws InterruptedException {
-            LockHolder lockHolder;
+        public boolean tryLock(Object key, long timeout, TimeUnit timeUnit)
+                throws InterruptedException {
+            ReentrantLock lock;
+            Counter counter;
+
+            lockManagerLock.lock();
 
             try {
-                lock.lock();
+                lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock(true));
 
-                lockHolder = map.computeIfAbsent(key, lh -> new LockHolder());
-                lockHolder.increaseLockCount();
+                counter = lockCounterMap.computeIfAbsent(key, k -> new Counter());
+                counter.increment();
+
+                if (lock.tryLock(timeout, timeUnit)) {
+                    return true;
+                } else {
+                    if (counter.decrement() == 0) {
+                        lockMap.remove(key);
+                        lockCounterMap.remove(key);
+                    }
+                    return false;
+                }
             } finally {
-                lock.unlock();
+                lockManagerLock.unlock();
             }
-
-            return lockHolder.getReentrantLock().tryLock(time, timeUnit);
         }
 
         /**
-         * Releases a Lock
+         * Unlock the Lock
          *
-         * @throws IllegalMonitorStateException if the current thread does not hold the Lock
+         * @param key key
          */
-        void unlock(Object key) {
+        public void unlock(Object key) {
+            lockManagerLock.lock();
+
             try {
-                lock.lock();
-
-                LockHolder lockHolder = map.get(key);
-
-                if (lockHolder == null) {
+                ReentrantLock lock = lockMap.get(key);
+                if (lock != null) {
+                    if (lock.isHeldByCurrentThread()) {
+                        lock.unlock();
+                        if (lockCounterMap.get(key).decrement() == 0) {
+                            lockMap.remove(key);
+                            lockCounterMap.remove(key);
+                        }
+                    } else {
+                        throw new IllegalMonitorStateException(
+                                format(
+                                        "Current thread does not hold the lock for the given key"
+                                                + " [%s]",
+                                        key));
+                    }
+                } else {
                     throw new IllegalMonitorStateException(
-                            format("LockReference [%s] not locked", key));
-                }
-
-                if (lockHolder.getLockCount() == 0) {
-                    throw new IllegalMonitorStateException(
-                            format("LockReference [%s] already unlocked", key));
-                }
-
-                lockHolder.getReentrantLock().unlock();
-                lockHolder.decreaseLockCount();
-
-                if (lockHolder.getLockCount() == 0) {
-                    map.remove(key);
+                            format("No lock found for the given key [%s]", key));
                 }
             } finally {
-                lock.unlock();
+                lockManagerLock.unlock();
             }
         }
     }
 
-    /** Class to implement LockHolder */
-    private static class LockHolder {
+    /** Class to implement Counter */
+    private static class Counter {
 
-        private final ReentrantLock reentrantLock;
-        private int lockCount;
+        private int count;
 
         /** Constructor */
-        LockHolder() {
-            reentrantLock = new ReentrantLock(true);
+        public Counter() {
+            // INTENTIONALLY BLANK
+        }
+
+        /** Increment the counter */
+        public void increment() {
+            count++;
         }
 
         /**
-         * Get the lock
+         * Decrement the counter
          *
-         * @return the Lock
+         * @return the count
          */
-        Lock getReentrantLock() {
-            return reentrantLock;
-        }
-
-        /** Increase the lock count */
-        void increaseLockCount() {
-            lockCount++;
-        }
-
-        /** Decrease the lock count */
-        void decreaseLockCount() {
-            lockCount--;
-        }
-
-        /**
-         * Get the lock count
-         *
-         * @return the lock count
-         */
-        int getLockCount() {
-            return lockCount;
+        public int decrement() {
+            count--;
+            if (count < 0) {
+                count = 0;
+            }
+            return count;
         }
     }
 }
