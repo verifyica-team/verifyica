@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.concurrency.lock;
+package org.antublue.verifyica.test.concurrency;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,13 +22,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 /** Example test */
-public class LockTest9 {
+public class StoreLockTest {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -52,12 +54,16 @@ public class LockTest9 {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
+        Lock lock = getLock(argumentContext);
+
         ConcurrencySupport.executeInLock(
-                argumentContext.getClassContext().getEngineContext(),
+                lock,
                 (Callable<Void>)
                         () -> {
                             System.out.println(
-                                    format("test2(%s) locked", argumentContext.getTestArgument()));
+                                    format(
+                                            "test2(%s) acquired",
+                                            argumentContext.getTestArgument()));
 
                             System.out.println(
                                     format("test2(%s)", argumentContext.getTestArgument()));
@@ -70,7 +76,7 @@ public class LockTest9 {
 
                             System.out.println(
                                     format(
-                                            "test2(%s) unlocked",
+                                            "test2(%s) released",
                                             argumentContext.getTestArgument()));
 
                             return null;
@@ -84,5 +90,19 @@ public class LockTest9 {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
+    }
+
+    /**
+     * Method to get or create a class level Lock
+     *
+     * @param argumentContext argumentContext
+     * @return a Lock
+     * @throws Throwable Throwable
+     */
+    private Lock getLock(ArgumentContext argumentContext) throws Throwable {
+        return argumentContext
+                .getClassContext()
+                .getStore()
+                .computeIfAbsent("lock", key -> new ReentrantLock(true), Lock.class);
     }
 }

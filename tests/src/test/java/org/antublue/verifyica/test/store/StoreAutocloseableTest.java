@@ -25,7 +25,7 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.engine.support.RandomSupport;
+import org.antublue.verifyica.test.RandomSupport;
 
 /** Example test */
 public class StoreAutocloseableTest {
@@ -88,7 +88,7 @@ public class StoreAutocloseableTest {
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
-        Thread.sleep(RandomSupport.randomInt(0, 1000));
+        Thread.sleep(RandomSupport.randomLong(0, 1000));
     }
 
     @Verifyica.Test
@@ -99,7 +99,7 @@ public class StoreAutocloseableTest {
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
-        Thread.sleep(RandomSupport.randomInt(0, 1000));
+        Thread.sleep(RandomSupport.randomLong(0, 1000));
     }
 
     @Verifyica.AfterEach

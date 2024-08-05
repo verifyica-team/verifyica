@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.concurrency.lock;
+package org.antublue.verifyica.test;
 
-import java.util.concurrent.locks.Lock;
+import java.util.Random;
 
-/** Interface to implement LockProvider */
-public interface LockProvider {
+public class RandomSupport {
 
-    /**
-     * Returns the Lock
-     *
-     * @return the Lock
-     */
-    Lock getLock();
+    private static final Random RANDOM = new Random();
+
+    private RandomSupport() {
+        // INTENTIONALLY BLANK
+    }
+
+    public static long randomLong(long minimum, long maximum) {
+        return RANDOM.nextLong(maximum - minimum + 1) + minimum;
+    }
 }

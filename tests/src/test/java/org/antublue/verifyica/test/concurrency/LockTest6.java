@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.concurrency.lock;
+package org.antublue.verifyica.test.concurrency;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +28,7 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 /** Example test */
-public class LockTest7 {
+public class LockTest6 {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -53,7 +53,7 @@ public class LockTest7 {
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
         ConcurrencySupport.executeInLock(
-                argumentContext.getClassContext(),
+                argumentContext.getStore().getLock(),
                 (Callable<Void>)
                         () -> {
                             System.out.println(

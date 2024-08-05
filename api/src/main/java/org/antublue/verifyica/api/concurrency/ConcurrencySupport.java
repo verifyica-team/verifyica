@@ -26,9 +26,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
-import org.antublue.verifyica.api.concurrency.lock.LockProvider;
-import org.antublue.verifyica.api.concurrency.lock.ReadWriteLockProvider;
-import org.antublue.verifyica.api.concurrency.semaphore.SemaphoreProvider;
 
 /** Class to implement ConcurrencySupport */
 public class ConcurrencySupport {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.concurrency.semaphore;
+package org.antublue.verifyica.api.concurrency;
 
 import java.util.concurrent.Semaphore;
 
@@ -22,9 +22,9 @@ import java.util.concurrent.Semaphore;
 public interface SemaphoreProvider {
 
     /**
-     * Returns the Semaphore
+     * Returns a Semaphore
      *
-     * @return the Lock
+     * @return a Semaphore
      */
     Semaphore getSemaphore();
 }

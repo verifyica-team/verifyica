@@ -14,30 +14,17 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api;
+package org.antublue.verifyica.api.concurrency;
 
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import org.antublue.verifyica.api.concurrency.LockProvider;
-import org.antublue.verifyica.api.concurrency.ReadWriteLockProvider;
 
-/** Interface to implement Context */
-public interface Context extends ReadWriteLockProvider, LockProvider {
+/** Interface to implement LockProvider */
+public interface LockProvider {
 
     /**
-     * Returns the Store
+     * Returns a Lock
      *
-     * @return the Store
+     * @return a Lock
      */
-    Store getStore();
-
-    @Override
-    default Lock getLock() {
-        return getReadWriteLock().writeLock();
-    }
-
-    @Override
-    default ReadWriteLock getReadWriteLock() {
-        return getStore().getReadWriteLock();
-    }
+    Lock getLock();
 }

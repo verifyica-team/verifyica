@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.api.concurrency.lock;
+package org.antublue.verifyica.api.concurrency;
 
 import java.util.concurrent.locks.ReadWriteLock;
 
@@ -22,9 +22,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 public interface ReadWriteLockProvider {
 
     /**
-     * Return the ReadWriteLock
+     * Return a ReadWriteLock
      *
-     * @return the ReadWriteLock
+     * @return a ReadWriteLock
      */
     ReadWriteLock getReadWriteLock();
 }
