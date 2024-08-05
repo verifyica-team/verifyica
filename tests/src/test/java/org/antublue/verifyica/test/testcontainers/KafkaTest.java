@@ -246,7 +246,10 @@ public class KafkaTest {
         public void initialize(Network network) {
             info("initialize test environment [%s] ...", dockerImageName);
 
-            kafkaContainer = new KafkaContainer(DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"));
+            kafkaContainer =
+                    new KafkaContainer(
+                            DockerImageName.parse(dockerImageName)
+                                    .asCompatibleSubstituteFor("apache/kafka"));
             kafkaContainer.withNetwork(network);
             kafkaContainer.start();
 
