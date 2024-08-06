@@ -28,13 +28,13 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.ExecutorServiceFactory;
 import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
@@ -178,14 +178,12 @@ public class VerifyicaEngine implements TestEngine {
                     .getEngineExecutionListener()
                     .executionStarted(executionRequest.getRootTestDescriptor());
 
-            int parallelism = getParallelism(engineContext);
+            int parallelism = getEngineClassParallelism();
 
-            executorService = ExecutorServiceFactory.getInstance().newExecutorService(parallelism);
+            String threadName = Thread.currentThread().getName();
 
-            final Semaphore semaphore =
-                    ExecutorServiceFactory.usingVirtualThreads()
-                            ? new Semaphore(parallelism)
-                            : null;
+            executorService =
+                    ExecutorServiceFactory.getInstance().createExecutorService(parallelism);
 
             for (TestDescriptor testDescriptor :
                     executionRequest.getRootTestDescriptor().getChildren()) {
@@ -195,33 +193,22 @@ public class VerifyicaEngine implements TestEngine {
                                     () -> {
                                         Throwable throwable = null;
 
-                                        Thread.currentThread()
-                                                .setName(
-                                                        "verifyica-"
-                                                                + HashSupport.alphaNumericHash(4));
-
                                         try {
-                                            if (semaphore != null) {
-                                                semaphore.acquire();
-                                            }
+                                            Thread.currentThread()
+                                                    .setName(
+                                                            "verifyica-"
+                                                                    + HashSupport.alphaNumericHash(
+                                                                            4));
 
-                                            try {
-                                                ((ExecutableTestDescriptor) testDescriptor)
-                                                        .execute(
-                                                                executionRequest,
-                                                                new DefaultClassContext(
-                                                                        engineContext));
-                                            } catch (Throwable t) {
-                                                throwable = t;
-                                                t.printStackTrace(System.err);
-                                            } finally {
-                                                if (semaphore != null) {
-                                                    semaphore.release();
-                                                }
-                                            }
-                                        } catch (Throwable outerT) {
-                                            throwable = outerT;
-                                            outerT.printStackTrace(System.err);
+                                            ((ExecutableTestDescriptor) testDescriptor)
+                                                    .execute(
+                                                            executionRequest,
+                                                            new DefaultClassContext(engineContext));
+                                        } catch (Throwable t) {
+                                            throwable = t;
+                                            t.printStackTrace(System.err);
+                                        } finally {
+                                            Thread.currentThread().setName(threadName);
                                         }
 
                                         return throwable;
@@ -283,38 +270,40 @@ public class VerifyicaEngine implements TestEngine {
     }
 
     /**
-     * Method to get the engine parallelism value
+     * Method to get the engine class parallelism value
      *
-     * @param engineContext engineContext
      * @return the engine parallelism value
      */
-    private static int getParallelism(EngineContext engineContext) {
-        int maxThreadCount = Runtime.getRuntime().availableProcessors();
+    private static int getEngineClassParallelism() {
+        int engineParallelism =
+                DefaultConfiguration.getInstance()
+                        .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
+                        .map(
+                                value -> {
+                                    int intValue;
+                                    try {
+                                        intValue = Integer.parseInt(value);
+                                        if (intValue < 1) {
+                                            throw new EngineException(
+                                                    format(
+                                                            "Invalid %s value [%d]",
+                                                            Constants.ENGINE_CLASS_PARALLELISM,
+                                                            intValue));
+                                        }
+                                        return intValue;
+                                    } catch (NumberFormatException e) {
+                                        throw new EngineException(
+                                                format(
+                                                        "Invalid %s value [%s]",
+                                                        Constants.ENGINE_CLASS_PARALLELISM, value),
+                                                e);
+                                    }
+                                })
+                        .orElse(Runtime.getRuntime().availableProcessors());
 
-        return engineContext
-                .getConfiguration()
-                .getOptional(Constants.ENGINE_PARALLELISM)
-                .map(
-                        value -> {
-                            int intValue;
-                            try {
-                                intValue = Integer.parseInt(value);
-                                if (intValue < 1) {
-                                    throw new EngineException(
-                                            format(
-                                                    "Invalid %s value [%d]",
-                                                    Constants.ENGINE_PARALLELISM, intValue));
-                                }
-                                return intValue;
-                            } catch (NumberFormatException e) {
-                                throw new EngineException(
-                                        format(
-                                                "Invalid %s value [%s]",
-                                                Constants.ENGINE_PARALLELISM, value),
-                                        e);
-                            }
-                        })
-                .orElse(maxThreadCount);
+        LOGGER.trace("getEngineClassParallelism() [%s]", engineParallelism);
+
+        return engineParallelism;
     }
 
     /**

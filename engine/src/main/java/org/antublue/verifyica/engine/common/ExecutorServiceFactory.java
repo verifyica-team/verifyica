@@ -17,6 +17,7 @@
 package org.antublue.verifyica.engine.common;
 
 import io.github.thunkware.vt.bridge.ExecutorTool;
+import io.github.thunkware.vt.bridge.SemaphoreExecutor;
 import io.github.thunkware.vt.bridge.ThreadTool;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -36,14 +37,13 @@ public class ExecutorServiceFactory {
     }
 
     /**
-     * Method to create a new ExecutorService. If virtual threads are supported, threadCount is
-     * ignored
+     * Method to create a new ExecutorService
      *
-     * @param threadCount threadCount
+     * @param parallelism parallelism
      * @return an ExecutorService
      */
-    public ExecutorService newExecutorService(int threadCount) {
-        ArgumentSupport.isTrue(threadCount > 0, "thread count is less than 1");
+    public ExecutorService createExecutorService(int parallelism) {
+        ArgumentSupport.isTrue(parallelism > 0, "parallelism is less than 1");
 
         ExecutorService executorService;
 
@@ -52,15 +52,15 @@ public class ExecutorServiceFactory {
         } else {
             executorService =
                     new ThreadPoolExecutor(
-                            threadCount,
-                            threadCount,
+                            parallelism,
+                            parallelism,
                             60L,
                             TimeUnit.SECONDS,
-                            new ArrayBlockingQueue<>(threadCount * 10),
+                            new ArrayBlockingQueue<>(parallelism * 10),
                             new BlockingRejectedExecutionHandler());
         }
 
-        return executorService;
+        return new SemaphoreExecutor(executorService, parallelism);
     }
 
     /**
