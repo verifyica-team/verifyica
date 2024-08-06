@@ -22,11 +22,9 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
-import org.antublue.verifyica.api.concurrency.LockProvider;
-import org.antublue.verifyica.api.concurrency.ReadWriteLockProvider;
 
 /** Interface to implement Configuration */
-public interface Configuration extends ReadWriteLockProvider, LockProvider {
+public interface Configuration {
 
     /**
      * Put a key-value pair
@@ -159,7 +157,6 @@ public interface Configuration extends ReadWriteLockProvider, LockProvider {
      *
      * @return the Lock
      */
-    @Override
     default Lock getLock() {
         return getReadWriteLock().writeLock();
     }
@@ -169,6 +166,5 @@ public interface Configuration extends ReadWriteLockProvider, LockProvider {
      *
      * @return the ReadWriteLock
      */
-    @Override
     ReadWriteLock getReadWriteLock();
 }

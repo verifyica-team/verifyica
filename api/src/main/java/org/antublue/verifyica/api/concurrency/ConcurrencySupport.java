@@ -20,15 +20,27 @@ import static java.lang.String.format;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.antublue.verifyica.api.Configuration;
+import org.antublue.verifyica.api.Context;
+import org.antublue.verifyica.api.Store;
 
 /** Class to implement ConcurrencySupport */
 public class ConcurrencySupport {
+
+    /** Enum to implement LockType */
+    public enum LockType {
+        /** READ Lock */
+        READ,
+        /** WRITE Lock */
+        WRITE
+    }
 
     private static final LockManager LOCK_MANAGER = new LockManager();
 
@@ -37,17 +49,13 @@ public class ConcurrencySupport {
         // INTENTIONALLY BLANK
     }
 
-    public static int getLockCount() {
-        return LOCK_MANAGER.getLockCount();
-    }
-
     /**
-     * Method to get a LockReference
+     * Acquire a LockReference to a Lock.
      *
      * @param key key
      * @return a LockReference
      */
-    public static LockReference getLock(Object key) {
+    public static LockReference getLockReference(Object key) {
         notNull(key, "key is null");
 
         return new DefaultLockReference(LOCK_MANAGER, key);
@@ -59,17 +67,128 @@ public class ConcurrencySupport {
      * @param key key
      * @param runnable runnable
      */
-    public static void executeInLock(Object key, Runnable runnable) {
+    public static void run(Object key, Runnable runnable) {
         notNull(key, "key is null");
         notNull(runnable, "runnable is null");
 
-        LockReference lockReference = getLock(key);
-
+        LockReference lockReference = getLockReference(key);
         lockReference.lock();
         try {
             runnable.run();
         } finally {
             lockReference.unlock();
+        }
+    }
+
+    /**
+     * Execute a Runnable in a lock
+     *
+     * @param lock lock
+     * @param runnable runnable
+     */
+    public static void run(Lock lock, Runnable runnable) {
+        notNull(lock, "lock is null");
+        notNull(runnable, "runnable is null");
+
+        lock.lock();
+        try {
+            runnable.run();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Execute a Runnable in a Configuration lock
+     *
+     * @param configuration configuration
+     * @param runnable runnable
+     */
+    public static void run(Configuration configuration, Runnable runnable) {
+        notNull(configuration, "configuration is null");
+        notNull(runnable, "runnable is null");
+
+        run(configuration.getLock(), runnable);
+    }
+
+    /**
+     * Execute a Runnable in a Context lock
+     *
+     * @param context context
+     * @param runnable runnable
+     */
+    public static void run(Context context, Runnable runnable) {
+        notNull(context, "context is null");
+        notNull(runnable, "runnable is null");
+
+        run(context.getLock(), runnable);
+    }
+
+    /**
+     * Execute a Runnable in a Store lock
+     *
+     * @param store store
+     * @param runnable runnable
+     */
+    public static void run(Store store, Runnable runnable) {
+        notNull(store, "store is null");
+        notNull(runnable, "runnable is null");
+
+        run(store.getLock(), runnable);
+    }
+
+    /**
+     * Execute a Runnable in a lock
+     *
+     * @param readWriteLock readWriteLock
+     * @param lockType lockType
+     * @param runnable runnable
+     */
+    public static void run(ReadWriteLock readWriteLock, LockType lockType, Runnable runnable) {
+        notNull(readWriteLock, "readWriteLock is null");
+        notNull(lockType, "lockType is null");
+        notNull(runnable, "runnable is null");
+
+        Lock lock;
+
+        switch (lockType) {
+            case READ:
+                {
+                    lock = readWriteLock.readLock();
+                    notNull(lock, "readWriteLock.readLock() is null");
+                    break;
+                }
+            case WRITE:
+                {
+                    lock = readWriteLock.writeLock();
+                    notNull(lock, "readWriteLock.writeLock() is null");
+                    break;
+                }
+            default:
+                {
+                    throw new IllegalArgumentException(format("Invalid lockType [%s]", lockType));
+                }
+        }
+
+        run(lock, runnable);
+    }
+
+    /**
+     * Execute a Runnable in a Semaphore
+     *
+     * @param semaphore semaphore
+     * @param runnable runnable
+     * @throws InterruptedException InterruptedException
+     */
+    public static void run(Semaphore semaphore, Runnable runnable) throws InterruptedException {
+        notNull(semaphore, "semaphore is null");
+        notNull(runnable, "runnable is null");
+
+        semaphore.acquire();
+        try {
+            runnable.run();
+        } finally {
+            semaphore.release();
         }
     }
 
@@ -82,12 +201,11 @@ public class ConcurrencySupport {
      * @throws Throwable Throwable
      * @param <V> the type
      */
-    public static <V> V executeInLock(Object key, Callable<V> callable) throws Throwable {
+    public static <V> V call(Object key, Callable<V> callable) throws Throwable {
         notNull(key, "key is null");
         notNull(callable, "callable is null");
 
-        LockReference lockReference = getLock(key);
-
+        LockReference lockReference = getLockReference(key);
         lockReference.lock();
         try {
             return callable.call();
@@ -97,56 +215,6 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Runnable in a lock
-     *
-     * @param lock lock
-     * @param runnable runnable
-     */
-    public static void executeInLock(Lock lock, Runnable runnable) {
-        notNull(lock, "lock is null");
-        notNull(runnable, "runnable is null");
-
-        lock.lock();
-        try {
-            runnable.run();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * Execute a Runnable in a lock
-     *
-     * @param lockProvider lockProvider
-     * @param runnable runnable
-     */
-    public static void executeInLock(LockProvider lockProvider, Runnable runnable) {
-        notNull(lockProvider, "lockProvider is null");
-        notNull(runnable, "runnable is null");
-
-        Lock lock = lockProvider.getLock();
-        notNull(lock, "lockProvider.getLock() is null");
-
-        executeInLock(lock, runnable);
-    }
-
-    /**
-     * Execute a Runnable in a lock
-     *
-     * @param readWriteLock readWriteLock
-     * @param runnable runnable
-     */
-    public static void executeInLock(ReadWriteLock readWriteLock, Runnable runnable) {
-        notNull(readWriteLock, "readWriteLock is null");
-        notNull(runnable, "runnable is null");
-
-        Lock lock = readWriteLock.writeLock();
-        notNull(lock, "readWriteLock.writeLock() is null");
-
-        executeInLock(lock, runnable);
-    }
-
-    /**
      * Execute a Callable in a lock
      *
      * @param lock lock
@@ -155,7 +223,7 @@ public class ConcurrencySupport {
      * @throws Throwable Throwable
      * @param <V> the type
      */
-    public static <V> V executeInLock(Lock lock, Callable<V> callable) throws Throwable {
+    public static <V> V call(Lock lock, Callable<V> callable) throws Throwable {
         notNull(lock, "lock is null");
         notNull(callable, "callable is null");
 
@@ -176,55 +244,102 @@ public class ConcurrencySupport {
      * @throws Throwable Throwable
      * @param <V> the type
      */
-    public static <V> V executeInLock(ReadWriteLock readWriteLock, Callable<V> callable)
-            throws Throwable {
+    public static <V> V call(ReadWriteLock readWriteLock, Callable<V> callable) throws Throwable {
         notNull(readWriteLock, "readWriteLock is null");
         notNull(callable, "callable is null");
 
         Lock lock = readWriteLock.writeLock();
         notNull(lock, "readWriteLock.writeLock() is null");
 
-        return executeInLock(lock, callable);
+        return call(lock, callable);
     }
 
     /**
      * Execute a Callable in a lock
      *
-     * @param lockProvider lockProvider
+     * @param readWriteLock readWriteLock
+     * @param lockType lockType
      * @param callable callable
      * @return the callable result
      * @throws Throwable Throwable
      * @param <V> the type
      */
-    public static <V> V executeInLock(LockProvider lockProvider, Callable<V> callable)
+    public static <V> V call(ReadWriteLock readWriteLock, LockType lockType, Callable<V> callable)
             throws Throwable {
-        notNull(lockProvider, "lockProvider is null");
+        notNull(readWriteLock, "readWriteLock is null");
+        notNull(lockType, "lockType is null");
         notNull(callable, "callable is null");
 
-        Lock lock = lockProvider.getLock();
-        notNull(lock, "lockProvider.getLock() is null");
+        Lock lock;
 
-        return executeInLock(lock, callable);
+        switch (lockType) {
+            case READ:
+                {
+                    lock = readWriteLock.readLock();
+                    notNull(lock, "readWriteLock.readLock() is null");
+                    break;
+                }
+            case WRITE:
+                {
+                    lock = readWriteLock.writeLock();
+                    notNull(lock, "readWriteLock.writeLock() is null");
+                    break;
+                }
+            default:
+                {
+                    throw new IllegalArgumentException(format("Invalid lockType [%s]", lockType));
+                }
+        }
+
+        return call(lock, callable);
     }
 
     /**
-     * Execute a Runnable in a Semaphore
+     * Execute a Callable in a Context lock
      *
-     * @param semaphore semaphore
-     * @param runnable runnable
-     * @throws InterruptedException InterruptedException
+     * @param configuration configuration
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     * @param <V> the type
      */
-    public static void executeInSemaphore(Semaphore semaphore, Runnable runnable)
-            throws InterruptedException {
-        notNull(semaphore, "semaphore is null");
-        notNull(runnable, "runnable is null");
+    public static <V> V call(Configuration configuration, Callable<V> callable) throws Throwable {
+        notNull(configuration, "configuration is null");
+        notNull(callable, "callable is null");
 
-        semaphore.acquire();
-        try {
-            runnable.run();
-        } finally {
-            semaphore.release();
-        }
+        return call(configuration.getLock(), callable);
+    }
+
+    /**
+     * Execute a Callable in a Context lock
+     *
+     * @param context context
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     * @param <V> the type
+     */
+    public static <V> V call(Context context, Callable<V> callable) throws Throwable {
+        notNull(context, "context is null");
+        notNull(callable, "callable is null");
+
+        return call(context.getLock(), callable);
+    }
+
+    /**
+     * Execute a Callable in a Store lock
+     *
+     * @param store store
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     * @param <V> the type
+     */
+    public static <V> V call(Store store, Callable<V> callable) throws Throwable {
+        notNull(store, "store is null");
+        notNull(callable, "callable is null");
+
+        return call(store.getLock(), callable);
     }
 
     /**
@@ -236,8 +351,7 @@ public class ConcurrencySupport {
      * @param <V> the callable result type
      * @throws Exception Exception
      */
-    public static <V> V executeInSemaphore(Semaphore semaphore, Callable<V> callable)
-            throws Exception {
+    public static <V> V call(Semaphore semaphore, Callable<V> callable) throws Exception {
         notNull(semaphore, "semaphore is null");
         notNull(callable, "callable is null");
 
@@ -247,44 +361,6 @@ public class ConcurrencySupport {
         } finally {
             semaphore.release();
         }
-    }
-
-    /**
-     * Execute a Runnable in a Semaphore
-     *
-     * @param semaphoreProvider semaphoreProvider
-     * @param runnable runnable
-     * @throws InterruptedException InterruptedException
-     */
-    public static void executeInSemaphore(SemaphoreProvider semaphoreProvider, Runnable runnable)
-            throws InterruptedException {
-        notNull(semaphoreProvider, "semaphoreProvider is null");
-        notNull(runnable, "runnable is null");
-
-        Semaphore semaphore = semaphoreProvider.getSemaphore();
-        notNull(semaphore, "semaphoreProvider.getSemaphore() is null");
-
-        executeInSemaphore(semaphore, runnable);
-    }
-
-    /**
-     * Execute a Callable in a Semaphore
-     *
-     * @param semaphoreProvider semaphoreProvider
-     * @param callable callable
-     * @return the callable result
-     * @param <V> the callable result type
-     * @throws Exception Exception
-     */
-    public static <V> V executeInSemaphore(
-            SemaphoreProvider semaphoreProvider, Callable<V> callable) throws Exception {
-        notNull(semaphoreProvider, "semaphoreProvider is null");
-        notNull(callable, "callable is null");
-
-        Semaphore semaphore = semaphoreProvider.getSemaphore();
-        notNull(semaphore, "semaphoreProvider.getSemaphore() is null");
-
-        return executeInSemaphore(semaphore, callable);
     }
 
     /**
@@ -302,11 +378,11 @@ public class ConcurrencySupport {
     /** Interface to implement LockReference */
     public interface LockReference {
 
-        /** Method to lock the Lock */
+        /** Lock the lock */
         void lock();
 
         /**
-         * Method to try to acquire the Lock
+         * Trys to lock the lock
          *
          * @return true if the lock was acquired, else false
          * @throws InterruptedException InterruptedException
@@ -314,7 +390,7 @@ public class ConcurrencySupport {
         boolean tryLock() throws InterruptedException;
 
         /**
-         * Method to try to acquire the Lock
+         * Trys lock the Lock
          *
          * @param timeout timeout
          * @param timeUnit timeUnit
@@ -324,7 +400,7 @@ public class ConcurrencySupport {
         boolean tryLock(long timeout, TimeUnit timeUnit) throws InterruptedException;
 
         /**
-         * Method to unlock the Lock
+         * Unlocks the lock
          *
          * @throws IllegalMonitorStateException if the current thread does not hold this lock
          */
@@ -372,6 +448,19 @@ public class ConcurrencySupport {
         public String toString() {
             return key.toString();
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            DefaultLockReference that = (DefaultLockReference) o;
+            return Objects.equals(lockManager, that.lockManager) && Objects.equals(key, that.key);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(lockManager, key);
+        }
     }
 
     /** Class to implement LockManager */
@@ -386,16 +475,6 @@ public class ConcurrencySupport {
             lockManagerLock = new ReentrantLock(true);
             lockMap = new HashMap<>();
             lockCounterMap = new HashMap<>();
-        }
-
-        public int getLockCount() {
-            lockManagerLock.lock();
-
-            try {
-                return Math.max(lockMap.size(), lockCounterMap.size());
-            } finally {
-                lockManagerLock.unlock();
-            }
         }
 
         /**

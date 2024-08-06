@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.test.interceptor.engine;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -41,10 +40,9 @@ public class EngineInterceptorTest3 implements EngineInterceptor {
             int testArgumentParallelism = classDefinition.getTestArgumentParallelism();
             classDefinition.setTestArgumentParallelism(1);
 
-            System.out.println(
-                    format(
-                            "changing test argument parallelism from [%d] to [%d]",
-                            testArgumentParallelism, classDefinition.getTestArgumentParallelism()));
+            System.out.printf(
+                    "changing test argument parallelism from [%d] to [%d]%n",
+                    testArgumentParallelism, classDefinition.getTestArgumentParallelism());
         }
     }
 
@@ -61,7 +59,7 @@ public class EngineInterceptorTest3 implements EngineInterceptor {
 
     @Verifyica.Prepare
     public static void prepare(ClassContext classContext) {
-        System.out.println(format("prepare()"));
+        System.out.println("prepare()");
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();
@@ -69,7 +67,7 @@ public class EngineInterceptorTest3 implements EngineInterceptor {
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) {
-        System.out.println(format("beforeAll(%s)", argumentContext.getTestArgument()));
+        System.out.printf("beforeAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -78,7 +76,7 @@ public class EngineInterceptorTest3 implements EngineInterceptor {
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) {
-        System.out.println(format("beforeEach(%s)", argumentContext.getTestArgument()));
+        System.out.printf("beforeEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -87,7 +85,7 @@ public class EngineInterceptorTest3 implements EngineInterceptor {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
+        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -98,7 +96,7 @@ public class EngineInterceptorTest3 implements EngineInterceptor {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
+        System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -109,7 +107,7 @@ public class EngineInterceptorTest3 implements EngineInterceptor {
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) {
-        System.out.println(format("afterEach(%s)", argumentContext.getTestArgument()));
+        System.out.printf("afterEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -118,7 +116,7 @@ public class EngineInterceptorTest3 implements EngineInterceptor {
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) {
-        System.out.println(format("afterAll(%s)", argumentContext.getTestArgument()));
+        System.out.printf("afterAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -127,7 +125,7 @@ public class EngineInterceptorTest3 implements EngineInterceptor {
 
     @Verifyica.Conclude
     public static void conclude(ClassContext classContext) {
-        System.out.println(format("conclude()"));
+        System.out.println("conclude()");
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();

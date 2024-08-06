@@ -40,7 +40,7 @@ public class ClearEngineContextStoreEngineInterceptor implements EngineIntercept
         Store store = engineInterceptorContext.getEngineContext().getStore();
 
         for (Object key : store.keySet()) {
-            Object value = store.getOptional(key);
+            Object value = store.get(key);
             if (value instanceof AutoCloseable) {
                 try {
                     ((AutoCloseable) value).close();

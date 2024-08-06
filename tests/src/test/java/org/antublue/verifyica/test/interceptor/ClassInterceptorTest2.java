@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.test.interceptor;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
@@ -50,23 +49,21 @@ public class ClassInterceptorTest2 {
 
     @Verifyica.Prepare
     public static void prepare(ClassContext classContext) throws Throwable {
-        System.out.println(format("  %s prepare()", classContext.getTestClass().getName()));
+        System.out.printf("  %s prepare()%n", classContext.getTestClass().getName());
 
         actual.add("prepare");
     }
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(
-                format("  %s beforeAll()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s beforeAll()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("beforeAll");
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(
-                format("  %s beforeEach()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s beforeEach()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("beforeEach");
     }
@@ -74,7 +71,7 @@ public class ClassInterceptorTest2 {
     @Verifyica.Test
     @Verifyica.Order(order = 0)
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("  %s test1()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s test1()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("test1");
     }
@@ -82,7 +79,7 @@ public class ClassInterceptorTest2 {
     @Verifyica.Test
     @Verifyica.Order(order = 1)
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("  %s test2()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s test2()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("test2");
     }
@@ -90,30 +87,28 @@ public class ClassInterceptorTest2 {
     @Verifyica.Test
     @Verifyica.Order(order = 2)
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("  %s test3()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s test3()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("test3");
     }
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(
-                format("  %s afterEach()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s afterEach()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("afterEach");
     }
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(
-                format("  %s afterAll()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s afterAll()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("afterAll");
     }
 
     @Verifyica.Conclude
     public static void conclude(ClassContext classContext) throws Throwable {
-        System.out.println(format("  %s conclude()", classContext.getTestClass().getName()));
+        System.out.printf("  %s conclude()%n", classContext.getTestClass().getName());
 
         actual.add("conclude");
     }
@@ -124,7 +119,7 @@ public class ClassInterceptorTest2 {
         public void preInstantiate(
                 EngineInterceptorContext engineInterceptorContext, Class<?> testClass)
                 throws Throwable {
-            System.out.println(format("%s preInstantiate()", getClass().getName()));
+            System.out.printf("%s preInstantiate()%n", getClass().getName());
 
             actual.add("preInstantiate");
         }
@@ -136,7 +131,7 @@ public class ClassInterceptorTest2 {
                 Object testInstance,
                 Throwable throwable)
                 throws Throwable {
-            System.out.println(format("%s postInstantiate()", getClass().getName()));
+            System.out.printf("%s postInstantiate()%n", getClass().getName());
 
             assertThat(throwable).isNull();
             actual.add("postInstantiate");
@@ -144,7 +139,7 @@ public class ClassInterceptorTest2 {
 
         @Override
         public void prePrepare(ClassInterceptorContext classInterceptorContext) throws Throwable {
-            System.out.println(format("%s prePrepare()", getClass().getName()));
+            System.out.printf("%s prePrepare()%n", getClass().getName());
 
             actual.add("prePrepare");
         }
@@ -153,7 +148,7 @@ public class ClassInterceptorTest2 {
         public void postPrepare(
                 ClassInterceptorContext classInterceptorContext, Throwable throwable)
                 throws Throwable {
-            System.out.println(format("%s postPrepare()", getClass().getName()));
+            System.out.printf("%s postPrepare()%n", getClass().getName());
 
             assertThat(throwable).isNull();
             actual.add("postPrepare");
@@ -162,7 +157,7 @@ public class ClassInterceptorTest2 {
         @Override
         public void preBeforeAll(ArgumentInterceptorContext argumentInterceptorContext)
                 throws Throwable {
-            System.out.println(format("%s preBeforeAll()", getClass().getName()));
+            System.out.printf("%s preBeforeAll()%n", getClass().getName());
 
             actual.add("preBeforeAll");
         }
@@ -171,7 +166,7 @@ public class ClassInterceptorTest2 {
         public void postBeforeAll(
                 ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
                 throws Throwable {
-            System.out.println(format("%s postBeforeAll()", getClass().getName()));
+            System.out.printf("%s postBeforeAll()%n", getClass().getName());
 
             assertThat(throwable).isNull();
             actual.add("postBeforeAll");
@@ -180,7 +175,7 @@ public class ClassInterceptorTest2 {
         @Override
         public void preBeforeEach(ArgumentInterceptorContext argumentInterceptorContext)
                 throws Throwable {
-            System.out.println(format("%s preBeforeEach()", getClass().getName()));
+            System.out.printf("%s preBeforeEach()%n", getClass().getName());
 
             actual.add("preBeforeEach");
         }
@@ -189,7 +184,7 @@ public class ClassInterceptorTest2 {
         public void postBeforeEach(
                 ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
                 throws Throwable {
-            System.out.println(format("%s postBeforeEach()", getClass().getName()));
+            System.out.printf("%s postBeforeEach()%n", getClass().getName());
 
             assertThat(throwable).isNull();
             actual.add("postBeforeEach");
@@ -199,7 +194,7 @@ public class ClassInterceptorTest2 {
         public void preTest(
                 ArgumentInterceptorContext argumentInterceptorContext, Method testMethod)
                 throws Throwable {
-            System.out.println(format("%s preTest()", getClass().getName()));
+            System.out.printf("%s preTest()%n", getClass().getName());
 
             actual.add("preTest");
         }
@@ -210,7 +205,7 @@ public class ClassInterceptorTest2 {
                 Method testMethod,
                 Throwable throwable)
                 throws Throwable {
-            System.out.println(format("%s postTest()", getClass().getName()));
+            System.out.printf("%s postTest()%n", getClass().getName());
 
             assertThat(throwable).isNull();
             actual.add("postTest");
@@ -219,7 +214,7 @@ public class ClassInterceptorTest2 {
         @Override
         public void preAfterEach(ArgumentInterceptorContext argumentInterceptorContext)
                 throws Throwable {
-            System.out.println(format("%s preAfterEach()", getClass().getName()));
+            System.out.printf("%s preAfterEach()%n", getClass().getName());
 
             actual.add("preAfterEach");
         }
@@ -228,7 +223,7 @@ public class ClassInterceptorTest2 {
         public void postAfterEach(
                 ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
                 throws Throwable {
-            System.out.println(format("%s postAfterEach()", getClass().getName()));
+            System.out.printf("%s postAfterEach()%n", getClass().getName());
 
             assertThat(throwable).isNull();
             actual.add("postAfterEach");
@@ -237,7 +232,7 @@ public class ClassInterceptorTest2 {
         @Override
         public void preAfterAll(ArgumentInterceptorContext argumentInterceptorContext)
                 throws Throwable {
-            System.out.println(format("%s preAfterAll()", getClass().getName()));
+            System.out.printf("%s preAfterAll()%n", getClass().getName());
 
             actual.add("preAfterAll");
         }
@@ -246,7 +241,7 @@ public class ClassInterceptorTest2 {
         public void postAfterAll(
                 ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
                 throws Throwable {
-            System.out.println(format("%s postAfterAll()", getClass().getName()));
+            System.out.printf("%s postAfterAll()%n", getClass().getName());
 
             assertThat(throwable).isNull();
             actual.add("postAfterAll");
@@ -254,7 +249,7 @@ public class ClassInterceptorTest2 {
 
         @Override
         public void preConclude(ClassInterceptorContext classInterceptorContext) throws Throwable {
-            System.out.println(format("%s preConclude()", getClass().getName()));
+            System.out.printf("%s preConclude()%n", getClass().getName());
 
             actual.add("preConclude");
         }
@@ -263,7 +258,7 @@ public class ClassInterceptorTest2 {
         public void postConclude(
                 ClassInterceptorContext classInterceptorContext, Throwable throwable)
                 throws Throwable {
-            System.out.println(format("%s postConclude()", getClass().getName()));
+            System.out.printf("%s postConclude()%n", getClass().getName());
 
             assertThat(throwable).isNull();
             actual.add("postConclude");
@@ -271,7 +266,7 @@ public class ClassInterceptorTest2 {
 
         @Override
         public void onDestroy(ClassInterceptorContext classInterceptorContext) throws Throwable {
-            System.out.println(format("%s onDestroy()", getClass().getName()));
+            System.out.printf("%s onDestroy()%n", getClass().getName());
 
             List<String> expected = new ArrayList<>();
 
@@ -320,11 +315,10 @@ public class ClassInterceptorTest2 {
             int pad = pad(expected);
 
             for (int i = 0; i < expected.size(); i++) {
-                System.out.println(
-                        format(
-                                "expected [%-" + pad + "s] actual [%-" + pad + "s]",
-                                expected.get(i),
-                                actual.get(i)));
+                System.out.printf(
+                        "expected [%-" + pad + "s] actual [%-" + pad + "s]%n",
+                        expected.get(i),
+                        actual.get(i));
 
                 assertThat(actual.get(i)).isEqualTo(expected.get(i));
             }

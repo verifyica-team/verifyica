@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.test.store;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.antublue.verifyica.api.ArgumentContext;
@@ -38,8 +37,7 @@ public class StoreTest1 {
     @Verifyica.Test
     @Verifyica.Order(order = 0)
     public void putIntoStores(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(
-                format("putIntoStores(%s)", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("putIntoStores(%s)%n", argumentContext.getTestArgument().getPayload());
 
         argumentContext.getStore().put(ARGUMENT_CONTEXT_KEY, "argument");
         argumentContext.getClassContext().getStore().put(CLASS_CONTEXT_KEY, "class");
@@ -53,8 +51,7 @@ public class StoreTest1 {
     @Verifyica.Test
     @Verifyica.Order(order = 1)
     public void getOutOfStores(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(
-                format("getOutOfStores(%s)", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("getOutOfStores(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext.getStore().get(ARGUMENT_CONTEXT_KEY, String.class))
                 .isEqualTo("argument");

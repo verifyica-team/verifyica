@@ -16,8 +16,6 @@
 
 package org.antublue.verifyica.test;
 
-import static java.lang.String.format;
-
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.Verifyica;
@@ -32,21 +30,17 @@ public class ConfigurationTest {
 
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test(%s)", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("test(%s)%n", argumentContext.getTestArgument().getPayload());
 
-        System.out.println(
-                format(
-                        "engine.version [%s]",
-                        argumentContext.getClassContext().getEngineContext().getVersion()));
+        System.out.printf(
+                "engine.version [%s]%n",
+                argumentContext.getClassContext().getEngineContext().getVersion());
 
         Configuration configuration =
                 argumentContext.getClassContext().getEngineContext().getConfiguration();
 
         configuration
                 .keySet()
-                .forEach(
-                        key ->
-                                System.out.println(
-                                        format("  [%s] = [%s]", key, configuration.get(key))));
+                .forEach(key -> System.out.printf("  [%s] = [%s]%n", key, configuration.get(key)));
     }
 }

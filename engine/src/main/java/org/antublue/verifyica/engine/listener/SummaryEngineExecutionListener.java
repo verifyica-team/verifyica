@@ -468,7 +468,6 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
      */
     private static void println(Object object) {
         System.out.println(object);
-        System.out.flush();
     }
 
     /**

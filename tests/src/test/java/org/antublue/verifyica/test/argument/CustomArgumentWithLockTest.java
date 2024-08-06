@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.test.argument;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public class CustomArgumentWithLockTest {
 
     @Verifyica.Prepare
     public static void prepare(ClassContext classContext) {
-        System.out.println(format("prepare()"));
+        System.out.println("prepare()");
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();
@@ -56,7 +55,7 @@ public class CustomArgumentWithLockTest {
     public void beforeAll(ArgumentContext argumentContext) {
         argumentContext.getTestArgument(CustomArgument.class).getPayload().lock();
 
-        System.out.println(format("beforeAll(%s)", argumentContext.getTestArgument()));
+        System.out.printf("beforeAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -65,7 +64,7 @@ public class CustomArgumentWithLockTest {
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) {
-        System.out.println(format("beforeEach(%s)", argumentContext.getTestArgument()));
+        System.out.printf("beforeEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -74,7 +73,7 @@ public class CustomArgumentWithLockTest {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
+        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -85,7 +84,7 @@ public class CustomArgumentWithLockTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test2(%s)", argumentContext.getTestArgument()));
+        System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -96,7 +95,7 @@ public class CustomArgumentWithLockTest {
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) {
-        System.out.println(format("afterEach(%s)", argumentContext.getTestArgument()));
+        System.out.printf("afterEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -105,7 +104,7 @@ public class CustomArgumentWithLockTest {
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("afterAll(%s)", argumentContext.getTestArgument()));
+        System.out.printf("afterAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -116,7 +115,7 @@ public class CustomArgumentWithLockTest {
 
     @Verifyica.Conclude
     public static void conclude(ClassContext classContext) {
-        System.out.println(format("conclude()"));
+        System.out.println("conclude()");
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();

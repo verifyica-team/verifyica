@@ -16,7 +16,7 @@
 
 package org.antublue.verifyica.test.interceptor.engine;
 
-import static java.lang.String.format;
+import static org.antublue.verifyica.api.Fail.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
     public void onTestDiscovery(
             EngineInterceptorContext engineInterceptorContext,
             List<ClassDefinition> classDefinitions) {
-        System.out.println(format("%s onTestDiscovery()", getClass().getName()));
+        System.out.printf("%s onTestDiscovery()%n", getClass().getName());
 
         for (ClassDefinition classDefinition : classDefinitions) {
             if (classDefinition.getTestClass() == EngineInterceptorTest2.class) {
@@ -54,7 +54,7 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
     @Verifyica.Test
     @Verifyica.Order(order = 0)
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test1(%s)", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("test1(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -85,15 +85,15 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
     @Verifyica.Test
     @Verifyica.Order(order = 1)
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test2(%s)", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("test2(%s)%n", argumentContext.getTestArgument().getPayload());
 
-        throw new RuntimeException("Should not execute... filtered by interceptor");
+        fail("Should not execute... filtered by interceptor");
     }
 
     @Verifyica.Test
     @Verifyica.Order(order = 2)
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test3(%s)", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("test3(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -123,7 +123,7 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
 
     @Verifyica.Test
     public void test4(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test4(%s)", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("test4(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();

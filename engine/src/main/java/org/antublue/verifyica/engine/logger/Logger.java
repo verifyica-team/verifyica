@@ -260,6 +260,12 @@ public class Logger {
         }
     }
 
+    /** Method to flush */
+    public void flush() {
+        System.err.flush();
+        System.out.flush();
+    }
+
     /**
      * Method to log a message
      *
@@ -276,16 +282,15 @@ public class Logger {
         }
 
         printStream.println(
-                dateTime
-                        + " | "
-                        + Thread.currentThread().getName()
-                        + " | "
-                        + level.toString()
-                        + " | "
-                        + name
-                        + " | "
-                        + format(format, objects));
-
-        printStream.flush();
+                new StringBuilder(80)
+                        .append(dateTime)
+                        .append(" | ")
+                        .append(Thread.currentThread().getName())
+                        .append(" | ")
+                        .append(level.toString())
+                        .append(" | ")
+                        .append(name)
+                        .append(" | ")
+                        .append(format(format, objects)));
     }
 }

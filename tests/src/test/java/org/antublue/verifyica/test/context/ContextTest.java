@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.test.context;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public class ContextTest {
 
     @Verifyica.Prepare
     public static void prepare(ClassContext classContext) {
-        System.out.println(format("prepare()"));
+        System.out.println("prepare()");
 
         assertThat(classContext.getClass().getSimpleName()).startsWith("Immutable");
         assertThat(classContext.getEngineContext().getClass().getSimpleName())
@@ -64,7 +63,7 @@ public class ContextTest {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test1(%s)", argumentContext.getTestArgument().getName()));
+        System.out.printf("test1(%s)%n", argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -77,7 +76,7 @@ public class ContextTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
-        System.out.println(format("test2(%s)", argumentContext.getTestArgument().getName()));
+        System.out.printf("test2(%s)%n", argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext.getClass().getSimpleName()).startsWith("Immutable");
         assertThat(argumentContext.getClassContext().getClass().getSimpleName())

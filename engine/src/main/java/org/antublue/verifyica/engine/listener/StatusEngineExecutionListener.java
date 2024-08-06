@@ -206,7 +206,6 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 ansiColorStringBuilder.color(AnsiColor.TEXT_RESET);
 
                 System.out.println(ansiColorStringBuilder);
-                System.out.flush();
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
             }
@@ -273,7 +272,6 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 ansiColorStringBuilder.color(AnsiColor.TEXT_RESET);
 
                 System.out.println(ansiColorStringBuilder);
-                System.out.flush();
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
             }
@@ -365,7 +363,6 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 ansiColorStringBuilder.color(AnsiColor.TEXT_RESET);
 
                 System.out.println(ansiColorStringBuilder);
-                System.out.flush();
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
             }

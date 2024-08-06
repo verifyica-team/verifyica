@@ -16,8 +16,6 @@
 
 package org.antublue.verifyica.test.interceptor;
 
-import static java.lang.String.format;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import org.antublue.verifyica.api.ArgumentContext;
@@ -45,53 +43,49 @@ public class ClassInterceptorTest1 {
 
     @Verifyica.Prepare
     public static void prepare(ClassContext classContext) throws Throwable {
-        System.out.println(format("  %s prepare()", classContext.getTestClass().getName()));
+        System.out.printf("  %s prepare()%n", classContext.getTestClass().getName());
     }
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(
-                format("  %s beforeAll()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s beforeAll()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(
-                format("  %s beforeEach()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s beforeEach()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test
     @Verifyica.Order(order = 0)
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("  %s test1()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s test1()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test
     @Verifyica.Order(order = 1)
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("  %s test2()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s test2()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test
     @Verifyica.Order(order = 2)
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("  %s test3()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s test3()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(
-                format("  %s afterEach()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s afterEach()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(
-                format("  %s afterAll()", argumentContext.getTestArgument().getPayload()));
+        System.out.printf("  %s afterAll()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Conclude
     public static void conclude(ClassContext classContext) throws Throwable {
-        System.out.println(format("  %s conclude()", classContext.getTestClass().getName()));
+        System.out.printf("  %s conclude()%n", classContext.getTestClass().getName());
     }
 }

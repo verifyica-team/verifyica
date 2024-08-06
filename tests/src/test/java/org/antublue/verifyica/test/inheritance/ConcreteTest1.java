@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.test.inheritance;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public class ConcreteTest1 extends AbstractTest1 {
 
     @Verifyica.Prepare
     public static void prepare2(ClassContext classContext) {
-        System.out.println(format("    ConcreteTest1 prepare2()"));
+        System.out.println("    ConcreteTest1 prepare2()");
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();
@@ -50,8 +49,7 @@ public class ConcreteTest1 extends AbstractTest1 {
 
     @Verifyica.BeforeAll
     public void beforeAll2(ArgumentContext argumentContext) {
-        System.out.println(
-                format("    ConcreteTest1 beforeAll2(%s)", argumentContext.getTestArgument()));
+        System.out.printf("    ConcreteTest1 beforeAll2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -60,8 +58,7 @@ public class ConcreteTest1 extends AbstractTest1 {
 
     @Verifyica.BeforeEach
     public void beforeEach2(ArgumentContext argumentContext) {
-        System.out.println(
-                format("    ConcreteTest1 beforeEach2(%s)", argumentContext.getTestArgument()));
+        System.out.printf("    ConcreteTest1 beforeEach2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -70,8 +67,7 @@ public class ConcreteTest1 extends AbstractTest1 {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
-        System.out.println(
-                format("    ConcreteTest1 test2(%s)", argumentContext.getTestArgument()));
+        System.out.printf("    ConcreteTest1 test2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -80,8 +76,7 @@ public class ConcreteTest1 extends AbstractTest1 {
 
     @Verifyica.AfterEach
     public void afterEach2(ArgumentContext argumentContext) {
-        System.out.println(
-                format("    ConcreteTest1 afterEach2(%s)", argumentContext.getTestArgument()));
+        System.out.printf("    ConcreteTest1 afterEach2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -90,8 +85,7 @@ public class ConcreteTest1 extends AbstractTest1 {
 
     @Verifyica.AfterAll
     public void afterAll2(ArgumentContext argumentContext) {
-        System.out.println(
-                format("    ConcreteTest1 afterAll2(%s)", argumentContext.getTestArgument()));
+        System.out.printf("    ConcreteTest1 afterAll2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -100,7 +94,7 @@ public class ConcreteTest1 extends AbstractTest1 {
 
     @Verifyica.Conclude
     public static void conclude2(ClassContext classContext) {
-        System.out.println(format("    ConcreteTest1 conclude2()"));
+        System.out.println("    ConcreteTest1 conclude2()");
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();

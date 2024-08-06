@@ -16,19 +16,21 @@
 
 package org.antublue.verifyica.test.concurrency;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.Callable;
+import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 /** Example test */
-public class LockTest7 {
+public class EngineContextStoreSemaphoreTest {
+
+    private static final String SEMAPHORE_KEY =
+            EngineContextStoreSemaphoreTest.class.getName() + ".semaphore";
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -43,7 +45,7 @@ public class LockTest7 {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
+        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -52,34 +54,34 @@ public class LockTest7 {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        ConcurrencySupport.executeInLock(
-                argumentContext.getClassContext(),
-                (Callable<Void>)
-                        () -> {
-                            System.out.println(
-                                    format("test2(%s) locked", argumentContext.getTestArgument()));
+        Semaphore semaphore =
+                argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .computeIfAbsent(SEMAPHORE_KEY, k -> new Semaphore(2), Semaphore.class);
 
-                            System.out.println(
-                                    format("test2(%s)", argumentContext.getTestArgument()));
+        ConcurrencySupport.call(
+                semaphore,
+                () -> {
+                    System.out.printf("test2(%s) acquired%n", argumentContext.getTestArgument());
+                    System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
-                            assertThat(argumentContext).isNotNull();
-                            assertThat(argumentContext.getStore()).isNotNull();
-                            assertThat(argumentContext.getTestArgument()).isNotNull();
+                    assertThat(argumentContext).isNotNull();
+                    assertThat(argumentContext.getStore()).isNotNull();
+                    assertThat(argumentContext.getTestArgument()).isNotNull();
 
-                            Thread.sleep(1000);
+                    Thread.sleep(1000);
 
-                            System.out.println(
-                                    format(
-                                            "test2(%s) unlocked",
-                                            argumentContext.getTestArgument()));
+                    System.out.printf("test2(%s) released%n", argumentContext.getTestArgument());
 
-                            return null;
-                        });
+                    return null;
+                });
     }
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
+        System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();

@@ -31,6 +31,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import org.antublue.verifyica.api.EngineContext;
+import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultClassContext;

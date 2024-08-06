@@ -16,12 +16,10 @@
 
 package org.antublue.verifyica.test.concurrency;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
@@ -29,7 +27,10 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 /** Example test */
-public class StoreSemaphoreTest {
+public class ClassContextStoreSemaphoreTest {
+
+    private static final String SEMAPHORE_KEY =
+            ClassContextStoreSemaphoreTest.class.getName() + ".semaphore";
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -44,7 +45,7 @@ public class StoreSemaphoreTest {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test1(%s)", argumentContext.getTestArgument()));
+        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -53,55 +54,36 @@ public class StoreSemaphoreTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Semaphore semaphore = getSemaphore(argumentContext);
+        Semaphore semaphore =
+                argumentContext
+                        .getClassContext()
+                        .getStore()
+                        .computeIfAbsent(SEMAPHORE_KEY, k -> new Semaphore(2), Semaphore.class);
 
-        ConcurrencySupport.executeInSemaphore(
+        ConcurrencySupport.call(
                 semaphore,
-                (Callable<Void>)
-                        () -> {
-                            System.out.println(
-                                    format(
-                                            "test2(%s) acquired",
-                                            argumentContext.getTestArgument()));
+                () -> {
+                    System.out.printf("test2(%s) acquired%n", argumentContext.getTestArgument());
+                    System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
-                            System.out.println(
-                                    format("test2(%s)", argumentContext.getTestArgument()));
+                    assertThat(argumentContext).isNotNull();
+                    assertThat(argumentContext.getStore()).isNotNull();
+                    assertThat(argumentContext.getTestArgument()).isNotNull();
 
-                            assertThat(argumentContext).isNotNull();
-                            assertThat(argumentContext.getStore()).isNotNull();
-                            assertThat(argumentContext.getTestArgument()).isNotNull();
+                    Thread.sleep(1000);
 
-                            Thread.sleep(1000);
+                    System.out.printf("test2(%s) released%n", argumentContext.getTestArgument());
 
-                            System.out.println(
-                                    format(
-                                            "test2(%s) released",
-                                            argumentContext.getTestArgument()));
-
-                            return null;
-                        });
+                    return null;
+                });
     }
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.println(format("test3(%s)", argumentContext.getTestArgument()));
+        System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
-    }
-
-    /**
-     * Method to get or create a class level Semaphore
-     *
-     * @param argumentContext argumentContext
-     * @return a Semaphore
-     * @throws Throwable Throwable
-     */
-    private Semaphore getSemaphore(ArgumentContext argumentContext) throws Throwable {
-        return argumentContext
-                .getClassContext()
-                .getStore()
-                .computeIfAbsent("semaphore", key -> new Semaphore(2), Semaphore.class);
     }
 }

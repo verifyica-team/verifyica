@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.test.inheritance;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.antublue.verifyica.api.ArgumentContext;
@@ -28,7 +27,7 @@ public abstract class AbstractTest2 {
     @Verifyica.Test
     @Verifyica.Order(order = 1)
     public final void test1(ArgumentContext argumentContext) {
-        System.out.println(format("AbstractTest2 test1(%s)", argumentContext.getTestArgument()));
+        System.out.printf("AbstractTest2 test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();

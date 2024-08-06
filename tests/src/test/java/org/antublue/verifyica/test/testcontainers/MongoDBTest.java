@@ -91,13 +91,14 @@ public class MongoDBTest {
             collection.insertOne(document);
         }
 
-        System.out.format("name [%s] inserted", name).println();
+        info("name [%s] inserted", name);
     }
 
     @Verifyica.Test
     @Verifyica.Order(order = 2)
     public void testQuery(ArgumentContext argumentContext) {
         info("testing testQuery() ...");
+
         String name = argumentContext.getStore().getOptional("name", String.class).get();
         info("name [%s]", name);
 

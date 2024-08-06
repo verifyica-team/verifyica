@@ -100,7 +100,7 @@ public class KafkaTest {
             producer.send(producerRecord).get();
         }
 
-        System.out.format("message [%s] produced", message).println();
+        info("message [%s] produced", message);
     }
 
     @Verifyica.Test

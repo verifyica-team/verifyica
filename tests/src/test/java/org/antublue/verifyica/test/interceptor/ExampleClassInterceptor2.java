@@ -16,8 +16,6 @@
 
 package org.antublue.verifyica.test.interceptor;
 
-import static java.lang.String.format;
-
 import java.lang.reflect.Method;
 import org.antublue.verifyica.api.interceptor.ArgumentInterceptorContext;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
@@ -29,14 +27,14 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
 
     /** Constructor */
     public ExampleClassInterceptor2() {
-        System.out.println(format("%s constructor", getClass().getName()));
+        System.out.printf("%s constructor%n", getClass().getName());
     }
 
     @Override
     public void preInstantiate(
             EngineInterceptorContext engineInterceptorContext, Class<?> testClass)
             throws Throwable {
-        System.out.println(format("%s preInstantiate()", getClass().getName()));
+        System.out.printf("%s preInstantiate()%n", getClass().getName());
     }
 
     @Override
@@ -46,7 +44,7 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
             Object testInstance,
             Throwable throwable)
             throws Throwable {
-        System.out.println(format("%s postInstantiate()", getClass().getName()));
+        System.out.printf("%s postInstantiate()%n", getClass().getName());
         if (throwable != null) {
             throw throwable;
         }
@@ -54,21 +52,19 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
 
     @Override
     public void prePrepare(ClassInterceptorContext classInterceptorContext) throws Throwable {
-        System.out.println(
-                format(
-                        "%s prePrepare(%s)",
-                        getClass().getName(),
-                        classInterceptorContext.getClassContext().getTestClass().getName()));
+        System.out.printf(
+                "%s prePrepare(%s)%n",
+                getClass().getName(),
+                classInterceptorContext.getClassContext().getTestClass().getName());
     }
 
     @Override
     public void postPrepare(ClassInterceptorContext classInterceptorContext, Throwable throwable)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s postPrepare(%s)",
-                        getClass().getName(),
-                        classInterceptorContext.getClassContext().getTestClass().getName()));
+        System.out.printf(
+                "%s postPrepare(%s)%n",
+                getClass().getName(),
+                classInterceptorContext.getClassContext().getTestClass().getName());
         if (throwable != null) {
             throw throwable;
         }
@@ -77,38 +73,30 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
     @Override
     public void preBeforeAll(ArgumentInterceptorContext argumentInterceptorContext)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s preBeforeAll(%s %s)",
-                        getClass().getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getClassContext()
-                                .getTestClass()
-                                .getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getTestArgument()
-                                .getName()));
+        System.out.printf(
+                "%s preBeforeAll(%s %s)%n",
+                getClass().getName(),
+                argumentInterceptorContext
+                        .getArgumentContext()
+                        .getClassContext()
+                        .getTestClass()
+                        .getName(),
+                argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
     }
 
     @Override
     public void postBeforeAll(
             ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s postBeforeAll(%s %s)",
-                        getClass().getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getClassContext()
-                                .getTestClass()
-                                .getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getTestArgument()
-                                .getName()));
+        System.out.printf(
+                "%s postBeforeAll(%s %s)%n",
+                getClass().getName(),
+                argumentInterceptorContext
+                        .getArgumentContext()
+                        .getClassContext()
+                        .getTestClass()
+                        .getName(),
+                argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
         if (throwable != null) {
             throw throwable;
         }
@@ -117,38 +105,30 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
     @Override
     public void preBeforeEach(ArgumentInterceptorContext argumentInterceptorContext)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s preBeforeEach(%s %s)",
-                        getClass().getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getClassContext()
-                                .getTestClass()
-                                .getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getTestArgument()
-                                .getName()));
+        System.out.printf(
+                "%s preBeforeEach(%s %s)%n",
+                getClass().getName(),
+                argumentInterceptorContext
+                        .getArgumentContext()
+                        .getClassContext()
+                        .getTestClass()
+                        .getName(),
+                argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
     }
 
     @Override
     public void postBeforeEach(
             ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s postBeforeEach(%s %s)",
-                        getClass().getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getClassContext()
-                                .getTestClass()
-                                .getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getTestArgument()
-                                .getName()));
+        System.out.printf(
+                "%s postBeforeEach(%s %s)%n",
+                getClass().getName(),
+                argumentInterceptorContext
+                        .getArgumentContext()
+                        .getClassContext()
+                        .getTestClass()
+                        .getName(),
+                argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
         if (throwable != null) {
             throw throwable;
         }
@@ -157,17 +137,16 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
     @Override
     public void preTest(ArgumentInterceptorContext argumentInterceptorContext, Method testMethod)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s preTest(%s %s %s)",
-                        getClass().getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getClassContext()
-                                .getTestClass()
-                                .getName(),
-                        argumentInterceptorContext.getArgumentContext().getTestArgument().getName(),
-                        testMethod.getName()));
+        System.out.printf(
+                "%s preTest(%s %s %s)%n",
+                getClass().getName(),
+                argumentInterceptorContext
+                        .getArgumentContext()
+                        .getClassContext()
+                        .getTestClass()
+                        .getName(),
+                argumentInterceptorContext.getArgumentContext().getTestArgument().getName(),
+                testMethod.getName());
     }
 
     @Override
@@ -176,17 +155,16 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
             Method testMethod,
             Throwable throwable)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s postTest(%s %s %s)",
-                        getClass().getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getClassContext()
-                                .getTestClass()
-                                .getName(),
-                        argumentInterceptorContext.getArgumentContext().getTestArgument().getName(),
-                        testMethod.getName()));
+        System.out.printf(
+                "%s postTest(%s %s %s)%n",
+                getClass().getName(),
+                argumentInterceptorContext
+                        .getArgumentContext()
+                        .getClassContext()
+                        .getTestClass()
+                        .getName(),
+                argumentInterceptorContext.getArgumentContext().getTestArgument().getName(),
+                testMethod.getName());
 
         if (throwable != null) {
             throw throwable;
@@ -196,38 +174,30 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
     @Override
     public void preAfterEach(ArgumentInterceptorContext argumentInterceptorContext)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s preAfterEach(%s %s)",
-                        getClass().getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getClassContext()
-                                .getTestClass()
-                                .getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getTestArgument()
-                                .getName()));
+        System.out.printf(
+                "%s preAfterEach(%s %s)%n",
+                getClass().getName(),
+                argumentInterceptorContext
+                        .getArgumentContext()
+                        .getClassContext()
+                        .getTestClass()
+                        .getName(),
+                argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
     }
 
     @Override
     public void postAfterEach(
             ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s postAfterEach(%s %s)",
-                        getClass().getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getClassContext()
-                                .getTestClass()
-                                .getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getTestArgument()
-                                .getName()));
+        System.out.printf(
+                "%s postAfterEach(%s %s)%n",
+                getClass().getName(),
+                argumentInterceptorContext
+                        .getArgumentContext()
+                        .getClassContext()
+                        .getTestClass()
+                        .getName(),
+                argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
         if (throwable != null) {
             throw throwable;
         }
@@ -236,38 +206,30 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
     @Override
     public void preAfterAll(ArgumentInterceptorContext argumentInterceptorContext)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s preAfterAll(%s %s)",
-                        getClass().getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getClassContext()
-                                .getTestClass()
-                                .getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getTestArgument()
-                                .getName()));
+        System.out.printf(
+                "%s preAfterAll(%s %s)%n",
+                getClass().getName(),
+                argumentInterceptorContext
+                        .getArgumentContext()
+                        .getClassContext()
+                        .getTestClass()
+                        .getName(),
+                argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
     }
 
     @Override
     public void postAfterAll(
             ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s postAfterAll(%s %s)",
-                        getClass().getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getClassContext()
-                                .getTestClass()
-                                .getName(),
-                        argumentInterceptorContext
-                                .getArgumentContext()
-                                .getTestArgument()
-                                .getName()));
+        System.out.printf(
+                "%s postAfterAll(%s %s)%n",
+                getClass().getName(),
+                argumentInterceptorContext
+                        .getArgumentContext()
+                        .getClassContext()
+                        .getTestClass()
+                        .getName(),
+                argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
         if (throwable != null) {
             throw throwable;
         }
@@ -275,21 +237,19 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
 
     @Override
     public void preConclude(ClassInterceptorContext classInterceptorContext) throws Throwable {
-        System.out.println(
-                format(
-                        "%s preConclude(%s)",
-                        getClass().getName(),
-                        classInterceptorContext.getClassContext().getTestClass().getName()));
+        System.out.printf(
+                "%s preConclude(%s)%n",
+                getClass().getName(),
+                classInterceptorContext.getClassContext().getTestClass().getName());
     }
 
     @Override
     public void postConclude(ClassInterceptorContext classInterceptorContext, Throwable throwable)
             throws Throwable {
-        System.out.println(
-                format(
-                        "%s postConclude(%s)",
-                        getClass().getName(),
-                        classInterceptorContext.getClassContext().getTestClass().getName()));
+        System.out.printf(
+                "%s postConclude(%s)%n",
+                getClass().getName(),
+                classInterceptorContext.getClassContext().getTestClass().getName());
         if (throwable != null) {
             throw throwable;
         }
@@ -297,6 +257,6 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
 
     @Override
     public void onDestroy(ClassInterceptorContext classInterceptorContext) throws Throwable {
-        System.out.println(format("%s onDestroy()", getClass().getName()));
+        System.out.printf("%s onDestroy()%n", getClass().getName());
     }
 }

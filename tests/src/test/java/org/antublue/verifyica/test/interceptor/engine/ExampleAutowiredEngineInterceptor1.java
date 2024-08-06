@@ -16,8 +16,6 @@
 
 package org.antublue.verifyica.test.interceptor.engine;
 
-import static java.lang.String.format;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +36,7 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
 
     @Override
     public void onInitialize(EngineInterceptorContext engineInterceptorContext) {
-        System.out.println(format("%s onInitialize()", getClass().getName()));
+        System.out.printf("%s onInitialize()%n", getClass().getName());
 
         // Add a global string to the EngineContext Store for EngineInterceptorTest
         engineInterceptorContext.getEngineContext().getStore().put(KEY, VALUE);
@@ -48,7 +46,7 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
     public void onTestDiscovery(
             EngineInterceptorContext engineInterceptorContext,
             List<ClassDefinition> classDefinitions) {
-        System.out.println(format("%s onTestDiscovery()", getClass().getName()));
+        System.out.printf("%s onTestDiscovery()%n", getClass().getName());
 
         for (ClassDefinition classDefinition : classDefinitions) {
             if (classDefinition
@@ -70,12 +68,12 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
 
     @Override
     public void preExecute(EngineInterceptorContext engineInterceptorContext) {
-        System.out.println(format("%s preExecute()", getClass().getName()));
+        System.out.printf("%s preExecute()%n", getClass().getName());
     }
 
     @Override
     public void postExecute(EngineInterceptorContext engineInterceptorContext) {
-        System.out.println(format("%s postExecute()", getClass().getName()));
+        System.out.printf("%s postExecute()%n", getClass().getName());
     }
 
     /**
