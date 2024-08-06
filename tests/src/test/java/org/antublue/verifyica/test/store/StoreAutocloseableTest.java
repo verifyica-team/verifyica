@@ -142,9 +142,7 @@ public class StoreAutocloseableTest {
 
         @Override
         public String toString() {
-            return "CustomAutoCloseable{" +
-                    "name='" + name + '\'' +
-                    '}';
+            return "CustomAutoCloseable{" + "name='" + name + '\'' + '}';
         }
     }
 }
