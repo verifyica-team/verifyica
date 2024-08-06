@@ -52,6 +52,7 @@ for (TestArgument testArgument : TestArguments) {
 - Test class tag filtering
 - Test class interceptors (extensions)
 - Engine interceptors (extensions)
+- Class / argument parallelism constraints
 - Store cleanup of `AutoClosable` objects
 - [IntelliJ](https://www.jetbrains.com/idea/) support
 

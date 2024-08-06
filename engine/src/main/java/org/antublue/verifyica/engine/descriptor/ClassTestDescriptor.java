@@ -16,6 +16,8 @@
 
 package org.antublue.verifyica.engine.descriptor;
 
+import static java.lang.String.format;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +29,14 @@ import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.common.ExecutorServiceFactory;
+import org.antublue.verifyica.engine.common.SemaphoreCallable;
 import org.antublue.verifyica.engine.common.StateTracker;
+import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.ImmutableClassContext;
+import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -48,6 +54,13 @@ import org.junit.platform.engine.support.descriptor.ClassSource;
 public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptor.class);
+    private static final ExecutorService EXECUTOR_SERVICE;
+
+    static {
+        EXECUTOR_SERVICE =
+                ExecutorServiceFactory.getInstance()
+                        .createExecutorService(getEngineArgumentParallelism());
+    }
 
     private final Class<?> testClass;
     private final int parallelism;
@@ -319,119 +332,65 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         ArgumentSupport.notNull(defaultClassContext, "defaultClassContext is null");
         ArgumentSupport.notNull(defaultClassContext.getTestInstance(), "testInstance is null");
 
-        ExecutorService executorService = null;
-
         List<Throwable> throwables = new ArrayList<>();
 
-        try {
-            executorService = ExecutorServiceFactory.getInstance().newExecutorService(parallelism);
+        List<Future<Throwable>> futures = new ArrayList<>();
 
-            if (parallelism > 1) {
-                final Semaphore semaphore =
-                        ExecutorServiceFactory.usingVirtualThreads()
-                                ? new Semaphore(parallelism)
-                                : null;
+        String threadName = Thread.currentThread().getName();
 
-                final String baseThreadName = Thread.currentThread().getName();
+        Semaphore semaphore = new Semaphore(parallelism);
 
-                List<Future<Throwable>> futures = new ArrayList<>();
+        for (TestDescriptor testDescriptor : getChildren()) {
+            if (testDescriptor instanceof ExecutableTestDescriptor) {
+                ExecutableTestDescriptor executableTestDescriptor =
+                        (ExecutableTestDescriptor) testDescriptor;
 
-                for (TestDescriptor testDescriptor : getChildren()) {
-                    if (testDescriptor instanceof ExecutableTestDescriptor) {
-                        ExecutableTestDescriptor executableTestDescriptor =
-                                (ExecutableTestDescriptor) testDescriptor;
+                DefaultArgumentContext defaultArgumentContext =
+                        new DefaultArgumentContext(defaultClassContext);
 
-                        DefaultArgumentContext defaultArgumentContext =
-                                new DefaultArgumentContext(defaultClassContext);
+                defaultArgumentContext.setTestInstance(defaultClassContext.getTestInstance());
 
-                        defaultArgumentContext.setTestInstance(
-                                defaultClassContext.getTestInstance());
-
-                        futures.add(
-                                executorService.submit(
+                futures.add(
+                        EXECUTOR_SERVICE.submit(
+                                new SemaphoreCallable<>(
+                                        semaphore,
                                         () -> {
                                             Throwable throwable = null;
 
-                                            Thread.currentThread()
-                                                    .setName(
-                                                            baseThreadName
-                                                                    + "/"
-                                                                    + HashSupport.alphaNumericHash(
-                                                                            4));
-
                                             try {
-                                                if (semaphore != null) {
-                                                    semaphore.acquire();
-                                                }
+                                                Thread.currentThread()
+                                                        .setName(
+                                                                threadName
+                                                                        + "/"
+                                                                        + HashSupport
+                                                                                .alphaNumericHash(
+                                                                                        4));
 
-                                                try {
-                                                    executableTestDescriptor.execute(
-                                                            executionRequest,
-                                                            defaultArgumentContext);
-                                                } catch (Throwable t) {
-                                                    throwable = t;
-                                                    t.printStackTrace(System.err);
-                                                } finally {
-                                                    if (semaphore != null) {
-                                                        semaphore.release();
-                                                    }
-                                                }
-                                            } catch (Throwable outerT) {
-                                                throwable = outerT;
-                                                outerT.printStackTrace(System.err);
+                                                executableTestDescriptor.execute(
+                                                        executionRequest, defaultArgumentContext);
+                                            } catch (Throwable t) {
+                                                throwable = t;
+                                                t.printStackTrace(System.err);
+                                            } finally {
+                                                Thread.currentThread().setName(threadName);
                                             }
 
                                             return throwable;
-                                        }));
-                    }
-                }
-
-                futures.forEach(
-                        future -> {
-                            try {
-                                Throwable throwable = future.get();
-                                if (throwable != null) {
-                                    throwables.add(throwable);
-                                }
-                            } catch (Throwable t) {
-                                t.printStackTrace(System.err);
-                            }
-                        });
-            } else {
-                // Run directly, but mimic thread naming
-                String threadName = Thread.currentThread().getName();
-
-                try {
-                    for (TestDescriptor testDescriptor : getChildren()) {
-                        if (testDescriptor instanceof ExecutableTestDescriptor) {
-                            Thread.currentThread()
-                                    .setName(threadName + "/" + HashSupport.alphaNumericHash(4));
-
-                            ExecutableTestDescriptor executableTestDescriptor =
-                                    (ExecutableTestDescriptor) testDescriptor;
-
-                            DefaultArgumentContext defaultArgumentContext =
-                                    new DefaultArgumentContext(defaultClassContext);
-
-                            defaultArgumentContext.setTestInstance(
-                                    defaultClassContext.getTestInstance());
-
-                            executableTestDescriptor.execute(
-                                    executionRequest, defaultArgumentContext);
-                        }
-                    }
-                } catch (Throwable t) {
-                    throwables.add(t);
-                    t.printStackTrace(System.err);
-                } finally {
-                    Thread.currentThread().setName(threadName);
-                }
-            }
-        } finally {
-            if (executorService != null) {
-                executorService.shutdown();
+                                        })));
             }
         }
+
+        futures.forEach(
+                future -> {
+                    try {
+                        Throwable throwable = future.get();
+                        if (throwable != null) {
+                            throwables.add(throwable);
+                        }
+                    } catch (Throwable t) {
+                        t.printStackTrace(System.err);
+                    }
+                });
 
         throwables.removeIf(Objects::isNull);
         if (!throwables.isEmpty()) {
@@ -488,5 +447,43 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         LOGGER.trace("destroyTestInstance() testClass [%s]", testClass.getName());
 
         ClassInterceptorRegistry.getInstance().onDestroy(defaultClassContext);
+    }
+
+    /**
+     * Method to get the engine argument parallelism value
+     *
+     * @return the engine parallelism value
+     */
+    private static int getEngineArgumentParallelism() {
+        int engineArgumentParallelism =
+                DefaultConfiguration.getInstance()
+                        .getOptional(Constants.ENGINE_ARGUMENT_PARALLELISM)
+                        .map(
+                                value -> {
+                                    int intValue;
+                                    try {
+                                        intValue = Integer.parseInt(value);
+                                        if (intValue < 1) {
+                                            throw new EngineException(
+                                                    format(
+                                                            "Invalid %s value [%d]",
+                                                            Constants.ENGINE_ARGUMENT_PARALLELISM,
+                                                            intValue));
+                                        }
+                                        return intValue;
+                                    } catch (NumberFormatException e) {
+                                        throw new EngineException(
+                                                format(
+                                                        "Invalid %s value [%s]",
+                                                        Constants.ENGINE_ARGUMENT_PARALLELISM,
+                                                        value),
+                                                e);
+                                    }
+                                })
+                        .orElse(Runtime.getRuntime().availableProcessors());
+
+        LOGGER.trace("getEngineArgumentParallelism() [%s]", engineArgumentParallelism);
+
+        return engineArgumentParallelism;
     }
 }

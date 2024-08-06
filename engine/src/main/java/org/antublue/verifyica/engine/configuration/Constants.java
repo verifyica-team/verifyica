@@ -25,22 +25,10 @@ public final class Constants {
     public static final String TRUE = "true";
 
     /** Configuration constant */
-    public static final String FALSE = "false";
-
-    /** Configuration constant */
     public static final String PREFIX = "verifyica";
 
     /** Configuration constant */
     public static final String ENGINE = PREFIX + ".engine";
-
-    /** Configuration constant */
-    public static final String ENGINE_VERSION = ENGINE + ".version";
-
-    /** Configuration constant */
-    public static final String ENGINE_PARALLELISM = ENGINE + ".parallelism";
-
-    /** Configuration constant */
-    public static final String ENGINE_EXECUTOR_TYPE = ENGINE + ".executor";
 
     /** Configuration constant */
     public static final String ENGINE_LOGGER_REGEX = ENGINE + ".logger.regex";
@@ -68,6 +56,18 @@ public final class Constants {
     /** Configuration constant */
     public static final String ENGINE_FILTER_DEFINITIONS_FILENAME =
             ENGINE_FILTER_DEFINITIONS + ".filename";
+
+    /** Configuration constant */
+    public static final String ENGINE_CLASS = ENGINE + ".class";
+
+    /** Configuration constant */
+    public static final String ENGINE_CLASS_PARALLELISM = ENGINE_CLASS + ".parallelism";
+
+    /** Configuration constant */
+    public static final String ENGINE_ARGUMENT = ENGINE + ".argument";
+
+    /** Configuration constant */
+    public static final String ENGINE_ARGUMENT_PARALLELISM = ENGINE_ARGUMENT + ".parallelism";
 
     /** Configuration constant */
     public static final String MAVEN_PLUGIN = PREFIX + ".maven.plugin";
