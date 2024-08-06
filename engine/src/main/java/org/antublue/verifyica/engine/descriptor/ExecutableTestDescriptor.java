@@ -20,7 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
 import org.antublue.verifyica.api.Context;
-import org.antublue.verifyica.engine.util.StopWatch;
+import org.antublue.verifyica.engine.common.StopWatch;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;

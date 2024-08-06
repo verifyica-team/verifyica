@@ -23,8 +23,8 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.engine.support.ClassSupport;
+import org.antublue.verifyica.engine.support.HierarchyTraversalMode;
 import org.antublue.verifyica.engine.support.MethodSupport;
-import org.junit.platform.commons.support.HierarchyTraversalMode;
 
 /** Class to implement Predicates */
 public class Predicates {

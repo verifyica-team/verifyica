@@ -20,7 +20,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 /** Class to implement FieldSupport */
@@ -48,7 +47,8 @@ public class FieldSupport {
         ArgumentSupport.notNull(hierarchyTraversalMode, "hierarchyTraversalMode is null");
 
         return new ArrayList<>(
-                ReflectionSupport.findFields(clazz, predicate, hierarchyTraversalMode));
+                ReflectionSupport.findFields(
+                        clazz, predicate, HierarchyTraversalMode.decode(hierarchyTraversalMode)));
     }
 
     /**

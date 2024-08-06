@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.util;
+package org.antublue.verifyica.engine.common;
 
 /** Class to implement AnsiColorStringBuilder */
 public class AnsiColorStringBuilder {

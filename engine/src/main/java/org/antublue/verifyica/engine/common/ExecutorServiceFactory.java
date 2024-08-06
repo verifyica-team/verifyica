@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.util;
+package org.antublue.verifyica.engine.common;
 
 import io.github.thunkware.vt.bridge.ExecutorTool;
 import io.github.thunkware.vt.bridge.ThreadTool;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.antublue.verifyica.engine.logger.Logger;
+import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement ExecutorServiceFactory */
@@ -83,5 +86,31 @@ public class ExecutorServiceFactory {
 
         /** The singleton instance */
         private static final ExecutorServiceFactory SINGLETON = new ExecutorServiceFactory();
+    }
+
+    /** Class to implement BlockingRejectedExecutionHandler */
+    private static class BlockingRejectedExecutionHandler implements RejectedExecutionHandler {
+
+        private static final Logger LOGGER =
+                LoggerFactory.getLogger(BlockingRejectedExecutionHandler.class);
+
+        /** Constructor */
+        public BlockingRejectedExecutionHandler() {
+            // INTENTIONALLY BLANK
+        }
+
+        @Override
+        public void rejectedExecution(Runnable runnable, ThreadPoolExecutor executor) {
+            ArgumentSupport.notNull(runnable, "runnable is null");
+            ArgumentSupport.notNull(executor, "executor is null");
+
+            if (!executor.isShutdown()) {
+                try {
+                    executor.getQueue().put(runnable);
+                } catch (InterruptedException e) {
+                    LOGGER.error("Runnable discarded!!!");
+                }
+            }
+        }
     }
 }
