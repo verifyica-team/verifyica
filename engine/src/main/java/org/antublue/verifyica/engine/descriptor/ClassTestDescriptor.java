@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.Context;
+import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.ImmutableClassContext;
@@ -159,6 +160,34 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             }
         }
 
+        Object testInstance = defaultClassContext.getTestInstance();
+        if (testInstance instanceof AutoCloseable) {
+            try {
+                stateTracker.put("argumentAutoClose(" + testClass.getName() + ")");
+                ((AutoCloseable) testInstance).close();
+                stateTracker.put("argumentAutoClose" + testClass.getName() + ")->SUCCESS");
+            } catch (Throwable t) {
+                t.printStackTrace(System.err);
+                stateTracker.put("argumentAutoClose" + testClass.getName() + ")->FAILURE");
+            }
+        }
+
+        Store store = defaultClassContext.getStore();
+        for (Object key : store.keySet()) {
+            Object value = store.get(key);
+            if (value instanceof AutoCloseable) {
+                try {
+                    stateTracker.put("storeAutoClose(" + key + ")");
+                    ((AutoCloseable) value).close();
+                    stateTracker.put("storeAutoClose(" + key + ")->SUCCESS");
+                } catch (Throwable t) {
+                    t.printStackTrace(System.err);
+                    stateTracker.put("storeAutoClose(" + key + ")->FAILURE");
+                }
+            }
+        }
+        store.clear();
+
         try {
             stateTracker.put("destroyTestInstance");
             destroyTestInstance(defaultClassContext);
@@ -168,9 +197,22 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             stateTracker.put("destroyTestInstance->FAILURE", t);
         }
 
+        defaultClassContext.setTestInstance(null);
+
+        if (testInstance instanceof AutoCloseable) {
+            try {
+                stateTracker.put("argumentAutoClose(" + testClass.getName() + ")");
+                ((AutoCloseable) testInstance).close();
+                stateTracker.put("argumentAutoClose" + testClass.getName() + ")->SUCCESS");
+            } catch (Throwable t) {
+                t.printStackTrace(System.err);
+                stateTracker.put("argumentAutoClose" + testClass.getName() + ")->FAILURE");
+            }
+        }
+
         getStopWatch().stop();
 
-        LOGGER.trace("state monitor [%s]", stateTracker);
+        LOGGER.trace("state tracker [%s]", stateTracker);
 
         TestExecutionResult testExecutionResult =
                 stateTracker
@@ -443,32 +485,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
      * @throws Throwable Throwable
      */
     private void destroyTestInstance(DefaultClassContext defaultClassContext) throws Throwable {
-        Object testInstance = defaultClassContext.getTestInstance();
+        LOGGER.trace("destroyTestInstance() testClass [%s]", testClass.getName());
 
-        LOGGER.trace("destroyTestInstance() testClass [%s]", testClass.getName(), testInstance);
-
-        Throwable throwable = null;
-
-        try {
-            ClassInterceptorRegistry.getInstance().onDestroy(defaultClassContext);
-        } catch (Throwable t) {
-            throwable = t;
-        }
-
-        defaultClassContext.setTestInstance(null);
-
-        if (testInstance instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) testInstance).close();
-            } catch (Throwable t) {
-                if (throwable == null) {
-                    throwable = t;
-                }
-            }
-        }
-
-        if (throwable != null) {
-            throw throwable;
-        }
+        ClassInterceptorRegistry.getInstance().onDestroy(defaultClassContext);
     }
 }

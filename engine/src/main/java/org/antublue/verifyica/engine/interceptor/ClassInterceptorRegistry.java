@@ -36,7 +36,6 @@ import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
 import org.antublue.verifyica.engine.context.ImmutableArgumentContext;
 import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
-import org.antublue.verifyica.engine.interceptor.internal.ClearClassContextStoreClassStoreInterceptor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
@@ -60,8 +59,6 @@ public class ClassInterceptorRegistry {
         readWriteLock = new ReentrantReadWriteLock(true);
         classInterceptors = new ArrayList<>();
         mappedClassInterceptors = new LinkedHashMap<>();
-
-        classInterceptors.add(new ClearClassContextStoreClassStoreInterceptor());
 
         loadClassInterceptors();
     }

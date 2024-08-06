@@ -31,6 +31,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import org.antublue.verifyica.api.EngineContext;
+import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
@@ -245,6 +246,20 @@ public class VerifyicaEngine implements TestEngine {
             if (executorService != null) {
                 executorService.shutdown();
             }
+
+            Store store = engineContext.getStore();
+            for (Object key : store.keySet()) {
+                Object value = store.get(key);
+                if (value instanceof AutoCloseable) {
+                    try {
+                        ((AutoCloseable) value).close();
+                    } catch (Throwable t) {
+                        t.printStackTrace(System.err);
+                        throwables.add(t);
+                    }
+                }
+            }
+            store.clear();
 
             try {
                 EngineInterceptorRegistry.getInstance().afterExecute(engineInterceptorContext);

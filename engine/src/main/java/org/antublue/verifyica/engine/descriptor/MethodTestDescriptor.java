@@ -153,7 +153,7 @@ public class MethodTestDescriptor extends ExecutableTestDescriptor {
 
         getStopWatch().stop();
 
-        LOGGER.trace("state monitor [%s]", stateTracker);
+        LOGGER.trace("state tracker [%s]", stateTracker);
 
         TestExecutionResult testExecutionResult =
                 stateTracker

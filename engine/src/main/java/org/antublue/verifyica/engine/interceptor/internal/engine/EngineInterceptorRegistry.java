@@ -58,7 +58,6 @@ public class EngineInterceptorRegistry {
         engineInterceptors = new ArrayList<>();
 
         engineInterceptors.add(new EngineFiltersInterceptor());
-        engineInterceptors.add(new ClearEngineContextStoreEngineInterceptor());
 
         loadEngineInterceptors();
     }

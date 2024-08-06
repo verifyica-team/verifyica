@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Context;
+import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -158,9 +159,36 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
             stateTracker.put("afterAll->FAILURE", t);
         }
 
+        if (testArgument instanceof AutoCloseable) {
+            try {
+                stateTracker.put("argumentAutoClose(" + testArgument.getName() + ")");
+                ((AutoCloseable) testArgument).close();
+                stateTracker.put("argumentAutoClose" + testArgument.getName() + ")->SUCCESS");
+            } catch (Throwable t) {
+                t.printStackTrace(System.err);
+                stateTracker.put("argumentAutoClose" + testArgument.getName() + ")->FAILURE");
+            }
+        }
+
+        Store store = defaultArgumentContext.getStore();
+        for (Object key : store.keySet()) {
+            Object value = store.get(key);
+            if (value instanceof AutoCloseable) {
+                try {
+                    stateTracker.put("storeAutoClose(" + key + ")");
+                    ((AutoCloseable) value).close();
+                    stateTracker.put("storeAutoClose(" + key + ")->SUCCESS");
+                } catch (Throwable t) {
+                    t.printStackTrace(System.err);
+                    stateTracker.put("storeAutoClose(" + key + ")->FAILURE");
+                }
+            }
+        }
+        store.clear();
+
         getStopWatch().stop();
 
-        LOGGER.trace("state monitor [%s]", stateTracker);
+        LOGGER.trace("state tracker [%s]", stateTracker);
 
         TestExecutionResult testExecutionResult =
                 stateTracker
@@ -278,9 +306,5 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
                 testClass.getName(), defaultArgumentContext.getTestArgument().getName());
 
         ClassInterceptorRegistry.getInstance().afterAll(defaultArgumentContext, afterAllMethods);
-
-        if (testArgument instanceof AutoCloseable) {
-            ((AutoCloseable) testArgument).close();
-        }
     }
 }
