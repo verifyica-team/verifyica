@@ -29,6 +29,11 @@ public class ThrowableCollector {
         throwables = new ArrayList<>();
     }
 
+    /**
+     * Method to execute an Executable, collecting a Throwable if generated
+     *
+     * @param executable executable
+     */
     public void execute(Executable executable) {
         try {
             executable.execute();
@@ -51,7 +56,7 @@ public class ThrowableCollector {
     /**
      * Method to return if empty
      *
-     * <p>return true is empty, else false
+     * @return true if empty, else false
      */
     public boolean isEmpty() {
         return throwables.isEmpty();
