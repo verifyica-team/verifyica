@@ -333,7 +333,7 @@ public class ClassInterceptorTest2 {
         int pad = 0;
 
         for (String string : strings) {
-            pad = string.length() > pad ? string.length() : pad;
+            pad = Math.max(string.length(), pad);
         }
 
         return pad;
