@@ -444,11 +444,50 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     }
 
     /**
+     * Method to get the engine class parallelism value
+     *
+     * @return the engine parallelism value
+     */
+    private static int getEngineClassParallelism() {
+        int engineParallelism =
+                DefaultConfiguration.getInstance()
+                        .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
+                        .map(
+                                value -> {
+                                    int intValue;
+                                    try {
+                                        intValue = Integer.parseInt(value);
+                                        if (intValue < 1) {
+                                            throw new EngineException(
+                                                    format(
+                                                            "Invalid %s value [%d]",
+                                                            Constants.ENGINE_CLASS_PARALLELISM,
+                                                            intValue));
+                                        }
+                                        return intValue;
+                                    } catch (NumberFormatException e) {
+                                        throw new EngineException(
+                                                format(
+                                                        "Invalid %s value [%s]",
+                                                        Constants.ENGINE_CLASS_PARALLELISM, value),
+                                                e);
+                                    }
+                                })
+                        .orElse(Runtime.getRuntime().availableProcessors());
+
+        LOGGER.trace("getEngineClassParallelism() [%s]", engineParallelism);
+
+        return engineParallelism;
+    }
+
+    /**
      * Method to get the engine argument parallelism value
      *
      * @return the engine parallelism value
      */
     private static int getEngineArgumentParallelism() {
+        int engineClassParallelism = getEngineClassParallelism();
+
         int engineArgumentParallelism =
                 DefaultConfiguration.getInstance()
                         .getOptional(Constants.ENGINE_ARGUMENT_PARALLELISM)
@@ -475,6 +514,16 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                     }
                                 })
                         .orElse(Runtime.getRuntime().availableProcessors());
+
+        if (engineArgumentParallelism < engineClassParallelism) {
+            LOGGER.warn(
+                    "[%s] is less than [%s] setting [%s] to [%d]",
+                    Constants.ENGINE_ARGUMENT_PARALLELISM,
+                    Constants.ENGINE_CLASS_PARALLELISM,
+                    Constants.ENGINE_ARGUMENT_PARALLELISM,
+                    engineClassParallelism);
+            engineArgumentParallelism = engineClassParallelism;
+        }
 
         LOGGER.trace("getEngineArgumentParallelism() [%s]", engineArgumentParallelism);
 
