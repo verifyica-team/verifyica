@@ -291,7 +291,7 @@ public class VerifyicaEngine implements TestEngine {
                                                 e);
                                     }
                                 })
-                        .orElse(Runtime.getRuntime().availableProcessors());
+                        .orElse(Runtime.getRuntime().availableProcessors() * 2);
 
         LOGGER.trace("getEngineClassParallelism() [%s]", engineParallelism);
 

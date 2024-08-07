@@ -473,7 +473,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                                 e);
                                     }
                                 })
-                        .orElse(Runtime.getRuntime().availableProcessors());
+                        .orElse(Runtime.getRuntime().availableProcessors() * 2);
 
         LOGGER.trace("getEngineClassParallelism() [%s]", engineParallelism);
 
@@ -513,11 +513,11 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                                 e);
                                     }
                                 })
-                        .orElse(Runtime.getRuntime().availableProcessors());
+                        .orElse(engineClassParallelism);
 
         if (engineArgumentParallelism < engineClassParallelism) {
             LOGGER.warn(
-                    "[%s] is less than [%s] setting [%s] to [%d]",
+                    "[%s] is less than [%s], setting [%s] to [%d]",
                     Constants.ENGINE_ARGUMENT_PARALLELISM,
                     Constants.ENGINE_CLASS_PARALLELISM,
                     Constants.ENGINE_ARGUMENT_PARALLELISM,
