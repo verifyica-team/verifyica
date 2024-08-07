@@ -21,7 +21,6 @@ import static java.lang.String.format;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -31,6 +30,7 @@ import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.common.ExecutorServiceFactory;
 import org.antublue.verifyica.engine.common.SemaphoreCallable;
 import org.antublue.verifyica.engine.common.StateTracker;
+import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
@@ -332,7 +332,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         ArgumentSupport.notNull(defaultClassContext, "defaultClassContext is null");
         ArgumentSupport.notNull(defaultClassContext.getTestInstance(), "testInstance is null");
 
-        List<Throwable> throwables = new ArrayList<>();
+        ThrowableCollector throwableCollector = new ThrowableCollector();
 
         List<Future<Throwable>> futures = new ArrayList<>();
 
@@ -383,19 +383,13 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         futures.forEach(
                 future -> {
                     try {
-                        Throwable throwable = future.get();
-                        if (throwable != null) {
-                            throwables.add(throwable);
-                        }
+                        throwableCollector.add(future.get());
                     } catch (Throwable t) {
                         t.printStackTrace(System.err);
                     }
                 });
 
-        throwables.removeIf(Objects::isNull);
-        if (!throwables.isEmpty()) {
-            throw throwables.get(0);
-        }
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -450,11 +444,50 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     }
 
     /**
+     * Method to get the engine class parallelism value
+     *
+     * @return the engine parallelism value
+     */
+    private static int getEngineClassParallelism() {
+        int engineParallelism =
+                DefaultConfiguration.getInstance()
+                        .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
+                        .map(
+                                value -> {
+                                    int intValue;
+                                    try {
+                                        intValue = Integer.parseInt(value);
+                                        if (intValue < 1) {
+                                            throw new EngineException(
+                                                    format(
+                                                            "Invalid %s value [%d]",
+                                                            Constants.ENGINE_CLASS_PARALLELISM,
+                                                            intValue));
+                                        }
+                                        return intValue;
+                                    } catch (NumberFormatException e) {
+                                        throw new EngineException(
+                                                format(
+                                                        "Invalid %s value [%s]",
+                                                        Constants.ENGINE_CLASS_PARALLELISM, value),
+                                                e);
+                                    }
+                                })
+                        .orElse(Runtime.getRuntime().availableProcessors() * 2);
+
+        LOGGER.trace("getEngineClassParallelism() [%s]", engineParallelism);
+
+        return engineParallelism;
+    }
+
+    /**
      * Method to get the engine argument parallelism value
      *
      * @return the engine parallelism value
      */
     private static int getEngineArgumentParallelism() {
+        int engineClassParallelism = getEngineClassParallelism();
+
         int engineArgumentParallelism =
                 DefaultConfiguration.getInstance()
                         .getOptional(Constants.ENGINE_ARGUMENT_PARALLELISM)
@@ -480,7 +513,17 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                                 e);
                                     }
                                 })
-                        .orElse(Runtime.getRuntime().availableProcessors());
+                        .orElse(engineClassParallelism);
+
+        if (engineArgumentParallelism < engineClassParallelism) {
+            LOGGER.warn(
+                    "[%s] is less than [%s], setting [%s] to [%d]",
+                    Constants.ENGINE_ARGUMENT_PARALLELISM,
+                    Constants.ENGINE_CLASS_PARALLELISM,
+                    Constants.ENGINE_ARGUMENT_PARALLELISM,
+                    engineClassParallelism);
+            engineArgumentParallelism = engineClassParallelism;
+        }
 
         LOGGER.trace("getEngineArgumentParallelism() [%s]", engineArgumentParallelism);
 

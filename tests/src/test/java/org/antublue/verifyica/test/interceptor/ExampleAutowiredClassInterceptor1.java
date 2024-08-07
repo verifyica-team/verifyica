@@ -47,9 +47,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
             Throwable throwable)
             throws Throwable {
         System.out.printf("%s postInstantiate()%n", getClass().getName());
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     @Override
@@ -67,9 +65,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s postPrepare(%s)%n",
                 getClass().getName(),
                 classInterceptorContext.getClassContext().getTestClass().getName());
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     @Override
@@ -99,9 +95,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                         .getTestClass()
                         .getName(),
                 argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     @Override
@@ -131,9 +125,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                         .getTestClass()
                         .getName(),
                 argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     @Override
@@ -167,10 +159,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                         .getName(),
                 argumentInterceptorContext.getArgumentContext().getTestArgument().getName(),
                 testMethod.getName());
-
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     @Override
@@ -200,9 +189,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                         .getTestClass()
                         .getName(),
                 argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     @Override
@@ -232,9 +219,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                         .getTestClass()
                         .getName(),
                 argumentInterceptorContext.getArgumentContext().getTestArgument().getName());
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     @Override
@@ -252,9 +237,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s postConclude(%s)%n",
                 getClass().getName(),
                 classInterceptorContext.getClassContext().getTestClass().getName());
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     @Override

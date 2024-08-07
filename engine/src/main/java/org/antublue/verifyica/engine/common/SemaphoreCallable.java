@@ -19,10 +19,14 @@ package org.antublue.verifyica.engine.common;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 
-/** Class to implement SemaphoreCallable */
-public class SemaphoreCallable<V> implements Callable<V> {
+/**
+ * Class to implement SemaphoreCallable
+ *
+ * @param <T> the callable result type
+ */
+public class SemaphoreCallable<T> implements Callable<T> {
 
-    private final Callable<V> callable;
+    private final Callable<T> callable;
     private final Semaphore semaphore;
 
     /**
@@ -31,13 +35,13 @@ public class SemaphoreCallable<V> implements Callable<V> {
      * @param semaphore semaphore
      * @param callable callable
      */
-    public SemaphoreCallable(Semaphore semaphore, Callable<V> callable) {
+    public SemaphoreCallable(Semaphore semaphore, Callable<T> callable) {
         this.callable = callable;
         this.semaphore = semaphore;
     }
 
     @Override
-    public V call() throws Exception {
+    public T call() throws Exception {
         semaphore.acquire();
         try {
             return callable.call();

@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -33,6 +32,7 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.ExecutorServiceFactory;
+import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
@@ -169,7 +169,7 @@ public class VerifyicaEngine implements TestEngine {
 
         List<Future<Throwable>> futures = new ArrayList<>();
 
-        List<Throwable> throwables = new ArrayList<>();
+        ThrowableCollector throwableCollector = new ThrowableCollector();
 
         try {
             EngineInterceptorRegistry.getInstance().beforeExecute(engineInterceptorContext);
@@ -219,16 +219,13 @@ public class VerifyicaEngine implements TestEngine {
             futures.forEach(
                     future -> {
                         try {
-                            Throwable throwable = future.get();
-                            if (throwable != null) {
-                                throwables.add(throwable);
-                            }
+                            throwableCollector.add(future.get());
                         } catch (Throwable t) {
                             t.printStackTrace(System.err);
                         }
                     });
         } catch (Throwable t) {
-            throwables.add(t);
+            throwableCollector.add(t);
         } finally {
             if (executorService != null) {
                 executorService.shutdown();
@@ -242,7 +239,7 @@ public class VerifyicaEngine implements TestEngine {
                         ((AutoCloseable) value).close();
                     } catch (Throwable t) {
                         t.printStackTrace(System.err);
-                        throwables.add(t);
+                        throwableCollector.add(t);
                     }
                 }
             }
@@ -251,16 +248,11 @@ public class VerifyicaEngine implements TestEngine {
             try {
                 EngineInterceptorRegistry.getInstance().afterExecute(engineInterceptorContext);
             } catch (Throwable t) {
-                throwables.add(t);
+                throwableCollector.add(t);
             }
         }
 
-        throwables.removeIf(Objects::isNull);
-
-        TestExecutionResult testExecutionResult =
-                !throwables.isEmpty()
-                        ? TestExecutionResult.failed(throwables.get(0))
-                        : TestExecutionResult.successful();
+        TestExecutionResult testExecutionResult = throwableCollector.toTestExecutionResult();
 
         executionRequest
                 .getEngineExecutionListener()
@@ -299,7 +291,7 @@ public class VerifyicaEngine implements TestEngine {
                                                 e);
                                     }
                                 })
-                        .orElse(Runtime.getRuntime().availableProcessors());
+                        .orElse(Runtime.getRuntime().availableProcessors() * 2);
 
         LOGGER.trace("getEngineClassParallelism() [%s]", engineParallelism);
 
