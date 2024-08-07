@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.antublue.verifyica</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.6-SNAPSHOT</version>
+    <version>0.0.7-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Verifyica Parent</name>
     <description>Verifyica Parent</description>
@@ -78,7 +78,6 @@
         <module>api</module>
         <module>engine</module>
         <module>maven-plugin</module>
-        <!-- <module>standalone</module> -->
         <module>tests</module>
     </modules>
 
