@@ -189,7 +189,7 @@ public class ClassInterceptorRegistry {
                 classInterceptor.postInstantiate(
                         engineInterceptorContext, testClass, testInstance, throwable);
             }
-        } else {
+        } else if (throwable != null) {
             throw throwable;
         }
     }
@@ -614,11 +614,11 @@ public class ClassInterceptorRegistry {
     public void onDestroy(ClassContext classContext) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
 
-        DefaultClassInterceptorContext defaultClassInterceptorContext =
+        DefaultClassInterceptorContext classInterceptorContext =
                 new DefaultClassInterceptorContext(classContext);
 
         for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
-            classInterceptor.onDestroy(defaultClassInterceptorContext);
+            classInterceptor.onDestroy(classInterceptorContext);
         }
     }
 
@@ -632,7 +632,11 @@ public class ClassInterceptorRegistry {
         try {
             getReadWriteLock().writeLock().lock();
 
-            List<ClassInterceptor> classInterceptors = new ArrayList<>(this.classInterceptors);
+            List<ClassInterceptor> classInterceptors = new ArrayList<>();
+
+            if (this.classInterceptors != null) {
+                classInterceptors.addAll(this.classInterceptors);
+            }
 
             classInterceptors.addAll(
                     mappedClassInterceptors.computeIfAbsent(testClass, o -> new ArrayList<>()));
