@@ -108,6 +108,7 @@ import java.util.Collection;
 import java.util.Properties;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example */
@@ -265,6 +266,7 @@ public class EnvironmentTest {
     }
   }
 }
+
 ```
 
 ### Output
