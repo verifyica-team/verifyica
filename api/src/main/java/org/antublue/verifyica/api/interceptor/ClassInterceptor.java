@@ -50,9 +50,7 @@ public interface ClassInterceptor {
             Object testInstance,
             Throwable throwable)
             throws Throwable {
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     /**
@@ -74,9 +72,7 @@ public interface ClassInterceptor {
      */
     default void postPrepare(ClassInterceptorContext classInterceptorContext, Throwable throwable)
             throws Throwable {
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     /**
@@ -100,9 +96,7 @@ public interface ClassInterceptor {
     default void postBeforeAll(
             ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     /**
@@ -126,9 +120,7 @@ public interface ClassInterceptor {
     default void postBeforeEach(
             ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     /**
@@ -156,9 +148,7 @@ public interface ClassInterceptor {
             Method testMethod,
             Throwable throwable)
             throws Throwable {
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     /**
@@ -182,9 +172,7 @@ public interface ClassInterceptor {
     default void postAfterEach(
             ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     /**
@@ -208,9 +196,7 @@ public interface ClassInterceptor {
     default void postAfterAll(
             ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     /**
@@ -232,9 +218,7 @@ public interface ClassInterceptor {
      */
     default void postConclude(ClassInterceptorContext classInterceptorContext, Throwable throwable)
             throws Throwable {
-        if (throwable != null) {
-            throw throwable;
-        }
+        rethrow(throwable);
     }
 
     /**
@@ -245,5 +229,17 @@ public interface ClassInterceptor {
      */
     default void onDestroy(ClassInterceptorContext classInterceptorContext) throws Throwable {
         // INTENTIONALLY BLANK
+    }
+
+    /**
+     * Rethrows a Throwable if not null
+     *
+     * @param throwable throwable
+     * @throws Throwable Throwable
+     */
+    default void rethrow(Throwable throwable) throws Throwable {
+        if (throwable != null) {
+            throw throwable;
+        }
     }
 }

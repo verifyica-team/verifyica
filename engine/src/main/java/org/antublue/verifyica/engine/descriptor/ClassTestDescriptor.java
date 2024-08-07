@@ -21,7 +21,6 @@ import static java.lang.String.format;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -31,6 +30,7 @@ import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.common.ExecutorServiceFactory;
 import org.antublue.verifyica.engine.common.SemaphoreCallable;
 import org.antublue.verifyica.engine.common.StateTracker;
+import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
@@ -332,7 +332,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         ArgumentSupport.notNull(defaultClassContext, "defaultClassContext is null");
         ArgumentSupport.notNull(defaultClassContext.getTestInstance(), "testInstance is null");
 
-        List<Throwable> throwables = new ArrayList<>();
+        ThrowableCollector throwableCollector = new ThrowableCollector();
 
         List<Future<Throwable>> futures = new ArrayList<>();
 
@@ -383,19 +383,13 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         futures.forEach(
                 future -> {
                     try {
-                        Throwable throwable = future.get();
-                        if (throwable != null) {
-                            throwables.add(throwable);
-                        }
+                        throwableCollector.add(future.get());
                     } catch (Throwable t) {
                         t.printStackTrace(System.err);
                     }
                 });
 
-        throwables.removeIf(Objects::isNull);
-        if (!throwables.isEmpty()) {
-            throw throwables.get(0);
-        }
+        throwableCollector.assertEmpty();
     }
 
     /**
