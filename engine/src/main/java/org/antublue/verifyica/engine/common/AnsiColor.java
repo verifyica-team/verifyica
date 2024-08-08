@@ -39,9 +39,11 @@ public class AnsiColor {
     /** Configuration constant */
     private static final String MAVEN_PLUGIN_BATCH = PREFIX + ".maven.plugin.batch";
 
+    private static final String ANSI_COLOR = "ANSI_COLOR";
     private static final String NO_COLOR = "NO_COLOR";
     private static final String EMPTY_STRING = "";
     private static final String ONE = "1";
+    private static final String TRUE = "true";
 
     /** AnsiColor constant */
     public static final AnsiColor TEXT_RESET = new AnsiColor("\033[0m");
@@ -239,6 +241,10 @@ public class AnsiColor {
 
         if (MAVEN_PLUGIN_BATCH.equals(System.getenv(MAVEN_PLUGIN_MODE))) {
             ANSI_COLOR_SUPPORTED = false;
+        }
+
+        if (ONE.equals(System.getenv(ANSI_COLOR)) || TRUE.equals(System.getenv(ANSI_COLOR))) {
+            ANSI_COLOR_SUPPORTED = true;
         }
     }
 
