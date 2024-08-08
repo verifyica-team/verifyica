@@ -28,6 +28,8 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
@@ -128,8 +130,10 @@ public class VerifyicaEngine implements TestEngine {
         LOGGER.trace("discovering test classes and test methods ...");
 
         EngineContext engineContext = DefaultEngineContext.getInstance();
+
         EngineInterceptorContext engineInterceptorContext =
                 new DefaultEngineInterceptorContext(engineContext);
+
         EngineDescriptor engineDescriptor = new StatusEngineDescriptor(uniqueId, getId());
 
         try {
@@ -165,7 +169,9 @@ public class VerifyicaEngine implements TestEngine {
         EngineInterceptorContext engineInterceptorContext =
                 new DefaultEngineInterceptorContext(engineContext);
 
-        ExecutorService executorService = null;
+        ExecutorService executorService =
+                ExecutorServiceFactory.getInstance()
+                        .createExecutorService(getEngineClassParallelism());
 
         List<Future<Throwable>> futures = new ArrayList<>();
 
@@ -178,43 +184,46 @@ public class VerifyicaEngine implements TestEngine {
                     .getEngineExecutionListener()
                     .executionStarted(executionRequest.getRootTestDescriptor());
 
-            int parallelism = getEngineClassParallelism();
-
             String threadName = Thread.currentThread().getName();
 
-            executorService =
-                    ExecutorServiceFactory.getInstance().createExecutorService(parallelism);
+            executionRequest.getRootTestDescriptor().getChildren().stream()
+                    .filter(
+                            (Predicate<TestDescriptor>)
+                                    testDescriptor ->
+                                            testDescriptor instanceof ExecutableTestDescriptor)
+                    .map(
+                            (Function<TestDescriptor, ExecutableTestDescriptor>)
+                                    testDescriptor -> (ExecutableTestDescriptor) testDescriptor)
+                    .forEach(
+                            executableTestDescriptor -> {
+                                futures.add(
+                                        executorService.submit(
+                                                () -> {
+                                                    Throwable throwable = null;
 
-            for (TestDescriptor testDescriptor :
-                    executionRequest.getRootTestDescriptor().getChildren()) {
-                if (testDescriptor instanceof ExecutableTestDescriptor) {
-                    futures.add(
-                            executorService.submit(
-                                    () -> {
-                                        Throwable throwable = null;
+                                                    try {
+                                                        Thread.currentThread()
+                                                                .setName(
+                                                                        threadName
+                                                                                + "/"
+                                                                                + HashSupport
+                                                                                        .alphaNumericHash(
+                                                                                                4));
 
-                                        try {
-                                            Thread.currentThread()
-                                                    .setName(
-                                                            "verifyica-"
-                                                                    + HashSupport.alphaNumericHash(
-                                                                            4));
+                                                        executableTestDescriptor.execute(
+                                                                executionRequest,
+                                                                new DefaultClassContext(
+                                                                        engineContext));
+                                                    } catch (Throwable t) {
+                                                        throwable = t;
+                                                        t.printStackTrace(System.err);
+                                                    } finally {
+                                                        Thread.currentThread().setName(threadName);
+                                                    }
 
-                                            ((ExecutableTestDescriptor) testDescriptor)
-                                                    .execute(
-                                                            executionRequest,
-                                                            new DefaultClassContext(engineContext));
-                                        } catch (Throwable t) {
-                                            throwable = t;
-                                            t.printStackTrace(System.err);
-                                        } finally {
-                                            Thread.currentThread().setName(threadName);
-                                        }
-
-                                        return throwable;
-                                    }));
-                }
-            }
+                                                    return throwable;
+                                                }));
+                            });
 
             futures.forEach(
                     future -> {
@@ -227,9 +236,7 @@ public class VerifyicaEngine implements TestEngine {
         } catch (Throwable t) {
             throwableCollector.add(t);
         } finally {
-            if (executorService != null) {
-                executorService.shutdown();
-            }
+            executorService.shutdown();
 
             Store store = engineContext.getStore();
             for (Object key : store.keySet()) {
@@ -291,9 +298,9 @@ public class VerifyicaEngine implements TestEngine {
                                                 e);
                                     }
                                 })
-                        .orElse(Runtime.getRuntime().availableProcessors() * 2);
+                        .orElse(Runtime.getRuntime().availableProcessors());
 
-        LOGGER.trace("getEngineClassParallelism() [%s]", engineParallelism);
+        LOGGER.debug("getEngineClassParallelism() [%s]", engineParallelism);
 
         return engineParallelism;
     }

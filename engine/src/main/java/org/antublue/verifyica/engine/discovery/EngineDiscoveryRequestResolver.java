@@ -113,8 +113,11 @@ public class EngineDiscoveryRequestResolver {
                             testClass -> {
                                 List<Argument<?>> testArguments =
                                         testClassArgumentMap.get(testClass);
+
                                 List<Method> testMethods = testClassMethodMap.get(testClass);
+
                                 int testArgumentParallelism = getTestArgumentParallelism(testClass);
+
                                 OrderSupport.orderMethods(testMethods);
 
                                 classDefinitions.add(
@@ -136,7 +139,7 @@ public class EngineDiscoveryRequestResolver {
             throw new EngineException(t);
         } finally {
             stopWatch.stop();
-            LOGGER.trace("resolveSelectors() %d ms", stopWatch.elapsedTime().toMillis());
+            LOGGER.trace("resolveSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
         }
     }
 
@@ -150,6 +153,8 @@ public class EngineDiscoveryRequestResolver {
             EngineDiscoveryRequest engineDiscoveryRequest,
             Map<Class<?>, List<Method>> classMethodMap) {
         LOGGER.trace("resolveClasspathRootSelectors()");
+
+        StopWatch stopWatch = new StopWatch();
 
         engineDiscoveryRequest
                 .getSelectorsByType(ClasspathRootSelector.class)
@@ -190,6 +195,8 @@ public class EngineDiscoveryRequestResolver {
                                         }
                                     });
                         });
+
+        LOGGER.trace("resolveClasspathRootSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**
@@ -202,6 +209,8 @@ public class EngineDiscoveryRequestResolver {
             EngineDiscoveryRequest engineDiscoveryRequest,
             Map<Class<?>, List<Method>> classMethodMap) {
         LOGGER.trace("resolvePackageSelectors()");
+
+        StopWatch stopWatch = new StopWatch();
 
         engineDiscoveryRequest
                 .getSelectorsByType(PackageSelector.class)
@@ -227,6 +236,8 @@ public class EngineDiscoveryRequestResolver {
                                                                     HierarchyTraversalMode
                                                                             .BOTTOM_UP)));
                         });
+
+        LOGGER.trace("resolvePackageSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**
@@ -239,6 +250,8 @@ public class EngineDiscoveryRequestResolver {
             EngineDiscoveryRequest engineDiscoveryRequest,
             Map<Class<?>, List<Method>> classMethodMap) {
         LOGGER.trace("resolveClassSelectors()");
+
+        StopWatch stopWatch = new StopWatch();
 
         engineDiscoveryRequest
                 .getSelectorsByType(ClassSelector.class)
@@ -256,6 +269,8 @@ public class EngineDiscoveryRequestResolver {
                                                         HierarchyTraversalMode.BOTTOM_UP));
                             }
                         });
+
+        LOGGER.trace("resolveClassSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**
@@ -268,6 +283,8 @@ public class EngineDiscoveryRequestResolver {
             EngineDiscoveryRequest engineDiscoveryRequest,
             Map<Class<?>, List<Method>> classMethodMap) {
         LOGGER.trace("resolveMethodSelectors()");
+
+        StopWatch stopWatch = new StopWatch();
 
         engineDiscoveryRequest
                 .getSelectorsByType(MethodSelector.class)
@@ -283,6 +300,8 @@ public class EngineDiscoveryRequestResolver {
                                         .add(testMethod);
                             }
                         });
+
+        LOGGER.trace("resolveMethodSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**
@@ -297,6 +316,8 @@ public class EngineDiscoveryRequestResolver {
             Map<Class<?>, List<Method>> classMethodMap,
             Map<Class<?>, Set<Integer>> argumentIndexMap) {
         LOGGER.trace("resolveUniqueIdSelectors()");
+
+        StopWatch stopWatch = new StopWatch();
 
         engineDiscoveryRequest
                 .getSelectorsByType(UniqueIdSelector.class)
@@ -368,6 +389,8 @@ public class EngineDiscoveryRequestResolver {
                                         });
                             }
                         });
+
+        LOGGER.trace("resolveUniqueIdSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**
@@ -383,10 +406,14 @@ public class EngineDiscoveryRequestResolver {
             throws Throwable {
         LOGGER.trace("resolveTestArguments()");
 
+        StopWatch stopWatch = new StopWatch();
+
         for (Class<?> testClass : testClassMethodMap.keySet()) {
             List<Argument<?>> testArguments = getTestArguments(testClass);
             testClassArgumentMap.put(testClass, testArguments);
         }
+
+        LOGGER.trace("resolveTestArguments() [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**
@@ -398,6 +425,8 @@ public class EngineDiscoveryRequestResolver {
      */
     private static List<Argument<?>> getTestArguments(Class<?> testClass) throws Throwable {
         LOGGER.trace("getTestArguments() testClass [%s]", testClass.getName());
+
+        StopWatch stopWatch = new StopWatch();
 
         List<Argument<?>> testArguments = new ArrayList<>();
 
@@ -431,6 +460,8 @@ public class EngineDiscoveryRequestResolver {
         } else {
             testArguments.add(Argument.of("argument", object));
         }
+
+        LOGGER.trace("getTestArguments() [%d] ms", stopWatch.elapsedTime().toMillis());
 
         return testArguments;
     }
@@ -556,6 +587,8 @@ public class EngineDiscoveryRequestResolver {
             throws Throwable {
         LOGGER.trace("buildEngineDescriptor()");
 
+        StopWatch stopWatch = new StopWatch();
+
         for (ClassDefinition classDefinition : classDefinitions) {
             Class<?> testClass = classDefinition.getTestClass();
 
@@ -628,6 +661,8 @@ public class EngineDiscoveryRequestResolver {
                 argumentIndex++;
             }
         }
+
+        LOGGER.trace("buildEngineDescriptor() [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**
@@ -640,9 +675,14 @@ public class EngineDiscoveryRequestResolver {
         LOGGER.trace("getTestArgumentParallelism() testClass [%s]", testClass.getName());
 
         Method argumentSupplierMethod = getArgumentSupplierMethod(testClass);
+
         Verifyica.ArgumentSupplier annotation =
                 argumentSupplierMethod.getAnnotation(Verifyica.ArgumentSupplier.class);
 
-        return Math.max(annotation.parallelism(), 1);
+        int parallelism = Math.max(annotation.parallelism(), 1);
+
+        LOGGER.trace("testClass [%s] parallelism [%d]", testClass.getName(), parallelism);
+
+        return parallelism;
     }
 }

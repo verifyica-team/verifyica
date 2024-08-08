@@ -86,7 +86,6 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         counterKeyToMessageDisplayStringMap.put("test.method.count.skipped", "SKIPPED");
     }
 
-    private boolean initialized;
     private boolean hasTests;
     private boolean hasFailures;
 
@@ -121,20 +120,16 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
         counterMap = new ConcurrentHashMap<>();
         stopWatch = new StopWatch();
+
+        println(INFO + SEPARATOR);
+        println(INFO + BANNER);
+        println(INFO + SEPARATOR);
     }
 
     @Override
     public void executionStarted(TestDescriptor testDescriptor) {
-        synchronized (this) {
-            if (!initialized) {
-                stopWatch.reset();
-
-                println(INFO + SEPARATOR);
-                println(INFO + BANNER);
-                println(INFO + SEPARATOR);
-
-                initialized = true;
-            }
+        if (testDescriptor.isRoot()) {
+            stopWatch.reset();
         }
 
         if (!testDescriptor.isRoot()) {
