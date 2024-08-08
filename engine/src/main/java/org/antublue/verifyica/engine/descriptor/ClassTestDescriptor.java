@@ -18,6 +18,7 @@ package org.antublue.verifyica.engine.descriptor;
 
 import static java.lang.String.format;
 
+import io.github.thunkware.vt.bridge.SemaphoreExecutor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +26,11 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.common.ExecutorServiceFactory;
-import org.antublue.verifyica.engine.common.SemaphoreCallable;
 import org.antublue.verifyica.engine.common.StateTracker;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
@@ -54,13 +56,10 @@ import org.junit.platform.engine.support.descriptor.ClassSource;
 public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptor.class);
-    private static final ExecutorService EXECUTOR_SERVICE;
 
-    static {
-        EXECUTOR_SERVICE =
-                ExecutorServiceFactory.getInstance()
-                        .createExecutorService(getEngineArgumentParallelism());
-    }
+    private static final ExecutorService ARGUMENT_EXECUTOR_SERVICE =
+            ExecutorServiceFactory.getInstance()
+                    .createExecutorService(getEngineArgumentParallelism());
 
     private final Class<?> testClass;
     private final int parallelism;
@@ -176,12 +175,12 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
         Object testInstance = defaultClassContext.getTestInstance();
         if (testInstance instanceof AutoCloseable) {
             try {
-                stateTracker.put("argumentAutoClose(" + testClass.getName() + ")");
+                stateTracker.put("classAutoClose(" + testClass.getName() + ")");
                 ((AutoCloseable) testInstance).close();
-                stateTracker.put("argumentAutoClose" + testClass.getName() + ")->SUCCESS");
+                stateTracker.put("classAutoClose(" + testClass.getName() + ")->SUCCESS");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("argumentAutoClose" + testClass.getName() + ")->FAILURE");
+                stateTracker.put("classAutoClose(" + testClass.getName() + ")->FAILURE");
             }
         }
 
@@ -338,47 +337,58 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
         String threadName = Thread.currentThread().getName();
 
-        Semaphore semaphore = new Semaphore(parallelism);
+        LOGGER.info(
+                "defaultClassContext.getTestArgumentParallelism() [%d]",
+                defaultClassContext.getTestArgumentParallelism());
 
-        for (TestDescriptor testDescriptor : getChildren()) {
-            if (testDescriptor instanceof ExecutableTestDescriptor) {
-                ExecutableTestDescriptor executableTestDescriptor =
-                        (ExecutableTestDescriptor) testDescriptor;
+        SemaphoreExecutor semaphoreExecutor =
+                new SemaphoreExecutor(
+                        ARGUMENT_EXECUTOR_SERVICE,
+                        new Semaphore(defaultClassContext.getTestArgumentParallelism(), true));
 
-                DefaultArgumentContext defaultArgumentContext =
-                        new DefaultArgumentContext(defaultClassContext);
+        getChildren().stream()
+                .filter(
+                        (Predicate<TestDescriptor>)
+                                testDescriptor ->
+                                        testDescriptor instanceof ExecutableTestDescriptor)
+                .map(
+                        (Function<TestDescriptor, ExecutableTestDescriptor>)
+                                testDescriptor -> (ExecutableTestDescriptor) testDescriptor)
+                .forEach(
+                        executableTestDescriptor -> {
+                            DefaultArgumentContext defaultArgumentContext =
+                                    new DefaultArgumentContext(defaultClassContext);
 
-                defaultArgumentContext.setTestInstance(defaultClassContext.getTestInstance());
+                            defaultArgumentContext.setTestInstance(
+                                    defaultClassContext.getTestInstance());
 
-                futures.add(
-                        EXECUTOR_SERVICE.submit(
-                                new SemaphoreCallable<>(
-                                        semaphore,
-                                        () -> {
-                                            Throwable throwable = null;
+                            futures.add(
+                                    semaphoreExecutor.submit(
+                                            () -> {
+                                                Throwable throwable = null;
 
-                                            try {
-                                                Thread.currentThread()
-                                                        .setName(
-                                                                threadName
-                                                                        + "/"
-                                                                        + HashSupport
-                                                                                .alphaNumericHash(
-                                                                                        4));
+                                                try {
+                                                    Thread.currentThread()
+                                                            .setName(
+                                                                    threadName
+                                                                            + "/"
+                                                                            + HashSupport
+                                                                                    .alphaNumericHash(
+                                                                                            4));
 
-                                                executableTestDescriptor.execute(
-                                                        executionRequest, defaultArgumentContext);
-                                            } catch (Throwable t) {
-                                                throwable = t;
-                                                t.printStackTrace(System.err);
-                                            } finally {
-                                                Thread.currentThread().setName(threadName);
-                                            }
+                                                    executableTestDescriptor.execute(
+                                                            executionRequest,
+                                                            defaultArgumentContext);
+                                                } catch (Throwable t) {
+                                                    throwable = t;
+                                                    t.printStackTrace(System.err);
+                                                } finally {
+                                                    Thread.currentThread().setName(threadName);
+                                                }
 
-                                            return throwable;
-                                        })));
-            }
-        }
+                                                return throwable;
+                                            }));
+                        });
 
         futures.forEach(
                 future -> {
@@ -449,7 +459,9 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
      * @return the engine parallelism value
      */
     private static int getEngineClassParallelism() {
-        int engineParallelism =
+        LOGGER.trace("getEngineClassParallelism()");
+
+        int engineClassParallelism =
                 DefaultConfiguration.getInstance()
                         .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
                         .map(
@@ -473,11 +485,11 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                                 e);
                                     }
                                 })
-                        .orElse(Runtime.getRuntime().availableProcessors() * 2);
+                        .orElse(Runtime.getRuntime().availableProcessors());
 
-        LOGGER.trace("getEngineClassParallelism() [%s]", engineParallelism);
+        LOGGER.trace("engineClassParallelism [%s]", engineClassParallelism);
 
-        return engineParallelism;
+        return engineClassParallelism;
     }
 
     /**
@@ -486,6 +498,8 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
      * @return the engine parallelism value
      */
     private static int getEngineArgumentParallelism() {
+        LOGGER.trace("getEngineArgumentParallelism()");
+
         int engineClassParallelism = getEngineClassParallelism();
 
         int engineArgumentParallelism =
@@ -513,7 +527,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
                                                 e);
                                     }
                                 })
-                        .orElse(engineClassParallelism);
+                        .orElse(Runtime.getRuntime().availableProcessors());
 
         if (engineArgumentParallelism < engineClassParallelism) {
             LOGGER.warn(
@@ -525,7 +539,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             engineArgumentParallelism = engineClassParallelism;
         }
 
-        LOGGER.trace("getEngineArgumentParallelism() [%s]", engineArgumentParallelism);
+        LOGGER.trace("engineArgumentParallelism [%s]", engineArgumentParallelism);
 
         return engineArgumentParallelism;
     }

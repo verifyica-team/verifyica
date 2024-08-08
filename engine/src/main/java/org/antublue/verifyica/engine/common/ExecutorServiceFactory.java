@@ -39,11 +39,11 @@ public class ExecutorServiceFactory {
     /**
      * Method to create a new ExecutorService
      *
-     * @param parallelism parallelism
+     * @param threads threads
      * @return an ExecutorService
      */
-    public ExecutorService createExecutorService(int parallelism) {
-        ArgumentSupport.isTrue(parallelism > 0, "parallelism is less than 1");
+    public ExecutorService createExecutorService(int threads) {
+        ArgumentSupport.isTrue(threads > 0, "threads is less than 1");
 
         ExecutorService executorService;
 
@@ -52,15 +52,15 @@ public class ExecutorServiceFactory {
         } else {
             executorService =
                     new ThreadPoolExecutor(
-                            parallelism,
-                            parallelism,
+                            threads,
+                            threads,
                             60L,
                             TimeUnit.SECONDS,
-                            new ArrayBlockingQueue<>(parallelism * 10),
+                            new ArrayBlockingQueue<>(threads * 10),
                             new BlockingRejectedExecutionHandler());
         }
 
-        return new SemaphoreExecutor(executorService, parallelism);
+        return new SemaphoreExecutor(executorService, threads);
     }
 
     /**
