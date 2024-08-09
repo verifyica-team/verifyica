@@ -43,6 +43,13 @@ public interface ClassContext extends Context {
     <T> Class<T> getTestClass(Class<T> type);
 
     /**
+     * Return the test class display name
+     *
+     * @return the test class display name
+     */
+    String getTestClassDisplayName();
+
+    /**
      * Returns the test class instance
      *
      * @return the test class instance

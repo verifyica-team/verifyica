@@ -20,25 +20,25 @@ import java.util.Objects;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 
 /** Class to implement DefaultClassContext */
 @SuppressWarnings("unchecked")
 public class DefaultClassContext implements ClassContext {
 
     private final EngineContext engineContext;
+    private final ClassTestDescriptor classTestDescriptor;
     private final Store store;
-
-    private Class<?> testClass;
-    private int testArgumentParallelism = 1;
-    private Object testInstance;
 
     /**
      * Constructor
      *
      * @param engineContext engineContext
      */
-    public DefaultClassContext(EngineContext engineContext) {
+    public DefaultClassContext(
+            EngineContext engineContext, ClassTestDescriptor classTestDescriptor) {
         this.engineContext = engineContext;
+        this.classTestDescriptor = classTestDescriptor;
         this.store = new DefaultStore();
     }
 
@@ -52,18 +52,9 @@ public class DefaultClassContext implements ClassContext {
         return store;
     }
 
-    /**
-     * Method to test the test class
-     *
-     * @param testClass testClass
-     */
-    public void setTestClass(Class<?> testClass) {
-        this.testClass = testClass;
-    }
-
     @Override
     public Class<?> getTestClass() {
-        return testClass;
+        return classTestDescriptor.getTestClass();
     }
 
     @Override
@@ -71,42 +62,24 @@ public class DefaultClassContext implements ClassContext {
         return (Class<T>) getTestClass().asSubclass(type);
     }
 
-    /**
-     * Method to set the test instance
-     *
-     * @param testInstance testInstance
-     */
-    public void setTestInstance(Object testInstance) {
-        this.testInstance = testInstance;
+    @Override
+    public String getTestClassDisplayName() {
+        return classTestDescriptor.getDisplayName();
     }
 
-    /**
-     * Method to get the test instance
-     *
-     * @return the test instance
-     */
     @Override
     public Object getTestInstance() {
-        return testInstance;
+        throw new IllegalStateException("Not implemented");
     }
 
     @Override
     public <T> T getTestInstance(Class<T> type) {
-        return type.cast(getTestInstance());
-    }
-
-    /**
-     * Method to set the test argument parallelims
-     *
-     * @param testArgumentParallelism testArgumentParallelism
-     */
-    public void setTestArgumentParallelism(int testArgumentParallelism) {
-        this.testArgumentParallelism = testArgumentParallelism;
+        throw new IllegalStateException("Not implemented");
     }
 
     @Override
     public int getTestArgumentParallelism() {
-        return testArgumentParallelism;
+        return classTestDescriptor.getTestArgumentParallelism();
     }
 
     @Override
@@ -114,12 +87,10 @@ public class DefaultClassContext implements ClassContext {
         return "DefaultClassContext{"
                 + "engineContext="
                 + engineContext
+                + ", classTestDescriptor="
+                + classTestDescriptor
                 + ", store="
                 + store
-                + ", testClass="
-                + testClass
-                + ", testInstance="
-                + testInstance
                 + '}';
     }
 
@@ -129,12 +100,12 @@ public class DefaultClassContext implements ClassContext {
         if (o == null || getClass() != o.getClass()) return false;
         DefaultClassContext that = (DefaultClassContext) o;
         return Objects.equals(engineContext, that.engineContext)
-                && Objects.equals(testClass, that.testClass)
-                && Objects.equals(testInstance, that.testInstance);
+                && Objects.equals(classTestDescriptor, that.classTestDescriptor)
+                && Objects.equals(store, that.store);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(engineContext, testClass, testInstance);
+        return Objects.hash(engineContext, classTestDescriptor, store);
     }
 }

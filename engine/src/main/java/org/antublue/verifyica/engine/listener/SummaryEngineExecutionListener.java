@@ -29,8 +29,8 @@ import org.antublue.verifyica.engine.common.AnsiColorStringBuilder;
 import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
-import org.antublue.verifyica.engine.descriptor.MethodTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
+import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.support.HumanReadableTimeSupport;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
@@ -99,10 +99,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     private final Map<ArgumentTestDescriptor, String> argumentTestDescriptorSkippedMap;
 
-    private final Map<MethodTestDescriptor, TestExecutionResult>
+    private final Map<TestMethodTestDescriptor, TestExecutionResult>
             methodTestDescriptorTestExecutionResultMap;
 
-    private final Map<MethodTestDescriptor, String> methodTestDescriptorSkippedMap;
+    private final Map<TestMethodTestDescriptor, String> methodTestDescriptorSkippedMap;
 
     private final Map<String, AtomicLong> counterMap;
     private final StopWatch stopWatch;
@@ -143,8 +143,8 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             classTestDescriptorSkippedMap.put((ClassTestDescriptor) testDescriptor, reason);
         } else if (testDescriptor instanceof ArgumentTestDescriptor) {
             argumentTestDescriptorSkippedMap.put((ArgumentTestDescriptor) testDescriptor, reason);
-        } else if (testDescriptor instanceof MethodTestDescriptor) {
-            methodTestDescriptorSkippedMap.put((MethodTestDescriptor) testDescriptor, reason);
+        } else if (testDescriptor instanceof TestMethodTestDescriptor) {
+            methodTestDescriptorSkippedMap.put((TestMethodTestDescriptor) testDescriptor, reason);
         }
     }
 
@@ -157,9 +157,9 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         } else if (testDescriptor instanceof ArgumentTestDescriptor) {
             argumentTestDescriptorTestExecutionResultMap.put(
                     (ArgumentTestDescriptor) testDescriptor, testExecutionResult);
-        } else if (testDescriptor instanceof MethodTestDescriptor) {
+        } else if (testDescriptor instanceof TestMethodTestDescriptor) {
             methodTestDescriptorTestExecutionResultMap.put(
-                    (MethodTestDescriptor) testDescriptor, testExecutionResult);
+                    (TestMethodTestDescriptor) testDescriptor, testExecutionResult);
         }
 
         if (!testDescriptor.isRoot()
@@ -282,7 +282,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 }
             }
 
-            for (Map.Entry<MethodTestDescriptor, TestExecutionResult> mapEntry :
+            for (Map.Entry<TestMethodTestDescriptor, TestExecutionResult> mapEntry :
                     methodTestDescriptorTestExecutionResultMap.entrySet()) {
                 TestExecutionResult testExecutionResult = mapEntry.getValue();
                 TestExecutionResult.Status status = testExecutionResult.getStatus();

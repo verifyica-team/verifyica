@@ -21,18 +21,22 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 
-/** Class to implement ImmutableClassContext */
-public class ImmutableClassContext implements ClassContext {
+/** Class to implement DefaultClassContext */
+@SuppressWarnings("unchecked")
+public class DefaultClassInstanceContext implements ClassContext {
 
     private final ClassContext classContext;
+    private final Object testInstance;
 
     /**
      * Constructor
      *
      * @param classContext classContext
+     * @param testInstance testInstance
      */
-    private ImmutableClassContext(ClassContext classContext) {
+    public DefaultClassInstanceContext(ClassContext classContext, Object testInstance) {
         this.classContext = classContext;
+        this.testInstance = testInstance;
     }
 
     @Override
@@ -52,7 +56,7 @@ public class ImmutableClassContext implements ClassContext {
 
     @Override
     public <T> Class<T> getTestClass(Class<T> type) {
-        return classContext.getTestClass(type);
+        return (Class<T>) getTestClass().asSubclass(type);
     }
 
     @Override
@@ -62,12 +66,12 @@ public class ImmutableClassContext implements ClassContext {
 
     @Override
     public Object getTestInstance() {
-        return classContext.getTestInstance();
+        return testInstance;
     }
 
     @Override
     public <T> T getTestInstance(Class<T> type) {
-        return classContext.getTestInstance(type);
+        return type.cast(getTestInstance());
     }
 
     @Override
@@ -77,29 +81,25 @@ public class ImmutableClassContext implements ClassContext {
 
     @Override
     public String toString() {
-        return "ImmutableClassContext{" + "classContext=" + classContext + '}';
+        return "DefaultClassInstanceContext{"
+                + "classContext="
+                + classContext
+                + ", testInstance="
+                + testInstance
+                + '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ImmutableClassContext that = (ImmutableClassContext) o;
-        return Objects.equals(classContext, that.classContext);
+        DefaultClassInstanceContext that = (DefaultClassInstanceContext) o;
+        return Objects.equals(classContext, that.classContext)
+                && Objects.equals(testInstance, that.testInstance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(classContext);
-    }
-
-    /**
-     * Method to wrap a ClassContext
-     *
-     * @param classContext classContext
-     * @return an ImmutableClassContext
-     */
-    public static ClassContext wrap(ClassContext classContext) {
-        return new ImmutableClassContext(classContext);
+        return Objects.hash(classContext, testInstance);
     }
 }

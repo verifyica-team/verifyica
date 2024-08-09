@@ -21,32 +21,26 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement DefaultArgumentContext */
 public class DefaultArgumentContext implements ArgumentContext {
 
-    private final DefaultClassContext defaultClassContext;
+    private final ClassContext classContext;
+    private final ArgumentTestDescriptor argumentTestDescriptor;
     private final Store store;
 
-    private Object testInstance;
-    private Argument<?> argument;
-
-    /**
-     * Constructor
-     *
-     * @param defaultClassContext classContextImpl
-     */
-    public DefaultArgumentContext(DefaultClassContext defaultClassContext) {
-        ArgumentSupport.notNull(defaultClassContext, "defaultClassContext null");
-
-        this.defaultClassContext = defaultClassContext;
+    public DefaultArgumentContext(
+            ClassContext classContext, ArgumentTestDescriptor argumentTestDescriptor) {
+        this.classContext = classContext;
+        this.argumentTestDescriptor = argumentTestDescriptor;
         this.store = new DefaultStore();
     }
 
     @Override
     public ClassContext getClassContext() {
-        return defaultClassContext;
+        return classContext;
     }
 
     @Override
@@ -58,6 +52,7 @@ public class DefaultArgumentContext implements ArgumentContext {
     public <T> Argument<T> getTestArgument(Class<T> type) {
         ArgumentSupport.notNull(type, "type is null;");
 
+        Argument<?> argument = argumentTestDescriptor.getTestArgument();
         return Argument.of(argument.getName(), type.cast(argument.getPayload()));
     }
 
@@ -66,48 +61,15 @@ public class DefaultArgumentContext implements ArgumentContext {
         return store;
     }
 
-    /**
-     * Method to set the test instance
-     *
-     * @param testInstance testInstance
-     */
-    public void setTestInstance(Object testInstance) {
-        ArgumentSupport.notNull(testInstance, "testInstance is null");
-
-        this.testInstance = testInstance;
-    }
-
-    /**
-     * Method to get the test instance
-     *
-     * @return the test instance
-     */
-    public Object getTestInstance() {
-        return testInstance;
-    }
-
-    /**
-     * Method to set the argument
-     *
-     * @param argument argument
-     */
-    public void setTestArgument(Argument<?> argument) {
-        ArgumentSupport.notNull(argument, "argument is null");
-
-        this.argument = argument;
-    }
-
     @Override
     public String toString() {
         return "DefaultArgumentContext{"
-                + "defaultClassContext="
-                + defaultClassContext
+                + "classContext="
+                + classContext
+                + ", argumentTestDescriptor="
+                + argumentTestDescriptor
                 + ", store="
                 + store
-                + ", testInstance="
-                + testInstance
-                + ", argument="
-                + argument
                 + '}';
     }
 
@@ -116,12 +78,13 @@ public class DefaultArgumentContext implements ArgumentContext {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DefaultArgumentContext that = (DefaultArgumentContext) o;
-        return Objects.equals(defaultClassContext, that.defaultClassContext)
-                && Objects.equals(testInstance, that.testInstance);
+        return Objects.equals(classContext, that.classContext)
+                && Objects.equals(argumentTestDescriptor, that.argumentTestDescriptor)
+                && Objects.equals(store, that.store);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(defaultClassContext, testInstance);
+        return Objects.hash(classContext, argumentTestDescriptor, store);
     }
 }

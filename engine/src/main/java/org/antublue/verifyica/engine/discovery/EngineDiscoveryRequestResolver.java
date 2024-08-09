@@ -39,7 +39,7 @@ import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
-import org.antublue.verifyica.engine.descriptor.MethodTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.exception.TestClassException;
 import org.antublue.verifyica.engine.exception.UncheckedClassNotFoundException;
@@ -599,6 +599,7 @@ public class EngineDiscoveryRequestResolver {
                     new ClassTestDescriptor(
                             classTestDescriptorUniqueId,
                             DisplayNameSupport.getDisplayName(testClass),
+                            classDefinition.getTestArgumentParallelism(),
                             testClass,
                             MethodSupport.findMethods(
                                     testClass,
@@ -607,8 +608,7 @@ public class EngineDiscoveryRequestResolver {
                             MethodSupport.findMethods(
                                     testClass,
                                     Predicates.CONCLUDE_METHOD,
-                                    HierarchyTraversalMode.BOTTOM_UP),
-                            classDefinition.getTestArgumentParallelism());
+                                    HierarchyTraversalMode.BOTTOM_UP));
 
             engineDescriptor.addChild(classTestDescriptor);
 
@@ -635,27 +635,25 @@ public class EngineDiscoveryRequestResolver {
 
                 classTestDescriptor.addChild(argumentTestDescriptor);
 
-                for (Method method : classDefinition.getTestMethods()) {
+                for (Method testMethod : classDefinition.getTestMethods()) {
                     UniqueId testMethodDescriptorUniqueId =
-                            argumentTestDescriptorUniqueId.append("test", method.getName());
+                            argumentTestDescriptorUniqueId.append("test", testMethod.getName());
 
-                    MethodTestDescriptor methodTestDescriptor =
-                            new MethodTestDescriptor(
+                    TestMethodTestDescriptor testMethodTestDescriptor =
+                            new TestMethodTestDescriptor(
                                     testMethodDescriptorUniqueId,
-                                    DisplayNameSupport.getDisplayName(method),
-                                    testClass,
-                                    testArgument,
+                                    DisplayNameSupport.getDisplayName(testMethod),
                                     MethodSupport.findMethods(
                                             testClass,
                                             Predicates.BEFORE_EACH_METHOD,
                                             HierarchyTraversalMode.TOP_DOWN),
-                                    method,
+                                    testMethod,
                                     MethodSupport.findMethods(
                                             testClass,
                                             Predicates.AFTER_EACH_METHOD,
                                             HierarchyTraversalMode.BOTTOM_UP));
 
-                    argumentTestDescriptor.addChild(methodTestDescriptor);
+                    argumentTestDescriptor.addChild(testMethodTestDescriptor);
                 }
 
                 argumentIndex++;

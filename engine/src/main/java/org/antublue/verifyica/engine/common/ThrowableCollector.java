@@ -17,16 +17,18 @@
 package org.antublue.verifyica.engine.common;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement ThrowableCollector */
 public class ThrowableCollector {
 
-    private final ArrayList<Throwable> throwables;
+    private final List<Throwable> throwables;
 
     /** Constructor */
     public ThrowableCollector() {
-        throwables = new ArrayList<>();
+        throwables = Collections.synchronizedList(new ArrayList<>());
     }
 
     /**
@@ -51,6 +53,21 @@ public class ThrowableCollector {
         if (throwable != null) {
             throwables.add(throwable);
         }
+    }
+
+    /**
+     * Method to add a Throwable is not null
+     *
+     * @param throwables throwables
+     */
+    public void addAll(List<Throwable> throwables) {
+        if (throwables != null) {
+            throwables.forEach(throwable -> add(throwable));
+        }
+    }
+
+    public void add(ThrowableCollector throwableCollector) {
+        throwables.addAll(throwableCollector.throwables);
     }
 
     /**
