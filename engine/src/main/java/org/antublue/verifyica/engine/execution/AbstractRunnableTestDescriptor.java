@@ -16,6 +16,15 @@
 
 package org.antublue.verifyica.engine.execution;
 
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
+import org.junit.platform.engine.TestDescriptor;
+
 /** Class to implement AbstractRunnableTestDescriptor */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public abstract class AbstractRunnableTestDescriptor implements Runnable {
@@ -36,4 +45,41 @@ public abstract class AbstractRunnableTestDescriptor implements Runnable {
 
     /** Method to execute */
     protected abstract void execute();
+
+    /**
+     * Method to get a List of ArgumentTestDescriptors
+     *
+     * @param classTestDescriptor classTestDescriptor
+     * @return a List of ArgumentTestDescriptors
+     */
+    protected static List<ArgumentTestDescriptor> getArgumentTestDescriptors(
+            ClassTestDescriptor classTestDescriptor) {
+        return classTestDescriptor.getChildren().stream()
+                .filter(
+                        (Predicate<TestDescriptor>)
+                                testDescriptor -> testDescriptor instanceof ArgumentTestDescriptor)
+                .map(
+                        (Function<TestDescriptor, ArgumentTestDescriptor>)
+                                testDescriptor -> (ArgumentTestDescriptor) testDescriptor)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Method to get a List of child TestMethodDescriptors
+     *
+     * @param argumentTestDescriptor argumentTestDescriptors
+     * @return a List of child TestMethodTestDescriptor
+     */
+    protected static List<TestMethodTestDescriptor> getTestMethodTestDescriptors(
+            ArgumentTestDescriptor argumentTestDescriptor) {
+        return argumentTestDescriptor.getChildren().stream()
+                .filter(
+                        (Predicate<TestDescriptor>)
+                                testDescriptor ->
+                                        testDescriptor instanceof TestMethodTestDescriptor)
+                .map(
+                        (Function<TestDescriptor, TestMethodTestDescriptor>)
+                                testDescriptor -> (TestMethodTestDescriptor) testDescriptor)
+                .collect(Collectors.toList());
+    }
 }

@@ -18,9 +18,6 @@ package org.antublue.verifyica.engine.execution;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
@@ -33,7 +30,6 @@ import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.ExecutionRequest;
-import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement ArgumentTestDescriptorRunnable */
@@ -49,6 +45,13 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
     private final List<Method> afterAllMethods;
     private final ArgumentContext argumentContext;
 
+    /**
+     * Constructor
+     *
+     * @param executionRequest executionRequest
+     * @param classContext classContext
+     * @param argumentTestDescriptor argumentTestDescriptor
+     */
     public RunnableArgumentTestDescriptor(
             ExecutionRequest executionRequest,
             ClassContext classContext,
@@ -173,20 +176,5 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
         executionRequest
                 .getEngineExecutionListener()
                 .executionFinished(argumentTestDescriptor, testExecutionResult);
-    }
-
-    private static List<TestMethodTestDescriptor> getTestMethodTestDescriptors(
-            ArgumentTestDescriptor argumentTestDescriptor) {
-        LOGGER.trace("getTestMethodTestDescriptors() %", argumentTestDescriptor);
-
-        return argumentTestDescriptor.getChildren().stream()
-                .filter(
-                        (Predicate<TestDescriptor>)
-                                testDescriptor ->
-                                        testDescriptor instanceof TestMethodTestDescriptor)
-                .map(
-                        (Function<TestDescriptor, TestMethodTestDescriptor>)
-                                testDescriptor -> (TestMethodTestDescriptor) testDescriptor)
-                .collect(Collectors.toList());
     }
 }

@@ -16,11 +16,20 @@
 
 package org.antublue.verifyica.engine.execution;
 
+import org.antublue.verifyica.engine.support.ArgumentSupport;
+
+/** Class to implement NamedRunnable */
 public class NamedRunnable implements Runnable {
 
     private final Runnable runnable;
     private final String threadName;
 
+    /**
+     * Constructor
+     *
+     * @param runnable runnable
+     * @param threadName threadName
+     */
     public NamedRunnable(Runnable runnable, String threadName) {
         this.runnable = runnable;
         this.threadName = threadName;
@@ -39,7 +48,17 @@ public class NamedRunnable implements Runnable {
         }
     }
 
+    /**
+     * Method to wrap a Runnable
+     *
+     * @param runnable runnable
+     * @param threadName threadName
+     * @return a NamedRunnable
+     */
     public static Runnable wrap(Runnable runnable, String threadName) {
-        return new NamedRunnable(runnable, threadName);
+        ArgumentSupport.notNull(runnable, "runnable is null");
+        ArgumentSupport.notNullOrEmpty(threadName, "threadName is null", "threadName is empty");
+
+        return new NamedRunnable(runnable, threadName.trim());
     }
 }

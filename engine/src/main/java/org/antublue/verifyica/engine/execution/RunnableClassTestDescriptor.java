@@ -23,9 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
@@ -44,7 +41,6 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ExecutorServiceSupport;
 import org.antublue.verifyica.engine.support.HashSupport;
 import org.junit.platform.engine.ExecutionRequest;
-import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
 
 public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor {
@@ -265,26 +261,6 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
         executionRequest
                 .getEngineExecutionListener()
                 .executionFinished(classTestDescriptor, testExecutionResult);
-    }
-
-    /**
-     * Method to get a List of ArgumentTestDescriptors
-     *
-     * @param classTestDescriptor classTestDescriptor
-     * @return a List of ArgumentTestDescriptors
-     */
-    private static List<ArgumentTestDescriptor> getArgumentTestDescriptors(
-            ClassTestDescriptor classTestDescriptor) {
-        LOGGER.trace("getArgumentTestDescriptors() %s", classTestDescriptor);
-
-        return classTestDescriptor.getChildren().stream()
-                .filter(
-                        (Predicate<TestDescriptor>)
-                                testDescriptor -> testDescriptor instanceof ArgumentTestDescriptor)
-                .map(
-                        (Function<TestDescriptor, ArgumentTestDescriptor>)
-                                testDescriptor -> (ArgumentTestDescriptor) testDescriptor)
-                .collect(Collectors.toList());
     }
 
     /**
