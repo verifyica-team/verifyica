@@ -56,6 +56,11 @@ public class ImmutableClassContext implements ClassContext {
     }
 
     @Override
+    public String getTestClassDisplayName() {
+        return classContext.getTestClassDisplayName();
+    }
+
+    @Override
     public Object getTestInstance() {
         return classContext.getTestInstance();
     }

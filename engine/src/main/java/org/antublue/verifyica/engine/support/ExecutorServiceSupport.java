@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.common;
+package org.antublue.verifyica.engine.support;
 
 import io.github.thunkware.vt.bridge.ExecutorTool;
 import io.github.thunkware.vt.bridge.SemaphoreExecutor;
 import io.github.thunkware.vt.bridge.ThreadTool;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
 
-/** Class to implement ExecutorServiceFactory */
-public class ExecutorServiceFactory {
+/** Class to implement ExecutorServiceSupport */
+public class ExecutorServiceSupport {
 
     /** Constructor */
-    private ExecutorServiceFactory() {
+    private ExecutorServiceSupport() {
         // INTENTIONALLY BLANK
     }
 
@@ -42,13 +45,16 @@ public class ExecutorServiceFactory {
      * @param threads threads
      * @return an ExecutorService
      */
-    public ExecutorService createExecutorService(int threads) {
+    public static ExecutorService createExecutorService(int threads) {
         ArgumentSupport.isTrue(threads > 0, "threads is less than 1");
 
         ExecutorService executorService;
 
         if (ThreadTool.hasVirtualThreads()) {
-            executorService = ExecutorTool.newVirtualThreadPerTaskExecutor();
+            executorService =
+                    new SemaphoreExecutor(
+                            ExecutorTool.newVirtualThreadPerTaskExecutor(),
+                            new Semaphore(threads, true));
         } else {
             executorService =
                     new ThreadPoolExecutor(
@@ -60,32 +66,52 @@ public class ExecutorServiceFactory {
                             new BlockingRejectedExecutionHandler());
         }
 
-        return new SemaphoreExecutor(executorService, threads);
+        return executorService;
     }
 
     /**
-     * Method to get a singleton instance
+     * Method to create an ExecutorService with a fixed number of permits
      *
-     * @return the singleton instance
+     * @param executorService executorService
+     * @param permits permits
+     * @return an ExecutorService with a fixed number of permits
      */
-    public static ExecutorServiceFactory getInstance() {
-        return SingletonHolder.SINGLETON;
+    public static ExecutorService createSemaphoreExecutorService(
+            ExecutorService executorService, int permits) {
+        ArgumentSupport.notNull(executorService, "executorService is null");
+        ArgumentSupport.isTrue(permits > 0, "permits is less than 1");
+
+        return createSemaphoreExecutorService(executorService, new Semaphore(permits, true));
     }
 
     /**
-     * Method to return if using virtual threads
+     * Method to create an ExecutorService with a fixed number of permits
      *
-     * @return true if using virtual threads, else false
+     * @param executorService executorService
+     * @param semaphore semaphore
+     * @return an ExecutorService with a fixed number of permits
      */
-    public static boolean usingVirtualThreads() {
-        return ThreadTool.hasVirtualThreads();
+    public static ExecutorService createSemaphoreExecutorService(
+            ExecutorService executorService, Semaphore semaphore) {
+        ArgumentSupport.notNull(executorService, "executorService is null");
+        ArgumentSupport.notNull(semaphore, "semaphore is null");
+
+        return new SemaphoreExecutor(executorService, semaphore);
     }
 
-    /** Class to hold the singleton instance */
-    private static class SingletonHolder {
-
-        /** The singleton instance */
-        private static final ExecutorServiceFactory SINGLETON = new ExecutorServiceFactory();
+    /**
+     * Method to wait on all Futures
+     *
+     * @param futures futures
+     */
+    public static void waitForAll(List<Future<?>> futures) {
+        for (Future<?> future : futures) {
+            try {
+                future.get();
+            } catch (Throwable t) {
+                throw new EngineException("Exception waiting on future", t);
+            }
+        }
     }
 
     /** Class to implement BlockingRejectedExecutionHandler */

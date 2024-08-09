@@ -30,6 +30,7 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.interceptor.ArgumentInterceptorContext;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
+import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.context.DefaultArgumentInterceptorContext;
 import org.antublue.verifyica.engine.context.DefaultClassInterceptorContext;
@@ -204,7 +205,7 @@ public class ClassInterceptorRegistry {
     public void prepare(ClassContext classContext, List<Method> prepareMethods) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
 
-        DefaultClassInterceptorContext argumentInterceptorContext =
+        ClassInterceptorContext argumentInterceptorContext =
                 new DefaultClassInterceptorContext(classContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
@@ -237,16 +238,18 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postPrepare(
-                                    argumentInterceptorContext, throwableCollector.getThrowable());
+                            classInterceptor.postPrepare(argumentInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -261,10 +264,9 @@ public class ClassInterceptorRegistry {
         ClassContext classContext = argumentContext.getClassContext();
 
         Class<?> testClass = classContext.getTestClass();
-
         Object testInstance = classContext.getTestInstance();
 
-        DefaultArgumentInterceptorContext argumentInterceptorContext =
+        ArgumentInterceptorContext argumentInterceptorContext =
                 new DefaultArgumentInterceptorContext(argumentContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
@@ -297,16 +299,18 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postBeforeAll(
-                                    argumentInterceptorContext, throwableCollector.getThrowable());
+                            classInterceptor.postBeforeAll(argumentInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -321,10 +325,9 @@ public class ClassInterceptorRegistry {
         ClassContext classContext = argumentContext.getClassContext();
 
         Class<?> testClass = classContext.getTestClass();
-
         Object testInstance = classContext.getTestInstance();
 
-        DefaultArgumentInterceptorContext argumentInterceptorContext =
+        ArgumentInterceptorContext argumentInterceptorContext =
                 new DefaultArgumentInterceptorContext(argumentContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
@@ -357,16 +360,18 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postBeforeEach(
-                                    argumentInterceptorContext, throwableCollector.getThrowable());
+                            classInterceptor.postBeforeEach(argumentInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -415,18 +420,19 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                             classInterceptor.postTest(
-                                    argumentInterceptorContext,
-                                    testMethod,
-                                    throwableCollector.getThrowable());
+                                    argumentInterceptorContext, testMethod, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -444,7 +450,7 @@ public class ClassInterceptorRegistry {
 
         Object testInstance = classContext.getTestInstance();
 
-        DefaultArgumentInterceptorContext argumentInterceptorContext =
+        ArgumentInterceptorContext argumentInterceptorContext =
                 new DefaultArgumentInterceptorContext(argumentContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
@@ -477,16 +483,18 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postAfterEach(
-                                    argumentInterceptorContext, throwableCollector.getThrowable());
+                            classInterceptor.postAfterEach(argumentInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -504,7 +512,7 @@ public class ClassInterceptorRegistry {
 
         Object testInstance = classContext.getTestInstance();
 
-        DefaultArgumentInterceptorContext argumentInterceptorContext =
+        ArgumentInterceptorContext argumentInterceptorContext =
                 new DefaultArgumentInterceptorContext(argumentContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
@@ -537,16 +545,18 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postAfterAll(
-                                    argumentInterceptorContext, throwableCollector.getThrowable());
+                            classInterceptor.postAfterAll(argumentInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -559,7 +569,7 @@ public class ClassInterceptorRegistry {
     public void conclude(ClassContext classContext, List<Method> concludeMethods) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
 
-        DefaultClassInterceptorContext defaultClassInterceptorContext =
+        ClassInterceptorContext defaultClassInterceptorContext =
                 new DefaultClassInterceptorContext(classContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
@@ -592,17 +602,19 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                             classInterceptor.postConclude(
-                                    defaultClassInterceptorContext,
-                                    throwableCollector.getThrowable());
+                                    defaultClassInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -614,7 +626,7 @@ public class ClassInterceptorRegistry {
     public void onDestroy(ClassContext classContext) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
 
-        DefaultClassInterceptorContext classInterceptorContext =
+        ClassInterceptorContext classInterceptorContext =
                 new DefaultClassInterceptorContext(classContext);
 
         for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {

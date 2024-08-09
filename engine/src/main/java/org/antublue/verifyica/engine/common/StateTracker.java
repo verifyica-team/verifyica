@@ -18,7 +18,9 @@ package org.antublue.verifyica.engine.common;
 
 import static java.lang.String.format;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,8 +34,8 @@ import org.antublue.verifyica.engine.support.ArgumentSupport;
 @SuppressWarnings("PMD.UnusedMethod")
 public class StateTracker<T> {
 
-    private final Map<T, Entry<T>> map;
-    private Entry<T> lastEntry;
+    private final Map<T, StateEntry<T>> map;
+    private StateEntry<T> currentStateEntry;
 
     /** Constructor */
     public StateTracker() {
@@ -45,17 +47,16 @@ public class StateTracker<T> {
      *
      * @param state state
      */
-    public void put(T state) {
+    public void setState(T state) {
         ArgumentSupport.notNull(state, "state is null");
 
         if (map.containsKey(state)) {
             throw new IllegalStateException(
-                    format("Programmer error, state [%s] already added", state));
+                    format("Application error, state [%s] already encountered", state));
         }
 
-        Entry<T> entry = new Entry<>(state);
-        map.put(state, entry);
-        lastEntry = entry;
+        currentStateEntry = new StateEntry<>(state);
+        map.put(state, currentStateEntry);
     }
 
     /**
@@ -64,18 +65,17 @@ public class StateTracker<T> {
      * @param state state
      * @param throwable throwable
      */
-    public void put(T state, Throwable throwable) {
+    public void setState(T state, Throwable throwable) {
         ArgumentSupport.notNull(state, "state is null");
         ArgumentSupport.notNull(throwable, "throwable is null");
 
         if (map.containsKey(state)) {
             throw new IllegalStateException(
-                    format("Programmer error, state [%s] already added", state));
+                    format("Application error, state [%s] already encountered", state));
         }
 
-        Entry<T> entry = new Entry<>(state, throwable);
-        map.put(state, entry);
-        lastEntry = entry;
+        currentStateEntry = new StateEntry<>(state, throwable);
+        map.put(state, currentStateEntry);
     }
 
     /**
@@ -84,9 +84,37 @@ public class StateTracker<T> {
      * @param state state
      * @return true if the state exists, else false
      */
-    public boolean contains(T state) {
+    public boolean containsState(T state) {
         ArgumentSupport.notNull(state, "state is null");
         return map.containsKey(state);
+    }
+
+    /**
+     * Method to return the current state
+     *
+     * @return the last state
+     */
+    public T getState() {
+        return currentStateEntry.getState();
+    }
+
+    /**
+     * Method to return if the last state matches a state
+     *
+     * @param state state
+     * @return true if the last state matches, else false
+     */
+    public boolean isState(T state) {
+        if (state == null && currentStateEntry != null) {
+            return false;
+        }
+
+        return currentStateEntry != null && state.equals(currentStateEntry.getState());
+    }
+
+    /** Method to clear all states */
+    public void clear() {
+        map.clear();
     }
 
     /**
@@ -94,20 +122,29 @@ public class StateTracker<T> {
      *
      * @return the state containing the first Throwable
      */
-    public Optional<Entry<T>> getFirstStateEntryWithThrowable() {
-        for (Map.Entry<T, Entry<T>> mapEntry : map.entrySet()) {
-            Entry<T> entry = mapEntry.getValue();
-            if (entry.hasThrowable()) {
-                return Optional.of(entry);
+    public Optional<StateEntry<T>> getStateWithThrowable() {
+        for (Map.Entry<T, StateEntry<T>> mapEntry : map.entrySet()) {
+            StateEntry<T> stateEntry = mapEntry.getValue();
+            if (stateEntry.hasThrowable()) {
+                return Optional.of(stateEntry);
             }
         }
 
         return Optional.empty();
     }
 
+    /**
+     * Method to get a Collection of states being observed
+     *
+     * @return a Collection of states observed tracked
+     */
+    public Collection<StateEntry<T>> getObservedStates() {
+        return new LinkedHashSet<>(map.values());
+    }
+
     @Override
     public String toString() {
-        return "StateTracker{" + "map=" + map + ", lastEntry=" + lastEntry + '}';
+        return "StateTracker{" + "map=" + map + ", lastStateEntry=" + currentStateEntry + '}';
     }
 
     @Override
@@ -115,12 +152,13 @@ public class StateTracker<T> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StateTracker<?> that = (StateTracker<?>) o;
-        return Objects.equals(map, that.map) && Objects.equals(lastEntry, that.lastEntry);
+        return Objects.equals(map, that.map)
+                && Objects.equals(currentStateEntry, that.currentStateEntry);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(map, lastEntry);
+        return Objects.hash(map, currentStateEntry);
     }
 
     /**
@@ -128,7 +166,7 @@ public class StateTracker<T> {
      *
      * @param <T> the type
      */
-    public static class Entry<T> {
+    public static class StateEntry<T> {
 
         private final T state;
         private final Throwable throwable;
@@ -138,7 +176,7 @@ public class StateTracker<T> {
          *
          * @param state state
          */
-        public Entry(T state) {
+        public StateEntry(T state) {
             this.state = state;
             this.throwable = null;
         }
@@ -149,7 +187,7 @@ public class StateTracker<T> {
          * @param state state
          * @param throwable throwable
          */
-        public Entry(T state, Throwable throwable) {
+        public StateEntry(T state, Throwable throwable) {
             this.state = state;
             this.throwable = throwable;
         }
@@ -190,8 +228,9 @@ public class StateTracker<T> {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Entry<?> entry = (Entry<?>) o;
-            return Objects.equals(state, entry.state) && Objects.equals(throwable, entry.throwable);
+            StateEntry<?> stateEntry = (StateEntry<?>) o;
+            return Objects.equals(state, stateEntry.state)
+                    && Objects.equals(throwable, stateEntry.throwable);
         }
 
         @Override

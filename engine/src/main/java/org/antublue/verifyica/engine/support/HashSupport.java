@@ -38,7 +38,7 @@ public class HashSupport {
      * @param length length
      * @return an alphanumeric hash
      */
-    public static String alphaNumericHash(int length) {
+    public static String alphanumeric(int length) {
         ArgumentSupport.isTrue(length > 0, "length is less than 1");
 
         StringBuilder stringBuilder = new StringBuilder(length);

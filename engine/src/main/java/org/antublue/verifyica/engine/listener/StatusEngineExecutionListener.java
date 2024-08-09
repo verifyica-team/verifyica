@@ -18,16 +18,19 @@ package org.antublue.verifyica.engine.listener;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.common.AnsiColor;
 import org.antublue.verifyica.engine.common.AnsiColorStringBuilder;
+import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
-import org.antublue.verifyica.engine.descriptor.ExecutableTestDescriptor;
-import org.antublue.verifyica.engine.descriptor.MethodTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.DisplayNameSupport;
@@ -62,6 +65,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     private final boolean consoleLogMessagesFinished;
     private final String consolePassMessage;
     private final String consoleFailMessage;
+
+    private final Map<TestDescriptor, StopWatch> stopWatchMap;
 
     /** Constructor */
     public StatusEngineExecutionListener() {
@@ -154,33 +159,29 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                         .orElse("FAIL"))
                         .color(AnsiColor.TEXT_RESET)
                         .toString();
+
+        stopWatchMap = new ConcurrentHashMap<>();
     }
 
     @Override
     public void executionStarted(TestDescriptor testDescriptor) {
-        if (consoleLogMessagesStarted && testDescriptor instanceof ExecutableTestDescriptor) {
-            try {
-                ExecutableTestDescriptor executableTestDescriptor =
-                        (ExecutableTestDescriptor) testDescriptor;
+        if (consoleLogMessagesStarted && shouldProcessDescriptor(testDescriptor)) {
+            stopWatchMap.put(testDescriptor, new StopWatch());
 
-                Class<?> testClass = executableTestDescriptor.getTestClass();
+            try {
+                Class<?> testClass = getTestClass(testDescriptor);
                 String testClassDisplayName = DisplayNameSupport.getDisplayName(testClass);
 
                 String testMethodDisplayName = null;
-                if (executableTestDescriptor instanceof MethodTestDescriptor) {
-                    Method testMethod =
-                            ((MethodTestDescriptor) executableTestDescriptor).getTestMethod();
+                if (testDescriptor instanceof TestMethodTestDescriptor) {
+                    Method testMethod = getTestMethod(testDescriptor);
                     testMethodDisplayName = DisplayNameSupport.getDisplayName(testMethod) + "()";
                 }
 
                 String testArgumentDisplayName = null;
-                if (executableTestDescriptor instanceof ArgumentTestDescriptor) {
-                    Argument<?> testArgument =
-                            ((ArgumentTestDescriptor) executableTestDescriptor).getTestArgument();
-                    testArgumentDisplayName = testArgument.getName();
-                } else if (executableTestDescriptor instanceof MethodTestDescriptor) {
-                    Argument<?> testArgument =
-                            ((MethodTestDescriptor) executableTestDescriptor).getTestArgument();
+                if (testDescriptor instanceof TestMethodTestDescriptor
+                        || testDescriptor instanceof ArgumentTestDescriptor) {
+                    Argument<?> testArgument = getTestArgument(testDescriptor);
                     testArgumentDisplayName = testArgument.getName();
                 }
 
@@ -214,32 +215,25 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     @Override
     public void executionSkipped(TestDescriptor testDescriptor, String reason) {
-        if (consoleLogMessagesSkipped && testDescriptor instanceof ExecutableTestDescriptor) {
+        if (consoleLogMessagesSkipped && shouldProcessDescriptor(testDescriptor)) {
+            Duration elapsedTime = stopWatchMap.remove(testDescriptor).stop().elapsedTime();
+
             try {
-                ExecutableTestDescriptor executableTestDescriptor =
-                        (ExecutableTestDescriptor) testDescriptor;
-                Class<?> testClass = executableTestDescriptor.getTestClass();
+                Class<?> testClass = getTestClass(testDescriptor);
                 String testClassDisplayName = DisplayNameSupport.getDisplayName(testClass);
 
                 String testMethodDisplayName = null;
-                if (executableTestDescriptor instanceof MethodTestDescriptor) {
-                    Method testMethod =
-                            ((MethodTestDescriptor) executableTestDescriptor).getTestMethod();
+                if (testDescriptor instanceof TestMethodTestDescriptor) {
+                    Method testMethod = getTestMethod(testDescriptor);
                     testMethodDisplayName = DisplayNameSupport.getDisplayName(testMethod) + "()";
                 }
 
                 String testArgumentDisplayName = null;
-                if (executableTestDescriptor instanceof ArgumentTestDescriptor) {
-                    Argument<?> testArgument =
-                            ((ArgumentTestDescriptor) executableTestDescriptor).getTestArgument();
-                    testArgumentDisplayName = testArgument.getName();
-                } else if (executableTestDescriptor instanceof MethodTestDescriptor) {
-                    Argument<?> testArgument =
-                            ((MethodTestDescriptor) executableTestDescriptor).getTestArgument();
+                if (testDescriptor instanceof TestMethodTestDescriptor
+                        || testDescriptor instanceof ArgumentTestDescriptor) {
+                    Argument<?> testArgument = getTestArgument(testDescriptor);
                     testArgumentDisplayName = testArgument.getName();
                 }
-
-                Duration elapsedTime = executableTestDescriptor.getStopWatch().elapsedTime();
 
                 AnsiColorStringBuilder ansiColorStringBuilder =
                         new AnsiColorStringBuilder()
@@ -281,32 +275,25 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     @Override
     public void executionFinished(
             TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
-        if (consoleLogMessagesFinished && testDescriptor instanceof ExecutableTestDescriptor) {
+        if (consoleLogMessagesFinished && shouldProcessDescriptor(testDescriptor)) {
+            Duration elapsedTime = stopWatchMap.remove(testDescriptor).stop().elapsedTime();
+
             try {
-                ExecutableTestDescriptor executableTestDescriptor =
-                        (ExecutableTestDescriptor) testDescriptor;
-                Class<?> testClass = executableTestDescriptor.getTestClass();
+                Class<?> testClass = getTestClass(testDescriptor);
                 String testClassDisplayName = DisplayNameSupport.getDisplayName(testClass);
 
                 String testMethodDisplayName = null;
-                if (executableTestDescriptor instanceof MethodTestDescriptor) {
-                    Method testMethod =
-                            ((MethodTestDescriptor) executableTestDescriptor).getTestMethod();
+                if (testDescriptor instanceof TestMethodTestDescriptor) {
+                    Method testMethod = getTestMethod(testDescriptor);
                     testMethodDisplayName = DisplayNameSupport.getDisplayName(testMethod) + "()";
                 }
 
                 String testArgumentDisplayName = null;
-                if (executableTestDescriptor instanceof ArgumentTestDescriptor) {
-                    Argument<?> testArgument =
-                            ((ArgumentTestDescriptor) executableTestDescriptor).getTestArgument();
-                    testArgumentDisplayName = testArgument.getName();
-                } else if (executableTestDescriptor instanceof MethodTestDescriptor) {
-                    Argument<?> testArgument =
-                            ((MethodTestDescriptor) executableTestDescriptor).getTestArgument();
+                if (testDescriptor instanceof TestMethodTestDescriptor
+                        || testDescriptor instanceof ArgumentTestDescriptor) {
+                    Argument<?> testArgument = getTestArgument(testDescriptor);
                     testArgumentDisplayName = testArgument.getName();
                 }
-
-                Duration elapsedTime = executableTestDescriptor.getStopWatch().elapsedTime();
 
                 AnsiColorStringBuilder ansiColorStringBuilder =
                         new AnsiColorStringBuilder()
@@ -367,5 +354,34 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 t.printStackTrace(System.err);
             }
         }
+    }
+
+    private static Class<?> getTestClass(TestDescriptor testDescriptor) {
+        if (testDescriptor instanceof TestMethodTestDescriptor) {
+            return ((ClassTestDescriptor) testDescriptor.getParent().get().getParent().get())
+                    .getTestClass();
+        } else if (testDescriptor instanceof ArgumentTestDescriptor) {
+            return ((ClassTestDescriptor) testDescriptor.getParent().get()).getTestClass();
+        } else {
+            return ((ClassTestDescriptor) testDescriptor).getTestClass();
+        }
+    }
+
+    private static Argument<?> getTestArgument(TestDescriptor testDescriptor) {
+        if (testDescriptor instanceof TestMethodTestDescriptor) {
+            return ((ArgumentTestDescriptor) testDescriptor.getParent().get()).getTestArgument();
+        } else {
+            return ((ArgumentTestDescriptor) testDescriptor).getTestArgument();
+        }
+    }
+
+    private static Method getTestMethod(TestDescriptor testDescriptor) {
+        return ((TestMethodTestDescriptor) testDescriptor).getTestMethod();
+    }
+
+    private static boolean shouldProcessDescriptor(TestDescriptor testDescriptor) {
+        return testDescriptor instanceof ClassTestDescriptor
+                || testDescriptor instanceof ArgumentTestDescriptor
+                || testDescriptor instanceof TestMethodTestDescriptor;
     }
 }

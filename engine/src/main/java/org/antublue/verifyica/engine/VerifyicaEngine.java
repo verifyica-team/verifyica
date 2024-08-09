@@ -30,23 +30,25 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
-import org.antublue.verifyica.engine.common.ExecutorServiceFactory;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
-import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
-import org.antublue.verifyica.engine.descriptor.ExecutableTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
+import org.antublue.verifyica.engine.descriptor.execution.NamedRunnable;
+import org.antublue.verifyica.engine.descriptor.execution.RunnableClassTestDescriptor;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.internal.engine.EngineInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.ExecutorServiceSupport;
 import org.antublue.verifyica.engine.support.HashSupport;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.ExecutionRequest;
@@ -166,16 +168,13 @@ public class VerifyicaEngine implements TestEngine {
 
         EngineContext engineContext = DefaultEngineContext.getInstance();
 
-        EngineInterceptorContext engineInterceptorContext =
-                new DefaultEngineInterceptorContext(engineContext);
-
         ExecutorService executorService =
-                ExecutorServiceFactory.getInstance()
-                        .createExecutorService(getEngineClassParallelism());
-
-        List<Future<Throwable>> futures = new ArrayList<>();
+                ExecutorServiceSupport.createExecutorService(getEngineClassParallelism());
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
+
+        EngineInterceptorContext engineInterceptorContext =
+                new DefaultEngineInterceptorContext(engineContext);
 
         try {
             EngineInterceptorRegistry.getInstance().beforeExecute(engineInterceptorContext);
@@ -184,55 +183,25 @@ public class VerifyicaEngine implements TestEngine {
                     .getEngineExecutionListener()
                     .executionStarted(executionRequest.getRootTestDescriptor());
 
-            String threadName = Thread.currentThread().getName();
+            List<ClassTestDescriptor> classTestDescriptors =
+                    getClassTestDescriptors(executionRequest);
 
-            executionRequest.getRootTestDescriptor().getChildren().stream()
-                    .filter(
-                            (Predicate<TestDescriptor>)
-                                    testDescriptor ->
-                                            testDescriptor instanceof ExecutableTestDescriptor)
-                    .map(
-                            (Function<TestDescriptor, ExecutableTestDescriptor>)
-                                    testDescriptor -> (ExecutableTestDescriptor) testDescriptor)
-                    .forEach(
-                            executableTestDescriptor -> {
-                                futures.add(
-                                        executorService.submit(
-                                                () -> {
-                                                    Throwable throwable = null;
+            LOGGER.trace("classTestDescriptors size [%d]", classTestDescriptors.size());
 
-                                                    try {
-                                                        Thread.currentThread()
-                                                                .setName(
-                                                                        threadName
-                                                                                + "/"
-                                                                                + HashSupport
-                                                                                        .alphaNumericHash(
-                                                                                                4));
+            List<Future<?>> futures = new ArrayList<>();
 
-                                                        executableTestDescriptor.execute(
-                                                                executionRequest,
-                                                                new DefaultClassContext(
-                                                                        engineContext));
-                                                    } catch (Throwable t) {
-                                                        throwable = t;
-                                                        t.printStackTrace(System.err);
-                                                    } finally {
-                                                        Thread.currentThread().setName(threadName);
-                                                    }
+            classTestDescriptors.forEach(
+                    classTestDescriptor ->
+                            futures.add(
+                                    executorService.submit(
+                                            NamedRunnable.wrap(
+                                                    new RunnableClassTestDescriptor(
+                                                            executionRequest,
+                                                            engineContext,
+                                                            classTestDescriptor),
+                                                    "verifyica/" + HashSupport.alphanumeric(4)))));
 
-                                                    return throwable;
-                                                }));
-                            });
-
-            futures.forEach(
-                    future -> {
-                        try {
-                            throwableCollector.add(future.get());
-                        } catch (Throwable t) {
-                            t.printStackTrace(System.err);
-                        }
-                    });
+            ExecutorServiceSupport.waitForAll(futures);
         } catch (Throwable t) {
             throwableCollector.add(t);
         } finally {
@@ -268,6 +237,18 @@ public class VerifyicaEngine implements TestEngine {
         LOGGER.trace("execution done");
     }
 
+    private static List<ClassTestDescriptor> getClassTestDescriptors(
+            ExecutionRequest executionRequest) {
+        return executionRequest.getRootTestDescriptor().getChildren().stream()
+                .filter(
+                        (Predicate<TestDescriptor>)
+                                testDescriptor -> testDescriptor instanceof ClassTestDescriptor)
+                .map(
+                        (Function<TestDescriptor, ClassTestDescriptor>)
+                                testDescriptor -> (ClassTestDescriptor) testDescriptor)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Method to get the engine class parallelism value
      *
@@ -300,7 +281,7 @@ public class VerifyicaEngine implements TestEngine {
                                 })
                         .orElse(Runtime.getRuntime().availableProcessors());
 
-        LOGGER.debug("getEngineClassParallelism() [%s]", engineParallelism);
+        LOGGER.trace("getEngineClassParallelism() [%s]", engineParallelism);
 
         return engineParallelism;
     }

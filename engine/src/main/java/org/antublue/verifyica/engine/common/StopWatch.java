@@ -17,7 +17,6 @@
 package org.antublue.verifyica.engine.common;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 /** Class to implement StopWatch */
@@ -66,9 +65,9 @@ public class StopWatch {
      */
     public Duration elapsedTime() {
         if (stopNanoTime == null) {
-            return Duration.of(System.nanoTime() - startNanoTime, ChronoUnit.NANOS);
+            return Duration.ofNanos(System.nanoTime() - startNanoTime);
         } else {
-            return Duration.of(stopNanoTime - startNanoTime, ChronoUnit.NANOS);
+            return Duration.ofNanos(stopNanoTime - startNanoTime);
         }
     }
 
