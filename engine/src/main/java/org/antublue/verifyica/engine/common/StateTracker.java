@@ -45,12 +45,12 @@ public class StateTracker<T> {
      *
      * @param state state
      */
-    public void put(T state) {
+    public void setState(T state) {
         ArgumentSupport.notNull(state, "state is null");
 
         if (map.containsKey(state)) {
             throw new IllegalStateException(
-                    format("Programmer error, state [%s] already added", state));
+                    format("Programmer error, state [%s] already encountered", state));
         }
 
         Entry<T> entry = new Entry<>(state);
@@ -64,13 +64,13 @@ public class StateTracker<T> {
      * @param state state
      * @param throwable throwable
      */
-    public void put(T state, Throwable throwable) {
+    public void setState(T state, Throwable throwable) {
         ArgumentSupport.notNull(state, "state is null");
         ArgumentSupport.notNull(throwable, "throwable is null");
 
         if (map.containsKey(state)) {
             throw new IllegalStateException(
-                    format("Programmer error, state [%s] already added", state));
+                    format("Programmer error, state [%s] already encountered", state));
         }
 
         Entry<T> entry = new Entry<>(state, throwable);
@@ -84,9 +84,34 @@ public class StateTracker<T> {
      * @param state state
      * @return true if the state exists, else false
      */
-    public boolean contains(T state) {
+    public boolean containsState(T state) {
         ArgumentSupport.notNull(state, "state is null");
         return map.containsKey(state);
+    }
+
+    /**
+     * Method to return the last state
+     *
+     * @return the last state
+     */
+    public T lastState() {
+        return lastEntry.state;
+    }
+
+    /**
+     * Method to return of the last state matches a state
+     *
+     * @param state state
+     * @return true of the last state matches, else false
+     */
+    public boolean isLastState(T state) {
+        ArgumentSupport.notNull(state, "state is null");
+
+        if (lastEntry == null) {
+            return false;
+        }
+
+        return state.equals(lastEntry.state);
     }
 
     /**

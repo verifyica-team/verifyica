@@ -83,7 +83,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
         StateTracker<String> stateTracker = new StateTracker<>();
 
         try {
-            stateTracker.put("instantiateTestInstance");
+            stateTracker.setState("instantiateTestInstance");
 
             Throwable throwable = null;
 
@@ -105,28 +105,28 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                     .afterInstantiate(
                             classContext.getEngineContext(), testClass, testInstance, throwable);
 
-            stateTracker.put("instantiateTestInstance->SUCCESS");
+            stateTracker.setState("instantiateTestInstance.success");
         } catch (Throwable t) {
-            stateTracker.put("instantiateTestInstance->FAILURE", t);
+            stateTracker.setState("instantiateTestInstance.failure", t);
         }
 
-        if (stateTracker.contains("instantiateTestInstance->SUCCESS")) {
+        if (stateTracker.isLastState("instantiateTestInstance.success")) {
             try {
-                stateTracker.put("prepare");
+                stateTracker.setState("prepare");
 
                 ClassInterceptorRegistry.getInstance()
                         .prepare(ImmutableClassContext.wrap(classInstanceContext), prepareMethods);
 
-                stateTracker.put("prepare->SUCCESS");
+                stateTracker.setState("prepare.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("prepare->FAILURE", t);
+                stateTracker.setState("prepare.failure", t);
             }
         }
 
-        if (stateTracker.contains("prepare->SUCCESS")) {
+        if (stateTracker.containsState("prepare.success")) {
             try {
-                stateTracker.put("doExecute");
+                stateTracker.setState("execute");
 
                 ExecutorService executorService =
                         ExecutorServiceSupport.createSemaphoreExecutorService(
@@ -149,16 +149,16 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
 
                 ExecutorServiceSupport.waitForAll(futures);
 
-                stateTracker.put("doExecute->SUCCESS");
+                stateTracker.setState("execute.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("doExecute->FAILURE", t);
+                stateTracker.setState("execute.failure", t);
             }
         }
 
-        if (stateTracker.contains("prepare->FAILURE")) {
+        if (stateTracker.containsState("prepare.failure")) {
             try {
-                stateTracker.put("doSkip");
+                stateTracker.setState("skip");
 
                 argumentTestDescriptors.forEach(
                         argumentTestDescriptor -> {
@@ -169,38 +169,38 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                         .getEngineExecutionListener()
                         .executionSkipped(classTestDescriptor, "Skipped");
 
-                stateTracker.put("doSkip->SUCCESS");
+                stateTracker.setState("skip.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("doSkip->FAILURE", t);
+                stateTracker.setState("skip.failure", t);
             }
         }
 
-        if (stateTracker.contains("prepare")) {
+        if (stateTracker.containsState("prepare")) {
             try {
-                stateTracker.put("conclude");
+                stateTracker.setState("conclude");
 
                 ClassInterceptorRegistry.getInstance()
                         .conclude(
                                 ImmutableClassContext.wrap(classInstanceContext), concludeMethods);
 
-                stateTracker.put("conclude->SUCCESS");
+                stateTracker.setState("conclude.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("conclude->FAILURE", t);
+                stateTracker.setState("conclude.failure", t);
             }
         }
 
         if (testInstance instanceof AutoCloseable) {
             try {
-                stateTracker.put("classAutoClose(" + testClass.getName() + ")");
+                stateTracker.setState("classAutoClose(" + testClass.getName() + ")");
 
                 ((AutoCloseable) testInstance).close();
 
-                stateTracker.put("classAutoClose(" + testClass.getName() + ")->SUCCESS");
+                stateTracker.setState("classAutoClose(" + testClass.getName() + ").success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("classAutoClose(" + testClass.getName() + ")->FAILURE");
+                stateTracker.setState("classAutoClose(" + testClass.getName() + ").failure");
             }
         }
 
@@ -209,21 +209,21 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
             Object value = store.get(key);
             if (value instanceof AutoCloseable) {
                 try {
-                    stateTracker.put("storeAutoClose(" + key + ")");
+                    stateTracker.setState("storeAutoClose(" + key + ")");
 
                     ((AutoCloseable) value).close();
 
-                    stateTracker.put("storeAutoClose(" + key + ")->SUCCESS");
+                    stateTracker.setState("storeAutoClose(" + key + ").success");
                 } catch (Throwable t) {
                     t.printStackTrace(System.err);
-                    stateTracker.put("storeAutoClose(" + key + ")->FAILURE");
+                    stateTracker.setState("storeAutoClose(" + key + ").failure");
                 }
             }
         }
         store.clear();
 
         try {
-            stateTracker.put("destroyTestInstance");
+            stateTracker.setState("destroyTestInstance");
 
             try {
                 ClassInterceptorRegistry.getInstance().onDestroy(classInstanceContext);
@@ -231,22 +231,22 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                 testInstance = null;
             }
 
-            stateTracker.put("destroyTestInstance->SUCCESS");
+            stateTracker.setState("destroyTestInstance.success");
         } catch (Throwable t) {
             t.printStackTrace(System.err);
-            stateTracker.put("destroyTestInstance->FAILURE", t);
+            stateTracker.setState("destroyTestInstance.failure", t);
         }
 
         if (testInstance instanceof AutoCloseable) {
             try {
-                stateTracker.put("argumentAutoClose(" + testClass.getName() + ")");
+                stateTracker.setState("argumentAutoClose(" + testClass.getName() + ")");
 
                 ((AutoCloseable) testInstance).close();
 
-                stateTracker.put("argumentAutoClose" + testClass.getName() + ")->SUCCESS");
+                stateTracker.setState("argumentAutoClose" + testClass.getName() + ").success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("argumentAutoClose" + testClass.getName() + ")->FAILURE");
+                stateTracker.setState("argumentAutoClose" + testClass.getName() + ").failure");
             }
         }
 

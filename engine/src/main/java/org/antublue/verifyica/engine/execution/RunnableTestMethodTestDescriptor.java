@@ -68,38 +68,38 @@ public class RunnableTestMethodTestDescriptor extends AbstractRunnableTestDescri
         StateTracker<String> stateTracker = new StateTracker<>();
 
         try {
-            stateTracker.put("beforeEach");
+            stateTracker.setState("beforeEach");
 
             ClassInterceptorRegistry.getInstance().beforeEach(argumentContext, beforeEachMethods);
 
-            stateTracker.put("beforeEach->SUCCESS");
+            stateTracker.setState("beforeEach.success");
         } catch (Throwable t) {
             t.printStackTrace(System.err);
-            stateTracker.put("beforeEach->FAILURE", t);
+            stateTracker.setState("beforeEach.failure", t);
         }
 
-        if (stateTracker.contains("beforeEach->SUCCESS")) {
+        if (stateTracker.containsState("beforeEach.success")) {
             try {
-                stateTracker.put("test");
+                stateTracker.setState("test");
 
                 ClassInterceptorRegistry.getInstance().test(argumentContext, testMethod);
 
-                stateTracker.put("test->SUCCESS");
+                stateTracker.setState("test.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("test->FAILURE", t);
+                stateTracker.setState("test.failure", t);
             }
         }
 
         try {
-            stateTracker.put("afterEach");
+            stateTracker.setState("afterEach");
 
             ClassInterceptorRegistry.getInstance().afterEach(argumentContext, afterEachMethods);
 
-            stateTracker.put("afterEach->SUCCESS");
+            stateTracker.setState("afterEach.success");
         } catch (Throwable t) {
             t.printStackTrace(System.err);
-            stateTracker.put("afterEach->FAILURE", t);
+            stateTracker.setState("afterEach.failure", t);
         }
 
         LOGGER.trace("state tracker [%s]", stateTracker);

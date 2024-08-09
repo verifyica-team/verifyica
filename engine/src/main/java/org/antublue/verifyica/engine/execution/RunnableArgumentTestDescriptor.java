@@ -73,19 +73,19 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
         StateTracker<String> stateTracker = new StateTracker<>();
 
         try {
-            stateTracker.put("beforeAll");
+            stateTracker.setState("beforeAll");
 
             ClassInterceptorRegistry.getInstance().beforeAll(argumentContext, beforeAllMethods);
 
-            stateTracker.put("beforeAll->SUCCESS");
+            stateTracker.setState("beforeAll.success");
         } catch (Throwable t) {
             t.printStackTrace(System.err);
-            stateTracker.put("beforeAll->FAILURE", t);
+            stateTracker.setState("beforeAll.failure", t);
         }
 
-        if (stateTracker.contains("beforeAll->SUCCESS")) {
+        if (stateTracker.isLastState("beforeAll.success")) {
             try {
-                stateTracker.put("doExecute");
+                stateTracker.setState("execute");
 
                 testMethodTestDescriptors.forEach(
                         methodTestDescriptor ->
@@ -95,16 +95,16 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
                                                 methodTestDescriptor)
                                         .run());
 
-                stateTracker.put("doExecute->SUCCESS");
+                stateTracker.setState("execute.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("doExecute->FAILURE", t);
+                stateTracker.setState("execute.failure", t);
             }
         }
 
-        if (stateTracker.contains("beforeAll->FAILURE")) {
+        if (stateTracker.containsState("beforeAll.failure")) {
             try {
-                stateTracker.put("doSkip");
+                stateTracker.setState("skip");
 
                 /*
                 getChildren().stream()
@@ -115,35 +115,35 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
                                 });
                  */
 
-                stateTracker.put("doSkip->SUCCESS");
+                stateTracker.setState("skip.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("doSkip->FAILURE", t);
+                stateTracker.setState("skip.failure", t);
             }
         }
 
         try {
-            stateTracker.put("afterAll");
+            stateTracker.setState("afterAll");
 
             ClassInterceptorRegistry.getInstance().afterAll(argumentContext, afterAllMethods);
 
-            stateTracker.put("afterAll->SUCCESS");
+            stateTracker.setState("afterAll.success");
         } catch (Throwable t) {
             t.printStackTrace(System.err);
-            stateTracker.put("afterAll->FAILURE", t);
+            stateTracker.setState("afterAll.failure", t);
         }
 
         Argument<?> testArgument = argumentContext.getTestArgument();
         if (testArgument instanceof AutoCloseable) {
             try {
-                stateTracker.put("argumentAutoClose(" + testArgument.getName() + ")");
+                stateTracker.setState("argumentAutoClose(" + testArgument.getName() + ")");
 
                 ((AutoCloseable) testArgument).close();
 
-                stateTracker.put("argumentAutoClose(" + testArgument.getName() + ")->SUCCESS");
+                stateTracker.setState("argumentAutoClose(" + testArgument.getName() + ").success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("argumentAutoClose(" + testArgument.getName() + ")->FAILURE");
+                stateTracker.setState("argumentAutoClose(" + testArgument.getName() + ").failure");
             }
         }
 
@@ -152,14 +152,14 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
             Object value = store.get(key);
             if (value instanceof AutoCloseable) {
                 try {
-                    stateTracker.put("storeAutoClose(" + key + ")");
+                    stateTracker.setState("storeAutoClose(" + key + ")");
 
                     ((AutoCloseable) value).close();
 
-                    stateTracker.put("storeAutoClose(" + key + ")->SUCCESS");
+                    stateTracker.setState("storeAutoClose(" + key + ").success");
                 } catch (Throwable t) {
                     t.printStackTrace(System.err);
-                    stateTracker.put("storeAutoClose(" + key + ")->FAILURE");
+                    stateTracker.setState("storeAutoClose(" + key + ").failure");
                 }
             }
         }
