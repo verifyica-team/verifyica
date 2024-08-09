@@ -37,7 +37,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor {
      *
      * @param uniqueId uniqueId
      * @param displayName displayName
-     * @param testArgumentParallelism parallelism
+     * @param testArgumentParallelism testArgumentParallelism
      * @param testClass testClass
      * @param prepareMethods prepareMethods
      * @param concludeMethods concludeMethods
@@ -67,18 +67,38 @@ public class ClassTestDescriptor extends AbstractTestDescriptor {
         return Type.CONTAINER_AND_TEST;
     }
 
+    /**
+     * Method to get test argument parallelism
+     *
+     * @return test argument parallelism
+     */
     public int getTestArgumentParallelism() {
         return testArgumentParallelism;
     }
 
+    /**
+     * Method to get the test class
+     *
+     * @return the test class
+     */
     public Class<?> getTestClass() {
         return testClass;
     }
 
+    /**
+     * Method to get a List of prepare Methods
+     *
+     * @return a List of prepare methods
+     */
     public List<Method> getPrepareMethods() {
         return prepareMethods;
     }
 
+    /**
+     * Method to get a List of conclude Methods
+     *
+     * @return a List of conclude methods
+     */
     public List<Method> getConcludeMethods() {
         return concludeMethods;
     }

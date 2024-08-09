@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.execution;
+package org.antublue.verifyica.engine.descriptor.execution;
 
 import static java.lang.String.format;
 
@@ -60,7 +60,6 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
     private final ClassContext classContext;
 
     private DefaultClassInstanceContext classInstanceContext;
-    private Object testInstance;
 
     /**
      * Constructor
@@ -94,6 +93,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
             stateTracker.setState("instantiate");
 
             Throwable throwable = null;
+            Object testInstance = null;
 
             try {
                 ClassInterceptorRegistry.getInstance()
@@ -169,13 +169,12 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                 stateTracker.setState("skip");
 
                 argumentTestDescriptors.forEach(
-                        argumentTestDescriptor -> {
-                            new RunnableArgumentTestDescriptor(
-                                            executionRequest,
-                                            classInstanceContext,
-                                            argumentTestDescriptor)
-                                    .skip();
-                        });
+                        argumentTestDescriptor ->
+                                new RunnableArgumentTestDescriptor(
+                                                executionRequest,
+                                                classInstanceContext,
+                                                argumentTestDescriptor)
+                                        .skip());
 
                 executionRequest
                         .getEngineExecutionListener()
@@ -201,6 +200,12 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                 t.printStackTrace(System.err);
                 stateTracker.setState("conclude.failure", t);
             }
+        }
+
+        Object testInstance = null;
+
+        if (classInstanceContext != null) {
+            testInstance = classInstanceContext.getTestInstance();
         }
 
         if (testInstance instanceof AutoCloseable) {

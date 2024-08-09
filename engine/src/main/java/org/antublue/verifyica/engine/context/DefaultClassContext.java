@@ -34,6 +34,7 @@ public class DefaultClassContext implements ClassContext {
      * Constructor
      *
      * @param engineContext engineContext
+     * @param classTestDescriptor classTestDescriptor
      */
     public DefaultClassContext(
             EngineContext engineContext, ClassTestDescriptor classTestDescriptor) {

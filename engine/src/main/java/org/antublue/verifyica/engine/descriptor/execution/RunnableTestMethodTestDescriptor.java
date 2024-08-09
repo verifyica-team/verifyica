@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.execution;
+package org.antublue.verifyica.engine.descriptor.execution;
 
 import java.lang.reflect.Method;
 import java.util.List;

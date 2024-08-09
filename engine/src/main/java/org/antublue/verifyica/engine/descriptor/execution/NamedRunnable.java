@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.execution;
+package org.antublue.verifyica.engine.descriptor.execution;
 
 import org.antublue.verifyica.engine.support.ArgumentSupport;
 

@@ -31,6 +31,12 @@ public class DefaultArgumentContext implements ArgumentContext {
     private final ArgumentTestDescriptor argumentTestDescriptor;
     private final Store store;
 
+    /**
+     * Constructor
+     *
+     * @param classContext classContext
+     * @param argumentTestDescriptor argumentTestDescriptor
+     */
     public DefaultArgumentContext(
             ClassContext classContext, ArgumentTestDescriptor argumentTestDescriptor) {
         this.classContext = classContext;
