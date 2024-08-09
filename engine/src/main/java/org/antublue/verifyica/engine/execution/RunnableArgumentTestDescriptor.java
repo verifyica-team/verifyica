@@ -140,10 +140,10 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
 
                 ((AutoCloseable) testArgument).close();
 
-                stateTracker.put("argumentAutoClose" + testArgument.getName() + ")->SUCCESS");
+                stateTracker.put("argumentAutoClose(" + testArgument.getName() + ")->SUCCESS");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.put("argumentAutoClose" + testArgument.getName() + ")->FAILURE");
+                stateTracker.put("argumentAutoClose(" + testArgument.getName() + ")->FAILURE");
             }
         }
 
