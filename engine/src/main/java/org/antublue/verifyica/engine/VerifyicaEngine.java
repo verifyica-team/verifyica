@@ -199,7 +199,7 @@ public class VerifyicaEngine implements TestEngine {
                                                             executionRequest,
                                                             engineContext,
                                                             classTestDescriptor),
-                                                    "verifyica/" + HashSupport.alphaNumericHash(4)))));
+                                                    "verifyica/" + HashSupport.alphanumeric(4)))));
 
             ExecutorServiceSupport.waitForAll(futures);
         } catch (Throwable t) {

@@ -149,8 +149,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                                                                 argumentTestDescriptor),
                                                         Thread.currentThread().getName()
                                                                 + "/"
-                                                                + HashSupport.alphaNumericHash(
-                                                                        4)))));
+                                                                + HashSupport.alphanumeric(4)))));
 
                 ExecutorServiceSupport.waitForAll(futures);
 
