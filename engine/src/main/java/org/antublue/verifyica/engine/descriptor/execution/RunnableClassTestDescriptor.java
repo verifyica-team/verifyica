@@ -43,6 +43,7 @@ import org.antublue.verifyica.engine.support.HashSupport;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 
+/** Class to implement RunnableClassTestDescriptor */
 public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RunnableClassTestDescriptor.class);
@@ -61,6 +62,13 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
     private DefaultClassInstanceContext classInstanceContext;
     private Object testInstance;
 
+    /**
+     * Constructor
+     *
+     * @param executionRequest executionRequest
+     * @param engineContext engineContext
+     * @param classTestDescriptor classTestDescriptor
+     */
     public RunnableClassTestDescriptor(
             ExecutionRequest executionRequest,
             EngineContext engineContext,
