@@ -44,7 +44,10 @@ public abstract class AbstractRunnableTestDescriptor implements Runnable {
     }
 
     /** Method to execute */
-    protected abstract void execute();
+    public abstract void execute();
+
+    /** Method to skip */
+    public abstract void skip();
 
     /**
      * Method to get a List of ArgumentTestDescriptors

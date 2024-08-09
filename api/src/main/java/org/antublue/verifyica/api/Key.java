@@ -16,18 +16,62 @@
 
 package org.antublue.verifyica.api;
 
-import java.util.Arrays;
+import static java.lang.String.format;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 /** Class to implement a Key */
 public class Key {
 
-    private final Object[] objects;
+    private final List<Segment> segments;
 
     /** Constructor */
-    private Key(Object[] objects) {
-        this.objects = objects;
+    private Key(List<Segment> segments) {
+        this.segments = segments;
+    }
+
+    /**
+     * Method to get a copy of the list of Segments
+     *
+     * @return a List of Segments
+     */
+    public List<Segment> segments() {
+        return new ArrayList<>(segments);
+    }
+
+    /**
+     * Method to append an Object to the Key, returning a new Key
+     *
+     * @param object object
+     * @return a new Key with the appended Object
+     */
+    public Key append(Object object) {
+        if (object == null) {
+            throw new IllegalArgumentException("object is null");
+        }
+
+        Key key = new Key(Collections.synchronizedList(segments));
+        key.segments.add(new Segment(object));
+        return key;
+    }
+
+    /**
+     * Method to remove the last Object from the key, returning a new Key
+     *
+     * @return a new Key with the last appended Object removed
+     */
+    public Key remove() {
+        List<Segment> segments = Collections.synchronizedList(this.segments);
+
+        if (segments.size() <= 1) {
+            throw new IllegalStateException("can't remove root segment");
+        }
+
+        segments.remove(segments.size() - 1);
+        return new Key(segments);
     }
 
     /**
@@ -45,7 +89,16 @@ public class Key {
             throw new IllegalArgumentException("objects is empty");
         }
 
-        return new Key(objects);
+        List<Segment> segments = Collections.synchronizedList(new ArrayList<>(objects.length));
+        for (int i = 0; i < objects.length; i++) {
+            Object object = objects[i];
+            if (object == null) {
+                throw new IllegalArgumentException(format("objects[%d] is null", i));
+            }
+            segments.add(new Segment(object));
+        }
+
+        return new Key(segments);
     }
 
     /**
@@ -63,12 +116,21 @@ public class Key {
             throw new IllegalArgumentException("objects is empty");
         }
 
-        return of(objects.toArray());
+        List<Segment> segments = Collections.synchronizedList(new ArrayList<>(objects.size()));
+        for (int i = 0; i < objects.size(); i++) {
+            Object object = objects.get(i);
+            if (object == null) {
+                throw new IllegalArgumentException(format("object[%d] is null", i));
+            }
+            segments.add(new Segment(object));
+        }
+
+        return new Key(segments);
     }
 
     @Override
     public String toString() {
-        return "Key{" + "objects=" + Arrays.toString(objects) + '}';
+        return "Key{" + "segments=" + segments + '}';
     }
 
     @Override
@@ -76,11 +138,35 @@ public class Key {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Key key = (Key) o;
-        return Objects.deepEquals(objects, key.objects);
+        return Objects.equals(segments, key.segments);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(objects);
+        return Objects.hashCode(segments);
+    }
+
+    /** Class to implement Segment */
+    public static class Segment {
+
+        private final Object value;
+
+        /**
+         * Contructor
+         *
+         * @param value value
+         */
+        private Segment(Object value) {
+            this.value = value;
+        }
+
+        /**
+         * Method to get the value
+         *
+         * @return the value
+         */
+        public Object value() {
+            return value;
+        }
     }
 }

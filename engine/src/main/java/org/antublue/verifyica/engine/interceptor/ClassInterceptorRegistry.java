@@ -238,16 +238,18 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postPrepare(
-                                    argumentInterceptorContext, throwableCollector.getThrowable());
+                            classInterceptor.postPrepare(argumentInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -297,16 +299,18 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postBeforeAll(
-                                    argumentInterceptorContext, throwableCollector.getThrowable());
+                            classInterceptor.postBeforeAll(argumentInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -356,16 +360,18 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postBeforeEach(
-                                    argumentInterceptorContext, throwableCollector.getThrowable());
+                            classInterceptor.postBeforeEach(argumentInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -414,18 +420,19 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                             classInterceptor.postTest(
-                                    argumentInterceptorContext,
-                                    testMethod,
-                                    throwableCollector.getThrowable());
+                                    argumentInterceptorContext, testMethod, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -476,16 +483,18 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postAfterEach(
-                                    argumentInterceptorContext, throwableCollector.getThrowable());
+                            classInterceptor.postAfterEach(argumentInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -536,16 +545,18 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postAfterAll(
-                                    argumentInterceptorContext, throwableCollector.getThrowable());
+                            classInterceptor.postAfterAll(argumentInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**
@@ -591,17 +602,19 @@ public class ClassInterceptorRegistry {
                 getClassInterceptorsReversed(testClass);
 
         if (!classInterceptorsReversed.isEmpty()) {
+            Throwable throwable = throwableCollector.getThrowable();
+            throwableCollector.clear();
+
             throwableCollector.execute(
                     () -> {
                         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                             classInterceptor.postConclude(
-                                    defaultClassInterceptorContext,
-                                    throwableCollector.getThrowable());
+                                    defaultClassInterceptorContext, throwable);
                         }
                     });
-        } else {
-            throwableCollector.assertEmpty();
         }
+
+        throwableCollector.assertEmpty();
     }
 
     /**

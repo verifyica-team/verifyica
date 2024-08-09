@@ -56,7 +56,7 @@ public class ThrowableCollector {
     }
 
     /**
-     * Method to add a Throwable is not null
+     * Method to add a List of Throwables
      *
      * @param throwables throwables
      */
@@ -66,6 +66,11 @@ public class ThrowableCollector {
         }
     }
 
+    /**
+     * Method to add a ThrowablesCollector's Throwables
+     *
+     * @param throwableCollector throwableCollector
+     */
     public void add(ThrowableCollector throwableCollector) {
         throwables.addAll(throwableCollector.throwables);
     }
@@ -86,6 +91,11 @@ public class ThrowableCollector {
      */
     public Throwable getThrowable() {
         return !throwables.isEmpty() ? throwables.get(0) : null;
+    }
+
+    /** Method to clear all Throwables */
+    public void clear() {
+        throwables.clear();
     }
 
     /**

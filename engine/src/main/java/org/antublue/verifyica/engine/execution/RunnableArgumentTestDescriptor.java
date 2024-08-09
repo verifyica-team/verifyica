@@ -65,7 +65,7 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         LOGGER.trace("execute() %s", argumentTestDescriptor);
 
         executionRequest.getEngineExecutionListener().executionStarted(argumentTestDescriptor);
@@ -83,7 +83,7 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
             stateTracker.setState("beforeAll.failure", t);
         }
 
-        if (stateTracker.isLastState("beforeAll.success")) {
+        if (stateTracker.isState("beforeAll.success")) {
             try {
                 stateTracker.setState("execute");
 
@@ -106,14 +106,13 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
             try {
                 stateTracker.setState("skip");
 
-                /*
-                getChildren().stream()
-                        .map(TO_EXECUTABLE_TEST_DESCRIPTOR)
-                        .forEach(
-                                executableTestDescriptor -> {
-                                    executableTestDescriptor.skip(executionRequest, defaultArgumentContext);
-                                });
-                 */
+                testMethodTestDescriptors.forEach(
+                        methodTestDescriptor ->
+                                new RunnableTestMethodTestDescriptor(
+                                                executionRequest,
+                                                argumentContext,
+                                                methodTestDescriptor)
+                                        .skip());
 
                 stateTracker.setState("skip.success");
             } catch (Throwable t) {
@@ -169,12 +168,29 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
 
         TestExecutionResult testExecutionResult =
                 stateTracker
-                        .getFirstStateEntryWithThrowable()
-                        .map(entry -> TestExecutionResult.failed(entry.getThrowable()))
+                        .getStateWithThrowable()
+                        .map(stateEntry -> TestExecutionResult.failed(stateEntry.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
         executionRequest
                 .getEngineExecutionListener()
                 .executionFinished(argumentTestDescriptor, testExecutionResult);
+    }
+
+    @Override
+    public void skip() {
+        LOGGER.trace("skip() %s", argumentTestDescriptor);
+
+        executionRequest.getEngineExecutionListener().executionStarted(argumentTestDescriptor);
+
+        testMethodTestDescriptors.forEach(
+                methodTestDescriptor ->
+                        new RunnableTestMethodTestDescriptor(
+                                        executionRequest, argumentContext, methodTestDescriptor)
+                                .skip());
+
+        executionRequest
+                .getEngineExecutionListener()
+                .executionFinished(argumentTestDescriptor, TestExecutionResult.aborted(null));
     }
 }

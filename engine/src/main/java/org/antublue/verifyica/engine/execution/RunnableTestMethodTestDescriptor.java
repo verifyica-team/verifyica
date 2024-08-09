@@ -60,7 +60,7 @@ public class RunnableTestMethodTestDescriptor extends AbstractRunnableTestDescri
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         LOGGER.trace("execute() %s", testMethodTestDescriptor);
 
         executionRequest.getEngineExecutionListener().executionStarted(testMethodTestDescriptor);
@@ -106,12 +106,23 @@ public class RunnableTestMethodTestDescriptor extends AbstractRunnableTestDescri
 
         TestExecutionResult testExecutionResult =
                 stateTracker
-                        .getFirstStateEntryWithThrowable()
-                        .map(entry -> TestExecutionResult.failed(entry.getThrowable()))
+                        .getStateWithThrowable()
+                        .map(stateEntry -> TestExecutionResult.failed(stateEntry.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
         executionRequest
                 .getEngineExecutionListener()
                 .executionFinished(testMethodTestDescriptor, testExecutionResult);
+    }
+
+    @Override
+    public void skip() {
+        LOGGER.trace("skip() %s", testMethodTestDescriptor);
+
+        executionRequest.getEngineExecutionListener().executionStarted(testMethodTestDescriptor);
+
+        executionRequest
+                .getEngineExecutionListener()
+                .executionFinished(testMethodTestDescriptor, TestExecutionResult.aborted(null));
     }
 }

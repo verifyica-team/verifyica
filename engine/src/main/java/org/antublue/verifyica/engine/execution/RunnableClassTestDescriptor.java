@@ -75,7 +75,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         LOGGER.trace("execute() %s", classTestDescriptor);
 
         executionRequest.getEngineExecutionListener().executionStarted(classTestDescriptor);
@@ -83,7 +83,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
         StateTracker<String> stateTracker = new StateTracker<>();
 
         try {
-            stateTracker.setState("instantiateTestInstance");
+            stateTracker.setState("instantiate");
 
             Throwable throwable = null;
 
@@ -105,12 +105,12 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                     .afterInstantiate(
                             classContext.getEngineContext(), testClass, testInstance, throwable);
 
-            stateTracker.setState("instantiateTestInstance.success");
+            stateTracker.setState("instantiate.success");
         } catch (Throwable t) {
-            stateTracker.setState("instantiateTestInstance.failure", t);
+            stateTracker.setState("instantiate.failure", t);
         }
 
-        if (stateTracker.isLastState("instantiateTestInstance.success")) {
+        if (stateTracker.isState("instantiate.success")) {
             try {
                 stateTracker.setState("prepare");
 
@@ -162,7 +162,11 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
 
                 argumentTestDescriptors.forEach(
                         argumentTestDescriptor -> {
-                            // argumentTestDescriptor.skip(executionRequest, );
+                            new RunnableArgumentTestDescriptor(
+                                            executionRequest,
+                                            classInstanceContext,
+                                            argumentTestDescriptor)
+                                    .skip();
                         });
 
                 executionRequest
@@ -223,7 +227,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
         store.clear();
 
         try {
-            stateTracker.setState("destroyTestInstance");
+            stateTracker.setState("destroy");
 
             try {
                 ClassInterceptorRegistry.getInstance().onDestroy(classInstanceContext);
@@ -231,10 +235,10 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                 testInstance = null;
             }
 
-            stateTracker.setState("destroyTestInstance.success");
+            stateTracker.setState("destroy.success");
         } catch (Throwable t) {
             t.printStackTrace(System.err);
-            stateTracker.setState("destroyTestInstance.failure", t);
+            stateTracker.setState("destroy.failure", t);
         }
 
         if (testInstance instanceof AutoCloseable) {
@@ -254,13 +258,18 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
 
         TestExecutionResult testExecutionResult =
                 stateTracker
-                        .getFirstStateEntryWithThrowable()
-                        .map(entry -> TestExecutionResult.failed(entry.getThrowable()))
+                        .getStateWithThrowable()
+                        .map(stateEntry -> TestExecutionResult.failed(stateEntry.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
         executionRequest
                 .getEngineExecutionListener()
                 .executionFinished(classTestDescriptor, testExecutionResult);
+    }
+
+    @Override
+    public void skip() {
+        throw new IllegalStateException("Not implemented");
     }
 
     /**
