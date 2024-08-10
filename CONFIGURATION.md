@@ -43,3 +43,15 @@ verifyica.engine.argument.parallelism=20
 
 
 - `@Verifyica.ArgumentSupplier(parallelism = X)` is still honored
+
+## ExecutorService Thread type
+
+Verifyica designed to use both platform threads and virtual threads automatically.
+
+- Java 21+
+  - virtual threads
+
+
+- Java 8 through Java 20
+  - platform threads
+
