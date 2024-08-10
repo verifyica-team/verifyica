@@ -1,6 +1,6 @@
 # Configuration
 
-## Parallelism
+## Execution Parallelism
 
 Verifyica has the ability to control both test class and test argument execution parallelism.
 
