@@ -56,7 +56,6 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     .reset()
                     .toString();
 
-    private final boolean consoleLogTiming;
     private final String consoleLogTimingUnits;
     private final boolean consoleLogMessagesStarted;
     private final String consoleTestMessage;
@@ -71,15 +70,6 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     /** Constructor */
     public StatusEngineExecutionListener() {
         Configuration configuration = DefaultEngineContext.getInstance().getConfiguration();
-
-        consoleLogTiming =
-                Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_LOG_TIMING))
-                        .map(Boolean::parseBoolean)
-                        .orElse(true);
-
-        LOGGER.trace(
-                "configuration property [%s] = [%b]",
-                Constants.MAVEN_PLUGIN_LOG_TIMING, consoleLogTiming);
 
         consoleLogTimingUnits =
                 Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_TIMING_UNITS))
@@ -255,13 +245,11 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     ansiColorStringBuilder.append(" | ").append(testMethodDisplayName);
                 }
 
-                if (consoleLogTiming && elapsedTime != null) {
-                    ansiColorStringBuilder
-                            .append(" ")
-                            .append(
-                                    HumanReadableTimeSupport.toTimingUnit(
-                                            elapsedTime.toNanos(), consoleLogTimingUnits));
-                }
+                ansiColorStringBuilder
+                        .append(" ")
+                        .append(
+                                HumanReadableTimeSupport.toTimingUnit(
+                                        elapsedTime.toNanos(), consoleLogTimingUnits));
 
                 ansiColorStringBuilder.reset();
 
@@ -339,13 +327,11 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     ansiColorStringBuilder.append(" | ").append(testMethodDisplayName);
                 }
 
-                if (consoleLogTiming && elapsedTime != null) {
-                    ansiColorStringBuilder
-                            .append(" ")
-                            .append(
-                                    HumanReadableTimeSupport.toTimingUnit(
-                                            elapsedTime.toNanos(), consoleLogTimingUnits));
-                }
+                ansiColorStringBuilder
+                        .append(" ")
+                        .append(
+                                HumanReadableTimeSupport.toTimingUnit(
+                                        elapsedTime.toNanos(), consoleLogTimingUnits));
 
                 ansiColorStringBuilder.reset();
 
