@@ -53,7 +53,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     .append("INFO")
                     .color(AnsiColor.TEXT_WHITE)
                     .append("]")
-                    .color(AnsiColor.TEXT_RESET)
+                    .reset()
                     .toString();
 
     private final boolean consoleLogTiming;
@@ -124,7 +124,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                                 configuration.get(
                                                         Constants.MAVEN_PLUGIN_LOG_TEST_MESSAGE))
                                         .orElse("TEST"))
-                        .color(AnsiColor.TEXT_RESET)
+                        .reset()
                         .toString();
 
         consolePassMessage =
@@ -135,7 +135,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                                 configuration.get(
                                                         Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGE))
                                         .orElse("PASS"))
-                        .color(AnsiColor.TEXT_RESET)
+                        .reset()
                         .toString();
 
         consoleSkipMessage =
@@ -146,7 +146,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                                 configuration.get(
                                                         Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGE))
                                         .orElse("SKIP"))
-                        .color(AnsiColor.TEXT_RESET)
+                        .reset()
                         .toString();
 
         consoleFailMessage =
@@ -157,7 +157,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                                 configuration.get(
                                                         Constants.MAVEN_PLUGIN_LOG_FAIL_MESSAGE))
                                         .orElse("FAIL"))
-                        .color(AnsiColor.TEXT_RESET)
+                        .reset()
                         .toString();
 
         stopWatchMap = new ConcurrentHashMap<>();
@@ -192,7 +192,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                 .append(Thread.currentThread().getName())
                                 .append(" | ")
                                 .append(consoleTestMessage)
-                                .color(AnsiColor.TEXT_RESET);
+                                .reset();
 
                 if (testArgumentDisplayName != null) {
                     ansiColorStringBuilder.append(" | ").append(testArgumentDisplayName);
@@ -204,7 +204,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     ansiColorStringBuilder.append(" | ").append(testMethodDisplayName);
                 }
 
-                ansiColorStringBuilder.color(AnsiColor.TEXT_RESET);
+                ansiColorStringBuilder.reset();
 
                 System.out.println(ansiColorStringBuilder);
             } catch (Throwable t) {
@@ -243,7 +243,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                 .append(" | ")
                                 .append(AnsiColor.TEXT_WHITE_BRIGHT);
 
-                ansiColorStringBuilder.append(consoleSkipMessage).color(AnsiColor.TEXT_RESET);
+                ansiColorStringBuilder.append(consoleSkipMessage).reset();
 
                 if (testArgumentDisplayName != null) {
                     ansiColorStringBuilder.append(" | ").append(testArgumentDisplayName);
@@ -263,7 +263,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                             elapsedTime.toNanos(), consoleLogTimingUnits));
                 }
 
-                ansiColorStringBuilder.color(AnsiColor.TEXT_RESET);
+                ansiColorStringBuilder.reset();
 
                 System.out.println(ansiColorStringBuilder);
             } catch (Throwable t) {
@@ -327,7 +327,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         }
                 }
 
-                ansiColorStringBuilder.color(AnsiColor.TEXT_RESET);
+                ansiColorStringBuilder.reset();
 
                 if (testArgumentDisplayName != null) {
                     ansiColorStringBuilder.append(" | ").append(testArgumentDisplayName);
@@ -347,7 +347,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                             elapsedTime.toNanos(), consoleLogTimingUnits));
                 }
 
-                ansiColorStringBuilder.color(AnsiColor.TEXT_RESET);
+                ansiColorStringBuilder.reset();
 
                 System.out.println(ansiColorStringBuilder);
             } catch (Throwable t) {

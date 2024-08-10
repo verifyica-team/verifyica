@@ -154,6 +154,16 @@ public class AnsiColorStringBuilder {
         return this;
     }
 
+    /**
+     * Method to reset (append AnsiColor.TEXT_RESET)
+     *
+     * @return this
+     */
+    public AnsiColorStringBuilder reset() {
+        stringBuilder.append(AnsiColor.TEXT_RESET);
+        return this;
+    }
+
     @Override
     public String toString() {
         return stringBuilder.toString();

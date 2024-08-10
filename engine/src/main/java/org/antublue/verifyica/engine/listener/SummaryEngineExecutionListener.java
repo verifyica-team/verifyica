@@ -44,7 +44,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     .color(AnsiColor.TEXT_WHITE_BRIGHT)
                     .append("Verifyica ")
                     .append(VerifyicaEngine.staticGetVersion())
-                    .color(AnsiColor.TEXT_RESET)
+                    .reset()
                     .toString();
 
     private static final String SUMMARY_BANNER =
@@ -62,7 +62,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     .append("INFO")
                     .color(AnsiColor.TEXT_WHITE)
                     .append("]")
-                    .color(AnsiColor.TEXT_RESET)
+                    .reset()
                     .append(" ")
                     .toString();
 
@@ -438,7 +438,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                             .append(" (")
                             .append(elapsedTime.toNanos() / 1e+6D)
                             .append(" ms)")
-                            .color(AnsiColor.TEXT_RESET));
+                            .reset());
 
             println(
                     new AnsiColorStringBuilder()
@@ -446,7 +446,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                             .color(AnsiColor.TEXT_WHITE_BRIGHT)
                             .append("Finished at : ")
                             .append(HumanReadableTimeSupport.now())
-                            .color(AnsiColor.TEXT_RESET));
+                            .reset());
 
             if (!hasFailures) {
                 println(INFO + SEPARATOR);

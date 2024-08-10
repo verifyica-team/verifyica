@@ -107,6 +107,7 @@ public class EngineDiscoveryRequestResolver {
             resolveTestArguments(testClassMethodMap, testClassArgumentMap);
 
             List<ClassDefinition> classDefinitions = new ArrayList<>();
+
             testClassMethodMap
                     .keySet()
                     .forEach(
