@@ -67,7 +67,7 @@ verifyica.engine.logger.regex=
 
 - `verifyica.engine.logger.level` controls whether logging is enabled.
   - default level is `INFO`
-  - supported levels are `INFO`, `WARN`, `ERROR`, `TRACE`
+  - supported levels are `INFO`, `WARN`, `ERROR`, `TRACE`, `ALL`
 
 
 - `verifyica.engine.logger.regex` controls which classes are enabled.
