@@ -43,6 +43,7 @@ verifyica.engine.argument.parallelism=20
 
 
 - `@Verifyica.ArgumentSupplier(parallelism = X)` is constrained to a maximum upper limit of `verifyica.engine.argument.parallelism`
+  - i.e. overall test argument execution parallelism (for all test classes) is `verifyica.engine.argument.parallelism`
 
 ## ExecutorService Thread type
 
