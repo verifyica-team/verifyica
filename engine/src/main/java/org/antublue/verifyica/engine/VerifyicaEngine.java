@@ -61,6 +61,7 @@ import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 
 /** Class to implement VerifyicaEngine */
+@SuppressWarnings("PMD.EmptyCatchBlock")
 public class VerifyicaEngine implements TestEngine {
 
     static {
