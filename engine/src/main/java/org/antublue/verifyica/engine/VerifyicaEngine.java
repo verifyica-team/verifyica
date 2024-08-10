@@ -64,18 +64,6 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class VerifyicaEngine implements TestEngine {
 
-    static {
-        PrintStream systemOut = System.out;
-        if (!(systemOut instanceof SynchronizedPrintStream)) {
-            System.setOut(new SynchronizedPrintStream(systemOut));
-        }
-
-        PrintStream systemErr = System.err;
-        if (!(systemErr instanceof SynchronizedPrintStream)) {
-            System.setErr(new SynchronizedPrintStream(systemErr));
-        }
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger(VerifyicaEngine.class);
 
     /** Constant */
@@ -120,6 +108,18 @@ public class VerifyicaEngine implements TestEngine {
     @Override
     public Optional<String> getVersion() {
         return Optional.of(VERSION);
+    }
+
+    static {
+        PrintStream systemOut = System.out;
+        if (!(systemOut instanceof SynchronizedPrintStream)) {
+            System.setOut(new SynchronizedPrintStream(systemOut));
+        }
+
+        PrintStream systemErr = System.err;
+        if (!(systemErr instanceof SynchronizedPrintStream)) {
+            System.setErr(new SynchronizedPrintStream(systemErr));
+        }
     }
 
     /**

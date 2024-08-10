@@ -71,18 +71,6 @@ import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
         requiresDependencyResolution = ResolutionScope.TEST)
 public class VerifyicaMavenPlugin extends AbstractMojo {
 
-    static {
-        PrintStream systemOut = System.out;
-        if (!(systemOut instanceof SynchronizedPrintStream)) {
-            System.setOut(new SynchronizedPrintStream(systemOut));
-        }
-
-        PrintStream systemErr = System.err;
-        if (!(systemErr instanceof SynchronizedPrintStream)) {
-            System.setErr(new SynchronizedPrintStream(systemErr));
-        }
-    }
-
     /** Constant */
     private static final String MAVEN_PLUGIN_PROPERTIES_RESOURCE = "/maven-plugin.properties";
 
@@ -115,6 +103,18 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
     @Parameter(property = "properties")
     private Map<String, String> properties;
+
+    static {
+        PrintStream systemOut = System.out;
+        if (!(systemOut instanceof SynchronizedPrintStream)) {
+            System.setOut(new SynchronizedPrintStream(systemOut));
+        }
+
+        PrintStream systemErr = System.err;
+        if (!(systemErr instanceof SynchronizedPrintStream)) {
+            System.setErr(new SynchronizedPrintStream(systemErr));
+        }
+    }
 
     /** Constructor */
     public VerifyicaMavenPlugin() {
