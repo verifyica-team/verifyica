@@ -20,6 +20,7 @@ import static java.lang.String.format;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -60,12 +61,18 @@ import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 
 /** Class to implement VerifyicaEngine */
-@SuppressWarnings("PMD.EmptyCatchBlock")
 public class VerifyicaEngine implements TestEngine {
 
     static {
-        System.setOut(new SynchronizedPrintStream(System.out));
-        System.setErr(new SynchronizedPrintStream(System.err));
+        PrintStream systemOut = System.out;
+        if (!(systemOut instanceof SynchronizedPrintStream)) {
+            System.setOut(new SynchronizedPrintStream(systemOut));
+        }
+
+        PrintStream systemErr = System.err;
+        if (!(systemErr instanceof SynchronizedPrintStream)) {
+            System.setErr(new SynchronizedPrintStream(systemErr));
+        }
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VerifyicaEngine.class);

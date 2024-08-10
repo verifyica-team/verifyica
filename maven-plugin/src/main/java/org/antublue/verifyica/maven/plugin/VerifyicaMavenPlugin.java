@@ -22,6 +22,7 @@ import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNa
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
@@ -37,6 +38,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.VerifyicaEngine;
+import org.antublue.verifyica.engine.common.SynchronizedPrintStream;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
@@ -68,6 +70,18 @@ import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
         threadSafe = true,
         requiresDependencyResolution = ResolutionScope.TEST)
 public class VerifyicaMavenPlugin extends AbstractMojo {
+
+    static {
+        PrintStream systemOut = System.out;
+        if (!(systemOut instanceof SynchronizedPrintStream)) {
+            System.setOut(new SynchronizedPrintStream(systemOut));
+        }
+
+        PrintStream systemErr = System.err;
+        if (!(systemErr instanceof SynchronizedPrintStream)) {
+            System.setErr(new SynchronizedPrintStream(systemErr));
+        }
+    }
 
     /** Constant */
     private static final String MAVEN_PLUGIN_PROPERTIES_RESOURCE = "/maven-plugin.properties";

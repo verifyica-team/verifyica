@@ -19,10 +19,16 @@ package org.antublue.verifyica.engine.common;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+/** Class to implement SynchronizedPrintStream */
 public class SynchronizedPrintStream extends PrintStream {
 
-    public SynchronizedPrintStream(OutputStream out) {
-        super(out);
+    /**
+     * Constructor
+     *
+     * @param outputStream outputStream
+     */
+    public SynchronizedPrintStream(OutputStream outputStream) {
+        super(outputStream);
     }
 
     @Override
