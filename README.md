@@ -309,6 +309,10 @@ To perform integration testing, you need a test context/environment. Typically t
 
 Alternatively, tests can be performed on an external environment. Ideally the external environment would have an API to initialize and destroy it.
 
+# Configuration
+
+See [Configuration](CONFIGURATION.md) for details.
+
 # Contributing
 
 See [Contributing](CONTRIBUTING.md) for details.
