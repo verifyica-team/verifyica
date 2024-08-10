@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
+import org.antublue.verifyica.engine.common.SynchronizedPrintStream;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
@@ -61,6 +62,11 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 /** Class to implement VerifyicaEngine */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class VerifyicaEngine implements TestEngine {
+
+    static {
+        System.setOut(new SynchronizedPrintStream(System.out));
+        System.setErr(new SynchronizedPrintStream(System.err));
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VerifyicaEngine.class);
 
