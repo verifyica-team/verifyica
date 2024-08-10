@@ -56,3 +56,19 @@ Verifyica designed to use both platform threads and virtual threads automaticall
 - Java 8 through Java 20
   - platform threads
 
+# Logging
+
+Verifyica logging can be enabled using two properties in `verifyica.properties`.
+
+```properties
+verifyica.engine.logger.level=ALL
+verifyica.engine.logger.regex=
+```
+
+- `verifyica.engine.logger.level` controls whether logging is enabled.
+  - default level is `INFO`
+  - supported levels are `INFO`, `WARN`, `ERROR`, `TRACE`
+
+
+- `verifyica.engine.logger.regex` controls which classes are enabled.
+  - an empty value "" is mapped to `.*`
