@@ -42,7 +42,7 @@ verifyica.engine.argument.parallelism=20
   - a `WARN` log print will be printed 
 
 
-- `@Verifyica.ArgumentSupplier(parallelism = X)` is constraints to a maximum upper limit of `verifyica.engine.argument.parallelism`
+- `@Verifyica.ArgumentSupplier(parallelism = X)` is constrained to a maximum upper limit of `verifyica.engine.argument.parallelism`
 
 ## ExecutorService Thread type
 
