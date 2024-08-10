@@ -2,7 +2,7 @@
 
 ## Parallelism
 
-Verify has the ability to control both test class and test argument execution parallelism.
+Verifyica has the ability to control both test class and test argument execution parallelism.
 
 ### Test class execution parallelism
 
