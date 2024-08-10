@@ -308,6 +308,7 @@ Examples using real test containers ...
 To perform integration testing, you need a test context/environment. Typically this is created using [testcontainers-java](https://java.testcontainers.org/) and [Docker](https://www.docker.com/) (or another compatible container environment.)
 
 Alternatively, tests can be performed on an external environment. Ideally the external environment would have an API to initialize and destroy it.
+
 # Contributing
 
 See [Contributing](CONTRIBUTING.md) for details.
