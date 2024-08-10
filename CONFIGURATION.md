@@ -58,7 +58,15 @@ Verifyica designed to use both platform threads and virtual threads automaticall
 
 # Logging
 
-Verifyica logging can be enabled using two properties in `verifyica.properties`.
+## Configuration Logging
+
+Verifyica configuration logging is enabled by setting an environment variable.
+
+- `VERIFYICA_CONFIGURATION_TRACE=true`
+
+## General Logging
+
+Verifyica engine logging can be enabled using two properties in `verifyica.properties`.
 
 ```properties
 verifyica.engine.logger.level=ALL
