@@ -298,9 +298,9 @@ Examples using real test containers ...
 - [KafkaTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/KafkaTest.java)
 - [MongoDBTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/MongoDBTest.java)
 
-# Base Requirements
+# Core Requirements
 
-- Java 8 (Java 21+ preferred for virtual threads)
+- Java 8 (Java 21+ recommended/virtual threads)
 - Maven
 
 # Ancillary Requirements
