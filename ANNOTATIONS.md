@@ -16,6 +16,10 @@ All test classes must define single method annotated with `@Verifyica.ArgumentSu
 - must return a non-null Object
 - iterables, collections, arrays, etc. can contain mixed Object types
 
+Test argument parallelism (parallel test argument testing) can be defined with an annotation property `parallelism`
+
+- Default `parallelism` is `1`
+
 **Notes**
 
 - If the `@Verifyica.ArgumentSupplier` method returns a `null` object, the test class will be ignored/not reported.
@@ -23,20 +27,21 @@ All test classes must define single method annotated with `@Verifyica.ArgumentSu
 Examples:
 
 ```java
+@Verifyica.ArgumentSupplier
 public static String arguments() {
     return "test";
 }
 ```
 
 ```java
+@Verifyica.ArgumentSupplier
 public static Argument<?> arguments() {
     return Argument.of("test", "test");
 }
 ```
 
 ```java
-import java.util.ArrayList;
-
+@Verifyica.ArgumentSupplier
 public static Collection<String> arguments() {
     Collection<String> collection = new ArrayList<>();
     collection.add("test");
@@ -45,13 +50,26 @@ public static Collection<String> arguments() {
 ```
 
 ```java
-import java.util.ArrayList;
-
+@Verifyica.ArgumentSupplier
 public static Object[] arguments() {
     Object[] objects = new Object[2];
     objects[0] = "foo";
     objects[1] = "bar";
     return objects;
+}
+```
+
+```java
+// Test 2 arguments in parallel/execution submission in order 
+@Verifyica.ArgumentSupplier(parallelism = 2)
+public static Collection<Argument<String>> arguments() {
+    Collection<Argument<String>> collection = new ArrayList<>();
+
+    for (int i = 0; i < 10; i++) {
+        collection.add(Argument.ofString("String " + i));
+    }
+
+    return collection;
 }
 ```
 
@@ -114,3 +132,34 @@ All methods annotated with `@Verifyica.Test`:
 - must not be static
 - must defined a single parameter [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
+
+---
+
+### @Verifyica.Order
+
+Used by Verifyica to order test classes / test methods.
+
+**Notes**
+
+- If `verifyica.engine.class.parallelism` is greater than `1`, orders test class **execution submission order**.
+  - Test class execution will still be in parallel.
+
+---
+
+### @Verifyica.DisplayName
+
+Used by Verifyica to set the test class / test method display name.
+
+- Used for test class / test method ordering if `@Verifyica.Order` is not declared.
+
+---
+
+### @Verifyica.Tag
+
+Repeatable annotation used to tag test classes for filtering.
+
+---
+
+### @Verifyica.Disabled
+
+Indicates the Verifyica that the test class / test method is disabled/do not test.
