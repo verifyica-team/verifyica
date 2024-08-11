@@ -378,11 +378,11 @@ public class ConcurrencySupport {
     /** Interface to implement LockReference */
     public interface LockReference {
 
-        /** Lock the lock */
+        /** Lock the Lock */
         void lock();
 
         /**
-         * Trys to lock the lock
+         * Tries to lock the lock
          *
          * @return true if the lock was acquired, else false
          * @throws InterruptedException InterruptedException
@@ -390,7 +390,7 @@ public class ConcurrencySupport {
         boolean tryLock() throws InterruptedException;
 
         /**
-         * Trys lock the Lock
+         * Tries to lock the Lock
          *
          * @param timeout timeout
          * @param timeUnit timeUnit
@@ -400,7 +400,7 @@ public class ConcurrencySupport {
         boolean tryLock(long timeout, TimeUnit timeUnit) throws InterruptedException;
 
         /**
-         * Unlocks the lock
+         * Unlocks the Lock
          *
          * @throws IllegalMonitorStateException if the current thread does not hold this lock
          */
@@ -478,7 +478,7 @@ public class ConcurrencySupport {
         }
 
         /**
-         * Lock a lock
+         * Lock a Lock
          *
          * @param key key
          */
@@ -487,7 +487,6 @@ public class ConcurrencySupport {
             Counter counter;
 
             lockManagerLock.lock();
-
             try {
                 lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock(true));
                 counter = lockCounterMap.computeIfAbsent(key, k -> new Counter());
@@ -510,7 +509,6 @@ public class ConcurrencySupport {
             Counter counter;
 
             lockManagerLock.lock();
-
             try {
                 lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock(true));
 
@@ -546,7 +544,6 @@ public class ConcurrencySupport {
             Counter counter;
 
             lockManagerLock.lock();
-
             try {
                 lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock(true));
 
@@ -574,7 +571,6 @@ public class ConcurrencySupport {
          */
         public void unlock(Object key) {
             lockManagerLock.lock();
-
             try {
                 ReentrantLock lock = lockMap.get(key);
                 if (lock != null) {
