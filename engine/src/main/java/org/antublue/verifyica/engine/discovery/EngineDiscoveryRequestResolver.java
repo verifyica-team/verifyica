@@ -440,7 +440,7 @@ public class EngineDiscoveryRequestResolver {
                 int index = 0;
                 for (Object o : objects) {
                     if (o instanceof Argument<?>) {
-                        testArguments.add(((Argument<?>) o));
+                        testArguments.add((Argument<?>) o);
                     } else {
                         testArguments.add(Argument.of("argument[" + index + "]", o));
                     }
