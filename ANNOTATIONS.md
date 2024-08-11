@@ -4,6 +4,8 @@ All Verifyica annotations are defined in a container class `Verifyica`.
 
 [Verifyica.java](api/src/main/java/org/antublue/verifyica/api/Verifyica.java)
 
+---
+
 ### @Verifyica.ArgumentSupplier
 
 All test classes must define single method annotated with `@Verifyica.ArgumentSupplier`.
@@ -53,6 +55,8 @@ public static Object[] arguments() {
 }
 ```
 
+---
+
 ### @Verifyica.Prepare / @Verifyica.Conclude
 
 `@Verifyica.Prepare` methods are executed **once** before a test class is tested.
@@ -66,6 +70,8 @@ All methods annotated with `@Verifyica.Prepare` or `@Verifyica.Conclude`:
 - must be static
 - must define a single parameter [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
 - may throw `Throwable`
+
+---
 
 ### @Verifyica.BeforeAll / @Verifyica.AfterAll
 
@@ -81,6 +87,8 @@ All methods annotated with `@Verifyica.BeforeAll` or `@Verifyica.AfterAll`:
 - must defined a single parameter [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
 
+---
+
 ### @Verifyica.BeforeEach / @Verifyica.AfterEach
 
 `@Verifyica.BeforeEach` methods are executed **once** before each `@Verifyica.Test` test method.
@@ -94,6 +102,8 @@ All methods annotated with `@Verifyica.BeforeEach` or `@Verifyica.AfterEach`:
 - must not be static
 - must defined a single parameter [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
+
+---
 
 ### @Verifyica.Test
 
