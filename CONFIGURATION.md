@@ -1,5 +1,27 @@
 # Configuration
 
+Verifyica configuration is defined in a properties files `verifyica.properties`.
+
+The properties file is searched recursively from the current execution directory, up to the root directory. The first file found will be used.
+
+Example:
+
+Given a project location ...
+
+```
+/home/user/github/project/
+```
+
+The search path will be ...
+
+```
+/home/user/github/project/verifyica.properties
+/home/user/github/verifyica.properties
+/home/user/verifyica.properties
+/home/verifyica.properties
+/verifyica.properties
+```
+
 ## Execution Parallelism
 
 Verifyica has the ability to control both test class and test argument execution parallelism.
