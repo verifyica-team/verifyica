@@ -35,11 +35,11 @@ public interface ArgumentContext extends Context {
     Argument<?> getTestArgument();
 
     /**
-     * Returns the Argument, casting the Argument payload to type
+     * Returns the Argument, casting the Argument payload to the payload type
      *
-     * @param type the Argument return type
+     * @param type the Argument payload type
      * @return the Argument
-     * @param <T> the Argument return type
+     * @param <T> the Argument payload type
      */
     <T> Argument<T> getTestArgument(Class<T> type);
 }

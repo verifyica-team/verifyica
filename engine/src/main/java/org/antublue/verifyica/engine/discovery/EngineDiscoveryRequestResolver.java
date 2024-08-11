@@ -434,6 +434,21 @@ public class EngineDiscoveryRequestResolver {
         Object object = getArgumentSupplierMethod(testClass).invoke(null, (Object[]) null);
         if (object == null) {
             return testArguments;
+        } else if (object.getClass().isArray()) {
+            Object[] objects = (Object[]) object;
+            if (objects.length > 0) {
+                int index = 0;
+                for (Object o : objects) {
+                    if (o instanceof Argument<?>) {
+                        testArguments.add(((Argument<?>) o));
+                    } else {
+                        testArguments.add(Argument.of("argument[" + index + "]", o));
+                    }
+                    index++;
+                }
+            } else {
+                return testArguments;
+            }
         } else if (object instanceof Argument<?>) {
             testArguments.add((Argument<?>) object);
             return testArguments;
@@ -459,7 +474,7 @@ public class EngineDiscoveryRequestResolver {
                 index++;
             }
         } else {
-            testArguments.add(Argument.of("argument", object));
+            testArguments.add(Argument.of("argument[0]", object));
         }
 
         LOGGER.trace("getTestArguments() [%d] ms", stopWatch.elapsedTime().toMillis());
