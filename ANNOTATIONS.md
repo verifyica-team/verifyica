@@ -10,15 +10,20 @@ All Verifyica annotations are defined in a container class `Verifyica`.
 
 All test classes must define single method annotated with `@Verifyica.ArgumentSupplier`.
 
+- required
+- may return a `Stream, ``Iterable`, `Collection`, arrays, or single `Object`
+  - `Stream`, `Iterable`, `Collection`, and arrays can contain mixed `Object` types
 - must be public
 - must be static
 - must not define any parameters
 - must return a non-null Object
-- iterables, collections, arrays, etc. can contain mixed Object types
+
+#### Parallelism
 
 Test argument parallelism (parallel test argument testing) can be defined with an annotation property `parallelism`
 
-- Default `parallelism` is `1`
+- The default `parallelism` value is `1`
+- `parallelism` will be constrained to `verifyica.engine.argument.parallelism` 
 
 **Notes**
 
@@ -83,6 +88,7 @@ public static Collection<Argument<String>> arguments() {
 
 All methods annotated with `@Verifyica.Prepare` or `@Verifyica.Conclude`:
 
+- optional
 - must return `void`
 - must be public
 - must be static
@@ -99,6 +105,7 @@ All methods annotated with `@Verifyica.Prepare` or `@Verifyica.Conclude`:
 
 All methods annotated with `@Verifyica.BeforeAll` or `@Verifyica.AfterAll`:
 
+- optional
 - must return `void`
 - must be public
 - must not be static
@@ -115,6 +122,7 @@ All methods annotated with `@Verifyica.BeforeAll` or `@Verifyica.AfterAll`:
 
 All methods annotated with `@Verifyica.BeforeEach` or `@Verifyica.AfterEach`:
 
+- optional
 - must return `void`
 - must be public
 - must not be static
@@ -127,6 +135,7 @@ All methods annotated with `@Verifyica.BeforeEach` or `@Verifyica.AfterEach`:
 
 All methods annotated with `@Verifyica.Test`:
 
+- at least 1 `@Verifyica.Test` method is required for concrete classes
 - must return `void`
 - must be public
 - must not be static
@@ -139,6 +148,8 @@ All methods annotated with `@Verifyica.Test`:
 
 Used by Verifyica to order test classes / test methods.
 
+- optional
+
 **Notes**
 
 - If `verifyica.engine.class.parallelism` is greater than `1`, orders test class **execution submission order**.
@@ -150,6 +161,10 @@ Used by Verifyica to order test classes / test methods.
 
 Used by Verifyica to set the test class / test method display name.
 
+- optional
+
+**Notes**
+
 - Used for test class / test method ordering if `@Verifyica.Order` is not declared.
 
 ---
@@ -158,8 +173,25 @@ Used by Verifyica to set the test class / test method display name.
 
 Repeatable annotation used to tag test classes for filtering.
 
+- optional
+
 ---
 
 ### @Verifyica.Disabled
 
 Indicates the Verifyica that the test class / test method is disabled/do not test.
+
+- optional
+
+---
+
+### @Verifyica.ClassInterceptorSupplier
+
+Used to register a test class specific [ClassInterceptor](api/src/main/java/org/antublue/verifyica/api/interceptor/ClassInterceptor.java)
+
+- optional
+- may return a `Stream`, `Iterable`, `Collection`, arrays, or single `ClassInterceptor` instance
+- must be public
+- must be static
+- must not define any parameters
+- may throw `Throwable`
