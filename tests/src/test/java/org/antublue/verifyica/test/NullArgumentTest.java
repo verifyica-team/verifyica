@@ -21,7 +21,7 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
-public class NoArgumentsTest {
+public class NullArgumentTest {
 
     @Verifyica.ArgumentSupplier
     public static Object arguments() {

@@ -181,6 +181,17 @@ public interface Argument<T> {
     }
 
     /**
+     * Method to create an empty Argument
+     *
+     * <p>Use when the argument is not used as part of tests</p>
+     *
+     * @return an empty Argument
+     */
+    static Argument<Object> empty() {
+        return of("---", null);
+    }
+
+    /**
      * Method to get the Argument name
      *
      * @return the Argument name

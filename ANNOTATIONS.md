@@ -23,11 +23,17 @@ All test classes must define single method annotated with `@Verifyica.ArgumentSu
 Test argument parallelism (parallel test argument testing) can be defined with an annotation property `parallelism`
 
 - The default `parallelism` value is `1`
+
+
 - `parallelism` will be constrained to `verifyica.engine.argument.parallelism` 
 
 **Notes**
 
 - If the `@Verifyica.ArgumentSupplier` method returns a `null` object, the test class will be ignored/not reported.
+
+
+- `Argument.empty()` can be used when the argument is not being used
+  - The payload for `Argument.empty()` is `null`
 
 Examples:
 
@@ -75,6 +81,13 @@ public static Collection<Argument<String>> arguments() {
     }
 
     return collection;
+}
+```
+
+```java
+@Verifyica.ArgumentSupplier
+public static Object arguments() {
+    return Argument.empty();
 }
 ```
 
