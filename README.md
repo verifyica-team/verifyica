@@ -313,6 +313,10 @@ Alternatively, tests can be performed on an external environment. Ideally the ex
 
 See [Annotations](ANNOTATIONS.md) for details.
 
+# Filtering
+
+See [Filters](FILTERS.md)
+
 # Configuration
 
 See [Configuration](CONFIGURATION.md) for details.
