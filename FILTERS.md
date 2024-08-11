@@ -4,7 +4,7 @@ Verifyica allows for various test class / test method filtering scenarios using 
 
 ## Configuration
 
-To use test class / test method filtering you need to configuration the location YAML filter file.
+To use test class / test method filtering you need to configure the filter YAML file property.
 
 ```properties
 verifyica.engine.filter.definitions.filename=filters.yaml
