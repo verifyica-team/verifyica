@@ -315,7 +315,7 @@ See [Annotations](ANNOTATIONS.md) for details.
 
 # Filtering
 
-See [Filters](FILTERS.md)
+See [Filters](FILTERS.md) for details.
 
 # Configuration
 
