@@ -8,7 +8,7 @@
 
 ![Verifyica](assets/verifyica.png)
 
-A Java annotation-based, multithreaded test engine for integration testing built on [JUnit](https://junit.org/junit5/) Platform.
+A Java annotation driven, multithreaded test engine for integration testing built on [JUnit](https://junit.org/junit5/) Platform.
 
 # Purpose
 
@@ -44,8 +44,8 @@ for (TestArgument testArgument : TestArguments) {
 
 - Purpose built for integration testing using [testcontainers-java](https://java.testcontainers.org/)
   - i.e. for each argument, execute a set of test methods
-- Annotation based
-- Multithreaded class / argument testing support
+- Annotation driven
+- Multithreaded test class / test argument testing
 - Virtual thread support (Java 21+)
 - Properties file driven configuration
 - Test class / test method filtering
