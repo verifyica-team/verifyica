@@ -286,7 +286,7 @@ public class EnvironmentTest {
 [Test Environment 2] destroyed
 ```
 
-# Examples using test containers
+# Test Containers Examples
 
 Example tests using [testcontainers-java](https://java.testcontainers.org/)
 
