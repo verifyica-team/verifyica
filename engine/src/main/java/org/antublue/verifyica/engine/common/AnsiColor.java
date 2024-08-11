@@ -17,6 +17,7 @@
 package org.antublue.verifyica.engine.common;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement ANSIColor */
@@ -39,6 +40,7 @@ public class AnsiColor {
     /** Configuration constant */
     private static final String MAVEN_PLUGIN_BATCH = PREFIX + ".maven.plugin.batch";
 
+    private static final Pattern ANSI_PATTERN = Pattern.compile("\\u001B\\[[;\\d]*m");
     private static final String ANSI_COLOR = "ANSI_COLOR";
     private static final String NO_COLOR = "NO_COLOR";
     private static final String EMPTY_STRING = "";
@@ -301,6 +303,19 @@ public class AnsiColor {
     @Override
     public int hashCode() {
         return Objects.hashCode(escapeSequence);
+    }
+
+    /**
+     * Method to strip ANSI codes
+     *
+     * @param string string
+     * @return a String stripped of ANSI codes
+     */
+    public static String stripAnsiCodes(String string) {
+        if (string == null) {
+            return null;
+        }
+        return ANSI_PATTERN.matcher(string).replaceAll("");
     }
 
     /**
