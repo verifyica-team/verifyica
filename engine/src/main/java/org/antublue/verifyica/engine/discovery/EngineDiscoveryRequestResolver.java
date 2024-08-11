@@ -561,6 +561,27 @@ public class EngineDiscoveryRequestResolver {
                 if (object instanceof ClassInterceptor) {
                     ClassInterceptorRegistry.getInstance()
                             .register(testClass, (ClassInterceptor) object);
+                } else if (object.getClass().isArray()) {
+                    Object[] objects = (Object[]) object;
+                    if (objects.length > 0) {
+                        int index = 0;
+                        for (Object o : objects) {
+                            if (o instanceof ClassInterceptor) {
+                                ClassInterceptorRegistry.getInstance()
+                                        .register(testClass, (ClassInterceptor) o);
+                            } else {
+                                throw new TestClassException(
+                                        format(
+                                                "Invalid argument type [%s] supplied by test class"
+                                                    + " [%s] @Verifyica.ClassInterceptorSupplier"
+                                                    + " method at index [%d]",
+                                                o.getClass().getName(),
+                                                testClass.getName(),
+                                                index));
+                            }
+                            index++;
+                        }
+                    }
                 } else if (object instanceof Stream || object instanceof Iterable) {
                     Iterator<?> iterator;
 
