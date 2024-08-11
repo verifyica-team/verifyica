@@ -369,7 +369,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                         INFO
                                 + AnsiColor.TEXT_WHITE_BRIGHT.wrap(
                                         counterKeyToMessageDisplayStringMap.get(key))
-                                + " : "
+                                + ": "
                                 + AnsiColor.TEXT_WHITE_BRIGHT.wrap(
                                         pad(
                                                 counterMap
@@ -406,7 +406,21 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                         countDisplayString = AnsiColor.TEXT_WHITE_BOLD.wrap(pad(count, skipPad));
                     }
 
-                    stringBuilder.append(", " + messageDisplayString + " : " + countDisplayString);
+                    if (count == 0) {
+                        // Revert display message and count display message to TEST_WRITE_BRIGHT
+                        messageDisplayString = AnsiColor.stripAnsiCodes(messageDisplayString);
+                        countDisplayString = AnsiColor.stripAnsiCodes(countDisplayString);
+
+                        messageDisplayString =
+                                AnsiColor.TEXT_WHITE_BRIGHT.wrap(messageDisplayString);
+                        countDisplayString = AnsiColor.TEXT_WHITE_BRIGHT.wrap(countDisplayString);
+                    }
+
+                    stringBuilder
+                            .append(" ")
+                            .append(messageDisplayString)
+                            .append(": ")
+                            .append(countDisplayString);
                 }
 
                 println(stringBuilder.toString());
@@ -414,12 +428,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
             println(INFO + SEPARATOR);
 
-            String message;
-            if (hasFailures) {
-                message = AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("TESTS FAILED");
-            } else {
-                message = AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("TESTS PASSED");
-            }
+            String message =
+                    hasFailures
+                            ? AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("TESTS FAILED")
+                            : AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("TESTS PASSED");
 
             println(INFO + message);
             println(INFO + SEPARATOR);
