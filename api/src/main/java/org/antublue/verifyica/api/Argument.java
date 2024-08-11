@@ -183,7 +183,7 @@ public interface Argument<T> {
     /**
      * Method to create an empty Argument
      *
-     * <p>Use when the argument is not used as part of tests</p>
+     * <p>Use when the argument is not required for tests
      *
      * @return an empty Argument
      */
