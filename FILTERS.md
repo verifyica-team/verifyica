@@ -90,3 +90,7 @@ Example File:
   enabled: false
   classTagRegex: "Tag1|Tag2"
 ```
+
+---
+
+Copyright (C) 2024 The Verifyica project authors

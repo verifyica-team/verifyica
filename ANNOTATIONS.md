@@ -208,3 +208,7 @@ Used to register a test class specific [ClassInterceptor](api/src/main/java/org/
 - must be static
 - must not define any parameters
 - may throw `Throwable`
+
+---
+
+Copyright (C) 2024 The Verifyica project authors

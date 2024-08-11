@@ -106,3 +106,7 @@ verifyica.engine.logger.regex=
 
 - `verifyica.engine.logger.regex` controls which classes are enabled.
   - an empty value "" is mapped to `.*`
+
+---
+
+Copyright (C) 2024 The Verifyica project authors

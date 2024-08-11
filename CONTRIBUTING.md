@@ -23,3 +23,7 @@ For changes, you should...
 - Build and test your changes
 - Open a pull request targeting `main`, tagging `@antublue` for review
 - A [Developer Certificate of Origin](DCO.md) (DCO) is required for all contributions
+
+---
+
+Copyright (C) 2024 The Verifyica project authors
