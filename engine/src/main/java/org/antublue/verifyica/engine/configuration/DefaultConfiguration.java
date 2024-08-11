@@ -196,6 +196,16 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
+    public Set<Map.Entry<String, String>> entrySet() {
+        try {
+            getReadWriteLock().readLock().lock();
+            return new TreeSet<>(map.entrySet());
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    @Override
     public Configuration merge(Map<String, String> map) {
         ArgumentSupport.notNull(map, "map is null");
 

@@ -115,6 +115,13 @@ public interface Configuration {
     Set<String> keySet();
 
     /**
+     * Return a COPY of the entrySet
+     *
+     * @return a COPY of the entrySet
+     */
+    Set<Map.Entry<String, String>> entrySet();
+
+    /**
      * Replace the contents
      *
      * @param map map
