@@ -31,7 +31,8 @@ public interface Configuration {
      *
      * @param key key
      * @param value value
-     * @return an Optional containing the existing value, or an empty Optional
+     * @return an Optional containing the previous value, or an empty Optional if a value didn't
+     *     exist
      */
     Optional<String> put(String key, String value);
 
@@ -49,7 +50,7 @@ public interface Configuration {
      * Get a value
      *
      * @param key key
-     * @return the value
+     * @return the value or null if value doesn't exist
      */
     String get(String key);
 
@@ -73,7 +74,7 @@ public interface Configuration {
      * Remove a key-value pair
      *
      * @param key key
-     * @return the value
+     * @return the value or null if a value didn't exist
      */
     String remove(String key);
 
@@ -154,6 +155,8 @@ public interface Configuration {
 
     /**
      * Get the Lock
+     *
+     * <p>Equivalent to getReadWriteLock().writeLock()
      *
      * @return the Lock
      */
