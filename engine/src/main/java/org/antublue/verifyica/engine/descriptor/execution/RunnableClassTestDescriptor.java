@@ -50,7 +50,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
     private static final Logger LOGGER = LoggerFactory.getLogger(RunnableClassTestDescriptor.class);
 
     private static final ExecutorService EXECUTOR_SERVICE =
-            ExecutorServiceSupport.createExecutorService(getEngineArgumentParallelism());
+            ExecutorServiceSupport.newExecutorService(getEngineArgumentParallelism());
 
     private final ExecutionRequest executionRequest;
     private final ClassTestDescriptor classTestDescriptor;
@@ -138,7 +138,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                 stateTracker.setState("execute");
 
                 ExecutorService executorService =
-                        ExecutorServiceSupport.createSemaphoreExecutorService(
+                        ExecutorServiceSupport.newSemaphoreExecutorService(
                                 EXECUTOR_SERVICE, classTestDescriptor.getTestArgumentParallelism());
 
                 List<Future<?>> futures = new ArrayList<>();

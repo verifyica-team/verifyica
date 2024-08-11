@@ -45,7 +45,7 @@ public class ExecutorServiceSupport {
      * @param threads threads
      * @return an ExecutorService
      */
-    public static ExecutorService createExecutorService(int threads) {
+    public static ExecutorService newExecutorService(int threads) {
         ArgumentSupport.isTrue(threads > 0, "threads is less than 1");
 
         ExecutorService executorService;
@@ -76,12 +76,12 @@ public class ExecutorServiceSupport {
      * @param permits permits
      * @return an ExecutorService with a fixed number of permits
      */
-    public static ExecutorService createSemaphoreExecutorService(
+    public static ExecutorService newSemaphoreExecutorService(
             ExecutorService executorService, int permits) {
         ArgumentSupport.notNull(executorService, "executorService is null");
         ArgumentSupport.isTrue(permits > 0, "permits is less than 1");
 
-        return createSemaphoreExecutorService(executorService, new Semaphore(permits, true));
+        return newSemaphoreExecutorService(executorService, new Semaphore(permits, true));
     }
 
     /**
@@ -91,7 +91,7 @@ public class ExecutorServiceSupport {
      * @param semaphore semaphore
      * @return an ExecutorService with a fixed number of permits
      */
-    public static ExecutorService createSemaphoreExecutorService(
+    public static ExecutorService newSemaphoreExecutorService(
             ExecutorService executorService, Semaphore semaphore) {
         ArgumentSupport.notNull(executorService, "executorService is null");
         ArgumentSupport.notNull(semaphore, "semaphore is null");

@@ -183,7 +183,7 @@ public class VerifyicaEngine implements TestEngine {
         EngineContext engineContext = DefaultEngineContext.getInstance();
 
         ExecutorService executorService =
-                ExecutorServiceSupport.createExecutorService(getEngineClassParallelism());
+                ExecutorServiceSupport.newExecutorService(getEngineClassParallelism());
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
