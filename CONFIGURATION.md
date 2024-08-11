@@ -22,6 +22,10 @@ The search path will be ...
 /verifyica.properties
 ```
 
+**Notes**
+
+- The first file found, regardless of content will be used
+
 ## Execution Parallelism
 
 Verifyica has the ability to control both test class and test argument execution parallelism.
