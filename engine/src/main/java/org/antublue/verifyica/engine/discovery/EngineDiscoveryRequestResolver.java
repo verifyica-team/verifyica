@@ -497,6 +497,13 @@ public class EngineDiscoveryRequestResolver {
                         Predicates.ARGUMENT_SUPPLIER_METHOD,
                         HierarchyTraversalMode.BOTTOM_UP);
 
+        if (methods.size() > 1) {
+            // Defensive code to get the first argument supplier method
+            final Class<?> declaredClass = methods.get(0).getDeclaringClass();
+            methods.removeIf(m -> !m.getDeclaringClass().equals(declaredClass));
+            OrderSupport.orderMethods(methods);
+        }
+
         return methods.get(0);
     }
 
