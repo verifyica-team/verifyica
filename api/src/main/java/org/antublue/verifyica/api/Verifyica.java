@@ -26,11 +26,6 @@ import org.junit.platform.commons.annotation.Testable;
 /** Interface that contains all Verifyica annotations */
 public @interface Verifyica {
 
-    /** ClassInterceptorSupplier annotation */
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface ClassInterceptorSupplier {}
-
     /** ArgumentSupplier annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
@@ -142,4 +137,9 @@ public @interface Verifyica {
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface AutowiredInterceptor {}
+
+    /** ClassInterceptorSupplier annotation */
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface ClassInterceptorSupplier {}
 }
