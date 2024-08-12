@@ -71,9 +71,9 @@ verifyica.engine.argument.parallelism=20
 - `@Verifyica.ArgumentSupplier(parallelism = X)` is constrained to a maximum upper limit of `verifyica.engine.argument.parallelism`
   - overall test argument execution parallelism (for all test classes) is `verifyica.engine.argument.parallelism`
 
-## ExecutorService Thread type
+## Parallelism Thread Type
 
-Verifyica designed to use both platform threads and virtual threads automatically.
+Verifyica is designed to use either platform threads or virtual threads depending on the Java version being used.
 
 - Java 21+
   - virtual threads
