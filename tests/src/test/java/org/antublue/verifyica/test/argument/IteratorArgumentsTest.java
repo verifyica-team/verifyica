@@ -28,8 +28,10 @@ public class IteratorArgumentsTest {
     @Verifyica.ArgumentSupplier
     public static Object arguments() {
         Collection<String> collection = new ArrayList<>();
+
         collection.add("test1");
         collection.add("test2");
+
         return collection.iterator();
     }
 

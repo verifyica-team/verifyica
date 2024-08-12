@@ -27,8 +27,10 @@ public class EnumerationArgumentsTest {
     @Verifyica.ArgumentSupplier
     public static Object arguments() {
         Vector<String> vector = new Vector<>();
+
         vector.add("test1");
         vector.add("test2");
+
         return vector.elements();
     }
 
