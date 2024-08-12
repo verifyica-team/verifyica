@@ -321,7 +321,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                                                 e);
                                     }
                                 })
-                        .orElse(Runtime.getRuntime().availableProcessors());
+                        .orElse(engineClassParallelism);
 
         if (engineArgumentParallelism < engineClassParallelism) {
             LOGGER.warn(
