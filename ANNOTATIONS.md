@@ -192,7 +192,7 @@ Repeatable annotation used to tag test classes for filtering.
 
 ### @Verifyica.Disabled
 
-Indicates the Verifyica that the test class / test method is disabled/do not test.
+Indicates the Verifyica that a test class / test method is disabled/do not test.
 
 - optional
 
