@@ -21,7 +21,9 @@ import static org.junit.platform.engine.Filter.composeFilters;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -452,10 +454,16 @@ public class EngineDiscoveryRequestResolver {
         } else if (object instanceof Argument<?>) {
             testArguments.add((Argument<?>) object);
             return testArguments;
-        } else if (object instanceof Stream || object instanceof Iterable) {
+        } else if (object instanceof Stream
+                || object instanceof Iterable
+                || object instanceof Iterator
+                || object instanceof Enumeration) {
             Iterator<?> iterator;
-
-            if (object instanceof Stream) {
+            if (object instanceof Enumeration) {
+                iterator = Collections.list((Enumeration<?>) object).iterator();
+            } else if (object instanceof Iterator) {
+                iterator = (Iterator<?>) object;
+            } else if (object instanceof Stream) {
                 Stream<?> stream = (Stream<?>) object;
                 iterator = stream.iterator();
             } else {
@@ -589,10 +597,16 @@ public class EngineDiscoveryRequestResolver {
                             index++;
                         }
                     }
-                } else if (object instanceof Stream || object instanceof Iterable) {
+                } else if (object instanceof Stream
+                        || object instanceof Iterable
+                        || object instanceof Iterator
+                        || object instanceof Enumeration) {
                     Iterator<?> iterator;
-
-                    if (object instanceof Stream) {
+                    if (object instanceof Enumeration) {
+                        iterator = Collections.list((Enumeration<?>) object).iterator();
+                    } else if (object instanceof Iterator) {
+                        iterator = (Iterator<?>) object;
+                    } else if (object instanceof Stream) {
                         Stream<?> stream = (Stream<?>) object;
                         iterator = stream.iterator();
                     } else {
