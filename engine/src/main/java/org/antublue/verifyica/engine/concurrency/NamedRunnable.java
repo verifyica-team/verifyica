@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.common;
+package org.antublue.verifyica.engine.concurrency;
 
 import org.antublue.verifyica.engine.support.ArgumentSupport;
 
@@ -30,7 +30,7 @@ public class NamedRunnable implements Runnable {
      * @param runnable runnable
      * @param threadName threadName
      */
-    public NamedRunnable(Runnable runnable, String threadName) {
+    private NamedRunnable(Runnable runnable, String threadName) {
         this.runnable = runnable;
         this.threadName = threadName;
     }
@@ -55,7 +55,7 @@ public class NamedRunnable implements Runnable {
      * @param threadName threadName
      * @return a NamedRunnable
      */
-    public static Runnable wrap(Runnable runnable, String threadName) {
+    public static NamedRunnable newNamedRunnable(Runnable runnable, String threadName) {
         ArgumentSupport.notNull(runnable, "runnable is null");
         ArgumentSupport.notNullOrEmpty(threadName, "threadName is null", "threadName is empty");
 

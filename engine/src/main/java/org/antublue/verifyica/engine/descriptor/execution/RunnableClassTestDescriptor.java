@@ -23,11 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.common.NamedRunnable;
 import org.antublue.verifyica.engine.common.StateTracker;
+import org.antublue.verifyica.engine.concurrency.ExecutorServiceFactory;
+import org.antublue.verifyica.engine.concurrency.FifoSemaphore;
+import org.antublue.verifyica.engine.concurrency.NamedRunnable;
+import org.antublue.verifyica.engine.concurrency.SemaphoreRunnable;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
@@ -39,7 +43,6 @@ import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.support.ExecutorServiceSupport;
 import org.antublue.verifyica.engine.support.HashSupport;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
@@ -50,7 +53,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
     private static final Logger LOGGER = LoggerFactory.getLogger(RunnableClassTestDescriptor.class);
 
     private static final ExecutorService EXECUTOR_SERVICE =
-            ExecutorServiceSupport.newExecutorService(getEngineArgumentParallelism());
+            ExecutorServiceFactory.newExecutorService(getEngineArgumentParallelism());
 
     private final ExecutionRequest executionRequest;
     private final ClassTestDescriptor classTestDescriptor;
@@ -137,26 +140,33 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
             try {
                 stateTracker.setState("execute");
 
-                ExecutorService executorService =
-                        ExecutorServiceSupport.newSemaphoreExecutorService(
-                                EXECUTOR_SERVICE, classTestDescriptor.getTestArgumentParallelism());
+                LOGGER.trace("argumentTestDescriptors size [%d]", argumentTestDescriptors.size());
+                LOGGER.trace(
+                        "testArgumentParallelism [%d]",
+                        classTestDescriptor.getTestArgumentParallelism());
+
+                Semaphore semaphore =
+                        new FifoSemaphore(classTestDescriptor.getTestArgumentParallelism());
 
                 List<Future<?>> futures = new ArrayList<>();
 
                 argumentTestDescriptors.forEach(
                         argumentTestDescriptor ->
                                 futures.add(
-                                        executorService.submit(
-                                                NamedRunnable.wrap(
-                                                        new RunnableArgumentTestDescriptor(
-                                                                executionRequest,
-                                                                classInstanceContext,
-                                                                argumentTestDescriptor),
-                                                        Thread.currentThread().getName()
-                                                                + "/"
-                                                                + HashSupport.alphanumeric(4)))));
+                                        EXECUTOR_SERVICE.submit(
+                                                SemaphoreRunnable.newSemaphoreRunnable(
+                                                        semaphore,
+                                                        NamedRunnable.newNamedRunnable(
+                                                                new RunnableArgumentTestDescriptor(
+                                                                        executionRequest,
+                                                                        classInstanceContext,
+                                                                        argumentTestDescriptor),
+                                                                Thread.currentThread().getName()
+                                                                        + "/"
+                                                                        + HashSupport.alphanumeric(
+                                                                                4))))));
 
-                ExecutorServiceSupport.waitForAll(futures);
+                ExecutorServiceFactory.waitForAll(futures);
 
                 stateTracker.setState("execute.success");
             } catch (Throwable t) {

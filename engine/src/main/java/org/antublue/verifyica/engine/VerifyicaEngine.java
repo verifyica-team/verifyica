@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -35,9 +36,12 @@ import java.util.stream.Collectors;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
-import org.antublue.verifyica.engine.common.NamedRunnable;
 import org.antublue.verifyica.engine.common.SynchronizedPrintStream;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
+import org.antublue.verifyica.engine.concurrency.ExecutorServiceFactory;
+import org.antublue.verifyica.engine.concurrency.FifoSemaphore;
+import org.antublue.verifyica.engine.concurrency.NamedRunnable;
+import org.antublue.verifyica.engine.concurrency.SemaphoreRunnable;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
@@ -50,7 +54,6 @@ import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.internal.engine.EngineInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.support.ExecutorServiceSupport;
 import org.antublue.verifyica.engine.support.HashSupport;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.ExecutionRequest;
@@ -183,7 +186,7 @@ public class VerifyicaEngine implements TestEngine {
         EngineContext engineContext = DefaultEngineContext.getInstance();
 
         ExecutorService executorService =
-                ExecutorServiceSupport.newExecutorService(getEngineClassParallelism());
+                ExecutorServiceFactory.newExecutorService(getEngineClassParallelism());
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -201,6 +204,9 @@ public class VerifyicaEngine implements TestEngine {
                     getClassTestDescriptors(executionRequest);
 
             LOGGER.trace("classTestDescriptors size [%d]", classTestDescriptors.size());
+            LOGGER.trace("engineClassParallelism [%d]", getEngineClassParallelism());
+
+            Semaphore semaphore = new FifoSemaphore(getEngineClassParallelism());
 
             List<Future<?>> futures = new ArrayList<>();
 
@@ -208,14 +214,18 @@ public class VerifyicaEngine implements TestEngine {
                     classTestDescriptor ->
                             futures.add(
                                     executorService.submit(
-                                            NamedRunnable.wrap(
-                                                    new RunnableClassTestDescriptor(
-                                                            executionRequest,
-                                                            engineContext,
-                                                            classTestDescriptor),
-                                                    "verifyica/" + HashSupport.alphanumeric(4)))));
+                                            SemaphoreRunnable.newSemaphoreRunnable(
+                                                    semaphore,
+                                                    NamedRunnable.newNamedRunnable(
+                                                            new RunnableClassTestDescriptor(
+                                                                    executionRequest,
+                                                                    engineContext,
+                                                                    classTestDescriptor),
+                                                            "verifyica/"
+                                                                    + HashSupport.alphanumeric(
+                                                                            4))))));
 
-            ExecutorServiceSupport.waitForAll(futures);
+            ExecutorServiceFactory.waitForAll(futures);
         } catch (Throwable t) {
             throwableCollector.add(t);
         } finally {
@@ -251,25 +261,15 @@ public class VerifyicaEngine implements TestEngine {
         LOGGER.trace("execution done");
     }
 
-    private static List<ClassTestDescriptor> getClassTestDescriptors(
-            ExecutionRequest executionRequest) {
-        return executionRequest.getRootTestDescriptor().getChildren().stream()
-                .filter(
-                        (Predicate<TestDescriptor>)
-                                testDescriptor -> testDescriptor instanceof ClassTestDescriptor)
-                .map(
-                        (Function<TestDescriptor, ClassTestDescriptor>)
-                                testDescriptor -> (ClassTestDescriptor) testDescriptor)
-                .collect(Collectors.toList());
-    }
-
     /**
      * Method to get the engine class parallelism value
      *
      * @return the engine parallelism value
      */
-    private static int getEngineClassParallelism() {
-        int engineParallelism =
+    public static int getEngineClassParallelism() {
+        LOGGER.trace("getEngineClassParallelism()");
+
+        int engineClassParallelism =
                 DefaultConfiguration.getInstance()
                         .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
                         .map(
@@ -295,9 +295,74 @@ public class VerifyicaEngine implements TestEngine {
                                 })
                         .orElse(Runtime.getRuntime().availableProcessors());
 
-        LOGGER.trace("getEngineClassParallelism() [%s]", engineParallelism);
+        LOGGER.trace("engineClassParallelism [%s]", engineClassParallelism);
 
-        return engineParallelism;
+        return engineClassParallelism;
+    }
+
+    /**
+     * Method to get the engine argument parallelism value
+     *
+     * @return the engine parallelism value
+     */
+    public static int getEngineArgumentParallelism() {
+        LOGGER.trace("getEngineArgumentParallelism()");
+
+        int engineClassParallelism = getEngineClassParallelism();
+
+        int engineArgumentParallelism =
+                DefaultConfiguration.getInstance()
+                        .getOptional(Constants.ENGINE_ARGUMENT_PARALLELISM)
+                        .map(
+                                value -> {
+                                    int intValue;
+                                    try {
+                                        intValue = Integer.parseInt(value);
+                                        if (intValue < 1) {
+                                            throw new EngineException(
+                                                    format(
+                                                            "Invalid %s value [%d]",
+                                                            Constants.ENGINE_ARGUMENT_PARALLELISM,
+                                                            intValue));
+                                        }
+                                        return intValue;
+                                    } catch (NumberFormatException e) {
+                                        throw new EngineException(
+                                                format(
+                                                        "Invalid %s value [%s]",
+                                                        Constants.ENGINE_ARGUMENT_PARALLELISM,
+                                                        value),
+                                                e);
+                                    }
+                                })
+                        .orElse(engineClassParallelism);
+
+        if (engineArgumentParallelism < engineClassParallelism) {
+            LOGGER.warn(
+                    "[%s] is less than [%s], setting [%s] to [%d]",
+                    Constants.ENGINE_ARGUMENT_PARALLELISM,
+                    Constants.ENGINE_CLASS_PARALLELISM,
+                    Constants.ENGINE_ARGUMENT_PARALLELISM,
+                    engineClassParallelism);
+
+            engineArgumentParallelism = engineClassParallelism;
+        }
+
+        LOGGER.trace("engineArgumentParallelism [%s]", engineArgumentParallelism);
+
+        return engineArgumentParallelism;
+    }
+
+    private static List<ClassTestDescriptor> getClassTestDescriptors(
+            ExecutionRequest executionRequest) {
+        return executionRequest.getRootTestDescriptor().getChildren().stream()
+                .filter(
+                        (Predicate<TestDescriptor>)
+                                testDescriptor -> testDescriptor instanceof ClassTestDescriptor)
+                .map(
+                        (Function<TestDescriptor, ClassTestDescriptor>)
+                                testDescriptor -> (ClassTestDescriptor) testDescriptor)
+                .collect(Collectors.toList());
     }
 
     /**

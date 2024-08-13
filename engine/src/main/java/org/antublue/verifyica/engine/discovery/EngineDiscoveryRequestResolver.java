@@ -132,7 +132,6 @@ public class EngineDiscoveryRequestResolver {
                             });
 
             afterTestDiscovery(classDefinitions);
-
             prune(classDefinitions);
             loadClassInterceptors(classDefinitions);
             buildEngineDescriptor(engineDescriptor, classDefinitions);
