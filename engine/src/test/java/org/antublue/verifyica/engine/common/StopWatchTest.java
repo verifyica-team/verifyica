@@ -67,7 +67,7 @@ public class StopWatchTest {
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
-            // INTENTIONALLY BLANK
+            Thread.currentThread().interrupt();
         }
     }
 }

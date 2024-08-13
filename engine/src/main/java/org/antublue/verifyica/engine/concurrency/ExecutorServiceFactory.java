@@ -14,33 +14,36 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.support;
+package org.antublue.verifyica.engine.concurrency;
 
 import io.github.thunkware.vt.bridge.ExecutorTool;
-import io.github.thunkware.vt.bridge.SemaphoreExecutor;
 import io.github.thunkware.vt.bridge.ThreadTool;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.ArgumentSupport;
 
-/** Class to implement ExecutorServiceSupport */
-public class ExecutorServiceSupport {
+/** Class to implement ExecutorServiceFactory */
+public class ExecutorServiceFactory {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorServiceFactory.class);
 
     /** Constructor */
-    private ExecutorServiceSupport() {
+    private ExecutorServiceFactory() {
         // INTENTIONALLY BLANK
     }
 
     /**
      * Method to create a new ExecutorService
+     *
+     * <p>threads is no ignored if the Java VM supports virtual threads
      *
      * @param threads threads
      * @return an ExecutorService
@@ -48,14 +51,17 @@ public class ExecutorServiceSupport {
     public static ExecutorService newExecutorService(int threads) {
         ArgumentSupport.isTrue(threads > 0, "threads is less than 1");
 
+        LOGGER.trace("newExecutorService() threads [%d]", threads);
+
         ExecutorService executorService;
 
         if (ThreadTool.hasVirtualThreads()) {
-            executorService =
-                    new SemaphoreExecutor(
-                            ExecutorTool.newVirtualThreadPerTaskExecutor(),
-                            new Semaphore(threads, true));
+            LOGGER.trace("using virtual threads");
+
+            executorService = ExecutorTool.newVirtualThreadPerTaskExecutor();
         } else {
+            LOGGER.trace("using platform threads");
+
             executorService =
                     new ThreadPoolExecutor(
                             threads,
@@ -70,37 +76,7 @@ public class ExecutorServiceSupport {
     }
 
     /**
-     * Method to create an ExecutorService with a fixed number of permits
-     *
-     * @param executorService executorService
-     * @param permits permits
-     * @return an ExecutorService with a fixed number of permits
-     */
-    public static ExecutorService newSemaphoreExecutorService(
-            ExecutorService executorService, int permits) {
-        ArgumentSupport.notNull(executorService, "executorService is null");
-        ArgumentSupport.isTrue(permits > 0, "permits is less than 1");
-
-        return newSemaphoreExecutorService(executorService, new Semaphore(permits, true));
-    }
-
-    /**
-     * Method to create an ExecutorService with a fixed number of permits
-     *
-     * @param executorService executorService
-     * @param semaphore semaphore
-     * @return an ExecutorService with a fixed number of permits
-     */
-    public static ExecutorService newSemaphoreExecutorService(
-            ExecutorService executorService, Semaphore semaphore) {
-        ArgumentSupport.notNull(executorService, "executorService is null");
-        ArgumentSupport.notNull(semaphore, "semaphore is null");
-
-        return new SemaphoreExecutor(executorService, semaphore);
-    }
-
-    /**
-     * Method to wait on all Futures
+     * Method to wait for all Futures to complete
      *
      * @param futures futures
      */
@@ -135,6 +111,7 @@ public class ExecutorServiceSupport {
                     executor.getQueue().put(runnable);
                 } catch (InterruptedException e) {
                     LOGGER.error("Runnable discarded!!!");
+                    Thread.currentThread().interrupt();
                 }
             }
         }

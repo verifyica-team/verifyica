@@ -53,7 +53,11 @@ for (TestArgument testArgument : TestArguments) {
 - Test class interceptors (extensions)
 - Engine interceptors (extensions)
 - Test class / test argument parallel testing constraints
-- Store cleanup of `AutoClosable` objects
+- Store cleanup of `AutoClosable` test classes / test arguments / [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) objects
+- Object / resource sharing via contexts
+  - [EngineContext](api/src/main/java/org/antublue/verifyica/api/EngineContext.java)
+  - [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
+  - [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java) 
 - [IntelliJ](https://www.jetbrains.com/idea/) support
 
 # High Level Design
