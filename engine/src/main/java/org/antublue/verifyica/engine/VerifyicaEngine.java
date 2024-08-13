@@ -353,6 +353,12 @@ public class VerifyicaEngine implements TestEngine {
         return engineArgumentParallelism;
     }
 
+    /**
+     * Method to get a List of ClassTestDescriptors
+     *
+     * @param executionRequest executionRequest
+     * @return a List of ClassTestDescriptors
+     */
     private static List<ClassTestDescriptor> getClassTestDescriptors(
             ExecutionRequest executionRequest) {
         return executionRequest.getRootTestDescriptor().getChildren().stream()

@@ -213,25 +213,6 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
             }
         }
 
-        Object testInstance = null;
-
-        if (classInstanceContext != null) {
-            testInstance = classInstanceContext.getTestInstance();
-        }
-
-        if (testInstance instanceof AutoCloseable) {
-            try {
-                stateTracker.setState("classAutoClose(" + testClass.getName() + ")");
-
-                ((AutoCloseable) testInstance).close();
-
-                stateTracker.setState("classAutoClose(" + testClass.getName() + ").success");
-            } catch (Throwable t) {
-                t.printStackTrace(System.err);
-                stateTracker.setState("classAutoClose(" + testClass.getName() + ").failure");
-            }
-        }
-
         Store store = classContext.getStore();
         for (Object key : store.keySet()) {
             Object value = store.get(key);
@@ -249,6 +230,12 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
             }
         }
         store.clear();
+
+        Object testInstance = null;
+
+        if (classInstanceContext != null) {
+            testInstance = classInstanceContext.getTestInstance();
+        }
 
         try {
             stateTracker.setState("destroy");
