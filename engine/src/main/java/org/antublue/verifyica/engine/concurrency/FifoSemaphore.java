@@ -23,8 +23,13 @@ import java.util.concurrent.locks.ReentrantLock;
 /** Class to implement FifoSemaphore */
 public class FifoSemaphore extends Semaphore {
 
+    /** BlockingQueue */
     private final BlockingQueue<Thread> blockingQueue;
+
+    /** ReentrantLock */
     private final ReentrantLock reentrantLock;
+
+    /** Condition */
     private final Condition notFullCondition;
 
     /**
