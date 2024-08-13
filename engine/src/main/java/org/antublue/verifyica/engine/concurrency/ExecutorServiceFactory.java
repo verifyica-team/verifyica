@@ -43,6 +43,8 @@ public class ExecutorServiceFactory {
     /**
      * Method to create a new ExecutorService
      *
+     * <p>threads is no ignored if the Java VM supports virtual threads
+     *
      * @param threads threads
      * @return an ExecutorService
      */
@@ -74,7 +76,7 @@ public class ExecutorServiceFactory {
     }
 
     /**
-     * Method to wait on all Futures
+     * Method to wait for all Futures to complete
      *
      * @param futures futures
      */
