@@ -53,7 +53,8 @@ for (TestArgument testArgument : TestArguments) {
 - Test class interceptors (extensions)
 - Engine interceptors (extensions)
 - Test class / test argument parallel testing constraints
-- Store cleanup of `AutoClosable` objects
+- Store cleanup of `AutoClosable` test classes / test arguments / `Store` objects
+- Resource / Object sharing via contexts
 - [IntelliJ](https://www.jetbrains.com/idea/) support
 
 # High Level Design
