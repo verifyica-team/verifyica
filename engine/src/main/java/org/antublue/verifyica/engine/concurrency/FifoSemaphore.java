@@ -20,40 +20,51 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+/** Class to implement FifoSemaphore */
 public class FifoSemaphore extends Semaphore {
 
-    private final BlockingQueue<Thread> blockingQueue = new LinkedBlockingQueue<>();
-    private final ReentrantLock lock = new ReentrantLock();
-    private final Condition notFull = lock.newCondition();
+    private final BlockingQueue<Thread> blockingQueue;
+    private final ReentrantLock reentrantLock;
+    private final Condition notFullCondition;
 
+    /**
+     * Constructor
+     *
+     * @param permits permits
+     */
     public FifoSemaphore(int permits) {
         super(permits, true);
+
+        blockingQueue = new LinkedBlockingQueue<>();
+        reentrantLock = new ReentrantLock(true);
+        notFullCondition = reentrantLock.newCondition();
     }
 
     @Override
     public void acquire() throws InterruptedException {
-        final Thread currentThread = Thread.currentThread();
-        lock.lock();
+        Thread currentThread = Thread.currentThread();
+
+        reentrantLock.lock();
         try {
             blockingQueue.put(currentThread);
             while (availablePermits() == 0) {
-                notFull.await();
+                notFullCondition.await();
             }
             blockingQueue.remove(currentThread);
             super.acquire();
         } finally {
-            lock.unlock();
+            reentrantLock.unlock();
         }
     }
 
     @Override
     public void release() {
-        lock.lock();
+        reentrantLock.lock();
         try {
             super.release();
-            notFull.signal();
+            notFullCondition.signal();
         } finally {
-            lock.unlock();
+            reentrantLock.unlock();
         }
     }
 }
