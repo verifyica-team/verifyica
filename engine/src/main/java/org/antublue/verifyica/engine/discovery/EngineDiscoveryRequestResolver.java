@@ -669,17 +669,18 @@ public class EngineDiscoveryRequestResolver {
 
             engineDescriptor.addChild(classTestDescriptor);
 
-            int argumentIndex = 0;
+            int testArgumentIndex = 0;
             for (Argument<?> testArgument : classDefinition.getTestArguments()) {
                 UniqueId argumentTestDescriptorUniqueId =
                         classTestDescriptorUniqueId.append(
-                                "argument", String.valueOf(argumentIndex));
+                                "argument", String.valueOf(testArgumentIndex));
 
                 ArgumentTestDescriptor argumentTestDescriptor =
                         new ArgumentTestDescriptor(
                                 argumentTestDescriptorUniqueId,
                                 testArgument.getName(),
                                 testClass,
+                                testArgumentIndex,
                                 testArgument,
                                 MethodSupport.findMethods(
                                         testClass,
@@ -713,7 +714,7 @@ public class EngineDiscoveryRequestResolver {
                     argumentTestDescriptor.addChild(testMethodTestDescriptor);
                 }
 
-                argumentIndex++;
+                testArgumentIndex++;
             }
         }
 

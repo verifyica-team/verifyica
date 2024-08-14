@@ -308,6 +308,10 @@ public class DefaultStore implements Store {
     public Store merge(Map<Object, Object> map) {
         ArgumentSupport.notNull(map, "map is null");
 
+        if (map.isEmpty()) {
+            return this;
+        }
+
         getReadWriteLock().writeLock().lock();
         try {
             this.map.putAll(map);
@@ -323,6 +327,10 @@ public class DefaultStore implements Store {
 
         store.getReadWriteLock().readLock().lock();
         try {
+            if (store.isEmpty()) {
+                return this;
+            }
+
             getReadWriteLock().writeLock().lock();
             try {
                 store.keySet().forEach(key -> put(key, store.get(key)));

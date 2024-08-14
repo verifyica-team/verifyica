@@ -25,6 +25,7 @@ import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement DefaultArgumentContext */
+@SuppressWarnings("unchecked")
 public class DefaultArgumentContext implements ArgumentContext {
 
     private final ClassContext classContext;
@@ -50,6 +51,11 @@ public class DefaultArgumentContext implements ArgumentContext {
     }
 
     @Override
+    public int getTestArgumentIndex() {
+        return argumentTestDescriptor.getTestArgumentIndex();
+    }
+
+    @Override
     public Argument<?> getTestArgument() {
         return getTestArgument(Object.class);
     }
@@ -58,8 +64,7 @@ public class DefaultArgumentContext implements ArgumentContext {
     public <T> Argument<T> getTestArgument(Class<T> type) {
         ArgumentSupport.notNull(type, "type is null;");
 
-        Argument<?> argument = argumentTestDescriptor.getTestArgument();
-        return Argument.of(argument.getName(), type.cast(argument.getPayload()));
+        return (Argument<T>) argumentTestDescriptor.getTestArgument();
     }
 
     @Override

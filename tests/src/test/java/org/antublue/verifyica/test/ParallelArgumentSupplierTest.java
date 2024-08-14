@@ -27,7 +27,7 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.test.support.RandomSupport;
 
 /** Example test */
-public class ParallelArgumentSupplierTest1 {
+public class ParallelArgumentSupplierTest {
 
     @Verifyica.ArgumentSupplier(parallelism = 2)
     public static Collection<Argument<String>> arguments() {
@@ -52,7 +52,10 @@ public class ParallelArgumentSupplierTest1 {
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) {
-        System.out.printf("beforeAll(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "beforeAll(index=[%d], name=[%s])%n",
+                argumentContext.getTestArgumentIndex(),
+                argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -61,7 +64,10 @@ public class ParallelArgumentSupplierTest1 {
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) {
-        System.out.printf("beforeEach(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "beforeEach(index=[%d], name=[%s])%n",
+                argumentContext.getTestArgumentIndex(),
+                argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -70,7 +76,10 @@ public class ParallelArgumentSupplierTest1 {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "test1(index=[%d], name=[%s])%n",
+                argumentContext.getTestArgumentIndex(),
+                argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -81,7 +90,10 @@ public class ParallelArgumentSupplierTest1 {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "test2(index=[%d], name=[%s])%n",
+                argumentContext.getTestArgumentIndex(),
+                argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -92,7 +104,10 @@ public class ParallelArgumentSupplierTest1 {
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) {
-        System.out.printf("afterEach(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "afterEach(index=[%d], name=[%s])%n",
+                argumentContext.getTestArgumentIndex(),
+                argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -101,7 +116,10 @@ public class ParallelArgumentSupplierTest1 {
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) {
-        System.out.printf("afterAll(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "afterAll(index=[%d], name=[%s])%n",
+                argumentContext.getTestArgumentIndex(),
+                argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();

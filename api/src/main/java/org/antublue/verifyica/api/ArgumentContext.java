@@ -17,7 +17,6 @@
 package org.antublue.verifyica.api;
 
 /** Interface to implement ArgumentContext */
-@SuppressWarnings({"deprecated", "unchecked"})
 public interface ArgumentContext extends Context {
 
     /**
@@ -26,6 +25,13 @@ public interface ArgumentContext extends Context {
      * @return the ClassContext
      */
     ClassContext getClassContext();
+
+    /**
+     * Return the Argument index
+     *
+     * @return the Argument index
+     */
+    int getTestArgumentIndex();
 
     /**
      * Returns the Argument

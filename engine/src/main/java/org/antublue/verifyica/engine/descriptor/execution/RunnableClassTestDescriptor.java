@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.engine.descriptor.execution;
 
-import io.github.thunkware.vt.bridge.SemaphoreExecutor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +48,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
     private static final Logger LOGGER = LoggerFactory.getLogger(RunnableClassTestDescriptor.class);
 
     private static final ExecutorService EXECUTOR_SERVICE =
-            new SemaphoreExecutor(
-                    ExecutorSupport.newExecutorService(
-                            VerifyicaEngine.getEngineArgumentParallelism()),
-                    new Semaphore(VerifyicaEngine.getEngineArgumentParallelism()));
+            ExecutorSupport.newExecutorService(VerifyicaEngine.getEngineArgumentParallelism());
 
     private final ExecutionRequest executionRequest;
     private final ClassTestDescriptor classTestDescriptor;
@@ -164,7 +160,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                                                                         + HashSupport.alphanumeric(
                                                                                 4))))));
 
-                ExecutorSupport.waitForFutures(futures, EXECUTOR_SERVICE);
+                ExecutorSupport.waitForAllFutures(futures, EXECUTOR_SERVICE);
 
                 stateTracker.setState("execute.success");
             } catch (Throwable t) {

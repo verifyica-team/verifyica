@@ -18,7 +18,6 @@ package org.antublue.verifyica.engine;
 
 import static java.lang.String.format;
 
-import io.github.thunkware.vt.bridge.SemaphoreExecutor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -29,7 +28,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -185,9 +183,7 @@ public class VerifyicaEngine implements TestEngine {
         EngineContext engineContext = DefaultEngineContext.getInstance();
 
         ExecutorService executorService =
-                new SemaphoreExecutor(
-                        ExecutorSupport.newExecutorService(getEngineClassParallelism()),
-                        new Semaphore(getEngineClassParallelism()));
+                ExecutorSupport.newExecutorService(getEngineClassParallelism());
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -220,7 +216,7 @@ public class VerifyicaEngine implements TestEngine {
                                                             classTestDescriptor),
                                                     "verifyica/" + HashSupport.alphanumeric(4)))));
 
-            ExecutorSupport.waitForFutures(futures, executorService);
+            ExecutorSupport.waitForAllFutures(futures, executorService);
         } catch (Throwable t) {
             throwableCollector.add(t);
         } finally {
