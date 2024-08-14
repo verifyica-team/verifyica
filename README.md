@@ -96,7 +96,7 @@ for (TestClass testClass : TestClasses) {
 
 # Basic example
 
-Basic example test that will execute a set of tests against an environment.
+Basic example test class that will execute a set of tests against an environment.
 
 ### Test Class
 
