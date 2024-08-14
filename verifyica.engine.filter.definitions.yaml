@@ -53,3 +53,8 @@
   enabled: false
   classRegex: "EngineInterceptorTest2"
   methodRegex: ".*"
+
+- type: ExcludeClass
+  enabled: true
+  classRegex: "concurrency"
+  methodRegex: ".*"

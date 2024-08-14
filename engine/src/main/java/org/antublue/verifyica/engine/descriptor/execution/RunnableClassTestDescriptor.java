@@ -16,8 +16,7 @@
 
 package org.antublue.verifyica.engine.descriptor.execution;
 
-import static java.lang.String.format;
-
+import io.github.thunkware.vt.bridge.SemaphoreExecutor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,19 +26,16 @@ import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.engine.VerifyicaEngine;
 import org.antublue.verifyica.engine.common.StateTracker;
-import org.antublue.verifyica.engine.concurrency.ExecutorServiceFactory;
-import org.antublue.verifyica.engine.concurrency.FifoSemaphore;
+import org.antublue.verifyica.engine.concurrency.ExecutorSupport;
 import org.antublue.verifyica.engine.concurrency.NamedRunnable;
 import org.antublue.verifyica.engine.concurrency.SemaphoreRunnable;
-import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultClassInstanceContext;
 import org.antublue.verifyica.engine.context.ImmutableClassContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
-import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -53,7 +49,10 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
     private static final Logger LOGGER = LoggerFactory.getLogger(RunnableClassTestDescriptor.class);
 
     private static final ExecutorService EXECUTOR_SERVICE =
-            ExecutorServiceFactory.newExecutorService(getEngineArgumentParallelism());
+            new SemaphoreExecutor(
+                    ExecutorSupport.newExecutorService(
+                            VerifyicaEngine.getEngineArgumentParallelism()),
+                    new Semaphore(VerifyicaEngine.getEngineArgumentParallelism()));
 
     private final ExecutionRequest executionRequest;
     private final ClassTestDescriptor classTestDescriptor;
@@ -140,15 +139,14 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
             try {
                 stateTracker.setState("execute");
 
-                LOGGER.trace("argumentTestDescriptors size [%d]", argumentTestDescriptors.size());
-                LOGGER.trace(
-                        "testArgumentParallelism [%d]",
-                        classTestDescriptor.getTestArgumentParallelism());
+                int testArgumentParallelism = classTestDescriptor.getTestArgumentParallelism();
 
-                Semaphore semaphore =
-                        new FifoSemaphore(classTestDescriptor.getTestArgumentParallelism());
+                LOGGER.trace("argumentTestDescriptors size [%d]", argumentTestDescriptors.size());
+                LOGGER.trace("testArgumentParallelism [%d]", testArgumentParallelism);
 
                 List<Future<?>> futures = new ArrayList<>();
+
+                Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
 
                 argumentTestDescriptors.forEach(
                         argumentTestDescriptor ->
@@ -166,7 +164,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                                                                         + HashSupport.alphanumeric(
                                                                                 4))))));
 
-                ExecutorServiceFactory.waitForAll(futures);
+                ExecutorSupport.waitForFutures(futures, EXECUTOR_SERVICE);
 
                 stateTracker.setState("execute.success");
             } catch (Throwable t) {
@@ -281,97 +279,5 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
     @Override
     public void skip() {
         throw new IllegalStateException("Not implemented");
-    }
-
-    /**
-     * Method to get the engine argument parallelism value
-     *
-     * @return the engine parallelism value
-     */
-    private static int getEngineArgumentParallelism() {
-        LOGGER.trace("getEngineArgumentParallelism()");
-
-        int engineClassParallelism = getEngineClassParallelism();
-
-        int engineArgumentParallelism =
-                DefaultConfiguration.getInstance()
-                        .getOptional(Constants.ENGINE_ARGUMENT_PARALLELISM)
-                        .map(
-                                value -> {
-                                    int intValue;
-                                    try {
-                                        intValue = Integer.parseInt(value);
-                                        if (intValue < 1) {
-                                            throw new EngineException(
-                                                    format(
-                                                            "Invalid %s value [%d]",
-                                                            Constants.ENGINE_ARGUMENT_PARALLELISM,
-                                                            intValue));
-                                        }
-                                        return intValue;
-                                    } catch (NumberFormatException e) {
-                                        throw new EngineException(
-                                                format(
-                                                        "Invalid %s value [%s]",
-                                                        Constants.ENGINE_ARGUMENT_PARALLELISM,
-                                                        value),
-                                                e);
-                                    }
-                                })
-                        .orElse(engineClassParallelism);
-
-        if (engineArgumentParallelism < engineClassParallelism) {
-            LOGGER.warn(
-                    "[%s] is less than [%s], setting [%s] to [%d]",
-                    Constants.ENGINE_ARGUMENT_PARALLELISM,
-                    Constants.ENGINE_CLASS_PARALLELISM,
-                    Constants.ENGINE_ARGUMENT_PARALLELISM,
-                    engineClassParallelism);
-
-            engineArgumentParallelism = engineClassParallelism;
-        }
-
-        LOGGER.trace("engineArgumentParallelism [%s]", engineArgumentParallelism);
-
-        return engineArgumentParallelism;
-    }
-
-    /**
-     * Method to get the engine class parallelism value
-     *
-     * @return the engine parallelism value
-     */
-    private static int getEngineClassParallelism() {
-        LOGGER.trace("getEngineClassParallelism()");
-
-        int engineClassParallelism =
-                DefaultConfiguration.getInstance()
-                        .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
-                        .map(
-                                value -> {
-                                    int intValue;
-                                    try {
-                                        intValue = Integer.parseInt(value);
-                                        if (intValue < 1) {
-                                            throw new EngineException(
-                                                    format(
-                                                            "Invalid %s value [%d]",
-                                                            Constants.ENGINE_CLASS_PARALLELISM,
-                                                            intValue));
-                                        }
-                                        return intValue;
-                                    } catch (NumberFormatException e) {
-                                        throw new EngineException(
-                                                format(
-                                                        "Invalid %s value [%s]",
-                                                        Constants.ENGINE_CLASS_PARALLELISM, value),
-                                                e);
-                                    }
-                                })
-                        .orElse(Runtime.getRuntime().availableProcessors());
-
-        LOGGER.trace("engineClassParallelism [%s]", engineClassParallelism);
-
-        return engineClassParallelism;
     }
 }

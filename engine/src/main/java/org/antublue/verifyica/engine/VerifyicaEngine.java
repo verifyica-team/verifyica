@@ -18,6 +18,7 @@ package org.antublue.verifyica.engine;
 
 import static java.lang.String.format;
 
+import io.github.thunkware.vt.bridge.SemaphoreExecutor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -38,10 +39,8 @@ import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.SynchronizedPrintStream;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
-import org.antublue.verifyica.engine.concurrency.ExecutorServiceFactory;
-import org.antublue.verifyica.engine.concurrency.FifoSemaphore;
+import org.antublue.verifyica.engine.concurrency.ExecutorSupport;
 import org.antublue.verifyica.engine.concurrency.NamedRunnable;
-import org.antublue.verifyica.engine.concurrency.SemaphoreRunnable;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
@@ -186,7 +185,9 @@ public class VerifyicaEngine implements TestEngine {
         EngineContext engineContext = DefaultEngineContext.getInstance();
 
         ExecutorService executorService =
-                ExecutorServiceFactory.newExecutorService(getEngineClassParallelism());
+                new SemaphoreExecutor(
+                        ExecutorSupport.newExecutorService(getEngineClassParallelism()),
+                        new Semaphore(getEngineClassParallelism()));
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -206,26 +207,20 @@ public class VerifyicaEngine implements TestEngine {
             LOGGER.trace("classTestDescriptors size [%d]", classTestDescriptors.size());
             LOGGER.trace("engineClassParallelism [%d]", getEngineClassParallelism());
 
-            Semaphore semaphore = new FifoSemaphore(getEngineClassParallelism());
-
             List<Future<?>> futures = new ArrayList<>();
 
             classTestDescriptors.forEach(
                     classTestDescriptor ->
                             futures.add(
                                     executorService.submit(
-                                            SemaphoreRunnable.newSemaphoreRunnable(
-                                                    semaphore,
-                                                    NamedRunnable.newNamedRunnable(
-                                                            new RunnableClassTestDescriptor(
-                                                                    executionRequest,
-                                                                    engineContext,
-                                                                    classTestDescriptor),
-                                                            "verifyica/"
-                                                                    + HashSupport.alphanumeric(
-                                                                            4))))));
+                                            NamedRunnable.newNamedRunnable(
+                                                    new RunnableClassTestDescriptor(
+                                                            executionRequest,
+                                                            engineContext,
+                                                            classTestDescriptor),
+                                                    "verifyica/" + HashSupport.alphanumeric(4)))));
 
-            ExecutorServiceFactory.waitForAll(futures);
+            ExecutorSupport.waitForFutures(futures, executorService);
         } catch (Throwable t) {
             throwableCollector.add(t);
         } finally {
