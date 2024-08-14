@@ -29,9 +29,10 @@ import org.junit.platform.engine.support.descriptor.ClassSource;
 public class ArgumentTestDescriptor extends AbstractTestDescriptor {
 
     private final Class<?> testClass;
+    private final int testArgumentIndex;
+    private final Argument<?> testArgument;
     private final List<Method> beforeAllMethods;
     private final List<Method> afterAllMethods;
-    private final Argument<?> testArgument;
 
     /**
      * Constructor
@@ -39,6 +40,7 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor {
      * @param uniqueId uniqueId
      * @param displayName displayName
      * @param testClass testClass
+     * @param testArgumentIndex testArgumentIndex
      * @param testArgument testArgument
      * @param beforeAllMethods beforeAllMethods
      * @param afterAllMethods afterAllMethods
@@ -47,11 +49,13 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor {
             UniqueId uniqueId,
             String displayName,
             Class<?> testClass,
+            int testArgumentIndex,
             Argument<?> testArgument,
             List<Method> beforeAllMethods,
             List<Method> afterAllMethods) {
         super(uniqueId, displayName);
         this.testClass = testClass;
+        this.testArgumentIndex = testArgumentIndex;
         this.testArgument = testArgument;
         this.beforeAllMethods = beforeAllMethods;
         this.afterAllMethods = afterAllMethods;
@@ -65,6 +69,15 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor {
     @Override
     public Type getType() {
         return Type.CONTAINER_AND_TEST;
+    }
+
+    /**
+     * Method to get the test Argument index
+     *
+     * @return the test Argument index
+     */
+    public int getTestArgumentIndex() {
+        return testArgumentIndex;
     }
 
     /**

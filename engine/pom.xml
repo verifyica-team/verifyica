@@ -343,6 +343,7 @@
             <groupId>org.antublue.verifyica</groupId>
             <artifactId>api</artifactId>
             <version>0.0.10-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>

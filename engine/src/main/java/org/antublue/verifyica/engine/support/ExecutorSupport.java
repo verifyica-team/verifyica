@@ -17,6 +17,7 @@
 package org.antublue.verifyica.engine.support;
 
 import io.github.thunkware.vt.bridge.ExecutorTool;
+import io.github.thunkware.vt.bridge.SemaphoreExecutor;
 import io.github.thunkware.vt.bridge.ThreadTool;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -45,8 +47,6 @@ public class ExecutorSupport {
     /**
      * Method to create a new ExecutorService
      *
-     * <p>threads is no ignored if the Java VM supports virtual threads
-     *
      * @param threads threads
      * @return an ExecutorService
      */
@@ -60,7 +60,10 @@ public class ExecutorSupport {
         if (ThreadTool.hasVirtualThreads()) {
             LOGGER.trace("using virtual threads");
 
-            executorService = ExecutorTool.newVirtualThreadPerTaskExecutor();
+            executorService =
+                    new SemaphoreExecutor(
+                            ExecutorTool.newVirtualThreadPerTaskExecutor(),
+                            new Semaphore(threads, true));
         } else {
             LOGGER.trace("using platform threads");
 
@@ -83,9 +86,9 @@ public class ExecutorSupport {
      * @param futures futures
      * @param executorService executorService
      */
-    public static void waitForFutures(
+    public static void waitForAllFutures(
             Collection<Future<?>> futures, ExecutorService executorService) {
-        LOGGER.trace("waitForFutures() futures [%d]", futures.size());
+        LOGGER.trace("waitForAllFutures() futures [%d]", futures.size());
 
         CompletionService<Object> completionService =
                 new ExecutorCompletionService<>(executorService);

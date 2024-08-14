@@ -45,6 +45,11 @@ public class ImmutableArgumentContext implements ArgumentContext {
     }
 
     @Override
+    public int getTestArgumentIndex() {
+        return argumentContext.getTestArgumentIndex();
+    }
+
+    @Override
     public Argument<?> getTestArgument() {
         return getTestArgument(Object.class);
     }
@@ -56,6 +61,7 @@ public class ImmutableArgumentContext implements ArgumentContext {
         return argumentContext.getTestArgument(type);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Store getStore() {
         return argumentContext.getStore();
