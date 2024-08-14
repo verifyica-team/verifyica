@@ -98,12 +98,6 @@ for (TestClass testClass : TestClasses) {
 
 Basic example test that will execute a set of tests against an environment.
 
-In this example, the environment is ...
-
-- initialized
-- tested (test1, test2, ...)
-- destroyed
-
 ### Test Class
 
 ```java
