@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.concurrency;
+package org.antublue.verifyica.engine.common;
 
 import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.engine.support.ArgumentSupport;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.concurrency;
+package org.antublue.verifyica.engine.support;
 
 import io.github.thunkware.vt.bridge.ExecutorTool;
 import io.github.thunkware.vt.bridge.ThreadTool;
@@ -31,7 +31,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement ExecutorServiceFactory */
 public class ExecutorSupport {
@@ -82,6 +81,7 @@ public class ExecutorSupport {
      * Method to wait for all Futures to complete
      *
      * @param futures futures
+     * @param executorService executorService
      */
     public static void waitForFutures(
             Collection<Future<?>> futures, ExecutorService executorService) {
@@ -93,7 +93,6 @@ public class ExecutorSupport {
             futureMap.put(completionService.submit(future::get), future);
         }
 
-        // Collect results as they complete
         for (int i = 0; i < futures.size(); i++) {
             try {
                 Future<Object> completedFuture = completionService.take();
