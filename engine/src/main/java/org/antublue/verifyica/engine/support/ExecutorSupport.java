@@ -85,6 +85,8 @@ public class ExecutorSupport {
      */
     public static void waitForFutures(
             Collection<Future<?>> futures, ExecutorService executorService) {
+        LOGGER.trace("waitForFutures() futures [%d]", futures.size());
+
         CompletionService<Object> completionService =
                 new ExecutorCompletionService<>(executorService);
         Map<Future<?>, Future<?>> futureMap = new HashMap<>();
