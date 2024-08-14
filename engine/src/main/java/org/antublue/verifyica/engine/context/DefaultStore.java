@@ -57,8 +57,8 @@ public class DefaultStore implements Store {
     public void put(Object key, Object value) {
         ArgumentSupport.notNull(key, "key is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             map.put(key, value);
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -69,8 +69,8 @@ public class DefaultStore implements Store {
     public Object get(Object key) {
         ArgumentSupport.notNull(key, "key is null");
 
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return map.get(key);
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -82,8 +82,8 @@ public class DefaultStore implements Store {
         ArgumentSupport.notNull(key, "key is null");
         ArgumentSupport.notNull(type, "type is null");
 
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return type.cast(map.get(key));
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -94,8 +94,8 @@ public class DefaultStore implements Store {
     public Optional<Object> getOptional(Object key) {
         ArgumentSupport.notNull(key, "key is null");
 
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return Optional.ofNullable(map.get(key));
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -107,8 +107,8 @@ public class DefaultStore implements Store {
         ArgumentSupport.notNull(key, "key is null");
         ArgumentSupport.notNull(type, "type is null");
 
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return Optional.ofNullable(type.cast(map.get(key)));
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -145,8 +145,8 @@ public class DefaultStore implements Store {
         ArgumentSupport.notNull(key, "key is null");
         ArgumentSupport.notNull(function, "function is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             Object value = get(key);
             if (value == null) {
                 value = function.apply(key);
@@ -167,8 +167,8 @@ public class DefaultStore implements Store {
         ArgumentSupport.notNull(function, "function is null");
         ArgumentSupport.notNull(type, "type is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             Object value = get(key);
             if (value == null) {
                 value = function.apply(key);
@@ -187,8 +187,8 @@ public class DefaultStore implements Store {
     public boolean containsKey(Object key) {
         ArgumentSupport.notNull(key, "key is null");
 
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return map.containsKey(key);
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -199,8 +199,8 @@ public class DefaultStore implements Store {
     public Object remove(Object key) {
         ArgumentSupport.notNull(key, "key is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             return map.remove(key);
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -212,8 +212,8 @@ public class DefaultStore implements Store {
         ArgumentSupport.notNull(key, "key is null");
         ArgumentSupport.notNull(type, "type is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             return type.cast(map.remove(key));
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -224,8 +224,8 @@ public class DefaultStore implements Store {
     public Optional<Object> removeOptional(Object key) {
         ArgumentSupport.notNull(key, "key is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             return Optional.ofNullable(map.remove(key));
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -237,8 +237,8 @@ public class DefaultStore implements Store {
         ArgumentSupport.notNull(key, "key is null");
         ArgumentSupport.notNull(type, "type is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             return Optional.ofNullable(type.cast(map.remove(key)));
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -247,8 +247,8 @@ public class DefaultStore implements Store {
 
     @Override
     public int size() {
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return map.size();
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -262,8 +262,8 @@ public class DefaultStore implements Store {
 
     @Override
     public Store clear() {
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             map.clear();
             return this;
         } finally {
@@ -275,8 +275,8 @@ public class DefaultStore implements Store {
     public Store replace(Map<Object, Object> map) {
         ArgumentSupport.notNull(map, "map is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             clear();
             merge(map);
             return this;
@@ -289,14 +289,17 @@ public class DefaultStore implements Store {
     public Store replace(Store store) {
         ArgumentSupport.notNull(store, "store is null");
 
+        store.getReadWriteLock().readLock().lock();
         try {
-            store.getReadWriteLock().readLock().lock();
             getReadWriteLock().writeLock().lock();
-            clear();
-            merge(store);
-            return this;
+            try {
+                clear();
+                merge(store);
+                return this;
+            } finally {
+                getReadWriteLock().writeLock().unlock();
+            }
         } finally {
-            getReadWriteLock().writeLock().unlock();
             store.getReadWriteLock().readLock().unlock();
         }
     }
@@ -305,8 +308,8 @@ public class DefaultStore implements Store {
     public Store merge(Map<Object, Object> map) {
         ArgumentSupport.notNull(map, "map is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             this.map.putAll(map);
             return this;
         } finally {
@@ -318,21 +321,24 @@ public class DefaultStore implements Store {
     public Store merge(Store store) {
         ArgumentSupport.notNull(store, "store is null");
 
+        store.getReadWriteLock().readLock().lock();
         try {
-            store.getReadWriteLock().readLock().lock();
             getReadWriteLock().writeLock().lock();
-            store.keySet().forEach(key -> put(key, store.get(key)));
-            return this;
+            try {
+                store.keySet().forEach(key -> put(key, store.get(key)));
+                return this;
+            } finally {
+                getReadWriteLock().writeLock().unlock();
+            }
         } finally {
-            getReadWriteLock().writeLock().unlock();
             store.getReadWriteLock().readLock().unlock();
         }
     }
 
     @Override
     public Store duplicate() {
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return new DefaultStore(new TreeMap<>(this.map));
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -341,8 +347,8 @@ public class DefaultStore implements Store {
 
     @Override
     public Set<Object> keySet() {
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return new HashSet<>(map.keySet());
         } finally {
             getReadWriteLock().readLock().unlock();

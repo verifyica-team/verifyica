@@ -78,8 +78,8 @@ public class DefaultConfiguration implements Configuration {
     public Optional<String> put(String key, String value) {
         ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             return Optional.ofNullable(map.put(key.trim(), value));
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -90,8 +90,8 @@ public class DefaultConfiguration implements Configuration {
     public String get(String key) {
         ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return map.get(key.trim());
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -102,8 +102,8 @@ public class DefaultConfiguration implements Configuration {
     public Optional<String> getOptional(String key) {
         ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return Optional.ofNullable(map.get(key.trim()));
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -115,8 +115,8 @@ public class DefaultConfiguration implements Configuration {
         ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
         ArgumentSupport.notNull(transformer, "transformer is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             return Optional.ofNullable(map.computeIfAbsent(key.trim(), transformer));
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -127,8 +127,8 @@ public class DefaultConfiguration implements Configuration {
     public boolean containsKey(String key) {
         ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return map.containsKey(key.trim());
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -139,8 +139,8 @@ public class DefaultConfiguration implements Configuration {
     public String remove(String key) {
         ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             return map.remove(key.trim());
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -151,8 +151,8 @@ public class DefaultConfiguration implements Configuration {
     public Optional<String> removeOptional(String key) {
         ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             return Optional.ofNullable(map.remove(key.trim()));
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -161,8 +161,8 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public int size() {
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return map.size();
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -176,8 +176,8 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Configuration clear() {
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             map.clear();
             return this;
         } finally {
@@ -187,8 +187,8 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Set<String> keySet() {
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return new TreeSet<>(map.keySet());
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -197,8 +197,8 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Set<Map.Entry<String, String>> entrySet() {
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return new TreeSet<>(map.entrySet());
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -209,8 +209,8 @@ public class DefaultConfiguration implements Configuration {
     public Configuration merge(Map<String, String> map) {
         ArgumentSupport.notNull(map, "map is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
@@ -231,19 +231,22 @@ public class DefaultConfiguration implements Configuration {
     public Configuration merge(Configuration configuration) {
         ArgumentSupport.notNull(configuration, "configuration is null");
 
+        configuration.getReadWriteLock().readLock().lock();
         try {
-            configuration.getReadWriteLock().readLock().lock();
             getReadWriteLock().writeLock().lock();
-            configuration
-                    .keySet()
-                    .forEach(
-                            key ->
-                                    configuration
-                                            .getOptional(key)
-                                            .ifPresent(value -> map.put(key, value)));
-            return this;
+            try {
+                configuration
+                        .keySet()
+                        .forEach(
+                                key ->
+                                        configuration
+                                                .getOptional(key)
+                                                .ifPresent(value -> map.put(key, value)));
+                return this;
+            } finally {
+                getReadWriteLock().writeLock().unlock();
+            }
         } finally {
-            getReadWriteLock().writeLock().unlock();
             configuration.getReadWriteLock().readLock().unlock();
         }
     }
@@ -252,8 +255,8 @@ public class DefaultConfiguration implements Configuration {
     public Configuration replace(Map<String, String> map) {
         ArgumentSupport.notNull(map, "map is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             clear();
             return merge(map);
         } finally {
@@ -265,21 +268,24 @@ public class DefaultConfiguration implements Configuration {
     public Configuration replace(Configuration configuration) {
         ArgumentSupport.notNull(configuration, "configuration is null");
 
+        configuration.getReadWriteLock().readLock().lock();
         try {
-            configuration.getReadWriteLock().readLock().lock();
             getReadWriteLock().writeLock().lock();
-            clear();
-            return merge(configuration);
+            try {
+                clear();
+                return merge(configuration);
+            } finally {
+                getReadWriteLock().writeLock().unlock();
+            }
         } finally {
-            getReadWriteLock().writeLock().unlock();
             configuration.getReadWriteLock().readLock().unlock();
         }
     }
 
     @Override
     public Configuration duplicate() {
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return new DefaultConfiguration(new TreeMap<>(map));
         } finally {
             getReadWriteLock().readLock().unlock();
