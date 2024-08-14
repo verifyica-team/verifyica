@@ -18,25 +18,28 @@ package org.antublue.verifyica.engine.concurrency;
 
 import io.github.thunkware.vt.bridge.ExecutorTool;
 import io.github.thunkware.vt.bridge.ThreadTool;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement ExecutorServiceFactory */
-public class ExecutorServiceFactory {
+public class ExecutorSupport {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorServiceFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorSupport.class);
 
     /** Constructor */
-    private ExecutorServiceFactory() {
+    private ExecutorSupport() {
         // INTENTIONALLY BLANK
     }
 
@@ -80,12 +83,24 @@ public class ExecutorServiceFactory {
      *
      * @param futures futures
      */
-    public static void waitForAll(List<Future<?>> futures) {
+    public static void waitForFutures(
+            Collection<Future<?>> futures, ExecutorService executorService) {
+        CompletionService<Object> completionService =
+                new ExecutorCompletionService<>(executorService);
+        Map<Future<?>, Future<?>> futureMap = new HashMap<>();
+
         for (Future<?> future : futures) {
+            futureMap.put(completionService.submit(future::get), future);
+        }
+
+        // Collect results as they complete
+        for (int i = 0; i < futures.size(); i++) {
             try {
-                future.get();
-            } catch (Throwable t) {
-                throw new EngineException("Exception waiting on future", t);
+                Future<Object> completedFuture = completionService.take();
+                futureMap.get(completedFuture);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.printf("Error waiting for future [%s]%n", e.getMessage());
             }
         }
     }
