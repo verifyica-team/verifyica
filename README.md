@@ -52,7 +52,7 @@ for (TestArgument testArgument : TestArguments) {
 - Test class tag filtering
 - Test class interceptors (extensions)
 - Engine interceptors (extensions)
-- Test class / test argument parallel testing constraints
+- Test class / test argument parallel testing with configurable constraints
 - Cleanup of `AutoClosable` test classes / test arguments
 - Cleanup of `AutoClosable` Objects in a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java)
 - Object / resource sharing via contexts
