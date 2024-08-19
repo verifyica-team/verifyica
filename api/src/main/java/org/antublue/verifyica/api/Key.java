@@ -26,52 +26,63 @@ import java.util.Objects;
 /** Class to implement a Key */
 public class Key {
 
-    private final List<Segment> segments;
+    private final List<Object> segments;
 
     /** Constructor */
-    private Key(List<Segment> segments) {
-        this.segments = segments;
+    private Key(List<Object> objects) {
+        this.segments = Collections.unmodifiableList(objects);
     }
 
     /**
-     * Method to get a copy of the list of Segments
+     * Method to get an unmodifiable List of Objects that make up the Key
      *
-     * @return a List of Segments
+     * @return a List of Objects
      */
-    public List<Segment> segments() {
-        return new ArrayList<>(segments);
+    public List<Object> segments() {
+        return segments;
     }
 
     /**
-     * Method to append an Object to the Key, returning a new Key
+     * Method to append an Object to the Key, returning a new Key.
      *
-     * @param object object
+     * <p>The Object must not be null
+     *
+     * @param segment segment
      * @return a new Key with the appended Object
      */
-    public Key append(Object object) {
-        if (object == null) {
-            throw new IllegalArgumentException("object is null");
+    public Key append(Object segment) {
+        if (segment == null) {
+            throw new IllegalArgumentException("segment is null");
         }
 
-        Key key = new Key(Collections.synchronizedList(segments));
-        key.segments.add(new Segment(object));
-        return key;
+        List<Object> segments = new ArrayList<>(this.segments);
+        segments.add(segment);
+        return new Key(segments);
     }
 
     /**
-     * Method to remove the last Object from the key, returning a new Key
+     * Method to remove the last Object from the Key, returning a new Key
      *
      * @return a new Key with the last appended Object removed
+     * @throws IllegalStateException if there is only one Object in the key
      */
     public Key remove() {
-        List<Segment> segments = Collections.synchronizedList(this.segments);
-
-        if (segments.size() <= 1) {
+        if (this.segments.size() <= 1) {
             throw new IllegalStateException("can't remove root segment");
         }
 
+        List<Object> segments = new ArrayList<>(this.segments);
         segments.remove(segments.size() - 1);
         return new Key(segments);
+    }
+
+    /**
+     * Method to duplicate a Key
+     *
+     * @return a duplicate Key
+     */
+    public Key duplicate() {
+        return new Key(new ArrayList<>(this.segments));
     }
 
     /**
@@ -89,13 +100,12 @@ public class Key {
             throw new IllegalArgumentException("objects is empty");
         }
 
-        List<Segment> segments = Collections.synchronizedList(new ArrayList<>(objects.length));
+        List<Object> segments = new ArrayList<>(objects.length);
         for (int i = 0; i < objects.length; i++) {
-            Object object = objects[i];
-            if (object == null) {
+            if (objects[i] == null) {
                 throw new IllegalArgumentException(format("objects[%d] is null", i));
             }
-            segments.add(new Segment(object));
+            segments.add(objects[i]);
         }
 
         return new Key(segments);
@@ -116,13 +126,12 @@ public class Key {
             throw new IllegalArgumentException("objects is empty");
         }
 
-        List<Segment> segments = Collections.synchronizedList(new ArrayList<>(objects.size()));
+        List<Object> segments = new ArrayList<>(objects.size());
         for (int i = 0; i < objects.size(); i++) {
-            Object object = objects.get(i);
-            if (object == null) {
-                throw new IllegalArgumentException(format("object[%d] is null", i));
+            if (objects.get(i) == null) {
+                throw new IllegalArgumentException(format("objects[%d] is null", i));
             }
-            segments.add(new Segment(object));
+            segments.add(objects.get(i));
         }
 
         return new Key(segments);
@@ -144,29 +153,5 @@ public class Key {
     @Override
     public int hashCode() {
         return Objects.hashCode(segments);
-    }
-
-    /** Class to implement Segment */
-    public static class Segment {
-
-        private final Object value;
-
-        /**
-         * Contructor
-         *
-         * @param value value
-         */
-        private Segment(Object value) {
-            this.value = value;
-        }
-
-        /**
-         * Method to get the value
-         *
-         * @return the value
-         */
-        public Object value() {
-            return value;
-        }
     }
 }
