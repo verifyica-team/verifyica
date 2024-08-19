@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement ExecutorServiceFactory */
+/** Class to implement ExecutorSupport */
 public class ExecutorSupport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorSupport.class);
