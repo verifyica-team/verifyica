@@ -43,17 +43,20 @@ public final class Constants {
     public static final String ENGINE_AUTOWIRED_ENGINE = ENGINE_AUTOWIRED + ".engine";
 
     /** Configuration constant */
-    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS = ENGINE_AUTOWIRED_ENGINE + ".interceptors";
+    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS =
+            ENGINE_AUTOWIRED_ENGINE + ".interceptors";
 
     /** Configuration constant */
-    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE = ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS + ".include";
+    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE =
+            ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS + ".include";
 
     /** Configuration constant */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX =
             ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE + ".regex";
 
     /** Configuration constant */
-    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE = ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS + ".exclude";
+    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE =
+            ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS + ".exclude";
 
     /** Configuration constant */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX =
@@ -66,19 +69,24 @@ public final class Constants {
     public static final String ENGINE_AUTOWIRED_CLASS = ENGINE_AUTOWIRED + ".class";
 
     /** Configuration constant */
-    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS = ENGINE_AUTOWIRED_CLASS + ".interceptors";
+    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS =
+            ENGINE_AUTOWIRED_CLASS + ".interceptors";
 
     /** Configuration constant */
-    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE = ENGINE_AUTOWIRED_CLASS_INTERCEPTORS + ".include";
+    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE =
+            ENGINE_AUTOWIRED_CLASS_INTERCEPTORS + ".include";
 
     /** Configuration constant */
-    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX = ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE + ".regex";
+    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX =
+            ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE + ".regex";
 
     /** Configuration constant */
-    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE = ENGINE_AUTOWIRED_CLASS_INTERCEPTORS + ".exclude";
+    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE =
+            ENGINE_AUTOWIRED_CLASS_INTERCEPTORS + ".exclude";
 
     /** Configuration constant */
-    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX = ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE + ".regex";
+    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX =
+            ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE + ".regex";
 
     /** Configuration constant */
     public static final String ENGINE_FILTER = ENGINE + ".filter";

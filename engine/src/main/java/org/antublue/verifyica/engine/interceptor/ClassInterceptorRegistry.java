@@ -30,7 +30,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
@@ -746,13 +745,14 @@ public class ClassInterceptorRegistry {
     private static void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        DefaultConfiguration
-                .getInstance()
+        DefaultConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX)
                 .ifPresent(
                         regex -> {
                             LOGGER.trace(
-                                    "%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX, regex);
+                                    "%s [%s]",
+                                    Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX,
+                                    regex);
 
                             Pattern pattern = Pattern.compile(regex);
                             Matcher matcher = pattern.matcher("");
@@ -770,13 +770,14 @@ public class ClassInterceptorRegistry {
                             }
                         });
 
-        DefaultConfiguration
-                .getInstance()
+        DefaultConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX)
                 .ifPresent(
                         regex -> {
                             LOGGER.trace(
-                                    "%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX, regex);
+                                    "%s [%s]",
+                                    Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX,
+                                    regex);
 
                             Pattern pattern = Pattern.compile(regex);
                             Matcher matcher = pattern.matcher("");
@@ -786,8 +787,7 @@ public class ClassInterceptorRegistry {
                                 Class<?> clazz = iterator.next();
                                 matcher.reset(clazz.getName());
                                 if (matcher.find()) {
-                                    LOGGER.trace(
-                                            "adding class interceptor [%s]", clazz.getName());
+                                    LOGGER.trace("adding class interceptor [%s]", clazz.getName());
                                     filteredClasses.add(clazz);
                                 }
                             }

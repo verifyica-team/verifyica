@@ -334,13 +334,14 @@ public class EngineInterceptorRegistry {
     private static void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        DefaultConfiguration
-                .getInstance()
+        DefaultConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX)
                 .ifPresent(
                         regex -> {
                             LOGGER.trace(
-                                    "%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX, regex);
+                                    "%s [%s]",
+                                    Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX,
+                                    regex);
 
                             Pattern pattern = Pattern.compile(regex);
                             Matcher matcher = pattern.matcher("");
@@ -358,13 +359,14 @@ public class EngineInterceptorRegistry {
                             }
                         });
 
-        DefaultConfiguration
-                .getInstance()
+        DefaultConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX)
                 .ifPresent(
                         regex -> {
                             LOGGER.trace(
-                                    "%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX, regex);
+                                    "%s [%s]",
+                                    Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX,
+                                    regex);
 
                             Pattern pattern = Pattern.compile(regex);
                             Matcher matcher = pattern.matcher("");
@@ -374,8 +376,7 @@ public class EngineInterceptorRegistry {
                                 Class<?> clazz = iterator.next();
                                 matcher.reset(clazz.getName());
                                 if (matcher.find()) {
-                                    LOGGER.trace(
-                                            "adding engine interceptor [%s]", clazz.getName());
+                                    LOGGER.trace("adding engine interceptor [%s]", clazz.getName());
                                     filteredClasses.add(clazz);
                                 }
                             }
