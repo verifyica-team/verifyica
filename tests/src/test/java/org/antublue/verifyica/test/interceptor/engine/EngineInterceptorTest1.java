@@ -127,6 +127,6 @@ public class EngineInterceptorTest1 {
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test4(%s)%n", argumentContext.getTestArgument().getPayload());
 
-        fail("Should not execute... filtered by interceptor");
+        fail("Should not execute... filtered by engine interceptor");
     }
 }
