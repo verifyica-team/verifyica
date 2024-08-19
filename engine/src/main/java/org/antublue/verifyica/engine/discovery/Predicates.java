@@ -35,7 +35,6 @@ public class Predicates {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
                         && !Modifier.isAbstract(modifiers)
-                        && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
                         && EngineInterceptor.class.isAssignableFrom(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
@@ -48,7 +47,6 @@ public class Predicates {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
                         && !Modifier.isAbstract(modifiers)
-                        && !Modifier.isStatic(modifiers)
                         && ClassSupport.hasDefaultConstructor(clazz)
                         && ClassInterceptor.class.isAssignableFrom(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
@@ -59,7 +57,6 @@ public class Predicates {
     public static final Predicate<Method> CLASS_INTERCEPTOR_SUPPLIER =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
                         && method.getParameterCount() == 0
