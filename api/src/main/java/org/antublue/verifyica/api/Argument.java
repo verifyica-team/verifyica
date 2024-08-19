@@ -28,6 +28,20 @@ import java.math.BigInteger;
 public interface Argument<T> {
 
     /**
+     * Method to get the Argument name
+     *
+     * @return the Argument name
+     */
+    String getName();
+
+    /**
+     * Method to get the Argument payload
+     *
+     * @return the Argument payload
+     */
+    T getPayload();
+
+    /**
      * Method to create an Argument of type boolean
      *
      * @param value value
@@ -190,20 +204,6 @@ public interface Argument<T> {
     static Argument<Object> empty() {
         return of("---", null);
     }
-
-    /**
-     * Method to get the Argument name
-     *
-     * @return the Argument name
-     */
-    String getName();
-
-    /**
-     * Method to get the Argument payload
-     *
-     * @return the Argument payload
-     */
-    T getPayload();
 
     /**
      * Check if a String is not null and not blank
