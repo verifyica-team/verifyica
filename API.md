@@ -17,7 +17,7 @@ The [Argument](api/src/main/java/org/antublue/verifyica/api/Argument.java) inter
 Any `ArgumentSupplier` method that returns a non-`Argument` Object will be wrapped as an `Argument`.
 
 - the `Argument` name will be `argument[<POSITIONAL INDEX>]`
-- the `Argument` value will `Object`
+- the `Argument` value type will be `Object`
 
 ---
 
