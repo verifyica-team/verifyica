@@ -1,6 +1,6 @@
 # API
 
-Verifyica has various core interfaces / classes that make up up the API.
+Verifyica has various core interfaces / classes / annotations that make up the API.
 
 ---
 
