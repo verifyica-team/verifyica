@@ -277,7 +277,7 @@ public class DefaultStore implements Store {
 
         getReadWriteLock().writeLock().lock();
         try {
-            clear();
+            map.clear();
             merge(map);
             return this;
         } finally {
@@ -293,7 +293,7 @@ public class DefaultStore implements Store {
         try {
             getReadWriteLock().writeLock().lock();
             try {
-                clear();
+                map.clear();
                 merge(store);
                 return this;
             } finally {
@@ -325,12 +325,12 @@ public class DefaultStore implements Store {
     public Store merge(Store store) {
         ArgumentSupport.notNull(store, "store is null");
 
+        if (store.isEmpty()) {
+            return this;
+        }
+
         store.getReadWriteLock().readLock().lock();
         try {
-            if (store.isEmpty()) {
-                return this;
-            }
-
             getReadWriteLock().writeLock().lock();
             try {
                 store.keySet().forEach(key -> put(key, store.get(key)));
