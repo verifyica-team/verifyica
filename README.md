@@ -1,4 +1,4 @@
-[![Build](https://github.com/antublue/verifyica/actions/workflows/build.yml/badge.svg)](https://github.com/antublue/verifyica/actions/workflows/build.yml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/016a73debd6041cb91e53abda16e76ac)](https://app.codacy.com/gh/antublue/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Build](https://github.com/antublue/verifyica/actions/workflows/build.yml/badge.svg)](https://github.com/antublue/verifyica/actions/workflows/build.yml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/016a73debd6041cb91e53abda16e76ac)](https://app.codacy.com/gh/antublue/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) ![JDK Compatibility](https://img.shields.io/badge/JDK%20compatibility-8+-blue.svg) ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
 
 |              |   |
 |--------------|---|
@@ -311,6 +311,10 @@ Alternatively, tests can be performed on an external environment. Ideally the ex
 # Annotations
 
 See [Annotations](ANNOTATIONS.md) for details.
+
+# API
+
+See [API](API.md) for details.
 
 # Filtering
 
