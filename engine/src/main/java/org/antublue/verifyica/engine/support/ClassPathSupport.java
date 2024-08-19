@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 /** Class to implement ClassPathSupport */
-@SuppressWarnings("deprecated")
+@SuppressWarnings("deprecation")
 public class ClassPathSupport {
 
     private static final ReentrantLock LOCK = new ReentrantLock(true);
