@@ -22,7 +22,7 @@ import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.VerifyicaEngine;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 
-/** Class to implement DefaultConfiguration */
+/** Class to implement DefaultEngineContext */
 public class DefaultEngineContext implements EngineContext {
 
     private final Configuration configuration;
