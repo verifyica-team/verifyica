@@ -42,28 +42,53 @@ public class KeyTest {
         assertThat(key).isNotNull();
         assertThat(key.segments()).isNotNull();
         assertThat(key.segments()).hasSize(2);
+        assertThat(key.segments().get(0)).isEqualTo("foo");
+        assertThat(key.segments().get(1)).isEqualTo("bar");
 
         Key key2 = key.remove();
 
         assertThat(key2).isNotNull();
         assertThat(key2.segments()).isNotNull();
         assertThat(key2.segments()).hasSize(1);
+        assertThat(key2.segments().get(0)).isEqualTo("foo");
 
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(key2::remove);
 
-        key2 = key.append("bar");
+        key2 = key2.append("bar");
 
         assertThat(key2).isNotNull();
         assertThat(key2.segments()).isNotNull();
         assertThat(key2.segments()).hasSize(2);
+        assertThat(key2.segments().get(0)).isEqualTo("foo");
+        assertThat(key2.segments().get(1)).isEqualTo("bar");
 
-        key2 = key.append("value");
+        key2 = key2.append("value");
 
         assertThat(key2).isNotNull();
         assertThat(key2.segments()).isNotNull();
         assertThat(key2.segments()).hasSize(3);
+        assertThat(key2.segments().get(0)).isEqualTo("foo");
+        assertThat(key2.segments().get(1)).isEqualTo("bar");
+        assertThat(key2.segments().get(2)).isEqualTo("value");
 
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> key.append(null));
+
+        Key CLASS_CONTEXT_STORE_KEY = Key.of(KeyTest.class, "class.context.key");
+
+        assertThat(CLASS_CONTEXT_STORE_KEY.segments()).hasSize(2);
+
+        Key fooKey = CLASS_CONTEXT_STORE_KEY.append("foo");
+
+        assertThat(fooKey.segments()).hasSize(3);
+
+        Key barKey = CLASS_CONTEXT_STORE_KEY.append("bar");
+
+        assertThat(barKey.segments()).hasSize(3);
+
+        Key duplicateFooKey = fooKey.duplicate();
+
+        assertThat(duplicateFooKey.segments()).hasSize(3);
+        assertThat(duplicateFooKey).isEqualTo(fooKey);
     }
 }
