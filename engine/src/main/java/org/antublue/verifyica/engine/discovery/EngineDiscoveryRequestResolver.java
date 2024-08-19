@@ -46,7 +46,7 @@ import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.exception.TestClassException;
 import org.antublue.verifyica.engine.exception.UncheckedClassNotFoundException;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
-import org.antublue.verifyica.engine.interceptor.internal.engine.EngineInterceptorRegistry;
+import org.antublue.verifyica.engine.interceptor.EngineInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ClassPathSupport;

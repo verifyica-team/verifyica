@@ -20,11 +20,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
@@ -32,6 +38,8 @@ import org.antublue.verifyica.api.interceptor.ArgumentInterceptorContext;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
+import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultArgumentInterceptorContext;
 import org.antublue.verifyica.engine.context.DefaultClassInterceptorContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
@@ -695,6 +703,8 @@ public class ClassInterceptorRegistry {
                                 ClassPathSupport.findClasses(
                                         Predicates.AUTOWIRED_CLASS_INTERCEPTOR_CLASS));
 
+                filter(autowiredClassInterceptors);
+
                 OrderSupport.orderClasses(autowiredClassInterceptors);
 
                 LOGGER.trace(
@@ -726,6 +736,65 @@ public class ClassInterceptorRegistry {
         } finally {
             getReadWriteLock().writeLock().unlock();
         }
+    }
+
+    /**
+     * Method to filter class interceptors
+     *
+     * @param classes classes
+     */
+    private static void filter(List<Class<?>> classes) {
+        Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
+
+        DefaultConfiguration
+                .getInstance()
+                .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX)
+                .ifPresent(
+                        regex -> {
+                            LOGGER.trace(
+                                    "%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX, regex);
+
+                            Pattern pattern = Pattern.compile(regex);
+                            Matcher matcher = pattern.matcher("");
+
+                            Iterator<Class<?>> iterator = filteredClasses.iterator();
+                            while (iterator.hasNext()) {
+                                Class<?> clazz = iterator.next();
+                                matcher.reset(clazz.getName());
+                                if (matcher.find()) {
+                                    LOGGER.trace(
+                                            "removing class interceptor [%s]", clazz.getName());
+
+                                    iterator.remove();
+                                }
+                            }
+                        });
+
+        DefaultConfiguration
+                .getInstance()
+                .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX)
+                .ifPresent(
+                        regex -> {
+                            LOGGER.trace(
+                                    "%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX, regex);
+
+                            Pattern pattern = Pattern.compile(regex);
+                            Matcher matcher = pattern.matcher("");
+
+                            Iterator<Class<?>> iterator = classes.iterator();
+                            while (iterator.hasNext()) {
+                                Class<?> clazz = iterator.next();
+                                matcher.reset(clazz.getName());
+                                if (matcher.find()) {
+                                    LOGGER.trace(
+                                            "adding class interceptor [%s]", clazz.getName());
+                                    filteredClasses.add(clazz);
+                                }
+                            }
+                        });
+
+        classes.clear();
+        classes.addAll(filteredClasses);
     }
 
     /**

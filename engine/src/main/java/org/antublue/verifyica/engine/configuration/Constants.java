@@ -37,15 +37,48 @@ public final class Constants {
     public static final String ENGINE_LOGGER_LEVEL = ENGINE + ".logger.level";
 
     /** Configuration constant */
-    public static final String ENGINE_INTERCEPTORS = ENGINE + ".interceptors";
+    public static final String ENGINE_AUTOWIRED = ENGINE + ".autowired";
 
     /** Configuration constant */
-    public static final String ENGINE_INTERCEPTORS_INCLUDE_REGEX =
-            ENGINE_INTERCEPTORS + ".include.regex";
+    public static final String ENGINE_AUTOWIRED_ENGINE = ENGINE_AUTOWIRED + ".engine";
 
     /** Configuration constant */
-    public static final String ENGINE_INTERCEPTORS_EXCLUDE_REGEX =
-            ENGINE_INTERCEPTORS + ".exclude.regex";
+    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS = ENGINE_AUTOWIRED_ENGINE + ".interceptors";
+
+    /** Configuration constant */
+    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE = ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS + ".include";
+
+    /** Configuration constant */
+    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX =
+            ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE + ".regex";
+
+    /** Configuration constant */
+    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE = ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS + ".exclude";
+
+    /** Configuration constant */
+    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX =
+            ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE + ".regex";
+
+    /** Configuration constant */
+    public static final String ENGINE_CLASS = ENGINE + ".class";
+
+    /** Configuration constant */
+    public static final String ENGINE_AUTOWIRED_CLASS = ENGINE_AUTOWIRED + ".class";
+
+    /** Configuration constant */
+    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS = ENGINE_AUTOWIRED_CLASS + ".interceptors";
+
+    /** Configuration constant */
+    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE = ENGINE_AUTOWIRED_CLASS_INTERCEPTORS + ".include";
+
+    /** Configuration constant */
+    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX = ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE + ".regex";
+
+    /** Configuration constant */
+    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE = ENGINE_AUTOWIRED_CLASS_INTERCEPTORS + ".exclude";
+
+    /** Configuration constant */
+    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX = ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE + ".regex";
 
     /** Configuration constant */
     public static final String ENGINE_FILTER = ENGINE + ".filter";
@@ -56,9 +89,6 @@ public final class Constants {
     /** Configuration constant */
     public static final String ENGINE_FILTER_DEFINITIONS_FILENAME =
             ENGINE_FILTER_DEFINITIONS + ".filename";
-
-    /** Configuration constant */
-    public static final String ENGINE_CLASS = ENGINE + ".class";
 
     /** Configuration constant */
     public static final String ENGINE_CLASS_PARALLELISM = ENGINE_CLASS + ".parallelism";
