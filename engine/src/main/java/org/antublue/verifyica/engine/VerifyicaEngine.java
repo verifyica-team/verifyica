@@ -47,7 +47,7 @@ import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.descriptor.execution.RunnableClassTestDescriptor;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.exception.EngineException;
-import org.antublue.verifyica.engine.interceptor.internal.engine.EngineInterceptorRegistry;
+import org.antublue.verifyica.engine.interceptor.EngineInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ExecutorSupport;

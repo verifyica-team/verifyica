@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.interceptor.internal.engine;
+package org.antublue.verifyica.engine.interceptor;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -28,7 +30,7 @@ import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
+import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.internal.engine.filter.EngineFiltersInterceptor;
@@ -44,9 +46,6 @@ import org.antublue.verifyica.engine.support.OrderSupport;
 public class EngineInterceptorRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EngineInterceptorRegistry.class);
-
-    private static final DefaultEngineContext DEFAULT_ENGINE_CONTEXT =
-            DefaultEngineContext.getInstance();
 
     private final ReentrantReadWriteLock readWriteLock;
     private final List<EngineInterceptor> engineInterceptors;
@@ -333,41 +332,20 @@ public class EngineInterceptorRegistry {
      * @param classes classes
      */
     private static void filter(List<Class<?>> classes) {
-        DEFAULT_ENGINE_CONTEXT
-                .getConfiguration()
-                .getOptional(Constants.ENGINE_INTERCEPTORS_INCLUDE_REGEX)
+        Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
+
+        DefaultConfiguration
+                .getInstance()
+                .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX)
                 .ifPresent(
                         regex -> {
                             LOGGER.trace(
-                                    "%s [%s]", Constants.ENGINE_INTERCEPTORS_INCLUDE_REGEX, regex);
+                                    "%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX, regex);
 
                             Pattern pattern = Pattern.compile(regex);
                             Matcher matcher = pattern.matcher("");
 
-                            Iterator<Class<?>> iterator = classes.iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
-                                matcher.reset(clazz.getName());
-                                if (!matcher.find()) {
-                                    LOGGER.trace(
-                                            "removing engine interceptor [%s]", clazz.getName());
-                                    iterator.remove();
-                                }
-                            }
-                        });
-
-        DEFAULT_ENGINE_CONTEXT
-                .getConfiguration()
-                .getOptional(Constants.ENGINE_INTERCEPTORS_EXCLUDE_REGEX)
-                .ifPresent(
-                        regex -> {
-                            LOGGER.trace(
-                                    "%s [%s]", Constants.ENGINE_INTERCEPTORS_EXCLUDE_REGEX, regex);
-
-                            Pattern pattern = Pattern.compile(regex);
-                            Matcher matcher = pattern.matcher("");
-
-                            Iterator<Class<?>> iterator = classes.iterator();
+                            Iterator<Class<?>> iterator = filteredClasses.iterator();
                             while (iterator.hasNext()) {
                                 Class<?> clazz = iterator.next();
                                 matcher.reset(clazz.getName());
@@ -379,6 +357,32 @@ public class EngineInterceptorRegistry {
                                 }
                             }
                         });
+
+        DefaultConfiguration
+                .getInstance()
+                .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX)
+                .ifPresent(
+                        regex -> {
+                            LOGGER.trace(
+                                    "%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX, regex);
+
+                            Pattern pattern = Pattern.compile(regex);
+                            Matcher matcher = pattern.matcher("");
+
+                            Iterator<Class<?>> iterator = classes.iterator();
+                            while (iterator.hasNext()) {
+                                Class<?> clazz = iterator.next();
+                                matcher.reset(clazz.getName());
+                                if (matcher.find()) {
+                                    LOGGER.trace(
+                                            "adding engine interceptor [%s]", clazz.getName());
+                                    filteredClasses.add(clazz);
+                                }
+                            }
+                        });
+
+        classes.clear();
+        classes.addAll(filteredClasses);
     }
 
     /** Class to hold the singleton instance */
