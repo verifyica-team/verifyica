@@ -334,11 +334,11 @@ Apache License 2.0, see [LICENSE](LICENSE).
 
 # Code of Conduct
 
-[Code of Conduct](CODE_OF_CONDUCT.md)
+See [Code of Conduct](CODE_OF_CONDUCT.md) for details.
 
 # DCO
 
-[DCO](DCO.md)
+See [DCO](DCO.md) for details.
 
 # Support
 
