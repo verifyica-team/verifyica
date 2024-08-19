@@ -98,6 +98,8 @@ public class ImmutableArgumentContext implements ArgumentContext {
      * @return an ImmutableClassContext
      */
     public static ArgumentContext wrap(ArgumentContext argumentContext) {
+        ArgumentSupport.notNull(argumentContext, "argumentContext is null");
+
         return new ImmutableArgumentContext(argumentContext);
     }
 }
