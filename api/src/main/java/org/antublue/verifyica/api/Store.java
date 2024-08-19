@@ -76,21 +76,21 @@ public interface Store {
      * Get or compute if absent
      *
      * @param key key
-     * @param function function
+     * @param mappingFunction mappingFunction
      * @return the value
      */
-    Object computeIfAbsent(Object key, Function<Object, Object> function);
+    Object computeIfAbsent(Object key, Function<Object, Object> mappingFunction);
 
     /**
      * Get or computer if absent
      *
      * @param key key
-     * @param function function
+     * @param mappingFunction mappingFunction
      * @param returnType returnType
      * @return the value
      * @param <V> the return type
      */
-    <V> V computeIfAbsent(Object key, Function<Object, V> function, Class<V> returnType);
+    <V> V computeIfAbsent(Object key, Function<Object, V> mappingFunction, Class<V> returnType);
 
     /**
      * Get a value

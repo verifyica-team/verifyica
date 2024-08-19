@@ -141,19 +141,18 @@ public class DefaultStore implements Store {
     }
 
     @Override
-    public Object computeIfAbsent(Object key, Function<Object, Object> function) {
+    public Object computeIfAbsent(Object key, Function<Object, Object> mappingFunction) {
         ArgumentSupport.notNull(key, "key is null");
-        ArgumentSupport.notNull(function, "function is null");
+        ArgumentSupport.notNull(mappingFunction, "mappingFunction is null");
 
         getReadWriteLock().writeLock().lock();
         try {
             Object value = get(key);
             if (value == null) {
-                value = function.apply(key);
-                if (value == null) {
-                    throw new IllegalStateException("Function returned a null value");
+                value = mappingFunction.apply(key);
+                if (value != null) {
+                    put(key, value);
                 }
-                put(key, value);
             }
             return value;
         } finally {
@@ -162,20 +161,19 @@ public class DefaultStore implements Store {
     }
 
     @Override
-    public <V> V computeIfAbsent(Object key, Function<Object, V> function, Class<V> type) {
+    public <V> V computeIfAbsent(Object key, Function<Object, V> mappingFunction, Class<V> type) {
         ArgumentSupport.notNull(key, "key is null");
-        ArgumentSupport.notNull(function, "function is null");
+        ArgumentSupport.notNull(mappingFunction, "mappingFunction is null");
         ArgumentSupport.notNull(type, "type is null");
 
         getReadWriteLock().writeLock().lock();
         try {
             Object value = get(key);
             if (value == null) {
-                value = function.apply(key);
-                if (value == null) {
-                    throw new IllegalStateException("Function returned a null value");
+                value = mappingFunction.apply(key);
+                if (value != null) {
+                    put(key, value);
                 }
-                put(key, value);
             }
             return (V) value;
         } finally {
