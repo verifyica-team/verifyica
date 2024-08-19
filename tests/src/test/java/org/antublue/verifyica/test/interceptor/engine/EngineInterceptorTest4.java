@@ -30,7 +30,7 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.test.support.RandomSupport;
 
 /** Example test */
-public class EngineInterceptorTest3 {
+public class EngineInterceptorTest4 {
 
     @Verifyica.AutowiredInterceptor
     public static class LocalEngineInterceptor implements EngineInterceptor {
@@ -39,19 +39,14 @@ public class EngineInterceptorTest3 {
         public void onTestDiscovery(
                 EngineInterceptorContext engineInterceptorContext,
                 ClassDefinition classDefinition) {
-            if (classDefinition.getTestClass() == EngineInterceptorTest3.class) {
+            if (classDefinition.getTestClass() == EngineInterceptorTest4.class) {
                 // Change test argument parallelism
-                int testArgumentParallelism = classDefinition.getTestArgumentParallelism();
-                classDefinition.setTestArgumentParallelism(1);
-
-                System.out.printf(
-                        "changing test argument parallelism from [%d] to [%d]%n",
-                        testArgumentParallelism, classDefinition.getTestArgumentParallelism());
+                classDefinition.setTestArgumentParallelism(Integer.MAX_VALUE);
             }
         }
     }
 
-    @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
+    @Verifyica.ArgumentSupplier
     public static Collection<Argument<String>> arguments() {
         Collection<Argument<String>> collection = new ArrayList<>();
 
@@ -68,7 +63,7 @@ public class EngineInterceptorTest3 {
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();
-        assertThat(classContext.getTestArgumentParallelism()).isEqualTo(1);
+        assertThat(classContext.getTestArgumentParallelism()).isEqualTo(Integer.MAX_VALUE);
     }
 
     @Verifyica.BeforeAll
