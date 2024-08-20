@@ -368,7 +368,12 @@ public class DefaultStore implements Store {
 
     @Override
     public String toString() {
-        return "DefaultStore{map=" + map + '}';
+        getReadWriteLock().readLock().lock();
+        try {
+            return "DefaultStore{map=" + map + '}';
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
     }
 
     @Override
@@ -376,11 +381,21 @@ public class DefaultStore implements Store {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DefaultStore that = (DefaultStore) o;
-        return Objects.equals(map, that.map);
+        getReadWriteLock().readLock().lock();
+        try {
+            return Objects.equals(map, that.map);
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(map);
+        getReadWriteLock().readLock().lock();
+        try {
+            return Objects.hashCode(map);
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
     }
 }

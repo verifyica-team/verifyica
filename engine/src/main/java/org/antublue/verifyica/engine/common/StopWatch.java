@@ -18,57 +18,79 @@ package org.antublue.verifyica.engine.common;
 
 import java.time.Duration;
 import java.util.Objects;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /** Class to implement StopWatch */
 @SuppressWarnings("UnusedReturnValue")
 public class StopWatch {
 
+    private final ReadWriteLock readWriteLock;
     private long startNanoTime;
     private Long stopNanoTime;
-
-    /** Constructor */
-    public StopWatch() {
-        reset();
-    }
 
     /**
      * Constructor
      *
-     * <p>The stop watch starts automatically
+     * <p>The StopWatch starts automatically
+     */
+    public StopWatch() {
+        readWriteLock = new ReentrantReadWriteLock(true);
+        reset();
+    }
+
+    /**
+     * Method to reset the StopWatch
      *
-     * <p>/ public StopWatch() { reset(); }
-     *
-     * <p>/** Method to reset the stop watch
-     *
-     * @return this
+     * @return the StopWatch
      */
     public StopWatch reset() {
-        startNanoTime = System.nanoTime();
-        stopNanoTime = null;
-        return this;
+        getReadWriteLock().writeLock().lock();
+        try {
+            startNanoTime = System.nanoTime();
+            stopNanoTime = null;
+            return this;
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
     }
 
     /**
-     * Method to stop the stop watch
+     * Method to stop the StopWatch
      *
-     * @return this
+     * @return the StopWatch
      */
     public StopWatch stop() {
-        stopNanoTime = System.nanoTime();
-        return this;
+        getReadWriteLock().writeLock().lock();
+        try {
+            stopNanoTime = System.nanoTime();
+            return this;
+        } finally {
+            getReadWriteLock().writeLock().unlock();
+        }
     }
 
     /**
-     * Method to get the elapsed time in nanoseconds
+     * Method to get the StopWatch elapsed time in nanoseconds
      *
-     * @return the elapsed time in nanoseconds
+     * @return the StopWatch elapsed time in nanoseconds
      */
     public Duration elapsedTime() {
-        if (stopNanoTime == null) {
-            return Duration.ofNanos(System.nanoTime() - startNanoTime);
-        } else {
-            return Duration.ofNanos(stopNanoTime - startNanoTime);
+        getReadWriteLock().readLock().lock();
+        try {
+            if (stopNanoTime == null) {
+                return Duration.ofNanos(System.nanoTime() - startNanoTime);
+            } else {
+                return Duration.ofNanos(stopNanoTime - startNanoTime);
+            }
+        } finally {
+            getReadWriteLock().readLock().unlock();
         }
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(elapsedTime().toNanos());
     }
 
     @Override
@@ -76,12 +98,32 @@ public class StopWatch {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StopWatch stopWatch = (StopWatch) o;
-        return startNanoTime == stopWatch.startNanoTime
-                && Objects.equals(stopNanoTime, stopWatch.stopNanoTime);
+
+        getReadWriteLock().readLock().lock();
+        try {
+            return startNanoTime == stopWatch.startNanoTime
+                    && Objects.equals(stopNanoTime, stopWatch.stopNanoTime);
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startNanoTime, stopNanoTime);
+        getReadWriteLock().readLock().lock();
+        try {
+            return Objects.hash(startNanoTime, stopNanoTime);
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    /**
+     * Method to get the ReadWriteLock
+     *
+     * @return the ReadWriteLock
+     */
+    private ReadWriteLock getReadWriteLock() {
+        return readWriteLock;
     }
 }
