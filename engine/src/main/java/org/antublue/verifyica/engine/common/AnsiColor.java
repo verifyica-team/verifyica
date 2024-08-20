@@ -23,14 +23,6 @@ import org.antublue.verifyica.engine.support.ArgumentSupport;
 /** Class to implement ANSIColor */
 public class AnsiColor {
 
-    /*
-     * Configuration constants must be in sync with values in
-     * org.antublue.test.engine.internal.configuration.Constants
-     *
-     * They are declared here to prevent a cyclic dependency
-     * on the engine project
-     */
-
     /** Configuration constant */
     private static final String PREFIX = "antublue.test.engine";
 
