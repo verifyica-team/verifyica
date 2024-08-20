@@ -61,6 +61,11 @@ public class StopWatchTest {
         stop = System.currentTimeMillis();
 
         assertThat(stopWatch.elapsedTime().toMillis()).isBetween(0L, (stop - start) + 50);
+
+        stopWatch.stop();
+
+        assertThat(stopWatch.elapsedTime().toNanos())
+                .isEqualTo(Long.parseLong(stopWatch.toString()));
     }
 
     private static void sleep() {
