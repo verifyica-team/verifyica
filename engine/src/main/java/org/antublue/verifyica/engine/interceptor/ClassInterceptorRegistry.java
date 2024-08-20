@@ -699,7 +699,7 @@ public class ClassInterceptorRegistry {
 
                 List<Class<?>> autowiredClassInterceptors =
                         new ArrayList<>(
-                                ClassPathSupport.findClasses(
+                                ClassPathSupport.findAllClasses(
                                         Predicates.AUTOWIRED_CLASS_INTERCEPTOR_CLASS));
 
                 filter(autowiredClassInterceptors);

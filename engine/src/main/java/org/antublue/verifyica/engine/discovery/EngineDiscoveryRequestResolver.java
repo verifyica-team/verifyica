@@ -43,7 +43,7 @@ import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
-import org.antublue.verifyica.engine.exception.TestClassException;
+import org.antublue.verifyica.engine.exception.TestClassDefinitionException;
 import org.antublue.verifyica.engine.exception.UncheckedClassNotFoundException;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.interceptor.EngineInterceptorRegistry;
@@ -163,7 +163,7 @@ public class EngineDiscoveryRequestResolver {
                 .forEach(
                         classpathRootSelector -> {
                             List<Class<?>> testClasses =
-                                    ClassPathSupport.findClasses(
+                                    ClassPathSupport.findAllClasses(
                                             classpathRootSelector.getClasspathRoot(),
                                             Predicates.TEST_CLASS);
 
@@ -223,7 +223,7 @@ public class EngineDiscoveryRequestResolver {
                             LOGGER.trace("packageName [%s]", packageName);
 
                             List<Class<?>> testClasses =
-                                    ClassPathSupport.findClasses(
+                                    ClassPathSupport.findAllClasses(
                                             packageName, Predicates.TEST_CLASS);
 
                             testClasses.forEach(
@@ -343,7 +343,7 @@ public class EngineDiscoveryRequestResolver {
                                                     .getContextClassLoader()
                                                     .loadClass(classSegment.getValue());
                                 } catch (ClassNotFoundException e) {
-                                    UncheckedClassNotFoundException.propagate(e);
+                                    UncheckedClassNotFoundException.throwUnchecked(e);
                                 }
 
                                 classMethodMap
@@ -374,7 +374,8 @@ public class EngineDiscoveryRequestResolver {
                                                                     .getContextClassLoader()
                                                                     .loadClass(javaClassName);
                                                 } catch (ClassNotFoundException e) {
-                                                    UncheckedClassNotFoundException.propagate(e);
+                                                    UncheckedClassNotFoundException.throwUnchecked(
+                                                            e);
                                                 }
 
                                                 classMethodMap
@@ -584,7 +585,7 @@ public class EngineDiscoveryRequestResolver {
                                 ClassInterceptorRegistry.getInstance()
                                         .register(testClass, (ClassInterceptor) o);
                             } else {
-                                throw new TestClassException(
+                                throw new TestClassDefinitionException(
                                         format(
                                                 "Invalid argument type [%s] supplied by test class"
                                                     + " [%s] @Verifyica.ClassInterceptorSupplier"
@@ -619,7 +620,7 @@ public class EngineDiscoveryRequestResolver {
                             ClassInterceptorRegistry.getInstance()
                                     .register(testClass, (ClassInterceptor) o);
                         } else {
-                            throw new TestClassException(
+                            throw new TestClassDefinitionException(
                                     format(
                                             "Invalid argument type [%s] supplied by test class"
                                                     + " [%s] @Verifyica.ClassInterceptorSupplier"
@@ -637,11 +638,9 @@ public class EngineDiscoveryRequestResolver {
      *
      * @param engineDescriptor engineDescriptor
      * @param classDefinitions classDefinitions
-     * @throws Throwable Throwable
      */
     private static void buildEngineDescriptor(
-            EngineDescriptor engineDescriptor, List<ClassDefinition> classDefinitions)
-            throws Throwable {
+            EngineDescriptor engineDescriptor, List<ClassDefinition> classDefinitions) {
         LOGGER.trace("buildEngineDescriptor()");
 
         StopWatch stopWatch = new StopWatch();

@@ -17,14 +17,14 @@
 package org.antublue.verifyica.engine.exception;
 
 /** Class to implement EngineException */
-public class TestClassException extends RuntimeException {
+public class TestClassDefinitionException extends RuntimeException {
 
     /**
      * Constructor
      *
      * @param message message
      */
-    public TestClassException(String message) {
+    public TestClassDefinitionException(String message) {
         super(message);
     }
 
@@ -34,7 +34,7 @@ public class TestClassException extends RuntimeException {
      * @param message message
      * @param throwable throwable
      */
-    public TestClassException(String message, Throwable throwable) {
+    public TestClassDefinitionException(String message, Throwable throwable) {
         super(message, throwable);
     }
 
@@ -43,7 +43,7 @@ public class TestClassException extends RuntimeException {
      *
      * @param throwable throwable
      */
-    public TestClassException(Throwable throwable) {
+    public TestClassDefinitionException(Throwable throwable) {
         super(throwable);
     }
 }

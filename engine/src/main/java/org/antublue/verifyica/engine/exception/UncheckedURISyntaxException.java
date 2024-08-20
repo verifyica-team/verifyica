@@ -16,18 +16,19 @@
 
 package org.antublue.verifyica.engine.exception;
 
-/** Class to implement UncheckedClassNotFoundException */
-public class UncheckedClassNotFoundException extends RuntimeException {
+import java.net.URISyntaxException;
+
+/** Class to implement UncheckedURISyntaxException */
+public class UncheckedURISyntaxException extends RuntimeException {
 
     /**
      * Constructor
      *
      * @param message message
-     * @param classNotFoundException classNotFoundException
+     * @param uriSyntaxException uriSyntaxException
      */
-    public UncheckedClassNotFoundException(
-            String message, ClassNotFoundException classNotFoundException) {
-        super(message, classNotFoundException);
+    public UncheckedURISyntaxException(String message, URISyntaxException uriSyntaxException) {
+        super(message, uriSyntaxException);
     }
 
     /** Method to propagate (throw) the exception */
@@ -38,11 +39,10 @@ public class UncheckedClassNotFoundException extends RuntimeException {
     /**
      * Method to wrap and propagate (throw) the exception
      *
-     * @param classNotFoundException classNotFoundException
+     * @param uriSyntaxException uriSyntaxException
      */
-    public static void throwUnchecked(ClassNotFoundException classNotFoundException) {
-        new UncheckedClassNotFoundException(
-                        classNotFoundException.getMessage(), classNotFoundException)
+    public static void throwUnchecked(URISyntaxException uriSyntaxException) {
+        new UncheckedURISyntaxException(uriSyntaxException.getMessage(), uriSyntaxException)
                 .throwUnchecked();
     }
 }

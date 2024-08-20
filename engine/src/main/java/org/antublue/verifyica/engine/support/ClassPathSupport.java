@@ -19,7 +19,7 @@ package org.antublue.verifyica.engine.support;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,7 +36,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.regex.Pattern;
+import org.antublue.verifyica.engine.exception.UncheckedURISyntaxException;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 /** Class to implement ClassPathSupport */
@@ -81,16 +81,17 @@ public class ClassPathSupport {
      * @param predicate predicate
      * @return a List of Classes
      */
-    public static List<Class<?>> findClasses(Predicate<Class<?>> predicate) {
+    public static List<Class<?>> findAllClasses(Predicate<Class<?>> predicate) {
         ArgumentSupport.notNull(predicate, "predicate is null");
 
         Set<Class<?>> set = new LinkedHashSet<>();
+
         getClasspathURIs()
                 .forEach(
                         uri ->
                                 set.addAll(
                                         ReflectionSupport.findAllClassesInClasspathRoot(
-                                                uri, predicate, name -> true)));
+                                                uri, predicate, classNameFilter -> true)));
 
         return new ArrayList<>(set);
     }
@@ -102,12 +103,13 @@ public class ClassPathSupport {
      * @param predicate predicate
      * @return a List of Classes
      */
-    public static List<Class<?>> findClasses(URI uri, Predicate<Class<?>> predicate) {
+    public static List<Class<?>> findAllClasses(URI uri, Predicate<Class<?>> predicate) {
         ArgumentSupport.notNull(uri, "uri is null");
         ArgumentSupport.notNull(predicate, "predicate is null");
 
         return new ArrayList<>(
-                ReflectionSupport.findAllClassesInClasspathRoot(uri, predicate, className -> true));
+                ReflectionSupport.findAllClassesInClasspathRoot(
+                        uri, predicate, classNameFilter -> true));
     }
 
     /**
@@ -118,69 +120,72 @@ public class ClassPathSupport {
      * @param predicate predicate
      * @return a List of Classes
      */
-    public static List<Class<?>> findClasses(String packageName, Predicate<Class<?>> predicate) {
+    public static List<Class<?>> findAllClasses(String packageName, Predicate<Class<?>> predicate) {
         ArgumentSupport.notNullOrEmpty(packageName, "packageName is null", "packageName is empty");
         ArgumentSupport.notNull(predicate, "predicate is null");
 
         return new ArrayList<>(
                 ReflectionSupport.findAllClassesInPackage(
-                        packageName.trim(), predicate, className -> true));
+                        packageName.trim(), predicate, classNameFilter -> true));
     }
 
     /**
-     * Method to scan the Java class path and return a list of URLs matching the name
+     * Method to scan the Java class path and return a List of URIs matching the resource name
      *
-     * @param regex regex
-     * @return a List of URLs
+     * @param predicate predicate
+     * @return a List of URIs
      * @throws IOException IOException
      */
-    public static List<URL> findResources(String regex) throws IOException {
-        ArgumentSupport.notNullOrEmpty(regex, "regex is null", "regex is empty");
+    public static List<URI> findAllResources(Predicate<String> predicate) throws IOException {
+        ArgumentSupport.notNull(predicate, "predicate is null");
 
-        Pattern pattern = Pattern.compile(regex.trim());
-        List<URL> resourceUrls = new ArrayList<>();
+        List<URI> uris = new ArrayList<>();
 
-        for (URI uri : getClasspathURIs()) {
-            Path path = Paths.get(uri);
-            if (Files.isDirectory(path)) {
-                scanDirectory(pattern, path, resourceUrls);
-            } else if (path.toString().toLowerCase(Locale.ENGLISH).endsWith(".jar")) {
-                scanJarFile(pattern, path, resourceUrls);
+        try {
+            for (URI uri : getClasspathURIs()) {
+                Path path = Paths.get(uri);
+                if (Files.isDirectory(path)) {
+                    scanDirectory(path, predicate, uris);
+                } else if (path.toString().toLowerCase(Locale.ENGLISH).endsWith(".jar")) {
+                    scanJarFile(path, predicate, uris);
+                }
             }
+        } catch (URISyntaxException e) {
+            UncheckedURISyntaxException.throwUnchecked(e);
         }
 
-        return resourceUrls;
+        return uris;
     }
 
     /**
      * Method to scan a directory
      *
-     * @param pattern pattern
      * @param directoryPath directoryPath
-     * @param resourceUrls resourceUrls
+     * @param predicate predicate
+     * @param uris uris
      * @throws IOException IOException
      */
-    private static void scanDirectory(Pattern pattern, Path directoryPath, List<URL> resourceUrls)
-            throws IOException {
-        Files.walkFileTree(directoryPath, new PathSimpleFileVisitor(pattern, resourceUrls));
+    private static void scanDirectory(
+            Path directoryPath, Predicate<String> predicate, List<URI> uris) throws IOException {
+        Files.walkFileTree(directoryPath, new PathSimpleFileVisitor(predicate, uris));
     }
 
     /**
      * Method to scan a Jar file
      *
-     * @param pattern pattern
      * @param jarPath jarPath
-     * @param resourceUrls resourceUrls
+     * @param predicate predicate
+     * @param uris uris
      * @throws IOException IOException
      */
-    private static void scanJarFile(Pattern pattern, Path jarPath, List<URL> resourceUrls)
-            throws IOException {
+    private static void scanJarFile(Path jarPath, Predicate<String> predicate, List<URI> uris)
+            throws IOException, URISyntaxException {
         try (JarFile jarFile = new JarFile(jarPath.toFile().getPath())) {
             Enumeration<JarEntry> jarEntryEnumeration = jarFile.entries();
             while (jarEntryEnumeration.hasMoreElements()) {
                 JarEntry jarEntry = jarEntryEnumeration.nextElement();
-                if (!jarEntry.isDirectory() && pattern.matcher(jarEntry.getName()).matches()) {
-                    resourceUrls.add(new URL("jar:" + jarPath.toUri() + "!/" + jarEntry.getName()));
+                if (!jarEntry.isDirectory() && predicate.test(jarEntry.getName())) {
+                    uris.add(new URI("jar:" + jarPath.toUri() + "!/" + jarEntry.getName()));
                 }
             }
         }
@@ -189,26 +194,25 @@ public class ClassPathSupport {
     /** Class to implement PathSimpleFileVisitor */
     private static class PathSimpleFileVisitor extends SimpleFileVisitor<Path> {
 
-        private final Pattern pattern;
-        private final List<URL> foundUrls;
+        private final Predicate<String> predicate;
+        private final List<URI> uris;
 
         /**
          * Constructor
          *
-         * @param pattern pattern
-         * @param foundUrls foundUrls
+         * @param uris uris
+         * @param predicate predicate
          */
-        public PathSimpleFileVisitor(Pattern pattern, List<URL> foundUrls) {
-            this.pattern = pattern;
-            this.foundUrls = foundUrls;
+        public PathSimpleFileVisitor(Predicate<String> predicate, List<URI> uris) {
+            this.predicate = predicate;
+            this.uris = uris;
         }
 
         @Override
-        public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes)
-                throws IOException {
+        public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) {
             if (basicFileAttributes.isRegularFile()
-                    && pattern.matcher(path.getFileName().toString()).matches()) {
-                foundUrls.add(path.toUri().toURL());
+                    && predicate.test(path.getFileName().toString())) {
+                uris.add(path.toUri());
             }
 
             return FileVisitResult.CONTINUE;

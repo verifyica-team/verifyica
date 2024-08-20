@@ -280,7 +280,7 @@ public class EngineInterceptorRegistry {
 
                 List<Class<?>> autowiredEngineInterceptors =
                         new ArrayList<>(
-                                ClassPathSupport.findClasses(
+                                ClassPathSupport.findAllClasses(
                                         Predicates.AUTOWIRED_ENGINE_INTERCEPTOR_CLASS));
 
                 filter(autowiredEngineInterceptors);
