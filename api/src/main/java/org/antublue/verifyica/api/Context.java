@@ -32,9 +32,9 @@ public interface Context {
     /**
      * Returns the Context Lock.
      *
-     * <p>Equivalent to context.getStore().getLock()
+     * <p>Equivalent to getStore().getLock()
      *
-     * <p>Equivalent to context.getStore().getReadWriteLock().writeLock()
+     * <p>Equivalent to getStore().getReadWriteLock().writeLock()
      *
      * @return the Context Lock
      */
@@ -45,7 +45,7 @@ public interface Context {
     /**
      * Returns the Context ReadWriteLock.
      *
-     * <p>Equivalent to context.getStore().getReadWriteLock()
+     * <p>Equivalent to getStore().getReadWriteLock()
      *
      * @return the Context ReadWriteLock
      */

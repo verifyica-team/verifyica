@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
@@ -359,6 +360,11 @@ public class DefaultStore implements Store {
         } finally {
             getReadWriteLock().readLock().unlock();
         }
+    }
+
+    @Override
+    public Lock getLock() {
+        return getReadWriteLock().writeLock();
     }
 
     @Override

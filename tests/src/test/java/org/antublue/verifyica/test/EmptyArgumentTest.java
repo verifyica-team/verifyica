@@ -26,7 +26,7 @@ public class EmptyArgumentTest {
 
     @Verifyica.ArgumentSupplier
     public static Object arguments() {
-        return Argument.empty();
+        return Argument.EMPTY;
     }
 
     @Verifyica.Prepare
