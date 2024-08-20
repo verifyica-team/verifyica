@@ -228,9 +228,7 @@ public interface Store {
      *
      * @return the Lock
      */
-    default Lock getLock() {
-        return getReadWriteLock().writeLock();
-    }
+    Lock getLock();
 
     /**
      * Get the ReadWriteLock

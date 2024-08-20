@@ -19,6 +19,10 @@ Any `ArgumentSupplier` method that returns a non-`Argument` Object will be wrapp
 - the `Argument` name will be `argument[<POSITIONAL INDEX>]`
 - the `Argument` value type will be `Object`
 
+**Notes**
+
+- static `Argument` factory methods create arguments that do NOT implement `equals()`
+
 ---
 
 ## Context

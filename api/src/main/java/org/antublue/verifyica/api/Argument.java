@@ -27,6 +27,8 @@ import java.math.BigInteger;
  */
 public interface Argument<T> {
 
+    Argument<Object> EMPTY = new Empty();
+
     /**
      * Method to get the Argument name
      *
@@ -40,6 +42,26 @@ public interface Argument<T> {
      * @return the Argument payload
      */
     T getPayload();
+
+    /**
+     * Method to get the Argument payload
+     *
+     * @param type type
+     * @return the Argument payload
+     */
+    default <V> V getPayload(Class<V> type) {
+        notNull(type, "type is null");
+        return type.cast(getPayload());
+    }
+
+    /**
+     * Method to return if the Argument has a payload
+     *
+     * @return true if the Argument payload is not null, else false
+     */
+    default boolean hasPayload() {
+        return getPayload() != null;
+    }
 
     /**
      * Method to create an Argument of type boolean
@@ -174,9 +196,10 @@ public interface Argument<T> {
      * @param <T> type T
      */
     static <T> Argument<T> of(String name, T payload) {
-        notNullOrEmpty(name, "name is null", "name is empty");
+        notNullOrBlank(name, "name is null", "name is blank");
 
         return new Argument<T>() {
+
             @Override
             public String getName() {
                 return name;
@@ -195,14 +218,27 @@ public interface Argument<T> {
     }
 
     /**
-     * Method to create an empty Argument
+     * Deprecated - use Argument.EMPTY
      *
      * <p>Use when an argument is not required for tests
      *
      * @return an empty Argument
      */
+    @Deprecated
     static Argument<Object> empty() {
-        return of("---", null);
+        return EMPTY;
+    }
+
+    /**
+     * Check if an Object is not null
+     *
+     * @param object object
+     * @param message message
+     */
+    static void notNull(Object object, String message) {
+        if (object == null) {
+            throw new IllegalArgumentException(message);
+        }
     }
 
     /**
@@ -212,13 +248,48 @@ public interface Argument<T> {
      * @param nullMessage nullMessage
      * @param emptyMessage emptyMessage
      */
-    static void notNullOrEmpty(String string, String nullMessage, String emptyMessage) {
+    static void notNullOrBlank(String string, String nullMessage, String emptyMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }
 
         if (string.trim().isEmpty()) {
             throw new IllegalArgumentException(emptyMessage);
+        }
+    }
+
+    class Empty implements Argument<Object> {
+
+        private final String NAME = "---";
+
+        private Empty() {
+            // INITIALLY BLANK
+        }
+
+        @Override
+        public String getName() {
+            return NAME;
+        }
+
+        @Override
+        public Object getPayload() {
+            return null;
+        }
+
+        @Override
+        public <V> V getPayload(Class<V> type) {
+            notNull(type, "type is null");
+            return type.cast(null);
+        }
+
+        @Override
+        public boolean hasPayload() {
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return NAME;
         }
     }
 }
