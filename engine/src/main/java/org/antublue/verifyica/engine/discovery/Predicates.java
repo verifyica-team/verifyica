@@ -35,10 +35,10 @@ public class Predicates {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
                         && !Modifier.isAbstract(modifiers)
-                        && ClassSupport.hasDefaultConstructor(clazz)
                         && EngineInterceptor.class.isAssignableFrom(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class);
+                        && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class)
+                        && ClassSupport.hasDefaultConstructor(clazz);
             };
 
     /** Predicate to filter discoverable class interceptor classes */
@@ -47,10 +47,10 @@ public class Predicates {
                 int modifiers = clazz.getModifiers();
                 return Modifier.isPublic(modifiers)
                         && !Modifier.isAbstract(modifiers)
-                        && ClassSupport.hasDefaultConstructor(clazz)
                         && ClassInterceptor.class.isAssignableFrom(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class);
+                        && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class)
+                        && ClassSupport.hasDefaultConstructor(clazz);
             };
 
     /** Predicate to filter class interceptor supplier methods */
@@ -92,8 +92,8 @@ public class Predicates {
                 int modifiers = clazz.getModifiers();
 
                 return !Modifier.isAbstract(modifiers)
-                        && ClassSupport.hasDefaultConstructor(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
+                        && ClassSupport.hasDefaultConstructor(clazz)
                         && !MethodSupport.findMethods(
                                         clazz,
                                         ARGUMENT_SUPPLIER_METHOD,
