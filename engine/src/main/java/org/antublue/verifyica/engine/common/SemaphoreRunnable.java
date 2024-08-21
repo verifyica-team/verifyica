@@ -21,8 +21,8 @@ import java.util.concurrent.Semaphore;
 /** Class to implement SemaphoreControlledRunnable */
 public class SemaphoreRunnable implements Runnable {
 
-    private final Semaphore semaphore;
     private final Runnable runnable;
+    private final Semaphore semaphore;
 
     /**
      * Constructor
