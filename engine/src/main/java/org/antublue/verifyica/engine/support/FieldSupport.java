@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 /** Class to implement FieldSupport */
@@ -42,9 +43,9 @@ public class FieldSupport {
             Class<?> clazz,
             Predicate<Field> predicate,
             HierarchyTraversalMode hierarchyTraversalMode) {
-        ArgumentSupport.notNull(clazz, "clazz is null");
-        ArgumentSupport.notNull(predicate, "predicate is null");
-        ArgumentSupport.notNull(hierarchyTraversalMode, "hierarchyTraversalMode is null");
+        Precondition.notNull(clazz, "clazz is null");
+        Precondition.notNull(predicate, "predicate is null");
+        Precondition.notNull(hierarchyTraversalMode, "hierarchyTraversalMode is null");
 
         return new ArrayList<>(
                 ReflectionSupport.findFields(
@@ -60,7 +61,7 @@ public class FieldSupport {
      * @throws Throwable Throwable
      */
     public static void setField(Object object, Field field, Object value) throws Throwable {
-        ArgumentSupport.notNull(field, "field is null");
+        Precondition.notNull(field, "field is null");
 
         if (value == null) {
             Class<?> fieldType = field.getType();

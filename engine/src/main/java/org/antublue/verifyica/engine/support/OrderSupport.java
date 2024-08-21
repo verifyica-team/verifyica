@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement OrderSupport */
 public class OrderSupport {
@@ -35,7 +36,7 @@ public class OrderSupport {
      * @param classes classes
      */
     public static void orderClasses(List<Class<?>> classes) {
-        ArgumentSupport.notNull(classes, "classes is null");
+        Precondition.notNull(classes, "classes is null");
 
         classes.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
         classes.sort(Comparator.comparingInt(OrderSupport::getOrder));
@@ -48,7 +49,7 @@ public class OrderSupport {
      * @return the order annotation value
      */
     public static int getOrder(Class<?> clazz) {
-        ArgumentSupport.notNull(clazz, "clazz is null");
+        Precondition.notNull(clazz, "clazz is null");
 
         int order = Integer.MAX_VALUE;
 
@@ -66,7 +67,7 @@ public class OrderSupport {
      * @param methods methods
      */
     public static void orderMethods(List<Method> methods) {
-        ArgumentSupport.notNull(methods, "methods is null");
+        Precondition.notNull(methods, "methods is null");
 
         methods.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
         methods.sort(Comparator.comparingInt(OrderSupport::getOrder));
@@ -79,7 +80,7 @@ public class OrderSupport {
      * @return the order annotation value
      */
     public static int getOrder(Method method) {
-        ArgumentSupport.notNull(method, "method is null");
+        Precondition.notNull(method, "method is null");
 
         int order = Integer.MAX_VALUE;
 

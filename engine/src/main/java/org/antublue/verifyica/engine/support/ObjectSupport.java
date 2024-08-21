@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement ObjectSupport */
 @SuppressWarnings("unchecked")
@@ -40,43 +41,40 @@ public class ObjectSupport {
      * @throws Throwable Throwable
      */
     public static <T> T createObject(Class<?> clazz) throws Throwable {
-        ArgumentSupport.notNull(clazz, "clazz is null");
+        Precondition.notNull(clazz, "clazz is null");
 
         return (T) clazz.getConstructor().newInstance();
     }
 
     /**
-     * Method to convert a list Methods to a String representation
+     * Method to convert a List Methods to a String representation
      *
      * @param methods methods
      * @return a String representation of the Methods
      */
     public static String toString(Method... methods) {
-        if (methods == null) {
-            throw new IllegalArgumentException("methods is null");
-        }
+        Precondition.isTrue(methods != null, "methods is null");
 
         return toString(Arrays.stream(methods).collect(Collectors.toList()));
     }
 
     /**
-     * Method to convert a list Methods to a String representation
+     * Method to convert a List Methods to a String representation
      *
      * @param methods methods
      * @return a String representation of the Methods
      */
     public static String toString(List<Method> methods) {
-        ArgumentSupport.notNull(methods, "methods is null");
+        Precondition.notNull(methods, "methods is null");
+        Precondition.isTrue(!methods.isEmpty(), "methods is empty");
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (methods != null) {
-            Iterator<Method> iterator = methods.iterator();
-            while (iterator.hasNext()) {
-                stringBuilder.append(iterator.next().getName());
-                if (iterator.hasNext()) {
-                    stringBuilder.append(", ");
-                }
+        Iterator<Method> iterator = methods.iterator();
+        while (iterator.hasNext()) {
+            stringBuilder.append(iterator.next().getName());
+            if (iterator.hasNext()) {
+                stringBuilder.append(", ");
             }
         }
 

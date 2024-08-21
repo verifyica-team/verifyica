@@ -17,7 +17,6 @@
 package org.antublue.verifyica.engine.common;
 
 import java.util.concurrent.Semaphore;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement SemaphoreControlledRunnable */
 public class SemaphoreRunnable implements Runnable {
@@ -53,13 +52,13 @@ public class SemaphoreRunnable implements Runnable {
     /**
      * Method to wrap a Runnable
      *
-     * @param semaphore semaphore
      * @param runnable runnable
+     * @param semaphore semaphore
      * @return a SemaphoreControlledRunnable
      */
-    public static SemaphoreRunnable newSemaphoreRunnable(Semaphore semaphore, Runnable runnable) {
-        ArgumentSupport.notNull(semaphore, "semaphore is null");
-        ArgumentSupport.notNull(runnable, "runnable is null");
+    public static SemaphoreRunnable wrap(Runnable runnable, Semaphore semaphore) {
+        Precondition.notNull(runnable, "runnable is null");
+        Precondition.notNull(semaphore, "semaphore is null");
 
         return new SemaphoreRunnable(semaphore, runnable);
     }

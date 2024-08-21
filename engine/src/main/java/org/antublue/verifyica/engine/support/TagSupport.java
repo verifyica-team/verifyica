@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement TagSupport */
 public class TagSupport {
@@ -39,7 +40,7 @@ public class TagSupport {
      * @return a List of tags
      */
     public static List<String> getTags(Class<?> clazz) {
-        ArgumentSupport.notNull(clazz, "clazz is null");
+        Precondition.notNull(clazz, "clazz is null");
 
         Set<String> tags = new HashSet<>();
 
@@ -68,7 +69,7 @@ public class TagSupport {
      * @return a List of tags
      */
     public static List<String> getTags(Method method) {
-        ArgumentSupport.notNull(method, "method is null");
+        Precondition.notNull(method, "method is null");
 
         Set<String> tags = new HashSet<>();
 

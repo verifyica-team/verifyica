@@ -19,7 +19,7 @@ package org.antublue.verifyica.engine.context;
 import java.util.Objects;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement DefaultEngineInterceptorContext */
 public class DefaultEngineInterceptorContext implements EngineInterceptorContext {
@@ -32,7 +32,7 @@ public class DefaultEngineInterceptorContext implements EngineInterceptorContext
      * @param engineContext engineContext
      */
     public DefaultEngineInterceptorContext(EngineContext engineContext) {
-        ArgumentSupport.notNull(engineContext, "engineContext is null");
+        Precondition.notNull(engineContext, "engineContext is null");
 
         this.engineContext = engineContext;
     }

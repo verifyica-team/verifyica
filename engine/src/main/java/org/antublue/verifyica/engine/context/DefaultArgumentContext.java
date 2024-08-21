@@ -21,8 +21,8 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement DefaultArgumentContext */
 @SuppressWarnings("unchecked")
@@ -62,7 +62,7 @@ public class DefaultArgumentContext implements ArgumentContext {
 
     @Override
     public <T> Argument<T> getTestArgument(Class<T> type) {
-        ArgumentSupport.notNull(type, "type is null;");
+        Precondition.notNull(type, "type is null;");
 
         return (Argument<T>) argumentTestDescriptor.getTestArgument();
     }

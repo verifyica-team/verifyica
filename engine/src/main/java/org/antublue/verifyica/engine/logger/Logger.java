@@ -25,9 +25,9 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antublue.verifyica.api.Configuration;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement Logger */
 @SuppressWarnings("PMD.EmptyCatchBlock")
@@ -119,7 +119,7 @@ public class Logger {
      * @param level level
      */
     public void setLevel(Level level) {
-        ArgumentSupport.notNull(name, "level is null");
+        Precondition.notNull(name, "level is null");
         this.level = level;
     }
 
@@ -130,7 +130,7 @@ public class Logger {
      * @return the return value
      */
     public boolean isEnabled(Level level) {
-        ArgumentSupport.notNull(name, "level is null");
+        Precondition.notNull(name, "level is null");
         return this.level.toInt() >= level.toInt();
     }
 
@@ -152,7 +152,7 @@ public class Logger {
      * @param objects objects
      */
     public void trace(String format, Object... objects) {
-        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+        Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isTraceEnabled()) {
             log(System.out, Level.TRACE, format, objects);
@@ -177,7 +177,7 @@ public class Logger {
      * @param objects objects
      */
     public void debug(String format, Object... objects) {
-        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+        Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isDebugEnabled()) {
             log(System.out, Level.DEBUG, format, objects);
@@ -203,7 +203,7 @@ public class Logger {
      * @param objects objects
      */
     public void info(String format, Object... objects) {
-        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+        Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isInfoEnabled()) {
             log(System.out, Level.INFO, format, objects);
@@ -228,7 +228,7 @@ public class Logger {
      * @param objects objects
      */
     public void warn(String format, Object... objects) {
-        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+        Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isWarnEnabled()) {
             log(System.out, Level.WARN, format, objects);
@@ -253,7 +253,7 @@ public class Logger {
      * @param objects objects
      */
     public void error(String format, Object... objects) {
-        ArgumentSupport.notNullOrEmpty(format, "format is null", "format is empty");
+        Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isErrorEnabled()) {
             log(System.err, Level.ERROR, format, objects);

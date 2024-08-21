@@ -20,7 +20,7 @@ import java.util.Objects;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement ImmutableClassContext */
 public class ImmutableClassContext implements ClassContext {
@@ -101,7 +101,7 @@ public class ImmutableClassContext implements ClassContext {
      * @return an ImmutableClassContext
      */
     public static ClassContext wrap(ClassContext classContext) {
-        ArgumentSupport.notNull(classContext, "classContext is null");
+        Precondition.notNull(classContext, "classContext is null");
 
         return new ImmutableClassContext(classContext);
     }

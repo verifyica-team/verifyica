@@ -369,10 +369,12 @@ public class ConcurrencySupport {
      * @param object object
      * @param message message
      */
-    private static void notNull(Object object, String message) {
+    private static Object notNull(Object object, String message) {
         if (object == null) {
             throw new IllegalArgumentException(message);
         }
+
+        return object;
     }
 
     /** Interface to implement LockReference */

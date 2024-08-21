@@ -37,8 +37,8 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import org.antublue.verifyica.api.Configuration;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /** Class to implement DefaultConfiguration */
 public class DefaultConfiguration implements Configuration {
@@ -76,7 +76,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Optional<String> put(String key, String value) {
-        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
+        Precondition.notNullOrBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -88,7 +88,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public String get(String key) {
-        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
+        Precondition.notNullOrBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().readLock().lock();
         try {
@@ -100,7 +100,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Optional<String> getOptional(String key) {
-        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
+        Precondition.notNullOrBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().readLock().lock();
         try {
@@ -112,8 +112,8 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Optional<String> computeIfAbsent(String key, Function<String, String> transformer) {
-        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
-        ArgumentSupport.notNull(transformer, "transformer is null");
+        Precondition.notNullOrBlank(key, "key is null", "key is blank");
+        Precondition.notNull(transformer, "transformer is null");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -125,7 +125,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public boolean containsKey(String key) {
-        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
+        Precondition.notNullOrBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().readLock().lock();
         try {
@@ -137,7 +137,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public String remove(String key) {
-        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
+        Precondition.notNullOrBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -149,7 +149,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Optional<String> removeOptional(String key) {
-        ArgumentSupport.notNullOrEmpty(key, "key is null", "key is empty");
+        Precondition.notNullOrBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -207,7 +207,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Configuration merge(Map<String, String> map) {
-        ArgumentSupport.notNull(map, "map is null");
+        Precondition.notNull(map, "map is null");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -229,7 +229,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Configuration merge(Configuration configuration) {
-        ArgumentSupport.notNull(configuration, "configuration is null");
+        Precondition.notNull(configuration, "configuration is null");
 
         configuration.getReadWriteLock().readLock().lock();
         try {
@@ -253,7 +253,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Configuration replace(Map<String, String> map) {
-        ArgumentSupport.notNull(map, "map is null");
+        Precondition.notNull(map, "map is null");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -266,7 +266,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Configuration replace(Configuration configuration) {
-        ArgumentSupport.notNull(configuration, "configuration is null");
+        Precondition.notNull(configuration, "configuration is null");
 
         configuration.getReadWriteLock().readLock().lock();
         try {

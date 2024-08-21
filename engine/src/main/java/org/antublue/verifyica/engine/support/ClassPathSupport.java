@@ -36,6 +36,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.exception.UncheckedURISyntaxException;
 import org.junit.platform.commons.support.ReflectionSupport;
 
@@ -82,7 +83,7 @@ public class ClassPathSupport {
      * @return a List of Classes
      */
     public static List<Class<?>> findAllClasses(Predicate<Class<?>> predicate) {
-        ArgumentSupport.notNull(predicate, "predicate is null");
+        Precondition.notNull(predicate, "predicate is null");
 
         Set<Class<?>> set = new LinkedHashSet<>();
 
@@ -104,8 +105,8 @@ public class ClassPathSupport {
      * @return a List of Classes
      */
     public static List<Class<?>> findAllClasses(URI uri, Predicate<Class<?>> predicate) {
-        ArgumentSupport.notNull(uri, "uri is null");
-        ArgumentSupport.notNull(predicate, "predicate is null");
+        Precondition.notNull(uri, "uri is null");
+        Precondition.notNull(predicate, "predicate is null");
 
         return new ArrayList<>(
                 ReflectionSupport.findAllClassesInClasspathRoot(
@@ -121,8 +122,8 @@ public class ClassPathSupport {
      * @return a List of Classes
      */
     public static List<Class<?>> findAllClasses(String packageName, Predicate<Class<?>> predicate) {
-        ArgumentSupport.notNullOrEmpty(packageName, "packageName is null", "packageName is empty");
-        ArgumentSupport.notNull(predicate, "predicate is null");
+        Precondition.notNullOrBlank(packageName, "packageName is null", "packageName is blank");
+        Precondition.notNull(predicate, "predicate is null");
 
         return new ArrayList<>(
                 ReflectionSupport.findAllClassesInPackage(
@@ -137,7 +138,7 @@ public class ClassPathSupport {
      * @throws IOException IOException
      */
     public static List<URI> findAllResources(Predicate<String> predicate) throws IOException {
-        ArgumentSupport.notNull(predicate, "predicate is null");
+        Precondition.notNull(predicate, "predicate is null");
 
         List<URI> uris = new ArrayList<>();
 

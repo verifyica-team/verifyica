@@ -209,7 +209,7 @@ public class VerifyicaEngine implements TestEngine {
                     classTestDescriptor ->
                             futures.add(
                                     executorService.submit(
-                                            NamedRunnable.newNamedRunnable(
+                                            NamedRunnable.wrap(
                                                     new RunnableClassTestDescriptor(
                                                             executionRequest,
                                                             engineContext,

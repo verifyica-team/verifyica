@@ -18,6 +18,7 @@ package org.antublue.verifyica.engine.support;
 
 import java.lang.reflect.Method;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement DisplayNameSupport */
 public class DisplayNameSupport {
@@ -34,7 +35,7 @@ public class DisplayNameSupport {
      * @return the display name
      */
     public static String getDisplayName(Class<?> clazz) {
-        ArgumentSupport.notNull(clazz, "clazz is null");
+        Precondition.notNull(clazz, "clazz is null");
 
         String displayName = clazz.getName();
 
@@ -56,7 +57,7 @@ public class DisplayNameSupport {
      * @return the display name
      */
     public static String getDisplayName(Method method) {
-        ArgumentSupport.notNull(method, "method is null");
+        Precondition.notNull(method, "method is null");
 
         String displayName = method.getName();
 

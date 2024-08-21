@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement HumanReadableTimeSupport */
 // Suppress PMD.UselessParentheses - PMD has bug around UselessParentheses calculating milliseconds
@@ -57,7 +58,7 @@ public final class HumanReadableTimeSupport {
      * @return the return value
      */
     public static String toHumanReadable(long nanoseconds, Format format) {
-        ArgumentSupport.notNull(format, "format is null");
+        Precondition.notNull(format, "format is null");
 
         long nanosecondsPositive = nanoseconds > 0 ? nanoseconds : -nanoseconds;
         long millisecondsDuration = (long) ((double) nanosecondsPositive / 1e+6d);

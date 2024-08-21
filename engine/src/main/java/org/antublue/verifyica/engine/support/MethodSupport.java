@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 /** Class to implement MethodSupport */
@@ -42,9 +43,9 @@ public class MethodSupport {
             Class<?> clazz,
             Predicate<Method> predicate,
             HierarchyTraversalMode hierarchyTraversalMode) {
-        ArgumentSupport.notNull(clazz, "clazz is null");
-        ArgumentSupport.notNull(predicate, "predicate is null");
-        ArgumentSupport.notNull(hierarchyTraversalMode, "hierarchyTraversalMode is null");
+        Precondition.notNull(clazz, "clazz is null");
+        Precondition.notNull(predicate, "predicate is null");
+        Precondition.notNull(hierarchyTraversalMode, "hierarchyTraversalMode is null");
 
         return new ArrayList<>(
                 ReflectionSupport.findMethods(

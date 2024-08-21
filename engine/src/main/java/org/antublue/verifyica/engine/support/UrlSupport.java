@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement UrlSupport */
 public class UrlSupport {
@@ -40,7 +41,7 @@ public class UrlSupport {
      * @throws IOException IOException
      */
     public static InputStream createInputStream(URL url) throws IOException {
-        ArgumentSupport.notNull(url, "url is null");
+        Precondition.notNull(url, "url is null");
 
         URLConnection connection = url.openConnection();
         connection.connect();
@@ -55,7 +56,7 @@ public class UrlSupport {
      * @throws IOException IOException
      */
     public static BufferedReader createBufferedReader(URL url) throws IOException {
-        ArgumentSupport.notNull(url, "url is null");
+        Precondition.notNull(url, "url is null");
 
         return new BufferedReader(
                 new InputStreamReader(createInputStream(url), StandardCharsets.UTF_8));

@@ -28,7 +28,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement DefaultStore */
 @SuppressWarnings("unchecked")
@@ -48,7 +48,7 @@ public class DefaultStore implements Store {
      * @param map map
      */
     private DefaultStore(Map<Object, Object> map) {
-        ArgumentSupport.notNull(map, "map is null");
+        Precondition.notNull(map, "map is null");
 
         this.map = map;
         readWriteLock = new ReentrantReadWriteLock(true);
@@ -56,7 +56,7 @@ public class DefaultStore implements Store {
 
     @Override
     public void put(Object key, Object value) {
-        ArgumentSupport.notNull(key, "key is null");
+        Precondition.notNull(key, "key is null");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -68,7 +68,7 @@ public class DefaultStore implements Store {
 
     @Override
     public Object get(Object key) {
-        ArgumentSupport.notNull(key, "key is null");
+        Precondition.notNull(key, "key is null");
 
         getReadWriteLock().readLock().lock();
         try {
@@ -80,8 +80,8 @@ public class DefaultStore implements Store {
 
     @Override
     public <V> V get(Object key, Class<V> type) {
-        ArgumentSupport.notNull(key, "key is null");
-        ArgumentSupport.notNull(type, "type is null");
+        Precondition.notNull(key, "key is null");
+        Precondition.notNull(type, "type is null");
 
         getReadWriteLock().readLock().lock();
         try {
@@ -93,7 +93,7 @@ public class DefaultStore implements Store {
 
     @Override
     public Optional<Object> getOptional(Object key) {
-        ArgumentSupport.notNull(key, "key is null");
+        Precondition.notNull(key, "key is null");
 
         getReadWriteLock().readLock().lock();
         try {
@@ -105,8 +105,8 @@ public class DefaultStore implements Store {
 
     @Override
     public <V> Optional<V> getOptional(Object key, Class<V> type) {
-        ArgumentSupport.notNull(key, "key is null");
-        ArgumentSupport.notNull(type, "type is null");
+        Precondition.notNull(key, "key is null");
+        Precondition.notNull(type, "type is null");
 
         getReadWriteLock().readLock().lock();
         try {
@@ -118,7 +118,7 @@ public class DefaultStore implements Store {
 
     @Override
     public Object getOrDefault(Object key, Object defaultValue) {
-        ArgumentSupport.notNull(key, "key is null");
+        Precondition.notNull(key, "key is null");
 
         Object value = get(key);
         if (value != null) {
@@ -130,8 +130,8 @@ public class DefaultStore implements Store {
 
     @Override
     public <V> V getOrDefault(Object key, V defaultValue, Class<V> type) {
-        ArgumentSupport.notNull(key, "key is null");
-        ArgumentSupport.notNull(type, "type is null");
+        Precondition.notNull(key, "key is null");
+        Precondition.notNull(type, "type is null");
 
         Object value = get(key);
         if (value != null) {
@@ -143,8 +143,8 @@ public class DefaultStore implements Store {
 
     @Override
     public Object computeIfAbsent(Object key, Function<Object, Object> mappingFunction) {
-        ArgumentSupport.notNull(key, "key is null");
-        ArgumentSupport.notNull(mappingFunction, "mappingFunction is null");
+        Precondition.notNull(key, "key is null");
+        Precondition.notNull(mappingFunction, "mappingFunction is null");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -163,9 +163,9 @@ public class DefaultStore implements Store {
 
     @Override
     public <V> V computeIfAbsent(Object key, Function<Object, V> mappingFunction, Class<V> type) {
-        ArgumentSupport.notNull(key, "key is null");
-        ArgumentSupport.notNull(mappingFunction, "mappingFunction is null");
-        ArgumentSupport.notNull(type, "type is null");
+        Precondition.notNull(key, "key is null");
+        Precondition.notNull(mappingFunction, "mappingFunction is null");
+        Precondition.notNull(type, "type is null");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -184,7 +184,7 @@ public class DefaultStore implements Store {
 
     @Override
     public boolean containsKey(Object key) {
-        ArgumentSupport.notNull(key, "key is null");
+        Precondition.notNull(key, "key is null");
 
         getReadWriteLock().readLock().lock();
         try {
@@ -196,7 +196,7 @@ public class DefaultStore implements Store {
 
     @Override
     public Object remove(Object key) {
-        ArgumentSupport.notNull(key, "key is null");
+        Precondition.notNull(key, "key is null");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -208,8 +208,8 @@ public class DefaultStore implements Store {
 
     @Override
     public <V> V remove(Object key, Class<V> type) {
-        ArgumentSupport.notNull(key, "key is null");
-        ArgumentSupport.notNull(type, "type is null");
+        Precondition.notNull(key, "key is null");
+        Precondition.notNull(type, "type is null");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -221,7 +221,7 @@ public class DefaultStore implements Store {
 
     @Override
     public Optional<Object> removeOptional(Object key) {
-        ArgumentSupport.notNull(key, "key is null");
+        Precondition.notNull(key, "key is null");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -233,8 +233,8 @@ public class DefaultStore implements Store {
 
     @Override
     public <V> Optional<V> removeOptional(Object key, Class<V> type) {
-        ArgumentSupport.notNull(key, "key is null");
-        ArgumentSupport.notNull(type, "type is null");
+        Precondition.notNull(key, "key is null");
+        Precondition.notNull(type, "type is null");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -272,7 +272,7 @@ public class DefaultStore implements Store {
 
     @Override
     public Store replace(Map<Object, Object> map) {
-        ArgumentSupport.notNull(map, "map is null");
+        Precondition.notNull(map, "map is null");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -286,7 +286,7 @@ public class DefaultStore implements Store {
 
     @Override
     public Store replace(Store store) {
-        ArgumentSupport.notNull(store, "store is null");
+        Precondition.notNull(store, "store is null");
 
         store.getReadWriteLock().readLock().lock();
         try {
@@ -305,7 +305,7 @@ public class DefaultStore implements Store {
 
     @Override
     public Store merge(Map<Object, Object> map) {
-        ArgumentSupport.notNull(map, "map is null");
+        Precondition.notNull(map, "map is null");
 
         if (map.isEmpty()) {
             return this;
@@ -322,7 +322,7 @@ public class DefaultStore implements Store {
 
     @Override
     public Store merge(Store store) {
-        ArgumentSupport.notNull(store, "store is null");
+        Precondition.notNull(store, "store is null");
 
         if (store.isEmpty()) {
             return this;
