@@ -74,7 +74,7 @@ public class DefaultClassContext implements ClassContext {
     }
 
     @Override
-    public <T> T getTestInstance(Class<T> type) {
+    public <V> V getTestInstance(Class<V> returnType) {
         throw new IllegalStateException("Not implemented");
     }
 

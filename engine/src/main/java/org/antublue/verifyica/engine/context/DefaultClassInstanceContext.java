@@ -70,8 +70,8 @@ public class DefaultClassInstanceContext implements ClassContext {
     }
 
     @Override
-    public <T> T getTestInstance(Class<T> type) {
-        return type.cast(getTestInstance());
+    public <V> V getTestInstance(Class<V> returnType) {
+        return returnType.cast(getTestInstance());
     }
 
     @Override
