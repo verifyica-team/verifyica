@@ -285,9 +285,9 @@ public interface Argument<T> {
         }
 
         @Override
-        public <V> V getPayload(Class<V> type) {
-            notNull(type, "type is null");
-            return type.cast(null);
+        public <V> V getPayload(Class<V> returnType) {
+            notNull(returnType, "returnType is null");
+            return returnType.cast(null);
         }
 
         @Override
