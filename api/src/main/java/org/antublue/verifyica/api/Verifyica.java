@@ -142,5 +142,4 @@ public @interface Verifyica {
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface AutowiredInterceptor {}
-
 }
