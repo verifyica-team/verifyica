@@ -224,11 +224,14 @@ public class VerifyicaEngine implements TestEngine {
 
             Store store = engineContext.getStore();
             for (Object key : store.keySet()) {
-                Object value = store.get(key);
+                Object value = store.remove(key);
                 if (value instanceof AutoCloseable) {
                     try {
+                        LOGGER.trace("storeAutoClose(" + key + ")");
                         ((AutoCloseable) value).close();
+                        LOGGER.trace("storeAutoClose(" + key + ").success");
                     } catch (Throwable t) {
+                        LOGGER.trace("storeAutoClose(" + key + ").failure");
                         t.printStackTrace(System.err);
                         throwableCollector.add(t);
                     }

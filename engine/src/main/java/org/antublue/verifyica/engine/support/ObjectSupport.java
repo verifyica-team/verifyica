@@ -47,7 +47,7 @@ public class ObjectSupport {
     }
 
     /**
-     * Method to convert a List Methods to a String representation
+     * Method to convert a List of Methods to a String representation
      *
      * @param methods methods
      * @return a String representation of the Methods
@@ -66,7 +66,6 @@ public class ObjectSupport {
      */
     public static String toString(List<Method> methods) {
         Precondition.notNull(methods, "methods is null");
-        Precondition.isTrue(!methods.isEmpty(), "methods is empty");
 
         StringBuilder stringBuilder = new StringBuilder();
 

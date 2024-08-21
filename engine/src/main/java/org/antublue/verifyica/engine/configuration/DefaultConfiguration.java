@@ -211,16 +211,14 @@ public class DefaultConfiguration implements Configuration {
 
         getReadWriteLock().writeLock().lock();
         try {
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (key != null
-                        && !key.trim().isEmpty()
-                        && value != null
-                        && !value.trim().isEmpty()) {
-                    this.map.put(key.trim(), value.trim());
-                }
-            }
+            map.entrySet().stream()
+                    .filter(
+                            entry ->
+                                    entry.getKey() != null
+                                            && !entry.getKey().trim().isEmpty()
+                                            && entry.getValue() != null
+                                            && !entry.getValue().trim().isEmpty())
+                    .forEach(entry -> map.put(entry.getKey().trim(), entry.getValue().trim()));
             return this;
         } finally {
             getReadWriteLock().writeLock().unlock();

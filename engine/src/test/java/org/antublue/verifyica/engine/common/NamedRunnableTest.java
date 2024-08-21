@@ -26,14 +26,12 @@ public class NamedRunnableTest {
     @Test
     public void test() {
         String threadName = Thread.currentThread().getName();
-        String namedRunnableThreadName = UUID.randomUUID().toString();
+        String customThreadName = UUID.randomUUID().toString();
 
         Runnable runnable =
-                () ->
-                        assertThat(Thread.currentThread().getName())
-                                .isEqualTo(namedRunnableThreadName);
+                () -> assertThat(Thread.currentThread().getName()).isEqualTo(customThreadName);
 
-        NamedRunnable.wrap(runnable, namedRunnableThreadName).run();
+        NamedRunnable.wrap(runnable, customThreadName).run();
 
         assertThat(Thread.currentThread().getName()).isEqualTo(threadName);
     }

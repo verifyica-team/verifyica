@@ -249,7 +249,8 @@ public class AnsiColor {
      * @param escapeSequence sequence
      */
     private AnsiColor(String escapeSequence) {
-        Precondition.notNull(escapeSequence, "escapeSequence is null");
+        Precondition.notNullOrBlank(
+                escapeSequence, "escapeSequence is null", "escapeSequence is blank");
 
         this.escapeSequence = escapeSequence;
     }

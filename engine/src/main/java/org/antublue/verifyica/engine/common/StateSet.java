@@ -31,22 +31,22 @@ import java.util.Optional;
  * @param <T> the state type
  */
 @SuppressWarnings("PMD.UnusedMethod")
-public class StateTracker<T> {
+public class StateSet<T> {
 
     private final Map<T, StateEntry<T>> map;
     private StateEntry<T> currentStateEntry;
 
     /** Constructor */
-    public StateTracker() {
+    public StateSet() {
         map = new LinkedHashMap<>();
     }
 
     /**
-     * Method to add a state
+     * Method to set the current State
      *
      * @param state state
      */
-    public void setState(T state) {
+    public void setCurrentState(T state) {
         Precondition.notNull(state, "state is null");
 
         if (map.containsKey(state)) {
@@ -59,12 +59,12 @@ public class StateTracker<T> {
     }
 
     /**
-     * Method to add a State and associated Throwable
+     * Method to set the current State and associated Throwable
      *
      * @param state state
      * @param throwable throwable
      */
-    public void setState(T state, Throwable throwable) {
+    public void setCurrentState(T state, Throwable throwable) {
         Precondition.notNull(state, "state is null");
         Precondition.notNull(throwable, "throwable is null");
 
@@ -78,32 +78,32 @@ public class StateTracker<T> {
     }
 
     /**
-     * Method to return if a state exists
+     * Method to return if a State has been observed
      *
      * @param state state
      * @return true if the state exists, else false
      */
-    public boolean containsState(T state) {
+    public boolean hasObservedState(T state) {
         Precondition.notNull(state, "state is null");
         return map.containsKey(state);
     }
 
     /**
-     * Method to return the current state
+     * Method to get the current State
      *
      * @return the last state
      */
-    public T getState() {
+    public T getCurrentState() {
         return currentStateEntry.getState();
     }
 
     /**
-     * Method to return if the last state matches a state
+     * Method to return if the current State matches a State
      *
      * @param state state
-     * @return true if the last state matches, else false
+     * @return true if the current State machines a State, else false
      */
-    public boolean isState(T state) {
+    public boolean isCurrentState(T state) {
         if (state == null && currentStateEntry != null) {
             return false;
         }
@@ -111,17 +111,30 @@ public class StateTracker<T> {
         return currentStateEntry != null && state.equals(currentStateEntry.getState());
     }
 
-    /** Method to clear all states */
-    public void clear() {
-        map.clear();
+    /**
+     * Method to return if any States have been observed
+     *
+     * @return true no States have been observed, else false
+     */
+    public boolean isEmpty() {
+        return map.isEmpty();
     }
 
     /**
-     * Method to get the state containing the first Throwable
+     * Method to get a Collection of observed States
      *
-     * @return the state containing the first Throwable
+     * @return a Collection of observed States
      */
-    public Optional<StateEntry<T>> getStateWithThrowable() {
+    public Collection<StateEntry<T>> getObservedStates() {
+        return new LinkedHashSet<>(map.values());
+    }
+
+    /**
+     * Method to get the first StateEntry with a Throwable
+     *
+     * @return the first StateEntry with a Throwable, or an empty Optional
+     */
+    public Optional<StateEntry<T>> getFirstStateEntryWithThrowable() {
         for (Map.Entry<T, StateEntry<T>> mapEntry : map.entrySet()) {
             StateEntry<T> stateEntry = mapEntry.getValue();
             if (stateEntry.hasThrowable()) {
@@ -132,25 +145,21 @@ public class StateTracker<T> {
         return Optional.empty();
     }
 
-    /**
-     * Method to get a Collection of states being observed
-     *
-     * @return a Collection of states observed tracked
-     */
-    public Collection<StateEntry<T>> getObservedStates() {
-        return new LinkedHashSet<>(map.values());
+    /** Method to clear all observed States */
+    public void clear() {
+        map.clear();
     }
 
     @Override
     public String toString() {
-        return "StateTracker{" + "map=" + map + ", lastStateEntry=" + currentStateEntry + '}';
+        return "StateTracker{" + "map=" + map + ", currentStateEntry=" + currentStateEntry + '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StateTracker<?> that = (StateTracker<?>) o;
+        StateSet<?> that = (StateSet<?>) o;
         return Objects.equals(map, that.map)
                 && Objects.equals(currentStateEntry, that.currentStateEntry);
     }

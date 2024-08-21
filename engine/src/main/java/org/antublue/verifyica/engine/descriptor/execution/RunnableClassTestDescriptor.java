@@ -28,7 +28,7 @@ import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.VerifyicaEngine;
 import org.antublue.verifyica.engine.common.NamedRunnable;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
-import org.antublue.verifyica.engine.common.StateTracker;
+import org.antublue.verifyica.engine.common.StateSet;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultClassInstanceContext;
 import org.antublue.verifyica.engine.context.ImmutableClassContext;
@@ -86,10 +86,10 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
 
         executionRequest.getEngineExecutionListener().executionStarted(classTestDescriptor);
 
-        StateTracker<String> stateTracker = new StateTracker<>();
+        StateSet<String> stateSet = new StateSet<>();
 
         try {
-            stateTracker.setState("instantiate");
+            stateSet.setCurrentState("instantiate");
 
             Throwable throwable = null;
             Object testInstance = null;
@@ -112,28 +112,28 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                     .afterInstantiate(
                             classContext.getEngineContext(), testClass, testInstance, throwable);
 
-            stateTracker.setState("instantiate.success");
+            stateSet.setCurrentState("instantiate.success");
         } catch (Throwable t) {
-            stateTracker.setState("instantiate.failure", t);
+            stateSet.setCurrentState("instantiate.failure", t);
         }
 
-        if (stateTracker.isState("instantiate.success")) {
+        if (stateSet.isCurrentState("instantiate.success")) {
             try {
-                stateTracker.setState("prepare");
+                stateSet.setCurrentState("prepare");
 
                 ClassInterceptorRegistry.getInstance()
                         .prepare(ImmutableClassContext.wrap(classInstanceContext), prepareMethods);
 
-                stateTracker.setState("prepare.success");
+                stateSet.setCurrentState("prepare.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.setState("prepare.failure", t);
+                stateSet.setCurrentState("prepare.failure", t);
             }
         }
 
-        if (stateTracker.containsState("prepare.success")) {
+        if (stateSet.hasObservedState("prepare.success")) {
             try {
-                stateTracker.setState("execute");
+                stateSet.setCurrentState("execute");
 
                 int testArgumentParallelism = classTestDescriptor.getTestArgumentParallelism();
 
@@ -162,16 +162,16 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
 
                 ExecutorSupport.waitForAllFutures(futures, EXECUTOR_SERVICE);
 
-                stateTracker.setState("execute.success");
+                stateSet.setCurrentState("execute.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.setState("execute.failure", t);
+                stateSet.setCurrentState("execute.failure", t);
             }
         }
 
-        if (stateTracker.containsState("prepare.failure")) {
+        if (stateSet.hasObservedState("prepare.failure")) {
             try {
-                stateTracker.setState("skip");
+                stateSet.setCurrentState("skip");
 
                 argumentTestDescriptors.forEach(
                         argumentTestDescriptor ->
@@ -185,25 +185,25 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                         .getEngineExecutionListener()
                         .executionSkipped(classTestDescriptor, "Skipped");
 
-                stateTracker.setState("skip.success");
+                stateSet.setCurrentState("skip.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.setState("skip.failure", t);
+                stateSet.setCurrentState("skip.failure", t);
             }
         }
 
-        if (stateTracker.containsState("prepare")) {
+        if (stateSet.hasObservedState("prepare")) {
             try {
-                stateTracker.setState("conclude");
+                stateSet.setCurrentState("conclude");
 
                 ClassInterceptorRegistry.getInstance()
                         .conclude(
                                 ImmutableClassContext.wrap(classInstanceContext), concludeMethods);
 
-                stateTracker.setState("conclude.success");
+                stateSet.setCurrentState("conclude.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.setState("conclude.failure", t);
+                stateSet.setCurrentState("conclude.failure", t);
             }
         }
 
@@ -212,14 +212,14 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
             Object value = store.get(key);
             if (value instanceof AutoCloseable) {
                 try {
-                    stateTracker.setState("storeAutoClose(" + key + ")");
+                    stateSet.setCurrentState("storeAutoClose(" + key + ")");
 
                     ((AutoCloseable) value).close();
 
-                    stateTracker.setState("storeAutoClose(" + key + ").success");
+                    stateSet.setCurrentState("storeAutoClose(" + key + ").success");
                 } catch (Throwable t) {
                     t.printStackTrace(System.err);
-                    stateTracker.setState("storeAutoClose(" + key + ").failure");
+                    stateSet.setCurrentState("storeAutoClose(" + key + ").failure");
                 }
             }
         }
@@ -232,7 +232,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
         }
 
         try {
-            stateTracker.setState("destroy");
+            stateSet.setCurrentState("destroy");
 
             try {
                 ClassInterceptorRegistry.getInstance().onDestroy(classInstanceContext);
@@ -240,30 +240,29 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                 testInstance = null;
             }
 
-            stateTracker.setState("destroy.success");
+            stateSet.setCurrentState("destroy.success");
         } catch (Throwable t) {
             t.printStackTrace(System.err);
-            stateTracker.setState("destroy.failure", t);
+            stateSet.setCurrentState("destroy.failure", t);
         }
 
         if (testInstance instanceof AutoCloseable) {
             try {
-                stateTracker.setState("argumentAutoClose(" + testClass.getName() + ")");
+                stateSet.setCurrentState("argumentAutoClose(" + testClass.getName() + ")");
 
                 ((AutoCloseable) testInstance).close();
 
-                stateTracker.setState("argumentAutoClose" + testClass.getName() + ").success");
+                stateSet.setCurrentState("argumentAutoClose" + testClass.getName() + ").success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.setState("argumentAutoClose" + testClass.getName() + ").failure");
+                stateSet.setCurrentState("argumentAutoClose" + testClass.getName() + ").failure");
             }
         }
 
-        LOGGER.trace("state tracker %s [%s]", classTestDescriptor, stateTracker);
+        LOGGER.trace("state tracker %s [%s]", classTestDescriptor, stateSet);
 
         TestExecutionResult testExecutionResult =
-                stateTracker
-                        .getStateWithThrowable()
+                stateSet.getFirstStateEntryWithThrowable()
                         .map(stateEntry -> TestExecutionResult.failed(stateEntry.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
