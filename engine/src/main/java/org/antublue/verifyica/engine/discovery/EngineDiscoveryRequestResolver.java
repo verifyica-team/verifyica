@@ -263,7 +263,7 @@ public class EngineDiscoveryRequestResolver {
 
                             if (Predicates.TEST_CLASS.test(testClass)) {
                                 classMethodMap
-                                        .computeIfAbsent(testClass, method -> new ArrayList())
+                                        .computeIfAbsent(testClass, method -> new ArrayList<>())
                                         .addAll(
                                                 MethodSupport.findMethods(
                                                         testClass,
@@ -298,7 +298,7 @@ public class EngineDiscoveryRequestResolver {
                             if (Predicates.TEST_CLASS.test(testClass)
                                     && Predicates.TEST_METHOD.test(testMethod)) {
                                 classMethodMap
-                                        .computeIfAbsent(testClass, method -> new ArrayList())
+                                        .computeIfAbsent(testClass, method -> new ArrayList<>())
                                         .add(testMethod);
                             }
                         });

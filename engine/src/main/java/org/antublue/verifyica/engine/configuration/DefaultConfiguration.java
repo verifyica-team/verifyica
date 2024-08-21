@@ -395,7 +395,7 @@ public class DefaultConfiguration implements Configuration {
      *
      * @param path path
      * @param filename filename
-     * @return a optional containing a File
+     * @return an Optional containing a File if found, else an empty Optional
      */
     private static Optional<File> find(Path path, String filename) {
         Path currentPath = path.toAbsolutePath().normalize();
@@ -407,9 +407,7 @@ public class DefaultConfiguration implements Configuration {
                     currentPathString += "/";
                 }
 
-                if (IS_TRACE_ENABLED) {
-                    trace("searching path [" + currentPathString + "]");
-                }
+                trace("searching path [" + currentPathString + "]");
             }
 
             File file = new File(currentPath.toAbsolutePath() + File.separator + filename);

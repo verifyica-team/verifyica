@@ -371,9 +371,7 @@ public class EngineInterceptorRegistry {
                             Pattern pattern = Pattern.compile(regex);
                             Matcher matcher = pattern.matcher("");
 
-                            Iterator<Class<?>> iterator = classes.iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
+                            for (Class<?> clazz : classes) {
                                 matcher.reset(clazz.getName());
                                 if (matcher.find()) {
                                     LOGGER.trace("adding engine interceptor [%s]", clazz.getName());

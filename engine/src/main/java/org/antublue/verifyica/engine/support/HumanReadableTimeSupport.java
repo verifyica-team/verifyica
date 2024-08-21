@@ -177,10 +177,6 @@ public final class HumanReadableTimeSupport {
                 {
                     return (nanoseconds / 1e+3) + " μs";
                 }
-            case "milliseconds":
-                {
-                    return (nanoseconds / 1e+6) + " ms";
-                }
             case "seconds":
                 {
                     return (nanoseconds / 1e+9) + " s";
@@ -203,6 +199,7 @@ public final class HumanReadableTimeSupport {
                         return nanoseconds + " ns";
                     }
                 }
+            case "milliseconds":
             default:
                 {
                     return (nanoseconds / 1e+6) + " ms";

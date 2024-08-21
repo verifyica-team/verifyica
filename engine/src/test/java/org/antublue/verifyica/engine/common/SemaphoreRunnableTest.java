@@ -25,11 +25,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
-public class SemaphoreControlledRunnableTest {
+public class SemaphoreRunnableTest {
 
     @Test
     public void test() throws InterruptedException {
-        AtomicReference<String> failed = new AtomicReference();
+        AtomicReference<String> failed = new AtomicReference<>();
         AtomicInteger counter = new AtomicInteger();
 
         Runnable runnable =

@@ -387,9 +387,8 @@ public class ConcurrencySupport {
          * Tries to lock the lock
          *
          * @return true if the lock was acquired, else false
-         * @throws InterruptedException InterruptedException
          */
-        boolean tryLock() throws InterruptedException;
+        boolean tryLock();
 
         /**
          * Tries to lock the Lock

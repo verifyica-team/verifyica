@@ -29,7 +29,7 @@ import org.antublue.verifyica.engine.support.MethodSupport;
 /** Class to implement Predicates */
 public class Predicates {
 
-    /** Predicate to filter discoverable engine interceptors classes */
+    /** Predicate to filter autowired engine interceptors classes */
     public static final Predicate<Class<?>> AUTOWIRED_ENGINE_INTERCEPTOR_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
@@ -41,7 +41,7 @@ public class Predicates {
                         && ClassSupport.hasDefaultConstructor(clazz);
             };
 
-    /** Predicate to filter discoverable class interceptor classes */
+    /** Predicate to filter autowired class interceptor classes */
     public static final Predicate<Class<?>> AUTOWIRED_CLASS_INTERCEPTOR_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();

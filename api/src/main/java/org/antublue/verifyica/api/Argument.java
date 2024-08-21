@@ -27,6 +27,7 @@ import java.math.BigInteger;
  */
 public interface Argument<T> {
 
+    /** Empty Argument */
     Argument<Object> EMPTY = new Empty();
 
     /**
@@ -46,12 +47,13 @@ public interface Argument<T> {
     /**
      * Method to get the Argument payload
      *
-     * @param type type
+     * @param returnType returnType
      * @return the Argument payload
+     * @param <V> the return type
      */
-    default <V> V getPayload(Class<V> type) {
-        notNull(type, "type is null");
-        return type.cast(getPayload());
+    default <V> V getPayload(Class<V> returnType) {
+        notNull(returnType, "returnType is null");
+        return returnType.cast(getPayload());
     }
 
     /**
@@ -151,9 +153,9 @@ public interface Argument<T> {
      */
     static Argument<String> ofString(String value) {
         if (value == null) {
-            return of("String=/null/", value);
+            return of("String=/null/", null);
         } else if (value.isEmpty()) {
-            return of("String=/empty/", value);
+            return of("String=/empty/", "");
         } else {
             return of(value, value);
         }
@@ -167,7 +169,7 @@ public interface Argument<T> {
      */
     static Argument<BigInteger> ofBigInteger(BigInteger value) {
         if (value == null) {
-            return of("BigInteger=/null/", value);
+            return of("BigInteger=/null/", null);
         } else {
             return of(value.toString(), value);
         }
@@ -181,7 +183,7 @@ public interface Argument<T> {
      */
     static Argument<BigDecimal> ofBigDecimal(BigDecimal value) {
         if (value == null) {
-            return of("BigDecimal=/null/", value);
+            return of("BigDecimal=/null/", null);
         } else {
             return of(value.toString(), value);
         }
@@ -247,6 +249,7 @@ public interface Argument<T> {
      * @param string string
      * @param nullMessage nullMessage
      * @param blankMessage blankMessage
+     * @return the trimmed String
      */
     static String notNullOrBlank(String string, String nullMessage, String blankMessage) {
         if (string == null) {
@@ -261,10 +264,12 @@ public interface Argument<T> {
         return trimmed;
     }
 
+    /** Class to implement Empty */
     class Empty implements Argument<Object> {
 
         private final String NAME = "---";
 
+        /** Constructor */
         private Empty() {
             // INITIALLY BLANK
         }
