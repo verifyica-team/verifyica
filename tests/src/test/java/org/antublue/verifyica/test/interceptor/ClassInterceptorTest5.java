@@ -36,7 +36,7 @@ public class ClassInterceptorTest5 {
     public static List<String> actual = new ArrayList<>();
 
     @Verifyica.ClassInterceptorSupplier
-    public static Object classInterceptor() {
+    public static Object classInterceptors() {
         return new ConcreteClasInterceptor();
     }
 
