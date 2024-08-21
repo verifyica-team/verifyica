@@ -62,7 +62,7 @@ public class ThrowableCollector {
      */
     public void addAll(List<Throwable> throwables) {
         if (throwables != null) {
-            throwables.forEach(throwable -> add(throwable));
+            throwables.forEach(this::add);
         }
     }
 
