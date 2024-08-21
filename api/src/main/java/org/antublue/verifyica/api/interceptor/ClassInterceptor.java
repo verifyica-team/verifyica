@@ -22,6 +22,9 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 /** Interface to implement ClassInterceptor */
 public interface ClassInterceptor {
 
+    /** No Op ClassInterceptor */
+    ClassInterceptor NOOP = new NoOp();
+
     /**
      * Class preInstantiate callback
      *
@@ -240,6 +243,15 @@ public interface ClassInterceptor {
     default void rethrow(Throwable throwable) throws Throwable {
         if (throwable != null) {
             throw throwable;
+        }
+    }
+
+    /** Class to implement NoOp */
+    final class NoOp implements ClassInterceptor {
+
+        /** Constructor */
+        private NoOp() {
+            // INTENTIONALLY BLANK
         }
     }
 }

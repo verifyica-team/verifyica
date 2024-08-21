@@ -27,7 +27,7 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 public class ClassInterceptorTest1 {
 
     @Verifyica.ClassInterceptorSupplier
-    public static Collection<ClassInterceptor> interceptors() {
+    public static Collection<ClassInterceptor> classInterceptors() {
         Collection<ClassInterceptor> collection = new ArrayList<>();
 
         collection.add(new ExampleClassInterceptor1());

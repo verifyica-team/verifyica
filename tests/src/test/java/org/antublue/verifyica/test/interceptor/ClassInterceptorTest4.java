@@ -27,14 +27,14 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 public class ClassInterceptorTest4 {
 
     @Verifyica.ClassInterceptorSupplier
-    public static ClassInterceptor interceptors1() {
+    public static ClassInterceptor classInterceptors1() {
         System.out.printf("%s interceptors1()%n", ClassInterceptorTest4.class.getName());
 
         return new ExampleClassInterceptor1();
     }
 
     @Verifyica.ClassInterceptorSupplier
-    public static Collection<ClassInterceptor> interceptors2() {
+    public static Collection<ClassInterceptor> classInterceptors2() {
         System.out.printf("%s interceptors2()%n", ClassInterceptorTest4.class.getName());
 
         Collection<ClassInterceptor> collection = new ArrayList<>();

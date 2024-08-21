@@ -573,7 +573,14 @@ public class EngineDiscoveryRequestResolver {
             for (Method classInterceptorSupplierMethod : classInterceptorSupplierMethods) {
                 Object object = classInterceptorSupplierMethod.invoke(null);
 
-                if (object instanceof ClassInterceptor) {
+                if (object == null) {
+                    throw new TestClassDefinitionException(
+                            format(
+                                    "Null Object supplied by test class"
+                                            + " [%s] @Verifyica.ClassInterceptorSupplier"
+                                            + " method",
+                                    testClass.getName()));
+                } else if (object instanceof ClassInterceptor) {
                     ClassInterceptorRegistry.getInstance()
                             .register(testClass, (ClassInterceptor) object);
                 } else if (object.getClass().isArray()) {
@@ -587,9 +594,9 @@ public class EngineDiscoveryRequestResolver {
                             } else {
                                 throw new TestClassDefinitionException(
                                         format(
-                                                "Invalid argument type [%s] supplied by test class"
-                                                    + " [%s] @Verifyica.ClassInterceptorSupplier"
-                                                    + " method at index [%d]",
+                                                "Invalid type [%s] supplied by test class [%s]"
+                                                    + " @Verifyica.ClassInterceptorSupplier method"
+                                                    + " at index [%d]",
                                                 o.getClass().getName(),
                                                 testClass.getName(),
                                                 index));
@@ -622,7 +629,7 @@ public class EngineDiscoveryRequestResolver {
                         } else {
                             throw new TestClassDefinitionException(
                                     format(
-                                            "Invalid argument type [%s] supplied by test class"
+                                            "Invalid type [%s] supplied by test class"
                                                     + " [%s] @Verifyica.ClassInterceptorSupplier"
                                                     + " method",
                                             o.getClass().getName(), testClass.getName()));
