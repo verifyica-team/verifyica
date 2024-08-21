@@ -14,52 +14,55 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.support;
+package org.antublue.verifyica.engine.common;
 
-/** Class to implement ArgumentSupport */
-public class ArgumentSupport {
+/** Class to implement Precondition */
+public class Precondition {
 
     /** Constructor */
-    private ArgumentSupport() {
+    private Precondition() {
         // INTENTIONALLY BLANK
     }
 
     /**
-     * Method to validate an Object is not nul, throwing an IllegalArgumentException if it's null
+     * Method to validate an Object is not null, throwing an IllegalArgumentException if it is null
      *
      * @param object object
      * @param message message
+     * @return the Object
      */
-    public static void notNull(Object object, String message) {
+    public static Object notNull(Object object, String message) {
         if (object == null) {
             throw new IllegalArgumentException(message);
         }
+
+        return object;
     }
 
     /**
-     * Method to validate a String is not null and not empty, throwing an IllegalArgumentException
-     * if it's null or empty
+     * Method to validate a String is not null and not blank, throwing an IllegalArgumentException
+     * if it is null or blank
      *
      * @param string string
      * @param nullMessage nullMessage
-     * @param emptyMessage emptyMessage
-     * @return a trimmed String
+     * @param blankMessage blankMessage
+     * @return the String trimmed
      */
-    public static String notNullOrEmpty(String string, String nullMessage, String emptyMessage) {
+    public static String notNullOrBlank(String string, String nullMessage, String blankMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }
 
-        String trimmedString = string.trim();
-        if (trimmedString.isEmpty()) {
-            throw new IllegalArgumentException(emptyMessage);
+        String trimmed = string.trim();
+        if (trimmed.isEmpty()) {
+            throw new IllegalArgumentException(blankMessage);
         }
 
-        return trimmedString;
+        return trimmed;
     }
 
     /**
-     * Method to valid a condition is true, throwing an IllegalArgumentException it is false
+     * Method to validate a condition is true, throwing an IllegalArgumentException if it is false
      *
      * @param condition condition
      * @param message message
@@ -71,7 +74,7 @@ public class ArgumentSupport {
     }
 
     /**
-     * Method to valid a condition is false, throwing an IllegalArgumentException it is true
+     * Method to validate a condition is false, throwing an IllegalArgumentException if it is true
      *
      * @param condition condition
      * @param message message

@@ -18,6 +18,7 @@ package org.antublue.verifyica.engine.support;
 
 import java.security.SecureRandom;
 import java.util.Random;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement HashSupport */
 public class HashSupport {
@@ -39,7 +40,7 @@ public class HashSupport {
      * @return an alphanumeric hash
      */
     public static String alphanumeric(int length) {
-        ArgumentSupport.isTrue(length > 0, "length is less than 1");
+        Precondition.isTrue(length > 0, "length is less than 1");
 
         StringBuilder stringBuilder = new StringBuilder(length);
         for (int i = 0; i < length; i++) {

@@ -31,6 +31,7 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
@@ -51,7 +52,7 @@ public class ExecutorSupport {
      * @return an ExecutorService
      */
     public static ExecutorService newExecutorService(int threads) {
-        ArgumentSupport.isTrue(threads > 0, "threads is less than 1");
+        Precondition.isTrue(threads > 0, "threads is less than 1");
 
         LOGGER.trace("newExecutorService() threads [%d]", threads);
 
@@ -122,8 +123,8 @@ public class ExecutorSupport {
 
         @Override
         public void rejectedExecution(Runnable runnable, ThreadPoolExecutor executor) {
-            ArgumentSupport.notNull(runnable, "runnable is null");
-            ArgumentSupport.notNull(executor, "executor is null");
+            Precondition.notNull(runnable, "runnable is null");
+            Precondition.notNull(executor, "executor is null");
 
             if (!executor.isShutdown()) {
                 try {

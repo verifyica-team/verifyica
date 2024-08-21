@@ -148,9 +148,8 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                         argumentTestDescriptor ->
                                 futures.add(
                                         EXECUTOR_SERVICE.submit(
-                                                SemaphoreRunnable.newSemaphoreRunnable(
-                                                        semaphore,
-                                                        NamedRunnable.newNamedRunnable(
+                                                SemaphoreRunnable.wrap(
+                                                        NamedRunnable.wrap(
                                                                 new RunnableArgumentTestDescriptor(
                                                                         executionRequest,
                                                                         classInstanceContext,
@@ -158,7 +157,8 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                                                                 Thread.currentThread().getName()
                                                                         + "/"
                                                                         + HashSupport.alphanumeric(
-                                                                                4))))));
+                                                                                4)),
+                                                        semaphore))));
 
                 ExecutorSupport.waitForAllFutures(futures, EXECUTOR_SERVICE);
 

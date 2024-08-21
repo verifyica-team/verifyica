@@ -51,9 +51,7 @@ public class Key {
      * @return a new Key with the appended Object
      */
     public Key append(Object segment) {
-        if (segment == null) {
-            throw new IllegalArgumentException("segment is null");
-        }
+        notNull(segment, "segment is null");
 
         List<Object> segments = new ArrayList<>(this.segments);
         segments.add(segment);
@@ -92,20 +90,14 @@ public class Key {
      * @return a Key
      */
     public static Key of(Object... objects) {
-        if (objects == null) {
-            throw new IllegalArgumentException("objects is null");
-        }
-
-        if (objects.length == 0) {
-            throw new IllegalArgumentException("objects is empty");
-        }
+        notNull(objects, "objects is null");
+        isTrue(objects.length > 0, "objects is empty");
 
         List<Object> segments = new ArrayList<>(objects.length);
         for (int i = 0; i < objects.length; i++) {
-            if (objects[i] == null) {
-                throw new IllegalArgumentException(format("objects[%d] is null", i));
-            }
-            segments.add(objects[i]);
+            Object object = objects[i];
+            notNull(object, format("objects[%d] is null", i));
+            segments.add(object);
         }
 
         return new Key(segments);
@@ -118,20 +110,14 @@ public class Key {
      * @return a Key
      */
     public static Object of(List<Object> objects) {
-        if (objects == null) {
-            throw new IllegalArgumentException("objects is null");
-        }
-
-        if (objects.isEmpty()) {
-            throw new IllegalArgumentException("objects is empty");
-        }
+        notNull(objects, "objects is null");
+        isTrue(!objects.isEmpty(), "objects is empty");
 
         List<Object> segments = new ArrayList<>(objects.size());
         for (int i = 0; i < objects.size(); i++) {
-            if (objects.get(i) == null) {
-                throw new IllegalArgumentException(format("objects[%d] is null", i));
-            }
-            segments.add(objects.get(i));
+            Object object = objects.get(i);
+            notNull(object, format("objects[%d] is null", i));
+            segments.add(object);
         }
 
         return new Key(segments);
@@ -153,5 +139,32 @@ public class Key {
     @Override
     public int hashCode() {
         return Objects.hashCode(segments);
+    }
+
+    /**
+     * Method to validate an Object is not null, throwing an IllegalArgumentException if it is null
+     *
+     * @param object object
+     * @param message message
+     * @return the Object
+     */
+    private static Object notNull(Object object, String message) {
+        if (object == null) {
+            throw new IllegalArgumentException(message);
+        }
+
+        return object;
+    }
+
+    /**
+     * Method to validate a condition is true, throwing an IllegalArgumentException if it is false
+     *
+     * @param condition condition
+     * @param message message
+     */
+    private static void isTrue(boolean condition, String message) {
+        if (!condition) {
+            throw new IllegalArgumentException(message);
+        }
     }
 }

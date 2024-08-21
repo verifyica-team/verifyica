@@ -36,6 +36,7 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.interceptor.ArgumentInterceptorContext;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
@@ -47,7 +48,6 @@ import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
 import org.antublue.verifyica.engine.support.ClassPathSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
@@ -81,8 +81,8 @@ public class ClassInterceptorRegistry {
      */
     public ClassInterceptorRegistry register(
             Class<?> testClass, ClassInterceptor classInterceptor) {
-        ArgumentSupport.notNull(testClass, "testClass is null");
-        ArgumentSupport.notNull(classInterceptor, "classInterceptor is null");
+        Precondition.notNull(testClass, "testClass is null");
+        Precondition.notNull(classInterceptor, "classInterceptor is null");
 
         try {
             getReadWriteLock().writeLock().lock();
@@ -104,8 +104,8 @@ public class ClassInterceptorRegistry {
      * @return this ClassInterceptorRegistry
      */
     public ClassInterceptorRegistry remove(Class<?> testClass, ClassInterceptor classInterceptor) {
-        ArgumentSupport.notNull(testClass, "testClass is null");
-        ArgumentSupport.notNull(classInterceptor, "classInterceptor is null");
+        Precondition.notNull(testClass, "testClass is null");
+        Precondition.notNull(classInterceptor, "classInterceptor is null");
 
         try {
             getReadWriteLock().writeLock().lock();
@@ -124,7 +124,7 @@ public class ClassInterceptorRegistry {
      * @return the number of class interceptors
      */
     public int size(Class<?> testClass) {
-        ArgumentSupport.notNull(testClass, "testClass is null");
+        Precondition.notNull(testClass, "testClass is null");
 
         try {
             getReadWriteLock().readLock().lock();
@@ -142,7 +142,7 @@ public class ClassInterceptorRegistry {
      * @return this ClassInterceptorRegistry
      */
     public ClassInterceptorRegistry clear(Class<?> testClass) {
-        ArgumentSupport.notNull(testClass, "testClass is null");
+        Precondition.notNull(testClass, "testClass is null");
 
         try {
             getReadWriteLock().writeLock().lock();

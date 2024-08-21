@@ -24,7 +24,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
 
 /**
  * Class to implement StateTracker
@@ -48,7 +47,7 @@ public class StateTracker<T> {
      * @param state state
      */
     public void setState(T state) {
-        ArgumentSupport.notNull(state, "state is null");
+        Precondition.notNull(state, "state is null");
 
         if (map.containsKey(state)) {
             throw new IllegalStateException(
@@ -66,8 +65,8 @@ public class StateTracker<T> {
      * @param throwable throwable
      */
     public void setState(T state, Throwable throwable) {
-        ArgumentSupport.notNull(state, "state is null");
-        ArgumentSupport.notNull(throwable, "throwable is null");
+        Precondition.notNull(state, "state is null");
+        Precondition.notNull(throwable, "throwable is null");
 
         if (map.containsKey(state)) {
             throw new IllegalStateException(
@@ -85,7 +84,7 @@ public class StateTracker<T> {
      * @return true if the state exists, else false
      */
     public boolean containsState(T state) {
-        ArgumentSupport.notNull(state, "state is null");
+        Precondition.notNull(state, "state is null");
         return map.containsKey(state);
     }
 

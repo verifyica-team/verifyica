@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.discovery.Predicates;
@@ -36,7 +37,6 @@ import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.internal.engine.filter.EngineFiltersInterceptor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
 import org.antublue.verifyica.engine.support.ClassPathSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
@@ -68,7 +68,7 @@ public class EngineInterceptorRegistry {
      * @return this EngineInterceptorRegistry
      */
     public EngineInterceptorRegistry register(EngineInterceptor engineInterceptor) {
-        ArgumentSupport.notNull(engineInterceptor, "engineInterceptor is null");
+        Precondition.notNull(engineInterceptor, "engineInterceptor is null");
 
         try {
             getReadWriteLock().writeLock().lock();
@@ -87,7 +87,7 @@ public class EngineInterceptorRegistry {
      * @return this EngineInterceptorRegistry
      */
     public EngineInterceptorRegistry remove(EngineInterceptor engineInterceptor) {
-        ArgumentSupport.notNull(engineInterceptor, "testClass is null");
+        Precondition.notNull(engineInterceptor, "testClass is null");
 
         try {
             getReadWriteLock().writeLock().lock();
@@ -120,7 +120,7 @@ public class EngineInterceptorRegistry {
      * @throws Throwable Throwable
      */
     public void onInitialize(EngineInterceptorContext engineInterceptorContext) throws Throwable {
-        ArgumentSupport.notNull(engineInterceptorContext, "engineInterceptorContext is null");
+        Precondition.notNull(engineInterceptorContext, "engineInterceptorContext is null");
 
         for (EngineInterceptor engineInterceptor : getEngineInterceptors()) {
             LOGGER.trace(
@@ -146,8 +146,8 @@ public class EngineInterceptorRegistry {
             EngineInterceptorContext engineInterceptorContext,
             List<ClassDefinition> classDefinitions)
             throws Throwable {
-        ArgumentSupport.notNull(engineInterceptorContext, "engineInterceptorContext is null");
-        ArgumentSupport.notNull(classDefinitions, "classDefinitions is null");
+        Precondition.notNull(engineInterceptorContext, "engineInterceptorContext is null");
+        Precondition.notNull(classDefinitions, "classDefinitions is null");
 
         for (EngineInterceptor engineInterceptor : getEngineInterceptors()) {
             LOGGER.trace(
@@ -172,8 +172,8 @@ public class EngineInterceptorRegistry {
     public void onTestDiscovery(
             EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
             throws Throwable {
-        ArgumentSupport.notNull(engineInterceptorContext, "engineInterceptorContext is null");
-        ArgumentSupport.notNull(classDefinition, "classDefinition is null");
+        Precondition.notNull(engineInterceptorContext, "engineInterceptorContext is null");
+        Precondition.notNull(classDefinition, "classDefinition is null");
 
         for (EngineInterceptor engineInterceptor : getEngineInterceptors()) {
             LOGGER.trace(
@@ -198,7 +198,7 @@ public class EngineInterceptorRegistry {
      * @throws Throwable Throwable
      */
     public void beforeExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
-        ArgumentSupport.notNull(engineInterceptorContext, "engineInterceptorContext is null");
+        Precondition.notNull(engineInterceptorContext, "engineInterceptorContext is null");
 
         for (EngineInterceptor engineInterceptor : getEngineInterceptors()) {
             LOGGER.trace(
@@ -220,7 +220,7 @@ public class EngineInterceptorRegistry {
      * @throws Throwable Throwable
      */
     public void afterExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
-        ArgumentSupport.notNull(engineInterceptorContext, "engineInterceptorContext is null");
+        Precondition.notNull(engineInterceptorContext, "engineInterceptorContext is null");
 
         for (EngineInterceptor engineInterceptor : getEngineInterceptorsReverse()) {
             LOGGER.trace(

@@ -21,7 +21,7 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.support.ArgumentSupport;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement ImmutableArgumentContext */
 public class ImmutableArgumentContext implements ArgumentContext {
@@ -56,7 +56,7 @@ public class ImmutableArgumentContext implements ArgumentContext {
 
     @Override
     public <T> Argument<T> getTestArgument(Class<T> type) {
-        ArgumentSupport.notNull(type, "type is null");
+        Precondition.notNull(type, "type is null");
 
         return argumentContext.getTestArgument(type);
     }
@@ -98,7 +98,7 @@ public class ImmutableArgumentContext implements ArgumentContext {
      * @return an ImmutableClassContext
      */
     public static ArgumentContext wrap(ArgumentContext argumentContext) {
-        ArgumentSupport.notNull(argumentContext, "argumentContext is null");
+        Precondition.notNull(argumentContext, "argumentContext is null");
 
         return new ImmutableArgumentContext(argumentContext);
     }

@@ -16,8 +16,6 @@
 
 package org.antublue.verifyica.engine.common;
 
-import org.antublue.verifyica.engine.support.ArgumentSupport;
-
 /** Class to implement NamedRunnable */
 public class NamedRunnable implements Runnable {
 
@@ -55,9 +53,9 @@ public class NamedRunnable implements Runnable {
      * @param threadName threadName
      * @return a NamedRunnable
      */
-    public static NamedRunnable newNamedRunnable(Runnable runnable, String threadName) {
-        ArgumentSupport.notNull(runnable, "runnable is null");
-        ArgumentSupport.notNullOrEmpty(threadName, "threadName is null", "threadName is empty");
+    public static NamedRunnable wrap(Runnable runnable, String threadName) {
+        Precondition.notNull(runnable, "runnable is null");
+        Precondition.notNullOrBlank(threadName, "threadName is null", "threadName is blank");
 
         return new NamedRunnable(runnable, threadName.trim());
     }
