@@ -133,13 +133,14 @@ public @interface Verifyica {
         String name();
     }
 
+    /** ClassInterceptorSupplier annotation */
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface ClassInterceptorSupplier {}
+
     /** AutowiredInterceptor annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface AutowiredInterceptor {}
 
-    /** ClassInterceptorSupplier annotation */
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface ClassInterceptorSupplier {}
 }
