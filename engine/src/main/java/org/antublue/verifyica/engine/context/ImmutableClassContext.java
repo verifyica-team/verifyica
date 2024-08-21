@@ -52,11 +52,6 @@ public class ImmutableClassContext implements ClassContext {
     }
 
     @Override
-    public <T> Class<T> getTestClass(Class<T> type) {
-        return classContext.getTestClass(type);
-    }
-
-    @Override
     public String getTestClassDisplayName() {
         return classContext.getTestClassDisplayName();
     }
@@ -67,8 +62,8 @@ public class ImmutableClassContext implements ClassContext {
     }
 
     @Override
-    public <T> T getTestInstance(Class<T> type) {
-        return classContext.getTestInstance(type);
+    public <V> V getTestInstance(Class<V> returnType) {
+        return classContext.getTestInstance(returnType);
     }
 
     @Override
@@ -100,7 +95,7 @@ public class ImmutableClassContext implements ClassContext {
      * @param classContext classContext
      * @return an ImmutableClassContext
      */
-    public static ClassContext wrap(ClassContext classContext) {
+    public static ImmutableClassContext wrap(ClassContext classContext) {
         Precondition.notNull(classContext, "classContext is null");
 
         return new ImmutableClassContext(classContext);

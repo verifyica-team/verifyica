@@ -22,7 +22,6 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 
 /** Class to implement DefaultClassContext */
-@SuppressWarnings("unchecked")
 public class DefaultClassInstanceContext implements ClassContext {
 
     private final ClassContext classContext;
@@ -52,11 +51,6 @@ public class DefaultClassInstanceContext implements ClassContext {
     @Override
     public Class<?> getTestClass() {
         return classContext.getTestClass();
-    }
-
-    @Override
-    public <T> Class<T> getTestClass(Class<T> type) {
-        return (Class<T>) getTestClass().asSubclass(type);
     }
 
     @Override

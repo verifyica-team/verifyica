@@ -89,9 +89,11 @@ public class ContextTest {
     public void test3(ArgumentContext argumentContext) throws Throwable {
         assertThat(ContextTest.value).isEqualTo(0);
 
-        Class<ContextTest> contextTest =
-                argumentContext.getClassContext().getTestClass(ContextTest.class);
-        contextTest.getDeclaredField("value").set(null, 10);
+        Class<?> contextTestClass = argumentContext.getClassContext().getTestClass();
+
+        assertThat(contextTestClass).isNotNull();
+
+        contextTestClass.getDeclaredField("value").set(null, 10);
 
         assertThat(ContextTest.value).isEqualTo(10);
     }

@@ -46,11 +46,11 @@ public interface Store {
      * Get a value
      *
      * @param key key
-     * @param returnType returnType
+     * @param type type
      * @return the value
      * @param <V> the return type
      */
-    <V> V get(Object key, Class<V> returnType);
+    <V> V get(Object key, Class<V> type);
 
     /**
      * Get a value
@@ -66,11 +66,11 @@ public interface Store {
      *
      * @param key key
      * @param defaultValue defaultValue
-     * @param returnType returnType
+     * @param type type
      * @return the value
      * @param <V> the return type
      */
-    <V> V getOrDefault(Object key, V defaultValue, Class<V> returnType);
+    <V> V getOrDefault(Object key, V defaultValue, Class<V> type);
 
     /**
      * Get or compute if absent
@@ -86,11 +86,11 @@ public interface Store {
      *
      * @param key key
      * @param mappingFunction mappingFunction
-     * @param returnType returnType
+     * @param type type
      * @return the value
      * @param <V> the return type
      */
-    <V> V computeIfAbsent(Object key, Function<Object, V> mappingFunction, Class<V> returnType);
+    <V> V computeIfAbsent(Object key, Function<Object, V> mappingFunction, Class<V> type);
 
     /**
      * Get a value
@@ -104,11 +104,11 @@ public interface Store {
      * Get a value
      *
      * @param key key
-     * @param returnType returnType
+     * @param type type
      * @return the value
      * @param <V> the return type
      */
-    <V> Optional<V> getOptional(Object key, Class<V> returnType);
+    <V> Optional<V> getOptional(Object key, Class<V> type);
 
     /**
      * Return if a key exists
@@ -130,11 +130,11 @@ public interface Store {
      * Remove a key-value pair
      *
      * @param key key
-     * @param returnType returnType
+     * @param type type
      * @return the value
      * @param <V> the return type
      */
-    <V> V remove(Object key, Class<V> returnType);
+    <V> V remove(Object key, Class<V> type);
 
     /**
      * Remove a key-value pair
@@ -148,11 +148,11 @@ public interface Store {
      * Remove a key-value pair
      *
      * @param key key
-     * @param returnType returnType
+     * @param type type
      * @return the value
      * @param <V> the return type
      */
-    <V> Optional<V> removeOptional(Object key, Class<V> returnType);
+    <V> Optional<V> removeOptional(Object key, Class<V> type);
 
     /**
      * Clear
@@ -162,7 +162,7 @@ public interface Store {
     Store clear();
 
     /**
-     * Return the size
+     * Returns the size
      *
      * @return the size
      */

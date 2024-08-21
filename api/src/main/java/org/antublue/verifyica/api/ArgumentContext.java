@@ -27,7 +27,7 @@ public interface ArgumentContext extends Context {
     ClassContext getClassContext();
 
     /**
-     * Return the Argument index
+     * Returns the Argument index
      *
      * @return the Argument index
      */
@@ -41,11 +41,11 @@ public interface ArgumentContext extends Context {
     Argument<?> getTestArgument();
 
     /**
-     * Returns the Argument, casting the Argument payload to the payload type
+     * Returns the Argument
      *
-     * @param type the Argument payload type
+     * @param type type
      * @return the Argument
-     * @param <T> the Argument payload type
+     * @param <V> type
      */
-    <T> Argument<T> getTestArgument(Class<T> type);
+    <V> Argument<V> getTestArgument(Class<V> type);
 }

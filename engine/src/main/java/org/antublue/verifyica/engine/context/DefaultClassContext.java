@@ -59,11 +59,6 @@ public class DefaultClassContext implements ClassContext {
     }
 
     @Override
-    public <T> Class<T> getTestClass(Class<T> type) {
-        return (Class<T>) getTestClass().asSubclass(type);
-    }
-
-    @Override
     public String getTestClassDisplayName() {
         return classTestDescriptor.getDisplayName();
     }

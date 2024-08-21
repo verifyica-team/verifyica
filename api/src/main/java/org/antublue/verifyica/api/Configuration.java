@@ -94,7 +94,7 @@ public interface Configuration {
     Configuration clear();
 
     /**
-     * Return the size
+     * Returns the size
      *
      * @return the size
      */

@@ -47,13 +47,13 @@ public interface Argument<T> {
     /**
      * Method to get the Argument payload
      *
-     * @param returnType returnType
+     * @param type type
      * @return the Argument payload
      * @param <V> the return type
      */
-    default <V> V getPayload(Class<V> returnType) {
-        notNull(returnType, "returnType is null");
-        return returnType.cast(getPayload());
+    default <V> V getPayload(Class<V> type) {
+        notNull(type, "type is null");
+        return type.cast(getPayload());
     }
 
     /**
@@ -285,9 +285,9 @@ public interface Argument<T> {
         }
 
         @Override
-        public <V> V getPayload(Class<V> returnType) {
-            notNull(returnType, "returnType is null");
-            return returnType.cast(null);
+        public <V> V getPayload(Class<V> type) {
+            notNull(type, "type is null");
+            return type.cast(null);
         }
 
         @Override
