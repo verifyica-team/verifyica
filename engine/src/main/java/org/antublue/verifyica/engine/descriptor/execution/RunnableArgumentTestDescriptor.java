@@ -22,7 +22,7 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.common.StateTracker;
+import org.antublue.verifyica.engine.common.StateSet;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
@@ -70,22 +70,22 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
 
         executionRequest.getEngineExecutionListener().executionStarted(argumentTestDescriptor);
 
-        StateTracker<String> stateTracker = new StateTracker<>();
+        StateSet<String> stateSet = new StateSet<>();
 
         try {
-            stateTracker.setState("beforeAll");
+            stateSet.setCurrentState("beforeAll");
 
             ClassInterceptorRegistry.getInstance().beforeAll(argumentContext, beforeAllMethods);
 
-            stateTracker.setState("beforeAll.success");
+            stateSet.setCurrentState("beforeAll.success");
         } catch (Throwable t) {
             t.printStackTrace(System.err);
-            stateTracker.setState("beforeAll.failure", t);
+            stateSet.setCurrentState("beforeAll.failure", t);
         }
 
-        if (stateTracker.isState("beforeAll.success")) {
+        if (stateSet.isCurrentState("beforeAll.success")) {
             try {
-                stateTracker.setState("execute");
+                stateSet.setCurrentState("execute");
 
                 testMethodTestDescriptors.forEach(
                         methodTestDescriptor ->
@@ -95,16 +95,16 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
                                                 methodTestDescriptor)
                                         .run());
 
-                stateTracker.setState("execute.success");
+                stateSet.setCurrentState("execute.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.setState("execute.failure", t);
+                stateSet.setCurrentState("execute.failure", t);
             }
         }
 
-        if (stateTracker.containsState("beforeAll.failure")) {
+        if (stateSet.hasObservedState("beforeAll.failure")) {
             try {
-                stateTracker.setState("skip");
+                stateSet.setCurrentState("skip");
 
                 testMethodTestDescriptors.forEach(
                         methodTestDescriptor ->
@@ -114,61 +114,62 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
                                                 methodTestDescriptor)
                                         .skip());
 
-                stateTracker.setState("skip.success");
+                stateSet.setCurrentState("skip.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.setState("skip.failure", t);
+                stateSet.setCurrentState("skip.failure", t);
             }
         }
 
         try {
-            stateTracker.setState("afterAll");
+            stateSet.setCurrentState("afterAll");
 
             ClassInterceptorRegistry.getInstance().afterAll(argumentContext, afterAllMethods);
 
-            stateTracker.setState("afterAll.success");
+            stateSet.setCurrentState("afterAll.success");
         } catch (Throwable t) {
             t.printStackTrace(System.err);
-            stateTracker.setState("afterAll.failure", t);
+            stateSet.setCurrentState("afterAll.failure", t);
         }
 
         Argument<?> testArgument = argumentContext.getTestArgument();
         if (testArgument instanceof AutoCloseable) {
             try {
-                stateTracker.setState("argumentAutoClose(" + testArgument.getName() + ")");
+                stateSet.setCurrentState("argumentAutoClose(" + testArgument.getName() + ")");
 
                 ((AutoCloseable) testArgument).close();
 
-                stateTracker.setState("argumentAutoClose(" + testArgument.getName() + ").success");
+                stateSet.setCurrentState(
+                        "argumentAutoClose(" + testArgument.getName() + ").success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.setState("argumentAutoClose(" + testArgument.getName() + ").failure");
+                stateSet.setCurrentState(
+                        "argumentAutoClose(" + testArgument.getName() + ").failure");
             }
         }
 
         Store store = argumentContext.getStore();
         for (Object key : store.keySet()) {
-            Object value = store.get(key);
+            Object value = store.remove(key);
             if (value instanceof AutoCloseable) {
                 try {
-                    stateTracker.setState("storeAutoClose(" + key + ")");
+                    stateSet.setCurrentState("storeAutoClose(" + key + ")");
 
                     ((AutoCloseable) value).close();
 
-                    stateTracker.setState("storeAutoClose(" + key + ").success");
+                    stateSet.setCurrentState("storeAutoClose(" + key + ").success");
                 } catch (Throwable t) {
                     t.printStackTrace(System.err);
-                    stateTracker.setState("storeAutoClose(" + key + ").failure");
+                    stateSet.setCurrentState("storeAutoClose(" + key + ").failure");
                 }
             }
         }
         store.clear();
 
-        LOGGER.trace("state tracker %s [%s]", argumentTestDescriptor, stateTracker);
+        LOGGER.trace("state tracker %s [%s]", argumentTestDescriptor, stateSet);
 
         TestExecutionResult testExecutionResult =
-                stateTracker
-                        .getStateWithThrowable()
+                stateSet.getFirstStateEntryWithThrowable()
                         .map(stateEntry -> TestExecutionResult.failed(stateEntry.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 

@@ -99,7 +99,7 @@ public class ArgumentTest {
         assertThat(argument1.hasPayload()).isFalse();
         assertThat(argument1.getPayload()).isNull();
 
-        Argument<?> argument2 = Argument.empty();
+        Argument<?> argument2 = Argument.EMPTY;
 
         assertThat(argument2).isNotNull();
         assertThat(argument2.getName()).isEqualTo("---");

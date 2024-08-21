@@ -19,7 +19,7 @@ package org.antublue.verifyica.engine.descriptor.execution;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.engine.common.StateTracker;
+import org.antublue.verifyica.engine.common.StateSet;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -65,48 +65,47 @@ public class RunnableTestMethodTestDescriptor extends AbstractRunnableTestDescri
 
         executionRequest.getEngineExecutionListener().executionStarted(testMethodTestDescriptor);
 
-        StateTracker<String> stateTracker = new StateTracker<>();
+        StateSet<String> stateSet = new StateSet<>();
 
         try {
-            stateTracker.setState("beforeEach");
+            stateSet.setCurrentState("beforeEach");
 
             ClassInterceptorRegistry.getInstance().beforeEach(argumentContext, beforeEachMethods);
 
-            stateTracker.setState("beforeEach.success");
+            stateSet.setCurrentState("beforeEach.success");
         } catch (Throwable t) {
             t.printStackTrace(System.err);
-            stateTracker.setState("beforeEach.failure", t);
+            stateSet.setCurrentState("beforeEach.failure", t);
         }
 
-        if (stateTracker.containsState("beforeEach.success")) {
+        if (stateSet.hasObservedState("beforeEach.success")) {
             try {
-                stateTracker.setState("test");
+                stateSet.setCurrentState("test");
 
                 ClassInterceptorRegistry.getInstance().test(argumentContext, testMethod);
 
-                stateTracker.setState("test.success");
+                stateSet.setCurrentState("test.success");
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
-                stateTracker.setState("test.failure", t);
+                stateSet.setCurrentState("test.failure", t);
             }
         }
 
         try {
-            stateTracker.setState("afterEach");
+            stateSet.setCurrentState("afterEach");
 
             ClassInterceptorRegistry.getInstance().afterEach(argumentContext, afterEachMethods);
 
-            stateTracker.setState("afterEach.success");
+            stateSet.setCurrentState("afterEach.success");
         } catch (Throwable t) {
             t.printStackTrace(System.err);
-            stateTracker.setState("afterEach.failure", t);
+            stateSet.setCurrentState("afterEach.failure", t);
         }
 
-        LOGGER.trace("state tracker [%s]", stateTracker);
+        LOGGER.trace("state tracker [%s]", stateSet);
 
         TestExecutionResult testExecutionResult =
-                stateTracker
-                        .getStateWithThrowable()
+                stateSet.getFirstStateEntryWithThrowable()
                         .map(stateEntry -> TestExecutionResult.failed(stateEntry.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
