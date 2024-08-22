@@ -45,8 +45,10 @@ public class EngineInterceptorTest3 {
                 classDefinition.setTestArgumentParallelism(1);
 
                 System.out.printf(
-                        "changing test argument parallelism from [%d] to [%d]%n",
-                        testArgumentParallelism, classDefinition.getTestArgumentParallelism());
+                        "changing test class [%s] test argument parallelism from [%d] to [%d]%n",
+                        classDefinition.getTestClass().getName(),
+                        testArgumentParallelism,
+                        classDefinition.getTestArgumentParallelism());
             }
         }
     }
