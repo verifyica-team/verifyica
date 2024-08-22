@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.HierarchyTraversalMode;
 import org.antublue.verifyica.engine.support.MethodSupport;
 
@@ -64,7 +63,7 @@ public class ResolverPredicates {
                 int modifiers = clazz.getModifiers();
                 return !Modifier.isAbstract(modifiers)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && ClassSupport.hasDefaultConstructor(clazz)
+                        && hasDefaultConstructor(clazz)
                         && !MethodSupport.findMethods(
                                         clazz,
                                         ARGUMENT_SUPPLIER_METHOD,
@@ -137,6 +136,21 @@ public class ResolverPredicates {
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.Conclude.class);
             };
+
+    /**
+     * Method to return if a Class has a default constructor
+     *
+     * @param clazz clazz
+     * @return true if the Class has a default constructor, else false
+     */
+    private static boolean hasDefaultConstructor(Class<?> clazz) {
+        try {
+            clazz.getDeclaredConstructor();
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
 
     /** Constructor */
     private ResolverPredicates() {

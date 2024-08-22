@@ -23,7 +23,7 @@ import java.util.Map;
 import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.support.ClassPathSupport;
+import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.HierarchyTraversalMode;
 import org.antublue.verifyica.engine.support.MethodSupport;
 import org.junit.platform.engine.EngineDiscoveryRequest;
@@ -61,7 +61,7 @@ public class PackageSelectorResolver {
                             LOGGER.trace("packageName [%s]", packageName);
 
                             List<Class<?>> testClasses =
-                                    ClassPathSupport.findAllClasses(
+                                    ClassSupport.findAllClasses(
                                             packageName, ResolverPredicates.TEST_CLASS);
 
                             testClasses.forEach(

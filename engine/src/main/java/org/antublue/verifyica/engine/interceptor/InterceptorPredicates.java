@@ -21,7 +21,6 @@ import java.util.function.Predicate;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
-import org.antublue.verifyica.engine.support.ClassSupport;
 
 /** Class to implement InterceptorPredicates */
 public class InterceptorPredicates {
@@ -35,7 +34,7 @@ public class InterceptorPredicates {
                         && EngineInterceptor.class.isAssignableFrom(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
                         && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class)
-                        && ClassSupport.hasDefaultConstructor(clazz);
+                        && hasDefaultConstructor(clazz);
             };
 
     /** Predicate to filter autowired class interceptor classes */
@@ -47,8 +46,23 @@ public class InterceptorPredicates {
                         && ClassInterceptor.class.isAssignableFrom(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
                         && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class)
-                        && ClassSupport.hasDefaultConstructor(clazz);
+                        && hasDefaultConstructor(clazz);
             };
+
+    /**
+     * Method to return if a Class has a default constructor
+     *
+     * @param clazz clazz
+     * @return true if the Class has a default constructor, else false
+     */
+    private static boolean hasDefaultConstructor(Class<?> clazz) {
+        try {
+            clazz.getDeclaredConstructor();
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
 
     /** Constructor */
     private InterceptorPredicates() {
