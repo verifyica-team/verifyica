@@ -60,6 +60,7 @@ for (TestArgument testArgument : TestArguments) {
   - [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
   - [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java) 
 - [IntelliJ](https://www.jetbrains.com/idea/) support
+- [Maven]() plugin
 
 # High Level Design
 
@@ -299,8 +300,48 @@ Examples using real test containers ...
 
 # Core Requirements
 
-- Java 8 (Java 21+ recommended/virtual threads)
-- Maven
+### Java
+
+Verifyica is compiled against/targets Java 8, but Java 21+ is recommended for virtual thread support.
+
+### Maven
+
+When using Maven, the Verifyica Maven plugin is required.
+
+#### Plugin XML
+
+```xml
+<plugin>
+    <groupId>org.antublue.verifyica</groupId>
+    <artifactId>maven-plugin</artifactId>
+    <version>VERSION</version>
+    <executions>
+        <execution>
+            <phase>test</phase>
+            <goals>
+                <goal>test</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+#### Dependency XML
+
+```xml
+<dependency>
+    <groupId>org.antublue.verifyica</groupId>
+    <artifactId>api</artifactId>
+    <version>VERSION</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.antublue.verifyica</groupId>
+    <artifactId>engine</artifactId>
+    <version>VERSION</version>
+    <scope>test</scope>
+</dependency>
+```
 
 # Ancillary Requirements
 
