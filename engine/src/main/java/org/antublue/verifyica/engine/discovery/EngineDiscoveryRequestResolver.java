@@ -17,7 +17,6 @@
 package org.antublue.verifyica.engine.discovery;
 
 import static java.lang.String.format;
-import static org.junit.platform.engine.Filter.composeFilters;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -25,17 +24,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.antublue.verifyica.api.Argument;
+import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
+import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
@@ -44,29 +43,19 @@ import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.exception.TestClassDefinitionException;
-import org.antublue.verifyica.engine.exception.UncheckedClassNotFoundException;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.interceptor.EngineInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.antublue.verifyica.engine.support.ClassPathSupport;
 import org.antublue.verifyica.engine.support.DisplayNameSupport;
 import org.antublue.verifyica.engine.support.HierarchyTraversalMode;
 import org.antublue.verifyica.engine.support.MethodSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.UniqueId;
-import org.junit.platform.engine.discovery.ClassNameFilter;
-import org.junit.platform.engine.discovery.ClassSelector;
-import org.junit.platform.engine.discovery.ClasspathRootSelector;
-import org.junit.platform.engine.discovery.MethodSelector;
-import org.junit.platform.engine.discovery.PackageNameFilter;
-import org.junit.platform.engine.discovery.PackageSelector;
-import org.junit.platform.engine.discovery.UniqueIdSelector;
 import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 
 /** Class to implement EngineDiscoveryRequestResolver */
-@SuppressWarnings("unchecked")
 public class EngineDiscoveryRequestResolver {
 
     private static final Logger LOGGER =
@@ -99,14 +88,15 @@ public class EngineDiscoveryRequestResolver {
         Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new TreeMap<>(getClassComparator());
 
         try {
-            resolveClasspathRootSelectors(engineDiscoveryRequest, testClassMethodMap);
-            resolvePackageSelectors(engineDiscoveryRequest, testClassMethodMap);
-            resolveClassSelectors(engineDiscoveryRequest, testClassMethodMap);
-            resolveMethodSelectors(engineDiscoveryRequest, testClassMethodMap);
-            resolveUniqueIdSelectors(
-                    engineDiscoveryRequest, testClassMethodMap, testClassArgumentIndexMap);
+            new ClasspathRootSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
+            new PackageSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
+            new ClassSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
+            new MethodSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
+            new UniqueIdSelectorResolver()
+                    .resolve(engineDiscoveryRequest, testClassMethodMap, testClassArgumentIndexMap);
 
-            resolveTestArguments(testClassMethodMap, testClassArgumentMap);
+            resolveTestArguments(
+                    testClassMethodMap, testClassArgumentMap, testClassArgumentIndexMap);
 
             List<ClassDefinition> classDefinitions = new ArrayList<>();
 
@@ -131,10 +121,11 @@ public class EngineDiscoveryRequestResolver {
                                                 testArgumentParallelism));
                             });
 
-            afterTestDiscovery(classDefinitions);
+            onTestDiscovery(classDefinitions);
             prune(classDefinitions);
             loadClassInterceptors(classDefinitions);
             buildEngineDescriptor(engineDescriptor, classDefinitions);
+            onInitialize(classDefinitions);
         } catch (EngineException e) {
             throw e;
         } catch (Throwable t) {
@@ -146,257 +137,6 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
-     * Method to resolve ClassPathSelectors
-     *
-     * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param classMethodMap classMethodMap
-     */
-    private static void resolveClasspathRootSelectors(
-            EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, List<Method>> classMethodMap) {
-        LOGGER.trace("resolveClasspathRootSelectors()");
-
-        StopWatch stopWatch = new StopWatch();
-
-        engineDiscoveryRequest
-                .getSelectorsByType(ClasspathRootSelector.class)
-                .forEach(
-                        classpathRootSelector -> {
-                            List<Class<?>> testClasses =
-                                    ClassPathSupport.findAllClasses(
-                                            classpathRootSelector.getClasspathRoot(),
-                                            Predicates.TEST_CLASS);
-
-                            List<? extends ClassNameFilter> classNameFilters =
-                                    engineDiscoveryRequest.getFiltersByType(ClassNameFilter.class);
-
-                            Predicate<String> classNamePredicate =
-                                    composeFilters(classNameFilters).toPredicate();
-
-                            List<? extends PackageNameFilter> packageNameFilters =
-                                    engineDiscoveryRequest.getFiltersByType(
-                                            PackageNameFilter.class);
-
-                            Predicate<String> packageNamePredicate =
-                                    composeFilters(packageNameFilters).toPredicate();
-
-                            testClasses.forEach(
-                                    testClass -> {
-                                        if (classNamePredicate.test(testClass.getName())
-                                                && packageNamePredicate.test(
-                                                        testClass.getPackage().getName())) {
-                                            classMethodMap
-                                                    .computeIfAbsent(
-                                                            testClass, method -> new ArrayList<>())
-                                                    .addAll(
-                                                            MethodSupport.findMethods(
-                                                                    testClass,
-                                                                    Predicates.TEST_METHOD,
-                                                                    HierarchyTraversalMode
-                                                                            .BOTTOM_UP));
-                                        }
-                                    });
-                        });
-
-        LOGGER.trace("resolveClasspathRootSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
-    }
-
-    /**
-     * Method to resolve PackageSelectors
-     *
-     * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param classMethodMap classMethodMap
-     */
-    private static void resolvePackageSelectors(
-            EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, List<Method>> classMethodMap) {
-        LOGGER.trace("resolvePackageSelectors()");
-
-        StopWatch stopWatch = new StopWatch();
-
-        engineDiscoveryRequest
-                .getSelectorsByType(PackageSelector.class)
-                .forEach(
-                        packageSelector -> {
-                            String packageName = packageSelector.getPackageName();
-
-                            LOGGER.trace("packageName [%s]", packageName);
-
-                            List<Class<?>> testClasses =
-                                    ClassPathSupport.findAllClasses(
-                                            packageName, Predicates.TEST_CLASS);
-
-                            testClasses.forEach(
-                                    testClass ->
-                                            classMethodMap
-                                                    .computeIfAbsent(
-                                                            testClass, method -> new ArrayList<>())
-                                                    .addAll(
-                                                            MethodSupport.findMethods(
-                                                                    testClass,
-                                                                    Predicates.TEST_METHOD,
-                                                                    HierarchyTraversalMode
-                                                                            .BOTTOM_UP)));
-                        });
-
-        LOGGER.trace("resolvePackageSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
-    }
-
-    /**
-     * Method to resolve ClassSelectors
-     *
-     * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param classMethodMap classMethodMap
-     */
-    private static void resolveClassSelectors(
-            EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, List<Method>> classMethodMap) {
-        LOGGER.trace("resolveClassSelectors()");
-
-        StopWatch stopWatch = new StopWatch();
-
-        engineDiscoveryRequest
-                .getSelectorsByType(ClassSelector.class)
-                .forEach(
-                        classSelector -> {
-                            Class<?> testClass = classSelector.getJavaClass();
-
-                            if (Predicates.TEST_CLASS.test(testClass)) {
-                                classMethodMap
-                                        .computeIfAbsent(testClass, method -> new ArrayList<>())
-                                        .addAll(
-                                                MethodSupport.findMethods(
-                                                        testClass,
-                                                        Predicates.TEST_METHOD,
-                                                        HierarchyTraversalMode.BOTTOM_UP));
-                            }
-                        });
-
-        LOGGER.trace("resolveClassSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
-    }
-
-    /**
-     * Method to resolve MethodSelectors
-     *
-     * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param classMethodMap classMethodMap
-     */
-    private static void resolveMethodSelectors(
-            EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, List<Method>> classMethodMap) {
-        LOGGER.trace("resolveMethodSelectors()");
-
-        StopWatch stopWatch = new StopWatch();
-
-        engineDiscoveryRequest
-                .getSelectorsByType(MethodSelector.class)
-                .forEach(
-                        methodSelector -> {
-                            Class<?> testClass = methodSelector.getJavaClass();
-                            Method testMethod = methodSelector.getJavaMethod();
-
-                            if (Predicates.TEST_CLASS.test(testClass)
-                                    && Predicates.TEST_METHOD.test(testMethod)) {
-                                classMethodMap
-                                        .computeIfAbsent(testClass, method -> new ArrayList<>())
-                                        .add(testMethod);
-                            }
-                        });
-
-        LOGGER.trace("resolveMethodSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
-    }
-
-    /**
-     * Method to resolve UniqueIdSelectors
-     *
-     * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param classMethodMap classMethodMap
-     * @param argumentIndexMap argumentIndexMap
-     */
-    private static void resolveUniqueIdSelectors(
-            EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, List<Method>> classMethodMap,
-            Map<Class<?>, Set<Integer>> argumentIndexMap) {
-        LOGGER.trace("resolveUniqueIdSelectors()");
-
-        StopWatch stopWatch = new StopWatch();
-
-        engineDiscoveryRequest
-                .getSelectorsByType(UniqueIdSelector.class)
-                .forEach(
-                        uniqueIdSelector -> {
-                            UniqueId uniqueId = uniqueIdSelector.getUniqueId();
-                            List<UniqueId.Segment> segments = uniqueId.getSegments();
-
-                            LOGGER.trace("uniqueId [%s]", uniqueId);
-
-                            // Specific argument selected
-                            if (segments.size() == 3) {
-                                UniqueId.Segment classSegment = segments.get(1);
-                                UniqueId.Segment argumentSegment = segments.get(2);
-
-                                Class<?> testClass = null;
-
-                                try {
-                                    testClass =
-                                            Thread.currentThread()
-                                                    .getContextClassLoader()
-                                                    .loadClass(classSegment.getValue());
-                                } catch (ClassNotFoundException e) {
-                                    UncheckedClassNotFoundException.throwUnchecked(e);
-                                }
-
-                                classMethodMap
-                                        .computeIfAbsent(testClass, method -> new ArrayList<>())
-                                        .addAll(
-                                                MethodSupport.findMethods(
-                                                        testClass,
-                                                        Predicates.TEST_METHOD,
-                                                        HierarchyTraversalMode.BOTTOM_UP));
-
-                                argumentIndexMap
-                                        .computeIfAbsent(testClass, clazz -> new LinkedHashSet<>())
-                                        .add(Integer.parseInt(argumentSegment.getValue()));
-                            } else {
-                                segments.forEach(
-                                        segment -> {
-                                            String segmentType = segment.getType();
-
-                                            if (segmentType.equals(
-                                                    ClassTestDescriptor.class.getName())) {
-                                                String javaClassName = segment.getValue();
-
-                                                Class<?> testClass = null;
-
-                                                try {
-                                                    testClass =
-                                                            Thread.currentThread()
-                                                                    .getContextClassLoader()
-                                                                    .loadClass(javaClassName);
-                                                } catch (ClassNotFoundException e) {
-                                                    UncheckedClassNotFoundException.throwUnchecked(
-                                                            e);
-                                                }
-
-                                                classMethodMap
-                                                        .computeIfAbsent(
-                                                                testClass,
-                                                                method -> new ArrayList<>())
-                                                        .addAll(
-                                                                MethodSupport.findMethods(
-                                                                        testClass,
-                                                                        Predicates.TEST_METHOD,
-                                                                        HierarchyTraversalMode
-                                                                                .BOTTOM_UP));
-                                            }
-                                        });
-                            }
-                        });
-
-        LOGGER.trace("resolveUniqueIdSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
-    }
-
-    /**
      * Method to resolve test class test arguments
      *
      * @param testClassMethodMap testClassMethodMap
@@ -405,7 +145,8 @@ public class EngineDiscoveryRequestResolver {
      */
     private static void resolveTestArguments(
             Map<Class<?>, List<Method>> testClassMethodMap,
-            Map<Class<?>, List<Argument<?>>> testClassArgumentMap)
+            Map<Class<?>, List<Argument<?>>> testClassArgumentMap,
+            Map<Class<?>, Set<Integer>> argumentIndexMap)
             throws Throwable {
         LOGGER.trace("resolveTestArguments()");
 
@@ -413,7 +154,18 @@ public class EngineDiscoveryRequestResolver {
 
         for (Class<?> testClass : testClassMethodMap.keySet()) {
             List<Argument<?>> testArguments = getTestArguments(testClass);
-            testClassArgumentMap.put(testClass, testArguments);
+            Set<Integer> testArgumentIndices = argumentIndexMap.get(testClass);
+            if (testArgumentIndices != null) {
+                List<Argument<?>> specificTestArguments = new ArrayList<>();
+                for (int i = 0; i < testArguments.size(); i++) {
+                    if (testArgumentIndices.contains(i)) {
+                        specificTestArguments.add(testArguments.get(i));
+                    }
+                }
+                testClassArgumentMap.put(testClass, specificTestArguments);
+            } else {
+                testClassArgumentMap.put(testClass, testArguments);
+            }
         }
 
         LOGGER.trace("resolveTestArguments() [%d] ms", stopWatch.elapsedTime().toMillis());
@@ -502,7 +254,7 @@ public class EngineDiscoveryRequestResolver {
         List<Method> methods =
                 MethodSupport.findMethods(
                         testClass,
-                        Predicates.ARGUMENT_SUPPLIER_METHOD,
+                        ResolverPredicates.ARGUMENT_SUPPLIER_METHOD,
                         HierarchyTraversalMode.BOTTOM_UP);
 
         if (methods.size() > 1) {
@@ -521,19 +273,33 @@ public class EngineDiscoveryRequestResolver {
      * @param classDefinitions classDefinitions
      * @throws Throwable Throwable
      */
-    private static void afterTestDiscovery(List<ClassDefinition> classDefinitions)
-            throws Throwable {
-        LOGGER.trace("afterTestDiscovery()");
+    private static void onTestDiscovery(List<ClassDefinition> classDefinitions) throws Throwable {
+        LOGGER.trace("onTestDiscovery()");
 
-        DefaultEngineInterceptorContext defaultEngineInterceptorContext =
-                new DefaultEngineInterceptorContext(DefaultEngineContext.getInstance());
+        if (!classDefinitions.isEmpty()) {
+            DefaultEngineInterceptorContext defaultEngineInterceptorContext =
+                    new DefaultEngineInterceptorContext(DefaultEngineContext.getInstance());
 
-        EngineInterceptorRegistry.getInstance()
-                .onTestDiscovery(defaultEngineInterceptorContext, classDefinitions);
-
-        for (ClassDefinition classDefinition : classDefinitions) {
             EngineInterceptorRegistry.getInstance()
-                    .onTestDiscovery(defaultEngineInterceptorContext, classDefinition);
+                    .onTestDiscovery(defaultEngineInterceptorContext, classDefinitions);
+
+            for (ClassDefinition classDefinition : classDefinitions) {
+                EngineInterceptorRegistry.getInstance()
+                        .onTestDiscovery(defaultEngineInterceptorContext, classDefinition);
+            }
+        }
+    }
+
+    private static void onInitialize(List<ClassDefinition> classDefinitions) throws Throwable {
+        LOGGER.trace("onInitialize()");
+
+        if (!classDefinitions.isEmpty()) {
+            EngineContext engineContext = DefaultEngineContext.getInstance();
+
+            EngineInterceptorContext engineInterceptorContext =
+                    new DefaultEngineInterceptorContext(engineContext);
+
+            EngineInterceptorRegistry.getInstance().onInitialize(engineInterceptorContext);
         }
     }
 
@@ -567,7 +333,7 @@ public class EngineDiscoveryRequestResolver {
             List<Method> classInterceptorSupplierMethods =
                     MethodSupport.findMethods(
                             testClass,
-                            Predicates.CLASS_INTERCEPTOR_SUPPLIER,
+                            ResolverPredicates.CLASS_INTERCEPTOR_SUPPLIER,
                             HierarchyTraversalMode.BOTTOM_UP);
 
             for (Method classInterceptorSupplierMethod : classInterceptorSupplierMethods) {
@@ -666,11 +432,11 @@ public class EngineDiscoveryRequestResolver {
                             testClass,
                             MethodSupport.findMethods(
                                     testClass,
-                                    Predicates.PREPARE_METHOD,
+                                    ResolverPredicates.PREPARE_METHOD,
                                     HierarchyTraversalMode.TOP_DOWN),
                             MethodSupport.findMethods(
                                     testClass,
-                                    Predicates.CONCLUDE_METHOD,
+                                    ResolverPredicates.CONCLUDE_METHOD,
                                     HierarchyTraversalMode.BOTTOM_UP));
 
             engineDescriptor.addChild(classTestDescriptor);
@@ -690,11 +456,11 @@ public class EngineDiscoveryRequestResolver {
                                 testArgument,
                                 MethodSupport.findMethods(
                                         testClass,
-                                        Predicates.BEFORE_ALL_METHOD,
+                                        ResolverPredicates.BEFORE_ALL_METHOD,
                                         HierarchyTraversalMode.TOP_DOWN),
                                 MethodSupport.findMethods(
                                         testClass,
-                                        Predicates.AFTER_ALL_METHOD,
+                                        ResolverPredicates.AFTER_ALL_METHOD,
                                         HierarchyTraversalMode.BOTTOM_UP));
 
                 classTestDescriptor.addChild(argumentTestDescriptor);
@@ -709,12 +475,12 @@ public class EngineDiscoveryRequestResolver {
                                     DisplayNameSupport.getDisplayName(testMethod),
                                     MethodSupport.findMethods(
                                             testClass,
-                                            Predicates.BEFORE_EACH_METHOD,
+                                            ResolverPredicates.BEFORE_EACH_METHOD,
                                             HierarchyTraversalMode.TOP_DOWN),
                                     testMethod,
                                     MethodSupport.findMethods(
                                             testClass,
-                                            Predicates.AFTER_EACH_METHOD,
+                                            ResolverPredicates.AFTER_EACH_METHOD,
                                             HierarchyTraversalMode.BOTTOM_UP));
 
                     argumentTestDescriptor.addChild(testMethodTestDescriptor);

@@ -149,16 +149,9 @@ public class VerifyicaEngine implements TestEngine {
 
         LOGGER.trace("discover()");
 
-        EngineContext engineContext = DefaultEngineContext.getInstance();
-
-        EngineInterceptorContext engineInterceptorContext =
-                new DefaultEngineInterceptorContext(engineContext);
-
         EngineDescriptor engineDescriptor = new StatusEngineDescriptor(uniqueId, getId());
 
         try {
-            EngineInterceptorRegistry.getInstance().onInitialize(engineInterceptorContext);
-
             new EngineDiscoveryRequestResolver()
                     .resolveSelectors(engineDiscoveryRequest, engineDescriptor);
         } catch (EngineException e) {

@@ -20,38 +20,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.interceptor.ClassInterceptor;
-import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
-import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.HierarchyTraversalMode;
 import org.antublue.verifyica.engine.support.MethodSupport;
 
-/** Class to implement Predicates */
-public class Predicates {
-
-    /** Predicate to filter autowired engine interceptors classes */
-    public static final Predicate<Class<?>> AUTOWIRED_ENGINE_INTERCEPTOR_CLASS =
-            clazz -> {
-                int modifiers = clazz.getModifiers();
-                return Modifier.isPublic(modifiers)
-                        && !Modifier.isAbstract(modifiers)
-                        && EngineInterceptor.class.isAssignableFrom(clazz)
-                        && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class)
-                        && ClassSupport.hasDefaultConstructor(clazz);
-            };
-
-    /** Predicate to filter autowired class interceptor classes */
-    public static final Predicate<Class<?>> AUTOWIRED_CLASS_INTERCEPTOR_CLASS =
-            clazz -> {
-                int modifiers = clazz.getModifiers();
-                return Modifier.isPublic(modifiers)
-                        && !Modifier.isAbstract(modifiers)
-                        && ClassInterceptor.class.isAssignableFrom(clazz)
-                        && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class)
-                        && ClassSupport.hasDefaultConstructor(clazz);
-            };
+/** Class to implement ResolverPredicates */
+public class ResolverPredicates {
 
     /** Predicate to filter class interceptor supplier methods */
     public static final Predicate<Method> CLASS_INTERCEPTOR_SUPPLIER =
@@ -67,7 +40,6 @@ public class Predicates {
     public static final Predicate<Method> ARGUMENT_SUPPLIER_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
                         && method.getParameterCount() == 0
@@ -78,7 +50,6 @@ public class Predicates {
     public static final Predicate<Method> TEST_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
@@ -90,10 +61,9 @@ public class Predicates {
     public static final Predicate<Class<?>> TEST_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && ClassSupport.hasDefaultConstructor(clazz)
+                        && hasDefaultConstructor(clazz)
                         && !MethodSupport.findMethods(
                                         clazz,
                                         ARGUMENT_SUPPLIER_METHOD,
@@ -105,7 +75,6 @@ public class Predicates {
     public static final Predicate<Method> PREPARE_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
@@ -117,7 +86,6 @@ public class Predicates {
     public static final Predicate<Method> BEFORE_ALL_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
@@ -129,7 +97,6 @@ public class Predicates {
     public static final Predicate<Method> BEFORE_EACH_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
@@ -141,7 +108,6 @@ public class Predicates {
     public static final Predicate<Method> AFTER_EACH_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
@@ -153,7 +119,6 @@ public class Predicates {
     public static final Predicate<Method> AFTER_ALL_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
@@ -165,7 +130,6 @@ public class Predicates {
     public static final Predicate<Method> CONCLUDE_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
@@ -173,8 +137,23 @@ public class Predicates {
                         && method.isAnnotationPresent(Verifyica.Conclude.class);
             };
 
+    /**
+     * Method to return if a Class has a default constructor
+     *
+     * @param clazz clazz
+     * @return true if the Class has a default constructor, else false
+     */
+    private static boolean hasDefaultConstructor(Class<?> clazz) {
+        try {
+            clazz.getDeclaredConstructor();
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     /** Constructor */
-    private Predicates() {
+    private ResolverPredicates() {
         // INTENTIONALLY BLANK
     }
 }

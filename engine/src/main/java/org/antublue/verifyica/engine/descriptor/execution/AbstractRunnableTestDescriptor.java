@@ -29,6 +29,24 @@ import org.junit.platform.engine.TestDescriptor;
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public abstract class AbstractRunnableTestDescriptor implements Runnable {
 
+    /** ArgumentTestDescriptor predicate */
+    private static final Predicate<TestDescriptor> ARGUMENT_TEST_DESCRIPTOR =
+            testDescriptor -> testDescriptor instanceof ArgumentTestDescriptor;
+
+    /** ArgumentTestDescriptor mapping function */
+    private static final Function<TestDescriptor, ArgumentTestDescriptor>
+            ARGUMENT_TEST_DESCRIPTOR_MAPPER =
+                    testDescriptor -> (ArgumentTestDescriptor) testDescriptor;
+
+    /** TestMethodTestDescriptor predicate */
+    private static final Predicate<TestDescriptor> TEST_METHOD_DESCRIPTOR =
+            testDescriptor -> testDescriptor instanceof TestMethodTestDescriptor;
+
+    /** TestMethodTestDescriptor mapping function */
+    private static final Function<TestDescriptor, TestMethodTestDescriptor>
+            TEST_METHOD_DESCRIPTOR_MAPPER =
+                    testDescriptor -> (TestMethodTestDescriptor) testDescriptor;
+
     /** Constructor */
     public AbstractRunnableTestDescriptor() {
         // INTENTIONALLY BLANK
@@ -58,12 +76,8 @@ public abstract class AbstractRunnableTestDescriptor implements Runnable {
     protected static List<ArgumentTestDescriptor> getArgumentTestDescriptors(
             ClassTestDescriptor classTestDescriptor) {
         return classTestDescriptor.getChildren().stream()
-                .filter(
-                        (Predicate<TestDescriptor>)
-                                testDescriptor -> testDescriptor instanceof ArgumentTestDescriptor)
-                .map(
-                        (Function<TestDescriptor, ArgumentTestDescriptor>)
-                                testDescriptor -> (ArgumentTestDescriptor) testDescriptor)
+                .filter(ARGUMENT_TEST_DESCRIPTOR)
+                .map(ARGUMENT_TEST_DESCRIPTOR_MAPPER)
                 .collect(Collectors.toList());
     }
 
@@ -71,18 +85,13 @@ public abstract class AbstractRunnableTestDescriptor implements Runnable {
      * Method to get a List of child TestMethodDescriptors
      *
      * @param argumentTestDescriptor argumentTestDescriptors
-     * @return a List of child TestMethodTestDescriptor
+     * @return a List of TestMethodTestDescriptors
      */
     protected static List<TestMethodTestDescriptor> getTestMethodTestDescriptors(
             ArgumentTestDescriptor argumentTestDescriptor) {
         return argumentTestDescriptor.getChildren().stream()
-                .filter(
-                        (Predicate<TestDescriptor>)
-                                testDescriptor ->
-                                        testDescriptor instanceof TestMethodTestDescriptor)
-                .map(
-                        (Function<TestDescriptor, TestMethodTestDescriptor>)
-                                testDescriptor -> (TestMethodTestDescriptor) testDescriptor)
+                .filter(TEST_METHOD_DESCRIPTOR)
+                .map(TEST_METHOD_DESCRIPTOR_MAPPER)
                 .collect(Collectors.toList());
     }
 }
