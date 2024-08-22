@@ -95,7 +95,8 @@ public class EngineDiscoveryRequestResolver {
             new UniqueIdSelectorResolver()
                     .resolve(engineDiscoveryRequest, testClassMethodMap, testClassArgumentIndexMap);
 
-            resolveTestArguments(testClassMethodMap, testClassArgumentMap);
+            resolveTestArguments(
+                    testClassMethodMap, testClassArgumentMap, testClassArgumentIndexMap);
 
             List<ClassDefinition> classDefinitions = new ArrayList<>();
 
@@ -144,7 +145,8 @@ public class EngineDiscoveryRequestResolver {
      */
     private static void resolveTestArguments(
             Map<Class<?>, List<Method>> testClassMethodMap,
-            Map<Class<?>, List<Argument<?>>> testClassArgumentMap)
+            Map<Class<?>, List<Argument<?>>> testClassArgumentMap,
+            Map<Class<?>, Set<Integer>> argumentIndexMap)
             throws Throwable {
         LOGGER.trace("resolveTestArguments()");
 
@@ -152,7 +154,18 @@ public class EngineDiscoveryRequestResolver {
 
         for (Class<?> testClass : testClassMethodMap.keySet()) {
             List<Argument<?>> testArguments = getTestArguments(testClass);
-            testClassArgumentMap.put(testClass, testArguments);
+            Set<Integer> testArgumentIndices = argumentIndexMap.get(testClass);
+            if (testArgumentIndices != null) {
+                List<Argument<?>> specificTestArguments = new ArrayList<>();
+                for (int i = 0; i < testArguments.size(); i++) {
+                    if (testArgumentIndices.contains(i)) {
+                        specificTestArguments.add(testArguments.get(i));
+                    }
+                }
+                testClassArgumentMap.put(testClass, specificTestArguments);
+            } else {
+                testClassArgumentMap.put(testClass, testArguments);
+            }
         }
 
         LOGGER.trace("resolveTestArguments() [%d] ms", stopWatch.elapsedTime().toMillis());
