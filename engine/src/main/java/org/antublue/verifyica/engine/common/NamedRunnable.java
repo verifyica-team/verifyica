@@ -19,18 +19,21 @@ package org.antublue.verifyica.engine.common;
 /** Class to implement NamedRunnable */
 public class NamedRunnable implements Runnable {
 
-    private final Runnable runnable;
     private final String threadName;
+    private final Runnable runnable;
 
     /**
      * Constructor
      *
-     * @param runnable runnable
      * @param threadName threadName
+     * @param runnable runnable
      */
-    private NamedRunnable(Runnable runnable, String threadName) {
-        this.runnable = runnable;
+    public NamedRunnable(String threadName, Runnable runnable) {
+        Precondition.notNullOrBlank(threadName, "threadName is null", "threadName is blank");
+        Precondition.notNull(runnable, "runnable is null");
+
         this.threadName = threadName;
+        this.runnable = runnable;
     }
 
     @Override
@@ -44,19 +47,5 @@ public class NamedRunnable implements Runnable {
         } finally {
             currentThread.setName(originalThreadName);
         }
-    }
-
-    /**
-     * Method to wrap a Runnable
-     *
-     * @param runnable runnable
-     * @param threadName threadName
-     * @return a NamedRunnable
-     */
-    public static NamedRunnable wrap(Runnable runnable, String threadName) {
-        Precondition.notNull(runnable, "runnable is null");
-        Precondition.notNullOrBlank(threadName, "threadName is null", "threadName is blank");
-
-        return new NamedRunnable(runnable, threadName.trim());
     }
 }

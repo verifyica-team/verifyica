@@ -50,8 +50,7 @@ public class StateSet<T> {
         Precondition.notNull(state, "state is null");
 
         if (map.containsKey(state)) {
-            throw new IllegalStateException(
-                    format("Application error, state [%s] already encountered", state));
+            throw new IllegalStateException(format("State [%s] already encountered", state));
         }
 
         currentStateEntry = new StateEntry<>(state);
@@ -69,8 +68,7 @@ public class StateSet<T> {
         Precondition.notNull(throwable, "throwable is null");
 
         if (map.containsKey(state)) {
-            throw new IllegalStateException(
-                    format("Application error, state [%s] already encountered", state));
+            throw new IllegalStateException(format("State [%s] already encountered", state));
         }
 
         currentStateEntry = new StateEntry<>(state, throwable);
@@ -121,18 +119,18 @@ public class StateSet<T> {
     }
 
     /**
-     * Method to get a Collection of observed States
+     * Method to get a Collection of observed State entries
      *
-     * @return a Collection of observed States
+     * @return a Collection of observed State entries
      */
-    public Collection<StateEntry<T>> getObservedStates() {
+    public Collection<StateEntry<T>> getObservedStateEntries() {
         return new LinkedHashSet<>(map.values());
     }
 
     /**
-     * Method to get the first StateEntry with a Throwable
+     * Method to get the first State entry with a Throwable
      *
-     * @return the first StateEntry with a Throwable, or an empty Optional
+     * @return the first State entry with a Throwable, or an empty Optional
      */
     public Optional<StateEntry<T>> getFirstStateEntryWithThrowable() {
         for (Map.Entry<T, StateEntry<T>> mapEntry : map.entrySet()) {

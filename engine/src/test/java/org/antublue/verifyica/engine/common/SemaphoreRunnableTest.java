@@ -55,7 +55,7 @@ public class SemaphoreRunnableTest {
         List<Thread> threads = new ArrayList<>();
 
         for (int i = 0; i < threadCount; i++) {
-            Thread thread = new Thread(SemaphoreRunnable.wrap(runnable, semaphore));
+            Thread thread = new Thread(new SemaphoreRunnable(semaphore, runnable));
             thread.setDaemon(true);
             threads.add(thread);
         }

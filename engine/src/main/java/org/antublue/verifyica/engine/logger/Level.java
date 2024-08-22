@@ -18,6 +18,7 @@ package org.antublue.verifyica.engine.logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /** Class to implement Level */
 public final class Level {
@@ -84,13 +85,26 @@ public final class Level {
         return string;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Level level1 = (Level) o;
+        return level == level1.level && Objects.equals(string, level1.string);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(level, string);
+    }
+
     /**
      * Method to map a Level String to a Level
      *
      * @param string string
-     * @return the decoded Level, or INFO
+     * @return the decoded Level, or INFO if the not valid
      */
-    static Level decode(String string) {
+    public static Level decode(String string) {
         Level level = null;
 
         if (string != null && !string.trim().isEmpty()) {

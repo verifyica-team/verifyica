@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.descriptor.execution;
+package org.antublue.verifyica.engine.descriptor.runnable;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
@@ -27,7 +28,7 @@ import org.junit.platform.engine.TestDescriptor;
 
 /** Class to implement AbstractRunnableTestDescriptor */
 @SuppressWarnings("PMD.EmptyCatchBlock")
-public abstract class AbstractRunnableTestDescriptor implements Runnable {
+public abstract class AbstractTestDescriptorRunnable implements Runnable {
 
     /** ArgumentTestDescriptor predicate */
     private static final Predicate<TestDescriptor> ARGUMENT_TEST_DESCRIPTOR =
@@ -48,7 +49,7 @@ public abstract class AbstractRunnableTestDescriptor implements Runnable {
                     testDescriptor -> (TestMethodTestDescriptor) testDescriptor;
 
     /** Constructor */
-    public AbstractRunnableTestDescriptor() {
+    public AbstractTestDescriptorRunnable() {
         // INTENTIONALLY BLANK
     }
 
@@ -75,6 +76,8 @@ public abstract class AbstractRunnableTestDescriptor implements Runnable {
      */
     protected static List<ArgumentTestDescriptor> getArgumentTestDescriptors(
             ClassTestDescriptor classTestDescriptor) {
+        Precondition.notNull(classTestDescriptor, "classTestDescriptor is null");
+
         return classTestDescriptor.getChildren().stream()
                 .filter(ARGUMENT_TEST_DESCRIPTOR)
                 .map(ARGUMENT_TEST_DESCRIPTOR_MAPPER)
@@ -89,6 +92,8 @@ public abstract class AbstractRunnableTestDescriptor implements Runnable {
      */
     protected static List<TestMethodTestDescriptor> getTestMethodTestDescriptors(
             ArgumentTestDescriptor argumentTestDescriptor) {
+        Precondition.notNull(argumentTestDescriptor, "argumentTestDescriptor is null");
+
         return argumentTestDescriptor.getChildren().stream()
                 .filter(TEST_METHOD_DESCRIPTOR)
                 .map(TEST_METHOD_DESCRIPTOR_MAPPER)

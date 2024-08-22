@@ -87,7 +87,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     private boolean hasTests;
-    private boolean hasFailures;
+    private AtomicLong failureCount;
 
     private final Map<ClassTestDescriptor, TestExecutionResult>
             classTestDescriptorTestExecutionResultMap;
@@ -109,6 +109,8 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     /** Constructor */
     public SummaryEngineExecutionListener() {
+        failureCount = new AtomicLong();
+
         classTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
         classTestDescriptorSkippedMap = new ConcurrentHashMap<>();
 
@@ -164,14 +166,11 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
         if (!testDescriptor.isRoot()
                 && testExecutionResult.getStatus() != TestExecutionResult.Status.SUCCESSFUL) {
-            hasFailures = true;
+            failureCount.incrementAndGet();
         }
 
         if (testDescriptor instanceof StatusEngineDescriptor) {
-            if (hasFailures) {
-                ((StatusEngineDescriptor) testDescriptor).setHasFailures();
-            }
-
+            ((StatusEngineDescriptor) testDescriptor).setFailureCount(failureCount.get());
             summary();
         }
     }
@@ -431,7 +430,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             println(INFO + SEPARATOR);
 
             String message =
-                    hasFailures
+                    failureCount.get() > 0
                             ? AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("TESTS FAILED")
                             : AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("TESTS PASSED");
 
@@ -462,7 +461,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                             .append(HumanReadableTimeSupport.now())
                             .reset());
 
-            if (!hasFailures) {
+            if (failureCount.get() == 0) {
                 println(INFO + SEPARATOR);
             }
         } catch (Throwable t) {

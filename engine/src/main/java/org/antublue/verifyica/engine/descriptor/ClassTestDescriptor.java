@@ -19,6 +19,7 @@ package org.antublue.verifyica.engine.descriptor;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
@@ -37,19 +38,24 @@ public class ClassTestDescriptor extends AbstractTestDescriptor {
      *
      * @param uniqueId uniqueId
      * @param displayName displayName
-     * @param testArgumentParallelism testArgumentParallelism
      * @param testClass testClass
+     * @param testArgumentParallelism testArgumentParallelism
      * @param prepareMethods prepareMethods
      * @param concludeMethods concludeMethods
      */
     public ClassTestDescriptor(
             UniqueId uniqueId,
             String displayName,
-            int testArgumentParallelism,
             Class<?> testClass,
+            int testArgumentParallelism,
             List<Method> prepareMethods,
             List<Method> concludeMethods) {
         super(uniqueId, displayName);
+
+        Precondition.notNull(testClass, "testClass is null");
+        Precondition.isTrue(testArgumentParallelism >= 1, "testArgumentParallelism is less than 1");
+        Precondition.notNull(prepareMethods, "prepareMethods is null");
+        Precondition.notNull(concludeMethods, "concludeMethods is null");
 
         this.testArgumentParallelism = testArgumentParallelism;
         this.testClass = testClass;

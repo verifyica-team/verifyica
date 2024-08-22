@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.descriptor.execution;
+package org.antublue.verifyica.engine.descriptor.runnable;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -22,6 +22,7 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.StateSet;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
@@ -33,10 +34,10 @@ import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement ArgumentTestDescriptorRunnable */
-public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescriptor {
+public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnable {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(RunnableArgumentTestDescriptor.class);
+            LoggerFactory.getLogger(ArgumentTestDescriptorRunnable.class);
 
     private final ExecutionRequest executionRequest;
     private final ArgumentTestDescriptor argumentTestDescriptor;
@@ -52,10 +53,14 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
      * @param classContext classContext
      * @param argumentTestDescriptor argumentTestDescriptor
      */
-    public RunnableArgumentTestDescriptor(
+    public ArgumentTestDescriptorRunnable(
             ExecutionRequest executionRequest,
             ClassContext classContext,
             ArgumentTestDescriptor argumentTestDescriptor) {
+        Precondition.notNull(executionRequest, "executionRequest is null");
+        Precondition.notNull(classContext, "classContext is null");
+        Precondition.notNull(argumentTestDescriptor, "argumentTestDescriptor is null");
+
         this.executionRequest = executionRequest;
         this.argumentTestDescriptor = argumentTestDescriptor;
         this.beforeAllMethods = argumentTestDescriptor.getBeforeAllMethods();
@@ -89,7 +94,7 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
 
                 testMethodTestDescriptors.forEach(
                         methodTestDescriptor ->
-                                new RunnableTestMethodTestDescriptor(
+                                new TestMethodTestDescriptorRunnable(
                                                 executionRequest,
                                                 argumentContext,
                                                 methodTestDescriptor)
@@ -108,7 +113,7 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
 
                 testMethodTestDescriptors.forEach(
                         methodTestDescriptor ->
-                                new RunnableTestMethodTestDescriptor(
+                                new TestMethodTestDescriptorRunnable(
                                                 executionRequest,
                                                 argumentContext,
                                                 methodTestDescriptor)
@@ -186,7 +191,7 @@ public class RunnableArgumentTestDescriptor extends AbstractRunnableTestDescript
 
         testMethodTestDescriptors.forEach(
                 methodTestDescriptor ->
-                        new RunnableTestMethodTestDescriptor(
+                        new TestMethodTestDescriptorRunnable(
                                         executionRequest, argumentContext, methodTestDescriptor)
                                 .skip());
 

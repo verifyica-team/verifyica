@@ -23,7 +23,7 @@ import org.antublue.verifyica.engine.common.Precondition;
 /** Class to implement HashSupport */
 public class HashSupport {
 
-    private static final String CHARACTERS =
+    private static final String ALPHA_NUMERIC_CHARACTERS =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz" + "0123456789";
 
     private static final Random RANDOM = new SecureRandom();
@@ -44,9 +44,10 @@ public class HashSupport {
 
         StringBuilder stringBuilder = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
-            stringBuilder.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
+            stringBuilder.append(
+                    ALPHA_NUMERIC_CHARACTERS.charAt(
+                            RANDOM.nextInt(ALPHA_NUMERIC_CHARACTERS.length())));
         }
-
         return stringBuilder.toString();
     }
 }

@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import org.antublue.verifyica.api.Argument;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
@@ -54,6 +55,13 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor {
             List<Method> beforeAllMethods,
             List<Method> afterAllMethods) {
         super(uniqueId, displayName);
+
+        Precondition.notNull(testClass, "testClass is null");
+        Precondition.isTrue(testArgumentIndex >= 0, "testArgumentIndex is less than 0");
+        Precondition.notNull(testArgument, "testArgument is null");
+        Precondition.notNull(beforeAllMethods, "beforeAllMethods is null");
+        Precondition.notNull(afterAllMethods, "afterAllMethods is null");
+
         this.testClass = testClass;
         this.testArgumentIndex = testArgumentIndex;
         this.testArgument = testArgument;

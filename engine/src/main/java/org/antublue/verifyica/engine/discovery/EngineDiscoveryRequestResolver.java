@@ -428,8 +428,8 @@ public class EngineDiscoveryRequestResolver {
                     new ClassTestDescriptor(
                             classTestDescriptorUniqueId,
                             DisplayNameSupport.getDisplayName(testClass),
-                            classDefinition.getTestArgumentParallelism(),
                             testClass,
+                            classDefinition.getTestArgumentParallelism(),
                             MethodSupport.findMethods(
                                     testClass,
                                     ResolverPredicates.PREPARE_METHOD,

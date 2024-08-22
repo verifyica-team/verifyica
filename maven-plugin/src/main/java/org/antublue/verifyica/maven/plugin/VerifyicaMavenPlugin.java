@@ -43,7 +43,7 @@ import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
-import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
+import org.antublue.verifyica.engine.listener.DispatchingEngineExecutionListener;
 // import org.antublue.verifyica.engine.listener.StatusEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.StatusEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.SummaryEngineExecutionListener;
@@ -244,8 +244,8 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
             Thread.currentThread().setContextClassLoader(classLoader);
 
-            ChainedEngineExecutionListener chainedEngineExecutionListener =
-                    new ChainedEngineExecutionListener(
+            DispatchingEngineExecutionListener dispatchingEngineExecutionListener =
+                    new DispatchingEngineExecutionListener(
                             new StatusEngineExecutionListener(),
                             new SummaryEngineExecutionListener());
 
@@ -264,7 +264,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             ExecutionRequest executionRequest =
                     new ExecutionRequest(
                             testDescriptor,
-                            chainedEngineExecutionListener,
+                            dispatchingEngineExecutionListener,
                             new DefaultConfigurationParameters(
                                     DefaultEngineContext.getInstance().getConfiguration()));
 
