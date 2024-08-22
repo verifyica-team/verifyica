@@ -24,11 +24,7 @@ import org.junit.jupiter.api.Test;
 
 public class ThreadNameRunnableTest {
 
-    private final String[] validThreadNames = new String[] {
-            "",
-            " ",
-            UUID.randomUUID().toString()
-    };
+    private final String[] validThreadNames = new String[] {"", " ", UUID.randomUUID().toString()};
 
     @Test
     public void testValidThreadNames() {
@@ -37,12 +33,12 @@ public class ThreadNameRunnableTest {
 
         for (String validThreadName : validThreadNames) {
             new ThreadNameRunnable(
-                    validThreadName,
-                    () -> {
-                        String threadName = Thread.currentThread().getName();
-                        assertThat(threadName).isNotNull();
-                        assertThat(threadName).isEqualTo(validThreadName);
-                    })
+                            validThreadName,
+                            () -> {
+                                String threadName = Thread.currentThread().getName();
+                                assertThat(threadName).isNotNull();
+                                assertThat(threadName).isEqualTo(validThreadName);
+                            })
                     .run();
 
             assertThat(thread.getName()).isEqualTo(originalThreadName);
