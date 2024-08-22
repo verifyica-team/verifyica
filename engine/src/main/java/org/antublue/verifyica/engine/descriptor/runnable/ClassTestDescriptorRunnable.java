@@ -26,7 +26,7 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.VerifyicaEngine;
-import org.antublue.verifyica.engine.common.NamedRunnable;
+import org.antublue.verifyica.engine.common.ThreadNameRunnable;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateSet;
@@ -155,7 +155,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                         EXECUTOR_SERVICE.submit(
                                                 new SemaphoreRunnable(
                                                         semaphore,
-                                                        new NamedRunnable(
+                                                        new ThreadNameRunnable(
                                                                 Thread.currentThread().getName()
                                                                         + "/"
                                                                         + HashSupport.alphanumeric(

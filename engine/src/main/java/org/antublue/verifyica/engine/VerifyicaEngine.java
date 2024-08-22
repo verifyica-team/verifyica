@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
-import org.antublue.verifyica.engine.common.NamedRunnable;
+import org.antublue.verifyica.engine.common.ThreadNameRunnable;
 import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.common.SynchronizedPrintStream;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
@@ -209,7 +209,7 @@ public class VerifyicaEngine implements TestEngine {
                     classTestDescriptor ->
                             futures.add(
                                     executorService.submit(
-                                            new NamedRunnable(
+                                            new ThreadNameRunnable(
                                                     "verifyica/" + HashSupport.alphanumeric(4),
                                                     new ClassTestDescriptorRunnable(
                                                             executionRequest,
