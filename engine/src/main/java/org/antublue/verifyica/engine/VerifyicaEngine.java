@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +37,7 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.NamedRunnable;
+import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.common.SynchronizedPrintStream;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
@@ -139,11 +141,13 @@ public class VerifyicaEngine implements TestEngine {
     @Override
     public TestDescriptor discover(
             EngineDiscoveryRequest engineDiscoveryRequest, UniqueId uniqueId) {
-        if (!UNIQUE_ID.equals(uniqueId.toString())) {
-            return null;
+        if (!UNIQUE_ID.equals(uniqueId.toString()) || isRunningViaMavenSurefirePlugin()) {
+            return new EngineDescriptor(uniqueId, "Verifyica disabled under Maven Surefire");
         }
 
-        LOGGER.trace("discovering test classes and test methods ...");
+        StopWatch stopWatch = new StopWatch();
+
+        LOGGER.trace("discover()");
 
         EngineContext engineContext = DefaultEngineContext.getInstance();
 
@@ -164,6 +168,7 @@ public class VerifyicaEngine implements TestEngine {
         }
 
         LOGGER.trace("discovered [%d] test classes", engineDescriptor.getChildren().size());
+        LOGGER.trace("discover() [%d] ms", stopWatch.elapsedTime().toMillis());
 
         return engineDescriptor;
     }
@@ -174,7 +179,9 @@ public class VerifyicaEngine implements TestEngine {
             return;
         }
 
-        LOGGER.trace("executing test classes and test methods");
+        StopWatch stopWatch = new StopWatch();
+
+        LOGGER.trace("execute()");
 
         if (LOGGER.isTraceEnabled()) {
             traceEngineDescriptor(executionRequest.getRootTestDescriptor());
@@ -252,7 +259,7 @@ public class VerifyicaEngine implements TestEngine {
                 .getEngineExecutionListener()
                 .executionFinished(executionRequest.getRootTestDescriptor(), testExecutionResult);
 
-        LOGGER.trace("execution done");
+        LOGGER.trace("execute() [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**
@@ -410,5 +417,23 @@ public class VerifyicaEngine implements TestEngine {
                 .forEach(
                         (Consumer<TestDescriptor>)
                                 testDescriptor1 -> traceTestDescriptor(testDescriptor1, level + 2));
+    }
+
+    /**
+     * Method to return whether the code is running via the Maven Surefire plugin
+     *
+     * @return true if running via the Maven Surefire plugin, else false
+     */
+    private static boolean isRunningViaMavenSurefirePlugin() {
+        if (System.getProperty("surefire.test.class.path") != null) {
+            return true;
+        }
+
+        return Arrays.stream(Thread.currentThread().getStackTrace())
+                .anyMatch(
+                        stackTraceElement ->
+                                stackTraceElement
+                                        .getClassName()
+                                        .startsWith("org.apache.maven.surefire"));
     }
 }
