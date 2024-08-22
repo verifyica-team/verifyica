@@ -41,7 +41,6 @@ public class ResolverPredicates {
     public static final Predicate<Method> ARGUMENT_SUPPLIER_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
                         && method.getParameterCount() == 0
@@ -52,7 +51,6 @@ public class ResolverPredicates {
     public static final Predicate<Method> TEST_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
@@ -64,7 +62,6 @@ public class ResolverPredicates {
     public static final Predicate<Class<?>> TEST_CLASS =
             clazz -> {
                 int modifiers = clazz.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
                         && ClassSupport.hasDefaultConstructor(clazz)
@@ -79,7 +76,6 @@ public class ResolverPredicates {
     public static final Predicate<Method> PREPARE_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
@@ -91,7 +87,6 @@ public class ResolverPredicates {
     public static final Predicate<Method> BEFORE_ALL_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
@@ -103,7 +98,6 @@ public class ResolverPredicates {
     public static final Predicate<Method> BEFORE_EACH_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
@@ -115,7 +109,6 @@ public class ResolverPredicates {
     public static final Predicate<Method> AFTER_EACH_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
@@ -127,7 +120,6 @@ public class ResolverPredicates {
     public static final Predicate<Method> AFTER_ALL_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
@@ -139,7 +131,6 @@ public class ResolverPredicates {
     public static final Predicate<Method> CONCLUDE_METHOD =
             method -> {
                 int modifiers = method.getModifiers();
-
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
