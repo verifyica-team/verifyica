@@ -20,38 +20,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.interceptor.ClassInterceptor;
-import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.HierarchyTraversalMode;
 import org.antublue.verifyica.engine.support.MethodSupport;
 
-/** Class to implement Predicates */
-public class Predicates {
-
-    /** Predicate to filter autowired engine interceptors classes */
-    public static final Predicate<Class<?>> AUTOWIRED_ENGINE_INTERCEPTOR_CLASS =
-            clazz -> {
-                int modifiers = clazz.getModifiers();
-                return Modifier.isPublic(modifiers)
-                        && !Modifier.isAbstract(modifiers)
-                        && EngineInterceptor.class.isAssignableFrom(clazz)
-                        && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class)
-                        && ClassSupport.hasDefaultConstructor(clazz);
-            };
-
-    /** Predicate to filter autowired class interceptor classes */
-    public static final Predicate<Class<?>> AUTOWIRED_CLASS_INTERCEPTOR_CLASS =
-            clazz -> {
-                int modifiers = clazz.getModifiers();
-                return Modifier.isPublic(modifiers)
-                        && !Modifier.isAbstract(modifiers)
-                        && ClassInterceptor.class.isAssignableFrom(clazz)
-                        && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class)
-                        && ClassSupport.hasDefaultConstructor(clazz);
-            };
+/** Class to implement ResolverPredicates */
+public class ResolverPredicates {
 
     /** Predicate to filter class interceptor supplier methods */
     public static final Predicate<Method> CLASS_INTERCEPTOR_SUPPLIER =
@@ -174,7 +148,7 @@ public class Predicates {
             };
 
     /** Constructor */
-    private Predicates() {
+    private ResolverPredicates() {
         // INTENTIONALLY BLANK
     }
 }

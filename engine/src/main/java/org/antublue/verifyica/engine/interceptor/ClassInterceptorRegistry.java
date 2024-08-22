@@ -44,7 +44,6 @@ import org.antublue.verifyica.engine.context.DefaultArgumentInterceptorContext;
 import org.antublue.verifyica.engine.context.DefaultClassInterceptorContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
 import org.antublue.verifyica.engine.context.ImmutableArgumentContext;
-import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -700,7 +699,7 @@ public class ClassInterceptorRegistry {
                 List<Class<?>> autowiredClassInterceptors =
                         new ArrayList<>(
                                 ClassPathSupport.findAllClasses(
-                                        Predicates.AUTOWIRED_CLASS_INTERCEPTOR_CLASS));
+                                        InterceptorPredicates.AUTOWIRED_CLASS_INTERCEPTOR_CLASS));
 
                 filter(autowiredClassInterceptors);
 

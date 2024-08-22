@@ -32,7 +32,6 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
-import org.antublue.verifyica.engine.discovery.Predicates;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.internal.engine.filter.EngineFiltersInterceptor;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -281,7 +280,7 @@ public class EngineInterceptorRegistry {
                 List<Class<?>> autowiredEngineInterceptors =
                         new ArrayList<>(
                                 ClassPathSupport.findAllClasses(
-                                        Predicates.AUTOWIRED_ENGINE_INTERCEPTOR_CLASS));
+                                        InterceptorPredicates.AUTOWIRED_ENGINE_INTERCEPTOR_CLASS));
 
                 filter(autowiredEngineInterceptors);
 

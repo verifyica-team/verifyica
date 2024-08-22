@@ -16,9 +16,9 @@
 
 package org.antublue.junit5.test;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 /** Example JUnit5 test */
 public class JUnit5Test {
