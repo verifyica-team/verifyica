@@ -63,6 +63,20 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <includes>
+                        <include>%regex[.*JUnit5Test.*]</include>
+                    </includes>
+                    <systemPropertyVariables>
+                        <junit.jupiter.extensions.autodetection.enabled>true
+                        </junit.jupiter.extensions.autodetection.enabled>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.antublue.verifyica</groupId>
                 <artifactId>maven-plugin</artifactId>
                 <version>0.0.11-SNAPSHOT</version>
@@ -167,6 +181,12 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+            <version>5.11.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
             <version>5.11.0</version>
             <scope>test</scope>
         </dependency>

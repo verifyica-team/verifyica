@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
+package org.antublue.junit5.test;
+
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+/** Example JUnit5 test */
 public class JUnit5Test {
 
     @Test
     public void test() {
         System.out.println("Testing " + getClass().getName());
+
+        assertThat(1).isEqualTo(1);
     }
 }
