@@ -60,7 +60,7 @@ for (TestArgument testArgument : TestArguments) {
   - [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
   - [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java) 
 - [IntelliJ](https://www.jetbrains.com/idea/) support
-- [Maven]() plugin
+- [Maven](https://maven.apache.org/) support
 
 # High Level Design
 
