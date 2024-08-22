@@ -46,7 +46,7 @@ import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
-import org.antublue.verifyica.engine.descriptor.execution.RunnableClassTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.runnable.ClassTestDescriptorRunnable;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.EngineInterceptorRegistry;
@@ -209,12 +209,12 @@ public class VerifyicaEngine implements TestEngine {
                     classTestDescriptor ->
                             futures.add(
                                     executorService.submit(
-                                            NamedRunnable.wrap(
-                                                    new RunnableClassTestDescriptor(
+                                            new NamedRunnable(
+                                                    "verifyica/" + HashSupport.alphanumeric(4),
+                                                    new ClassTestDescriptorRunnable(
                                                             executionRequest,
                                                             engineContext,
-                                                            classTestDescriptor),
-                                                    "verifyica/" + HashSupport.alphanumeric(4)))));
+                                                            classTestDescriptor)))));
 
             ExecutorSupport.waitForAllFutures(futures, executorService);
         } catch (Throwable t) {

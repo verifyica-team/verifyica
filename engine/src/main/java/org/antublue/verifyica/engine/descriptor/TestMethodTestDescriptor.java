@@ -19,6 +19,7 @@ package org.antublue.verifyica.engine.descriptor;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
@@ -47,6 +48,11 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor {
             Method testMethod,
             List<Method> afterEachMethods) {
         super(uniqueId, displayName);
+
+        Precondition.notNull(beforeEachMethods, "beforeEachMethods is null");
+        Precondition.notNull(testMethod, "testMethod is null");
+        Precondition.notNull(afterEachMethods, "afterEachMethods is null");
+
         this.beforeEachMethods = beforeEachMethods;
         this.testMethod = testMethod;
         this.afterEachMethods = afterEachMethods;

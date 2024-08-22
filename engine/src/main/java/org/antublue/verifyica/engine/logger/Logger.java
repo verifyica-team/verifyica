@@ -19,9 +19,10 @@ package org.antublue.verifyica.engine.logger;
 import static java.lang.String.format;
 
 import java.io.PrintStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antublue.verifyica.api.Configuration;
@@ -35,11 +36,11 @@ public class Logger {
 
     private static final Configuration CONFIGURATION = DefaultConfiguration.getInstance();
 
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
 
     private final String name;
-    private Level level;
+    private final AtomicReference<Level> level;
 
     /**
      * Constructor
@@ -48,7 +49,7 @@ public class Logger {
      */
     Logger(String name) {
         this.name = name;
-        this.level = Level.INFO;
+        this.level = new AtomicReference<>(Level.INFO);
 
         String loggerLevel =
                 CONFIGURATION
@@ -61,7 +62,7 @@ public class Logger {
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(name);
             if (matcher.find()) {
-                level = Level.decode(loggerLevel);
+                level.set(Level.decode(loggerLevel));
             }
         } catch (Throwable t) {
             // INTENTIONALLY BLANK
@@ -74,7 +75,7 @@ public class Logger {
      * @return the return value
      */
     public boolean isTraceEnabled() {
-        return level.toInt() >= Level.TRACE.toInt();
+        return level.get().toInt() >= Level.TRACE.toInt();
     }
 
     /**
@@ -83,7 +84,7 @@ public class Logger {
      * @return the return value
      */
     public boolean isDebugEnabled() {
-        return level.toInt() >= Level.DEBUG.toInt();
+        return level.get().toInt() >= Level.DEBUG.toInt();
     }
 
     /**
@@ -92,7 +93,7 @@ public class Logger {
      * @return the return value
      */
     public boolean isInfoEnabled() {
-        return level.toInt() >= Level.INFO.toInt();
+        return level.get().toInt() >= Level.INFO.toInt();
     }
 
     /**
@@ -101,7 +102,7 @@ public class Logger {
      * @return the return value
      */
     public boolean isWarnEnabled() {
-        return level.toInt() >= Level.WARN.toInt();
+        return level.get().toInt() >= Level.WARN.toInt();
     }
 
     /**
@@ -110,7 +111,7 @@ public class Logger {
      * @return the return value
      */
     public boolean isErrorEnabled() {
-        return level.toInt() >= Level.ERROR.toInt();
+        return level.get().toInt() >= Level.ERROR.toInt();
     }
 
     /**
@@ -119,8 +120,8 @@ public class Logger {
      * @param level level
      */
     public void setLevel(Level level) {
-        Precondition.notNull(name, "level is null");
-        this.level = level;
+        Precondition.notNull(level, "level is null");
+        this.level.set(level);
     }
 
     /**
@@ -130,8 +131,8 @@ public class Logger {
      * @return the return value
      */
     public boolean isEnabled(Level level) {
-        Precondition.notNull(name, "level is null");
-        return this.level.toInt() >= level.toInt();
+        Precondition.notNull(level, "level is null");
+        return this.level.get().toInt() >= level.toInt();
     }
 
     /**
@@ -190,7 +191,6 @@ public class Logger {
      * @param message message
      */
     public void info(String message) {
-
         if (isInfoEnabled()) {
             log(System.out, Level.INFO, "%s", message);
         }
@@ -275,15 +275,9 @@ public class Logger {
      * @param objects objects
      */
     private void log(PrintStream printStream, Level level, String format, Object... objects) {
-        String dateTime;
-
-        synchronized (SIMPLE_DATE_FORMAT) {
-            dateTime = SIMPLE_DATE_FORMAT.format(new Date());
-        }
-
         printStream.println(
                 new StringBuilder(80)
-                        .append(dateTime)
+                        .append(LocalDateTime.now().format(DATE_TIME_FORMATTER))
                         .append(" | ")
                         .append(Thread.currentThread().getName())
                         .append(" | ")

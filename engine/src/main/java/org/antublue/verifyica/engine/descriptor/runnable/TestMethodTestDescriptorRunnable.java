@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.descriptor.execution;
+package org.antublue.verifyica.engine.descriptor.runnable;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.StateSet;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
@@ -28,10 +29,10 @@ import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement RunnableTestMethodTestDescriptor */
-public class RunnableTestMethodTestDescriptor extends AbstractRunnableTestDescriptor {
+public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunnable {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(RunnableTestMethodTestDescriptor.class);
+            LoggerFactory.getLogger(TestMethodTestDescriptorRunnable.class);
 
     private final ExecutionRequest executionRequest;
     private final ArgumentContext argumentContext;
@@ -47,10 +48,14 @@ public class RunnableTestMethodTestDescriptor extends AbstractRunnableTestDescri
      * @param argumentContext argumentContext
      * @param testMethodTestDescriptor testMethodTestDescriptor
      */
-    public RunnableTestMethodTestDescriptor(
+    public TestMethodTestDescriptorRunnable(
             ExecutionRequest executionRequest,
             ArgumentContext argumentContext,
             TestMethodTestDescriptor testMethodTestDescriptor) {
+        Precondition.notNull(executionRequest, "executionRequest is null");
+        Precondition.notNull(argumentContext, "argumentContext is null");
+        Precondition.notNull(testMethodTestDescriptor, "testMethodTestDescriptor is null");
+
         this.executionRequest = executionRequest;
         this.argumentContext = argumentContext;
         this.testMethodTestDescriptor = testMethodTestDescriptor;

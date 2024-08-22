@@ -22,7 +22,7 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 /** Class to implement StatusEngineDescriptor */
 public class StatusEngineDescriptor extends EngineDescriptor {
 
-    private boolean hasFailures;
+    private long failureCount;
 
     /**
      * Constructor
@@ -34,9 +34,13 @@ public class StatusEngineDescriptor extends EngineDescriptor {
         super(uniqueId, displayName);
     }
 
-    /** Method to mark the test descriptor as having failures */
-    public void setHasFailures() {
-        this.hasFailures = true;
+    /**
+     * Method to set the failure count
+     *
+     * @param failureCount failureCount
+     */
+    public void setFailureCount(long failureCount) {
+        this.failureCount = failureCount;
     }
 
     /**
@@ -45,6 +49,6 @@ public class StatusEngineDescriptor extends EngineDescriptor {
      * @return true if the test descriptor has failures, else false
      */
     public boolean hasFailures() {
-        return hasFailures;
+        return failureCount > 0;
     }
 }

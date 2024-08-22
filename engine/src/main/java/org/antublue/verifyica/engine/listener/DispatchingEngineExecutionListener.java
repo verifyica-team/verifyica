@@ -17,15 +17,15 @@
 package org.antublue.verifyica.engine.listener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
 
-/** Class to implement ChainedEngineExecutionListener */
-public class ChainedEngineExecutionListener implements EngineExecutionListener {
+/** Class to implement DispatchingEngineExecutionListener */
+public class DispatchingEngineExecutionListener implements EngineExecutionListener {
 
     private final List<EngineExecutionListener> engineExecutionListeners;
 
@@ -34,9 +34,15 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
      *
      * @param engineExecutionListeners engineExecutionListeners
      */
-    public ChainedEngineExecutionListener(EngineExecutionListener... engineExecutionListeners) {
+    public DispatchingEngineExecutionListener(EngineExecutionListener... engineExecutionListeners) {
+        Precondition.notNull(engineExecutionListeners, "engineExecutionListeners is null");
         this.engineExecutionListeners = new ArrayList<>();
-        this.engineExecutionListeners.addAll(Arrays.asList(engineExecutionListeners));
+
+        for (EngineExecutionListener engineExecutionListener : engineExecutionListeners) {
+            if (engineExecutionListener != null) {
+                this.engineExecutionListeners.add(engineExecutionListener);
+            }
+        }
     }
 
     @Override

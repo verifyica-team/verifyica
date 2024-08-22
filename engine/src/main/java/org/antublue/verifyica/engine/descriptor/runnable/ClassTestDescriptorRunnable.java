@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.descriptor.execution;
+package org.antublue.verifyica.engine.descriptor.runnable;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.VerifyicaEngine;
 import org.antublue.verifyica.engine.common.NamedRunnable;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateSet;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
@@ -43,9 +44,9 @@ import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement RunnableClassTestDescriptor */
-public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor {
+public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RunnableClassTestDescriptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptorRunnable.class);
 
     private static final ExecutorService EXECUTOR_SERVICE =
             ExecutorSupport.newExecutorService(VerifyicaEngine.getEngineArgumentParallelism());
@@ -67,10 +68,14 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
      * @param engineContext engineContext
      * @param classTestDescriptor classTestDescriptor
      */
-    public RunnableClassTestDescriptor(
+    public ClassTestDescriptorRunnable(
             ExecutionRequest executionRequest,
             EngineContext engineContext,
             ClassTestDescriptor classTestDescriptor) {
+        Precondition.notNull(executionRequest, "executionRequest is null");
+        Precondition.notNull(engineContext, "engineContext is null");
+        Precondition.notNull(classTestDescriptor, "classTestDescriptor is null");
+
         this.executionRequest = executionRequest;
         this.classTestDescriptor = classTestDescriptor;
         this.testClass = classTestDescriptor.getTestClass();
@@ -148,17 +153,17 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
                         argumentTestDescriptor ->
                                 futures.add(
                                         EXECUTOR_SERVICE.submit(
-                                                SemaphoreRunnable.wrap(
-                                                        NamedRunnable.wrap(
-                                                                new RunnableArgumentTestDescriptor(
-                                                                        executionRequest,
-                                                                        classInstanceContext,
-                                                                        argumentTestDescriptor),
+                                                new SemaphoreRunnable(
+                                                        semaphore,
+                                                        new NamedRunnable(
                                                                 Thread.currentThread().getName()
                                                                         + "/"
                                                                         + HashSupport.alphanumeric(
-                                                                                4)),
-                                                        semaphore))));
+                                                                                4),
+                                                                new ArgumentTestDescriptorRunnable(
+                                                                        executionRequest,
+                                                                        classInstanceContext,
+                                                                        argumentTestDescriptor))))));
 
                 ExecutorSupport.waitForAllFutures(futures, EXECUTOR_SERVICE);
 
@@ -175,7 +180,7 @@ public class RunnableClassTestDescriptor extends AbstractRunnableTestDescriptor 
 
                 argumentTestDescriptors.forEach(
                         argumentTestDescriptor ->
-                                new RunnableArgumentTestDescriptor(
+                                new ArgumentTestDescriptorRunnable(
                                                 executionRequest,
                                                 classInstanceContext,
                                                 argumentTestDescriptor)

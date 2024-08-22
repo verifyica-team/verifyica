@@ -17,22 +17,47 @@
 package org.antublue.verifyica.engine.common;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.util.Arrays;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 public class NamedRunnableTest {
 
     @Test
-    public void test() {
-        String threadName = Thread.currentThread().getName();
-        String customThreadName = UUID.randomUUID().toString();
+    public void testThreadName() {
+        Thread thread = Thread.currentThread();
+        String threadName = thread.getName();
+        String namedRunnableThreadName = UUID.randomUUID().toString();
 
-        Runnable runnable =
-                () -> assertThat(Thread.currentThread().getName()).isEqualTo(customThreadName);
+        new NamedRunnable(
+                        namedRunnableThreadName,
+                        () -> {
+                            String currentThreadName = Thread.currentThread().getName();
+                            assertThat(currentThreadName).isNotNull();
+                            assertThat(currentThreadName).isEqualTo(namedRunnableThreadName);
+                        })
+                .run();
 
-        NamedRunnable.wrap(runnable, customThreadName).run();
+        assertThat(thread.getName()).isEqualTo(threadName);
+    }
 
-        assertThat(Thread.currentThread().getName()).isEqualTo(threadName);
+    @Test
+    public void testInvalidArguments() {
+        String[] names =
+                new String[] {"", " ", "\t", "\n", "\r", " \t", " \r", " \n", " \t\r\n", " \r\n"};
+
+        Arrays.stream(names)
+                .forEach(
+                        name ->
+                                assertThatExceptionOfType(IllegalArgumentException.class)
+                                        .isThrownBy(() -> new NamedRunnable(name, () -> {})));
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> new NamedRunnable("test", null));
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> new NamedRunnable(null, null));
     }
 }

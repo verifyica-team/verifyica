@@ -159,16 +159,16 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 String testArgumentDisplayName = null;
                 String testMethodDisplayName = null;
                 String testClassDisplayName =
-                        getClassTestDescriptor(testDescriptor).getDisplayName();
+                        findClassTestDescriptor(testDescriptor).getDisplayName();
 
                 ArgumentTestDescriptor argumentTestDescriptor =
-                        getArgumentTestDescriptor(testDescriptor);
+                        findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
                     testArgumentDisplayName = argumentTestDescriptor.getTestArgument().getName();
                 }
 
                 TestMethodTestDescriptor testMethodTestDescriptor =
-                        getTestMethodTestDescriptor(testDescriptor);
+                        findTestMethodTestDescriptor(testDescriptor);
                 if (testMethodTestDescriptor != null) {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
@@ -210,16 +210,16 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 String testArgumentDisplayName = null;
                 String testMethodDisplayName = null;
                 String testClassDisplayName =
-                        getClassTestDescriptor(testDescriptor).getDisplayName();
+                        findClassTestDescriptor(testDescriptor).getDisplayName();
 
                 ArgumentTestDescriptor argumentTestDescriptor =
-                        getArgumentTestDescriptor(testDescriptor);
+                        findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
                     testArgumentDisplayName = argumentTestDescriptor.getTestArgument().getName();
                 }
 
                 TestMethodTestDescriptor testMethodTestDescriptor =
-                        getTestMethodTestDescriptor(testDescriptor);
+                        findTestMethodTestDescriptor(testDescriptor);
                 if (testMethodTestDescriptor != null) {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
@@ -269,16 +269,16 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 String testArgumentDisplayName = null;
                 String testMethodDisplayName = null;
                 String testClassDisplayName =
-                        getClassTestDescriptor(testDescriptor).getDisplayName();
+                        findClassTestDescriptor(testDescriptor).getDisplayName();
 
                 ArgumentTestDescriptor argumentTestDescriptor =
-                        getArgumentTestDescriptor(testDescriptor);
+                        findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
                     testArgumentDisplayName = argumentTestDescriptor.getTestArgument().getName();
                 }
 
                 TestMethodTestDescriptor testMethodTestDescriptor =
-                        getTestMethodTestDescriptor(testDescriptor);
+                        findTestMethodTestDescriptor(testDescriptor);
                 if (testMethodTestDescriptor != null) {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
@@ -342,37 +342,67 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
         }
     }
 
-    private static ClassTestDescriptor getClassTestDescriptor(TestDescriptor testDescriptor) {
-        if (testDescriptor instanceof TestMethodTestDescriptor) {
-            return (ClassTestDescriptor) testDescriptor.getParent().get().getParent().get();
-        } else if (testDescriptor instanceof ArgumentTestDescriptor) {
-            return (ClassTestDescriptor) testDescriptor.getParent().get();
-        } else if (testDescriptor instanceof ClassTestDescriptor) {
+    /**
+     * Method to find the ClassTestDescriptor
+     *
+     * @param testDescriptor testDescriptor
+     * @return the ClassTestDescriptor or null if not found
+     */
+    private static ClassTestDescriptor findClassTestDescriptor(TestDescriptor testDescriptor) {
+        if (testDescriptor instanceof ClassTestDescriptor) {
             return (ClassTestDescriptor) testDescriptor;
-        } else {
-            return null;
         }
-    }
 
-    private static ArgumentTestDescriptor getArgumentTestDescriptor(TestDescriptor testDescriptor) {
+        if (testDescriptor instanceof ArgumentTestDescriptor) {
+            return (ClassTestDescriptor) testDescriptor.getParent().orElse(null);
+        }
+
         if (testDescriptor instanceof TestMethodTestDescriptor) {
-            return (ArgumentTestDescriptor) testDescriptor.getParent().get();
-        } else if (testDescriptor instanceof ArgumentTestDescriptor) {
-            return (ArgumentTestDescriptor) testDescriptor;
-        } else {
-            return null;
+            return (ClassTestDescriptor)
+                    testDescriptor.getParent().flatMap(TestDescriptor::getParent).orElse(null);
         }
+
+        return null;
     }
 
-    private static TestMethodTestDescriptor getTestMethodTestDescriptor(
+    /**
+     * Method to resolve the ArgumentTestDescriptor
+     *
+     * @param testDescriptor testDescriptor
+     * @return the ArgumentTestDescriptor or null if not found
+     */
+    private static ArgumentTestDescriptor findArgumentTestDescriptor(
             TestDescriptor testDescriptor) {
-        if (testDescriptor instanceof TestMethodTestDescriptor) {
-            return (TestMethodTestDescriptor) testDescriptor;
-        } else {
-            return null;
+        if (testDescriptor instanceof ArgumentTestDescriptor) {
+            return (ArgumentTestDescriptor) testDescriptor;
         }
+
+        if (testDescriptor instanceof TestMethodTestDescriptor) {
+            return (ArgumentTestDescriptor) testDescriptor.getParent().orElse(null);
+        }
+
+        return null;
     }
 
+    /**
+     * Method to find the TestMethodTestDescriptor
+     *
+     * @param testDescriptor testDescriptor
+     * @return the TestMethodTestDescriptor or null if not found
+     */
+    private static TestMethodTestDescriptor findTestMethodTestDescriptor(
+            TestDescriptor testDescriptor) {
+        return (testDescriptor instanceof TestMethodTestDescriptor)
+                ? (TestMethodTestDescriptor) testDescriptor
+                : null;
+    }
+
+    /**
+     * Method to return whether we should process the TestDescriptor
+     *
+     * @param testDescriptor testDescriptor
+     * @return true if we should process the TestDescriptor, else false
+     */
     private static boolean shouldProcessDescriptor(TestDescriptor testDescriptor) {
         return testDescriptor instanceof ClassTestDescriptor
                 || testDescriptor instanceof ArgumentTestDescriptor

@@ -21,8 +21,8 @@ import java.util.concurrent.Semaphore;
 /** Class to implement SemaphoreControlledRunnable */
 public class SemaphoreRunnable implements Runnable {
 
-    private final Runnable runnable;
     private final Semaphore semaphore;
+    private final Runnable runnable;
 
     /**
      * Constructor
@@ -30,7 +30,10 @@ public class SemaphoreRunnable implements Runnable {
      * @param semaphore semaphore
      * @param runnable runnable
      */
-    private SemaphoreRunnable(Semaphore semaphore, Runnable runnable) {
+    public SemaphoreRunnable(Semaphore semaphore, Runnable runnable) {
+        Precondition.notNull(semaphore, "semaphore is null");
+        Precondition.notNull(runnable, "runnable is null");
+
         this.semaphore = semaphore;
         this.runnable = runnable;
     }
@@ -47,19 +50,5 @@ public class SemaphoreRunnable implements Runnable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-    }
-
-    /**
-     * Method to wrap a Runnable
-     *
-     * @param runnable runnable
-     * @param semaphore semaphore
-     * @return a SemaphoreControlledRunnable
-     */
-    public static SemaphoreRunnable wrap(Runnable runnable, Semaphore semaphore) {
-        Precondition.notNull(runnable, "runnable is null");
-        Precondition.notNull(semaphore, "semaphore is null");
-
-        return new SemaphoreRunnable(semaphore, runnable);
     }
 }

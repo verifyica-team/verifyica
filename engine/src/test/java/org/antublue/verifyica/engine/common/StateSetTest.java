@@ -27,21 +27,21 @@ public class StateSetTest {
     public void test() {
         StateSet<String> stateSet = new StateSet<>();
 
-        assertThat(stateSet.getObservedStates()).isNotNull();
-        assertThat(stateSet.getObservedStates()).isEmpty();
+        assertThat(stateSet.getObservedStateEntries()).isNotNull();
+        assertThat(stateSet.getObservedStateEntries()).isEmpty();
 
         stateSet.setCurrentState("FOO");
 
-        assertThat(stateSet.getObservedStates()).isNotNull();
-        assertThat(stateSet.getObservedStates()).hasSize(1);
+        assertThat(stateSet.getObservedStateEntries()).isNotNull();
+        assertThat(stateSet.getObservedStateEntries()).hasSize(1);
         assertThat(stateSet.getFirstStateEntryWithThrowable()).isEmpty();
 
         stateSet.setCurrentState("BAR", new RuntimeException());
 
         assertThat(stateSet.isCurrentState("BAR")).isTrue();
         assertThat(stateSet.getCurrentState()).isEqualTo("BAR");
-        assertThat(stateSet.getObservedStates()).isNotNull();
-        assertThat(stateSet.getObservedStates()).hasSize(2);
+        assertThat(stateSet.getObservedStateEntries()).isNotNull();
+        assertThat(stateSet.getObservedStateEntries()).hasSize(2);
         assertThat(stateSet.getFirstStateEntryWithThrowable()).isNotEmpty();
 
         assertThatExceptionOfType(IllegalStateException.class)
@@ -50,7 +50,7 @@ public class StateSetTest {
         stateSet.clear();
 
         assertThat(stateSet.isEmpty()).isTrue();
-        assertThat(stateSet.getObservedStates()).isNotNull();
-        assertThat(stateSet.getObservedStates()).isEmpty();
+        assertThat(stateSet.getObservedStateEntries()).isNotNull();
+        assertThat(stateSet.getObservedStateEntries()).isEmpty();
     }
 }
