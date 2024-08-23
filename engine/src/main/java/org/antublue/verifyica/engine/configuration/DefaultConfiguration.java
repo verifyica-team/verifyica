@@ -229,9 +229,9 @@ public class DefaultConfiguration implements Configuration {
     public Configuration merge(Configuration configuration) {
         Precondition.notNull(configuration, "configuration is null");
 
-        configuration.getReadWriteLock().readLock().lock();
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
+            configuration.getReadWriteLock().readLock().lock();
             try {
                 configuration
                         .keySet()
@@ -242,10 +242,10 @@ public class DefaultConfiguration implements Configuration {
                                                 .ifPresent(value -> map.put(key, value)));
                 return this;
             } finally {
-                getReadWriteLock().writeLock().unlock();
+                configuration.getReadWriteLock().readLock().unlock();
             }
         } finally {
-            configuration.getReadWriteLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -266,17 +266,17 @@ public class DefaultConfiguration implements Configuration {
     public Configuration replace(Configuration configuration) {
         Precondition.notNull(configuration, "configuration is null");
 
-        configuration.getReadWriteLock().readLock().lock();
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
+            configuration.getReadWriteLock().readLock().lock();
             try {
                 clear();
                 return merge(configuration);
             } finally {
-                getReadWriteLock().writeLock().unlock();
+                configuration.getReadWriteLock().readLock().unlock();
             }
         } finally {
-            configuration.getReadWriteLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 

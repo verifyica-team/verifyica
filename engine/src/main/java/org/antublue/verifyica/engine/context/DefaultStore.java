@@ -288,18 +288,18 @@ public class DefaultStore implements Store {
     public Store replace(Store store) {
         Precondition.notNull(store, "store is null");
 
-        store.getReadWriteLock().readLock().lock();
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
+            store.getReadWriteLock().readLock().lock();
             try {
                 map.clear();
                 merge(store);
                 return this;
             } finally {
-                getReadWriteLock().writeLock().unlock();
+                store.getReadWriteLock().readLock().unlock();
             }
         } finally {
-            store.getReadWriteLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
@@ -328,17 +328,17 @@ public class DefaultStore implements Store {
             return this;
         }
 
-        store.getReadWriteLock().readLock().lock();
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
+            store.getReadWriteLock().readLock().lock();
             try {
                 store.keySet().forEach(key -> put(key, store.get(key)));
                 return this;
             } finally {
-                getReadWriteLock().writeLock().unlock();
+                store.getReadWriteLock().readLock().unlock();
             }
         } finally {
-            store.getReadWriteLock().readLock().unlock();
+            getReadWriteLock().writeLock().unlock();
         }
     }
 
