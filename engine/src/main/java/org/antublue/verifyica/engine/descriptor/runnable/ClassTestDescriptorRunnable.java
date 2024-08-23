@@ -145,27 +145,44 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                 LOGGER.trace("argumentTestDescriptors size [%d]", argumentTestDescriptors.size());
                 LOGGER.trace("testArgumentParallelism [%d]", testArgumentParallelism);
 
-                List<Future<?>> futures = new ArrayList<>();
+                String threadName = Thread.currentThread().getName();
 
-                Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
+                if (testArgumentParallelism > 1) {
+                    List<Future<?>> futures = new ArrayList<>();
 
-                argumentTestDescriptors.forEach(
-                        argumentTestDescriptor ->
-                                futures.add(
-                                        EXECUTOR_SERVICE.submit(
-                                                new SemaphoreRunnable(
-                                                        semaphore,
-                                                        new ThreadNameRunnable(
-                                                                Thread.currentThread().getName()
-                                                                        + "/"
-                                                                        + HashSupport.alphanumeric(
-                                                                                4),
-                                                                new ArgumentTestDescriptorRunnable(
-                                                                        executionRequest,
-                                                                        classInstanceContext,
-                                                                        argumentTestDescriptor))))));
+                    Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
 
-                ExecutorSupport.waitForAllFutures(futures, EXECUTOR_SERVICE);
+                    argumentTestDescriptors.forEach(
+                            argumentTestDescriptor ->
+                                    futures.add(
+                                            EXECUTOR_SERVICE.submit(
+                                                    new SemaphoreRunnable(
+                                                            semaphore,
+                                                            new ThreadNameRunnable(
+                                                                    threadName
+                                                                            + "/"
+                                                                            + HashSupport
+                                                                                    .alphanumeric(
+                                                                                            4),
+                                                                    new ArgumentTestDescriptorRunnable(
+                                                                            executionRequest,
+                                                                            classInstanceContext,
+                                                                            argumentTestDescriptor))))));
+
+                    ExecutorSupport.waitForAllFutures(futures, EXECUTOR_SERVICE);
+                } else {
+                    String threadNameSuffix = threadName.substring(threadName.lastIndexOf("/") + 1);
+
+                    argumentTestDescriptors.forEach(
+                            argumentTestDescriptor ->
+                                    new ThreadNameRunnable(
+                                                    threadName + "/" + threadNameSuffix,
+                                                    new ArgumentTestDescriptorRunnable(
+                                                            executionRequest,
+                                                            classInstanceContext,
+                                                            argumentTestDescriptor))
+                                            .run());
+                }
 
                 stateSet.setCurrentState("execute.success");
             } catch (Throwable t) {
