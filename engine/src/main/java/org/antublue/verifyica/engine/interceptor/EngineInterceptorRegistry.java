@@ -69,8 +69,8 @@ public class EngineInterceptorRegistry {
     public EngineInterceptorRegistry register(EngineInterceptor engineInterceptor) {
         Precondition.notNull(engineInterceptor, "engineInterceptor is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             engineInterceptors.add(engineInterceptor);
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -88,8 +88,8 @@ public class EngineInterceptorRegistry {
     public EngineInterceptorRegistry remove(EngineInterceptor engineInterceptor) {
         Precondition.notNull(engineInterceptor, "testClass is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             engineInterceptors.remove(engineInterceptor);
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -104,8 +104,8 @@ public class EngineInterceptorRegistry {
      * @return the number of class interceptors
      */
     public int size() {
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return engineInterceptors.size();
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -236,8 +236,8 @@ public class EngineInterceptorRegistry {
      * @return a COPY of the List of EngineInterceptors
      */
     private List<EngineInterceptor> getEngineInterceptors() {
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             return new ArrayList<>(engineInterceptors);
         } finally {
             getReadWriteLock().readLock().unlock();
@@ -250,8 +250,8 @@ public class EngineInterceptorRegistry {
      * @return a COPY of the List of EngineInterceptors in reverse
      */
     private List<EngineInterceptor> getEngineInterceptorsReverse() {
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             List<EngineInterceptor> list = new ArrayList<>(engineInterceptors);
             Collections.reverse(list);
             return list;
@@ -271,9 +271,8 @@ public class EngineInterceptorRegistry {
 
     /** Method to load test engine interceptors */
     private void loadEngineInterceptors() {
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
-
             if (!initialized) {
                 LOGGER.trace("loading engine interceptors");
 

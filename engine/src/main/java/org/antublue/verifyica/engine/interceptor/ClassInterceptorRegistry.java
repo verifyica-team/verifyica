@@ -83,8 +83,8 @@ public class ClassInterceptorRegistry {
         Precondition.notNull(testClass, "testClass is null");
         Precondition.notNull(classInterceptor, "classInterceptor is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             mappedClassInterceptors
                     .computeIfAbsent(testClass, c -> new ArrayList<>())
                     .add(classInterceptor);
@@ -106,8 +106,8 @@ public class ClassInterceptorRegistry {
         Precondition.notNull(testClass, "testClass is null");
         Precondition.notNull(classInterceptor, "classInterceptor is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             mappedClassInterceptors.get(testClass).remove(classInterceptor);
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -125,8 +125,8 @@ public class ClassInterceptorRegistry {
     public int size(Class<?> testClass) {
         Precondition.notNull(testClass, "testClass is null");
 
+        getReadWriteLock().readLock().lock();
         try {
-            getReadWriteLock().readLock().lock();
             List<ClassInterceptor> classInterceptors = mappedClassInterceptors.get(testClass);
             return classInterceptors != null ? classInterceptors.size() : 0;
         } finally {
@@ -143,8 +143,8 @@ public class ClassInterceptorRegistry {
     public ClassInterceptorRegistry clear(Class<?> testClass) {
         Precondition.notNull(testClass, "testClass is null");
 
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
             mappedClassInterceptors.remove(testClass);
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -647,9 +647,8 @@ public class ClassInterceptorRegistry {
      * @return a COPY of the List of ClassInterceptors (internal + class specific)
      */
     private List<ClassInterceptor> getClassInterceptors(Class<?> testClass) {
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
-
             List<ClassInterceptor> classInterceptors = new ArrayList<>();
 
             if (this.classInterceptors != null) {
@@ -690,9 +689,8 @@ public class ClassInterceptorRegistry {
 
     /** Method to load class interceptors */
     private void loadClassInterceptors() {
+        getReadWriteLock().writeLock().lock();
         try {
-            getReadWriteLock().writeLock().lock();
-
             if (!initialized) {
                 LOGGER.trace("loadClassInterceptors()");
 
