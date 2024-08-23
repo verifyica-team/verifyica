@@ -36,7 +36,7 @@ public class StoreTest1 {
 
     @Verifyica.Test
     @Verifyica.Order(order = 0)
-    public void putIntoStores(ArgumentContext argumentContext) throws Throwable {
+    public void putIntoStores(ArgumentContext argumentContext) {
         System.out.printf("putIntoStores(%s)%n", argumentContext.getTestArgument().getPayload());
 
         argumentContext.getStore().put(ARGUMENT_CONTEXT_KEY, "argument");
@@ -50,7 +50,7 @@ public class StoreTest1 {
 
     @Verifyica.Test
     @Verifyica.Order(order = 1)
-    public void getOutOfStores(ArgumentContext argumentContext) throws Throwable {
+    public void getOutOfStores(ArgumentContext argumentContext) {
         System.out.printf("getOutOfStores(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext.getStore().get(ARGUMENT_CONTEXT_KEY, String.class))
