@@ -14,7 +14,7 @@ A Java annotation driven, multithreaded test engine for integration testing buil
 
 Parameterized testing is traditionally test first oriented ...
 
-- Given a set of tests (methods), execute each test using a set of arguments.
+- Given a set of test methods, execute each test method with a list of test arguments.
 
 ```
 for (Test test : Tests) {
@@ -29,7 +29,7 @@ for (Test test : Tests) {
 
 Verifyica swaps the paradigm to be test argument first oriented ...
 
-- Given a set of arguments, execute each test with the arguments.
+- Given a set of test arguments, execute each test method with the test arguments.
 
 ```
 for (TestArgument testArgument : TestArguments) {
