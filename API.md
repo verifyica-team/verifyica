@@ -134,3 +134,7 @@ A Store is thread-safe, but allow locking the Store lock for chained atomic oper
 [ConcurrencySupport](api/src/main/java/org/antublue/verifyica/api/concurrency/ConcurrencySupport.java) is a helper used to provide synchronization of code.
 
 Additionally, `ConcurrencySupport` provides a global Lock manager.
+
+---
+
+Copyright (C) 2024 The Verifyica project authors
