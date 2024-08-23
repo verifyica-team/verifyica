@@ -37,7 +37,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.antublue.verifyica.api.Configuration;
-import org.antublue.verifyica.engine.VerifyicaEngine;
+import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.common.SynchronizedPrintStream;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
@@ -256,10 +256,12 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                             .configurationParameters(Collections.emptyMap())
                             .build();
 
-            VerifyicaEngine engine = new VerifyicaEngine();
+            VerifyicaTestEngine verifyicaTestEngine = new VerifyicaTestEngine();
 
             TestDescriptor testDescriptor =
-                    engine.discover(launcherDiscoveryRequest, UniqueId.forEngine(engine.getId()));
+                    verifyicaTestEngine.discover(
+                            launcherDiscoveryRequest,
+                            UniqueId.forEngine(verifyicaTestEngine.getId()));
 
             ExecutionRequest executionRequest =
                     new ExecutionRequest(
@@ -268,7 +270,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                             new DefaultConfigurationParameters(
                                     DefaultEngineContext.getInstance().getConfiguration()));
 
-            engine.execute(executionRequest);
+            verifyicaTestEngine.execute(executionRequest);
 
             if (((StatusEngineDescriptor) testDescriptor).hasFailures()) {
                 throw new MojoFailureException("");

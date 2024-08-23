@@ -28,7 +28,7 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 
-/** Class to implement RunnableTestMethodTestDescriptor */
+/** Class to implement TestMethodTestDescriptorRunnable */
 public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunnable {
 
     private static final Logger LOGGER =

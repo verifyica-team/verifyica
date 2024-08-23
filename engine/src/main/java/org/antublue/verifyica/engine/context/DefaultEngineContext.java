@@ -19,7 +19,7 @@ package org.antublue.verifyica.engine.context;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.VerifyicaEngine;
+import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 
 /** Class to implement DefaultEngineContext */
@@ -36,7 +36,7 @@ public class DefaultEngineContext implements EngineContext {
 
     @Override
     public String getVersion() {
-        return VerifyicaEngine.staticGetVersion();
+        return VerifyicaTestEngine.staticGetVersion();
     }
 
     @Override

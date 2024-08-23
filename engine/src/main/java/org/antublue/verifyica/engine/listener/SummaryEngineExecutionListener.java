@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import org.antublue.verifyica.engine.VerifyicaEngine;
+import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.common.AnsiColor;
 import org.antublue.verifyica.engine.common.AnsiColorStringBuilder;
 import org.antublue.verifyica.engine.common.StopWatch;
@@ -43,7 +43,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             new AnsiColorStringBuilder()
                     .color(AnsiColor.TEXT_WHITE_BRIGHT)
                     .append("Verifyica ")
-                    .append(VerifyicaEngine.staticGetVersion())
+                    .append(VerifyicaTestEngine.staticGetVersion())
                     .reset()
                     .toString();
 

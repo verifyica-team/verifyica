@@ -25,7 +25,7 @@ import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.VerifyicaEngine;
+import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateSet;
@@ -43,13 +43,13 @@ import org.antublue.verifyica.engine.support.HashSupport;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 
-/** Class to implement RunnableClassTestDescriptor */
+/** Class to implement ClassTestDescriptorRunnable */
 public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptorRunnable.class);
 
     private static final ExecutorService EXECUTOR_SERVICE =
-            ExecutorSupport.newExecutorService(VerifyicaEngine.getEngineArgumentParallelism());
+            ExecutorSupport.newExecutorService(VerifyicaTestEngine.getEngineArgumentParallelism());
 
     private final ExecutionRequest executionRequest;
     private final ClassTestDescriptor classTestDescriptor;

@@ -64,9 +64,9 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 
 /** Class to implement VerifyicaEngine */
 @SuppressWarnings("PMD.EmptyCatchBlock")
-public class VerifyicaEngine implements TestEngine {
+public class VerifyicaTestEngine implements TestEngine {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(VerifyicaEngine.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VerifyicaTestEngine.class);
 
     /** Constant */
     private static final String ENGINE_PROPERTIES_RESOURCE = "/engine.properties";
@@ -134,7 +134,7 @@ public class VerifyicaEngine implements TestEngine {
     }
 
     /** Constructor */
-    public VerifyicaEngine() {
+    public VerifyicaTestEngine() {
         // INTENTIONALLY BLANK
     }
 
@@ -374,7 +374,7 @@ public class VerifyicaEngine implements TestEngine {
         String value = UNKNOWN_VERSION;
 
         try (InputStream inputStream =
-                VerifyicaEngine.class.getResourceAsStream(ENGINE_PROPERTIES_RESOURCE)) {
+                VerifyicaTestEngine.class.getResourceAsStream(ENGINE_PROPERTIES_RESOURCE)) {
             if (inputStream != null) {
                 Properties properties = new Properties();
                 properties.load(inputStream);

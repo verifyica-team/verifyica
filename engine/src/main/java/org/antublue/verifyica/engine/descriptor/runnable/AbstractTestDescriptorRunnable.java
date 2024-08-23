@@ -26,7 +26,7 @@ import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.junit.platform.engine.TestDescriptor;
 
-/** Class to implement AbstractRunnableTestDescriptor */
+/** Class to implement AbstractTestDescriptorRunnable */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public abstract class AbstractTestDescriptorRunnable implements Runnable {
 
