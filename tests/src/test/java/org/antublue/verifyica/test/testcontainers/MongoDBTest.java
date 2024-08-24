@@ -40,7 +40,7 @@ public class MongoDBTest {
 
     public static final String NETWORK = "network";
 
-    @Verifyica.ArgumentSupplier(parallelism = 2)
+    @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<MongoDBTestEnvironment> arguments() {
         return Stream.of(
                 new MongoDBTestEnvironment("mongo:4.4"),
