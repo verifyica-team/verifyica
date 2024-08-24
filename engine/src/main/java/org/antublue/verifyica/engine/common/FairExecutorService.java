@@ -135,7 +135,7 @@ public class FairExecutorService extends AbstractExecutorService {
                 Queue<Runnable> queue = entry.getValue();
                 Runnable task = queue.poll();
                 if (task != null) {
-                    executorService.execute(
+                    executorService.submit(
                             () -> {
                                 try {
                                     task.run();
