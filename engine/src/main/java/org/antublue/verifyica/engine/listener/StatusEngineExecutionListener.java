@@ -392,7 +392,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
      */
     private static TestMethodTestDescriptor findTestMethodTestDescriptor(
             TestDescriptor testDescriptor) {
-        return (testDescriptor instanceof TestMethodTestDescriptor)
+        return testDescriptor instanceof TestMethodTestDescriptor
                 ? (TestMethodTestDescriptor) testDescriptor
                 : null;
     }
