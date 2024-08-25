@@ -43,6 +43,11 @@ public class FairExecutorService extends AbstractExecutorService {
     private final AtomicBoolean isShutdown;
     private final AtomicBoolean isTerminating;
 
+    /**
+     * Constructor
+     *
+     * @param executorService executorService
+     */
     public FairExecutorService(ExecutorService executorService) {
         Precondition.notNull(executorService, "executorService is null");
 
