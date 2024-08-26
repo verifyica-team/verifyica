@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -103,6 +102,8 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     @Parameter(property = "properties")
     private Map<String, String> properties;
 
+    private Logger logger;
+
     static {
         Streams.fix();
     }
@@ -127,7 +128,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
      * @throws MojoExecutionException MojoExecutionException
      */
     public void execute() throws MojoFailureException, MojoExecutionException {
-        Logger logger = Logger.from(getLog());
+        logger = Logger.from(getLog());
 
         try {
             Configuration configuration = DefaultEngineContext.getInstance().getConfiguration();
@@ -157,67 +158,16 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
             Set<Path> artifactPaths = new LinkedHashSet<>();
 
-            List<String> classpathElements = mavenProject.getCompileClasspathElements();
-
-            if (classpathElements != null) {
-                for (String classpathElement : classpathElements) {
-                    Path path = new File(classpathElement).toPath();
-                    artifactPaths.add(path);
-                    logger.debug("classpathElement [%s]", path);
-                }
-            }
-
-            classpathElements = mavenProject.getCompileClasspathElements();
-            if (classpathElements != null) {
-                for (String classpathElement : classpathElements) {
-                    Path path = new File(classpathElement).toPath();
-                    artifactPaths.add(path);
-                    logger.debug("classpathElement [%s]", path);
-                }
-            }
-
-            classpathElements = mavenProject.getRuntimeClasspathElements();
-            if (classpathElements != null) {
-                for (String classpathElement : classpathElements) {
-                    Path path = new File(classpathElement).toPath();
-                    artifactPaths.add(path);
-                    logger.debug("classpathElement [%s]", path);
-                }
-            }
-
-            classpathElements = mavenProject.getTestClasspathElements();
-            if (classpathElements != null) {
-                for (String classpathElement : classpathElements) {
-                    Path path = new File(classpathElement).toPath();
-                    artifactPaths.add(path);
-                    logger.debug("classpathElement [%s]", path);
-                }
-            }
-
-            Artifact artifact = mavenProject.getArtifact();
-            if (artifact != null) {
-                Path path = artifact.getFile().toPath();
-                artifactPaths.add(path);
-                logger.debug("classpathElement [%s]", path);
-            }
-
-            Set<Artifact> artifactSet = mavenProject.getDependencyArtifacts();
-            if (artifactSet != null) {
-                for (Artifact a : artifactSet) {
-                    Path path = a.getFile().toPath();
-                    artifactPaths.add(path);
-                    logger.debug("classpathElement [%s]", path);
-                }
-            }
-
-            List<Artifact> artifactList = mavenProject.getAttachedArtifacts();
-            if (artifactList != null) {
-                for (Artifact a : artifactList) {
-                    Path path = a.getFile().toPath();
-                    artifactPaths.add(path);
-                    logger.debug("classpathElement [%s]", path);
-                }
-            }
+            artifactPaths.addAll(
+                    resolveClasspathElements(mavenProject.getCompileClasspathElements()));
+            artifactPaths.addAll(
+                    resolveClasspathElements(mavenProject.getCompileClasspathElements()));
+            artifactPaths.addAll(
+                    resolveClasspathElements(mavenProject.getRuntimeClasspathElements()));
+            artifactPaths.addAll(resolveClasspathElements(mavenProject.getTestClasspathElements()));
+            artifactPaths.addAll(resolveArtifact(mavenProject.getArtifact()));
+            artifactPaths.addAll(resolveArtifacts(mavenProject.getDependencyArtifacts()));
+            artifactPaths.addAll(resolveArtifacts(mavenProject.getAttachedArtifacts()));
 
             Map<String, URL> urls = new LinkedHashMap<>();
 
@@ -274,10 +224,68 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     }
 
     /**
-     * Method to build a String representing the class path
+     * Method to process a Collection of Strings representing classpath elements
+     *
+     * @param classpathElements classpathElements
+     * @return a Set of Paths
+     */
+    private Set<Path> resolveClasspathElements(Collection<String> classpathElements) {
+        Set<Path> paths = new LinkedHashSet<>();
+
+        if (classpathElements != null) {
+            for (String classpathElement : classpathElements) {
+                File file = new File(classpathElement);
+                if (file.exists()) {
+                    Path path = file.toPath();
+                    paths.add(path);
+                    logger.debug("classpathElement [%s]", path);
+                }
+            }
+        }
+
+        return paths;
+    }
+
+    /**
+     * Method to process an Artifact representing a classpath element
+     *
+     * @param artifact artifact
+     * @return a Set of Paths
+     */
+    private Set<Path> resolveArtifact(Artifact artifact) {
+        Set<Artifact> artifacts = new LinkedHashSet<>();
+        artifacts.add(artifact);
+        return resolveArtifacts(artifacts);
+    }
+
+    /**
+     * Method to process a Collection of Artifacts representing a classpath element
+     *
+     * @param artifacts artifacts
+     * @return a Set of Paths
+     */
+    private Set<Path> resolveArtifacts(Collection<Artifact> artifacts) {
+        Set<Path> paths = new LinkedHashSet<>();
+
+        if (artifacts != null) {
+            for (Artifact artifact : artifacts) {
+                File file = artifact.getFile();
+                if (file.exists()) {
+                    Path path = file.toPath();
+                    paths.add(path);
+                    logger.debug("classpathElement [%s]", path);
+                }
+            }
+        }
+
+        return paths;
+    }
+
+    /**
+     * Method to build a String representing the classpath
      *
      * @param urls urls
-     * @return a String representing the class path
+     * @return a String representing the classpath
      */
     private static String buildClasspath(Collection<URL> urls) {
         StringJoiner stringJoiner = new StringJoiner(File.pathSeparator);
