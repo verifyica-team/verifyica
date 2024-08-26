@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 /** Class to implement ANSIColor */
+@SuppressWarnings("unused")
 public class AnsiColor {
 
     /** Configuration constant */
