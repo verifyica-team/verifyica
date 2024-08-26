@@ -21,12 +21,13 @@ import java.util.Collection;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.test.support.RandomSupport;
 
 /** Example test */
 @Verifyica.Disabled
 public class StreamsTest {
 
-    @Verifyica.ArgumentSupplier(parallelism = 2)
+    @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
         Collection<Argument<String>> collection = new ArrayList<>();
 
@@ -39,8 +40,21 @@ public class StreamsTest {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
+        sleep();
         System.out.println("test1() A");
+        sleep();
         new RuntimeException().printStackTrace(System.err);
+        sleep();
         System.out.println("test1() B");
+        sleep();
+        new IllegalArgumentException().printStackTrace(System.err);
+    }
+
+    private static void sleep() {
+        try {
+            Thread.sleep(RandomSupport.randomLong(0, 1000));
+        } catch (InterruptedException e) {
+            // INTENTIONALLY BLANK
+        }
     }
 }
