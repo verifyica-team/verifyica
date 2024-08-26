@@ -28,13 +28,11 @@ import java.util.regex.Pattern;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
+import org.antublue.verifyica.engine.context.DefaultEngineContext;
 
 /** Class to implement Logger */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class Logger {
-
-    private static final Configuration CONFIGURATION = DefaultConfiguration.getInstance();
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
@@ -51,12 +49,14 @@ public class Logger {
         this.name = name;
         this.level = new AtomicReference<>(Level.INFO);
 
+        Configuration configuration = DefaultEngineContext.getInstance().getConfiguration();
+
         String loggerLevel =
-                CONFIGURATION
+                configuration
                         .getOptional(Constants.ENGINE_LOGGER_LEVEL)
                         .orElse(Level.INFO.toString());
 
-        String regex = CONFIGURATION.getOptional(Constants.ENGINE_LOGGER_REGEX).orElse(".*");
+        String regex = configuration.getOptional(Constants.ENGINE_LOGGER_REGEX).orElse(".*");
 
         try {
             Pattern pattern = Pattern.compile(regex);

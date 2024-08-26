@@ -40,7 +40,6 @@ import org.antublue.verifyica.engine.common.Streams;
 import org.antublue.verifyica.engine.common.ThreadNameRunnable;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.configuration.DefaultConfiguration;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
@@ -255,7 +254,8 @@ public class VerifyicaTestEngine implements TestEngine {
         LOGGER.trace("getEngineClassParallelism()");
 
         int engineClassParallelism =
-                DefaultConfiguration.getInstance()
+                DefaultEngineContext.getInstance()
+                        .getConfiguration()
                         .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
                         .map(
                                 value -> {
@@ -296,7 +296,8 @@ public class VerifyicaTestEngine implements TestEngine {
         int engineClassParallelism = getEngineClassParallelism();
 
         int engineArgumentParallelism =
-                DefaultConfiguration.getInstance()
+                DefaultEngineContext.getInstance()
+                        .getConfiguration()
                         .getOptional(Constants.ENGINE_ARGUMENT_PARALLELISM)
                         .map(
                                 value -> {
