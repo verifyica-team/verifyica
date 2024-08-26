@@ -17,6 +17,7 @@
 package org.antublue.verifyica.engine.common;
 
 /** Class to implement AnsiColorString */
+@SuppressWarnings("PMD.MissingStaticMethodInNonInstantiatableClass")
 public class AnsiColorString {
 
     /** Constructor */
