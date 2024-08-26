@@ -5,6 +5,22 @@
  * Author: https://stackoverflow.com/users/1217178/markus-a
  */
 
+/*
+ * Modifications Copyright (C) 2024 The Verifyica project authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.antublue.verifyica.engine.common;
 
 import java.io.IOException;
@@ -17,8 +33,26 @@ import java.util.List;
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class Streams {
 
-    private static List<OutputStream> outputStreams = null;
-    private static OutputStream lastOutputStream = null;
+    private static List<OutputStream> OUTPUT_STREAMS = null;
+    private static OutputStream LAST_OUTPUT_STREAM = null;
+
+    /** Constructor */
+    private Streams() {
+        // INTENTIONALLY BLANK
+    }
+
+    /**
+     * Method to fix streams
+     */
+    public static void fix() {
+        synchronized (Streams.class) {
+            if (OUTPUT_STREAMS == null) {
+                OUTPUT_STREAMS = new ArrayList<>();
+                System.setErr(new PrintStream(new FixedStream(System.err)));
+                System.setOut(new PrintStream(new FixedStream(System.out)));
+            }
+        }
+    }
 
     /** Class to implement FixedStream */
     private static class FixedStream extends OutputStream {
@@ -30,14 +64,14 @@ public class Streams {
          *
          * @param outputStream outputStream
          */
-        public FixedStream(OutputStream outputStream) {
+        private FixedStream(OutputStream outputStream) {
             this.outputStream = outputStream;
-            outputStreams.add(this);
+            OUTPUT_STREAMS.add(this);
         }
 
         @Override
         public void write(int b) throws IOException {
-            if (lastOutputStream != this) {
+            if (LAST_OUTPUT_STREAM != this) {
                 flushAndSwap();
             }
             outputStream.write(b);
@@ -45,7 +79,7 @@ public class Streams {
 
         @Override
         public void write(byte[] b) throws IOException {
-            if (lastOutputStream != this) {
+            if (LAST_OUTPUT_STREAM != this) {
                 flushAndSwap();
             }
             outputStream.write(b);
@@ -53,7 +87,7 @@ public class Streams {
 
         @Override
         public void write(byte[] b, int off, int len) throws IOException {
-            if (lastOutputStream != this) {
+            if (LAST_OUTPUT_STREAM != this) {
                 flushAndSwap();
             }
             outputStream.write(b, off, len);
@@ -75,8 +109,8 @@ public class Streams {
          * @throws IOException IOException
          */
         private void flushAndSwap() throws IOException {
-            if (lastOutputStream != null) {
-                lastOutputStream.flush();
+            if (LAST_OUTPUT_STREAM != null) {
+                LAST_OUTPUT_STREAM.flush();
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
@@ -84,20 +118,7 @@ public class Streams {
                 }
             }
 
-            lastOutputStream = this;
-        }
-    }
-
-    /**
-     * Method to fix streams
-     */
-    public static void fix() {
-        synchronized (Streams.class) {
-            if (outputStreams == null) {
-                outputStreams = new ArrayList<>();
-                System.setErr(new PrintStream(new FixedStream(System.err)));
-                System.setOut(new PrintStream(new FixedStream(System.out)));
-            }
+            LAST_OUTPUT_STREAM = this;
         }
     }
 }
