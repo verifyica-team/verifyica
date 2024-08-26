@@ -23,8 +23,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -47,11 +47,13 @@ public class DefaultConfiguration implements Configuration {
 
     private static final String VERIFYICA_PROPERTIES_FILENAME = "verifyica.properties";
 
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
-
     private static final boolean IS_TRACE_ENABLED =
             Constants.TRUE.equals(System.getenv().get(VERIFYICA_CONFIGURATION_TRACE));
+
+    private static final String CLASS_NAME = DefaultConfiguration.class.getName();
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
 
     private final Map<String, String> map;
     private final ReadWriteLock readWriteLock;
@@ -436,20 +438,14 @@ public class DefaultConfiguration implements Configuration {
      */
     private static void trace(String message) {
         if (IS_TRACE_ENABLED) {
-            String dateTime;
-
-            synchronized (SIMPLE_DATE_FORMAT) {
-                dateTime = SIMPLE_DATE_FORMAT.format(new Date());
-            }
-
             System.out.println(
-                    dateTime
+                    LocalDateTime.now().format(DATE_TIME_FORMATTER)
                             + " | "
                             + Thread.currentThread().getName()
                             + " | "
                             + "TRACE"
                             + " | "
-                            + DefaultConfiguration.class.getName()
+                            + CLASS_NAME
                             + " | "
                             + message
                             + " ");
