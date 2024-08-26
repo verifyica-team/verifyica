@@ -53,9 +53,9 @@ public class ClassSupport {
     }
 
     /**
-     * Method to get a List of clas path URIs
+     * Method to get a List of classpath URIs
      *
-     * @return a List of class path URIs
+     * @return a List of classpath URIs
      */
     public static List<URI> getClasspathURIs() {
         LOCK.lock();
@@ -77,7 +77,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to scan the Java class path and return a list of classes matching the Predicate
+     * Method to scan the Java classpath and return a list of classes matching the Predicate
      *
      * @param predicate predicate
      * @return a List of Classes
@@ -98,7 +98,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to scan the Java class path URI and return a list of classes matching the Predicate
+     * Method to scan the Java classpath URI and return a list of classes matching the Predicate
      *
      * @param uri uri
      * @param predicate predicate
@@ -114,7 +114,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to scan the Java class path and return a list of lasses matching the package name and
+     * Method to scan the Java classpath and return a list of lasses matching the package name and
      * Predicate
      *
      * @param packageName packageName
@@ -131,7 +131,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to scan the Java class path and return a List of URIs matching the resource name
+     * Method to scan the Java classpath and return a List of URIs matching the resource name
      *
      * @param predicate predicate
      * @return a List of URIs
