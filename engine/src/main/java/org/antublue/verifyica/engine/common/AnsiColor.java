@@ -32,14 +32,21 @@ public class AnsiColor {
     private static final String MAVEN_PLUGIN_BATCH = PREFIX + ".maven.plugin.batch";
 
     private static final Pattern ANSI_PATTERN = Pattern.compile("\\u001B\\[[;\\d]*m");
-    private static final String ANSI_COLOR = "ANSI_COLOR";
-    private static final String NO_COLOR = "NO_COLOR";
+
+    /** Configuration constant */
+    private static final String ANSI_COLOR_ENVIRONMENT_VARIABLE = "ANSI_COLOR";
+
+    /** Configuration constant */
+    private static final String NO_COLOR_ENVIRONMENT_VARIABLE = "NO_COLOR";
+
     private static final String EMPTY_STRING = "";
+
     private static final String ONE = "1";
+
     private static final String TRUE = "true";
 
     /** AnsiColor constant */
-    public static final AnsiColor TEXT_RESET = new AnsiColor("\033[0m");
+    public static final AnsiColor NONE = new AnsiColor("\033[0m");
 
     // Regular Colors
 
@@ -228,7 +235,7 @@ public class AnsiColor {
     static {
         ANSI_COLOR_SUPPORTED = System.console() != null;
 
-        if (ONE.equals(System.getenv(NO_COLOR))) {
+        if (ONE.equals(System.getenv(NO_COLOR_ENVIRONMENT_VARIABLE))) {
             ANSI_COLOR_SUPPORTED = false;
         }
 
@@ -236,7 +243,8 @@ public class AnsiColor {
             ANSI_COLOR_SUPPORTED = false;
         }
 
-        if (ONE.equals(System.getenv(ANSI_COLOR)) || TRUE.equals(System.getenv(ANSI_COLOR))) {
+        if (ONE.equals(System.getenv(ANSI_COLOR_ENVIRONMENT_VARIABLE))
+                || TRUE.equals(System.getenv(ANSI_COLOR_ENVIRONMENT_VARIABLE))) {
             ANSI_COLOR_SUPPORTED = true;
         }
     }
@@ -264,7 +272,7 @@ public class AnsiColor {
      */
     public String wrap(Object object) {
         if (ANSI_COLOR_SUPPORTED) {
-            return escapeSequence + object + TEXT_RESET;
+            return escapeSequence + object + NONE;
         } else {
             return String.valueOf(object);
         }

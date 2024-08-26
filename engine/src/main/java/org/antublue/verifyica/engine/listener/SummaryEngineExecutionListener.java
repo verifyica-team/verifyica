@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.common.AnsiColor;
-import org.antublue.verifyica.engine.common.AnsiColorStringBuilder;
+import org.antublue.verifyica.engine.common.AnsiColorString;
 import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
@@ -40,12 +40,12 @@ import org.junit.platform.engine.TestExecutionResult;
 public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     private static final String BANNER =
-            new AnsiColorStringBuilder()
+            new AnsiColorString.Builder()
                     .color(AnsiColor.TEXT_WHITE_BRIGHT)
                     .append("Verifyica ")
                     .append(VerifyicaTestEngine.staticGetVersion())
-                    .reset()
-                    .toString();
+                    .color(AnsiColor.NONE)
+                    .build();
 
     private static final String SUMMARY_BANNER =
             BANNER + AnsiColor.TEXT_WHITE_BRIGHT.wrap(" Summary");
@@ -55,16 +55,16 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     "------------------------------------------------------------------------");
 
     private static final String INFO =
-            new AnsiColorStringBuilder()
+            new AnsiColorString.Builder()
                     .color(AnsiColor.TEXT_WHITE)
                     .append("[")
                     .color(AnsiColor.TEXT_BLUE_BOLD)
                     .append("INFO")
                     .color(AnsiColor.TEXT_WHITE)
                     .append("]")
-                    .reset()
+                    .color(AnsiColor.NONE)
                     .append(" ")
-                    .toString();
+                    .build();
 
     private static final Map<String, String> counterKeyToMessageDisplayStringMap = new HashMap<>();
 
@@ -424,7 +424,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                             .append(countDisplayString);
                 }
 
-                println(stringBuilder.toString());
+                println(stringBuilder);
             }
 
             println(INFO + SEPARATOR);
@@ -440,7 +440,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             Duration elapsedTime = stopWatch.elapsedTime();
 
             println(
-                    new AnsiColorStringBuilder()
+                    new AnsiColorString.Builder()
                             .append(INFO)
                             .color(AnsiColor.TEXT_WHITE_BRIGHT)
                             .append("Total time  : ")
@@ -451,15 +451,15 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                             .append(" (")
                             .append(elapsedTime.toNanos() / 1e+6D)
                             .append(" ms)")
-                            .reset());
+                            .color(AnsiColor.NONE));
 
             println(
-                    new AnsiColorStringBuilder()
+                    new AnsiColorString.Builder()
                             .append(INFO)
                             .color(AnsiColor.TEXT_WHITE_BRIGHT)
                             .append("Finished at : ")
                             .append(HumanReadableTimeSupport.now())
-                            .reset());
+                            .color(AnsiColor.NONE));
 
             if (failureCount.get() == 0) {
                 println(INFO + SEPARATOR);
