@@ -20,7 +20,6 @@ import static java.lang.String.format;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,7 +36,7 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.StopWatch;
-import org.antublue.verifyica.engine.common.SynchronizedPrintStream;
+import org.antublue.verifyica.engine.common.Streams;
 import org.antublue.verifyica.engine.common.ThreadNameRunnable;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
@@ -113,15 +112,7 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     static {
-        PrintStream systemOut = System.out;
-        if (!(systemOut instanceof SynchronizedPrintStream)) {
-            System.setOut(new SynchronizedPrintStream(systemOut));
-        }
-
-        PrintStream systemErr = System.err;
-        if (!(systemErr instanceof SynchronizedPrintStream)) {
-            System.setErr(new SynchronizedPrintStream(systemErr));
-        }
+        Streams.fix();
     }
 
     /**
