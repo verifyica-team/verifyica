@@ -24,7 +24,7 @@ import org.antublue.verifyica.api.Verifyica;
 
 /** Example test */
 @Verifyica.Disabled
-public class StreamTest {
+public class StreamsTest {
 
     @Verifyica.ArgumentSupplier(parallelism = 2)
     public static Collection<Argument<String>> arguments() {
