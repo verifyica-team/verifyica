@@ -133,9 +133,7 @@ public class FairExecutorService extends AbstractExecutorService {
         return executorService.awaitTermination(timeout, unit);
     }
 
-    /**
-     * Method to process the task queue fairly
-     */
+    /** Method to process the task queue fairly */
     private void processTaskQueue() {
         lock.lock();
         try {
