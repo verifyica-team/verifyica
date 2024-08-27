@@ -22,10 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.antublue.verifyica.engine.support.ExecutorSupport;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 
-@Disabled
 public class FairTaskExecutorTest {
 
     private static final AtomicInteger ATOMIC_INTEGER = new AtomicInteger(-1);
@@ -33,8 +30,7 @@ public class FairTaskExecutorTest {
             new FairExecutorService(ExecutorSupport.newExecutorService(1));
     private static final List<Future<?>> FUTURES = new ArrayList<>();
 
-    @Test
-    public void test() throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         Thread[] threads = new Thread[10];
 
         try {
