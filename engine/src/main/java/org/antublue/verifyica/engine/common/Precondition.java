@@ -29,14 +29,11 @@ public class Precondition {
      *
      * @param object object
      * @param message message
-     * @return the Object
      */
-    public static Object notNull(Object object, String message) {
+    public static void notNull(Object object, String message) {
         if (object == null) {
             throw new IllegalArgumentException(message);
         }
-
-        return object;
     }
 
     /**
@@ -46,9 +43,8 @@ public class Precondition {
      * @param string string
      * @param nullMessage nullMessage
      * @param blankMessage blankMessage
-     * @return the String trimmed
      */
-    public static String notNullOrBlank(String string, String nullMessage, String blankMessage) {
+    public static void notNullOrBlank(String string, String nullMessage, String blankMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }
@@ -57,8 +53,6 @@ public class Precondition {
         if (trimmed.isEmpty()) {
             throw new IllegalArgumentException(blankMessage);
         }
-
-        return trimmed;
     }
 
     /**
