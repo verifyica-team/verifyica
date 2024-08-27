@@ -68,7 +68,7 @@ public class FairExecutorService extends AbstractExecutorService {
 
         Thread currentThread = Thread.currentThread();
         taskQueues.computeIfAbsent(currentThread, k -> new LinkedList<>()).offer(task);
-        dispatchTasks();
+        processTaskQueue();
     }
 
     @Override
@@ -133,7 +133,10 @@ public class FairExecutorService extends AbstractExecutorService {
         return executorService.awaitTermination(timeout, unit);
     }
 
-    private void dispatchTasks() {
+    /**
+     * Method to process the task queue fairly
+     */
+    private void processTaskQueue() {
         lock.lock();
         try {
             for (Map.Entry<Thread, Queue<Runnable>> entry : taskQueues.entrySet()) {
@@ -145,7 +148,7 @@ public class FairExecutorService extends AbstractExecutorService {
                                 try {
                                     task.run();
                                 } finally {
-                                    dispatchTasks();
+                                    processTaskQueue();
                                 }
                             });
                 }
