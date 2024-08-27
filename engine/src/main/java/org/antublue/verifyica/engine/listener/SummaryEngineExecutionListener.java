@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.common.AnsiColor;
+import org.antublue.verifyica.engine.common.AnsiColoredString;
 import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
@@ -39,7 +40,7 @@ import org.junit.platform.engine.TestExecutionResult;
 public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     private static final String BANNER =
-            new AnsiColor.StringBuilder()
+            new AnsiColoredString()
                     .append(AnsiColor.TEXT_WHITE_BRIGHT)
                     .append("Verifyica ")
                     .append(VerifyicaTestEngine.staticGetVersion())
@@ -54,7 +55,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     "------------------------------------------------------------------------");
 
     private static final String INFO =
-            new AnsiColor.StringBuilder()
+            new AnsiColoredString()
                     .append(AnsiColor.TEXT_WHITE)
                     .append("[")
                     .append(AnsiColor.TEXT_BLUE_BOLD)
@@ -439,7 +440,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             Duration elapsedTime = stopWatch.elapsedTime();
 
             println(
-                    new AnsiColor.StringBuilder()
+                    new AnsiColoredString()
                             .append(INFO)
                             .append(AnsiColor.TEXT_WHITE_BRIGHT)
                             .append("Total time  : ")
@@ -453,7 +454,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                             .append(AnsiColor.NONE));
 
             println(
-                    new AnsiColor.StringBuilder()
+                    new AnsiColoredString()
                             .append(INFO)
                             .append(AnsiColor.TEXT_WHITE_BRIGHT)
                             .append("Finished at : ")

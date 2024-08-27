@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.common.AnsiColor;
+import org.antublue.verifyica.engine.common.AnsiColoredString;
 import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
@@ -42,7 +43,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
             LoggerFactory.getLogger(StatusEngineExecutionListener.class);
 
     private static final String INFO =
-            new AnsiColor.StringBuilder()
+            new AnsiColoredString()
                     .append(AnsiColor.TEXT_WHITE)
                     .append("[")
                     .append(AnsiColor.TEXT_BLUE_BOLD)
@@ -103,7 +104,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 Constants.MAVEN_PLUGIN_LOG_MESSAGES_SKIPPED, consoleLogMessagesSkipped);
 
         consoleTestMessage =
-                new AnsiColor.StringBuilder()
+                new AnsiColoredString()
                         .append(AnsiColor.TEXT_WHITE_BRIGHT)
                         .append(
                                 Optional.ofNullable(
@@ -114,7 +115,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .build();
 
         consolePassMessage =
-                new AnsiColor.StringBuilder()
+                new AnsiColoredString()
                         .append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT)
                         .append(
                                 Optional.ofNullable(
@@ -125,7 +126,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .build();
 
         consoleSkipMessage =
-                new AnsiColor.StringBuilder()
+                new AnsiColoredString()
                         .append(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
                         .append(
                                 Optional.ofNullable(
@@ -136,7 +137,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .build();
 
         consoleFailMessage =
-                new AnsiColor.StringBuilder()
+                new AnsiColoredString()
                         .append(AnsiColor.TEXT_RED_BOLD_BRIGHT)
                         .append(
                                 Optional.ofNullable(
@@ -172,8 +173,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
 
-                AnsiColor.StringBuilder ansiColorStringBuilder =
-                        new AnsiColor.StringBuilder()
+                AnsiColoredString ansiColorAnsiColoredString =
+                        new AnsiColoredString()
                                 .append(INFO)
                                 .append(" ")
                                 .append(Thread.currentThread().getName())
@@ -182,18 +183,18 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                 .append(AnsiColor.NONE);
 
                 if (testArgumentDisplayName != null) {
-                    ansiColorStringBuilder.append(" | ").append(testArgumentDisplayName);
+                    ansiColorAnsiColoredString.append(" | ").append(testArgumentDisplayName);
                 }
 
-                ansiColorStringBuilder.append(" | ").append(testClassDisplayName);
+                ansiColorAnsiColoredString.append(" | ").append(testClassDisplayName);
 
                 if (testMethodDisplayName != null) {
-                    ansiColorStringBuilder.append(" | ").append(testMethodDisplayName);
+                    ansiColorAnsiColoredString.append(" | ").append(testMethodDisplayName);
                 }
 
-                ansiColorStringBuilder.append(AnsiColor.NONE);
+                ansiColorAnsiColoredString.append(AnsiColor.NONE);
 
-                System.out.println(ansiColorStringBuilder);
+                System.out.println(ansiColorAnsiColoredString);
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
             }
@@ -223,35 +224,35 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
 
-                AnsiColor.StringBuilder ansiColorStringBuilder =
-                        new AnsiColor.StringBuilder()
+                AnsiColoredString ansiColorAnsiColoredString =
+                        new AnsiColoredString()
                                 .append(INFO)
                                 .append(" ")
                                 .append(Thread.currentThread().getName())
                                 .append(" | ")
                                 .append(AnsiColor.TEXT_WHITE_BRIGHT);
 
-                ansiColorStringBuilder.append(consoleSkipMessage).append(AnsiColor.NONE);
+                ansiColorAnsiColoredString.append(consoleSkipMessage).append(AnsiColor.NONE);
 
                 if (testArgumentDisplayName != null) {
-                    ansiColorStringBuilder.append(" | ").append(testArgumentDisplayName);
+                    ansiColorAnsiColoredString.append(" | ").append(testArgumentDisplayName);
                 }
 
-                ansiColorStringBuilder.append(" | ").append(testClassDisplayName);
+                ansiColorAnsiColoredString.append(" | ").append(testClassDisplayName);
 
                 if (testMethodDisplayName != null) {
-                    ansiColorStringBuilder.append(" | ").append(testMethodDisplayName);
+                    ansiColorAnsiColoredString.append(" | ").append(testMethodDisplayName);
                 }
 
-                ansiColorStringBuilder
+                ansiColorAnsiColoredString
                         .append(" ")
                         .append(
                                 HumanReadableTimeSupport.toTimingUnit(
                                         elapsedTime.toNanos(), consoleLogTimingUnits));
 
-                ansiColorStringBuilder.append(AnsiColor.NONE);
+                ansiColorAnsiColoredString.append(AnsiColor.NONE);
 
-                System.out.println(ansiColorStringBuilder);
+                System.out.println(ansiColorAnsiColoredString);
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
             }
@@ -282,8 +283,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
 
-                AnsiColor.StringBuilder ansiColorStringBuilder =
-                        new AnsiColor.StringBuilder()
+                AnsiColoredString ansiColorAnsiColoredString =
+                        new AnsiColoredString()
                                 .append(INFO)
                                 .append(" ")
                                 .append(Thread.currentThread().getName())
@@ -295,45 +296,46 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 switch (status) {
                     case SUCCESSFUL:
                         {
-                            ansiColorStringBuilder.append(consolePassMessage);
+                            ansiColorAnsiColoredString.append(consolePassMessage);
                             break;
                         }
                     case FAILED:
                         {
-                            ansiColorStringBuilder.append(consoleFailMessage);
+                            ansiColorAnsiColoredString.append(consoleFailMessage);
                             break;
                         }
                     case ABORTED:
                         {
-                            ansiColorStringBuilder.append(consoleSkipMessage);
+                            ansiColorAnsiColoredString.append(consoleSkipMessage);
                             break;
                         }
                     default:
                         {
-                            ansiColorStringBuilder.append(AnsiColor.TEXT_CYAN_BOLD.wrap("????"));
+                            ansiColorAnsiColoredString.append(
+                                    AnsiColor.TEXT_CYAN_BOLD.wrap("????"));
                         }
                 }
 
-                ansiColorStringBuilder.append(AnsiColor.NONE);
+                ansiColorAnsiColoredString.append(AnsiColor.NONE);
 
                 if (testArgumentDisplayName != null) {
-                    ansiColorStringBuilder.append(" | ").append(testArgumentDisplayName);
+                    ansiColorAnsiColoredString.append(" | ").append(testArgumentDisplayName);
                 }
 
-                ansiColorStringBuilder.append(" | ").append(testClassDisplayName);
+                ansiColorAnsiColoredString.append(" | ").append(testClassDisplayName);
 
                 if (testMethodDisplayName != null) {
-                    ansiColorStringBuilder.append(" | ").append(testMethodDisplayName);
+                    ansiColorAnsiColoredString.append(" | ").append(testMethodDisplayName);
                 }
 
-                ansiColorStringBuilder
+                ansiColorAnsiColoredString
                         .append(" ")
                         .append(
                                 HumanReadableTimeSupport.toTimingUnit(
                                         elapsedTime.toNanos(), consoleLogTimingUnits))
                         .append(AnsiColor.NONE);
 
-                System.out.println(ansiColorStringBuilder);
+                System.out.println(ansiColorAnsiColoredString);
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
             }
