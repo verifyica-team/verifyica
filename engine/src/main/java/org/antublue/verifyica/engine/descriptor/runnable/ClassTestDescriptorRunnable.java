@@ -26,6 +26,7 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
+import org.antublue.verifyica.engine.common.FairExecutorService;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateSet;
@@ -49,7 +50,9 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptorRunnable.class);
 
     private static final ExecutorService EXECUTOR_SERVICE =
-            ExecutorSupport.newExecutorService(VerifyicaTestEngine.getEngineArgumentParallelism());
+            new FairExecutorService(
+                    ExecutorSupport.newExecutorService(
+                            VerifyicaTestEngine.getEngineArgumentParallelism()));
 
     private final ExecutionRequest executionRequest;
     private final ClassTestDescriptor classTestDescriptor;
