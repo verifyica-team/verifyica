@@ -27,13 +27,11 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
-import org.antublue.verifyica.engine.common.FairExecutorService;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateSet;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultClassInstanceContext;
-import org.antublue.verifyica.engine.context.ImmutableClassContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
@@ -50,9 +48,9 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptorRunnable.class);
 
     private static final ExecutorService EXECUTOR_SERVICE =
-            new FairExecutorService(
-                    ExecutorSupport.newExecutorService(
-                            VerifyicaTestEngine.getEngineArgumentParallelism()));
+            // new FairExecutorService(
+            ExecutorSupport.newExecutorService(VerifyicaTestEngine.getEngineArgumentParallelism());
+    // );
 
     private final ExecutionRequest executionRequest;
     private final ClassTestDescriptor classTestDescriptor;
@@ -130,7 +128,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                 stateSet.setCurrentState("prepare");
 
                 ClassInterceptorRegistry.getInstance()
-                        .prepare(ImmutableClassContext.wrap(classInstanceContext), prepareMethods);
+                        .prepare(classInstanceContext, prepareMethods);
 
                 stateSet.setCurrentState("prepare.success");
             } catch (Throwable t) {
@@ -222,8 +220,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                 stateSet.setCurrentState("conclude");
 
                 ClassInterceptorRegistry.getInstance()
-                        .conclude(
-                                ImmutableClassContext.wrap(classInstanceContext), concludeMethods);
+                        .conclude(classInstanceContext, concludeMethods);
 
                 stateSet.setCurrentState("conclude.success");
             } catch (Throwable t) {

@@ -63,7 +63,6 @@ public class DefaultArgumentContext implements ArgumentContext {
     @Override
     public <V> Argument<V> getTestArgument(Class<V> type) {
         Precondition.notNull(type, "type is null");
-
         return (Argument<V>) argumentTestDescriptor.getTestArgument();
     }
 

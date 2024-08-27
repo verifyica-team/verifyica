@@ -20,14 +20,14 @@ package org.antublue.verifyica.api;
 public interface EngineContext extends Context {
 
     /**
-     * Returns the Engine version
+     * Get the Engine version
      *
      * @return the Engine version
      */
     String getVersion();
 
     /**
-     * Returns the Engine Configuration
+     * Get the Engine Configuration
      *
      * @return the Engine Configuration
      */

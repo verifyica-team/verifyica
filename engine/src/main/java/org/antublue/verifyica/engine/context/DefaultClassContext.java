@@ -23,7 +23,6 @@ import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 
 /** Class to implement DefaultClassContext */
-@SuppressWarnings("unchecked")
 public class DefaultClassContext implements ClassContext {
 
     private final EngineContext engineContext;

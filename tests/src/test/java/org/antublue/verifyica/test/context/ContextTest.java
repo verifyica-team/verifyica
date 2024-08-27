@@ -30,8 +30,9 @@ import org.antublue.verifyica.api.Verifyica;
 public class ContextTest {
 
     // Only declared for testing
-    private static Context rootContext;
+    private static Context engineContext;
     private static ClassContext classContext;
+    private static ArgumentContext argumentContext;
     private static int value;
 
     @Verifyica.ArgumentSupplier
@@ -49,45 +50,80 @@ public class ContextTest {
     public static void prepare(ClassContext classContext) {
         System.out.println("prepare()");
 
-        assertThat(classContext.getClass().getSimpleName()).startsWith("Immutable");
-        assertThat(classContext.getEngineContext().getClass().getSimpleName())
-                .startsWith("Default");
         assertThat(classContext).isNotNull();
+
         assertThat(classContext.getStore()).isNotNull();
 
-        ContextTest.rootContext = classContext.getEngineContext();
+        assertThat(classContext.getConfiguration())
+                .isSameAs(classContext.getEngineContext().getConfiguration());
+
+        assertThat(classContext.getConfiguration().getPropertiesFilename())
+                .isEqualTo(
+                        classContext.getEngineContext().getConfiguration().getPropertiesFilename());
+
+        classContext
+                .getConfiguration()
+                .getPropertiesFilename()
+                .ifPresent(path -> System.out.printf("properties filename [%s]%n", path));
+
+        ContextTest.engineContext = classContext.getEngineContext();
         ContextTest.classContext = classContext;
 
         classContext.getStore().put("FOO", "BAR");
     }
 
     @Verifyica.Test
+    @Verifyica.Order(order = 1)
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
+
         assertThat(argumentContext.getStore()).isNotNull();
+
         assertThat(argumentContext.getTestArgument()).isNotNull();
+
         assertThat(argumentContext.getClassContext().getStore().get("FOO", String.class))
                 .isEqualTo("BAR");
-        assertThat(argumentContext.getClassContext() == ContextTest.classContext);
-        assertThat(argumentContext.getClassContext().getEngineContext() == ContextTest.rootContext);
+
+        assertThat(argumentContext.getClassContext().getEngineContext())
+                .isSameAs(ContextTest.engineContext);
+
+        assertThat(argumentContext.getClassContext()).isSameAs(ContextTest.classContext);
+
+        assertThat(argumentContext.getConfiguration())
+                .isSameAs(argumentContext.getClassContext().getEngineContext().getConfiguration());
+
+        ContextTest.argumentContext = argumentContext;
     }
 
     @Verifyica.Test
+    @Verifyica.Order(order = 2)
     public void test2(ArgumentContext argumentContext) {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument().getName());
 
-        assertThat(argumentContext.getClass().getSimpleName()).startsWith("Immutable");
-        assertThat(argumentContext.getClassContext().getClass().getSimpleName())
-                .startsWith("Immutable");
-        assertThat(argumentContext.getClassContext().getEngineContext().getClass().getSimpleName())
-                .startsWith("Default");
+        assertThat(argumentContext.getClassContext().getEngineContext())
+                .isSameAs(ContextTest.engineContext);
+
+        assertThat(argumentContext.getClassContext()).isSameAs(ContextTest.classContext);
+
+        assertThat(argumentContext).isSameAs(ContextTest.argumentContext);
+
+        assertThat(argumentContext.getConfiguration())
+                .isSameAs(argumentContext.getClassContext().getEngineContext().getConfiguration());
+
+        assertThat(argumentContext).isSameAs(ContextTest.argumentContext);
     }
 
     @Verifyica.Test
+    @Verifyica.Order(order = 3)
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        assertThat(ContextTest.value).isEqualTo(0);
+        assertThat(argumentContext.getClassContext().getEngineContext())
+                .isSameAs(ContextTest.engineContext);
+
+        assertThat(argumentContext.getClassContext()).isSameAs(ContextTest.classContext);
+
+        assertThat(argumentContext).isSameAs(ContextTest.argumentContext);
 
         Class<?> contextTestClass = argumentContext.getClassContext().getTestClass();
 
@@ -99,8 +135,14 @@ public class ContextTest {
     }
 
     @Verifyica.Test
-    public void test4(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getLock()).isEqualTo(argumentContext.getStore().getLock());
+    public void test4(ArgumentContext argumentContext) {
+        assertThat(argumentContext.getClassContext().getEngineContext())
+                .isSameAs(ContextTest.engineContext);
+
+        assertThat(argumentContext.getClassContext()).isSameAs(ContextTest.classContext);
+
+        assertThat(argumentContext).isSameAs(ContextTest.argumentContext);
+
         assertThat(argumentContext.getReadWriteLock())
                 .isEqualTo(argumentContext.getStore().getReadWriteLock());
 

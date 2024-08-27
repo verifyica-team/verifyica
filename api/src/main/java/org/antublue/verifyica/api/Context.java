@@ -23,14 +23,14 @@ import java.util.concurrent.locks.ReadWriteLock;
 public interface Context {
 
     /**
-     * Returns the Store
+     * Get the Store
      *
      * @return the Store
      */
     Store getStore();
 
     /**
-     * Returns the Context Lock.
+     * Get the Context Lock
      *
      * <p>Equivalent to getStore().getLock()
      *
@@ -43,7 +43,7 @@ public interface Context {
     }
 
     /**
-     * Returns the Context ReadWriteLock.
+     * Get the Context ReadWriteLock.
      *
      * <p>Equivalent to getStore().getReadWriteLock()
      *

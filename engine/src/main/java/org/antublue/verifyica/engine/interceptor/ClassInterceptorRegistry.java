@@ -43,7 +43,6 @@ import org.antublue.verifyica.engine.context.DefaultArgumentInterceptorContext;
 import org.antublue.verifyica.engine.context.DefaultClassInterceptorContext;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
-import org.antublue.verifyica.engine.context.ImmutableArgumentContext;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -414,8 +413,7 @@ public class ClassInterceptorRegistry {
             throwableCollector.execute(
                     () -> {
                         try {
-                            testMethod.invoke(
-                                    testInstance, ImmutableArgumentContext.wrap(argumentContext));
+                            testMethod.invoke(testInstance, argumentContext);
                         } catch (InvocationTargetException e) {
                             throw e.getCause();
                         }
