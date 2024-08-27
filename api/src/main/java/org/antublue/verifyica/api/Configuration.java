@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.api;
 
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -25,6 +26,13 @@ import java.util.function.Function;
 
 /** Interface to implement Configuration */
 public interface Configuration {
+
+    /**
+     * Get the Path to the Properties configuration file
+     *
+     * @return an Optional containing Path to the Properties configuration file
+     */
+    Optional<Path> getPropertiesFilename();
 
     /**
      * Put a key-value pair

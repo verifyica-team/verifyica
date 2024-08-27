@@ -47,6 +47,12 @@ public class BasicTest {
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();
+
+        classContext
+                .getEngineContext()
+                .getConfiguration()
+                .getPropertiesFilename()
+                .ifPresent(path -> System.out.printf("properties filename [%s]%n", path));
     }
 
     @Verifyica.BeforeAll

@@ -55,6 +55,7 @@ public class DefaultConfiguration implements Configuration {
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
 
+    private Path propertiesFilename;
     private final Map<String, String> map;
     private final ReadWriteLock readWriteLock;
 
@@ -74,6 +75,11 @@ public class DefaultConfiguration implements Configuration {
     private DefaultConfiguration(TreeMap<String, String> map) {
         this.map = map;
         readWriteLock = new ReentrantReadWriteLock(true);
+    }
+
+    @Override
+    public Optional<Path> getPropertiesFilename() {
+        return propertiesFilename != null ? Optional.of(propertiesFilename) : Optional.empty();
     }
 
     @Override
@@ -354,6 +360,8 @@ public class DefaultConfiguration implements Configuration {
                     trace("loading [" + optional.get().getAbsolutePath() + "]");
                 }
 
+                propertiesFilename = optional.get().toPath().toAbsolutePath();
+
                 Properties properties = new Properties();
 
                 try (Reader reader =
@@ -366,8 +374,6 @@ public class DefaultConfiguration implements Configuration {
                 }
 
                 properties.forEach((key, value) -> map.put((String) key, (String) value));
-
-                map.put(VERIFYICA_PROPERTIES_FILENAME, optional.get().getAbsolutePath());
             } else {
                 if (IS_TRACE_ENABLED) {
                     trace("no configuration properties file found");
