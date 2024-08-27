@@ -272,11 +272,7 @@ public class AnsiColor {
      * @return the return value
      */
     public String wrap(Object object) {
-        if (ANSI_COLOR_SUPPORTED) {
-            return escapeSequence + object + NONE;
-        } else {
-            return String.valueOf(object);
-        }
+        return ANSI_COLOR_SUPPORTED ? escapeSequence + object + NONE : String.valueOf(object);
     }
 
     /**
@@ -286,11 +282,7 @@ public class AnsiColor {
      */
     @Override
     public String toString() {
-        if (ANSI_COLOR_SUPPORTED) {
-            return escapeSequence;
-        } else {
-            return EMPTY_STRING;
-        }
+        return ANSI_COLOR_SUPPORTED ? escapeSequence : EMPTY_STRING;
     }
 
     @Override
@@ -313,10 +305,7 @@ public class AnsiColor {
      * @return a String stripped of ANSI codes
      */
     public static String stripAnsiCodes(String string) {
-        if (string == null) {
-            return null;
-        }
-        return ANSI_PATTERN.matcher(string).replaceAll("");
+        return string == null ? null : ANSI_PATTERN.matcher(string).replaceAll("");
     }
 
     /**
