@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.common.AnsiColor;
-import org.antublue.verifyica.engine.common.AnsiColorString;
 import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
@@ -43,14 +42,14 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
             LoggerFactory.getLogger(StatusEngineExecutionListener.class);
 
     private static final String INFO =
-            new AnsiColorString.Builder()
-                    .color(AnsiColor.TEXT_WHITE)
+            new AnsiColor.StringBuilder()
+                    .append(AnsiColor.TEXT_WHITE)
                     .append("[")
-                    .color(AnsiColor.TEXT_BLUE_BOLD)
+                    .append(AnsiColor.TEXT_BLUE_BOLD)
                     .append("INFO")
-                    .color(AnsiColor.TEXT_WHITE)
+                    .append(AnsiColor.TEXT_WHITE)
                     .append("]")
-                    .color(AnsiColor.NONE)
+                    .append(AnsiColor.NONE)
                     .build();
 
     private final String consoleLogTimingUnits;
@@ -104,47 +103,47 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 Constants.MAVEN_PLUGIN_LOG_MESSAGES_SKIPPED, consoleLogMessagesSkipped);
 
         consoleTestMessage =
-                new AnsiColorString.Builder()
+                new AnsiColor.StringBuilder()
                         .append(AnsiColor.TEXT_WHITE_BRIGHT)
                         .append(
                                 Optional.ofNullable(
                                                 configuration.get(
                                                         Constants.MAVEN_PLUGIN_LOG_TEST_MESSAGE))
                                         .orElse("TEST"))
-                        .color(AnsiColor.NONE)
+                        .append(AnsiColor.NONE)
                         .build();
 
         consolePassMessage =
-                new AnsiColorString.Builder()
-                        .color(AnsiColor.TEXT_GREEN_BOLD_BRIGHT)
+                new AnsiColor.StringBuilder()
+                        .append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT)
                         .append(
                                 Optional.ofNullable(
                                                 configuration.get(
                                                         Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGE))
                                         .orElse("PASS"))
-                        .color(AnsiColor.NONE)
+                        .append(AnsiColor.NONE)
                         .build();
 
         consoleSkipMessage =
-                new AnsiColorString.Builder()
-                        .color(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
+                new AnsiColor.StringBuilder()
+                        .append(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
                         .append(
                                 Optional.ofNullable(
                                                 configuration.get(
                                                         Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGE))
                                         .orElse("SKIP"))
-                        .color(AnsiColor.NONE)
+                        .append(AnsiColor.NONE)
                         .build();
 
         consoleFailMessage =
-                new AnsiColorString.Builder()
-                        .color(AnsiColor.TEXT_RED_BOLD_BRIGHT)
+                new AnsiColor.StringBuilder()
+                        .append(AnsiColor.TEXT_RED_BOLD_BRIGHT)
                         .append(
                                 Optional.ofNullable(
                                                 configuration.get(
                                                         Constants.MAVEN_PLUGIN_LOG_FAIL_MESSAGE))
                                         .orElse("FAIL"))
-                        .color(AnsiColor.NONE)
+                        .append(AnsiColor.NONE)
                         .build();
 
         stopWatchMap = new ConcurrentHashMap<>();
@@ -173,14 +172,14 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
 
-                AnsiColorString.Builder ansiColorStringBuilder =
-                        new AnsiColorString.Builder()
+                AnsiColor.StringBuilder ansiColorStringBuilder =
+                        new AnsiColor.StringBuilder()
                                 .append(INFO)
                                 .append(" ")
                                 .append(Thread.currentThread().getName())
                                 .append(" | ")
                                 .append(consoleTestMessage)
-                                .color(AnsiColor.NONE);
+                                .append(AnsiColor.NONE);
 
                 if (testArgumentDisplayName != null) {
                     ansiColorStringBuilder.append(" | ").append(testArgumentDisplayName);
@@ -192,7 +191,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     ansiColorStringBuilder.append(" | ").append(testMethodDisplayName);
                 }
 
-                ansiColorStringBuilder.color(AnsiColor.NONE);
+                ansiColorStringBuilder.append(AnsiColor.NONE);
 
                 System.out.println(ansiColorStringBuilder);
             } catch (Throwable t) {
@@ -224,15 +223,15 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
 
-                AnsiColorString.Builder ansiColorStringBuilder =
-                        new AnsiColorString.Builder()
+                AnsiColor.StringBuilder ansiColorStringBuilder =
+                        new AnsiColor.StringBuilder()
                                 .append(INFO)
                                 .append(" ")
                                 .append(Thread.currentThread().getName())
                                 .append(" | ")
                                 .append(AnsiColor.TEXT_WHITE_BRIGHT);
 
-                ansiColorStringBuilder.append(consoleSkipMessage).color(AnsiColor.NONE);
+                ansiColorStringBuilder.append(consoleSkipMessage).append(AnsiColor.NONE);
 
                 if (testArgumentDisplayName != null) {
                     ansiColorStringBuilder.append(" | ").append(testArgumentDisplayName);
@@ -250,7 +249,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                 HumanReadableTimeSupport.toTimingUnit(
                                         elapsedTime.toNanos(), consoleLogTimingUnits));
 
-                ansiColorStringBuilder.color(AnsiColor.NONE);
+                ansiColorStringBuilder.append(AnsiColor.NONE);
 
                 System.out.println(ansiColorStringBuilder);
             } catch (Throwable t) {
@@ -283,8 +282,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
 
-                AnsiColorString.Builder ansiColorStringBuilder =
-                        new AnsiColorString.Builder()
+                AnsiColor.StringBuilder ansiColorStringBuilder =
+                        new AnsiColor.StringBuilder()
                                 .append(INFO)
                                 .append(" ")
                                 .append(Thread.currentThread().getName())
@@ -315,7 +314,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         }
                 }
 
-                ansiColorStringBuilder.color(AnsiColor.NONE);
+                ansiColorStringBuilder.append(AnsiColor.NONE);
 
                 if (testArgumentDisplayName != null) {
                     ansiColorStringBuilder.append(" | ").append(testArgumentDisplayName);
@@ -332,7 +331,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .append(
                                 HumanReadableTimeSupport.toTimingUnit(
                                         elapsedTime.toNanos(), consoleLogTimingUnits))
-                        .color(AnsiColor.NONE);
+                        .append(AnsiColor.NONE);
 
                 System.out.println(ansiColorStringBuilder);
             } catch (Throwable t) {

@@ -335,4 +335,214 @@ public class AnsiColor {
     public static AnsiColor ofSequence(String escapeSequence) {
         return new AnsiColor(escapeSequence);
     }
+
+    /** Class to implement Builder */
+    public static class StringBuilder {
+
+        private final java.lang.StringBuilder stringBuilder;
+        private AnsiColor lastColor;
+
+        /** Constructor */
+        public StringBuilder() {
+            this(null);
+        }
+
+        /**
+         * Constructor
+         *
+         * @param ansiColor ansiColor
+         */
+        public StringBuilder(AnsiColor ansiColor) {
+            stringBuilder = new java.lang.StringBuilder();
+
+            if (ansiColor != null) {
+                stringBuilder.append(ansiColor);
+                lastColor = ansiColor;
+            }
+        }
+
+        /**
+         * Method to append a boolean
+         *
+         * @param b boolean
+         * @return this
+         */
+        public StringBuilder append(boolean b) {
+            stringBuilder.append(b);
+            return this;
+        }
+
+        /**
+         * Method to append a boolean
+         *
+         * @param s short
+         * @return this
+         */
+        public StringBuilder append(short s) {
+            stringBuilder.append(s);
+            return this;
+        }
+
+        /**
+         * Method to append a character
+         *
+         * @param c character
+         * @return this
+         */
+        public StringBuilder append(char c) {
+            stringBuilder.append(c);
+            return this;
+        }
+
+        /**
+         * Method to append a character array
+         *
+         * @param chars character array
+         * @return this
+         */
+        public StringBuilder append(char[] chars) {
+            stringBuilder.append(chars);
+            return this;
+        }
+
+        /**
+         * Method to append a character array
+         *
+         * @param chars character array
+         * @param offset offset
+         * @param length length
+         * @return this
+         */
+        public StringBuilder append(char[] chars, int offset, int length) {
+            stringBuilder.append(chars, offset, length);
+            return this;
+        }
+
+        /**
+         * Method to append an int
+         *
+         * @param i int
+         * @return this
+         */
+        public StringBuilder append(int i) {
+            stringBuilder.append(i);
+            return this;
+        }
+
+        /**
+         * Method to append a long
+         *
+         * @param l long
+         * @return this
+         */
+        public StringBuilder append(long l) {
+            stringBuilder.append(l);
+            return this;
+        }
+
+        /**
+         * Method to append a float
+         *
+         * @param f float
+         * @return this
+         */
+        public StringBuilder append(float f) {
+            stringBuilder.append(f);
+            return this;
+        }
+
+        /**
+         * Method to append a double
+         *
+         * @param d double
+         * @return this
+         */
+        public StringBuilder append(double d) {
+            stringBuilder.append(d);
+            return this;
+        }
+
+        /**
+         * Method to append a String
+         *
+         * @param s String
+         * @return this
+         */
+        public StringBuilder append(String s) {
+            stringBuilder.append(s);
+            return this;
+        }
+
+        /**
+         * Method to append an Object
+         *
+         * @param o object
+         * @return this
+         */
+        public StringBuilder append(Object o) {
+            stringBuilder.append(o);
+            return this;
+        }
+
+        /**
+         * Method to append a StringBuffer
+         *
+         * @param sb StringBuffer
+         * @return this
+         */
+        public StringBuilder append(StringBuffer sb) {
+            stringBuilder.append(sb);
+            return this;
+        }
+
+        /**
+         * Method to append a CharSequence
+         *
+         * @param cs CharSequence
+         * @return this
+         */
+        public StringBuilder append(CharSequence cs) {
+            stringBuilder.append(cs);
+            return this;
+        }
+
+        /**
+         * Method to append an AnsiColor
+         *
+         * @param ansiColor ansiColor
+         * @return this
+         */
+        public StringBuilder append(AnsiColor ansiColor) {
+            if (ansiColor != lastColor) {
+                if (stringBuilder.length() > 0) {
+                    if (ansiColor != null) {
+                        stringBuilder.append(ansiColor);
+                        lastColor = ansiColor;
+                    } else {
+                        stringBuilder.append(NONE);
+                        lastColor = NONE;
+                    }
+                } else if (ansiColor != null && ansiColor != NONE) {
+                    stringBuilder.append(ansiColor);
+                    lastColor = ansiColor;
+                }
+            }
+
+            return this;
+        }
+
+        /**
+         * Method to build the Builder
+         *
+         * @return a String
+         */
+        public String build() {
+            return stringBuilder.toString();
+        }
+
+        @Override
+        public String toString() {
+            return build();
+        }
+    }
 }

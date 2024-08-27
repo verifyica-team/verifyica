@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.common.AnsiColor;
-import org.antublue.verifyica.engine.common.AnsiColorString;
 import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
@@ -40,11 +39,11 @@ import org.junit.platform.engine.TestExecutionResult;
 public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     private static final String BANNER =
-            new AnsiColorString.Builder()
-                    .color(AnsiColor.TEXT_WHITE_BRIGHT)
+            new AnsiColor.StringBuilder()
+                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
                     .append("Verifyica ")
                     .append(VerifyicaTestEngine.staticGetVersion())
-                    .color(AnsiColor.NONE)
+                    .append(AnsiColor.NONE)
                     .build();
 
     private static final String SUMMARY_BANNER =
@@ -55,14 +54,14 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     "------------------------------------------------------------------------");
 
     private static final String INFO =
-            new AnsiColorString.Builder()
-                    .color(AnsiColor.TEXT_WHITE)
+            new AnsiColor.StringBuilder()
+                    .append(AnsiColor.TEXT_WHITE)
                     .append("[")
-                    .color(AnsiColor.TEXT_BLUE_BOLD)
+                    .append(AnsiColor.TEXT_BLUE_BOLD)
                     .append("INFO")
-                    .color(AnsiColor.TEXT_WHITE)
+                    .append(AnsiColor.TEXT_WHITE)
                     .append("]")
-                    .color(AnsiColor.NONE)
+                    .append(AnsiColor.NONE)
                     .append(" ")
                     .build();
 
@@ -440,9 +439,9 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             Duration elapsedTime = stopWatch.elapsedTime();
 
             println(
-                    new AnsiColorString.Builder()
+                    new AnsiColor.StringBuilder()
                             .append(INFO)
-                            .color(AnsiColor.TEXT_WHITE_BRIGHT)
+                            .append(AnsiColor.TEXT_WHITE_BRIGHT)
                             .append("Total time  : ")
                             .append(
                                     HumanReadableTimeSupport.toHumanReadable(
@@ -451,15 +450,15 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                             .append(" (")
                             .append(elapsedTime.toNanos() / 1e+6D)
                             .append(" ms)")
-                            .color(AnsiColor.NONE));
+                            .append(AnsiColor.NONE));
 
             println(
-                    new AnsiColorString.Builder()
+                    new AnsiColor.StringBuilder()
                             .append(INFO)
-                            .color(AnsiColor.TEXT_WHITE_BRIGHT)
+                            .append(AnsiColor.TEXT_WHITE_BRIGHT)
                             .append("Finished at : ")
                             .append(HumanReadableTimeSupport.now())
-                            .color(AnsiColor.NONE));
+                            .append(AnsiColor.NONE));
 
             if (failureCount.get() == 0) {
                 println(INFO + SEPARATOR);
