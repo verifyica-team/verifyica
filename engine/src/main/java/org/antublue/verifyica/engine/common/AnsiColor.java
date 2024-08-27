@@ -255,7 +255,7 @@ public class AnsiColor {
     /**
      * Constructor
      *
-     * @param escapeSequence sequence
+     * @param escapeSequence escapeSequence
      */
     private AnsiColor(String escapeSequence) {
         Precondition.notNullOrBlank(
