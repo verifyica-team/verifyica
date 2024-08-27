@@ -20,28 +20,50 @@ package org.antublue.verifyica.api;
 public interface ArgumentContext extends Context {
 
     /**
-     * Returns the ClassContext
+     * Get the Engine Configuration
+     *
+     * <p>Equivalent to getClassContext().getEngineContext().getConfiguration()
+     *
+     * @return the Engine Configuration
+     */
+    default Configuration getConfiguration() {
+        return getEngineContext().getConfiguration();
+    }
+
+    /**
+     * Get the EngineContext
+     *
+     * <p>Equivalent to getClassContext().getEngineContext()
+     *
+     * @return the Engine Configuration
+     */
+    default EngineContext getEngineContext() {
+        return getClassContext().getEngineContext();
+    }
+
+    /**
+     * Get the ClassContext
      *
      * @return the ClassContext
      */
     ClassContext getClassContext();
 
     /**
-     * Returns the Argument index
+     * Get the Argument index
      *
      * @return the Argument index
      */
     int getTestArgumentIndex();
 
     /**
-     * Returns the Argument
+     * Get the Argument
      *
      * @return the Argument
      */
     Argument<?> getTestArgument();
 
     /**
-     * Returns the Argument
+     * Get the Argument
      *
      * @param type type
      * @return the Argument

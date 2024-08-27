@@ -20,35 +20,46 @@ package org.antublue.verifyica.api;
 public interface ClassContext extends Context {
 
     /**
-     * Returns the EngineContext
+     * Get the Engine Configuration
+     *
+     * <p>Equivalent to getEngineContext().getConfiguration()
+     *
+     * @return the Engine Configuration
+     */
+    default Configuration getConfiguration() {
+        return getEngineContext().getConfiguration();
+    }
+
+    /**
+     * Get the EngineContext
      *
      * @return the EngineContext
      */
     EngineContext getEngineContext();
 
     /**
-     * Returns the test class
+     * Get the test class
      *
      * @return the test class
      */
     Class<?> getTestClass();
 
     /**
-     * Returns the test class display name
+     * Get the test class display name
      *
      * @return the test class display name
      */
     String getTestClassDisplayName();
 
     /**
-     * Returns the test class instance
+     * Get the test class instance
      *
      * @return the test class instance
      */
     Object getTestInstance();
 
     /**
-     * Returns the test class instance
+     * Get the test class instance
      *
      * @param type type
      * @return the test class instance
@@ -57,7 +68,7 @@ public interface ClassContext extends Context {
     <V> V getTestInstance(Class<V> type);
 
     /**
-     * Returns the test argument parallelism
+     * Get the test argument parallelism
      *
      * @return the test argument parallelism
      */
