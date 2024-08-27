@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.descriptor.runnable;
 
+import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,6 @@ import org.antublue.verifyica.engine.common.FairExecutorService;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateSet;
-import org.antublue.verifyica.engine.common.ThreadNameRunnable;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultClassInstanceContext;
 import org.antublue.verifyica.engine.context.ImmutableClassContext;

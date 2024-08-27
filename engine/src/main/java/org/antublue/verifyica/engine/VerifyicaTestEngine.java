@@ -18,6 +18,7 @@ package org.antublue.verifyica.engine;
 
 import static java.lang.String.format;
 
+import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.common.Streams;
-import org.antublue.verifyica.engine.common.ThreadNameRunnable;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
