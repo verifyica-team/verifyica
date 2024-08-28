@@ -21,11 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
-public class StopWatchTest {
+public class StopwatchTest {
 
     @Test
     public void test() {
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
 
         assertThat(stopWatch.elapsedTime()).isNotNull();
 

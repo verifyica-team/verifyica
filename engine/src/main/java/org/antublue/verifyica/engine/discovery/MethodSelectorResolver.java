@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.antublue.verifyica.engine.common.StopWatch;
+import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.EngineDiscoveryRequest;
@@ -47,7 +47,7 @@ public class MethodSelectorResolver {
             Map<Class<?>, List<Method>> classMethodMap) {
         LOGGER.trace("resolve()");
 
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
 
         engineDiscoveryRequest
                 .getSelectorsByType(MethodSelector.class)

@@ -22,7 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.antublue.verifyica.engine.common.StopWatch;
+import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.exception.UncheckedClassNotFoundException;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -56,7 +56,7 @@ public class UniqueIdSelectorResolver {
             Map<Class<?>, Set<Integer>> argumentIndexMap) {
         LOGGER.trace("resolve()");
 
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
 
         engineDiscoveryRequest
                 .getSelectorsByType(UniqueIdSelector.class)

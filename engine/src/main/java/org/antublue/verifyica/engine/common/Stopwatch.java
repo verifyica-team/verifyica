@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /** Class to implement StopWatch */
 @SuppressWarnings("UnusedReturnValue")
-public class StopWatch {
+public class Stopwatch {
 
     private final ReadWriteLock readWriteLock;
     private long startNanoTime;
@@ -34,7 +34,7 @@ public class StopWatch {
      *
      * <p>The StopWatch starts automatically
      */
-    public StopWatch() {
+    public Stopwatch() {
         readWriteLock = new ReentrantReadWriteLock(true);
         reset();
     }
@@ -44,7 +44,7 @@ public class StopWatch {
      *
      * @return the StopWatch
      */
-    public StopWatch reset() {
+    public Stopwatch reset() {
         getReadWriteLock().writeLock().lock();
         try {
             startNanoTime = System.nanoTime();
@@ -60,7 +60,7 @@ public class StopWatch {
      *
      * @return the StopWatch
      */
-    public StopWatch stop() {
+    public Stopwatch stop() {
         getReadWriteLock().writeLock().lock();
         try {
             stopNanoTime = System.nanoTime();
@@ -97,7 +97,7 @@ public class StopWatch {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StopWatch stopWatch = (StopWatch) o;
+        Stopwatch stopWatch = (Stopwatch) o;
 
         getReadWriteLock().readLock().lock();
         try {

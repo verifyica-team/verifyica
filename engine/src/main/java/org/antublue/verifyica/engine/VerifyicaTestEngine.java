@@ -37,7 +37,7 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.FairExecutorService;
-import org.antublue.verifyica.engine.common.StopWatch;
+import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.common.Streams;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
@@ -136,7 +136,7 @@ public class VerifyicaTestEngine implements TestEngine {
             return new EngineDescriptor(uniqueId, "Verifyica disabled under Maven Surefire");
         }
 
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
 
         LOGGER.trace("discover()");
 
@@ -163,7 +163,7 @@ public class VerifyicaTestEngine implements TestEngine {
             return;
         }
 
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
 
         LOGGER.trace("execute()");
 

@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.common.AnsiColor;
 import org.antublue.verifyica.engine.common.AnsiColoredString;
-import org.antublue.verifyica.engine.common.StopWatch;
+import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
@@ -62,7 +62,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     private final String consolePassMessage;
     private final String consoleFailMessage;
 
-    private final Map<TestDescriptor, StopWatch> stopWatchMap;
+    private final Map<TestDescriptor, Stopwatch> stopWatchMap;
 
     /** Constructor */
     public StatusEngineExecutionListener() {
@@ -153,7 +153,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     @Override
     public void executionStarted(TestDescriptor testDescriptor) {
         if (consoleLogMessagesStarted && shouldProcessDescriptor(testDescriptor)) {
-            stopWatchMap.put(testDescriptor, new StopWatch());
+            stopWatchMap.put(testDescriptor, new Stopwatch());
 
             try {
                 String testArgumentDisplayName = null;

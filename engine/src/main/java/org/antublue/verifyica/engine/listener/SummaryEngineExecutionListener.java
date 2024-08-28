@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.common.AnsiColor;
 import org.antublue.verifyica.engine.common.AnsiColoredString;
-import org.antublue.verifyica.engine.common.StopWatch;
+import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
@@ -105,7 +105,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     private final Map<TestMethodTestDescriptor, String> methodTestDescriptorSkippedMap;
 
     private final Map<String, AtomicLong> counterMap;
-    private final StopWatch stopWatch;
+    private final Stopwatch stopWatch;
 
     /** Constructor */
     public SummaryEngineExecutionListener() {
@@ -121,7 +121,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         methodTestDescriptorSkippedMap = new ConcurrentHashMap<>();
 
         counterMap = new ConcurrentHashMap<>();
-        stopWatch = new StopWatch();
+        stopWatch = new Stopwatch();
 
         println(INFO + SEPARATOR);
         println(INFO + BANNER);

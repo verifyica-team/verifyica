@@ -35,7 +35,7 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
-import org.antublue.verifyica.engine.common.StopWatch;
+import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
@@ -81,7 +81,7 @@ public class EngineDiscoveryRequestResolver {
             EngineDiscoveryRequest engineDiscoveryRequest, EngineDescriptor engineDescriptor) {
         LOGGER.trace("resolveSelectors()");
 
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
 
         Map<Class<?>, List<Method>> testClassMethodMap = new TreeMap<>(getClassComparator());
         Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new TreeMap<>(getClassComparator());
@@ -150,7 +150,7 @@ public class EngineDiscoveryRequestResolver {
             throws Throwable {
         LOGGER.trace("resolveTestArguments()");
 
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
 
         for (Class<?> testClass : testClassMethodMap.keySet()) {
             List<Argument<?>> testArguments = getTestArguments(testClass);
@@ -181,7 +181,7 @@ public class EngineDiscoveryRequestResolver {
     private static List<Argument<?>> getTestArguments(Class<?> testClass) throws Throwable {
         LOGGER.trace("getTestArguments() testClass [%s]", testClass.getName());
 
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
 
         List<Argument<?>> testArguments = new ArrayList<>();
 
@@ -416,7 +416,7 @@ public class EngineDiscoveryRequestResolver {
             EngineDescriptor engineDescriptor, List<ClassDefinition> classDefinitions) {
         LOGGER.trace("buildEngineDescriptor()");
 
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
 
         for (ClassDefinition classDefinition : classDefinitions) {
             Class<?> testClass = classDefinition.getTestClass();
