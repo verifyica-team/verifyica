@@ -18,17 +18,18 @@ package org.antublue.verifyica.engine.common;
 
 import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.antublue.verifyica.engine.support.ExecutorSupport;
 
-public class FairTaskExecutorTest {
+public class FairExecutorTest {
 
     private static final AtomicInteger ATOMIC_INTEGER = new AtomicInteger(-1);
-    private static final ExecutorService EXECUTOR_SERVICE =
-            new FairExecutorService(ExecutorSupport.newExecutorService(1));
+    private static final ExecutorService EXECUTOR_SERVICE = new FairExecutorService(1);
     private static final List<Future<?>> FUTURES = new ArrayList<>();
 
     public static void main(String[] args) throws InterruptedException {
@@ -52,7 +53,10 @@ public class FairTaskExecutorTest {
                 threads[i] = thread;
             }
 
-            for (Thread thread : threads) {
+            List<Thread> threadCollection = new ArrayList<>(Arrays.asList(threads));
+            Collections.shuffle(threadCollection);
+
+            for (Thread thread : threadCollection) {
                 thread.start();
             }
         } finally {

@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
+import org.antublue.verifyica.engine.common.FairExecutorService;
 import org.antublue.verifyica.engine.common.StopWatch;
 import org.antublue.verifyica.engine.common.Streams;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
@@ -172,8 +173,11 @@ public class VerifyicaTestEngine implements TestEngine {
 
         EngineContext engineContext = DefaultEngineContext.getInstance();
 
-        ExecutorService executorService =
+        ExecutorService classExecutorService =
                 ExecutorSupport.newExecutorService(getEngineClassParallelism());
+
+        ExecutorService argumentExecutorService =
+                new FairExecutorService(getEngineArgumentParallelism());
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -191,26 +195,27 @@ public class VerifyicaTestEngine implements TestEngine {
                     getClassTestDescriptors(executionRequest);
 
             LOGGER.trace("classTestDescriptors size [%d]", classTestDescriptors.size());
-            LOGGER.trace("engineClassParallelism [%d]", getEngineClassParallelism());
 
             List<Future<?>> futures = new ArrayList<>();
 
             classTestDescriptors.forEach(
                     classTestDescriptor ->
                             futures.add(
-                                    executorService.submit(
+                                    classExecutorService.submit(
                                             new ThreadNameRunnable(
                                                     "verifyica/" + HashSupport.alphanumeric(4),
                                                     new ClassTestDescriptorRunnable(
                                                             executionRequest,
+                                                            argumentExecutorService,
                                                             engineContext,
                                                             classTestDescriptor)))));
 
-            ExecutorSupport.waitForAllFutures(futures, executorService);
+            ExecutorSupport.waitForAllFutures(futures, classExecutorService);
         } catch (Throwable t) {
             throwableCollector.add(t);
         } finally {
-            executorService.shutdown();
+            argumentExecutorService.shutdown();
+            classExecutorService.shutdown();
 
             Store store = engineContext.getStore();
             for (Object key : store.keySet()) {

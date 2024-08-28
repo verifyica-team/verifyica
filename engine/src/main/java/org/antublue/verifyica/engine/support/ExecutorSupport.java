@@ -48,13 +48,13 @@ public class ExecutorSupport {
     /**
      * Method to create a new ExecutorService
      *
-     * @param threads threads
+     * @param parallelism parallelism
      * @return an ExecutorService
      */
-    public static ExecutorService newExecutorService(int threads) {
-        Precondition.isTrue(threads > 0, "threads is less than 1");
+    public static ExecutorService newExecutorService(int parallelism) {
+        Precondition.isTrue(parallelism > 0, "parallelism is less than 1");
 
-        LOGGER.trace("newExecutorService() threads [%d]", threads);
+        LOGGER.trace("newExecutorService() parallelism [%d]", parallelism);
 
         ExecutorService executorService;
 
@@ -64,17 +64,17 @@ public class ExecutorSupport {
             executorService =
                     new SemaphoreExecutor(
                             ExecutorTool.newVirtualThreadPerTaskExecutor(),
-                            new Semaphore(threads, true));
+                            new Semaphore(parallelism, true));
         } else {
             LOGGER.trace("using platform threads");
 
             executorService =
                     new ThreadPoolExecutor(
-                            threads,
-                            threads,
+                            parallelism,
+                            parallelism,
                             60L,
                             TimeUnit.SECONDS,
-                            new ArrayBlockingQueue<>(threads * 10),
+                            new ArrayBlockingQueue<>(parallelism * 10),
                             new BlockingRejectedExecutionHandler());
         }
 

@@ -16,146 +16,118 @@
 
 package org.antublue.verifyica.engine.common;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.AbstractExecutorService;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import io.github.thunkware.vt.bridge.ThreadTool;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import org.antublue.verifyica.engine.logger.Logger;
+import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.ThreadSupport;
 
-/** Class to implement FaireExecutorService */
+/** Class to implement FairExecutorService */
 public class FairExecutorService extends AbstractExecutorService {
 
-    private final ExecutorService executorService;
-    private final Map<Thread, Queue<Runnable>> taskQueues;
-    private final Lock lock;
-    private final AtomicBoolean isShutdown;
-    private final AtomicBoolean isTerminating;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FairExecutorService.class);
+
+    private final int blockingQueueCount;
+    private final List<BlockingQueue<Runnable>> blockingQueues;
+    private final List<Thread> threads;
+    private final AtomicInteger blockingQueueIndex;
+    private final AtomicBoolean isRunning;
 
     /**
      * Constructor
      *
-     * @param executorService executorService
+     * @param parallelism parallelism
      */
-    public FairExecutorService(ExecutorService executorService) {
-        Precondition.notNull(executorService, "executorService is null");
+    public FairExecutorService(int parallelism) {
+        Precondition.isTrue(parallelism > 0, "parallelism is less than 1");
 
-        this.executorService = executorService;
-        this.taskQueues = new ConcurrentHashMap<>();
-        this.lock = new ReentrantLock(true);
-        this.isShutdown = new AtomicBoolean(false);
-        this.isTerminating = new AtomicBoolean(false);
-    }
+        LOGGER.trace("parallelism [%d]", parallelism);
 
-    @Override
-    public void execute(Runnable task) {
-        Precondition.notNull(task, "task is null");
-
-        if (isShutdown.get()) {
-            throw new RejectedExecutionException("ExecutorService is shut down");
+        if (ThreadTool.hasVirtualThreads()) {
+            LOGGER.trace("using virtual threads");
+        } else {
+            LOGGER.trace("using platform threads");
         }
 
-        Thread currentThread = Thread.currentThread();
-        taskQueues.computeIfAbsent(currentThread, k -> new LinkedList<>()).offer(task);
-        processTaskQueue();
-    }
+        this.blockingQueueCount = parallelism;
+        this.blockingQueues = new ArrayList<>(parallelism);
+        this.threads = new ArrayList<>(parallelism);
+        this.blockingQueueIndex = new AtomicInteger(0);
+        this.isRunning = new AtomicBoolean(true);
 
-    @Override
-    public <T> Future<T> submit(Callable<T> task) {
-        Precondition.notNull(task, "task is null");
+        for (int i = 0; i < parallelism; i++) {
+            BlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>(10);
+            blockingQueues.add(blockingQueue);
 
-        RunnableFuture<T> futureTask = new FutureTask<>(task);
-        execute(futureTask);
-        return futureTask;
-    }
+            Runnable runnable =
+                    () -> {
+                        while (isRunning.get() || !blockingQueue.isEmpty()) {
+                            try {
+                                Runnable task = blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+                                if (task != null) {
+                                    task.run();
+                                }
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                        }
+                    };
 
-    @Override
-    public <T> Future<T> submit(Runnable task, T result) {
-        Precondition.notNull(task, "task is null");
-        Precondition.notNull(result, "result is null");
-
-        RunnableFuture<T> futureTask = new FutureTask<>(task, result);
-        execute(futureTask);
-        return futureTask;
-    }
-
-    @Override
-    public Future<?> submit(Runnable task) {
-        Precondition.notNull(task, "task is null");
-
-        RunnableFuture<?> futureTask = new FutureTask<>(task, null);
-        execute(futureTask);
-        return futureTask;
+            Thread thread = ThreadSupport.newThread(runnable);
+            threads.add(thread);
+            thread.start();
+        }
     }
 
     @Override
     public void shutdown() {
-        isShutdown.set(true);
-        executorService.shutdown();
+        isRunning.set(false);
     }
 
     @Override
     public List<Runnable> shutdownNow() {
-        isShutdown.set(true);
-        isTerminating.set(true);
-        List<Runnable> pendingTasks = new ArrayList<>();
-        taskQueues.values().forEach(pendingTasks::addAll);
-        taskQueues.clear();
-        pendingTasks.addAll(executorService.shutdownNow());
-        return pendingTasks;
+        isRunning.set(false);
+        List<Runnable> remainingTasks = new ArrayList<>();
+        for (BlockingQueue<Runnable> queue : blockingQueues) {
+            queue.drainTo(remainingTasks);
+        }
+        return remainingTasks;
     }
 
     @Override
     public boolean isShutdown() {
-        return isShutdown.get();
+        return !isRunning.get();
     }
 
     @Override
     public boolean isTerminated() {
-        return executorService.isTerminated();
+        return threads.stream().allMatch(thread -> !thread.isAlive());
     }
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        Precondition.notNull(unit, "unit is null");
-
-        return executorService.awaitTermination(timeout, unit);
+        long endTime = System.nanoTime() + unit.toNanos(timeout);
+        for (Thread thread : threads) {
+            long timeLeft = endTime - System.nanoTime();
+            if (timeLeft > 0) {
+                thread.join(timeLeft / 1_000_000, (int) (timeLeft % 1_000_000));
+            } else {
+                break;
+            }
+        }
+        return isTerminated();
     }
 
-    /** Method to process the task queue fairly */
-    private void processTaskQueue() {
-        lock.lock();
+    @Override
+    public void execute(Runnable task) {
+        int index = blockingQueueIndex.getAndUpdate(i -> (i + 1) % blockingQueueCount);
+
         try {
-            for (Map.Entry<Thread, Queue<Runnable>> entry : taskQueues.entrySet()) {
-                Queue<Runnable> queue = entry.getValue();
-                Runnable task = queue.poll();
-                if (task != null) {
-                    executorService.submit(
-                            () -> {
-                                try {
-                                    task.run();
-                                } finally {
-                                    processTaskQueue();
-                                }
-                            });
-                }
-                if (queue.isEmpty()) {
-                    taskQueues.remove(entry.getKey());
-                }
-            }
-        } finally {
-            lock.unlock();
+            blockingQueues.get(index).put(task);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }

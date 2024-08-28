@@ -26,7 +26,6 @@ import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateSet;
@@ -47,12 +46,8 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptorRunnable.class);
 
-    private static final ExecutorService EXECUTOR_SERVICE =
-            // new FairExecutorService(
-            ExecutorSupport.newExecutorService(VerifyicaTestEngine.getEngineArgumentParallelism());
-    // );
-
     private final ExecutionRequest executionRequest;
+    private final ExecutorService argumentExecutorService;
     private final ClassTestDescriptor classTestDescriptor;
     private final Class<?> testClass;
     private final List<Method> prepareMethods;
@@ -66,18 +61,22 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
      * Constructor
      *
      * @param executionRequest executionRequest
+     * @param argumentExecutorService argumentExecutorService
      * @param engineContext engineContext
      * @param classTestDescriptor classTestDescriptor
      */
     public ClassTestDescriptorRunnable(
             ExecutionRequest executionRequest,
+            ExecutorService argumentExecutorService,
             EngineContext engineContext,
             ClassTestDescriptor classTestDescriptor) {
         Precondition.notNull(executionRequest, "executionRequest is null");
+        Precondition.notNull(argumentExecutorService, "argumentExecutorService is null");
         Precondition.notNull(engineContext, "engineContext is null");
         Precondition.notNull(classTestDescriptor, "classTestDescriptor is null");
 
         this.executionRequest = executionRequest;
+        this.argumentExecutorService = argumentExecutorService;
         this.classTestDescriptor = classTestDescriptor;
         this.testClass = classTestDescriptor.getTestClass();
         this.prepareMethods = classTestDescriptor.getPrepareMethods();
@@ -156,7 +155,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                     argumentTestDescriptors.forEach(
                             argumentTestDescriptor ->
                                     futures.add(
-                                            EXECUTOR_SERVICE.submit(
+                                            argumentExecutorService.submit(
                                                     new SemaphoreRunnable(
                                                             semaphore,
                                                             new ThreadNameRunnable(
@@ -170,7 +169,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                                                             classInstanceContext,
                                                                             argumentTestDescriptor))))));
 
-                    ExecutorSupport.waitForAllFutures(futures, EXECUTOR_SERVICE);
+                    ExecutorSupport.waitForAllFutures(futures, argumentExecutorService);
                 } else {
                     String threadNameSuffix = threadName.substring(threadName.lastIndexOf("/") + 1);
 
