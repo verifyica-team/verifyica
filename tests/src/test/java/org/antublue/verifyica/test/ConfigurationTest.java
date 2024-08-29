@@ -20,7 +20,6 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.Verifyica;
 
-/** Example test */
 public class ConfigurationTest {
 
     @Verifyica.ArgumentSupplier

@@ -26,7 +26,6 @@ import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.engine.context.DefaultStore;
 
-/** Example test */
 public class StoreMergeTest {
 
     @Verifyica.ArgumentSupplier

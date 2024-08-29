@@ -22,7 +22,6 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-/** Class to implement ExampleClassInterceptor2 */
 public class ExampleClassInterceptor2 implements ClassInterceptor {
 
     /** Constructor */

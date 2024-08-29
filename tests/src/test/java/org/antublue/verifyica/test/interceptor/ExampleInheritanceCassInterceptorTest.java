@@ -22,7 +22,6 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.test.interceptor.engine.ExampleAutowiredEngineInterceptor1;
 
-/** Example test */
 public class ExampleInheritanceCassInterceptorTest implements ExampleInheritanceClassInterceptor {
 
     @Verifyica.ArgumentSupplier

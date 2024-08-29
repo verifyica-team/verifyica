@@ -27,7 +27,6 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.test.support.RandomSupport;
 
-/** Example test */
 public class CustomArgumentWithSemaphoreTest {
 
     @Verifyica.ArgumentSupplier

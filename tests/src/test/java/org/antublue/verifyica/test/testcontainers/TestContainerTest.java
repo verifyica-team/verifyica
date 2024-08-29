@@ -26,7 +26,6 @@ import org.antublue.verifyica.api.Verifyica;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 
-/** Example */
 public class TestContainerTest {
 
     // The network key

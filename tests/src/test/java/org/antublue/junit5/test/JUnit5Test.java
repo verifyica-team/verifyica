@@ -20,13 +20,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-/** Example JUnit5 test */
 public class JUnit5Test {
 
     @Test
     public void test() {
         System.out.println("Testing " + getClass().getName());
 
-        assertThat(1).isEqualTo(1);
+        int value = 0;
+        value++;
+
+        assertThat(value).isEqualTo(1);
     }
 }

@@ -24,7 +24,6 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
-/** Example test */
 @Verifyica.Tag(tag = "Tag1")
 @Verifyica.Tag(tag = "Tag2")
 public class RepeatableTagTest {

@@ -23,7 +23,7 @@ import java.util.Collection;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
-public class StreamArgumentsTest {
+public class StreamOfArgumentsTest {
 
     @Verifyica.ArgumentSupplier
     public static Object arguments() {

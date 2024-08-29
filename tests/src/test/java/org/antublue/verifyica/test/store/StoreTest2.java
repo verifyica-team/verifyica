@@ -23,7 +23,6 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Key;
 import org.antublue.verifyica.api.Verifyica;
 
-/** Example test */
 public class StoreTest2 {
 
     private static final Key ARGUMENT_CONTEXT_KEY = Key.of("argument.context.key");

@@ -23,7 +23,6 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-/** Class to implement ExampleAutowiredClassInterceptor1 */
 @Verifyica.AutowiredInterceptor
 public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
 

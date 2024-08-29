@@ -29,7 +29,6 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.test.support.RandomSupport;
 
-/** Example test */
 public class EngineInterceptorTest4 {
 
     @Verifyica.AutowiredInterceptor

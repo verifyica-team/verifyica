@@ -25,7 +25,6 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
-/** Example test */
 public class LockTest {
 
     private static final String LOCK_KEY = LockTest.class.getName() + ".lockKey";

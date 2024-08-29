@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
-public class ObjectArgumentTest {
+public class SingleObjectTest {
 
     @Verifyica.ArgumentSupplier
     public static Object arguments() {

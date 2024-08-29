@@ -20,7 +20,6 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 
-/** Example test */
 public class ClassInterceptorTest6 {
 
     @Verifyica.ClassInterceptorSupplier

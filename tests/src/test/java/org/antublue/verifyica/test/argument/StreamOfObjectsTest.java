@@ -14,22 +14,35 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.inheritance;
+package org.antublue.verifyica.test.argument;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
-public abstract class AbstractTest2 {
+public class StreamOfObjectsTest {
+
+    @Verifyica.ArgumentSupplier
+    public static Object arguments() {
+        Collection<String> collection = new ArrayList<>();
+
+        collection.add("test1");
+        collection.add("test2");
+
+        return collection.stream();
+    }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 1)
-    public final void test1(ArgumentContext argumentContext) {
-        System.out.printf("AbstractTest2 test1(%s)%n", argumentContext.getTestArgument());
-
+    public void test(ArgumentContext argumentContext) throws Throwable {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
+
+        System.out.printf(
+                "test(name[%s], payload[%s])%n",
+                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
     }
 }

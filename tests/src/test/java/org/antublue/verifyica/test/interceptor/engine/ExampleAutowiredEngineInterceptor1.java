@@ -27,7 +27,6 @@ import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-/** Class to implement ExampleAutowiredEngineInterceptor1 */
 @Verifyica.AutowiredInterceptor
 public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
 

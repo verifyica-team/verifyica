@@ -23,7 +23,6 @@ import org.antublue.verifyica.api.Key;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.Verifyica;
 
-/** Example test */
 public class StoreTest3 {
 
     private static final Key CLASS_CONTEXT_STORE_KEY =

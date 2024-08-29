@@ -31,7 +31,6 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-/** Example test */
 public class LifecycleTest {
 
     private static final int ARGUMENT_COUNT = 3;

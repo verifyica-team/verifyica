@@ -20,7 +20,6 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 
-/** Example test */
 public class NullArgumentTest {
 
     @Verifyica.ArgumentSupplier

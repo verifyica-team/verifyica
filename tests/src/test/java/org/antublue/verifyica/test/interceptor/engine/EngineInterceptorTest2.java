@@ -26,7 +26,6 @@ import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-/** Example test */
 @Verifyica.AutowiredInterceptor
 public class EngineInterceptorTest2 implements EngineInterceptor {
 

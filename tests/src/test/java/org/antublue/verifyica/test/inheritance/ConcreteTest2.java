@@ -21,7 +21,6 @@ import java.util.Collection;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.Verifyica;
 
-/** Example test */
 public class ConcreteTest2 extends AbstractTest1 {
 
     @Verifyica.ArgumentSupplier

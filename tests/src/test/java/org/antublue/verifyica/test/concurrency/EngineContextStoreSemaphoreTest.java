@@ -26,7 +26,6 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
-/** Example test */
 public class EngineContextStoreSemaphoreTest {
 
     private static final String SEMAPHORE_KEY =

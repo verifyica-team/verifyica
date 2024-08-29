@@ -30,7 +30,6 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.test.support.RandomSupport;
 
-/** Example test */
 public class EngineInterceptorTest5 {
 
     @Verifyica.AutowiredInterceptor
@@ -43,9 +42,7 @@ public class EngineInterceptorTest5 {
             if (classDefinition.getTestClass() == EngineInterceptorTest5.class) {
                 List<Argument<?>> arguments = classDefinition.getTestArguments();
                 assertThat(arguments).hasSize(10);
-                if (arguments.size() > 1) {
-                    arguments.subList(0, arguments.size() - 1).clear();
-                }
+                arguments.subList(0, arguments.size() - 1).clear();
                 assertThat(arguments).hasSize(1);
             }
         }

@@ -23,9 +23,8 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.test.support.RandomSupport;
 
-/** Example test */
 @Verifyica.Disabled
-public class StreamsTest {
+public class PrintStreamsTest {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {

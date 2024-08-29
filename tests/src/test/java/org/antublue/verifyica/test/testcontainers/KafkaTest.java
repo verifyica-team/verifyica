@@ -42,7 +42,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
-/** Example using testcontainers-java and Apache Kafka */
 public class KafkaTest {
 
     private static final String TOPIC = "test";

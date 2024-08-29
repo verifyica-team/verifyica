@@ -18,7 +18,6 @@ package org.antublue.verifyica.test;
 
 import org.antublue.verifyica.api.Verifyica;
 
-/** Example test */
 public class NoTestMethodsTest {
 
     @Verifyica.ArgumentSupplier

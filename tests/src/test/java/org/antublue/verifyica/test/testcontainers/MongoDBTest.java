@@ -35,7 +35,6 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 
-/** Example using testcontainers-java and MongoDB */
 public class MongoDBTest {
 
     public static final String NETWORK = "network";

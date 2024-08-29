@@ -24,7 +24,6 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
-/** Example test */
 @Verifyica.Tag(tag = "Bar")
 public class TagTest2 {
 

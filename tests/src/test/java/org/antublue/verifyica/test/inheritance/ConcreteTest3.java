@@ -24,7 +24,6 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
-/** Example test */
 public class ConcreteTest3 extends AbstractTest2 {
 
     @Verifyica.ArgumentSupplier

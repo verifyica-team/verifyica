@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
-/** Example test */
 public class EngineInterceptorTest1 {
 
     @Verifyica.ArgumentSupplier
