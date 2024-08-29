@@ -36,6 +36,7 @@ public class DispatchingEngineExecutionListener implements EngineExecutionListen
      */
     public DispatchingEngineExecutionListener(EngineExecutionListener... engineExecutionListeners) {
         Precondition.notNull(engineExecutionListeners, "engineExecutionListeners is null");
+
         this.engineExecutionListeners = new ArrayList<>();
 
         for (EngineExecutionListener engineExecutionListener : engineExecutionListeners) {
