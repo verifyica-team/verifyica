@@ -16,6 +16,8 @@
 
 package org.antublue.verifyica.api;
 
+import java.util.function.Supplier;
+
 /** Class to implement Fail */
 public class Fail extends RuntimeException {
 
@@ -50,10 +52,31 @@ public class Fail extends RuntimeException {
     /**
      * Fail
      *
+     * @param supplier supplier
+     */
+    public static void fail(Supplier<String> supplier) {
+        String message = supplier != null ? supplier.get() : null;
+        throw new Fail(message);
+    }
+
+    /**
+     * Fail
+     *
      * @param message message
      * @param throwable throwable
      */
     public static void fail(String message, Throwable throwable) {
+        throw new Fail(message, throwable);
+    }
+
+    /**
+     * Fail
+     *
+     * @param supplier supplier
+     * @param throwable throwable
+     */
+    public static void fail(Supplier<String> supplier, Throwable throwable) {
+        String message = supplier != null ? supplier.get() : null;
         throw new Fail(message, throwable);
     }
 
@@ -73,11 +96,39 @@ public class Fail extends RuntimeException {
      * Fail if true
      *
      * @param condition condition
+     * @param supplier supplier
+     */
+    public static void failIfTrue(boolean condition, Supplier<String> supplier) {
+        if (condition) {
+            String message = supplier != null ? supplier.get() : null;
+            throw new Fail(message);
+        }
+    }
+
+    /**
+     * Fail if true
+     *
+     * @param condition condition
      * @param message message
      * @param throwable throwable
      */
     public static void failIfTrue(boolean condition, String message, Throwable throwable) {
         if (condition) {
+            throw new Fail(message, throwable);
+        }
+    }
+
+    /**
+     * Fail if true
+     *
+     * @param condition condition
+     * @param supplier supplier
+     * @param throwable throwable
+     */
+    public static void failIfTrue(
+            boolean condition, Supplier<String> supplier, Throwable throwable) {
+        if (condition) {
+            String message = supplier != null ? supplier.get() : null;
             throw new Fail(message, throwable);
         }
     }
@@ -98,11 +149,39 @@ public class Fail extends RuntimeException {
      * Fail if false
      *
      * @param condition condition
+     * @param supplier supplier
+     */
+    public static void failIfFalse(boolean condition, Supplier<String> supplier) {
+        if (!condition) {
+            String message = supplier != null ? supplier.get() : null;
+            throw new Fail(message);
+        }
+    }
+
+    /**
+     * Fail if false
+     *
+     * @param condition condition
      * @param message message
      * @param throwable throwable
      */
     public static void failIfFalse(boolean condition, String message, Throwable throwable) {
         if (!condition) {
+            throw new Fail(message, throwable);
+        }
+    }
+
+    /**
+     * Fail if false
+     *
+     * @param condition condition
+     * @param supplier supplier
+     * @param throwable throwable
+     */
+    public static void failIfFalse(
+            boolean condition, Supplier<String> supplier, Throwable throwable) {
+        if (!condition) {
+            String message = supplier != null ? supplier.get() : null;
             throw new Fail(message, throwable);
         }
     }
