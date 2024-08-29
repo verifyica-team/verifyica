@@ -39,6 +39,8 @@ public class LifecycleTest {
     // Antipattern, but used for testing
     public static List<String> actual = new ArrayList<>();
 
+    public String string;
+
     @Verifyica.ClassInterceptorSupplier
     public static Object classInterceptors() {
         return new ConcreteClassInterceptor();
@@ -56,6 +58,14 @@ public class LifecycleTest {
     @Verifyica.Prepare
     public static void prepare(ClassContext classContext) throws Throwable {
         System.out.printf("  %s prepare()%n", classContext.getTestClass().getName());
+
+        assertThat(classContext).isNotNull();
+        assertThat(classContext.getTestInstance()).isNotNull();
+
+        LifecycleTest lifecycleTest = classContext.getTestInstance(LifecycleTest.class);
+
+        assertThat(lifecycleTest).isNotNull();
+        lifecycleTest.string = "FOO";
 
         actual.add("prepare");
     }
@@ -116,6 +126,14 @@ public class LifecycleTest {
     public static void conclude(ClassContext classContext) throws Throwable {
         System.out.printf("  %s conclude()%n", classContext.getTestClass().getName());
 
+        assertThat(classContext).isNotNull();
+        assertThat(classContext.getTestInstance()).isNotNull();
+
+        LifecycleTest lifecycleTest = classContext.getTestInstance(LifecycleTest.class);
+
+        assertThat(lifecycleTest).isNotNull();
+        assertThat(lifecycleTest.string).isEqualTo("FOO");
+
         actual.add("conclude");
     }
 
@@ -146,6 +164,9 @@ public class LifecycleTest {
         @Override
         public void prePrepare(ClassInterceptorContext classInterceptorContext) throws Throwable {
             System.out.printf("%s prePrepare()%n", getClass().getName());
+
+            assertThat(classInterceptorContext).isNotNull();
+            assertThat(classInterceptorContext.getClassContext()).isNotNull();
 
             actual.add("prePrepare");
         }
@@ -273,6 +294,15 @@ public class LifecycleTest {
         @Override
         public void onDestroy(ClassInterceptorContext classInterceptorContext) throws Throwable {
             System.out.printf("%s onDestroy()%n", getClass().getName());
+
+            assertThat(classInterceptorContext).isNotNull();
+            assertThat(classInterceptorContext.getClassContext()).isNotNull();
+            assertThat(classInterceptorContext.getClassContext().getTestInstance()).isNotNull();
+
+            LifecycleTest lifecycleTest =
+                    classInterceptorContext.getClassContext().getTestInstance(LifecycleTest.class);
+
+            assertThat(lifecycleTest).isNotNull();
 
             List<String> expected = new ArrayList<>();
 
