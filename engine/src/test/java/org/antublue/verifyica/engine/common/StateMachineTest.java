@@ -26,6 +26,17 @@ import org.junit.jupiter.api.Test;
 
 public class StateMachineTest {
 
+    private enum State {
+        START,
+        ONE,
+        TWO,
+        THREE,
+        END,
+        RANDOM,
+        TEST1,
+        TEST2
+    }
+
     @Test
     public void test() {
         List<String> expected = new ArrayList<>();
@@ -37,85 +48,87 @@ public class StateMachineTest {
         List<String> actual = new ArrayList<>();
         RuntimeException runtimeException = new RuntimeException();
 
-        StateMachine<String> stateMachine =
-                new StateMachine<String>()
+        StateMachine<State> stateMachine =
+                new StateMachine<State>()
                         .onState(
-                                "start",
+                                State.START,
                                 () -> {
                                     actual.add("start");
                                     System.out.println("start");
-                                    return StateMachine.Result.of("one");
+                                    return StateMachine.Result.of(State.ONE);
                                 })
                         .onState(
-                                "one",
+                                State.ONE,
                                 () -> {
                                     actual.add("one");
                                     System.out.println("one");
-                                    return StateMachine.Result.of("two");
+                                    return StateMachine.Result.of(State.TWO);
                                 })
                         .onState(
-                                "two",
+                                State.TWO,
                                 () -> {
                                     actual.add("two");
                                     System.out.println("two");
-                                    return StateMachine.Result.of("three", runtimeException);
+                                    return StateMachine.Result.of(State.THREE, runtimeException);
                                 })
                         .onState(
-                                "three",
+                                State.THREE,
                                 () -> {
                                     actual.add("three");
                                     System.out.println("end");
-                                    return StateMachine.Result.of("end");
+                                    return StateMachine.Result.of(State.END);
                                 });
 
-        stateMachine.run("start", "end");
+        stateMachine.run(State.START, State.END);
 
-        Optional<StateMachine.Result<String>> stateResult =
+        Optional<StateMachine.Result<State>> stateResult =
                 stateMachine.getFirstResultWithThrowable();
 
         assertThat(stateResult).isNotNull();
-        assertThat(stateResult.get().getState()).isEqualTo("three");
+        assertThat(stateResult.get().getState()).isEqualTo(State.THREE);
         assertThat(stateResult.get().getThrowable()).isSameAs(runtimeException);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void testDuplicateAction() {
-        StateMachine<String> stateMachine = new StateMachine<>();
+        StateMachine<State> stateMachine = new StateMachine<>();
 
-        stateMachine.onState("test", () -> StateMachine.Result.of("random"));
+        stateMachine.onState(State.TEST1, () -> StateMachine.Result.of(State.RANDOM));
 
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(
-                        () -> stateMachine.onState("test", () -> StateMachine.Result.of("random")));
+                        () ->
+                                stateMachine.onState(
+                                        State.TEST1, () -> StateMachine.Result.of(State.RANDOM)));
 
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(
                         () ->
                                 stateMachine.onStates(
-                                        StateMachine.asList("test", "test2"),
-                                        () -> StateMachine.Result.of("random")));
+                                        StateMachine.asList(State.TEST1, State.TEST2),
+                                        () -> StateMachine.Result.of(State.RANDOM)));
     }
 
     @Test
     public void testDuplicateStates() {
-        StateMachine<String> stateMachine = new StateMachine<>();
+        StateMachine<State> stateMachine = new StateMachine<>();
 
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(
                         () ->
                                 stateMachine.onStates(
-                                        StateMachine.asList("test", "test"),
-                                        () -> StateMachine.Result.of("random")));
+                                        StateMachine.asList(State.TEST1, State.TEST1),
+                                        () -> StateMachine.Result.of(State.RANDOM)));
     }
 
     @Test
     public void testNoAction() {
-        StateMachine<String> stateMachine = new StateMachine<>();
+        StateMachine<State> stateMachine = new StateMachine<>();
 
-        stateMachine.onState("test", () -> StateMachine.Result.of("random"));
+        stateMachine.onState(State.TEST1, () -> StateMachine.Result.of(State.RANDOM));
 
         assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> stateMachine.run("start", "end"));
+                .isThrownBy(() -> stateMachine.run(State.START, State.END));
     }
 }

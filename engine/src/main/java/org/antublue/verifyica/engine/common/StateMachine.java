@@ -30,7 +30,7 @@ import java.util.Optional;
  *
  * @param <T> the State type
  */
-public class StateMachine<T> {
+public class StateMachine<T extends Enum<T>> {
 
     private final Map<T, Action<T>> actions;
     private final List<Result<T>> results;
@@ -64,15 +64,16 @@ public class StateMachine<T> {
      */
     public StateMachine<T> onStates(List<T> states, Action<T> action) {
         Precondition.notNull(states, "states is null");
+        Precondition.isTrue(!states.isEmpty(), "states is empty");
         Precondition.notNull(action, "action is null");
 
         for (T state : states) {
-            if (actions.containsKey(state)) {
+            if (actions.putIfAbsent(state, action) != null) {
                 throw new IllegalStateException(
                         format("Action already registered for State [%s]", state));
             }
-            actions.putIfAbsent(state, action);
         }
+
         return this;
     }
 
@@ -101,18 +102,18 @@ public class StateMachine<T> {
 
             result = action.execute();
             if (result == null) {
-                throw new IllegalStateException(format("Action for State [%s] return null", state));
+                throw new IllegalStateException(format("Action for State [%s] returned null", state));
             }
 
             state = result.getState();
             if (state == null) {
                 throw new IllegalStateException(
-                        format("Action for State [%s] return a Result with a null state", state));
+                        format("Action for State [%s] returned a Result with a null State", state));
             }
 
             results.add(result);
             state = result.getState();
-        } while (state != endState);
+        } while (state != endState && state.compareTo(endState) != 0);
 
         return this;
     }
