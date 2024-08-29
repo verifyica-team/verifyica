@@ -121,6 +121,7 @@ public class Logger {
      */
     public void setLevel(Level level) {
         Precondition.notNull(level, "level is null");
+
         this.level.set(level);
     }
 
@@ -132,6 +133,7 @@ public class Logger {
      */
     public boolean isEnabled(Level level) {
         Precondition.notNull(level, "level is null");
+
         return this.level.get().toInt() >= level.toInt();
     }
 
