@@ -21,7 +21,7 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 
-/** Class to implement DefaultClassContext */
+/** Class to implement DefaultClassInstanceContext */
 public class DefaultClassInstanceContext implements ClassContext {
 
     private final ClassContext classContext;

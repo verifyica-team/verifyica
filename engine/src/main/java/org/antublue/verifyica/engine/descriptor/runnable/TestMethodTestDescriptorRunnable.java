@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.engine.common.Precondition;
-import org.antublue.verifyica.engine.common.StateSet;
+import org.antublue.verifyica.engine.common.StateMachine;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -40,6 +40,17 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
     private final List<Method> beforeEachMethods;
     private final Method testMethod;
     private final List<Method> afterEachMethods;
+
+    private enum State {
+        START,
+        BEFORE_EACH_SUCCESS,
+        BEFORE_EACH_FAILURE,
+        TEST_SUCCESS,
+        TEST_FAILURE,
+        AFTER_EACH_SUCCESS,
+        AFTER_EACH_FAILURE,
+        END
+    }
 
     /**
      * Constructor
@@ -70,48 +81,59 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
 
         executionRequest.getEngineExecutionListener().executionStarted(testMethodTestDescriptor);
 
-        StateSet<String> stateSet = new StateSet<>();
+        StateMachine<State> stateMachine =
+                new StateMachine<State>()
+                        .onState(
+                                State.START,
+                                () -> {
+                                    try {
+                                        ClassInterceptorRegistry.getInstance()
+                                                .beforeEach(argumentContext, beforeEachMethods);
+                                        return StateMachine.Result.of(State.BEFORE_EACH_SUCCESS);
+                                    } catch (Throwable t) {
+                                        t.printStackTrace(System.err);
+                                        return StateMachine.Result.of(State.BEFORE_EACH_FAILURE, t);
+                                    }
+                                })
+                        .onState(
+                                State.BEFORE_EACH_SUCCESS,
+                                () -> {
+                                    try {
+                                        ClassInterceptorRegistry.getInstance()
+                                                .test(argumentContext, testMethod);
+                                        return StateMachine.Result.of(State.TEST_SUCCESS);
+                                    } catch (Throwable t) {
+                                        t.printStackTrace(System.err);
+                                        return StateMachine.Result.of(State.TEST_FAILURE, t);
+                                    }
+                                })
+                        .onStates(
+                                StateMachine.asList(
+                                        State.BEFORE_EACH_FAILURE,
+                                        State.TEST_SUCCESS,
+                                        State.TEST_FAILURE),
+                                () -> {
+                                    try {
+                                        ClassInterceptorRegistry.getInstance()
+                                                .afterEach(argumentContext, afterEachMethods);
+                                        return StateMachine.Result.of(State.AFTER_EACH_SUCCESS);
+                                    } catch (Throwable t) {
+                                        t.printStackTrace(System.err);
+                                        return StateMachine.Result.of(State.AFTER_EACH_FAILURE, t);
+                                    }
+                                })
+                        .onStates(
+                                StateMachine.asList(
+                                        State.AFTER_EACH_SUCCESS, State.AFTER_EACH_FAILURE),
+                                () -> StateMachine.Result.of(State.END))
+                        .run(State.START, State.END);
 
-        try {
-            stateSet.setCurrentState("beforeEach");
-
-            ClassInterceptorRegistry.getInstance().beforeEach(argumentContext, beforeEachMethods);
-
-            stateSet.setCurrentState("beforeEach.success");
-        } catch (Throwable t) {
-            t.printStackTrace(System.err);
-            stateSet.setCurrentState("beforeEach.failure", t);
-        }
-
-        if (stateSet.hasObservedState("beforeEach.success")) {
-            try {
-                stateSet.setCurrentState("test");
-
-                ClassInterceptorRegistry.getInstance().test(argumentContext, testMethod);
-
-                stateSet.setCurrentState("test.success");
-            } catch (Throwable t) {
-                t.printStackTrace(System.err);
-                stateSet.setCurrentState("test.failure", t);
-            }
-        }
-
-        try {
-            stateSet.setCurrentState("afterEach");
-
-            ClassInterceptorRegistry.getInstance().afterEach(argumentContext, afterEachMethods);
-
-            stateSet.setCurrentState("afterEach.success");
-        } catch (Throwable t) {
-            t.printStackTrace(System.err);
-            stateSet.setCurrentState("afterEach.failure", t);
-        }
-
-        LOGGER.trace("state tracker [%s]", stateSet);
+        LOGGER.trace("state machine [%s]", stateMachine);
 
         TestExecutionResult testExecutionResult =
-                stateSet.getFirstStateEntryWithThrowable()
-                        .map(stateEntry -> TestExecutionResult.failed(stateEntry.getThrowable()))
+                stateMachine
+                        .getFirstResultWithThrowable()
+                        .map(result -> TestExecutionResult.failed(result.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
         executionRequest

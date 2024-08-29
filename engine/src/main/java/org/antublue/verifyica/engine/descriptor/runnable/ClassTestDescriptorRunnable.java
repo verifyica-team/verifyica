@@ -28,7 +28,7 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
-import org.antublue.verifyica.engine.common.StateSet;
+import org.antublue.verifyica.engine.common.StateMachine;
 import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultClassInstanceContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
@@ -56,6 +56,27 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
     private final ClassContext classContext;
 
     private DefaultClassInstanceContext classInstanceContext;
+
+    private enum State {
+        START,
+        INSTANTIATE_SUCCESS,
+        INSTANTIATE_FAILURE,
+        PREPARE_SUCCESS,
+        PREPARE_FAILURE,
+        EXECUTE_SUCCESS,
+        EXECUTE_FAILURE,
+        SKIP_SUCCESS,
+        SKIP_FAILURE,
+        CONCLUDE_SUCCESS,
+        CONCLUDE_FAILURE,
+        ON_DESTROY_SUCCESS,
+        ON_DESTROY_FAILURE,
+        AUTO_CLOSE_INSTANCE_SUCCESS,
+        AUTO_CLOSE_INSTANCE_FAILURE,
+        AUTO_CLOSE_STORE_SUCCESS,
+        AUTO_CLOSE_STORE_FAILURE,
+        END
+    }
 
     /**
      * Constructor
@@ -91,200 +112,238 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
 
         executionRequest.getEngineExecutionListener().executionStarted(classTestDescriptor);
 
-        StateSet<String> stateSet = new StateSet<>();
+        StateMachine<State> stateMachine =
+                new StateMachine<State>()
+                        .onState(
+                                State.START,
+                                () -> {
+                                    Object testInstance = null;
+                                    Throwable throwable = null;
+                                    try {
+                                        ClassInterceptorRegistry.getInstance()
+                                                .preInstantiate(
+                                                        classContext.getEngineContext(), testClass);
 
-        try {
-            stateSet.setCurrentState("instantiate");
+                                        testInstance =
+                                                testClass
+                                                        .getDeclaredConstructor((Class<?>[]) null)
+                                                        .newInstance((Object[]) null);
 
-            Throwable throwable = null;
-            Object testInstance = null;
+                                        classInstanceContext =
+                                                new DefaultClassInstanceContext(
+                                                        classContext, testInstance);
+                                    } catch (Throwable t) {
+                                        throwable = t;
+                                    }
 
-            try {
-                ClassInterceptorRegistry.getInstance()
-                        .beforeInstantiate(classContext.getEngineContext(), testClass);
+                                    try {
+                                        ClassInterceptorRegistry.getInstance()
+                                                .postInstantiate(
+                                                        classContext.getEngineContext(),
+                                                        testClass,
+                                                        testInstance,
+                                                        throwable);
 
-                testInstance =
-                        testClass
-                                .getDeclaredConstructor((Class<?>[]) null)
-                                .newInstance((Object[]) null);
+                                        if (throwable == null) {
+                                            return StateMachine.Result.of(
+                                                    State.INSTANTIATE_SUCCESS);
+                                        } else {
+                                            return StateMachine.Result.of(
+                                                    State.INSTANTIATE_FAILURE, throwable);
+                                        }
+                                    } catch (Throwable t) {
+                                        t.printStackTrace(System.err);
+                                        return StateMachine.Result.of(State.INSTANTIATE_FAILURE, t);
+                                    }
+                                })
+                        .onState(
+                                State.INSTANTIATE_SUCCESS,
+                                () -> {
+                                    try {
+                                        ClassInterceptorRegistry.getInstance()
+                                                .prepare(classInstanceContext, prepareMethods);
+                                        return StateMachine.Result.of(State.PREPARE_SUCCESS);
+                                    } catch (Throwable t) {
+                                        t.printStackTrace(System.err);
+                                        return StateMachine.Result.of(State.PREPARE_FAILURE, t);
+                                    }
+                                })
+                        .onState(
+                                State.PREPARE_SUCCESS,
+                                () -> {
+                                    try {
+                                        int testArgumentParallelism =
+                                                classTestDescriptor.getTestArgumentParallelism();
 
-                classInstanceContext = new DefaultClassInstanceContext(classContext, testInstance);
-            } catch (Throwable t) {
-                throwable = t;
-            }
+                                        LOGGER.trace(
+                                                "argumentTestDescriptors size [%d]",
+                                                argumentTestDescriptors.size());
+                                        LOGGER.trace(
+                                                "testArgumentParallelism [%d]",
+                                                testArgumentParallelism);
 
-            ClassInterceptorRegistry.getInstance()
-                    .afterInstantiate(
-                            classContext.getEngineContext(), testClass, testInstance, throwable);
+                                        String threadName = Thread.currentThread().getName();
 
-            stateSet.setCurrentState("instantiate.success");
-        } catch (Throwable t) {
-            stateSet.setCurrentState("instantiate.failure", t);
-        }
+                                        if (testArgumentParallelism > 1) {
+                                            List<Future<?>> futures = new ArrayList<>();
 
-        if (stateSet.isCurrentState("instantiate.success")) {
-            try {
-                stateSet.setCurrentState("prepare");
+                                            Semaphore semaphore =
+                                                    new Semaphore(testArgumentParallelism, true);
 
-                ClassInterceptorRegistry.getInstance()
-                        .prepare(classInstanceContext, prepareMethods);
+                                            argumentTestDescriptors.forEach(
+                                                    argumentTestDescriptor ->
+                                                            futures.add(
+                                                                    argumentExecutorService.submit(
+                                                                            new SemaphoreRunnable(
+                                                                                    semaphore,
+                                                                                    new ThreadNameRunnable(
+                                                                                            threadName
+                                                                                                    + "/"
+                                                                                                    + HashSupport
+                                                                                                            .alphanumeric(
+                                                                                                                    4),
+                                                                                            new ArgumentTestDescriptorRunnable(
+                                                                                                    executionRequest,
+                                                                                                    classInstanceContext,
+                                                                                                    argumentTestDescriptor))))));
 
-                stateSet.setCurrentState("prepare.success");
-            } catch (Throwable t) {
-                t.printStackTrace(System.err);
-                stateSet.setCurrentState("prepare.failure", t);
-            }
-        }
+                                            ExecutorSupport.waitForAllFutures(
+                                                    futures, argumentExecutorService);
+                                        } else {
+                                            String threadNameSuffix =
+                                                    threadName.substring(
+                                                            threadName.lastIndexOf("/") + 1);
 
-        if (stateSet.hasObservedState("prepare.success")) {
-            try {
-                stateSet.setCurrentState("execute");
-
-                int testArgumentParallelism = classTestDescriptor.getTestArgumentParallelism();
-
-                LOGGER.trace("argumentTestDescriptors size [%d]", argumentTestDescriptors.size());
-                LOGGER.trace("testArgumentParallelism [%d]", testArgumentParallelism);
-
-                String threadName = Thread.currentThread().getName();
-
-                if (testArgumentParallelism > 1) {
-                    List<Future<?>> futures = new ArrayList<>();
-
-                    Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
-
-                    argumentTestDescriptors.forEach(
-                            argumentTestDescriptor ->
-                                    futures.add(
-                                            argumentExecutorService.submit(
-                                                    new SemaphoreRunnable(
-                                                            semaphore,
+                                            argumentTestDescriptors.forEach(
+                                                    argumentTestDescriptor ->
                                                             new ThreadNameRunnable(
-                                                                    threadName
-                                                                            + "/"
-                                                                            + HashSupport
-                                                                                    .alphanumeric(
-                                                                                            4),
-                                                                    new ArgumentTestDescriptorRunnable(
-                                                                            executionRequest,
-                                                                            classInstanceContext,
-                                                                            argumentTestDescriptor))))));
+                                                                            threadName
+                                                                                    + "/"
+                                                                                    + threadNameSuffix,
+                                                                            new ArgumentTestDescriptorRunnable(
+                                                                                    executionRequest,
+                                                                                    classInstanceContext,
+                                                                                    argumentTestDescriptor))
+                                                                    .run());
+                                        }
 
-                    ExecutorSupport.waitForAllFutures(futures, argumentExecutorService);
-                } else {
-                    String threadNameSuffix = threadName.substring(threadName.lastIndexOf("/") + 1);
+                                        return StateMachine.Result.of(State.EXECUTE_SUCCESS);
+                                    } catch (Throwable t) {
+                                        t.printStackTrace(System.err);
+                                        return StateMachine.Result.of(State.EXECUTE_FAILURE, t);
+                                    }
+                                })
+                        .onState(
+                                State.PREPARE_FAILURE,
+                                () -> {
+                                    try {
+                                        argumentTestDescriptors.forEach(
+                                                argumentTestDescriptor ->
+                                                        new ArgumentTestDescriptorRunnable(
+                                                                        executionRequest,
+                                                                        classInstanceContext,
+                                                                        argumentTestDescriptor)
+                                                                .skip());
 
-                    argumentTestDescriptors.forEach(
-                            argumentTestDescriptor ->
-                                    new ThreadNameRunnable(
-                                                    threadName + "/" + threadNameSuffix,
-                                                    new ArgumentTestDescriptorRunnable(
-                                                            executionRequest,
-                                                            classInstanceContext,
-                                                            argumentTestDescriptor))
-                                            .run());
-                }
+                                        executionRequest
+                                                .getEngineExecutionListener()
+                                                .executionSkipped(classTestDescriptor, "Skipped");
 
-                stateSet.setCurrentState("execute.success");
-            } catch (Throwable t) {
-                t.printStackTrace(System.err);
-                stateSet.setCurrentState("execute.failure", t);
-            }
-        }
+                                        return StateMachine.Result.of(State.SKIP_SUCCESS);
+                                    } catch (Throwable t) {
+                                        t.printStackTrace(System.err);
+                                        return StateMachine.Result.of(State.SKIP_FAILURE, t);
+                                    }
+                                })
+                        .onStates(
+                                StateMachine.asList(
+                                        State.EXECUTE_SUCCESS,
+                                        State.EXECUTE_FAILURE,
+                                        State.SKIP_SUCCESS,
+                                        State.SKIP_FAILURE),
+                                () -> {
+                                    try {
+                                        ClassInterceptorRegistry.getInstance()
+                                                .conclude(classInstanceContext, concludeMethods);
 
-        if (stateSet.hasObservedState("prepare.failure")) {
-            try {
-                stateSet.setCurrentState("skip");
+                                        return StateMachine.Result.of(State.CONCLUDE_SUCCESS);
+                                    } catch (Throwable t) {
+                                        t.printStackTrace(System.err);
+                                        return StateMachine.Result.of(State.CONCLUDE_FAILURE, t);
+                                    }
+                                })
+                        .onStates(
+                                StateMachine.asList(State.CONCLUDE_SUCCESS, State.CONCLUDE_FAILURE),
+                                () -> {
+                                    try {
+                                        ClassInterceptorRegistry.getInstance()
+                                                .onDestroy(classInstanceContext);
+                                        return StateMachine.Result.of(State.ON_DESTROY_SUCCESS);
+                                    } catch (Throwable t) {
+                                        t.printStackTrace(System.err);
+                                        return StateMachine.Result.of(State.ON_DESTROY_FAILURE, t);
+                                    }
+                                })
+                        .onStates(
+                                StateMachine.asList(
+                                        State.ON_DESTROY_SUCCESS, State.ON_DESTROY_FAILURE),
+                                () -> {
+                                    try {
+                                        if (classInstanceContext != null) {
+                                            Object testInstance =
+                                                    classInstanceContext.getTestInstance();
+                                            if (testInstance instanceof AutoCloseable) {
+                                                ((AutoCloseable) testInstance).close();
+                                            }
+                                        }
+                                        return StateMachine.Result.of(
+                                                State.AUTO_CLOSE_INSTANCE_SUCCESS);
+                                    } catch (Throwable t) {
+                                        t.printStackTrace(System.err);
+                                        return StateMachine.Result.of(
+                                                State.AUTO_CLOSE_INSTANCE_FAILURE, t);
+                                    }
+                                })
+                        .onStates(
+                                StateMachine.asList(
+                                        State.AUTO_CLOSE_INSTANCE_SUCCESS,
+                                        State.AUTO_CLOSE_INSTANCE_FAILURE),
+                                () -> {
+                                    List<Throwable> throwables = new ArrayList<>();
+                                    Store store = classContext.getStore();
+                                    for (Object key : store.keySet()) {
+                                        Object value = store.remove(key);
+                                        if (value instanceof AutoCloseable) {
+                                            try {
+                                                ((AutoCloseable) value).close();
+                                            } catch (Throwable t) {
+                                                t.printStackTrace(System.err);
+                                                throwables.add(t);
+                                            }
+                                        }
+                                    }
+                                    store.clear();
+                                    if (throwables.isEmpty()) {
+                                        return StateMachine.Result.of(
+                                                State.AUTO_CLOSE_STORE_SUCCESS);
+                                    } else {
+                                        return StateMachine.Result.of(
+                                                State.AUTO_CLOSE_STORE_FAILURE, throwables.get(0));
+                                    }
+                                })
+                        .onStates(
+                                StateMachine.asList(
+                                        State.AUTO_CLOSE_STORE_SUCCESS,
+                                        State.AUTO_CLOSE_STORE_FAILURE),
+                                () -> StateMachine.Result.of(State.END))
+                        .run(State.START, State.END);
 
-                argumentTestDescriptors.forEach(
-                        argumentTestDescriptor ->
-                                new ArgumentTestDescriptorRunnable(
-                                                executionRequest,
-                                                classInstanceContext,
-                                                argumentTestDescriptor)
-                                        .skip());
-
-                executionRequest
-                        .getEngineExecutionListener()
-                        .executionSkipped(classTestDescriptor, "Skipped");
-
-                stateSet.setCurrentState("skip.success");
-            } catch (Throwable t) {
-                t.printStackTrace(System.err);
-                stateSet.setCurrentState("skip.failure", t);
-            }
-        }
-
-        if (stateSet.hasObservedState("prepare")) {
-            try {
-                stateSet.setCurrentState("conclude");
-
-                ClassInterceptorRegistry.getInstance()
-                        .conclude(classInstanceContext, concludeMethods);
-
-                stateSet.setCurrentState("conclude.success");
-            } catch (Throwable t) {
-                t.printStackTrace(System.err);
-                stateSet.setCurrentState("conclude.failure", t);
-            }
-        }
-
-        Store store = classContext.getStore();
-        for (Object key : store.keySet()) {
-            Object value = store.get(key);
-            if (value instanceof AutoCloseable) {
-                try {
-                    stateSet.setCurrentState("storeAutoClose(" + key + ")");
-
-                    ((AutoCloseable) value).close();
-
-                    stateSet.setCurrentState("storeAutoClose(" + key + ").success");
-                } catch (Throwable t) {
-                    t.printStackTrace(System.err);
-                    stateSet.setCurrentState("storeAutoClose(" + key + ").failure");
-                }
-            }
-        }
-        store.clear();
-
-        Object testInstance = null;
-
-        if (classInstanceContext != null) {
-            testInstance = classInstanceContext.getTestInstance();
-        }
-
-        try {
-            stateSet.setCurrentState("destroy");
-
-            try {
-                ClassInterceptorRegistry.getInstance().onDestroy(classInstanceContext);
-            } finally {
-                testInstance = null;
-            }
-
-            stateSet.setCurrentState("destroy.success");
-        } catch (Throwable t) {
-            t.printStackTrace(System.err);
-            stateSet.setCurrentState("destroy.failure", t);
-        }
-
-        if (testInstance instanceof AutoCloseable) {
-            try {
-                stateSet.setCurrentState("argumentAutoClose(" + testClass.getName() + ")");
-
-                ((AutoCloseable) testInstance).close();
-
-                stateSet.setCurrentState("argumentAutoClose" + testClass.getName() + ").success");
-            } catch (Throwable t) {
-                t.printStackTrace(System.err);
-                stateSet.setCurrentState("argumentAutoClose" + testClass.getName() + ").failure");
-            }
-        }
-
-        LOGGER.trace("state tracker %s [%s]", classTestDescriptor, stateSet);
+        LOGGER.trace("state machine [%s]", stateMachine);
 
         TestExecutionResult testExecutionResult =
-                stateSet.getFirstStateEntryWithThrowable()
-                        .map(stateEntry -> TestExecutionResult.failed(stateEntry.getThrowable()))
+                stateMachine
+                        .getFirstResultWithThrowable()
+                        .map(result -> TestExecutionResult.failed(result.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
         executionRequest

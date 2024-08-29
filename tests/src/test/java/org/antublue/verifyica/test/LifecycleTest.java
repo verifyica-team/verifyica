@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.interceptor;
+package org.antublue.verifyica.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
@@ -30,19 +32,25 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
 /** Example test */
-public class ClassInterceptorTest5 {
+public class LifecycleTest {
+
+    private static final int ARGUMENT_COUNT = 3;
 
     // Antipattern, but used for testing
     public static List<String> actual = new ArrayList<>();
 
     @Verifyica.ClassInterceptorSupplier
     public static Object classInterceptors() {
-        return new ConcreteClasInterceptor();
+        return new ConcreteClassInterceptor();
     }
 
     @Verifyica.ArgumentSupplier
-    public static String arguments() {
-        return "dummy";
+    public static Collection<AutoClosableArgument> arguments() {
+        Collection<AutoClosableArgument> autoClosableArguments = new ArrayList<>();
+        for (int i = 0; i < ARGUMENT_COUNT; i++) {
+            autoClosableArguments.add(new AutoClosableArgument("argument[" + i + "]"));
+        }
+        return autoClosableArguments;
     }
 
     @Verifyica.Prepare
@@ -111,7 +119,7 @@ public class ClassInterceptorTest5 {
         actual.add("conclude");
     }
 
-    public static class ConcreteClasInterceptor implements ClassInterceptor {
+    public static class ConcreteClassInterceptor implements ClassInterceptor {
 
         @Override
         public void preInstantiate(
@@ -276,32 +284,36 @@ public class ClassInterceptorTest5 {
             expected.add(state);
             expected.add("post" + capitalize(state));
 
-            state = "beforeAll";
-            expected.add("pre" + capitalize(state));
-            expected.add(state);
-            expected.add("post" + capitalize(state));
-
-            for (int i = 1; i <= 3; i++) {
-                state = "beforeEach";
+            for (int i = 0; i < ARGUMENT_COUNT; i++) {
+                state = "beforeAll";
                 expected.add("pre" + capitalize(state));
                 expected.add(state);
                 expected.add("post" + capitalize(state));
 
-                state = "test";
-                expected.add("pre" + capitalize(state));
-                expected.add(state + i);
-                expected.add("post" + capitalize(state));
+                for (int j = 1; j < 4; j++) {
+                    state = "beforeEach";
+                    expected.add("pre" + capitalize(state));
+                    expected.add(state);
+                    expected.add("post" + capitalize(state));
 
-                state = "afterEach";
+                    state = "test";
+                    expected.add("pre" + capitalize(state));
+                    expected.add(state + j);
+                    expected.add("post" + capitalize(state));
+
+                    state = "afterEach";
+                    expected.add("pre" + capitalize(state));
+                    expected.add(state);
+                    expected.add("post" + capitalize(state));
+                }
+
+                state = "afterAll";
                 expected.add("pre" + capitalize(state));
                 expected.add(state);
                 expected.add("post" + capitalize(state));
+
+                expected.add("argumentClose");
             }
-
-            state = "afterAll";
-            expected.add("pre" + capitalize(state));
-            expected.add(state);
-            expected.add("post" + capitalize(state));
 
             state = "conclude";
             expected.add("pre" + capitalize(state));
@@ -335,5 +347,35 @@ public class ClassInterceptorTest5 {
         }
 
         return pad;
+    }
+
+    public static class AutoClosableArgument implements Argument<String>, AutoCloseable {
+
+        private final String value;
+
+        public AutoClosableArgument(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String getName() {
+            return value;
+        }
+
+        @Override
+        public String getPayload() {
+            return value;
+        }
+
+        @Override
+        public void close() {
+            System.out.println("argumentClose()");
+            actual.add("argumentClose");
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
     }
 }

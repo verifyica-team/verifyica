@@ -159,8 +159,7 @@ public class ClassInterceptorRegistry {
      * @param testClass testClass
      * @throws Throwable Throwable
      */
-    public void beforeInstantiate(EngineContext engineContext, Class<?> testClass)
-            throws Throwable {
+    public void preInstantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
         DefaultEngineInterceptorContext engineInterceptorContext =
                 new DefaultEngineInterceptorContext(engineContext);
 
@@ -178,7 +177,7 @@ public class ClassInterceptorRegistry {
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    public void afterInstantiate(
+    public void postInstantiate(
             EngineContext engineContext,
             Class<?> testClass,
             Object testInstance,
