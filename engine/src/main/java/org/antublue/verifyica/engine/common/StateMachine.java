@@ -49,6 +49,9 @@ public class StateMachine<T> {
      * @return the StateMachine
      */
     public StateMachine<T> onState(T state, Action<T> action) {
+        Precondition.notNull(state, "state is null");
+        Precondition.notNull(action, "action is null");
+
         return onStates(asList(state), action);
     }
 
@@ -60,6 +63,9 @@ public class StateMachine<T> {
      * @return the StateMachine
      */
     public StateMachine<T> onStates(List<T> states, Action<T> action) {
+        Precondition.notNull(states, "states is null");
+        Precondition.notNull(action, "action is null");
+
         for (T state : states) {
             if (actions.containsKey(state)) {
                 throw new IllegalStateException(
@@ -78,6 +84,9 @@ public class StateMachine<T> {
      * @return the StateMachine
      */
     public StateMachine<T> run(T startState, T endState) {
+        Precondition.notNull(startState, "startState is null");
+        Precondition.notNull(endState, "endState is null");
+
         T state = startState;
         results.add(Result.of(state));
         Action<T> action;
@@ -89,7 +98,18 @@ public class StateMachine<T> {
                 throw new IllegalStateException(
                         format("No Action registered for State [%s]", state));
             }
+
             result = action.execute();
+            if (result == null) {
+                throw new IllegalStateException(format("Action for State [%s] return null", state));
+            }
+
+            state = result.getState();
+            if (state == null) {
+                throw new IllegalStateException(
+                        format("Action for State [%s] return a Result with a null state", state));
+            }
+
             results.add(result);
             state = result.getState();
         } while (state != endState);
@@ -120,6 +140,13 @@ public class StateMachine<T> {
      */
     @SafeVarargs
     public static <T> List<T> asList(T... states) {
+        Precondition.notNull(states, "states is null");
+        Precondition.isTrue(states.length > 0, "states is empty");
+
+        for (int i = 0; i < states.length; i++) {
+            Precondition.notNull(states[i], format("State[%d] is null", i));
+        }
+
         return Arrays.asList(states);
     }
 
@@ -199,6 +226,8 @@ public class StateMachine<T> {
          * @param <T> the State type
          */
         public static <T> Result<T> of(T state) {
+            Precondition.notNull(state, "state is null");
+
             return new Result<>(state);
         }
 
@@ -211,6 +240,9 @@ public class StateMachine<T> {
          * @param <T> the State type
          */
         public static <T> Result<T> of(T state, Throwable throwable) {
+            Precondition.notNull(state, "state is null");
+            Precondition.notNull(throwable, "throwable is null");
+
             return new Result<>(state, throwable);
         }
     }
