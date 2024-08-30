@@ -29,6 +29,11 @@ public class TracingEngineExecutionListener implements EngineExecutionListener {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(TracingEngineExecutionListener.class);
 
+    /** Constructor */
+    public TracingEngineExecutionListener() {
+        // INTENTIONALLY BLANK
+    }
+
     @Override
     public void dynamicTestRegistered(TestDescriptor testDescriptor) {
         LOGGER.trace("dynamicTestRegistered() testDescriptor [%s]", testDescriptor);
