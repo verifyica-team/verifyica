@@ -17,8 +17,11 @@
 package org.antublue.verifyica.engine.listener;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 import org.antublue.verifyica.engine.common.Precondition;
+import org.antublue.verifyica.engine.logger.Logger;
+import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
@@ -27,7 +30,27 @@ import org.junit.platform.engine.reporting.ReportEntry;
 /** Class to implement ChainedEngineExecutionListener */
 public class ChainedEngineExecutionListener implements EngineExecutionListener {
 
-    private final List<EngineExecutionListener> engineExecutionListeners;
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(ChainedEngineExecutionListener.class);
+
+    private final Collection<EngineExecutionListener> engineExecutionListeners;
+
+    /** Constructor */
+    public ChainedEngineExecutionListener() {
+        engineExecutionListeners = Collections.synchronizedCollection(new ArrayList<>());
+    }
+
+    /**
+     * Constructor
+     *
+     * @param engineExecutionListener engineExecutionListener
+     */
+    public ChainedEngineExecutionListener(EngineExecutionListener engineExecutionListener) {
+        Precondition.notNull(engineExecutionListener, "engineExecutionListener is null");
+
+        engineExecutionListeners = Collections.synchronizedCollection(new ArrayList<>());
+        add(engineExecutionListener);
+    }
 
     /**
      * Constructor
@@ -35,15 +58,51 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
      * @param engineExecutionListeners engineExecutionListeners
      */
     public ChainedEngineExecutionListener(EngineExecutionListener... engineExecutionListeners) {
+        this();
+
         Precondition.notNull(engineExecutionListeners, "engineExecutionListeners is null");
 
-        this.engineExecutionListeners = new ArrayList<>();
-
         for (EngineExecutionListener engineExecutionListener : engineExecutionListeners) {
-            if (engineExecutionListener != null) {
-                this.engineExecutionListeners.add(engineExecutionListener);
-            }
+            add(engineExecutionListener);
         }
+    }
+
+    /**
+     * Constructor
+     *
+     * @param engineExecutionListeners engineExecutionListeners
+     */
+    public ChainedEngineExecutionListener(
+            Collection<EngineExecutionListener> engineExecutionListeners) {
+        this();
+
+        Precondition.notNull(engineExecutionListeners, "engineExecutionListeners is null");
+        Precondition.isTrue(
+                !engineExecutionListeners.isEmpty(), "engineExecutionListeners is empty");
+
+        engineExecutionListeners.forEach(this::add);
+    }
+
+    /**
+     * Method to add an EngineExecutionListener
+     *
+     * @param engineExecutionListener engineExecutionListener
+     * @return this
+     */
+    public ChainedEngineExecutionListener add(EngineExecutionListener engineExecutionListener) {
+        Precondition.notNull(engineExecutionListener, "engineExecutionListener is null");
+
+        this.engineExecutionListeners.add(engineExecutionListener);
+        return this;
+    }
+
+    /**
+     * Method to get the Collection of EngineExecutionListeners
+     *
+     * @return the Collection of EngineExecutionListeners
+     */
+    public Collection<EngineExecutionListener> getEngineExecutionListeners() {
+        return engineExecutionListeners;
     }
 
     @Override
