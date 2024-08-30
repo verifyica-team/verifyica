@@ -196,18 +196,17 @@ public class EngineInterceptorRegistry {
      * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable
      */
-    public void beforeExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
+    public void preExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
         Precondition.notNull(engineInterceptorContext, "engineInterceptorContext is null");
 
         for (EngineInterceptor engineInterceptor : getEngineInterceptors()) {
             LOGGER.trace(
-                    "engine interceptor [%s] beforeExecute()",
-                    engineInterceptor.getClass().getName());
+                    "engine interceptor [%s] preExecute()", engineInterceptor.getClass().getName());
 
             engineInterceptor.preExecute(engineInterceptorContext);
 
             LOGGER.trace(
-                    "engine interceptor [%s] beforeExecute() success",
+                    "engine interceptor [%s] preExecute() success",
                     engineInterceptor.getClass().getName());
         }
     }
@@ -218,7 +217,7 @@ public class EngineInterceptorRegistry {
      * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable
      */
-    public void afterExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
+    public void postExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
         Precondition.notNull(engineInterceptorContext, "engineInterceptorContext is null");
 
         for (EngineInterceptor engineInterceptor : getEngineInterceptorsReverse()) {

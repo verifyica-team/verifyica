@@ -41,6 +41,7 @@ import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.common.Streams;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
@@ -49,6 +50,8 @@ import org.antublue.verifyica.engine.descriptor.runnable.ClassTestDescriptorRunn
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.EngineInterceptorRegistry;
+import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
+import org.antublue.verifyica.engine.listener.TracingEngineExecutionListener;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ExecutorSupport;
@@ -90,6 +93,14 @@ public class VerifyicaTestEngine implements TestEngine {
 
     /** Constant */
     private static final String UNIQUE_ID = "[engine:" + ID + "]";
+
+    /** Predicate to filter TestDescriptors */
+    private static final Predicate<TestDescriptor> CLASS_TEST_DESCRIPTOR =
+            testDescriptor -> testDescriptor instanceof ClassTestDescriptor;
+
+    /** Function to map a TestDescriptor to a ClassTestDescriptor */
+    private static final Function<TestDescriptor, ClassTestDescriptor> MAP_CLASS_TEST_DESCRIPTOR =
+            testDescriptor -> (ClassTestDescriptor) testDescriptor;
 
     @Override
     public String getId() {
@@ -171,6 +182,18 @@ public class VerifyicaTestEngine implements TestEngine {
             traceEngineDescriptor(executionRequest.getRootTestDescriptor());
         }
 
+        ChainedEngineExecutionListener chainedEngineExecutionListener =
+                new ChainedEngineExecutionListener(
+                        executionRequest.getEngineExecutionListener(),
+                        new TracingEngineExecutionListener());
+
+        final ExecutionRequest engineExecutionRequest =
+                new ExecutionRequest(
+                        executionRequest.getRootTestDescriptor(),
+                        chainedEngineExecutionListener,
+                        new DefaultConfigurationParameters(
+                                DefaultEngineContext.getInstance().getConfiguration()));
+
         EngineContext engineContext = DefaultEngineContext.getInstance();
 
         ExecutorService classExecutorService =
@@ -185,18 +208,21 @@ public class VerifyicaTestEngine implements TestEngine {
                 new DefaultEngineInterceptorContext(engineContext);
 
         try {
-            EngineInterceptorRegistry.getInstance().beforeExecute(engineInterceptorContext);
+            EngineInterceptorRegistry.getInstance().preExecute(engineInterceptorContext);
 
             executionRequest
                     .getEngineExecutionListener()
                     .executionStarted(executionRequest.getRootTestDescriptor());
 
             List<ClassTestDescriptor> classTestDescriptors =
-                    getClassTestDescriptors(executionRequest);
+                    executionRequest.getRootTestDescriptor().getChildren().stream()
+                            .filter(CLASS_TEST_DESCRIPTOR)
+                            .map(MAP_CLASS_TEST_DESCRIPTOR)
+                            .collect(Collectors.toList());
 
-            LOGGER.trace("classTestDescriptors size [%d]", classTestDescriptors.size());
+            LOGGER.trace("classTestDescriptor count [%d]", classTestDescriptors.size());
 
-            List<Future<?>> futures = new ArrayList<>();
+            List<Future<?>> futures = new ArrayList<>(classTestDescriptors.size());
 
             classTestDescriptors.forEach(
                     classTestDescriptor ->
@@ -205,7 +231,7 @@ public class VerifyicaTestEngine implements TestEngine {
                                             new ThreadNameRunnable(
                                                     "verifyica/" + HashSupport.alphanumeric(4),
                                                     new ClassTestDescriptorRunnable(
-                                                            executionRequest,
+                                                            engineExecutionRequest,
                                                             argumentExecutorService,
                                                             engineContext,
                                                             classTestDescriptor)))));
@@ -235,7 +261,7 @@ public class VerifyicaTestEngine implements TestEngine {
             store.clear();
 
             try {
-                EngineInterceptorRegistry.getInstance().afterExecute(engineInterceptorContext);
+                EngineInterceptorRegistry.getInstance().postExecute(engineInterceptorContext);
             } catch (Throwable t) {
                 throwableCollector.add(t);
             }
@@ -342,24 +368,6 @@ public class VerifyicaTestEngine implements TestEngine {
         LOGGER.trace("engineArgumentParallelism [%s]", engineArgumentParallelism);
 
         return engineArgumentParallelism;
-    }
-
-    /**
-     * Method to get a List of ClassTestDescriptors
-     *
-     * @param executionRequest executionRequest
-     * @return a List of ClassTestDescriptors
-     */
-    private static List<ClassTestDescriptor> getClassTestDescriptors(
-            ExecutionRequest executionRequest) {
-        return executionRequest.getRootTestDescriptor().getChildren().stream()
-                .filter(
-                        (Predicate<TestDescriptor>)
-                                testDescriptor -> testDescriptor instanceof ClassTestDescriptor)
-                .map(
-                        (Function<TestDescriptor, ClassTestDescriptor>)
-                                testDescriptor -> (ClassTestDescriptor) testDescriptor)
-                .collect(Collectors.toList());
     }
 
     /**
