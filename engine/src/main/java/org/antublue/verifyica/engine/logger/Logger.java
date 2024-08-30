@@ -278,15 +278,14 @@ public class Logger {
      */
     private void log(PrintStream printStream, Level level, String format, Object... objects) {
         printStream.println(
-                new StringBuilder(80)
-                        .append(LocalDateTime.now().format(DATE_TIME_FORMATTER))
-                        .append(" | ")
-                        .append(Thread.currentThread().getName())
-                        .append(" | ")
-                        .append(level.toString())
-                        .append(" | ")
-                        .append(name)
-                        .append(" | ")
-                        .append(format(format, objects)));
+                LocalDateTime.now().format(DATE_TIME_FORMATTER)
+                        + " | "
+                        + Thread.currentThread().getName()
+                        + " | "
+                        + level.toString()
+                        + " | "
+                        + name
+                        + " | "
+                        + format(format, objects));
     }
 }
