@@ -76,7 +76,7 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor {
 
     @Override
     public Type getType() {
-        return Type.CONTAINER_AND_TEST;
+        return Type.CONTAINER;
     }
 
     /**
@@ -113,5 +113,25 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor {
      */
     public List<Method> getAfterAllMethods() {
         return afterAllMethods;
+    }
+
+    @Override
+    public String toString() {
+        return "ArgumentTestDescriptor{"
+                + "uniqueId="
+                + getUniqueId()
+                + ", displayName="
+                + getDisplayName()
+                + ", testClass="
+                + testClass
+                + ", testArgumentIndex="
+                + testArgumentIndex
+                + ", testArgument="
+                + testArgument
+                + ", beforeAllMethods="
+                + beforeAllMethods
+                + ", afterAllMethods="
+                + afterAllMethods
+                + '}';
     }
 }

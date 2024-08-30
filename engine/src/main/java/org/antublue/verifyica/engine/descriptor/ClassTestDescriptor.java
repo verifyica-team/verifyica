@@ -53,6 +53,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor {
         super(uniqueId, displayName);
 
         Precondition.notNull(testClass, "testClass is null");
+        Precondition.notNullOrBlank(displayName, "displayName is null", "displayName is blank");
         Precondition.isTrue(testArgumentParallelism >= 1, "testArgumentParallelism is less than 1");
         Precondition.notNull(prepareMethods, "prepareMethods is null");
         Precondition.notNull(concludeMethods, "concludeMethods is null");
@@ -70,7 +71,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor {
 
     @Override
     public Type getType() {
-        return Type.CONTAINER_AND_TEST;
+        return Type.CONTAINER;
     }
 
     /**
@@ -112,7 +113,11 @@ public class ClassTestDescriptor extends AbstractTestDescriptor {
     @Override
     public String toString() {
         return "ClassTestDescriptor{"
-                + "testClass="
+                + "uniqueId="
+                + getUniqueId()
+                + ", displayName="
+                + getDisplayName()
+                + ", testClass="
                 + testClass
                 + ", parallelism="
                 + testArgumentParallelism
