@@ -260,7 +260,7 @@ public class AnsiColoredString {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AnsiColoredString that = (AnsiColoredString) o;
-        return Objects.equals(stringBuilder, that.stringBuilder)
+        return Objects.equals(stringBuilder.toString(), that.stringBuilder.toString())
                 && Objects.equals(lastAnsiColor, that.lastAnsiColor);
     }
 
