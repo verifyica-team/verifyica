@@ -24,7 +24,6 @@ import org.antublue.verifyica.engine.common.Precondition;
 import org.junit.platform.engine.ConfigurationParameters;
 
 /** Class to implement DefaultConfigurationParameters */
-@SuppressWarnings("deprecation")
 public class DefaultConfigurationParameters implements ConfigurationParameters {
 
     private final Configuration configuration;
