@@ -32,6 +32,20 @@ public interface ClassDefinition {
     Class<?> getTestClass();
 
     /**
+     * Get the test class display name
+     *
+     * @return the test class display name
+     */
+    String getTestClassDisplayName();
+
+    /**
+     * Set the test class display name
+     *
+     * @param displayName displayName
+     */
+    void setTestClassDisplayName(String displayName);
+
+    /**
      * Get the test methods
      *
      * @return the test methods
@@ -46,16 +60,16 @@ public interface ClassDefinition {
     List<Argument<?>> getTestArguments();
 
     /**
-     * Get the test argument parallelism
-     *
-     * @return the test argument parallelism
-     */
-    int getTestArgumentParallelism();
-
-    /**
      * Set the test argument parallelism
      *
      * @param testArgumentParallelism testArgumentParallelism
      */
     void setTestArgumentParallelism(int testArgumentParallelism);
+
+    /**
+     * Get the test argument parallelism
+     *
+     * @return the test argument parallelism
+     */
+    int getTestArgumentParallelism();
 }

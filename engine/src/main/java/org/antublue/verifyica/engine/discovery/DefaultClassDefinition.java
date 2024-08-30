@@ -34,22 +34,27 @@ public class DefaultClassDefinition implements ClassDefinition {
     private final Class<?> testClass;
     private final Set<Method> testMethods;
     private final List<Argument<?>> testArguments;
+
+    private String testClassDisplayName;
     private int testArgumentParallelism;
 
     /**
      * Constructor
      *
      * @param testClass testClass
+     * @param testClassDisplayName testClassDisplayName
      * @param testMethods testMethods
      * @param testArguments testArguments
      * @param testArgumentParallelism testArgumentParallelism
      */
     public DefaultClassDefinition(
             Class<?> testClass,
+            String testClassDisplayName,
             List<Method> testMethods,
             List<Argument<?>> testArguments,
             int testArgumentParallelism) {
         this.testClass = testClass;
+        this.testClassDisplayName = testClassDisplayName;
         this.testMethods = new LinkedHashSet<>(testMethods);
         this.testArguments = testArguments;
         this.testArgumentParallelism = testArgumentParallelism;
@@ -58,6 +63,18 @@ public class DefaultClassDefinition implements ClassDefinition {
     @Override
     public Class<?> getTestClass() {
         return testClass;
+    }
+
+    @Override
+    public void setTestClassDisplayName(String displayName) {
+        if (displayName != null && !displayName.trim().isEmpty()) {
+            this.testClassDisplayName = displayName.trim();
+        }
+    }
+
+    @Override
+    public String getTestClassDisplayName() {
+        return testClassDisplayName;
     }
 
     @Override

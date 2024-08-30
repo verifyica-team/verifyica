@@ -113,9 +113,13 @@ public class EngineDiscoveryRequestResolver {
 
                                 OrderSupport.orderMethods(testMethods);
 
+                                String testClassDisplayName =
+                                        DisplayNameSupport.getDisplayName(testClass);
+
                                 classDefinitions.add(
                                         new DefaultClassDefinition(
                                                 testClass,
+                                                testClassDisplayName,
                                                 testMethods,
                                                 testArguments,
                                                 testArgumentParallelism));
@@ -124,7 +128,7 @@ public class EngineDiscoveryRequestResolver {
             onTestDiscovery(classDefinitions);
             prune(classDefinitions);
             loadClassInterceptors(classDefinitions);
-            buildEngineDescriptor(engineDescriptor, classDefinitions);
+            buildEngineDescriptor(classDefinitions, engineDescriptor);
             onInitialize(classDefinitions);
         } catch (EngineException e) {
             throw e;
@@ -409,11 +413,11 @@ public class EngineDiscoveryRequestResolver {
     /**
      * Method to build the EngineDescriptor
      *
-     * @param engineDescriptor engineDescriptor
      * @param classDefinitions classDefinitions
+     * @param engineDescriptor engineDescriptor
      */
     private static void buildEngineDescriptor(
-            EngineDescriptor engineDescriptor, List<ClassDefinition> classDefinitions) {
+            List<ClassDefinition> classDefinitions, EngineDescriptor engineDescriptor) {
         LOGGER.trace("buildEngineDescriptor()");
 
         Stopwatch stopWatch = new Stopwatch();
@@ -427,7 +431,7 @@ public class EngineDiscoveryRequestResolver {
             ClassTestDescriptor classTestDescriptor =
                     new ClassTestDescriptor(
                             classTestDescriptorUniqueId,
-                            DisplayNameSupport.getDisplayName(testClass),
+                            classDefinition.getTestClassDisplayName(),
                             testClass,
                             classDefinition.getTestArgumentParallelism(),
                             MethodSupport.findMethods(
