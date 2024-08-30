@@ -98,7 +98,11 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor {
     @Override
     public String toString() {
         return "TestMethodTestDescriptor{"
-                + "beforeEachMethods="
+                + "uniqueId="
+                + getUniqueId()
+                + ", displayName="
+                + getDisplayName()
+                + ", beforeEachMethods="
                 + beforeEachMethods
                 + ", testMethod="
                 + testMethod
