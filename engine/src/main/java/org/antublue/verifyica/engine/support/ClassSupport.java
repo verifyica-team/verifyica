@@ -122,7 +122,7 @@ public class ClassSupport {
      * @return a List of Classes
      */
     public static List<Class<?>> findAllClasses(String packageName, Predicate<Class<?>> predicate) {
-        Precondition.notNullOrBlank(packageName, "packageName is null", "packageName is blank");
+        Precondition.notNull(packageName, "packageName is null");
         Precondition.notNull(predicate, "predicate is null");
 
         return new ArrayList<>(
