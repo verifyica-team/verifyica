@@ -16,8 +16,6 @@
 
 package org.antublue.verifyica.engine.configuration;
 
-// TODO change to environment variable names
-
 /** Class to implement Constants */
 public final class Constants {
 
