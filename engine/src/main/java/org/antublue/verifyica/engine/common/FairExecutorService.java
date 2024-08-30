@@ -103,7 +103,7 @@ public class FairExecutorService extends AbstractExecutorService {
 
     @Override
     public boolean isTerminated() {
-        return threads.stream().allMatch(thread -> !thread.isAlive());
+        return threads.stream().noneMatch(Thread::isAlive);
     }
 
     @Override
@@ -122,6 +122,8 @@ public class FairExecutorService extends AbstractExecutorService {
 
     @Override
     public void execute(Runnable task) {
+        Precondition.notNull(task, "task is null");
+
         int index = blockingQueueIndex.getAndUpdate(i -> (i + 1) % blockingQueueCount);
 
         try {
