@@ -39,13 +39,13 @@ public class StateMachineTest {
 
     @Test
     public void test() {
-        List<String> expected = new ArrayList<>();
-        expected.add("start");
-        expected.add("one");
-        expected.add("two");
-        expected.add("three");
+        List<State> expected = new ArrayList<>();
+        expected.add(State.START);
+        expected.add(State.ONE);
+        expected.add(State.TWO);
+        expected.add(State.THREE);
 
-        List<String> actual = new ArrayList<>();
+        List<State> actual = new ArrayList<>();
         RuntimeException runtimeException = new RuntimeException();
 
         StateMachine<State> stateMachine =
@@ -53,29 +53,25 @@ public class StateMachineTest {
                         .onState(
                                 State.START,
                                 () -> {
-                                    actual.add("start");
-                                    System.out.println("start");
+                                    actual.add(State.START);
                                     return StateMachine.Result.of(State.ONE);
                                 })
                         .onState(
                                 State.ONE,
                                 () -> {
-                                    actual.add("one");
-                                    System.out.println("one");
+                                    actual.add(State.ONE);
                                     return StateMachine.Result.of(State.TWO);
                                 })
                         .onState(
                                 State.TWO,
                                 () -> {
-                                    actual.add("two");
-                                    System.out.println("two");
+                                    actual.add(State.TWO);
                                     return StateMachine.Result.of(State.THREE, runtimeException);
                                 })
                         .onState(
                                 State.THREE,
                                 () -> {
-                                    actual.add("three");
-                                    System.out.println("end");
+                                    actual.add(State.THREE);
                                     return StateMachine.Result.of(State.END);
                                 });
 
@@ -85,6 +81,7 @@ public class StateMachineTest {
                 stateMachine.getFirstResultWithThrowable();
 
         assertThat(stateResult).isNotNull();
+        assertThat(stateResult).isPresent();
         assertThat(stateResult.get().getState()).isEqualTo(State.THREE);
         assertThat(stateResult.get().getThrowable()).isSameAs(runtimeException);
         assertThat(actual).isEqualTo(expected);

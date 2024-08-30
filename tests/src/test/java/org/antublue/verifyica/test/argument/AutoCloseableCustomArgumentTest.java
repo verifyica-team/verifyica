@@ -20,8 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
@@ -32,11 +30,10 @@ public class AutoCloseableCustomArgumentTest {
 
     @Verifyica.ArgumentSupplier
     public static Collection<CustomArgument> arguments() {
-        Lock lock = new ReentrantLock(true);
         Collection<CustomArgument> collection = new ArrayList<>();
 
         for (int i = 0; i < 1; i++) {
-            collection.add(new CustomArgument(lock, "String " + i));
+            collection.add(new CustomArgument("String " + i));
         }
 
         return collection;
@@ -118,11 +115,9 @@ public class AutoCloseableCustomArgumentTest {
 
     public static class CustomArgument implements Argument<CustomArgument>, AutoCloseable {
 
-        private final Lock lock;
         private final String value;
 
-        public CustomArgument(Lock lock, String value) {
-            this.lock = lock;
+        public CustomArgument(String value) {
             this.value = value;
         }
 
