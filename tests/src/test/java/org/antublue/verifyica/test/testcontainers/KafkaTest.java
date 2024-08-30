@@ -112,7 +112,7 @@ public class KafkaTest {
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
-        String message = argumentContext.getStore().getOptional("message", String.class).get();
+        String message = argumentContext.getStore().get("message", String.class);
 
         info("consuming message from [%s] ...", bootstrapServers);
 
@@ -156,7 +156,7 @@ public class KafkaTest {
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
-        String message = argumentContext.getStore().getOptional("message", String.class).get();
+        String message = argumentContext.getStore().get("message", String.class);
 
         info("consuming message from [%s] ...", bootstrapServers);
 

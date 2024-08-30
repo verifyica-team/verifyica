@@ -98,7 +98,7 @@ public class MongoDBTest {
     public void testQuery(ArgumentContext argumentContext) {
         info("testing testQuery() ...");
 
-        String name = argumentContext.getStore().getOptional("name", String.class).get();
+        String name = argumentContext.getStore().get("name", String.class);
         info("name [%s]", name);
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
