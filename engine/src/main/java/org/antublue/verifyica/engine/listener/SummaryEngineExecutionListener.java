@@ -87,7 +87,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     private boolean hasTests;
-    private AtomicLong failureCount;
+    private final AtomicLong failureCount;
 
     private final Map<ClassTestDescriptor, TestExecutionResult>
             classTestDescriptorTestExecutionResultMap;
