@@ -22,6 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.exception.UncheckedClassNotFoundException;
@@ -58,10 +59,14 @@ public class UniqueIdSelectorResolver {
 
         Stopwatch stopWatch = new Stopwatch();
 
+        AtomicInteger uniqueIdSelectorCount = new AtomicInteger();
+
         engineDiscoveryRequest
                 .getSelectorsByType(UniqueIdSelector.class)
                 .forEach(
                         uniqueIdSelector -> {
+                            uniqueIdSelectorCount.incrementAndGet();
+
                             UniqueId uniqueId = uniqueIdSelector.getUniqueId();
                             List<UniqueId.Segment> segments = uniqueId.getSegments();
 
@@ -131,6 +136,8 @@ public class UniqueIdSelectorResolver {
                             }
                         });
 
-        LOGGER.trace("resolve() [%d] ms", stopWatch.elapsedTime().toMillis());
+        LOGGER.trace(
+                "resolve() uniqueIdSelectors [%d] elapsedTime [%d] ms",
+                uniqueIdSelectorCount.get(), stopWatch.elapsedTime().toMillis());
     }
 }

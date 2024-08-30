@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -51,10 +52,14 @@ public class ClassSelectorResolver {
 
         Stopwatch stopWatch = new Stopwatch();
 
+        AtomicInteger classSelectorCount = new AtomicInteger();
+
         engineDiscoveryRequest
                 .getSelectorsByType(ClassSelector.class)
                 .forEach(
                         classSelector -> {
+                            classSelectorCount.incrementAndGet();
+
                             Class<?> testClass = classSelector.getJavaClass();
 
                             if (ResolverPredicates.TEST_CLASS.test(testClass)) {
@@ -68,6 +73,8 @@ public class ClassSelectorResolver {
                             }
                         });
 
-        LOGGER.trace("resolve() [%d] ms", stopWatch.elapsedTime().toMillis());
+        LOGGER.trace(
+                "resolve() classSelectors [%d] elapsedTime [%d] ms",
+                classSelectorCount.get(), stopWatch.elapsedTime().toMillis());
     }
 }

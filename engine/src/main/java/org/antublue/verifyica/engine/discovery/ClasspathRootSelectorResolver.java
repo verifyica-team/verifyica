@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -58,10 +59,17 @@ public class ClasspathRootSelectorResolver {
 
         Stopwatch stopWatch = new Stopwatch();
 
+        AtomicInteger classpathRootSelectorCount = new AtomicInteger();
+
         engineDiscoveryRequest
                 .getSelectorsByType(ClasspathRootSelector.class)
                 .forEach(
                         classpathRootSelector -> {
+                            classpathRootSelectorCount.incrementAndGet();
+
+                            LOGGER.trace(
+                                    "classpathRoot [%s]", classpathRootSelector.getClasspathRoot());
+
                             List<Class<?>> testClasses =
                                     ClassSupport.findAllClasses(
                                             classpathRootSelector.getClasspathRoot(),
@@ -98,6 +106,8 @@ public class ClasspathRootSelectorResolver {
                                     });
                         });
 
-        LOGGER.trace("resolve() [%d] ms", stopWatch.elapsedTime().toMillis());
+        LOGGER.trace(
+                "resolve() classpathRootSelectors [%d] elapsedTime [%d] ms",
+                classpathRootSelectorCount.get(), stopWatch.elapsedTime().toMillis());
     }
 }

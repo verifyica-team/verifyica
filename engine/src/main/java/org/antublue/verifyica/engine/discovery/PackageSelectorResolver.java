@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -52,10 +53,14 @@ public class PackageSelectorResolver {
 
         Stopwatch stopWatch = new Stopwatch();
 
+        AtomicInteger packageSelectorsCount = new AtomicInteger();
+
         engineDiscoveryRequest
                 .getSelectorsByType(PackageSelector.class)
                 .forEach(
                         packageSelector -> {
+                            packageSelectorsCount.incrementAndGet();
+
                             String packageName = packageSelector.getPackageName();
 
                             LOGGER.trace("packageName [%s]", packageName);
@@ -77,6 +82,8 @@ public class PackageSelectorResolver {
                                                                             .BOTTOM_UP)));
                         });
 
-        LOGGER.trace("resolve() [%d] ms", stopWatch.elapsedTime().toMillis());
+        LOGGER.trace(
+                "resolve() packageSelectors [%d] elapsedTime [%d] ms",
+                packageSelectorsCount.get(), stopWatch.elapsedTime().toMillis());
     }
 }
