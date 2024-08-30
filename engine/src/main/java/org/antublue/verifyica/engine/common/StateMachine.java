@@ -106,8 +106,7 @@ public class StateMachine<T extends Enum<T>> {
                         format("Action for State [%s] returned null", state));
             }
 
-            state = result.getState();
-            if (state == null) {
+            if (result.getState() == null) {
                 throw new IllegalStateException(
                         format("Action for State [%s] returned a Result with a null State", state));
             }
