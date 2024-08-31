@@ -16,7 +16,10 @@
 
 package org.antublue.verifyica.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
 public class LocksTest {
@@ -24,6 +27,7 @@ public class LocksTest {
     @Test
     public void testMultithreading() throws InterruptedException {
         UUID uuid = UUID.randomUUID();
+        AtomicInteger atomicInteger = new AtomicInteger();
 
         Thread[] threads = new Thread[5];
         for (int i = 0; i < 5; i++) {
@@ -36,12 +40,16 @@ public class LocksTest {
                                             "thread [%s] locked%n",
                                             Thread.currentThread().getName());
 
+                                    atomicInteger.incrementAndGet();
+
                                     try {
                                         Thread.sleep(RandomSupport.randomLong(0, 1000));
                                     } catch (InterruptedException e) {
                                         // INTENTIONALLY BLANK
                                     }
                                 } finally {
+                                    atomicInteger.decrementAndGet();
+
                                     System.out.printf(
                                             "thread [%s] unlocked%n",
                                             Thread.currentThread().getName());
@@ -57,6 +65,7 @@ public class LocksTest {
             thread.join();
         }
 
+        assertThat(atomicInteger).hasValue(0);
         Locks.assertEmpty();
     }
 }
