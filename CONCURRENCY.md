@@ -8,7 +8,9 @@ Annotations require...
 - a static lock mode
   - read / write
 - a static scope
-  - parent / parent + children
+  - parent / parent + children for a class
+
+Annotations also don't address scenarios where threads are used in test.
 
 ## Locking
 
