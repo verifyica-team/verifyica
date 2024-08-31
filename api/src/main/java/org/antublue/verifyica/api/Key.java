@@ -65,11 +65,11 @@ public class Key {
      * @throws IllegalStateException if there is only one Object in the key
      */
     public Key remove() {
-        if (this.segments.size() <= 1) {
+        if (segments.size() <= 1) {
             throw new IllegalStateException("can't remove root segment");
         }
 
-        List<Object> segments = new ArrayList<>(this.segments);
+        List<Object> segments = new ArrayList<>(segments);
         segments.remove(segments.size() - 1);
         return new Key(segments);
     }
@@ -80,7 +80,7 @@ public class Key {
      * @return a duplicate Key
      */
     public Key duplicate() {
-        return new Key(new ArrayList<>(this.segments));
+        return new Key(new ArrayList<>(segments));
     }
 
     /**
@@ -109,7 +109,7 @@ public class Key {
      * @param objects objects
      * @return a Key
      */
-    public static Object of(List<Object> objects) {
+    public static Key of(List<Object> objects) {
         notNull(objects, "objects is null");
         isTrue(!objects.isEmpty(), "objects is empty");
 
