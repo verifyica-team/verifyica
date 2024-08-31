@@ -44,6 +44,7 @@ try {
 - `Store` (uses the Store's lock)
 - [Context](api/src/main/java/org/antublue/verifyica/api/Context.java)
   - all subclasses
+  - uses the Context's `Lock`
 
 **Notes**
 
