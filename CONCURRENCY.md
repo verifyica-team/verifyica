@@ -41,10 +41,13 @@ try {
 
 - lock key
 - `Lock`
-- `Store` (uses the Store's lock)
+- [Store](api/src/main/java/org/antublue/verifyica/api/Store.java)
+  - uses the Store's lock
 - [Context](api/src/main/java/org/antublue/verifyica/api/Context.java)
-  - all subclasses
   - uses the Context's `Lock`
+  - valid of all context types
+- [Configuration](api/src/main/java/org/antublue/verifyica/api/Configuration.java)
+  - uses the Configuration's `Lock`
 
 **Notes**
 
