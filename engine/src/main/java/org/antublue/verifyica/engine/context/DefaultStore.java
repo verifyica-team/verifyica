@@ -16,8 +16,8 @@
 
 package org.antublue.verifyica.engine.context;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,28 +39,30 @@ public class DefaultStore implements Store {
 
     /** Constructor */
     public DefaultStore() {
-        this(new HashMap<>());
+        this(new LinkedHashMap<>());
     }
 
     /**
      * Constructor
+     *
+     * <p>Copies the map
      *
      * @param map map
      */
     private DefaultStore(Map<Object, Object> map) {
         Precondition.notNull(map, "map is null");
 
-        this.map = map;
+        this.map = new LinkedHashMap<>(map);
         readWriteLock = new ReentrantReadWriteLock(true);
     }
 
     @Override
-    public void put(Object key, Object value) {
+    public Object put(Object key, Object value) {
         Precondition.notNull(key, "key is null");
 
         getReadWriteLock().writeLock().lock();
         try {
-            map.put(key, value);
+            return map.put(key, value);
         } finally {
             getReadWriteLock().writeLock().unlock();
         }

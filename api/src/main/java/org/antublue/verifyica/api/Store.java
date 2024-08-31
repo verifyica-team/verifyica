@@ -31,8 +31,9 @@ public interface Store {
      *
      * @param key key
      * @param value value
+     * @return the previous value, or null if there was no previous value
      */
-    void put(Object key, Object value);
+    Object put(Object key, Object value);
 
     /**
      * Get a value
