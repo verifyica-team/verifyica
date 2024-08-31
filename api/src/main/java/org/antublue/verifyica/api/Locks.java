@@ -252,7 +252,7 @@ public class Locks {
     /** Class to implement InternalLockManager */
     private static class InternalLockManager {
 
-        private static final ConcurrentHashMap<Object, LockContainer> lockReferences =
+        private static final ConcurrentHashMap<Object, LockReference> lockReferences =
                 new ConcurrentHashMap<>();
 
         /** Constructor */
@@ -268,12 +268,12 @@ public class Locks {
         public void lock(Object key) {
             notNull(key, "key is null");
 
-            LockContainer lockContainer =
+            LockReference lockReference =
                     lockReferences.compute(
                             key,
-                            (k, v) -> v == null ? new LockContainer() : v.incrementThreadCount());
+                            (k, v) -> v == null ? new LockReference() : v.incrementThreadCount());
 
-            lockContainer.getLock().lock();
+            lockReference.getLock().lock();
         }
 
         /**
@@ -285,12 +285,12 @@ public class Locks {
         public boolean tryLock(Object key) {
             notNull(key, "key is null");
 
-            LockContainer lockContainer =
+            LockReference lockReference =
                     lockReferences.compute(
                             key,
-                            (k, v) -> v == null ? new LockContainer() : v.incrementThreadCount());
+                            (k, v) -> v == null ? new LockReference() : v.incrementThreadCount());
 
-            return lockContainer.getLock().tryLock();
+            return lockReference.getLock().tryLock();
         }
 
         /**
@@ -301,12 +301,12 @@ public class Locks {
          */
         public boolean tryLock(Object key, long time, TimeUnit timeUnit)
                 throws InterruptedException {
-            LockContainer lockContainer =
+            LockReference lockReference =
                     lockReferences.compute(
                             key,
-                            (k, v) -> v == null ? new LockContainer() : v.incrementThreadCount());
+                            (k, v) -> v == null ? new LockReference() : v.incrementThreadCount());
 
-            return lockContainer.getLock().tryLock(time, timeUnit);
+            return lockReference.getLock().tryLock(time, timeUnit);
         }
 
         /**
@@ -317,10 +317,10 @@ public class Locks {
         public void unlock(Object key) {
             notNull(key, "key is null");
 
-            LockContainer lockContainer = lockReferences.get(key);
-            lockContainer.reentrantLock.unlock();
-            if (lockContainer.decrementThreadCount() == 0) {
-                lockReferences.remove(key, lockContainer);
+            LockReference lockReference = lockReferences.get(key);
+            lockReference.reentrantLock.unlock();
+            if (lockReference.decrementThreadCount() == 0) {
+                lockReferences.remove(key, lockReference);
             }
         }
 
@@ -332,13 +332,13 @@ public class Locks {
         }
 
         /** Class to implement LockReference */
-        private static class LockContainer {
+        private static class LockReference {
 
             private final ReentrantLock reentrantLock;
             private final AtomicInteger numberOfThreadsInQueue;
 
             /** Constructor */
-            private LockContainer() {
+            private LockReference() {
                 reentrantLock = new ReentrantLock(true);
                 numberOfThreadsInQueue = new AtomicInteger(1);
             }
@@ -357,7 +357,7 @@ public class Locks {
              *
              * @return this
              */
-            private LockContainer incrementThreadCount() {
+            private LockReference incrementThreadCount() {
                 numberOfThreadsInQueue.incrementAndGet();
                 return this;
             }
