@@ -75,6 +75,11 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
         System.out.printf("%s postExecute()%n", getClass().getName());
     }
 
+    @Override
+    public void onDestroy(EngineInterceptorContext engineInterceptorContext) {
+        System.out.printf("%s onDestroy()%n", getClass().getName());
+    }
+
     /**
      * Method to reverse a Set of Methods
      *

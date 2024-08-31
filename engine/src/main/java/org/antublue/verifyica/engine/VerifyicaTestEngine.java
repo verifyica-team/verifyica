@@ -179,119 +179,125 @@ public class VerifyicaTestEngine implements TestEngine {
             return;
         }
 
-        Stopwatch stopWatch = new Stopwatch();
-
-        LOGGER.trace("execute()");
-
-        if (LOGGER.isTraceEnabled()) {
-            traceEngineDescriptor(executionRequest.getRootTestDescriptor());
-        }
-
-        EngineExecutionListener engineExecutionListener =
-                configureEngineExecutionListeners(executionRequest);
-
-        final ExecutionRequest engineExecutionRequest =
-                new ExecutionRequest(
-                        executionRequest.getRootTestDescriptor(),
-                        engineExecutionListener,
-                        new DefaultConfigurationParameters(
-                                DefaultEngineContext.getInstance().getConfiguration()));
-
         EngineContext engineContext = DefaultEngineContext.getInstance();
-
-        ExecutorService classExecutorService =
-                ExecutorSupport.newExecutorService(getEngineClassParallelism());
-
-        ExecutorService argumentExecutorService =
-                new FairExecutorService(getEngineArgumentParallelism());
-
-        ThrowableCollector throwableCollector = new ThrowableCollector();
 
         EngineInterceptorContext engineInterceptorContext =
                 new DefaultEngineInterceptorContext(engineContext);
 
         try {
-            EngineInterceptorRegistry.getInstance().preExecute(engineInterceptorContext);
+            Stopwatch stopWatch = new Stopwatch();
 
-            executionRequest
-                    .getEngineExecutionListener()
-                    .executionStarted(executionRequest.getRootTestDescriptor());
+            LOGGER.trace("execute()");
 
-            List<ClassTestDescriptor> classTestDescriptors =
-                    executionRequest.getRootTestDescriptor().getChildren().stream()
-                            .filter(CLASS_TEST_DESCRIPTOR)
-                            .map(MAP_CLASS_TEST_DESCRIPTOR)
-                            .collect(Collectors.toList());
-
-            List<ArgumentTestDescriptor> argumentTestDescriptors = new ArrayList<>();
-            List<TestMethodTestDescriptor> testMethodTestDescriptors = new ArrayList<>();
-
-            for (TestDescriptor testDescriptor :
-                    executionRequest.getRootTestDescriptor().getChildren()) {
-                for (TestDescriptor testDescriptor1 : testDescriptor.getChildren()) {
-                    argumentTestDescriptors.add((ArgumentTestDescriptor) testDescriptor1);
-                    for (TestDescriptor testDescriptor2 : testDescriptor1.getChildren()) {
-                        testMethodTestDescriptors.add((TestMethodTestDescriptor) testDescriptor2);
-                    }
-                }
+            if (LOGGER.isTraceEnabled()) {
+                traceEngineDescriptor(executionRequest.getRootTestDescriptor());
             }
 
-            LOGGER.trace("classTestDescriptors [%d]", classTestDescriptors.size());
-            LOGGER.trace("argumentTestDescriptors [%d]", argumentTestDescriptors.size());
-            LOGGER.trace("testMethodTestDescriptors [%d]", testMethodTestDescriptors.size());
+            EngineExecutionListener engineExecutionListener =
+                    configureEngineExecutionListeners(executionRequest);
 
-            List<Future<?>> futures = new ArrayList<>(classTestDescriptors.size());
+            final ExecutionRequest engineExecutionRequest =
+                    new ExecutionRequest(
+                            executionRequest.getRootTestDescriptor(),
+                            engineExecutionListener,
+                            new DefaultConfigurationParameters(
+                                    DefaultEngineContext.getInstance().getConfiguration()));
 
-            classTestDescriptors.forEach(
-                    classTestDescriptor ->
-                            futures.add(
-                                    classExecutorService.submit(
-                                            new ThreadNameRunnable(
-                                                    "verifyica/" + HashSupport.alphanumeric(4),
-                                                    new ClassTestDescriptorRunnable(
-                                                            engineExecutionRequest,
-                                                            argumentExecutorService,
-                                                            engineContext,
-                                                            classTestDescriptor)))));
+            ExecutorService classExecutorService =
+                    ExecutorSupport.newExecutorService(getEngineClassParallelism());
 
-            ExecutorSupport.waitForAllFutures(futures, classExecutorService);
-        } catch (Throwable t) {
-            throwableCollector.add(t);
-        } finally {
-            ExecutorSupport.shutdownAndAwaitTermination(argumentExecutorService);
-            ExecutorSupport.shutdownAndAwaitTermination(classExecutorService);
+            ExecutorService argumentExecutorService =
+                    new FairExecutorService(getEngineArgumentParallelism());
 
-            Store store = engineContext.getStore();
-            for (Object key : store.keySet()) {
-                Object value = store.remove(key);
-                if (value instanceof AutoCloseable) {
-                    try {
-                        LOGGER.trace("storeAutoClose(" + key + ")");
-                        ((AutoCloseable) value).close();
-                        LOGGER.trace("storeAutoClose(" + key + ").success");
-                    } catch (Throwable t) {
-                        LOGGER.trace("storeAutoClose(" + key + ").failure");
-                        t.printStackTrace(System.err);
-                        throwableCollector.add(t);
-                    }
-                }
-            }
-            store.clear();
+            ThrowableCollector throwableCollector = new ThrowableCollector();
 
             try {
-                EngineInterceptorRegistry.getInstance().postExecute(engineInterceptorContext);
+                EngineInterceptorRegistry.getInstance().preExecute(engineInterceptorContext);
+
+                executionRequest
+                        .getEngineExecutionListener()
+                        .executionStarted(executionRequest.getRootTestDescriptor());
+
+                List<ClassTestDescriptor> classTestDescriptors =
+                        executionRequest.getRootTestDescriptor().getChildren().stream()
+                                .filter(CLASS_TEST_DESCRIPTOR)
+                                .map(MAP_CLASS_TEST_DESCRIPTOR)
+                                .collect(Collectors.toList());
+
+                List<ArgumentTestDescriptor> argumentTestDescriptors = new ArrayList<>();
+                List<TestMethodTestDescriptor> testMethodTestDescriptors = new ArrayList<>();
+
+                for (TestDescriptor testDescriptor :
+                        executionRequest.getRootTestDescriptor().getChildren()) {
+                    for (TestDescriptor testDescriptor1 : testDescriptor.getChildren()) {
+                        argumentTestDescriptors.add((ArgumentTestDescriptor) testDescriptor1);
+                        for (TestDescriptor testDescriptor2 : testDescriptor1.getChildren()) {
+                            testMethodTestDescriptors.add(
+                                    (TestMethodTestDescriptor) testDescriptor2);
+                        }
+                    }
+                }
+
+                LOGGER.trace("classTestDescriptors [%d]", classTestDescriptors.size());
+                LOGGER.trace("argumentTestDescriptors [%d]", argumentTestDescriptors.size());
+                LOGGER.trace("testMethodTestDescriptors [%d]", testMethodTestDescriptors.size());
+
+                List<Future<?>> futures = new ArrayList<>(classTestDescriptors.size());
+
+                classTestDescriptors.forEach(
+                        classTestDescriptor ->
+                                futures.add(
+                                        classExecutorService.submit(
+                                                new ThreadNameRunnable(
+                                                        "verifyica/" + HashSupport.alphanumeric(4),
+                                                        new ClassTestDescriptorRunnable(
+                                                                engineExecutionRequest,
+                                                                argumentExecutorService,
+                                                                engineContext,
+                                                                classTestDescriptor)))));
+
+                ExecutorSupport.waitForAllFutures(futures, classExecutorService);
             } catch (Throwable t) {
                 throwableCollector.add(t);
+            } finally {
+                ExecutorSupport.shutdownAndAwaitTermination(argumentExecutorService);
+                ExecutorSupport.shutdownAndAwaitTermination(classExecutorService);
+
+                Store store = engineContext.getStore();
+                for (Object key : store.keySet()) {
+                    Object value = store.remove(key);
+                    if (value instanceof AutoCloseable) {
+                        try {
+                            LOGGER.trace("storeAutoClose(" + key + ")");
+                            ((AutoCloseable) value).close();
+                            LOGGER.trace("storeAutoClose(" + key + ").success");
+                        } catch (Throwable t) {
+                            LOGGER.trace("storeAutoClose(" + key + ").failure");
+                            t.printStackTrace(System.err);
+                            throwableCollector.add(t);
+                        }
+                    }
+                }
+                store.clear();
+
+                try {
+                    EngineInterceptorRegistry.getInstance().postExecute(engineInterceptorContext);
+                } catch (Throwable t) {
+                    throwableCollector.add(t);
+                }
             }
+
+            TestExecutionResult testExecutionResult = throwableCollector.toTestExecutionResult();
+
+            engineExecutionRequest
+                    .getEngineExecutionListener()
+                    .executionFinished(
+                            executionRequest.getRootTestDescriptor(), testExecutionResult);
+
+            LOGGER.trace("execute() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
+        } finally {
+            EngineInterceptorRegistry.getInstance().onDestroy(engineInterceptorContext);
         }
-
-        TestExecutionResult testExecutionResult = throwableCollector.toTestExecutionResult();
-
-        engineExecutionRequest
-                .getEngineExecutionListener()
-                .executionFinished(executionRequest.getRootTestDescriptor(), testExecutionResult);
-
-        LOGGER.trace("execute() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**

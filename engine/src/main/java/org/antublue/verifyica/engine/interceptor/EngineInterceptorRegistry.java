@@ -156,7 +156,7 @@ public class EngineInterceptorRegistry {
             engineInterceptor.onTestDiscovery(engineInterceptorContext, classDefinitions);
 
             LOGGER.trace(
-                    "engine interceptor [%s] onTestDiscovery()" + " success",
+                    "engine interceptor [%s] onTestDiscovery() success",
                     engineInterceptor.getClass().getName());
         }
     }
@@ -193,10 +193,42 @@ public class EngineInterceptorRegistry {
 
         for (EngineInterceptor engineInterceptor : getEngineInterceptorsReverse()) {
             LOGGER.trace(
-                    "engine interceptor [%s] beforeDestroy()",
+                    "engine interceptor [%s] postExecute()",
                     engineInterceptor.getClass().getName());
 
             engineInterceptor.postExecute(engineInterceptorContext);
+
+            LOGGER.trace(
+                    "engine interceptor [%s] postExecute() success",
+                    engineInterceptor.getClass().getName());
+        }
+    }
+
+    /**
+     * Method to call engine interceptors
+     *
+     * @param engineInterceptorContext engineInterceptorContext
+     */
+    public void onDestroy(EngineInterceptorContext engineInterceptorContext) {
+        Precondition.notNull(engineInterceptorContext, "engineInterceptorContext is null");
+
+        for (EngineInterceptor engineInterceptor : getEngineInterceptorsReverse()) {
+            LOGGER.trace(
+                    "engine interceptor [%s] onDestroy()", engineInterceptor.getClass().getName());
+
+            try {
+                engineInterceptor.onDestroy(engineInterceptorContext);
+
+                LOGGER.trace(
+                        "engine interceptor [%s] onDestroy() success",
+                        engineInterceptor.getClass().getName());
+            } catch (Throwable t) {
+                LOGGER.trace(
+                        "engine interceptor [%s] onDestroy() failure",
+                        engineInterceptor.getClass().getName());
+
+                t.printStackTrace(System.err);
+            }
         }
     }
 

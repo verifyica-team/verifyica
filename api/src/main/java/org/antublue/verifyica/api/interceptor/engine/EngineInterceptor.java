@@ -79,4 +79,13 @@ public interface EngineInterceptor {
     default void postExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
+
+    /**
+     * Engine onDestroy callback
+     *
+     * @param engineInterceptorContext engineInterceptorContext
+     */
+    default void onDestroy(EngineInterceptorContext engineInterceptorContext) {
+        // INTENTIONALLY BLANK
+    }
 }
