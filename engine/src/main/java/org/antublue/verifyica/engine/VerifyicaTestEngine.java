@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -76,16 +77,13 @@ public class VerifyicaTestEngine implements TestEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(VerifyicaTestEngine.class);
 
     /** Constant */
-    private static final String ENGINE_PROPERTIES_RESOURCE = "/engine.properties";
-
-    /** Constant */
-    private static final String ENGINE_PROPERTIES_VERSION_KEY = "version";
-
-    /** Constant */
     private static final String UNKNOWN_VERSION = "unknown";
 
     /** Constant */
-    private static final String ID = "verifyica";
+    private static final String DISPLAY_NAME = "Verifyica";
+
+    /** Constant */
+    private static final String ID = DISPLAY_NAME.toLowerCase(Locale.ENGLISH);
 
     /** Constant */
     private static final String GROUP_ID = "org.antublue.verifyica";
@@ -98,6 +96,12 @@ public class VerifyicaTestEngine implements TestEngine {
 
     /** Constant */
     private static final String UNIQUE_ID = "[engine:" + ID + "]";
+
+    /** Constant */
+    private static final String ENGINE_PROPERTIES_RESOURCE = "/engine.properties";
+
+    /** Constant */
+    private static final String ENGINE_PROPERTIES_VERSION_KEY = "version";
 
     /** Predicate to filter TestDescriptors */
     private static final Predicate<TestDescriptor> CLASS_TEST_DESCRIPTOR =
@@ -156,7 +160,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
         LOGGER.trace("discover()");
 
-        EngineDescriptor engineDescriptor = new StatusEngineDescriptor(uniqueId, getId());
+        EngineDescriptor engineDescriptor = new StatusEngineDescriptor(uniqueId, DISPLAY_NAME);
 
         try {
             new EngineDiscoveryRequestResolver()
