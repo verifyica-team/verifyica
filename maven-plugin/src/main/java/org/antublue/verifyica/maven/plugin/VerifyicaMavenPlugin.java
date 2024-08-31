@@ -41,9 +41,6 @@ import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
-import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
-import org.antublue.verifyica.engine.listener.StatusEngineExecutionListener;
-import org.antublue.verifyica.engine.listener.SummaryEngineExecutionListener;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
@@ -53,6 +50,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
@@ -105,6 +103,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
     static {
         Streams.fix();
+        System.setProperty(Constants.PLUGIN, "true");
     }
 
     /** Constructor */
@@ -184,11 +183,6 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
             Thread.currentThread().setContextClassLoader(classLoader);
 
-            ChainedEngineExecutionListener chainedEngineExecutionListener =
-                    new ChainedEngineExecutionListener(
-                            new StatusEngineExecutionListener(),
-                            new SummaryEngineExecutionListener());
-
             LauncherDiscoveryRequest launcherDiscoveryRequest =
                     LauncherDiscoveryRequestBuilder.request()
                             .selectors(DiscoverySelectors.selectClasspathRoots(artifactPaths))
@@ -206,7 +200,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             ExecutionRequest executionRequest =
                     new ExecutionRequest(
                             testDescriptor,
-                            chainedEngineExecutionListener,
+                            EngineExecutionListener.NOOP,
                             new DefaultConfigurationParameters(
                                     DefaultEngineContext.getInstance().getConfiguration()));
 

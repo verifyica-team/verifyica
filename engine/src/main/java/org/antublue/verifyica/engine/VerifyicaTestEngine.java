@@ -44,19 +44,24 @@ import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
 import org.antublue.verifyica.engine.context.DefaultEngineContext;
 import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
+import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
+import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.runnable.ClassTestDescriptorRunnable;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.EngineInterceptorRegistry;
 import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
+import org.antublue.verifyica.engine.listener.StatusEngineExecutionListener;
+import org.antublue.verifyica.engine.listener.SummaryEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.TracingEngineExecutionListener;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ExecutorSupport;
 import org.antublue.verifyica.engine.support.HashSupport;
 import org.junit.platform.engine.EngineDiscoveryRequest;
+import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestEngine;
@@ -163,7 +168,7 @@ public class VerifyicaTestEngine implements TestEngine {
         }
 
         LOGGER.trace("discovered [%d] test classes", engineDescriptor.getChildren().size());
-        LOGGER.trace("discover() [%d] ms", stopWatch.elapsedTime().toMillis());
+        LOGGER.trace("discover() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
 
         return engineDescriptor;
     }
@@ -182,15 +187,13 @@ public class VerifyicaTestEngine implements TestEngine {
             traceEngineDescriptor(executionRequest.getRootTestDescriptor());
         }
 
-        ChainedEngineExecutionListener chainedEngineExecutionListener =
-                new ChainedEngineExecutionListener(
-                        executionRequest.getEngineExecutionListener(),
-                        new TracingEngineExecutionListener());
+        EngineExecutionListener engineExecutionListener =
+                configureEngineExecutionListeners(executionRequest);
 
         final ExecutionRequest engineExecutionRequest =
                 new ExecutionRequest(
                         executionRequest.getRootTestDescriptor(),
-                        chainedEngineExecutionListener,
+                        engineExecutionListener,
                         new DefaultConfigurationParameters(
                                 DefaultEngineContext.getInstance().getConfiguration()));
 
@@ -220,7 +223,22 @@ public class VerifyicaTestEngine implements TestEngine {
                             .map(MAP_CLASS_TEST_DESCRIPTOR)
                             .collect(Collectors.toList());
 
-            LOGGER.trace("classTestDescriptor count [%d]", classTestDescriptors.size());
+            List<ArgumentTestDescriptor> argumentTestDescriptors = new ArrayList<>();
+            List<TestMethodTestDescriptor> testMethodTestDescriptors = new ArrayList<>();
+
+            for (TestDescriptor testDescriptor :
+                    executionRequest.getRootTestDescriptor().getChildren()) {
+                for (TestDescriptor testDescriptor1 : testDescriptor.getChildren()) {
+                    argumentTestDescriptors.add((ArgumentTestDescriptor) testDescriptor1);
+                    for (TestDescriptor testDescriptor2 : testDescriptor1.getChildren()) {
+                        testMethodTestDescriptors.add((TestMethodTestDescriptor) testDescriptor2);
+                    }
+                }
+            }
+
+            LOGGER.trace("classTestDescriptors [%d]", classTestDescriptors.size());
+            LOGGER.trace("argumentTestDescriptors [%d]", argumentTestDescriptors.size());
+            LOGGER.trace("testMethodTestDescriptors [%d]", testMethodTestDescriptors.size());
 
             List<Future<?>> futures = new ArrayList<>(classTestDescriptors.size());
 
@@ -269,11 +287,11 @@ public class VerifyicaTestEngine implements TestEngine {
 
         TestExecutionResult testExecutionResult = throwableCollector.toTestExecutionResult();
 
-        executionRequest
+        engineExecutionRequest
                 .getEngineExecutionListener()
                 .executionFinished(executionRequest.getRootTestDescriptor(), testExecutionResult);
 
-        LOGGER.trace("execute() [%d] ms", stopWatch.elapsedTime().toMillis());
+        LOGGER.trace("execute() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**
@@ -311,7 +329,7 @@ public class VerifyicaTestEngine implements TestEngine {
                                 })
                         .orElse(Runtime.getRuntime().availableProcessors());
 
-        LOGGER.trace("engineClassParallelism [%s]", engineClassParallelism);
+        LOGGER.trace("engineClassParallelism [%d]", engineClassParallelism);
 
         return engineClassParallelism;
     }
@@ -365,7 +383,7 @@ public class VerifyicaTestEngine implements TestEngine {
             engineArgumentParallelism = engineClassParallelism;
         }
 
-        LOGGER.trace("engineArgumentParallelism [%s]", engineArgumentParallelism);
+        LOGGER.trace("engineArgumentParallelism [%d]", engineArgumentParallelism);
 
         return engineArgumentParallelism;
     }
@@ -393,6 +411,97 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
+     * Method to configure EngineExecutionListeners
+     *
+     * @return an EngineExecutionListener
+     */
+    private static EngineExecutionListener configureEngineExecutionListeners(
+            ExecutionRequest executionRequest) {
+        LOGGER.trace("configureEngineExecutionListeners()");
+
+        ChainedEngineExecutionListener chainedEngineExecutionListener =
+                new ChainedEngineExecutionListener(new TracingEngineExecutionListener());
+
+        if (!isRunningViaConsoleLauncher()) {
+            chainedEngineExecutionListener.add(executionRequest.getEngineExecutionListener());
+        }
+
+        if (isRunningViaVerifyicaMavenPlugin() || isRunningViaConsoleLauncher()) {
+            chainedEngineExecutionListener
+                    .add(new StatusEngineExecutionListener())
+                    .add(new SummaryEngineExecutionListener());
+        }
+
+        if (LOGGER.isTraceEnabled()) {
+            chainedEngineExecutionListener
+                    .getEngineExecutionListeners()
+                    .forEach(
+                            engineExecutionListener ->
+                                    LOGGER.trace(
+                                            "engineExecutionListener [%s]",
+                                            engineExecutionListener.getClass().getName()));
+        }
+
+        return chainedEngineExecutionListener;
+    }
+
+    /**
+     * Method to return whether the code is running via the Verifyica Maven plugin
+     *
+     * @return true if running via the Verifyica Maven plugin, else false
+     */
+    private static boolean isRunningViaVerifyicaMavenPlugin() {
+        boolean isRunningViaVerifyicaMavenPlugin =
+                "true".equals(System.getProperty(Constants.PLUGIN));
+
+        LOGGER.trace("isRunningViaVerifyicaMavenPlugin [%b]", isRunningViaVerifyicaMavenPlugin);
+
+        return isRunningViaVerifyicaMavenPlugin;
+    }
+
+    /**
+     * Method to return whether the code is running via the Maven Surefire plugin
+     *
+     * @return true if running via the Maven Surefire plugin, else false
+     */
+    private static boolean isRunningViaMavenSurefirePlugin() {
+        if (System.getProperty("surefire.test.class.path") != null) {
+            return true;
+        }
+
+        boolean isRunningViaMavenSurefirePlugin =
+                Arrays.stream(Thread.currentThread().getStackTrace())
+                        .anyMatch(
+                                stackTraceElement ->
+                                        stackTraceElement
+                                                .getClassName()
+                                                .startsWith("org.apache.maven.surefire"));
+
+        LOGGER.trace("isRunningViaMavenSurefirePlugin [%b]", isRunningViaMavenSurefirePlugin);
+
+        return isRunningViaMavenSurefirePlugin;
+    }
+
+    /**
+     * Method to return whether the code is running via the Junit Console launcher
+     *
+     * @return true if running via the Junit Console launcher, else false
+     */
+    private static boolean isRunningViaConsoleLauncher() {
+        boolean isRunningViaConsoleLauncher =
+                Arrays.stream(Thread.currentThread().getStackTrace())
+                        .anyMatch(
+                                stackTraceElement ->
+                                        stackTraceElement
+                                                .getClassName()
+                                                .startsWith("org.junit.platform.console"));
+
+        LOGGER.trace("isRunningViaConsoleLauncher [%b]", isRunningViaConsoleLauncher);
+
+        return isRunningViaConsoleLauncher;
+    }
+
+    /**
      * Method trace log a test descriptor tree
      *
      * @param testDescriptor testDescriptor
@@ -414,24 +523,7 @@ public class VerifyicaTestEngine implements TestEngine {
                 .getChildren()
                 .forEach(
                         (Consumer<TestDescriptor>)
-                                testDescriptor1 -> traceTestDescriptor(testDescriptor1, level + 2));
-    }
-
-    /**
-     * Method to return whether the code is running via the Maven Surefire plugin
-     *
-     * @return true if running via the Maven Surefire plugin, else false
-     */
-    private static boolean isRunningViaMavenSurefirePlugin() {
-        if (System.getProperty("surefire.test.class.path") != null) {
-            return true;
-        }
-
-        return Arrays.stream(Thread.currentThread().getStackTrace())
-                .anyMatch(
-                        stackTraceElement ->
-                                stackTraceElement
-                                        .getClassName()
-                                        .startsWith("org.apache.maven.surefire"));
+                                childTestDescriptor ->
+                                        traceTestDescriptor(childTestDescriptor, level + 2));
     }
 }

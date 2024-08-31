@@ -51,8 +51,20 @@ import org.antublue.verifyica.engine.support.DisplayNameSupport;
 import org.antublue.verifyica.engine.support.HierarchyTraversalMode;
 import org.antublue.verifyica.engine.support.MethodSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
+import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.UniqueId;
+import org.junit.platform.engine.discovery.ClassSelector;
+import org.junit.platform.engine.discovery.ClasspathResourceSelector;
+import org.junit.platform.engine.discovery.ClasspathRootSelector;
+import org.junit.platform.engine.discovery.DirectorySelector;
+import org.junit.platform.engine.discovery.FileSelector;
+import org.junit.platform.engine.discovery.IterationSelector;
+import org.junit.platform.engine.discovery.MethodSelector;
+import org.junit.platform.engine.discovery.ModuleSelector;
+import org.junit.platform.engine.discovery.PackageSelector;
+import org.junit.platform.engine.discovery.UniqueIdSelector;
+import org.junit.platform.engine.discovery.UriSelector;
 import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 
 /** Class to implement EngineDiscoveryRequestResolver */
@@ -61,9 +73,26 @@ public class EngineDiscoveryRequestResolver {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(EngineDiscoveryRequestResolver.class);
 
+    private static final List<Class<? extends DiscoverySelector>> DISCOVERY_SELECTORS_CLASSES;
+
     private static Comparator<Object> getClassComparator() {
         return Comparator.comparing(clazz -> OrderSupport.getOrder((Class<?>) clazz))
                 .thenComparing(clazz -> DisplayNameSupport.getDisplayName((Class<?>) clazz));
+    }
+
+    static {
+        DISCOVERY_SELECTORS_CLASSES = new ArrayList<>();
+        DISCOVERY_SELECTORS_CLASSES.add(FileSelector.class);
+        DISCOVERY_SELECTORS_CLASSES.add(DirectorySelector.class);
+        DISCOVERY_SELECTORS_CLASSES.add(IterationSelector.class);
+        DISCOVERY_SELECTORS_CLASSES.add(ClasspathResourceSelector.class);
+        DISCOVERY_SELECTORS_CLASSES.add(ModuleSelector.class);
+        DISCOVERY_SELECTORS_CLASSES.add(UriSelector.class);
+        DISCOVERY_SELECTORS_CLASSES.add(ClasspathRootSelector.class);
+        DISCOVERY_SELECTORS_CLASSES.add(PackageSelector.class);
+        DISCOVERY_SELECTORS_CLASSES.add(ClassSelector.class);
+        DISCOVERY_SELECTORS_CLASSES.add(MethodSelector.class);
+        DISCOVERY_SELECTORS_CLASSES.add(UniqueIdSelector.class);
     }
 
     /** Constructor */
@@ -88,6 +117,22 @@ public class EngineDiscoveryRequestResolver {
         Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new TreeMap<>(getClassComparator());
 
         try {
+            List<DiscoverySelector> discoverySelectors = new ArrayList<>();
+
+            if (LOGGER.isTraceEnabled()) {
+                for (Class<? extends DiscoverySelector> discoverySelectorClass :
+                        DISCOVERY_SELECTORS_CLASSES) {
+                    discoverySelectors.addAll(
+                            engineDiscoveryRequest.getSelectorsByType(discoverySelectorClass));
+                }
+
+                discoverySelectors.forEach(
+                        discoverySelector ->
+                                LOGGER.trace(
+                                        "discoverySelector [%s]",
+                                        discoverySelector.toIdentifier().get()));
+            }
+
             new ClasspathRootSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
             new PackageSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
             new ClassSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
@@ -136,7 +181,8 @@ public class EngineDiscoveryRequestResolver {
             throw new EngineException(t);
         } finally {
             stopWatch.stop();
-            LOGGER.trace("resolveSelectors() [%d] ms", stopWatch.elapsedTime().toMillis());
+            LOGGER.trace(
+                    "resolveSelectors() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
         }
     }
 
@@ -172,7 +218,8 @@ public class EngineDiscoveryRequestResolver {
             }
         }
 
-        LOGGER.trace("resolveTestArguments() [%d] ms", stopWatch.elapsedTime().toMillis());
+        LOGGER.trace(
+                "resolveTestArguments() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**
@@ -241,7 +288,7 @@ public class EngineDiscoveryRequestResolver {
             testArguments.add(Argument.of("argument[0]", object));
         }
 
-        LOGGER.trace("getTestArguments() [%d] ms", stopWatch.elapsedTime().toMillis());
+        LOGGER.trace("getTestArguments() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
 
         return testArguments;
     }
@@ -471,7 +518,7 @@ public class EngineDiscoveryRequestResolver {
 
                 for (Method testMethod : classDefinition.getTestMethods()) {
                     UniqueId testMethodDescriptorUniqueId =
-                            argumentTestDescriptorUniqueId.append("test", testMethod.getName());
+                            argumentTestDescriptorUniqueId.append("method", testMethod.getName());
 
                     TestMethodTestDescriptor testMethodTestDescriptor =
                             new TestMethodTestDescriptor(
@@ -494,7 +541,8 @@ public class EngineDiscoveryRequestResolver {
             }
         }
 
-        LOGGER.trace("buildEngineDescriptor() [%d] ms", stopWatch.elapsedTime().toMillis());
+        LOGGER.trace(
+                "buildEngineDescriptor() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
     }
 
     /**

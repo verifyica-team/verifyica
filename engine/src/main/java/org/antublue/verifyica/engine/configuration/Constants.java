@@ -26,6 +26,9 @@ public final class Constants {
     public static final String PREFIX = "verifyica";
 
     /** Configuration constant */
+    public static final String PLUGIN = PREFIX + ".plugin";
+
+    /** Configuration constant */
     public static final String ENGINE = PREFIX + ".engine";
 
     /** Configuration constant */
