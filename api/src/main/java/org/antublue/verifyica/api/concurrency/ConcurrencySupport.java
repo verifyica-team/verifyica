@@ -32,6 +32,7 @@ import org.antublue.verifyica.api.Context;
 import org.antublue.verifyica.api.Store;
 
 /** Class to implement ConcurrencySupport */
+@Deprecated
 public class ConcurrencySupport {
 
     /** Enum to implement LockType */
