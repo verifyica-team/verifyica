@@ -253,7 +253,7 @@ public class Locks {
     /** Class to implement InternalLockManager */
     private static class InternalLockManager {
 
-        private static final ConcurrentHashMap<Object, LockReference> lockReferences =
+        private final ConcurrentHashMap<Object, LockReference> lockReferences =
                 new ConcurrentHashMap<>();
 
         /** Constructor */
