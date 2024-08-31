@@ -16,6 +16,8 @@
 
 package org.antublue.verifyica.engine.interceptor.internal.engine.filter;
 
+import static java.lang.String.format;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -56,10 +58,12 @@ public class FilterFactory {
      * @return a List of Filters
      */
     public List<Filter> loadFilters() {
+        String filtersFilename = null;
+
         try {
             List<Filter> filters = new ArrayList<>();
 
-            String filtersFilename =
+            filtersFilename =
                     DefaultEngineContext.getInstance()
                             .getConfiguration()
                             .getOptional(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME)
@@ -104,7 +108,8 @@ public class FilterFactory {
                                 }
                             default:
                                 {
-                                    throw new EngineConfigurationException("Invalid filter type");
+                                    throw new EngineConfigurationException(
+                                            format("Invalid filter type [%s]", type));
                                 }
                         }
                     }
@@ -115,7 +120,8 @@ public class FilterFactory {
         } catch (EngineConfigurationException e) {
             throw e;
         } catch (Throwable t) {
-            throw new EngineConfigurationException("Invalid filter", t);
+            throw new EngineConfigurationException(
+                    format("Invalid filter definition [%s] file format", filtersFilename), t);
         }
     }
 
