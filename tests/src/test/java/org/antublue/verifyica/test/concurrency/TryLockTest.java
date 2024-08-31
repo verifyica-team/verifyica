@@ -77,6 +77,31 @@ public class TryLockTest {
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
+        ConcurrencySupport.LockReference lockReference =
+                ConcurrencySupport.getLockReference(LOCK_KEY);
+
+        if (lockReference.tryLock()) {
+            try {
+                System.out.printf("test3(%s) locked%n", argumentContext.getTestArgument());
+                System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
+
+                assertThat(argumentContext).isNotNull();
+                assertThat(argumentContext.getStore()).isNotNull();
+                assertThat(argumentContext.getTestArgument()).isNotNull();
+
+                Thread.sleep(1000);
+
+                System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
+            } finally {
+                lockReference.unlock();
+            }
+        } else {
+            System.out.println("Couldn't acquire lock");
+        }
+    }
+
+    @Verifyica.Test
+    public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();

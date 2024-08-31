@@ -144,6 +144,7 @@ public class ConcurrencySupport {
      * @param lockType lockType
      * @param runnable runnable
      */
+    @Deprecated
     public static void run(ReadWriteLock readWriteLock, LockType lockType, Runnable runnable) {
         notNull(readWriteLock, "readWriteLock is null");
         notNull(lockType, "lockType is null");
@@ -244,6 +245,7 @@ public class ConcurrencySupport {
      * @throws Throwable Throwable
      * @param <V> the type
      */
+    @Deprecated
     public static <V> V call(ReadWriteLock readWriteLock, Callable<V> callable) throws Throwable {
         notNull(readWriteLock, "readWriteLock is null");
         notNull(callable, "callable is null");
@@ -264,6 +266,7 @@ public class ConcurrencySupport {
      * @throws Throwable Throwable
      * @param <V> the type
      */
+    @Deprecated
     public static <V> V call(ReadWriteLock readWriteLock, LockType lockType, Callable<V> callable)
             throws Throwable {
         notNull(readWriteLock, "readWriteLock is null");
@@ -369,16 +372,21 @@ public class ConcurrencySupport {
      * @param object object
      * @param message message
      */
-    private static Object notNull(Object object, String message) {
+    private static void notNull(Object object, String message) {
         if (object == null) {
             throw new IllegalArgumentException(message);
         }
-
-        return object;
     }
 
     /** Interface to implement LockReference */
     public interface LockReference {
+
+        /**
+         * LockReference key
+         *
+         * @return the LockReference key
+         */
+        Object key();
 
         /** Lock the Lock */
         void lock();
@@ -425,6 +433,11 @@ public class ConcurrencySupport {
         }
 
         @Override
+        public Object key() {
+            return this.key;
+        }
+
+        @Override
         public void lock() {
             lockManager.lock(key);
         }
@@ -467,13 +480,13 @@ public class ConcurrencySupport {
     /** Class to implement LockManager */
     private static class LockManager {
 
-        private final ReentrantLock lockManagerLock;
+        private final ReentrantLock reentrantLock;
         private final Map<Object, ReentrantLock> lockMap;
         private final Map<Object, Counter> lockCounterMap;
 
         /** Constructor */
-        public LockManager() {
-            lockManagerLock = new ReentrantLock(true);
+        private LockManager() {
+            reentrantLock = new ReentrantLock(true);
             lockMap = new HashMap<>();
             lockCounterMap = new HashMap<>();
         }
@@ -487,13 +500,13 @@ public class ConcurrencySupport {
             ReentrantLock lock;
             Counter counter;
 
-            lockManagerLock.lock();
+            reentrantLock.lock();
             try {
                 lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock(true));
                 counter = lockCounterMap.computeIfAbsent(key, k -> new Counter());
                 counter.increment();
             } finally {
-                lockManagerLock.unlock();
+                reentrantLock.unlock();
             }
 
             lock.lock();
@@ -509,7 +522,7 @@ public class ConcurrencySupport {
             ReentrantLock lock;
             Counter counter;
 
-            lockManagerLock.lock();
+            reentrantLock.lock();
             try {
                 lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock(true));
 
@@ -526,7 +539,7 @@ public class ConcurrencySupport {
                     return false;
                 }
             } finally {
-                lockManagerLock.unlock();
+                reentrantLock.unlock();
             }
         }
 
@@ -544,7 +557,7 @@ public class ConcurrencySupport {
             ReentrantLock lock;
             Counter counter;
 
-            lockManagerLock.lock();
+            reentrantLock.lock();
             try {
                 lock = lockMap.computeIfAbsent(key, k -> new ReentrantLock(true));
 
@@ -561,7 +574,7 @@ public class ConcurrencySupport {
                     return false;
                 }
             } finally {
-                lockManagerLock.unlock();
+                reentrantLock.unlock();
             }
         }
 
@@ -571,7 +584,7 @@ public class ConcurrencySupport {
          * @param key key
          */
         public void unlock(Object key) {
-            lockManagerLock.lock();
+            reentrantLock.lock();
             try {
                 ReentrantLock lock = lockMap.get(key);
                 if (lock != null) {
@@ -593,7 +606,7 @@ public class ConcurrencySupport {
                             format("No lock found for the given key [%s]", key));
                 }
             } finally {
-                lockManagerLock.unlock();
+                reentrantLock.unlock();
             }
         }
     }
