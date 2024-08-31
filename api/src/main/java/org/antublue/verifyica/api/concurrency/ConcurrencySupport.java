@@ -62,7 +62,7 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Runnable in a lock
+     * Execute a Runnable in a Lock
      *
      * @param key key
      * @param runnable runnable
@@ -81,7 +81,7 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Runnable in a lock
+     * Execute a Runnable in a Lock
      *
      * @param lock lock
      * @param runnable runnable
@@ -99,7 +99,7 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Runnable in a Configuration lock
+     * Execute a Runnable in a Configuration Lock
      *
      * @param configuration configuration
      * @param runnable runnable
@@ -112,7 +112,7 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Runnable in a Context lock
+     * Execute a Runnable in a Context Lock
      *
      * @param context context
      * @param runnable runnable
@@ -125,7 +125,7 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Runnable in a Store lock
+     * Execute a Runnable in a Store Lock
      *
      * @param store store
      * @param runnable runnable
@@ -138,7 +138,7 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Runnable in a lock
+     * Execute a Runnable in a Lock
      *
      * @param readWriteLock readWriteLock
      * @param lockType lockType
@@ -194,7 +194,7 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Callable in a lock
+     * Execute a Callable in a Lock
      *
      * @param key key
      * @param callable callable
@@ -216,7 +216,7 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Callable in a lock
+     * Execute a Callable in a Lock
      *
      * @param lock lock
      * @param callable callable
@@ -237,7 +237,7 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Callable in a lock
+     * Execute a Callable in a Lock
      *
      * @param readWriteLock readWriteLock
      * @param callable callable
@@ -257,7 +257,7 @@ public class ConcurrencySupport {
     }
 
     /**
-     * Execute a Callable in a lock
+     * Execute a Callable in a Lock
      *
      * @param readWriteLock readWriteLock
      * @param lockType lockType
