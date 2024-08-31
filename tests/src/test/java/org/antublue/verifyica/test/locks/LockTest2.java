@@ -22,12 +22,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.Key;
 import org.antublue.verifyica.api.Locks;
 import org.antublue.verifyica.api.Verifyica;
 
-public class LockTest {
+public class LockTest2 {
 
-    private static final String LOCK_KEY = LockTest.class.getName() + ".lockKey";
+    private static final Key LOCK_KEY = Key.of(LockTest2.class);
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
