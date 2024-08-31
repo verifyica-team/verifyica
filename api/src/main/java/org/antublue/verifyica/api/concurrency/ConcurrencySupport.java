@@ -382,7 +382,7 @@ public class ConcurrencySupport {
     public interface LockReference {
 
         /**
-         * LockReference key
+         * Get the LockReference key
          *
          * @return the LockReference key
          */
