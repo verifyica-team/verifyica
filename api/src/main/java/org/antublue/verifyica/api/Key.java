@@ -69,7 +69,7 @@ public class Key {
             throw new IllegalStateException("can't remove root segment");
         }
 
-        List<Object> segments = new ArrayList<>(segments);
+        List<Object> segments = new ArrayList<>(this.segments);
         segments.remove(segments.size() - 1);
         return new Key(segments);
     }
