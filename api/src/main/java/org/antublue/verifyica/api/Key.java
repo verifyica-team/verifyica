@@ -146,14 +146,11 @@ public class Key {
      *
      * @param object object
      * @param message message
-     * @return the Object
      */
-    private static Object notNull(Object object, String message) {
+    private static void notNull(Object object, String message) {
         if (object == null) {
             throw new IllegalArgumentException(message);
         }
-
-        return object;
     }
 
     /**

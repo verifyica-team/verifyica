@@ -249,19 +249,15 @@ public interface Argument<T> {
      * @param string string
      * @param nullMessage nullMessage
      * @param blankMessage blankMessage
-     * @return the trimmed String
      */
-    static String notNullOrBlank(String string, String nullMessage, String blankMessage) {
+    static void notNullOrBlank(String string, String nullMessage, String blankMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }
 
-        String trimmed = string.trim();
-        if (trimmed.isEmpty()) {
+        if (string.trim().isEmpty()) {
             throw new IllegalArgumentException(blankMessage);
         }
-
-        return trimmed;
     }
 
     /** Class to implement Empty */
