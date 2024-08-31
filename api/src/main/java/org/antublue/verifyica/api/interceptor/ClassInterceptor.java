@@ -39,7 +39,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class postInstantiate
+     * Class postInstantiate callback
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @param testClass testClass
