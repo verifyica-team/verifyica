@@ -36,12 +36,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.exception.UncheckedURISyntaxException;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 /** Class to implement ClassPathSupport */
-@SuppressWarnings("deprecation")
 public class ClassSupport {
 
     private static final ReentrantLock LOCK = new ReentrantLock(true);
@@ -114,7 +114,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to scan the Java classpath and return a list of lasses matching the package name and
+     * Method to scan the Java classpath and return a list of classes matching the package name and
      * Predicate
      *
      * @param packageName packageName
@@ -125,9 +125,9 @@ public class ClassSupport {
         Precondition.notNull(packageName, "packageName is null");
         Precondition.notNull(predicate, "predicate is null");
 
-        return new ArrayList<>(
-                ReflectionSupport.findAllClassesInPackage(
-                        packageName.trim(), predicate, classNameFilter -> true));
+        return findAllClasses(predicate).stream()
+                .filter(clazz -> packageName.equals(clazz.getPackage().getName()))
+                .collect(Collectors.toList());
     }
 
     /**
