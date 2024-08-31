@@ -268,12 +268,7 @@ public class Locks {
         public void lock(Object key) {
             notNull(key, "key is null");
 
-            LockReference lockReference =
-                    lockReferences.compute(
-                            key,
-                            (k, v) -> v == null ? new LockReference() : v.incrementThreadCount());
-
-            lockReference.getLock().lock();
+            compute(key).getLock().lock();
         }
 
         /**
@@ -285,12 +280,7 @@ public class Locks {
         public boolean tryLock(Object key) {
             notNull(key, "key is null");
 
-            LockReference lockReference =
-                    lockReferences.compute(
-                            key,
-                            (k, v) -> v == null ? new LockReference() : v.incrementThreadCount());
-
-            return lockReference.getLock().tryLock();
+            return compute(key).getLock().tryLock();
         }
 
         /**
@@ -301,12 +291,10 @@ public class Locks {
          */
         public boolean tryLock(Object key, long time, TimeUnit timeUnit)
                 throws InterruptedException {
-            LockReference lockReference =
-                    lockReferences.compute(
-                            key,
-                            (k, v) -> v == null ? new LockReference() : v.incrementThreadCount());
+            notNull(key, "key is null");
+            notNull(timeUnit, "timeUnit is null");
 
-            return lockReference.getLock().tryLock(time, timeUnit);
+            return compute(key).getLock().tryLock(time, timeUnit);
         }
 
         /**
@@ -322,6 +310,17 @@ public class Locks {
             if (lockReference.decrementThreadCount() == 0) {
                 lockReferences.remove(key, lockReference);
             }
+        }
+
+        /**
+         * Method to compute (get or modify) a LockReference
+         *
+         * @param key key
+         * @return a LockReference
+         */
+        private LockReference compute(Object key) {
+            return lockReferences.compute(
+                    key, (k, v) -> v == null ? new LockReference() : v.incrementThreadCount());
         }
 
         /** For testing */
