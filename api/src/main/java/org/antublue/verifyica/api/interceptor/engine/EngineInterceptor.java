@@ -42,7 +42,9 @@ public interface EngineInterceptor {
             EngineInterceptorContext engineInterceptorContext,
             List<ClassDefinition> classDefinitions)
             throws Throwable {
-        // INTENTIONALLY BLANK
+        for (ClassDefinition classDefinition : classDefinitions) {
+            onTestDiscovery(engineInterceptorContext, classDefinition);
+        }
     }
 
     /**
@@ -59,7 +61,7 @@ public interface EngineInterceptor {
     }
 
     /**
-     * Engine beforeExecute callback
+     * Engine preExecute callback
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable
@@ -69,7 +71,7 @@ public interface EngineInterceptor {
     }
 
     /**
-     * Engine beforeDestroy callback
+     * Engine postExecute callback
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable

@@ -333,11 +333,6 @@ public class EngineDiscoveryRequestResolver {
 
             EngineInterceptorRegistry.getInstance()
                     .onTestDiscovery(defaultEngineInterceptorContext, classDefinitions);
-
-            for (ClassDefinition classDefinition : classDefinitions) {
-                EngineInterceptorRegistry.getInstance()
-                        .onTestDiscovery(defaultEngineInterceptorContext, classDefinition);
-            }
         }
     }
 

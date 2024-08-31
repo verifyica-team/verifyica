@@ -165,35 +165,6 @@ public class EngineInterceptorRegistry {
      * Method to call engine interceptors
      *
      * @param engineInterceptorContext engineInterceptorContext
-     * @param classDefinition classDefinition
-     * @throws Throwable Throwable
-     */
-    public void onTestDiscovery(
-            EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
-            throws Throwable {
-        Precondition.notNull(engineInterceptorContext, "engineInterceptorContext is null");
-        Precondition.notNull(classDefinition, "classDefinition is null");
-
-        for (EngineInterceptor engineInterceptor : getEngineInterceptors()) {
-            LOGGER.trace(
-                    "engine interceptor [%s] onTestDiscovery() classDefinition testClass [%s]",
-                    engineInterceptor.getClass().getName(),
-                    classDefinition.getTestClass().getName());
-
-            engineInterceptor.onTestDiscovery(engineInterceptorContext, classDefinition);
-
-            LOGGER.trace(
-                    "engine interceptor [%s] onTestDiscovery() classDefinition testClass [%s]"
-                            + " success",
-                    engineInterceptor.getClass().getName(),
-                    classDefinition.getTestClass().getName());
-        }
-    }
-
-    /**
-     * Method to call engine interceptors
-     *
-     * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable
      */
     public void preExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
