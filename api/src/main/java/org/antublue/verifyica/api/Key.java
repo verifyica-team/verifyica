@@ -79,6 +79,7 @@ public class Key {
      *
      * @return a duplicate Key
      */
+    @Deprecated
     public Key duplicate() {
         return new Key(new ArrayList<>(segments));
     }
