@@ -37,7 +37,7 @@ try {
 }
 ```
 
-[Locks](api/src/main/java/org/antublue/verifyica/api/Locks.java) also hase convenience methods to allow execution of a `Runnable` or `Callable` using a ...
+[Locks](api/src/main/java/org/antublue/verifyica/api/Locks.java) also has convenience methods to allow execution of a `Runnable` or `Callable` using a ...
 
 - lock key
 - `Lock`
