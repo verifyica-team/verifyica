@@ -24,6 +24,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /** Class to implement Locks */
+@SuppressWarnings("PMD.UnusedPrivateMethod")
 public class Locks {
 
     private static final InternalLockManager INTERNAL_LOCK_MANAGER = new InternalLockManager();
