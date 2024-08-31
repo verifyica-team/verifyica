@@ -52,7 +52,6 @@ public class LockTest1 {
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
         Locks.lock(LOCK_KEY);
-
         try {
             System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
             System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
