@@ -39,14 +39,14 @@ public class ThreadSupport {
     /**
      * Method to create a new Thread
      *
-     * @param task task
+     * @param runnable runnable
      * @return a new Thread
      */
-    public static Thread newThread(Runnable task) {
-        Precondition.notNull(task, "task is null");
+    public static Thread newThread(Runnable runnable) {
+        Precondition.notNull(runnable, "runnable is null");
 
         return ThreadTool.hasVirtualThreads()
-                ? ThreadTool.unstartedVirtualThread(task)
-                : new Thread(task);
+                ? ThreadTool.unstartedVirtualThread(runnable)
+                : new Thread(runnable);
     }
 }

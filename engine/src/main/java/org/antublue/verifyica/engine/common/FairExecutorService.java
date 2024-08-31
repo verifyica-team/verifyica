@@ -33,7 +33,7 @@ public class FairExecutorService extends AbstractExecutorService {
     private final List<BlockingQueue<Runnable>> blockingQueues;
     private final List<Thread> threads;
     private final AtomicInteger blockingQueueIndex;
-    private final AtomicBoolean isRunning;
+    private final AtomicBoolean isShutdown;
 
     /**
      * Constructor
@@ -55,27 +55,13 @@ public class FairExecutorService extends AbstractExecutorService {
         this.blockingQueues = new ArrayList<>(parallelism);
         this.threads = new ArrayList<>(parallelism);
         this.blockingQueueIndex = new AtomicInteger(0);
-        this.isRunning = new AtomicBoolean(true);
+        this.isShutdown = new AtomicBoolean();
 
         for (int i = 0; i < parallelism; i++) {
             BlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>(10);
             blockingQueues.add(blockingQueue);
 
-            Runnable runnable =
-                    () -> {
-                        while (isRunning.get() || !blockingQueue.isEmpty()) {
-                            try {
-                                Runnable task = blockingQueue.poll(100, TimeUnit.MILLISECONDS);
-                                if (task != null) {
-                                    task.run();
-                                }
-                            } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                            }
-                        }
-                    };
-
-            Thread thread = ThreadSupport.newThread(runnable);
+            Thread thread = ThreadSupport.newThread(() -> processBlockingQueue(blockingQueue));
             threads.add(thread);
             thread.start();
         }
@@ -83,22 +69,22 @@ public class FairExecutorService extends AbstractExecutorService {
 
     @Override
     public void shutdown() {
-        isRunning.set(false);
+        isShutdown.set(true);
     }
 
     @Override
     public List<Runnable> shutdownNow() {
-        isRunning.set(false);
-        List<Runnable> remainingTasks = new ArrayList<>();
+        isShutdown.set(true);
+        List<Runnable> remainingRunnables = new ArrayList<>();
         for (BlockingQueue<Runnable> queue : blockingQueues) {
-            queue.drainTo(remainingTasks);
+            queue.drainTo(remainingRunnables);
         }
-        return remainingTasks;
+        return remainingRunnables;
     }
 
     @Override
     public boolean isShutdown() {
-        return !isRunning.get();
+        return isShutdown.get();
     }
 
     @Override
@@ -121,15 +107,32 @@ public class FairExecutorService extends AbstractExecutorService {
     }
 
     @Override
-    public void execute(Runnable task) {
-        Precondition.notNull(task, "task is null");
+    public void execute(Runnable runnable) {
+        Precondition.notNull(runnable, "runnable is null");
 
         int index = blockingQueueIndex.getAndUpdate(i -> (i + 1) % blockingQueueCount);
-
         try {
-            blockingQueues.get(index).put(task);
+            blockingQueues.get(index).put(runnable);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Method to process a BlockingQueue
+     *
+     * @param blockingQueue blockingQueue
+     */
+    private void processBlockingQueue(BlockingQueue<Runnable> blockingQueue) {
+        while (!isShutdown.get()) {
+            try {
+                Runnable runnable = blockingQueue.poll(100, TimeUnit.MILLISECONDS);
+                if (runnable != null) {
+                    runnable.run();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 }

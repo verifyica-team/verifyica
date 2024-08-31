@@ -258,8 +258,8 @@ public class VerifyicaTestEngine implements TestEngine {
         } catch (Throwable t) {
             throwableCollector.add(t);
         } finally {
-            argumentExecutorService.shutdown();
-            classExecutorService.shutdown();
+            ExecutorSupport.shutdownAndAwaitTermination(argumentExecutorService);
+            ExecutorSupport.shutdownAndAwaitTermination(classExecutorService);
 
             Store store = engineContext.getStore();
             for (Object key : store.keySet()) {

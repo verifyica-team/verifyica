@@ -89,6 +89,9 @@ public class ExecutorSupport {
      */
     public static void waitForAllFutures(
             Collection<Future<?>> futures, ExecutorService executorService) {
+        Precondition.notNull(futures, "futures is null");
+        Precondition.notNull(executorService, "executorService is null");
+
         LOGGER.trace("waitForAllFutures() futures [%d]", futures.size());
 
         CompletionService<Object> completionService =
@@ -107,6 +110,29 @@ public class ExecutorSupport {
                 Thread.currentThread().interrupt();
                 System.err.printf("Error waiting for future [%s]%n", e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Method to shutdown an ExecutorService wait for termination
+     *
+     * @param executorService executorService
+     */
+    public static void shutdownAndAwaitTermination(ExecutorService executorService) {
+        Precondition.notNull(executorService, "executorService is null");
+
+        executorService.shutdown();
+
+        try {
+            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+                if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                    LOGGER.error("ExecutorService did not terminate");
+                }
+            }
+        } catch (InterruptedException ie) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 
