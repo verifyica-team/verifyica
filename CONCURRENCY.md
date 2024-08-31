@@ -16,6 +16,24 @@ Annotations also don't address scenarios where threads are used in test.
 
 [Locks](api/src/main/java/org/antublue/verifyica/api/Locks.java) provides a mechanism to create global exclusive locks.
 
+Multiple convenience methods are defined to allow execution of a `Runnable` or `Callable` using a ...
+
+- lock key
+- `Lock`
+- [Store](api/src/main/java/org/antublue/verifyica/api/Store.java)
+  - uses the Store's lock
+- [Context](api/src/main/java/org/antublue/verifyica/api/Context.java)
+  - uses the Context's `Lock`
+  - valid of all context types
+- [Configuration](api/src/main/java/org/antublue/verifyica/api/Configuration.java)
+  - uses the Configuration's `Lock`
+
+**Notes**
+
+- a lock key should be immutable
+
+### Examples
+
 Example 1:
 
 ```java
@@ -39,21 +57,16 @@ try {
 }
 ```
 
-[Locks](api/src/main/java/org/antublue/verifyica/api/Locks.java) also has convenience methods to allow execution of a `Runnable` or `Callable` using a ...
+Example 3:
 
-- lock key
-- `Lock`
-- [Store](api/src/main/java/org/antublue/verifyica/api/Store.java)
-  - uses the Store's lock
-- [Context](api/src/main/java/org/antublue/verifyica/api/Context.java)
-  - uses the Context's `Lock`
-  - valid of all context types
-- [Configuration](api/src/main/java/org/antublue/verifyica/api/Configuration.java)
-  - uses the Configuration's `Lock`
-
-**Notes**
-
-- a lock key should be immutable
+```java
+Locks.lock(argumentContext.getClassContext());
+try {
+    // ... code omitted ...
+} finally {
+    Locks.unlock(argumentContext.getClassContext());
+}
+```
 
 ---
 
