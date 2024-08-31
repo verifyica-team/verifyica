@@ -119,9 +119,12 @@ public class FilterFactory {
             return filters;
         } catch (EngineConfigurationException e) {
             throw e;
+        } catch (IOException e) {
+            throw new EngineConfigurationException(
+                    format("Exception loading filter definition file [%s]", filtersFilename), e);
         } catch (Throwable t) {
             throw new EngineConfigurationException(
-                    format("Invalid filter definition [%s] file format", filtersFilename), t);
+                    format("Invalid filter definition file [%s]", filtersFilename), t);
         }
     }
 
