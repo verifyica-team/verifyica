@@ -8,7 +8,7 @@ All Verifyica annotations are defined in a container class `Verifyica`.
 
 ### @Verifyica.ArgumentSupplier
 
-All test classes must define single method annotated with `@Verifyica.ArgumentSupplier`.
+All test classes must define a single method annotated with `@Verifyica.ArgumentSupplier`.
 
 - required
 - may return a `Stream, `Iterable`, `Collection`, `Enumeration`, arrays, or single `Object`
