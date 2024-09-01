@@ -333,6 +333,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 })
                         .onStates(
                                 StateMachine.asList(
+                                        State.INSTANTIATE_FAILURE,
                                         State.AUTO_CLOSE_STORE_SUCCESS,
                                         State.AUTO_CLOSE_STORE_FAILURE),
                                 () -> StateMachine.Result.of(State.END))
