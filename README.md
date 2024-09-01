@@ -17,9 +17,9 @@ Parameterized testing is traditionally test method oriented ...
 - For each test method, execute the test method with the list of test arguments.
 
 ```
-for (Test test : Tests) {
+for (TestMethod testMethod : TestMethods) {
    for (TestArgument testArgument : TestArguments) {
-      test(testArgument)
+      testMethod(testArgument)
    }   
 }
 ```
@@ -30,7 +30,7 @@ Verifyica swaps the paradigm to be test argument oriented ...
 
 ```
 for (TestArgument testArgument : TestArguments) {
-   for (Test test : Tests) {
+   for (TestMethod testMethod : TestMethods) {
       test(testArgument)
    }
 }
