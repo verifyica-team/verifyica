@@ -2,15 +2,15 @@
 
 Verifyica does not (by design) have an annotation to perform locking.
 
-Annotations require...
+Annotations require static values...
 
-- a static lock key
-- a static lock mode
+- a lock key
+- a lock mode
   - read / write
-- a static scope
+- a scope
   - self / self + children for a class
 
-Annotations also don't address scenarios where threads are used in test.
+Annotations also don't address scenarios where threads created/used in test.
 
 ## Locking
 
