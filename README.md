@@ -39,7 +39,7 @@ for (TestArgument testArgument : TestArguments) {
 # Features
 
 - Purpose built for integration testing using [testcontainers-java](https://java.testcontainers.org/)
-  - i.e. for each argument, execute a set of test methods
+  - i.e. for each test argument, execute a set of test methods
 - Annotation driven
 - Multithreaded test class / test argument testing
 - Virtual thread support (Java 21+)
