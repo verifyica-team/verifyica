@@ -61,6 +61,7 @@ for (TestArgument testArgument : TestArguments) {
   - [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java) 
 - [IntelliJ](https://www.jetbrains.com/idea/) support
 - [Maven](https://maven.apache.org/) support
+- [JUnit5 ConsoleLauncher](https://junit.org/junit5/docs/5.0.0-M5/user-guide/#running-tests-console-launcher) support (ALPHA)
 
 # High Level Design
 
