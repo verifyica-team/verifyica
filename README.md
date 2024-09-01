@@ -19,11 +19,8 @@ Parameterized testing is traditionally test first oriented ...
 ```
 for (Test test : Tests) {
    for (TestArgument testArgument : TestArguments) {
-      test1(testArgument)
+      test(testArgument)
    }   
-   for (TestArgument testArgument : TestArguments) {
-      test2(testArgument)
-   }
 }
 ```
 
@@ -34,8 +31,7 @@ Verifyica swaps the paradigm to be test argument first oriented ...
 ```
 for (TestArgument testArgument : TestArguments) {
    for (Test test : Tests) {
-      test1(testArgument)
-      test2(testArgument);
+      test(testArgument)
    }
 }
 ```
