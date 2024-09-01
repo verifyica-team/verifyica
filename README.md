@@ -12,7 +12,7 @@ A Java annotation driven, multithreaded test engine for integration testing base
 
 # Purpose
 
-Parameterized testing is traditionally test first oriented ...
+Parameterized testing is traditionally test oriented ...
 
 - Given a set of test methods, execute each test method with a list of test arguments.
 
