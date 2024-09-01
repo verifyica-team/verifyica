@@ -31,7 +31,7 @@ Verifyica swaps the paradigm to be test argument oriented ...
 ```
 for (TestArgument testArgument : TestArguments) {
    for (TestMethod testMethod : TestMethods) {
-      test(testArgument)
+      testMethod(testArgument)
    }
 }
 ```
