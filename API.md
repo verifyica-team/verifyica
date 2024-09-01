@@ -77,7 +77,7 @@ A [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) is used to ..
   - between test classes
   - globally
 
-A Store is thread-safe, but allow locking the Store lock for chained atomic operations.
+A Store is thread safe, but allow locking the Store lock for chained atomic operations.
 
 ```java
     private static final Key CLASS_CONTEXT_STORE_KEY = Key.of("class.context.key");
