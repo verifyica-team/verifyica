@@ -20,8 +20,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.HierarchyTraversalMode;
-import org.antublue.verifyica.engine.support.MethodSupport;
 
 /** Class to implement ResolverPredicates */
 public class ResolverPredicates {
@@ -64,7 +64,7 @@ public class ResolverPredicates {
                 return !Modifier.isAbstract(modifiers)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
                         && hasDefaultConstructor(clazz)
-                        && !MethodSupport.findMethods(
+                        && !ClassSupport.findMethods(
                                         clazz,
                                         ARGUMENT_SUPPLIER_METHOD,
                                         HierarchyTraversalMode.BOTTOM_UP)
@@ -137,6 +137,11 @@ public class ResolverPredicates {
                         && method.isAnnotationPresent(Verifyica.Conclude.class);
             };
 
+    /** Constructor */
+    private ResolverPredicates() {
+        // INTENTIONALLY BLANK
+    }
+
     /**
      * Method to return if a Class has a default constructor
      *
@@ -150,10 +155,5 @@ public class ResolverPredicates {
         } catch (Throwable t) {
             return false;
         }
-    }
-
-    /** Constructor */
-    private ResolverPredicates() {
-        // INTENTIONALLY BLANK
     }
 }
