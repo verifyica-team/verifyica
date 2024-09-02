@@ -50,6 +50,7 @@ import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.runnable.ClassTestDescriptorRunnable;
+import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.DefaultEngineInterceptorRegistry;
 import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
@@ -322,7 +323,7 @@ public class VerifyicaTestEngine implements TestEngine {
                                     try {
                                         intValue = Integer.parseInt(value);
                                         if (intValue < 1) {
-                                            throw new EngineException(
+                                            throw new EngineConfigurationException(
                                                     format(
                                                             "Invalid %s value [%d]",
                                                             Constants.ENGINE_CLASS_PARALLELISM,
@@ -330,7 +331,7 @@ public class VerifyicaTestEngine implements TestEngine {
                                         }
                                         return intValue;
                                     } catch (NumberFormatException e) {
-                                        throw new EngineException(
+                                        throw new EngineConfigurationException(
                                                 format(
                                                         "Invalid %s value [%s]",
                                                         Constants.ENGINE_CLASS_PARALLELISM, value),
@@ -364,7 +365,7 @@ public class VerifyicaTestEngine implements TestEngine {
                                     try {
                                         intValue = Integer.parseInt(value);
                                         if (intValue < 1) {
-                                            throw new EngineException(
+                                            throw new EngineConfigurationException(
                                                     format(
                                                             "Invalid %s value [%d]",
                                                             Constants.ENGINE_ARGUMENT_PARALLELISM,
@@ -372,7 +373,7 @@ public class VerifyicaTestEngine implements TestEngine {
                                         }
                                         return intValue;
                                     } catch (NumberFormatException e) {
-                                        throw new EngineException(
+                                        throw new EngineConfigurationException(
                                                 format(
                                                         "Invalid %s value [%s]",
                                                         Constants.ENGINE_ARGUMENT_PARALLELISM,

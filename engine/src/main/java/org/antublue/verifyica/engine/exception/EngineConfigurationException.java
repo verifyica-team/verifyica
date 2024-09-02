@@ -17,7 +17,7 @@
 package org.antublue.verifyica.engine.exception;
 
 /** Class to implement EngineConfigurationException */
-public class EngineConfigurationException extends RuntimeException {
+public class EngineConfigurationException extends EngineException {
 
     /**
      * Constructor
