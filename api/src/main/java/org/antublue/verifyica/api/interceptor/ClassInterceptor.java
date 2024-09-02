@@ -22,9 +22,6 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 /** Interface to implement ClassInterceptor */
 public interface ClassInterceptor {
 
-    /** No Op ClassInterceptor */
-    ClassInterceptor NOOP = new NoOp();
-
     /**
      * Class preInstantiate callback
      *
