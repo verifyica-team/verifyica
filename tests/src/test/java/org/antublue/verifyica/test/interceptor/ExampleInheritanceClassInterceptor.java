@@ -24,9 +24,9 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 public interface ExampleInheritanceClassInterceptor {
 
     @Verifyica.ClassInterceptorSupplier
-    static Collection<ClassInterceptor> interceptors() {
+    static Collection<ClassInterceptor> classInterceptors() {
         System.out.printf(
-                "%s interceptors()%n", ExampleInheritanceClassInterceptor.class.getName());
+                "%s classInterceptors()%n", ExampleInheritanceClassInterceptor.class.getName());
 
         Collection<ClassInterceptor> collection = new ArrayList<>();
 
