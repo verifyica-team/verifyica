@@ -47,9 +47,9 @@ import org.antublue.verifyica.engine.interceptor.DefaultClassInterceptorRegistry
 import org.antublue.verifyica.engine.interceptor.DefaultEngineInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.DisplayNameSupport;
 import org.antublue.verifyica.engine.support.HierarchyTraversalMode;
-import org.antublue.verifyica.engine.support.MethodSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
 import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.EngineDiscoveryRequest;
@@ -303,7 +303,7 @@ public class EngineDiscoveryRequestResolver {
         LOGGER.trace("getArgumentSupplierMethod() testClass [%s]", testClass.getName());
 
         List<Method> methods =
-                MethodSupport.findMethods(
+                ClassSupport.findMethods(
                         testClass,
                         ResolverPredicates.ARGUMENT_SUPPLIER_METHOD,
                         HierarchyTraversalMode.BOTTOM_UP);
@@ -377,7 +377,7 @@ public class EngineDiscoveryRequestResolver {
             Class<?> testClass = classDefinition.getTestClass();
 
             List<Method> classInterceptorSupplierMethods =
-                    MethodSupport.findMethods(
+                    ClassSupport.findMethods(
                             testClass,
                             ResolverPredicates.CLASS_INTERCEPTOR_SUPPLIER,
                             HierarchyTraversalMode.BOTTOM_UP);
@@ -476,11 +476,11 @@ public class EngineDiscoveryRequestResolver {
                             classDefinition.getTestClassDisplayName(),
                             testClass,
                             classDefinition.getTestArgumentParallelism(),
-                            MethodSupport.findMethods(
+                            ClassSupport.findMethods(
                                     testClass,
                                     ResolverPredicates.PREPARE_METHOD,
                                     HierarchyTraversalMode.TOP_DOWN),
-                            MethodSupport.findMethods(
+                            ClassSupport.findMethods(
                                     testClass,
                                     ResolverPredicates.CONCLUDE_METHOD,
                                     HierarchyTraversalMode.BOTTOM_UP));
@@ -500,11 +500,11 @@ public class EngineDiscoveryRequestResolver {
                                 testClass,
                                 testArgumentIndex,
                                 testArgument,
-                                MethodSupport.findMethods(
+                                ClassSupport.findMethods(
                                         testClass,
                                         ResolverPredicates.BEFORE_ALL_METHOD,
                                         HierarchyTraversalMode.TOP_DOWN),
-                                MethodSupport.findMethods(
+                                ClassSupport.findMethods(
                                         testClass,
                                         ResolverPredicates.AFTER_ALL_METHOD,
                                         HierarchyTraversalMode.BOTTOM_UP));
@@ -519,12 +519,12 @@ public class EngineDiscoveryRequestResolver {
                             new TestMethodTestDescriptor(
                                     testMethodDescriptorUniqueId,
                                     DisplayNameSupport.getDisplayName(testMethod),
-                                    MethodSupport.findMethods(
+                                    ClassSupport.findMethods(
                                             testClass,
                                             ResolverPredicates.BEFORE_EACH_METHOD,
                                             HierarchyTraversalMode.TOP_DOWN),
                                     testMethod,
-                                    MethodSupport.findMethods(
+                                    ClassSupport.findMethods(
                                             testClass,
                                             ResolverPredicates.AFTER_EACH_METHOD,
                                             HierarchyTraversalMode.BOTTOM_UP));

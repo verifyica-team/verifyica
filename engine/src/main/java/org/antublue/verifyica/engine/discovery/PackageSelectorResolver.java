@@ -26,7 +26,6 @@ import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.HierarchyTraversalMode;
-import org.antublue.verifyica.engine.support.MethodSupport;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.discovery.PackageSelector;
 
@@ -75,7 +74,7 @@ public class PackageSelectorResolver {
                                                     .computeIfAbsent(
                                                             testClass, method -> new ArrayList<>())
                                                     .addAll(
-                                                            MethodSupport.findMethods(
+                                                            ClassSupport.findMethods(
                                                                     testClass,
                                                                     ResolverPredicates.TEST_METHOD,
                                                                     HierarchyTraversalMode

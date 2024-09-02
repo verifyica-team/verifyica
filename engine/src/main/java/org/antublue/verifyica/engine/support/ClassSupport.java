@@ -18,6 +18,8 @@ package org.antublue.verifyica.engine.support;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileVisitResult;
@@ -128,6 +130,48 @@ public class ClassSupport {
         return findAllClasses(predicate).stream()
                 .filter(clazz -> packageName.equals(clazz.getPackage().getName()))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Method to find fields of a Class
+     *
+     * @param clazz clazz
+     * @param predicate predicate
+     * @param hierarchyTraversalMode hierarchyTraversalMode
+     * @return a List of Fields
+     */
+    public static List<Field> findFields(
+            Class<?> clazz,
+            Predicate<Field> predicate,
+            HierarchyTraversalMode hierarchyTraversalMode) {
+        Precondition.notNull(clazz, "clazz is null");
+        Precondition.notNull(predicate, "predicate is null");
+        Precondition.notNull(hierarchyTraversalMode, "hierarchyTraversalMode is null");
+
+        return new ArrayList<>(
+                ReflectionSupport.findFields(
+                        clazz, predicate, HierarchyTraversalMode.decode(hierarchyTraversalMode)));
+    }
+
+    /**
+     * Method to find Methods of a Class
+     *
+     * @param clazz clazz
+     * @param predicate predicate
+     * @param hierarchyTraversalMode hierarchyTraversalMode
+     * @return a List of Methods
+     */
+    public static List<Method> findMethods(
+            Class<?> clazz,
+            Predicate<Method> predicate,
+            HierarchyTraversalMode hierarchyTraversalMode) {
+        Precondition.notNull(clazz, "clazz is null");
+        Precondition.notNull(predicate, "predicate is null");
+        Precondition.notNull(hierarchyTraversalMode, "hierarchyTraversalMode is null");
+
+        return new ArrayList<>(
+                ReflectionSupport.findMethods(
+                        clazz, predicate, HierarchyTraversalMode.decode(hierarchyTraversalMode)));
     }
 
     /**
