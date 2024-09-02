@@ -204,8 +204,7 @@ public class VerifyicaTestEngine implements TestEngine {
                     new ExecutionRequest(
                             executionRequest.getRootTestDescriptor(),
                             engineExecutionListener,
-                            new DefaultConfigurationParameters(
-                                    DefaultEngineContext.getInstance().getConfiguration()));
+                            new DefaultConfigurationParameters(engineContext.getConfiguration()));
 
             ExecutorService classExecutorService =
                     ExecutorSupport.newExecutorService(getEngineClassParallelism());
