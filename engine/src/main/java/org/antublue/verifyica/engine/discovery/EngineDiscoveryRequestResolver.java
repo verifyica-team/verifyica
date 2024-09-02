@@ -43,8 +43,8 @@ import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.exception.TestClassDefinitionException;
-import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
-import org.antublue.verifyica.engine.interceptor.EngineInterceptorRegistry;
+import org.antublue.verifyica.engine.interceptor.DefaultClassInterceptorRegistry;
+import org.antublue.verifyica.engine.interceptor.DefaultEngineInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.DisplayNameSupport;
@@ -331,7 +331,7 @@ public class EngineDiscoveryRequestResolver {
             DefaultEngineInterceptorContext defaultEngineInterceptorContext =
                     new DefaultEngineInterceptorContext(DefaultEngineContext.getInstance());
 
-            EngineInterceptorRegistry.getInstance()
+            DefaultEngineInterceptorRegistry.getInstance()
                     .onTestDiscovery(defaultEngineInterceptorContext, classDefinitions);
         }
     }
@@ -345,7 +345,7 @@ public class EngineDiscoveryRequestResolver {
             EngineInterceptorContext engineInterceptorContext =
                     new DefaultEngineInterceptorContext(engineContext);
 
-            EngineInterceptorRegistry.getInstance().onInitialize(engineInterceptorContext);
+            DefaultEngineInterceptorRegistry.getInstance().onInitialize(engineInterceptorContext);
         }
     }
 
@@ -393,7 +393,7 @@ public class EngineDiscoveryRequestResolver {
                                             + " method",
                                     testClass.getName()));
                 } else if (object instanceof ClassInterceptor) {
-                    ClassInterceptorRegistry.getInstance()
+                    DefaultClassInterceptorRegistry.getInstance()
                             .register(testClass, (ClassInterceptor) object);
                 } else if (object.getClass().isArray()) {
                     Object[] objects = (Object[]) object;
@@ -401,7 +401,7 @@ public class EngineDiscoveryRequestResolver {
                         int index = 0;
                         for (Object o : objects) {
                             if (o instanceof ClassInterceptor) {
-                                ClassInterceptorRegistry.getInstance()
+                                DefaultClassInterceptorRegistry.getInstance()
                                         .register(testClass, (ClassInterceptor) o);
                             } else {
                                 throw new TestClassDefinitionException(
@@ -436,7 +436,7 @@ public class EngineDiscoveryRequestResolver {
                     while (iterator.hasNext()) {
                         Object o = iterator.next();
                         if (o instanceof ClassInterceptor) {
-                            ClassInterceptorRegistry.getInstance()
+                            DefaultClassInterceptorRegistry.getInstance()
                                     .register(testClass, (ClassInterceptor) o);
                         } else {
                             throw new TestClassDefinitionException(

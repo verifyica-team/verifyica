@@ -42,16 +42,17 @@ import org.antublue.verifyica.engine.support.OrderSupport;
 
 /** Class to implement EngineInterceptorRegistry */
 @SuppressWarnings("PMD.EmptyCatchBlock")
-public class EngineInterceptorRegistry {
+public class DefaultEngineInterceptorRegistry {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EngineInterceptorRegistry.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(DefaultEngineInterceptorRegistry.class);
 
     private final ReentrantReadWriteLock readWriteLock;
     private final List<EngineInterceptor> engineInterceptors;
     private boolean initialized;
 
     /** Constructor */
-    private EngineInterceptorRegistry() {
+    private DefaultEngineInterceptorRegistry() {
         readWriteLock = new ReentrantReadWriteLock(true);
         engineInterceptors = new ArrayList<>();
 
@@ -66,7 +67,7 @@ public class EngineInterceptorRegistry {
      * @param engineInterceptor engineInterceptor
      * @return this EngineInterceptorRegistry
      */
-    public EngineInterceptorRegistry register(EngineInterceptor engineInterceptor) {
+    public DefaultEngineInterceptorRegistry register(EngineInterceptor engineInterceptor) {
         Precondition.notNull(engineInterceptor, "engineInterceptor is null");
 
         getReadWriteLock().writeLock().lock();
@@ -85,7 +86,7 @@ public class EngineInterceptorRegistry {
      * @param engineInterceptor engineInterceptor
      * @return this EngineInterceptorRegistry
      */
-    public EngineInterceptorRegistry remove(EngineInterceptor engineInterceptor) {
+    public DefaultEngineInterceptorRegistry remove(EngineInterceptor engineInterceptor) {
         Precondition.notNull(engineInterceptor, "testClass is null");
 
         getReadWriteLock().writeLock().lock();
@@ -322,7 +323,7 @@ public class EngineInterceptorRegistry {
      *
      * @return the singleton instance
      */
-    public static EngineInterceptorRegistry getInstance() {
+    public static DefaultEngineInterceptorRegistry getInstance() {
         return SingletonHolder.SINGLETON;
     }
 
@@ -390,6 +391,7 @@ public class EngineInterceptorRegistry {
     private static class SingletonHolder {
 
         /** The singleton instance */
-        private static final EngineInterceptorRegistry SINGLETON = new EngineInterceptorRegistry();
+        private static final DefaultEngineInterceptorRegistry SINGLETON =
+                new DefaultEngineInterceptorRegistry();
     }
 }

@@ -52,9 +52,10 @@ import org.antublue.verifyica.engine.support.OrderSupport;
 
 /** Class to implement ClassInterceptorRegistry */
 @SuppressWarnings("PMD.EmptyCatchBlock")
-public class ClassInterceptorRegistry {
+public class DefaultClassInterceptorRegistry {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(DefaultClassInterceptorRegistry.class);
 
     private final ReadWriteLock readWriteLock;
     private final List<ClassInterceptor> classInterceptors;
@@ -62,7 +63,7 @@ public class ClassInterceptorRegistry {
     private boolean initialized;
 
     /** Constructor */
-    private ClassInterceptorRegistry() {
+    private DefaultClassInterceptorRegistry() {
         readWriteLock = new ReentrantReadWriteLock(true);
         classInterceptors = new ArrayList<>();
         mappedClassInterceptors = new LinkedHashMap<>();
@@ -77,7 +78,7 @@ public class ClassInterceptorRegistry {
      * @param classInterceptor classInterceptors
      * @return this ClassInterceptorRegistry
      */
-    public ClassInterceptorRegistry register(
+    public DefaultClassInterceptorRegistry register(
             Class<?> testClass, ClassInterceptor classInterceptor) {
         Precondition.notNull(testClass, "testClass is null");
         Precondition.notNull(classInterceptor, "classInterceptor is null");
@@ -101,7 +102,8 @@ public class ClassInterceptorRegistry {
      * @param classInterceptor classInterceptor
      * @return this ClassInterceptorRegistry
      */
-    public ClassInterceptorRegistry remove(Class<?> testClass, ClassInterceptor classInterceptor) {
+    public DefaultClassInterceptorRegistry remove(
+            Class<?> testClass, ClassInterceptor classInterceptor) {
         Precondition.notNull(testClass, "testClass is null");
         Precondition.notNull(classInterceptor, "classInterceptor is null");
 
@@ -139,7 +141,7 @@ public class ClassInterceptorRegistry {
      * @param testClass testClass
      * @return this ClassInterceptorRegistry
      */
-    public ClassInterceptorRegistry clear(Class<?> testClass) {
+    public DefaultClassInterceptorRegistry clear(Class<?> testClass) {
         Precondition.notNull(testClass, "testClass is null");
 
         getReadWriteLock().writeLock().lock();
@@ -796,7 +798,7 @@ public class ClassInterceptorRegistry {
      *
      * @return the singleton instance
      */
-    public static ClassInterceptorRegistry getInstance() {
+    public static DefaultClassInterceptorRegistry getInstance() {
         return SingletonHolder.SINGLETON;
     }
 
@@ -804,6 +806,7 @@ public class ClassInterceptorRegistry {
     private static class SingletonHolder {
 
         /** The singleton instance */
-        private static final ClassInterceptorRegistry SINGLETON = new ClassInterceptorRegistry();
+        private static final DefaultClassInterceptorRegistry SINGLETON =
+                new DefaultClassInterceptorRegistry();
     }
 }

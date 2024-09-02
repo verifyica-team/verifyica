@@ -22,7 +22,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.StateMachine;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
-import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
+import org.antublue.verifyica.engine.interceptor.DefaultClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.ExecutionRequest;
@@ -87,7 +87,7 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
                                 State.START,
                                 () -> {
                                     try {
-                                        ClassInterceptorRegistry.getInstance()
+                                        DefaultClassInterceptorRegistry.getInstance()
                                                 .beforeEach(argumentContext, beforeEachMethods);
                                         return StateMachine.Result.of(State.BEFORE_EACH_SUCCESS);
                                     } catch (Throwable t) {
@@ -99,7 +99,7 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
                                 State.BEFORE_EACH_SUCCESS,
                                 () -> {
                                     try {
-                                        ClassInterceptorRegistry.getInstance()
+                                        DefaultClassInterceptorRegistry.getInstance()
                                                 .test(argumentContext, testMethod);
                                         return StateMachine.Result.of(State.TEST_SUCCESS);
                                     } catch (Throwable t) {
@@ -114,7 +114,7 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
                                         State.TEST_FAILURE),
                                 () -> {
                                     try {
-                                        ClassInterceptorRegistry.getInstance()
+                                        DefaultClassInterceptorRegistry.getInstance()
                                                 .afterEach(argumentContext, afterEachMethods);
                                         return StateMachine.Result.of(State.AFTER_EACH_SUCCESS);
                                     } catch (Throwable t) {

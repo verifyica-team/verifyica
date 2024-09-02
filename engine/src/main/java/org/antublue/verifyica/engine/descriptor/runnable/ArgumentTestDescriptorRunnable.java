@@ -28,7 +28,7 @@ import org.antublue.verifyica.engine.common.StateMachine;
 import org.antublue.verifyica.engine.context.DefaultArgumentContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
-import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
+import org.antublue.verifyica.engine.interceptor.DefaultClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.ExecutionRequest;
@@ -99,7 +99,7 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
                                 State.START,
                                 () -> {
                                     try {
-                                        ClassInterceptorRegistry.getInstance()
+                                        DefaultClassInterceptorRegistry.getInstance()
                                                 .beforeAll(argumentContext, beforeAllMethods);
                                         return StateMachine.Result.of(State.BEFORE_ALL_SUCCESS);
                                     } catch (Throwable t) {
@@ -149,7 +149,7 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
                                         State.SKIP_FAILURE),
                                 () -> {
                                     try {
-                                        ClassInterceptorRegistry.getInstance()
+                                        DefaultClassInterceptorRegistry.getInstance()
                                                 .afterAll(argumentContext, afterAllMethods);
                                         return StateMachine.Result.of(State.AFTER_ALL_SUCCESS);
                                     } catch (Throwable t) {

@@ -52,7 +52,7 @@ import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.runnable.ClassTestDescriptorRunnable;
 import org.antublue.verifyica.engine.discovery.EngineDiscoveryRequestResolver;
 import org.antublue.verifyica.engine.exception.EngineException;
-import org.antublue.verifyica.engine.interceptor.EngineInterceptorRegistry;
+import org.antublue.verifyica.engine.interceptor.DefaultEngineInterceptorRegistry;
 import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.StatusEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.SummaryEngineExecutionListener;
@@ -215,7 +215,7 @@ public class VerifyicaTestEngine implements TestEngine {
             ThrowableCollector throwableCollector = new ThrowableCollector();
 
             try {
-                EngineInterceptorRegistry.getInstance().preExecute(engineInterceptorContext);
+                DefaultEngineInterceptorRegistry.getInstance().preExecute(engineInterceptorContext);
 
                 executionRequest
                         .getEngineExecutionListener()
@@ -284,7 +284,8 @@ public class VerifyicaTestEngine implements TestEngine {
                 store.clear();
 
                 try {
-                    EngineInterceptorRegistry.getInstance().postExecute(engineInterceptorContext);
+                    DefaultEngineInterceptorRegistry.getInstance()
+                            .postExecute(engineInterceptorContext);
                 } catch (Throwable t) {
                     throwableCollector.add(t);
                 }
@@ -299,7 +300,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
             LOGGER.trace("execute() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
         } finally {
-            EngineInterceptorRegistry.getInstance().onDestroy(engineInterceptorContext);
+            DefaultEngineInterceptorRegistry.getInstance().onDestroy(engineInterceptorContext);
         }
     }
 
