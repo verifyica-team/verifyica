@@ -171,7 +171,7 @@ public class EngineDiscoveryRequestResolver {
                             });
 
             onTestDiscovery(classDefinitions);
-            prune(classDefinitions);
+            pruneClassDefinitions(classDefinitions);
             loadClassInterceptors(classDefinitions);
             buildEngineDescriptor(classDefinitions, engineDescriptor);
             onInitialize(classDefinitions);
@@ -350,12 +350,12 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
-     * Method to prune test classes without arguments or test methods
+     * Method to prune ClassDefinitions for test classes without arguments or test methods
      *
      * @param classDefinitions classDefinitions
      */
-    private static void prune(List<ClassDefinition> classDefinitions) {
-        LOGGER.trace("prune()");
+    private static void pruneClassDefinitions(List<ClassDefinition> classDefinitions) {
+        LOGGER.trace("pruneClassDefinitions()");
 
         classDefinitions.removeIf(
                 classDefinition ->
