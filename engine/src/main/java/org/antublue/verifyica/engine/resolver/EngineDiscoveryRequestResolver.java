@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.discovery;
+package org.antublue.verifyica.engine.resolver;
 
 import static java.lang.String.format;
 

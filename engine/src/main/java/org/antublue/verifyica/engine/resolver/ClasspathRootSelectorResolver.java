@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.discovery;
+package org.antublue.verifyica.engine.resolver;
 
 import static org.junit.platform.engine.Filter.composeFilters;
 
