@@ -37,7 +37,36 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
     public ChainedEngineExecutionListener(EngineExecutionListener engineExecutionListener) {
         Precondition.notNull(engineExecutionListener, "engineExecutionListener is null");
 
-        this.engineExecutionListeners.add(engineExecutionListener);
+        add(engineExecutionListener);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param engineExecutionListeners engineExecutionListeners
+     */
+    public ChainedEngineExecutionListener(EngineExecutionListener... engineExecutionListeners) {
+        Precondition.notNull(engineExecutionListeners, "engineExecutionListeners is null");
+        Precondition.isTrue(
+                engineExecutionListeners.length > 0, "engineExecutionListeners is empty");
+
+        for (EngineExecutionListener engineExecutionListener : engineExecutionListeners) {
+            add(engineExecutionListener);
+        }
+    }
+
+    /**
+     * Constructor
+     *
+     * @param engineExecutionListeners engineExecutionListeners
+     */
+    public ChainedEngineExecutionListener(
+            Collection<EngineExecutionListener> engineExecutionListeners) {
+        Precondition.notNull(engineExecutionListeners, "engineExecutionListeners is null");
+        Precondition.isTrue(
+                !engineExecutionListeners.isEmpty(), "engineExecutionListeners is empty");
+
+        engineExecutionListeners.forEach(this::add);
     }
 
     /**
