@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("deprecation")
 public class ConcurrencySupportTest {
 
     @Test

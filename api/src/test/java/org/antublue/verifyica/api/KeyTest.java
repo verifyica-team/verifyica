@@ -75,20 +75,21 @@ public class KeyTest {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> key.append(null));
 
-        Key CLASS_CONTEXT_STORE_KEY = Key.of(KeyTest.class, "class.context.key");
+        Key classContextKey = Key.of(KeyTest.class, "class.context.key");
 
-        assertThat(CLASS_CONTEXT_STORE_KEY.segments()).hasSize(2);
+        assertThat(classContextKey.segments()).hasSize(2);
 
-        Key fooKey = CLASS_CONTEXT_STORE_KEY.append("foo");
+        Key fooKey = classContextKey.append("foo");
 
         assertThat(fooKey.segments()).hasSize(3);
 
-        Key barKey = CLASS_CONTEXT_STORE_KEY.append("bar");
+        Key barKey = classContextKey.append("bar");
 
         assertThat(barKey.segments()).hasSize(3);
 
         Key duplicateFooKey = fooKey.duplicate();
 
+        assertThat(classContextKey.segments()).hasSize(2);
         assertThat(duplicateFooKey.segments()).hasSize(3);
         assertThat(duplicateFooKey).isEqualTo(fooKey);
     }
