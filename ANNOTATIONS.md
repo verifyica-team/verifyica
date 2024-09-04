@@ -11,12 +11,24 @@ All Verifyica annotations are defined in a container class `Verifyica`.
 All test classes must define a single method annotated with `@Verifyica.ArgumentSupplier`.
 
 - required
-- may return a `Stream, `Iterable`, `Collection`, `Enumeration`, arrays, or single `Object`
-  - `Stream`, `Iterable`, `Collection`, `Enumeration`, and arrays can contain mixed `Object` types
+- valid types:
+  - `Collection`
+  - `Enumeration`
+  - `Iterable`
+  - `Iterator`
+  - `Stream`
+  - `Object`
+  - array
 - must be public
 - must be static
 - must not define any parameters
 - must return a non-null Object
+
+**Notes**
+
+- may return mixed types
+
+- `Argument.EMPTY` may be used in scenarios where the argument is irrelevant
 
 #### Parallelism
 
