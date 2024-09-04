@@ -23,7 +23,7 @@ import java.util.Collection;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
-public class IteratorArgumentsTest {
+public class IteratorOfArgumentsTest {
 
     @Verifyica.ArgumentSupplier
     public static Object arguments() {
