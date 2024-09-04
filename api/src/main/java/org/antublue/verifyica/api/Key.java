@@ -28,9 +28,13 @@ public class Key {
 
     private final List<Object> segments;
 
-    /** Constructor */
-    private Key(List<Object> objects) {
-        this.segments = Collections.unmodifiableList(objects);
+    /**
+     * Constructor
+     *
+     * @param segments segments
+     */
+    private Key(List<Object> segments) {
+        this.segments = Collections.unmodifiableList(segments);
     }
 
     /**
@@ -87,41 +91,41 @@ public class Key {
     /**
      * Method to create a Key from an array of Objects
      *
-     * @param objects objects
+     * @param segments segments
      * @return a Key
      */
-    public static Key of(Object... objects) {
-        notNull(objects, "objects is null");
-        isTrue(objects.length > 0, "objects is empty");
+    public static Key of(Object... segments) {
+        notNull(segments, "segments is null");
+        isTrue(segments.length > 0, "segments is empty");
 
-        List<Object> segments = new ArrayList<>(objects.length);
-        for (int i = 0; i < objects.length; i++) {
-            Object object = objects[i];
-            notNull(object, format("objects[%d] is null", i));
-            segments.add(object);
+        List<Object> tempSegments = new ArrayList<>(segments.length);
+        for (int i = 0; i < segments.length; i++) {
+            Object object = segments[i];
+            notNull(object, format("segments[%d] is null", i));
+            tempSegments.add(object);
         }
 
-        return new Key(segments);
+        return new Key(tempSegments);
     }
 
     /**
      * Method to create a Key from a List of Objects
      *
-     * @param objects objects
+     * @param segments segments
      * @return a Key
      */
-    public static Key of(List<Object> objects) {
-        notNull(objects, "objects is null");
-        isTrue(!objects.isEmpty(), "objects is empty");
+    public static Key of(List<Object> segments) {
+        notNull(segments, "segments is null");
+        isFalse(segments.isEmpty(), "segments is empty");
 
-        List<Object> segments = new ArrayList<>(objects.size());
-        for (int i = 0; i < objects.size(); i++) {
-            Object object = objects.get(i);
-            notNull(object, format("objects[%d] is null", i));
-            segments.add(object);
+        List<Object> tempSegments = new ArrayList<>(segments.size());
+        for (int i = 0; i < segments.size(); i++) {
+            Object object = segments.get(i);
+            notNull(object, format("segments[%d] is null", i));
+            tempSegments.add(object);
         }
 
-        return new Key(segments);
+        return new Key(tempSegments);
     }
 
     @Override
@@ -162,6 +166,18 @@ public class Key {
      */
     private static void isTrue(boolean condition, String message) {
         if (!condition) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    /**
+     * Method to validate a condition is false, throwing an IllegalArgumentException if it is true
+     *
+     * @param condition condition
+     * @param message message
+     */
+    private static void isFalse(boolean condition, String message) {
+        if (condition) {
             throw new IllegalArgumentException(message);
         }
     }
