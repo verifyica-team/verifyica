@@ -258,9 +258,7 @@ public class AnsiColor {
      * @param escapeSequence escapeSequence
      */
     private AnsiColor(String escapeSequence) {
-        Precondition.notNullOrBlank(
-                escapeSequence, "escapeSequence is null", "escapeSequence is blank");
-
+        Precondition.notBlank(escapeSequence, "escapeSequence is null", "escapeSequence is blank");
         this.escapeSequence = escapeSequence;
     }
 
@@ -333,6 +331,7 @@ public class AnsiColor {
      * @return an AnsiColor
      */
     public static AnsiColor ofSequence(String escapeSequence) {
+        Precondition.notBlank(escapeSequence, "escapeSequence is null", "escapeSequence is blank");
         return new AnsiColor(escapeSequence);
     }
 }

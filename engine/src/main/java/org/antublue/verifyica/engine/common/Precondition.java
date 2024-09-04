@@ -44,13 +44,12 @@ public class Precondition {
      * @param nullMessage nullMessage
      * @param blankMessage blankMessage
      */
-    public static void notNullOrBlank(String string, String nullMessage, String blankMessage) {
+    public static void notBlank(String string, String nullMessage, String blankMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }
 
-        String trimmed = string.trim();
-        if (trimmed.isEmpty()) {
+        if (string.trim().isEmpty()) {
             throw new IllegalArgumentException(blankMessage);
         }
     }

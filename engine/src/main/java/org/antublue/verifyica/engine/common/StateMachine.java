@@ -64,7 +64,7 @@ public class StateMachine<T extends Enum<T>> {
      */
     public StateMachine<T> onStates(List<T> states, Action<T> action) {
         Precondition.notNull(states, "states is null");
-        Precondition.isTrue(!states.isEmpty(), "states is empty");
+        Precondition.isFalse(states.isEmpty(), "states is empty");
         Precondition.notNull(action, "action is null");
 
         for (T state : states) {

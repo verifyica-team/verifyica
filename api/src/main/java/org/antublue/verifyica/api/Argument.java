@@ -198,7 +198,7 @@ public interface Argument<T> {
      * @param <T> type T
      */
     static <T> Argument<T> of(String name, T payload) {
-        notNullOrBlank(name, "name is null", "name is blank");
+        notBlank(name, "name is null", "name is blank");
 
         return new Argument<T>() {
 
@@ -232,7 +232,7 @@ public interface Argument<T> {
     }
 
     /**
-     * Check if an Object is not null
+     * Method to validate an Object is not null, throwing an IllegalArgumentException if it is null
      *
      * @param object object
      * @param message message
@@ -244,13 +244,14 @@ public interface Argument<T> {
     }
 
     /**
-     * Check if a String is not null and not blank
+     * Method to validate a String is not null and not blank, throwing an IllegalArgumentException
+     * if it is null or blank
      *
      * @param string string
      * @param nullMessage nullMessage
      * @param blankMessage blankMessage
      */
-    static void notNullOrBlank(String string, String nullMessage, String blankMessage) {
+    static void notBlank(String string, String nullMessage, String blankMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }

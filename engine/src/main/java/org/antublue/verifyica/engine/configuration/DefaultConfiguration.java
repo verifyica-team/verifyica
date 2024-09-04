@@ -84,7 +84,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Optional<String> put(String key, String value) {
-        Precondition.notNullOrBlank(key, "key is null", "key is blank");
+        Precondition.notBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -96,7 +96,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public String get(String key) {
-        Precondition.notNullOrBlank(key, "key is null", "key is blank");
+        Precondition.notBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().readLock().lock();
         try {
@@ -108,7 +108,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Optional<String> getOptional(String key) {
-        Precondition.notNullOrBlank(key, "key is null", "key is blank");
+        Precondition.notBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().readLock().lock();
         try {
@@ -120,7 +120,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Optional<String> computeIfAbsent(String key, Function<String, String> transformer) {
-        Precondition.notNullOrBlank(key, "key is null", "key is blank");
+        Precondition.notBlank(key, "key is null", "key is blank");
         Precondition.notNull(transformer, "transformer is null");
 
         getReadWriteLock().writeLock().lock();
@@ -133,7 +133,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public boolean containsKey(String key) {
-        Precondition.notNullOrBlank(key, "key is null", "key is blank");
+        Precondition.notBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().readLock().lock();
         try {
@@ -145,7 +145,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public String remove(String key) {
-        Precondition.notNullOrBlank(key, "key is null", "key is blank");
+        Precondition.notBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().writeLock().lock();
         try {
@@ -157,7 +157,7 @@ public class DefaultConfiguration implements Configuration {
 
     @Override
     public Optional<String> removeOptional(String key) {
-        Precondition.notNullOrBlank(key, "key is null", "key is blank");
+        Precondition.notBlank(key, "key is null", "key is blank");
 
         getReadWriteLock().writeLock().lock();
         try {

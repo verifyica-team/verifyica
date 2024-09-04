@@ -53,7 +53,7 @@ public class ObjectSupport {
      * @return a String representation of the Methods
      */
     public static String toString(Method... methods) {
-        Precondition.isTrue(methods != null, "methods is null");
+        Precondition.notNull(methods, "methods is null");
 
         return toString(Arrays.stream(methods).collect(Collectors.toList()));
     }

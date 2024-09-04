@@ -24,6 +24,7 @@ import org.antublue.verifyica.engine.common.Precondition;
 import org.junit.platform.engine.ConfigurationParameters;
 
 /** Class to implement DefaultConfigurationParameters */
+@SuppressWarnings("deprecation")
 public class DefaultConfigurationParameters implements ConfigurationParameters {
 
     private final Configuration configuration;
@@ -41,21 +42,21 @@ public class DefaultConfigurationParameters implements ConfigurationParameters {
 
     @Override
     public Optional<String> get(String key) {
-        Precondition.notNullOrBlank(key, "key is null", "key is blank");
+        Precondition.notBlank(key, "key is null", "key is blank");
 
         return configuration.getOptional(key.trim());
     }
 
     @Override
     public Optional<Boolean> getBoolean(String key) {
-        Precondition.notNullOrBlank(key, "key is null", "key is blank");
+        Precondition.notBlank(key, "key is null", "key is blank");
 
         return Optional.ofNullable(configuration.get(key.trim())).map("true"::equals);
     }
 
     @Override
     public <T> Optional<T> get(String key, Function<String, T> transformer) {
-        Precondition.notNullOrBlank(key, "key is null", "key is blank");
+        Precondition.notBlank(key, "key is null", "key is blank");
         Precondition.notNull(transformer, "transformer is null");
 
         String value = configuration.get(key.trim());

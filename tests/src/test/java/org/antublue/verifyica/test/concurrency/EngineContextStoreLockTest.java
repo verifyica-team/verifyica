@@ -25,6 +25,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
+@SuppressWarnings("deprecation")
 public class EngineContextStoreLockTest {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)

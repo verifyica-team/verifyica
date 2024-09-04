@@ -26,6 +26,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
+@SuppressWarnings("deprecation")
 public class EngineContextStoreSemaphoreTest {
 
     private static final String SEMAPHORE_KEY =

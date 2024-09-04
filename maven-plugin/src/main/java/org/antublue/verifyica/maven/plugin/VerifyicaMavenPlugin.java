@@ -126,7 +126,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
      * @throws MojoExecutionException MojoExecutionException
      */
     public void execute() throws MojoFailureException, MojoExecutionException {
-        logger = Logger.from(getLog());
+        logger = Logger.create(getLog());
 
         try {
             Configuration configuration = DefaultEngineContext.getInstance().getConfiguration();
@@ -206,7 +206,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
             verifyicaTestEngine.execute(executionRequest);
 
-            if (((StatusEngineDescriptor) testDescriptor).hasFailures()) {
+            if (((StatusEngineDescriptor) testDescriptor).getFailureCount() > 0) {
                 throw new MojoFailureException("");
             }
         } catch (MojoFailureException e) {
@@ -342,7 +342,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
          * @param log log
          * @return a Logger
          */
-        public static Logger from(Log log) {
+        public static Logger create(Log log) {
             return new Logger(log);
         }
     }

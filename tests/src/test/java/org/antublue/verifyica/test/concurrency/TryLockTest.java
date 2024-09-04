@@ -26,6 +26,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
+@SuppressWarnings("deprecation")
 public class TryLockTest {
 
     private static final String LOCK_KEY = TryLockTest.class.getName() + ".lockKey";

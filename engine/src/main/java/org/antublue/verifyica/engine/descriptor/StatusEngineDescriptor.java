@@ -44,11 +44,11 @@ public class StatusEngineDescriptor extends EngineDescriptor {
     }
 
     /**
-     * Method to return if the test descriptor has failures
+     * Method to return the test descriptor failure count
      *
-     * @return true if the test descriptor has failures, else false
+     * @return the test descriptor failure count
      */
-    public boolean hasFailures() {
-        return failureCount > 0;
+    public long getFailureCount() {
+        return failureCount;
     }
 }
