@@ -53,7 +53,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor {
         super(uniqueId, displayName);
 
         Precondition.notNull(testClass, "testClass is null");
-        Precondition.notNullOrBlank(displayName, "displayName is null", "displayName is blank");
+        Precondition.notBlank(displayName, "displayName is null", "displayName is blank");
         Precondition.isTrue(testArgumentParallelism >= 1, "testArgumentParallelism is less than 1");
         Precondition.notNull(prepareMethods, "prepareMethods is null");
         Precondition.notNull(concludeMethods, "concludeMethods is null");
