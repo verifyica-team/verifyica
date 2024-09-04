@@ -19,25 +19,11 @@ package org.antublue.verifyica.api;
 import java.util.function.Supplier;
 
 /** Class to implement Fail */
-public class Fail extends RuntimeException {
+public class Fail {
 
-    /**
-     * Constructor
-     *
-     * @param message message
-     */
-    private Fail(String message) {
-        super(message);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param message message
-     * @param throwable throwable
-     */
-    private Fail(String message, Throwable throwable) {
-        super(message, throwable);
+    /** Constructor */
+    private Fail() {
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -46,7 +32,7 @@ public class Fail extends RuntimeException {
      * @param message message
      */
     public static void fail(String message) {
-        throw new Fail(message);
+        throw new AssertionError(message);
     }
 
     /**
@@ -56,7 +42,7 @@ public class Fail extends RuntimeException {
      */
     public static void fail(Supplier<String> supplier) {
         String message = supplier != null ? supplier.get() : null;
-        throw new Fail(message);
+        throw new AssertionError(message);
     }
 
     /**
@@ -66,7 +52,7 @@ public class Fail extends RuntimeException {
      * @param throwable throwable
      */
     public static void fail(String message, Throwable throwable) {
-        throw new Fail(message, throwable);
+        throw new AssertionError(message, throwable);
     }
 
     /**
@@ -77,7 +63,7 @@ public class Fail extends RuntimeException {
      */
     public static void fail(Supplier<String> supplier, Throwable throwable) {
         String message = supplier != null ? supplier.get() : null;
-        throw new Fail(message, throwable);
+        throw new AssertionError(message, throwable);
     }
 
     /**
@@ -88,7 +74,7 @@ public class Fail extends RuntimeException {
      */
     public static void failIfTrue(boolean condition, String message) {
         if (condition) {
-            throw new Fail(message);
+            throw new AssertionError(message);
         }
     }
 
@@ -101,7 +87,7 @@ public class Fail extends RuntimeException {
     public static void failIfTrue(boolean condition, Supplier<String> supplier) {
         if (condition) {
             String message = supplier != null ? supplier.get() : null;
-            throw new Fail(message);
+            throw new AssertionError(message);
         }
     }
 
@@ -114,7 +100,7 @@ public class Fail extends RuntimeException {
      */
     public static void failIfTrue(boolean condition, String message, Throwable throwable) {
         if (condition) {
-            throw new Fail(message, throwable);
+            throw new AssertionError(message, throwable);
         }
     }
 
@@ -129,7 +115,7 @@ public class Fail extends RuntimeException {
             boolean condition, Supplier<String> supplier, Throwable throwable) {
         if (condition) {
             String message = supplier != null ? supplier.get() : null;
-            throw new Fail(message, throwable);
+            throw new AssertionError(message, throwable);
         }
     }
 
@@ -141,7 +127,7 @@ public class Fail extends RuntimeException {
      */
     public static void failIfFalse(boolean condition, String message) {
         if (!condition) {
-            throw new Fail(message);
+            throw new AssertionError(message);
         }
     }
 
@@ -154,7 +140,7 @@ public class Fail extends RuntimeException {
     public static void failIfFalse(boolean condition, Supplier<String> supplier) {
         if (!condition) {
             String message = supplier != null ? supplier.get() : null;
-            throw new Fail(message);
+            throw new AssertionError(message);
         }
     }
 
@@ -167,7 +153,7 @@ public class Fail extends RuntimeException {
      */
     public static void failIfFalse(boolean condition, String message, Throwable throwable) {
         if (!condition) {
-            throw new Fail(message, throwable);
+            throw new AssertionError(message, throwable);
         }
     }
 
@@ -182,7 +168,7 @@ public class Fail extends RuntimeException {
             boolean condition, Supplier<String> supplier, Throwable throwable) {
         if (!condition) {
             String message = supplier != null ? supplier.get() : null;
-            throw new Fail(message, throwable);
+            throw new AssertionError(message, throwable);
         }
     }
 }
