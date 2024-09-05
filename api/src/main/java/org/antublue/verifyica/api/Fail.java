@@ -61,6 +61,7 @@ public class Fail {
      * @param supplier supplier
      * @param throwable throwable
      */
+    @Deprecated
     public static void fail(Supplier<String> supplier, Throwable throwable) {
         String message = supplier != null ? supplier.get() : null;
         throw new AssertionError(message, throwable);
@@ -72,9 +73,34 @@ public class Fail {
      * @param condition condition
      * @param message message
      */
+    public static void ifTrue(boolean condition, String message) {
+        if (condition) {
+            throw new AssertionError(message);
+        }
+    }
+
+    /**
+     * Fail if true
+     *
+     * @param condition condition
+     * @param message message
+     */
     @Deprecated
     public static void failIfTrue(boolean condition, String message) {
         if (condition) {
+            throw new AssertionError(message);
+        }
+    }
+
+    /**
+     * Fail if true
+     *
+     * @param condition condition
+     * @param supplier supplier
+     */
+    public static void ifTrue(boolean condition, Supplier<String> supplier) {
+        if (condition) {
+            String message = supplier != null ? supplier.get() : null;
             throw new AssertionError(message);
         }
     }
@@ -129,9 +155,34 @@ public class Fail {
      * @param condition condition
      * @param message message
      */
+    public static void ifFalse(boolean condition, String message) {
+        if (!condition) {
+            throw new AssertionError(message);
+        }
+    }
+
+    /**
+     * Fail if false
+     *
+     * @param condition condition
+     * @param message message
+     */
     @Deprecated
     public static void failIfFalse(boolean condition, String message) {
         if (!condition) {
+            throw new AssertionError(message);
+        }
+    }
+
+    /**
+     * Fail if false
+     *
+     * @param condition condition
+     * @param supplier supplier
+     */
+    public static void ifFalse(boolean condition, Supplier<String> supplier) {
+        if (!condition) {
+            String message = supplier != null ? supplier.get() : null;
             throw new AssertionError(message);
         }
     }
