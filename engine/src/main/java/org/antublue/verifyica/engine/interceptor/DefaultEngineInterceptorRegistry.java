@@ -40,7 +40,7 @@ import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
 
-/** Class to implement EngineInterceptorRegistry */
+/** Class to implement DefaultEngineInterceptorRegistry */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class DefaultEngineInterceptorRegistry {
 
