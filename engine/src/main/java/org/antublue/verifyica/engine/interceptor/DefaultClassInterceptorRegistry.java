@@ -159,15 +159,56 @@ public class DefaultClassInterceptorRegistry {
      *
      * @param engineContext engineContext
      * @param testClass testClass
+     * @return a test instance
      * @throws Throwable Throwable
      */
-    public void preInstantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
+    public Object instantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
+        Object testInstance = null;
+        Throwable throwable = null;
+
         DefaultEngineInterceptorContext engineInterceptorContext =
                 new DefaultEngineInterceptorContext(engineContext);
 
-        for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
-            classInterceptor.preInstantiate(engineInterceptorContext, testClass);
+        ThrowableCollector throwableCollector = new ThrowableCollector();
+
+        throwableCollector.execute(
+                () -> {
+                    for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
+                        classInterceptor.preInstantiate(engineInterceptorContext, testClass);
+                    }
+                });
+
+        if (throwableCollector.isEmpty()) {
+            try {
+                testInstance =
+                        testClass
+                                .getDeclaredConstructor((Class<?>[]) null)
+                                .newInstance((Object[]) null);
+            } catch (Throwable t) {
+                throwable = t.getCause();
+            }
         }
+
+        final List<ClassInterceptor> classInterceptorsReversed =
+                getClassInterceptorsReversed(testClass);
+
+        throwable =
+                throwableCollector.getThrowable() != null
+                        ? throwableCollector.getThrowable()
+                        : throwable;
+
+        for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+            try {
+                classInterceptor.postInstantiate(
+                        engineInterceptorContext, testClass, testInstance, throwable);
+            } catch (Throwable t) {
+                throwableCollector.add(t);
+            }
+        }
+
+        throwableCollector.assertEmpty();
+
+        return testInstance;
     }
 
     /**

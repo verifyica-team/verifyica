@@ -33,7 +33,6 @@ import org.antublue.verifyica.engine.context.DefaultClassContext;
 import org.antublue.verifyica.engine.context.DefaultClassInstanceContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
-import org.antublue.verifyica.engine.interceptor.DefaultClassInterceptorRegistry;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ExecutorSupport;
@@ -117,42 +116,19 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                         .onState(
                                 State.START,
                                 () -> {
-                                    Object testInstance = null;
-                                    Throwable throwable = null;
                                     try {
-                                        DefaultClassInterceptorRegistry.getInstance()
-                                                .preInstantiate(
-                                                        classContext.getEngineContext(), testClass);
-
-                                        testInstance =
-                                                testClass
-                                                        .getDeclaredConstructor((Class<?>[]) null)
-                                                        .newInstance((Object[]) null);
+                                        Object testInstance =
+                                                getClassInterceptorManager()
+                                                        .instantiate(
+                                                                classContext.getEngineContext(),
+                                                                testClass);
 
                                         classInstanceContext =
                                                 new DefaultClassInstanceContext(
                                                         classContext, testInstance);
-                                    } catch (Throwable t) {
-                                        throwable = t;
-                                    }
 
-                                    try {
-                                        DefaultClassInterceptorRegistry.getInstance()
-                                                .postInstantiate(
-                                                        classContext.getEngineContext(),
-                                                        testClass,
-                                                        testInstance,
-                                                        throwable);
-
-                                        if (throwable == null) {
-                                            return StateMachine.Result.of(
-                                                    State.INSTANTIATE_SUCCESS);
-                                        } else {
-                                            return StateMachine.Result.of(
-                                                    State.INSTANTIATE_FAILURE, throwable);
-                                        }
+                                        return StateMachine.Result.of(State.INSTANTIATE_SUCCESS);
                                     } catch (Throwable t) {
-                                        t.printStackTrace(System.err);
                                         return StateMachine.Result.of(State.INSTANTIATE_FAILURE, t);
                                     }
                                 })
@@ -160,7 +136,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 State.INSTANTIATE_SUCCESS,
                                 () -> {
                                     try {
-                                        DefaultClassInterceptorRegistry.getInstance()
+                                        getClassInterceptorManager()
                                                 .prepare(classInstanceContext, prepareMethods);
                                         return StateMachine.Result.of(State.PREPARE_SUCCESS);
                                     } catch (Throwable t) {
@@ -263,7 +239,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                         State.SKIP_FAILURE),
                                 () -> {
                                     try {
-                                        DefaultClassInterceptorRegistry.getInstance()
+                                        getClassInterceptorManager()
                                                 .conclude(classInstanceContext, concludeMethods);
 
                                         return StateMachine.Result.of(State.CONCLUDE_SUCCESS);
@@ -276,7 +252,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 StateMachine.asList(State.CONCLUDE_SUCCESS, State.CONCLUDE_FAILURE),
                                 () -> {
                                     try {
-                                        DefaultClassInterceptorRegistry.getInstance()
+                                        getClassInterceptorManager()
                                                 .onDestroy(classInstanceContext);
                                         return StateMachine.Result.of(State.ON_DESTROY_SUCCESS);
                                     } catch (Throwable t) {
