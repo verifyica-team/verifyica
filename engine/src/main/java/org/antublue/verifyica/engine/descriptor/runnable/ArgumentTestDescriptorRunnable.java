@@ -25,7 +25,7 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.StateMachine;
-import org.antublue.verifyica.engine.context.DefaultArgumentContext;
+import org.antublue.verifyica.engine.context.ConcreteArgumentContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -83,7 +83,7 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
         this.beforeAllMethods = argumentTestDescriptor.getBeforeAllMethods();
         this.testMethodTestDescriptors = getTestMethodTestDescriptors(argumentTestDescriptor);
         this.afterAllMethods = argumentTestDescriptor.getAfterAllMethods();
-        this.argumentContext = new DefaultArgumentContext(classContext, argumentTestDescriptor);
+        this.argumentContext = new ConcreteArgumentContext(classContext, argumentTestDescriptor);
     }
 
     @Override

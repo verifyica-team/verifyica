@@ -24,7 +24,7 @@ import java.util.Properties;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.engine.context.DefaultStore;
+import org.antublue.verifyica.engine.context.ConcreteStore;
 
 public class StoreMergeTest {
 
@@ -40,7 +40,7 @@ public class StoreMergeTest {
         argumentContext.getStore().clear();
         System.out.println("argument context store before merge " + argumentContext.getStore());
 
-        Store store = new DefaultStore();
+        Store store = new ConcreteStore();
         for (int i = 0; i < 10; i++) {
             store.put("key " + i, "value " + i);
         }

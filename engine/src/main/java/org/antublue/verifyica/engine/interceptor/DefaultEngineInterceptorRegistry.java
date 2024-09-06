@@ -31,7 +31,7 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
+import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.internal.engine.filter.EngineFiltersInterceptor;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -335,7 +335,7 @@ public class DefaultEngineInterceptorRegistry {
     private static void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        DefaultEngineContext.getInstance()
+        ConcreteEngineContext.getInstance()
                 .getConfiguration()
                 .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX)
                 .ifPresent(
@@ -361,7 +361,7 @@ public class DefaultEngineInterceptorRegistry {
                             }
                         });
 
-        DefaultEngineContext.getInstance()
+        ConcreteEngineContext.getInstance()
                 .getConfiguration()
                 .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX)
                 .ifPresent(

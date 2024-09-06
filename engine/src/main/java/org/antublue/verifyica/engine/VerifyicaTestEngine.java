@@ -41,10 +41,10 @@ import org.antublue.verifyica.engine.common.FairExecutorService;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.common.Streams;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
+import org.antublue.verifyica.engine.configuration.ConcreteConfigurationParameters;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
-import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
+import org.antublue.verifyica.engine.context.ConcreteEngineContext;
+import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
@@ -184,10 +184,10 @@ public class VerifyicaTestEngine implements TestEngine {
             return;
         }
 
-        EngineContext engineContext = DefaultEngineContext.getInstance();
+        EngineContext engineContext = ConcreteEngineContext.getInstance();
 
         EngineInterceptorContext engineInterceptorContext =
-                new DefaultEngineInterceptorContext(engineContext);
+                new ConcreteEngineInterceptorContext(engineContext);
 
         try {
             Stopwatch stopWatch = new Stopwatch();
@@ -205,7 +205,7 @@ public class VerifyicaTestEngine implements TestEngine {
                     new ExecutionRequest(
                             executionRequest.getRootTestDescriptor(),
                             engineExecutionListener,
-                            new DefaultConfigurationParameters(engineContext.getConfiguration()));
+                            new ConcreteConfigurationParameters(engineContext.getConfiguration()));
 
             ExecutorService classExecutorService =
                     ExecutorSupport.newExecutorService(getEngineClassParallelism());
@@ -314,7 +314,7 @@ public class VerifyicaTestEngine implements TestEngine {
         LOGGER.trace("getEngineClassParallelism()");
 
         int engineClassParallelism =
-                DefaultEngineContext.getInstance()
+                ConcreteEngineContext.getInstance()
                         .getConfiguration()
                         .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
                         .map(
@@ -356,7 +356,7 @@ public class VerifyicaTestEngine implements TestEngine {
         int engineClassParallelism = getEngineClassParallelism();
 
         int engineArgumentParallelism =
-                DefaultEngineContext.getInstance()
+                ConcreteEngineContext.getInstance()
                         .getConfiguration()
                         .getOptional(Constants.ENGINE_ARGUMENT_PARALLELISM)
                         .map(

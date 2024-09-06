@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
+import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 
 /** Class to implement Logger */
 @SuppressWarnings("PMD.EmptyCatchBlock")
@@ -49,7 +49,7 @@ public class Logger {
         this.name = name;
         this.level = new AtomicReference<>(Level.INFO);
 
-        Configuration configuration = DefaultEngineContext.getInstance().getConfiguration();
+        Configuration configuration = ConcreteEngineContext.getInstance().getConfiguration();
 
         String loggerLevel =
                 configuration

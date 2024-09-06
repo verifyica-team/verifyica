@@ -20,66 +20,72 @@ import java.util.Objects;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 
-/** Class to implement DefaultClassInstanceContext */
-public class DefaultClassInstanceContext implements ClassContext {
+/** Class to implement ConcreteClassContext */
+public class ConcreteClassContext implements ClassContext {
 
-    private final ClassContext classContext;
-    private final Object testInstance;
+    private final EngineContext engineContext;
+    private final ClassTestDescriptor classTestDescriptor;
+    private final Store store;
 
     /**
      * Constructor
      *
-     * @param classContext classContext
-     * @param testInstance testInstance
+     * @param engineContext engineContext
+     * @param classTestDescriptor classTestDescriptor
      */
-    public DefaultClassInstanceContext(ClassContext classContext, Object testInstance) {
-        this.classContext = classContext;
-        this.testInstance = testInstance;
+    public ConcreteClassContext(
+            EngineContext engineContext, ClassTestDescriptor classTestDescriptor) {
+        this.engineContext = engineContext;
+        this.classTestDescriptor = classTestDescriptor;
+        this.store = new ConcreteStore();
     }
 
     @Override
     public EngineContext getEngineContext() {
-        return classContext.getEngineContext();
+        return engineContext;
     }
 
     @Override
     public Store getStore() {
-        return classContext.getStore();
+        return store;
     }
 
     @Override
     public Class<?> getTestClass() {
-        return classContext.getTestClass();
+        return classTestDescriptor.getTestClass();
     }
 
     @Override
     public String getTestClassDisplayName() {
-        return classContext.getTestClassDisplayName();
+        return classTestDescriptor.getDisplayName();
     }
 
     @Override
     public Object getTestInstance() {
-        return testInstance;
+        throw new IllegalStateException("Not implemented");
     }
 
     @Override
     public <V> V getTestInstance(Class<V> returnType) {
-        return returnType.cast(getTestInstance());
+        throw new IllegalStateException("Not implemented");
     }
 
     @Override
     public int getTestArgumentParallelism() {
-        return classContext.getTestArgumentParallelism();
+        return classTestDescriptor.getTestArgumentParallelism();
     }
 
     @Override
     public String toString() {
-        return "DefaultClassInstanceContext{"
-                + "classContext="
-                + classContext
-                + ", testInstance="
-                + testInstance
+        return "ConcreteClassContext{"
+                + "engineContext="
+                + engineContext
+                + ", classTestDescriptor="
+                + classTestDescriptor
+                + ", store="
+                + store
                 + '}';
     }
 
@@ -87,13 +93,14 @@ public class DefaultClassInstanceContext implements ClassContext {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DefaultClassInstanceContext that = (DefaultClassInstanceContext) o;
-        return Objects.equals(classContext, that.classContext)
-                && Objects.equals(testInstance, that.testInstance);
+        ConcreteClassContext that = (ConcreteClassContext) o;
+        return Objects.equals(engineContext, that.engineContext)
+                && Objects.equals(classTestDescriptor, that.classTestDescriptor)
+                && Objects.equals(store, that.store);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(classContext, testInstance);
+        return Objects.hash(engineContext, classTestDescriptor, store);
     }
 }

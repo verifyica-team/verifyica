@@ -20,8 +20,8 @@ import java.util.Objects;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.interceptor.ArgumentInterceptorContext;
 
-/** Class to implement DefaultArgumentInterceptorContext */
-public class DefaultArgumentInterceptorContext implements ArgumentInterceptorContext {
+/** Class to implement ConcreteArgumentInterceptorContext */
+public class ConcreteArgumentInterceptorContext implements ArgumentInterceptorContext {
 
     private final ArgumentContext argumentContext;
 
@@ -30,7 +30,7 @@ public class DefaultArgumentInterceptorContext implements ArgumentInterceptorCon
      *
      * @param argumentContext argumentContext
      */
-    public DefaultArgumentInterceptorContext(ArgumentContext argumentContext) {
+    public ConcreteArgumentInterceptorContext(ArgumentContext argumentContext) {
         this.argumentContext = argumentContext;
     }
 
@@ -41,14 +41,14 @@ public class DefaultArgumentInterceptorContext implements ArgumentInterceptorCon
 
     @Override
     public String toString() {
-        return "DefaultArgumentInterceptorContext{" + "argumentContext=" + argumentContext + '}';
+        return "ConcreteArgumentInterceptorContext{" + "argumentContext=" + argumentContext + '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DefaultArgumentInterceptorContext that = (DefaultArgumentInterceptorContext) o;
+        ConcreteArgumentInterceptorContext that = (ConcreteArgumentInterceptorContext) o;
         return Objects.equals(argumentContext, that.argumentContext);
     }
 

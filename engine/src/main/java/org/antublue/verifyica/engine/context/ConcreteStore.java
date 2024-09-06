@@ -30,15 +30,15 @@ import java.util.function.Function;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.common.Precondition;
 
-/** Class to implement DefaultStore */
+/** Class to implement ConcreteStore */
 @SuppressWarnings("unchecked")
-public class DefaultStore implements Store {
+public class ConcreteStore implements Store {
 
     private final Map<Object, Object> map;
     private final ReadWriteLock readWriteLock;
 
     /** Constructor */
-    public DefaultStore() {
+    public ConcreteStore() {
         this(new LinkedHashMap<>());
     }
 
@@ -49,7 +49,7 @@ public class DefaultStore implements Store {
      *
      * @param map map
      */
-    private DefaultStore(Map<Object, Object> map) {
+    private ConcreteStore(Map<Object, Object> map) {
         Precondition.notNull(map, "map is null");
 
         this.map = new LinkedHashMap<>(map);
@@ -348,7 +348,7 @@ public class DefaultStore implements Store {
     public Store duplicate() {
         getReadWriteLock().readLock().lock();
         try {
-            return new DefaultStore(new TreeMap<>(this.map));
+            return new ConcreteStore(new TreeMap<>(this.map));
         } finally {
             getReadWriteLock().readLock().unlock();
         }
@@ -388,7 +388,7 @@ public class DefaultStore implements Store {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DefaultStore that = (DefaultStore) o;
+        ConcreteStore that = (ConcreteStore) o;
         getReadWriteLock().readLock().lock();
         try {
             return Objects.equals(map, that.map);

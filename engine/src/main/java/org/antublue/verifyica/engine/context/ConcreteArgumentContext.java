@@ -24,9 +24,9 @@ import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 
-/** Class to implement DefaultArgumentContext */
+/** Class to implement ConcreteArgumentContext */
 @SuppressWarnings("unchecked")
-public class DefaultArgumentContext implements ArgumentContext {
+public class ConcreteArgumentContext implements ArgumentContext {
 
     private final ClassContext classContext;
     private final ArgumentTestDescriptor argumentTestDescriptor;
@@ -38,11 +38,11 @@ public class DefaultArgumentContext implements ArgumentContext {
      * @param classContext classContext
      * @param argumentTestDescriptor argumentTestDescriptor
      */
-    public DefaultArgumentContext(
+    public ConcreteArgumentContext(
             ClassContext classContext, ArgumentTestDescriptor argumentTestDescriptor) {
         this.classContext = classContext;
         this.argumentTestDescriptor = argumentTestDescriptor;
-        this.store = new DefaultStore();
+        this.store = new ConcreteStore();
     }
 
     @Override
@@ -74,7 +74,7 @@ public class DefaultArgumentContext implements ArgumentContext {
 
     @Override
     public String toString() {
-        return "DefaultArgumentContext{"
+        return "ConcreteArgumentContext{"
                 + "classContext="
                 + classContext
                 + ", argumentTestDescriptor="
@@ -88,7 +88,7 @@ public class DefaultArgumentContext implements ArgumentContext {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DefaultArgumentContext that = (DefaultArgumentContext) o;
+        ConcreteArgumentContext that = (ConcreteArgumentContext) o;
         return Objects.equals(classContext, that.classContext)
                 && Objects.equals(argumentTestDescriptor, that.argumentTestDescriptor)
                 && Objects.equals(store, that.store);

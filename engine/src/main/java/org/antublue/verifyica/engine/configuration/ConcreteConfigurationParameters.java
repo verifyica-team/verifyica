@@ -25,7 +25,7 @@ import org.junit.platform.engine.ConfigurationParameters;
 
 /** Class to implement DefaultConfigurationParameters */
 @SuppressWarnings("deprecation")
-public class DefaultConfigurationParameters implements ConfigurationParameters {
+public class ConcreteConfigurationParameters implements ConfigurationParameters {
 
     private final Configuration configuration;
 
@@ -34,7 +34,7 @@ public class DefaultConfigurationParameters implements ConfigurationParameters {
      *
      * @param configuration configuration
      */
-    public DefaultConfigurationParameters(Configuration configuration) {
+    public ConcreteConfigurationParameters(Configuration configuration) {
         Precondition.notNull(configuration, "configuration is null");
 
         this.configuration = configuration;

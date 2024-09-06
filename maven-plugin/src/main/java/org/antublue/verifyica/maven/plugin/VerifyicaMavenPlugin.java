@@ -37,9 +37,9 @@ import java.util.StringJoiner;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.common.Streams;
+import org.antublue.verifyica.engine.configuration.ConcreteConfigurationParameters;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.configuration.DefaultConfigurationParameters;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
+import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
@@ -129,7 +129,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         logger = Logger.create(getLog());
 
         try {
-            Configuration configuration = DefaultEngineContext.getInstance().getConfiguration();
+            Configuration configuration = ConcreteEngineContext.getInstance().getConfiguration();
 
             configuration.put(Constants.MAVEN_PLUGIN, Constants.TRUE);
             logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN, Constants.TRUE);
@@ -201,8 +201,8 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                     new ExecutionRequest(
                             testDescriptor,
                             EngineExecutionListener.NOOP,
-                            new DefaultConfigurationParameters(
-                                    DefaultEngineContext.getInstance().getConfiguration()));
+                            new ConcreteConfigurationParameters(
+                                    ConcreteEngineContext.getInstance().getConfiguration()));
 
             verifyicaTestEngine.execute(executionRequest);
 

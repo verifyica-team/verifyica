@@ -60,6 +60,8 @@ public class ContextTest {
                 .isEqualTo(
                         classContext.getEngineContext().getConfiguration().getPropertiesFilename());
 
+        assertThat(classContext.getTestInstance()).isNotNull();;
+
         classContext
                 .getConfiguration()
                 .getPropertiesFilename()

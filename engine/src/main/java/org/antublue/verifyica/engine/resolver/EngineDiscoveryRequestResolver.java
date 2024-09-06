@@ -36,8 +36,8 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.Stopwatch;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
-import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
+import org.antublue.verifyica.engine.context.ConcreteEngineContext;
+import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
@@ -162,7 +162,7 @@ public class EngineDiscoveryRequestResolver {
                                         DisplayNameSupport.getDisplayName(testClass);
 
                                 classDefinitions.add(
-                                        new DefaultClassDefinition(
+                                        new ConcreteClassDefinition(
                                                 testClass,
                                                 testClassDisplayName,
                                                 testMethods,
@@ -328,11 +328,11 @@ public class EngineDiscoveryRequestResolver {
         LOGGER.trace("onTestDiscovery()");
 
         if (!classDefinitions.isEmpty()) {
-            DefaultEngineInterceptorContext defaultEngineInterceptorContext =
-                    new DefaultEngineInterceptorContext(DefaultEngineContext.getInstance());
+            ConcreteEngineInterceptorContext concreteEngineInterceptorContext =
+                    new ConcreteEngineInterceptorContext(ConcreteEngineContext.getInstance());
 
             DefaultEngineInterceptorRegistry.getInstance()
-                    .onTestDiscovery(defaultEngineInterceptorContext, classDefinitions);
+                    .onTestDiscovery(concreteEngineInterceptorContext, classDefinitions);
         }
     }
 
@@ -340,10 +340,10 @@ public class EngineDiscoveryRequestResolver {
         LOGGER.trace("onInitialize()");
 
         if (!classDefinitions.isEmpty()) {
-            EngineContext engineContext = DefaultEngineContext.getInstance();
+            EngineContext engineContext = ConcreteEngineContext.getInstance();
 
             EngineInterceptorContext engineInterceptorContext =
-                    new DefaultEngineInterceptorContext(engineContext);
+                    new ConcreteEngineInterceptorContext(engineContext);
 
             DefaultEngineInterceptorRegistry.getInstance().onInitialize(engineInterceptorContext);
         }

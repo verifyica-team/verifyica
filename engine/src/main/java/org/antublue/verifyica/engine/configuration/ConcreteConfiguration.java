@@ -41,7 +41,7 @@ import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 
 /** Class to implement DefaultConfiguration */
-public class DefaultConfiguration implements Configuration {
+public class ConcreteConfiguration implements Configuration {
 
     private static final String VERIFYICA_CONFIGURATION_TRACE = "VERIFYICA_CONFIGURATION_TRACE";
 
@@ -50,7 +50,7 @@ public class DefaultConfiguration implements Configuration {
     private static final boolean IS_TRACE_ENABLED =
             Constants.TRUE.equals(System.getenv().get(VERIFYICA_CONFIGURATION_TRACE));
 
-    private static final String CLASS_NAME = DefaultConfiguration.class.getName();
+    private static final String CLASS_NAME = ConcreteConfiguration.class.getName();
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
@@ -60,7 +60,7 @@ public class DefaultConfiguration implements Configuration {
     private final ReadWriteLock readWriteLock;
 
     /** Constructor */
-    private DefaultConfiguration() {
+    private ConcreteConfiguration() {
         map = new TreeMap<>();
         readWriteLock = new ReentrantReadWriteLock(true);
 
@@ -72,7 +72,7 @@ public class DefaultConfiguration implements Configuration {
      *
      * @param map map
      */
-    private DefaultConfiguration(TreeMap<String, String> map) {
+    private ConcreteConfiguration(TreeMap<String, String> map) {
         this.map = map;
         readWriteLock = new ReentrantReadWriteLock(true);
     }
@@ -292,7 +292,7 @@ public class DefaultConfiguration implements Configuration {
     public Configuration duplicate() {
         getReadWriteLock().readLock().lock();
         try {
-            return new DefaultConfiguration(new TreeMap<>(map));
+            return new ConcreteConfiguration(new TreeMap<>(map));
         } finally {
             getReadWriteLock().readLock().unlock();
         }
@@ -312,7 +312,7 @@ public class DefaultConfiguration implements Configuration {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DefaultConfiguration that = (DefaultConfiguration) o;
+        ConcreteConfiguration that = (ConcreteConfiguration) o;
         return Objects.equals(map, that.map);
     }
 
@@ -326,7 +326,7 @@ public class DefaultConfiguration implements Configuration {
      *
      * @return the singleton instance
      */
-    public static DefaultConfiguration getInstance() {
+    public static ConcreteConfiguration getInstance() {
         return SingletonHolder.SINGLETON;
     }
 
@@ -334,7 +334,7 @@ public class DefaultConfiguration implements Configuration {
     private static class SingletonHolder {
 
         /** The singleton instance */
-        private static final DefaultConfiguration SINGLETON = new DefaultConfiguration();
+        private static final ConcreteConfiguration SINGLETON = new ConcreteConfiguration();
     }
 
     /** Method to load configuration */

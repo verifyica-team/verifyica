@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
+import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.yaml.snakeyaml.Yaml;
 
@@ -64,7 +64,7 @@ public class FilterFactory {
             List<Filter> filters = new ArrayList<>();
 
             filtersFilename =
-                    DefaultEngineContext.getInstance()
+                    ConcreteEngineContext.getInstance()
                             .getConfiguration()
                             .getOptional(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME)
                             .orElse(null);

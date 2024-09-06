@@ -17,46 +17,43 @@
 package org.antublue.verifyica.engine.context;
 
 import java.util.Objects;
-import org.antublue.verifyica.api.EngineContext;
-import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
-import org.antublue.verifyica.engine.common.Precondition;
+import org.antublue.verifyica.api.ClassContext;
+import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 
-/** Class to implement DefaultEngineInterceptorContext */
-public class DefaultEngineInterceptorContext implements EngineInterceptorContext {
+/** Class to implement ConcreteClassInterceptorContext */
+public class ConcreteClassInterceptorContext implements ClassInterceptorContext {
 
-    private final EngineContext engineContext;
+    private final ClassContext classContext;
 
     /**
      * Constructor
      *
-     * @param engineContext engineContext
+     * @param classContext classContext
      */
-    public DefaultEngineInterceptorContext(EngineContext engineContext) {
-        Precondition.notNull(engineContext, "engineContext is null");
-
-        this.engineContext = engineContext;
+    public ConcreteClassInterceptorContext(ClassContext classContext) {
+        this.classContext = classContext;
     }
 
     @Override
-    public EngineContext getEngineContext() {
-        return engineContext;
+    public ClassContext getClassContext() {
+        return classContext;
     }
 
     @Override
     public String toString() {
-        return "DefaultEngineInterceptorContext{" + "engineContext=" + engineContext + '}';
+        return "ConcreteClassInterceptorContext{" + "classContext=" + classContext + '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DefaultEngineInterceptorContext that = (DefaultEngineInterceptorContext) o;
-        return Objects.equals(engineContext, that.engineContext);
+        ConcreteClassInterceptorContext that = (ConcreteClassInterceptorContext) o;
+        return Objects.equals(classContext, that.classContext);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(engineContext);
+        return Objects.hashCode(classContext);
     }
 }

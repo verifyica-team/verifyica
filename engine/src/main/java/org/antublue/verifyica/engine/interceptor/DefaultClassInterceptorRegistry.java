@@ -39,10 +39,10 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.DefaultArgumentInterceptorContext;
-import org.antublue.verifyica.engine.context.DefaultClassInterceptorContext;
-import org.antublue.verifyica.engine.context.DefaultEngineContext;
-import org.antublue.verifyica.engine.context.DefaultEngineInterceptorContext;
+import org.antublue.verifyica.engine.context.ConcreteArgumentInterceptorContext;
+import org.antublue.verifyica.engine.context.ConcreteClassInterceptorContext;
+import org.antublue.verifyica.engine.context.ConcreteEngineContext;
+import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -166,8 +166,8 @@ public class DefaultClassInterceptorRegistry {
         Object testInstance = null;
         Throwable throwable = null;
 
-        DefaultEngineInterceptorContext engineInterceptorContext =
-                new DefaultEngineInterceptorContext(engineContext);
+        ConcreteEngineInterceptorContext engineInterceptorContext =
+                new ConcreteEngineInterceptorContext(engineContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -226,8 +226,8 @@ public class DefaultClassInterceptorRegistry {
             Object testInstance,
             Throwable throwable)
             throws Throwable {
-        DefaultEngineInterceptorContext engineInterceptorContext =
-                new DefaultEngineInterceptorContext(engineContext);
+        ConcreteEngineInterceptorContext engineInterceptorContext =
+                new ConcreteEngineInterceptorContext(engineContext);
 
         final List<ClassInterceptor> classInterceptorsReversed =
                 getClassInterceptorsReversed(testClass);
@@ -253,7 +253,7 @@ public class DefaultClassInterceptorRegistry {
         Class<?> testClass = classContext.getTestClass();
 
         ClassInterceptorContext argumentInterceptorContext =
-                new DefaultClassInterceptorContext(classContext);
+                new ConcreteClassInterceptorContext(classContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -314,7 +314,7 @@ public class DefaultClassInterceptorRegistry {
         Object testInstance = classContext.getTestInstance();
 
         ArgumentInterceptorContext argumentInterceptorContext =
-                new DefaultArgumentInterceptorContext(argumentContext);
+                new ConcreteArgumentInterceptorContext(argumentContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -375,7 +375,7 @@ public class DefaultClassInterceptorRegistry {
         Object testInstance = classContext.getTestInstance();
 
         ArgumentInterceptorContext argumentInterceptorContext =
-                new DefaultArgumentInterceptorContext(argumentContext);
+                new ConcreteArgumentInterceptorContext(argumentContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -436,7 +436,7 @@ public class DefaultClassInterceptorRegistry {
         Object testInstance = classContext.getTestInstance();
 
         ArgumentInterceptorContext argumentInterceptorContext =
-                new DefaultArgumentInterceptorContext(argumentContext);
+                new ConcreteArgumentInterceptorContext(argumentContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -497,7 +497,7 @@ public class DefaultClassInterceptorRegistry {
         Object testInstance = classContext.getTestInstance();
 
         ArgumentInterceptorContext argumentInterceptorContext =
-                new DefaultArgumentInterceptorContext(argumentContext);
+                new ConcreteArgumentInterceptorContext(argumentContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -559,7 +559,7 @@ public class DefaultClassInterceptorRegistry {
         Object testInstance = classContext.getTestInstance();
 
         ArgumentInterceptorContext argumentInterceptorContext =
-                new DefaultArgumentInterceptorContext(argumentContext);
+                new ConcreteArgumentInterceptorContext(argumentContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -616,7 +616,7 @@ public class DefaultClassInterceptorRegistry {
         Class<?> testClass = classContext.getTestClass();
 
         ClassInterceptorContext defaultClassInterceptorContext =
-                new DefaultClassInterceptorContext(classContext);
+                new ConcreteClassInterceptorContext(classContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -673,7 +673,7 @@ public class DefaultClassInterceptorRegistry {
         Class<?> testClass = classContext.getTestClass();
 
         ClassInterceptorContext classInterceptorContext =
-                new DefaultClassInterceptorContext(classContext);
+                new ConcreteClassInterceptorContext(classContext);
 
         for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
             classInterceptor.onDestroy(classInterceptorContext);
@@ -782,7 +782,7 @@ public class DefaultClassInterceptorRegistry {
     private static void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        DefaultEngineContext.getInstance()
+        ConcreteEngineContext.getInstance()
                 .getConfiguration()
                 .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX)
                 .ifPresent(
@@ -808,7 +808,7 @@ public class DefaultClassInterceptorRegistry {
                             }
                         });
 
-        DefaultEngineContext.getInstance()
+        ConcreteEngineContext.getInstance()
                 .getConfiguration()
                 .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX)
                 .ifPresent(

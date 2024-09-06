@@ -26,10 +26,10 @@ import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement DefaultClassDefinition */
-public class DefaultClassDefinition implements ClassDefinition {
+/** Class to implement ConcreteClassDefinition */
+public class ConcreteClassDefinition implements ClassDefinition {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClassDefinition.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConcreteClassDefinition.class);
 
     private final Class<?> testClass;
     private final Set<Method> testMethods;
@@ -47,7 +47,7 @@ public class DefaultClassDefinition implements ClassDefinition {
      * @param testArguments testArguments
      * @param testArgumentParallelism testArgumentParallelism
      */
-    public DefaultClassDefinition(
+    public ConcreteClassDefinition(
             Class<?> testClass,
             String testClassDisplayName,
             List<Method> testMethods,
@@ -106,7 +106,7 @@ public class DefaultClassDefinition implements ClassDefinition {
 
     @Override
     public String toString() {
-        return "DefaultClassDefinition{"
+        return "ConcreteClassDefinition{"
                 + "testClass="
                 + testClass
                 + ", testMethods="
@@ -120,7 +120,7 @@ public class DefaultClassDefinition implements ClassDefinition {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DefaultClassDefinition that = (DefaultClassDefinition) o;
+        ConcreteClassDefinition that = (ConcreteClassDefinition) o;
         return Objects.equals(testClass, that.testClass)
                 && Objects.equals(testMethods, that.testMethods)
                 && Objects.equals(testArguments, that.testArguments);

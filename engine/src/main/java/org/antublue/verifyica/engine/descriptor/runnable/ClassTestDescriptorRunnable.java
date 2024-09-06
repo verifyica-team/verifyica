@@ -29,8 +29,8 @@ import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateMachine;
-import org.antublue.verifyica.engine.context.DefaultClassContext;
-import org.antublue.verifyica.engine.context.DefaultClassInstanceContext;
+import org.antublue.verifyica.engine.context.ConcreteClassContext;
+import org.antublue.verifyica.engine.context.ConcreteClassInstanceContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -54,7 +54,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
     private final List<Method> concludeMethods;
     private final ClassContext classContext;
 
-    private DefaultClassInstanceContext classInstanceContext;
+    private ConcreteClassInstanceContext classInstanceContext;
 
     private enum State {
         START,
@@ -102,7 +102,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
         this.prepareMethods = classTestDescriptor.getPrepareMethods();
         this.argumentTestDescriptors = getArgumentTestDescriptors(classTestDescriptor);
         this.concludeMethods = classTestDescriptor.getConcludeMethods();
-        this.classContext = new DefaultClassContext(engineContext, classTestDescriptor);
+        this.classContext = new ConcreteClassContext(engineContext, classTestDescriptor);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                                                 testClass);
 
                                         classInstanceContext =
-                                                new DefaultClassInstanceContext(
+                                                new ConcreteClassInstanceContext(
                                                         classContext, testInstance);
 
                                         return StateMachine.Result.of(State.INSTANTIATE_SUCCESS);
