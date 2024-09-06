@@ -42,7 +42,6 @@ public class RepeaterTest {
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
         new Repeater(10)
-                .throttle(new Repeater.FixedThrottle(100))
                 .before(() -> beforeEach(argumentContext))
                 .execute(
                         () -> {
@@ -58,6 +57,7 @@ public class RepeaterTest {
                                     argumentContext.getTestArgument().getPayload());
                         })
                 .after(() -> afterEach(argumentContext))
+                .throttle(new Repeater.FixedThrottle(100))
                 .execute();
     }
 
@@ -67,7 +67,6 @@ public class RepeaterTest {
                 .isThrownBy(
                         () ->
                                 new Repeater(10)
-                                        .throttle(new Repeater.ExponentialBackoffThrottle(10000))
                                         .before(() -> beforeEach(argumentContext))
                                         .execute(
                                                 () -> {
@@ -98,6 +97,7 @@ public class RepeaterTest {
                                                         Repeater.rethrow(throwable);
                                                     }
                                                 })
+                                        .throttle(new Repeater.ExponentialBackoffThrottle(10000))
                                         .execute());
     }
 
