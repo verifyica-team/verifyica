@@ -76,6 +76,15 @@ public class ExecutorSupport {
                             TimeUnit.SECONDS,
                             new ArrayBlockingQueue<>(parallelism * 10),
                             new BlockingRejectedExecutionHandler());
+
+            /*
+
+            TODO add configuration/code to conditionally use a new platform thread for every execution
+
+            executorService =
+                    new SemaphoreExecutor(
+                            new NewPlatformThreadExecutorService(), new Semaphore(parallelism, true));
+             */
         }
 
         return executorService;
