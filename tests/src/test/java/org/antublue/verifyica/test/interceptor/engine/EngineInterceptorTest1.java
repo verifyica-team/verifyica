@@ -16,8 +16,8 @@
 
 package org.antublue.verifyica.test.interceptor.engine;
 
-import static org.antublue.verifyica.api.Fail.fail;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
