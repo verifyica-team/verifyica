@@ -141,7 +141,7 @@ public class Repeater {
             } else if (throwable != null) {
                 throw throwable;
             }
-            
+
             if (i < count && throttle != null) {
                 throttle.throttle();
             }
