@@ -23,6 +23,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.test.support.Repeater;
 
+@SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 public class RepeaterTest {
 
     @Verifyica.ArgumentSupplier
