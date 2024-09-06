@@ -17,6 +17,7 @@
 package org.antublue.verifyica.engine.context;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
@@ -27,6 +28,7 @@ public class ConcreteClassContext implements ClassContext {
 
     private final EngineContext engineContext;
     private final ClassTestDescriptor classTestDescriptor;
+    private final AtomicReference<Object> testClassInstanceReference;
     private final Store store;
 
     /**
@@ -36,9 +38,12 @@ public class ConcreteClassContext implements ClassContext {
      * @param classTestDescriptor classTestDescriptor
      */
     public ConcreteClassContext(
-            EngineContext engineContext, ClassTestDescriptor classTestDescriptor) {
+            EngineContext engineContext,
+            ClassTestDescriptor classTestDescriptor,
+            AtomicReference<Object> testClassInstanceReference) {
         this.engineContext = engineContext;
         this.classTestDescriptor = classTestDescriptor;
+        this.testClassInstanceReference = testClassInstanceReference;
         this.store = new ConcreteStore();
     }
 
@@ -64,12 +69,20 @@ public class ConcreteClassContext implements ClassContext {
 
     @Override
     public Object getTestInstance() {
-        throw new IllegalStateException("Not implemented");
+        Object testInstance = testClassInstanceReference.get();
+        if (testInstance == null) {
+            throw new IllegalStateException("The class instance has not yet been instantiated");
+        }
+        return testInstance;
     }
 
     @Override
     public <V> V getTestInstance(Class<V> returnType) {
-        throw new IllegalStateException("Not implemented");
+        Object testInstance = testClassInstanceReference.get();
+        if (testInstance == null) {
+            throw new IllegalStateException("The class instance has not yet been instantiated");
+        }
+        return returnType.cast(testInstance);
     }
 
     @Override

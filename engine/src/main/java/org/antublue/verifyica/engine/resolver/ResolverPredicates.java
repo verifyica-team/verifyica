@@ -77,7 +77,6 @@ public class ResolverPredicates {
                 int modifiers = method.getModifiers();
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
-                        && Modifier.isStatic(modifiers)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.Prepare.class);
             };
@@ -132,7 +131,6 @@ public class ResolverPredicates {
                 int modifiers = method.getModifiers();
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
-                        && Modifier.isStatic(modifiers)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.Conclude.class);
             };

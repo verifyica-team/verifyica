@@ -18,6 +18,7 @@ package org.antublue.verifyica.engine.interceptor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -273,7 +274,12 @@ public class DefaultClassInterceptorRegistry {
                     () -> {
                         try {
                             for (Method prepareMethod : prepareMethods) {
-                                prepareMethod.invoke(null, classContext);
+                                if (Modifier.isStatic(prepareMethod.getModifiers())) {
+                                    prepareMethod.invoke(null, classContext);
+                                } else {
+                                    prepareMethod.invoke(
+                                            classContext.getTestInstance(), classContext);
+                                }
                             }
                         } catch (InvocationTargetException e) {
                             throw e.getCause();
@@ -636,7 +642,12 @@ public class DefaultClassInterceptorRegistry {
                     () -> {
                         try {
                             for (Method concludeMethod : concludeMethods) {
-                                concludeMethod.invoke(null, classContext);
+                                if (Modifier.isStatic(concludeMethod.getModifiers())) {
+                                    concludeMethod.invoke(null, classContext);
+                                } else {
+                                    concludeMethod.invoke(
+                                            classContext.getTestInstance(), classContext);
+                                }
                             }
                         } catch (InvocationTargetException e) {
                             throw e.getCause();

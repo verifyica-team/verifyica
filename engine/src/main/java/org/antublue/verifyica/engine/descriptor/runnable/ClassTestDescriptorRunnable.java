@@ -23,14 +23,16 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicReference;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateMachine;
 import org.antublue.verifyica.engine.context.ConcreteClassContext;
-import org.antublue.verifyica.engine.context.ConcreteClassInstanceContext;
+import org.antublue.verifyica.engine.context.ConcreteClassInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -53,8 +55,9 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
     private final List<ArgumentTestDescriptor> argumentTestDescriptors;
     private final List<Method> concludeMethods;
     private final ClassContext classContext;
+    private final ClassInterceptorContext classInterceptorContext;
 
-    private ConcreteClassInstanceContext classInstanceContext;
+    private AtomicReference<Object> testInstanceReference;
 
     private enum State {
         START,
@@ -102,7 +105,11 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
         this.prepareMethods = classTestDescriptor.getPrepareMethods();
         this.argumentTestDescriptors = getArgumentTestDescriptors(classTestDescriptor);
         this.concludeMethods = classTestDescriptor.getConcludeMethods();
-        this.classContext = new ConcreteClassContext(engineContext, classTestDescriptor);
+
+        this.testInstanceReference = new AtomicReference<>();
+        this.classContext =
+                new ConcreteClassContext(engineContext, classTestDescriptor, testInstanceReference);
+        this.classInterceptorContext = new ConcreteClassInterceptorContext(this.classContext);
     }
 
     @Override
@@ -123,9 +130,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                                                 classContext.getEngineContext(),
                                                                 testClass);
 
-                                        classInstanceContext =
-                                                new ConcreteClassInstanceContext(
-                                                        classContext, testInstance);
+                                        testInstanceReference.set(testInstance);
 
                                         return StateMachine.Result.of(State.INSTANTIATE_SUCCESS);
                                     } catch (Throwable t) {
@@ -137,7 +142,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 () -> {
                                     try {
                                         getClassInterceptorManager()
-                                                .prepare(classInstanceContext, prepareMethods);
+                                                .prepare(classContext, prepareMethods);
                                         return StateMachine.Result.of(State.PREPARE_SUCCESS);
                                     } catch (Throwable t) {
                                         t.printStackTrace(System.err);
@@ -180,7 +185,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                                                                                                     4),
                                                                                             new ArgumentTestDescriptorRunnable(
                                                                                                     executionRequest,
-                                                                                                    classInstanceContext,
+                                                                                                    classContext,
                                                                                                     argumentTestDescriptor))))));
 
                                             ExecutorSupport.waitForAllFutures(
@@ -198,7 +203,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                                                                     + threadNameSuffix,
                                                                             new ArgumentTestDescriptorRunnable(
                                                                                     executionRequest,
-                                                                                    classInstanceContext,
+                                                                                    classContext,
                                                                                     argumentTestDescriptor))
                                                                     .run());
                                         }
@@ -217,7 +222,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                                 argumentTestDescriptor ->
                                                         new ArgumentTestDescriptorRunnable(
                                                                         executionRequest,
-                                                                        classInstanceContext,
+                                                                        classContext,
                                                                         argumentTestDescriptor)
                                                                 .skip());
 
@@ -240,7 +245,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 () -> {
                                     try {
                                         getClassInterceptorManager()
-                                                .conclude(classInstanceContext, concludeMethods);
+                                                .conclude(classContext, concludeMethods);
 
                                         return StateMachine.Result.of(State.CONCLUDE_SUCCESS);
                                     } catch (Throwable t) {
@@ -252,8 +257,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 StateMachine.asList(State.CONCLUDE_SUCCESS, State.CONCLUDE_FAILURE),
                                 () -> {
                                     try {
-                                        getClassInterceptorManager()
-                                                .onDestroy(classInstanceContext);
+                                        getClassInterceptorManager().onDestroy(classContext);
                                         return StateMachine.Result.of(State.ON_DESTROY_SUCCESS);
                                     } catch (Throwable t) {
                                         t.printStackTrace(System.err);
@@ -265,12 +269,9 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                         State.ON_DESTROY_SUCCESS, State.ON_DESTROY_FAILURE),
                                 () -> {
                                     try {
-                                        if (classInstanceContext != null) {
-                                            Object testInstance =
-                                                    classInstanceContext.getTestInstance();
-                                            if (testInstance instanceof AutoCloseable) {
-                                                ((AutoCloseable) testInstance).close();
-                                            }
+                                        Object testInstance = testInstanceReference.get();
+                                        if (testInstance instanceof AutoCloseable) {
+                                            ((AutoCloseable) testInstance).close();
                                         }
                                         return StateMachine.Result.of(
                                                 State.AUTO_CLOSE_INSTANCE_SUCCESS);
@@ -278,6 +279,9 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                         t.printStackTrace(System.err);
                                         return StateMachine.Result.of(
                                                 State.AUTO_CLOSE_INSTANCE_FAILURE, t);
+                                    } finally {
+                                        testInstanceReference.set(null);
+                                        ;
                                     }
                                 })
                         .onStates(

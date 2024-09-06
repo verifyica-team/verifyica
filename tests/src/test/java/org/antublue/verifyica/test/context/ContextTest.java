@@ -60,7 +60,7 @@ public class ContextTest {
                 .isEqualTo(
                         classContext.getEngineContext().getConfiguration().getPropertiesFilename());
 
-        assertThat(classContext.getTestInstance()).isNotNull();;
+        assertThat(classContext.getTestInstance()).isNotNull();
 
         classContext
                 .getConfiguration()
@@ -163,5 +163,23 @@ public class ContextTest {
                                 .getEngineContext()
                                 .getStore()
                                 .getReadWriteLock());
+    }
+
+    @Verifyica.Conclude
+    public static void conclude(ClassContext classContext) {
+        System.out.println("conclude()");
+
+        assertThat(classContext).isNotNull();
+
+        assertThat(classContext.getStore()).isNotNull();
+
+        assertThat(classContext.getConfiguration())
+                .isSameAs(classContext.getEngineContext().getConfiguration());
+
+        assertThat(classContext.getConfiguration().getPropertiesFilename())
+                .isEqualTo(
+                        classContext.getEngineContext().getConfiguration().getPropertiesFilename());
+
+        assertThat(classContext.getTestInstance()).isNotNull();
     }
 }
