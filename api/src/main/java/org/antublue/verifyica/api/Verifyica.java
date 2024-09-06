@@ -60,6 +60,12 @@ public @interface Verifyica {
     @Retention(RetentionPolicy.RUNTIME)
     @interface Test {}
 
+    /** Test annotation */
+    @Testable
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface TestClassContainer {}
+
     /** AfterEach annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)

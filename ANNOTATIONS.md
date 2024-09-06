@@ -223,4 +223,10 @@ Used to register a test class specific [ClassInterceptor](api/src/main/java/org/
 
 ---
 
+### @Verifyica.TestClassContainer
+
+Used to mark a class as having nested test classes
+
+---
+
 Copyright (C) 2024 The Verifyica project authors

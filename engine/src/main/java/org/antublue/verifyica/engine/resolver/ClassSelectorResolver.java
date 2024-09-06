@@ -71,10 +71,30 @@ public class ClassSelectorResolver {
                                                         ResolverPredicates.TEST_METHOD,
                                                         HierarchyTraversalMode.BOTTOM_UP));
                             }
+
+                            processInnerClasses(testClass, classMethodMap);
                         });
 
         LOGGER.trace(
                 "resolve() classSelectors [%d] elapsedTime [%d] ms",
                 classSelectorCount.get(), stopWatch.elapsedTime().toMillis());
+    }
+
+    private void processInnerClasses(
+            Class<?> testClass, Map<Class<?>, List<Method>> classMethodMap) {
+        Class<?>[] innerClasses = testClass.getDeclaredClasses();
+        for (Class<?> innerClass : innerClasses) {
+            processInnerClasses(innerClass, classMethodMap);
+        }
+
+        if (ResolverPredicates.TEST_CLASS.test(testClass)) {
+            classMethodMap
+                    .computeIfAbsent(testClass, method -> new ArrayList<>())
+                    .addAll(
+                            ClassSupport.findMethods(
+                                    testClass,
+                                    ResolverPredicates.TEST_METHOD,
+                                    HierarchyTraversalMode.BOTTOM_UP));
+        }
     }
 }

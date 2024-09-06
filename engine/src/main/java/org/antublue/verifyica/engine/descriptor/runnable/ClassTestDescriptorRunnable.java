@@ -27,12 +27,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateMachine;
 import org.antublue.verifyica.engine.context.ConcreteClassContext;
-import org.antublue.verifyica.engine.context.ConcreteClassInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -55,9 +53,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
     private final List<ArgumentTestDescriptor> argumentTestDescriptors;
     private final List<Method> concludeMethods;
     private final ClassContext classContext;
-    private final ClassInterceptorContext classInterceptorContext;
-
-    private AtomicReference<Object> testInstanceReference;
+    private final AtomicReference<Object> testInstanceReference;
 
     private enum State {
         START,
@@ -109,7 +105,6 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
         this.testInstanceReference = new AtomicReference<>();
         this.classContext =
                 new ConcreteClassContext(engineContext, classTestDescriptor, testInstanceReference);
-        this.classInterceptorContext = new ConcreteClassInterceptorContext(this.classContext);
     }
 
     @Override
@@ -281,7 +276,6 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                                 State.AUTO_CLOSE_INSTANCE_FAILURE, t);
                                     } finally {
                                         testInstanceReference.set(null);
-                                        ;
                                     }
                                 })
                         .onStates(
