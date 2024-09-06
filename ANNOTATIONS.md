@@ -116,7 +116,7 @@ All methods annotated with `@Verifyica.Prepare` or `@Verifyica.Conclude`:
 - optional
 - must return `void`
 - must be public
-- must be static
+- may be static
 - must define a single parameter [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
 - may throw `Throwable`
 
