@@ -16,7 +16,8 @@
 
 package org.antublue.verifyica.test.support;
 
-/** Class to implement a Repeater */
+/** Class to implement Repeater */
+@SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 public class Repeater {
 
     private final int count;
