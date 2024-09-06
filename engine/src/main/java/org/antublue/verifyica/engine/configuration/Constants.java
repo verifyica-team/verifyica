@@ -32,6 +32,12 @@ public final class Constants {
     public static final String ENGINE = PREFIX + ".engine";
 
     /** Configuration constant */
+    public static final String ENGINE_THREADS = ENGINE + ".threads";
+
+    /** Configuration constant */
+    public static final String ENGINE_THREADS_PLATFORM = ENGINE_THREADS + ".platform";
+
+    /** Configuration constant */
     public static final String ENGINE_LOGGER_REGEX = ENGINE + ".logger.regex";
 
     /** Configuration constant */

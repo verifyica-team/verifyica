@@ -31,7 +31,10 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.antublue.verifyica.engine.common.NewPlatformThreadExecutorService;
 import org.antublue.verifyica.engine.common.Precondition;
+import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
+import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
@@ -39,6 +42,9 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 public class ExecutorSupport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorSupport.class);
+
+    private static final String PLATFORM = "platform";
+    private static final String EPHEMERAL = "ephemeral";
 
     /** Constructor */
     private ExecutorSupport() {
@@ -56,9 +62,12 @@ public class ExecutorSupport {
 
         LOGGER.trace("newExecutorService() parallelism [%d]", parallelism);
 
+        boolean usePlatformThreads =
+                PLATFORM.equals(ConcreteConfiguration.getInstance().get(Constants.ENGINE_THREADS));
+
         ExecutorService executorService;
 
-        if (ThreadTool.hasVirtualThreads()) {
+        if (!usePlatformThreads && ThreadTool.hasVirtualThreads()) {
             LOGGER.trace("using virtual threads");
 
             executorService =
@@ -66,25 +75,26 @@ public class ExecutorSupport {
                             ExecutorTool.newVirtualThreadPerTaskExecutor(),
                             new Semaphore(parallelism, true));
         } else {
-            LOGGER.trace("using platform threads");
+            if (EPHEMERAL.equals(
+                    ConcreteConfiguration.getInstance().get(Constants.ENGINE_THREADS_PLATFORM))) {
+                LOGGER.trace("using ephemeral platform threads");
 
-            executorService =
-                    new ThreadPoolExecutor(
-                            parallelism,
-                            parallelism,
-                            60L,
-                            TimeUnit.SECONDS,
-                            new ArrayBlockingQueue<>(parallelism * 10),
-                            new BlockingRejectedExecutionHandler());
+                executorService =
+                        new SemaphoreExecutor(
+                                new NewPlatformThreadExecutorService(),
+                                new Semaphore(parallelism, true));
+            } else {
+                LOGGER.trace("using platform thread pool");
 
-            /*
-
-            TODO add configuration/code to conditionally use a new platform thread for every execution
-
-            executorService =
-                    new SemaphoreExecutor(
-                            new NewPlatformThreadExecutorService(), new Semaphore(parallelism, true));
-             */
+                executorService =
+                        new ThreadPoolExecutor(
+                                parallelism,
+                                parallelism,
+                                60L,
+                                TimeUnit.SECONDS,
+                                new ArrayBlockingQueue<>(parallelism * 10),
+                                new BlockingRejectedExecutionHandler());
+            }
         }
 
         return executorService;
