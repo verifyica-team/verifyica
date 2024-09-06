@@ -16,7 +16,7 @@
 
 package org.antublue.verifyica.api;
 
-/** Class to implement ClassContext */
+/** Interface to implement ClassContext */
 public interface ClassContext extends Context {
 
     /**

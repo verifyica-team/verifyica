@@ -16,7 +16,7 @@
 
 package org.antublue.verifyica.api;
 
-/** Class to implement EngineContext */
+/** Interface to implement EngineContext */
 public interface EngineContext extends Context {
 
     /**
