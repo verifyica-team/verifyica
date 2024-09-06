@@ -86,7 +86,7 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
                                 State.START,
                                 () -> {
                                     try {
-                                        getClassInterceptorManager()
+                                        getClassInterceptorRegistry()
                                                 .beforeEach(argumentContext, beforeEachMethods);
                                         return StateMachine.Result.of(State.BEFORE_EACH_SUCCESS);
                                     } catch (Throwable t) {
@@ -98,7 +98,7 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
                                 State.BEFORE_EACH_SUCCESS,
                                 () -> {
                                     try {
-                                        getClassInterceptorManager()
+                                        getClassInterceptorRegistry()
                                                 .test(argumentContext, testMethod);
                                         return StateMachine.Result.of(State.TEST_SUCCESS);
                                     } catch (Throwable t) {
@@ -113,7 +113,7 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
                                         State.TEST_FAILURE),
                                 () -> {
                                     try {
-                                        getClassInterceptorManager()
+                                        getClassInterceptorRegistry()
                                                 .afterEach(argumentContext, afterEachMethods);
                                         return StateMachine.Result.of(State.AFTER_EACH_SUCCESS);
                                     } catch (Throwable t) {

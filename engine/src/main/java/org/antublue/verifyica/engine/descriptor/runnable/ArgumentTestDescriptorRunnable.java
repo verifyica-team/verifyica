@@ -98,7 +98,7 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
                                 State.START,
                                 () -> {
                                     try {
-                                        getClassInterceptorManager()
+                                        getClassInterceptorRegistry()
                                                 .beforeAll(argumentContext, beforeAllMethods);
                                         return StateMachine.Result.of(State.BEFORE_ALL_SUCCESS);
                                     } catch (Throwable t) {
@@ -148,7 +148,7 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
                                         State.SKIP_FAILURE),
                                 () -> {
                                     try {
-                                        getClassInterceptorManager()
+                                        getClassInterceptorRegistry()
                                                 .afterAll(argumentContext, afterAllMethods);
                                         return StateMachine.Result.of(State.AFTER_ALL_SUCCESS);
                                     } catch (Throwable t) {

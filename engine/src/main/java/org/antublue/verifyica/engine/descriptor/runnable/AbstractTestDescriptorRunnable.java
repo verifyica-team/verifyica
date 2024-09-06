@@ -101,7 +101,12 @@ public abstract class AbstractTestDescriptorRunnable implements Runnable {
                 .collect(Collectors.toList());
     }
 
-    protected static ClassInterceptorRegistry getClassInterceptorManager() {
+    /**
+     * Method to get the ClassInterceptorRegistry
+     *
+     * @return the ClassInterceptorRegistry
+     */
+    protected static ClassInterceptorRegistry getClassInterceptorRegistry() {
         return ClassInterceptorRegistry.getInstance();
     }
 }

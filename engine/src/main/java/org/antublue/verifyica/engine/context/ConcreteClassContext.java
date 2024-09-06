@@ -36,6 +36,7 @@ public class ConcreteClassContext implements ClassContext {
      *
      * @param engineContext engineContext
      * @param classTestDescriptor classTestDescriptor
+     * @param testClassInstanceReference testClassInstanceReference
      */
     public ConcreteClassContext(
             EngineContext engineContext,

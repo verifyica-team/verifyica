@@ -120,7 +120,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 () -> {
                                     try {
                                         Object testInstance =
-                                                getClassInterceptorManager()
+                                                getClassInterceptorRegistry()
                                                         .instantiate(
                                                                 classContext.getEngineContext(),
                                                                 testClass);
@@ -136,7 +136,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 State.INSTANTIATE_SUCCESS,
                                 () -> {
                                     try {
-                                        getClassInterceptorManager()
+                                        getClassInterceptorRegistry()
                                                 .prepare(classContext, prepareMethods);
                                         return StateMachine.Result.of(State.PREPARE_SUCCESS);
                                     } catch (Throwable t) {
@@ -239,7 +239,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                         State.SKIP_FAILURE),
                                 () -> {
                                     try {
-                                        getClassInterceptorManager()
+                                        getClassInterceptorRegistry()
                                                 .conclude(classContext, concludeMethods);
 
                                         return StateMachine.Result.of(State.CONCLUDE_SUCCESS);
@@ -252,7 +252,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 StateMachine.asList(State.CONCLUDE_SUCCESS, State.CONCLUDE_FAILURE),
                                 () -> {
                                     try {
-                                        getClassInterceptorManager().onDestroy(classContext);
+                                        getClassInterceptorRegistry().onDestroy(classContext);
                                         return StateMachine.Result.of(State.ON_DESTROY_SUCCESS);
                                     } catch (Throwable t) {
                                         t.printStackTrace(System.err);
