@@ -23,7 +23,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
 
-/** Class to implement Store */
+/** Interface to implement Store */
 public interface Store {
 
     /**
