@@ -25,8 +25,8 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 
-@Verifyica.TestClassContainer
-public class TestClassContainer {
+@Verifyica.Testable
+public class NestedTest {
 
     public static class NestedTest1 {
 
@@ -35,7 +35,7 @@ public class TestClassContainer {
             Collection<Argument<String>> collection = new ArrayList<>();
 
             for (int i = 0; i < 10; i++) {
-                collection.add(Argument.ofString("NestedTest1String " + i));
+                collection.add(Argument.ofString("NestedTest1 String " + i));
             }
 
             return collection;
@@ -151,7 +151,7 @@ public class TestClassContainer {
             Collection<Argument<String>> collection = new ArrayList<>();
 
             for (int i = 0; i < 10; i++) {
-                collection.add(Argument.ofString("NestedTest2String " + i));
+                collection.add(Argument.ofString("NestedTest2 String " + i));
             }
 
             return collection;
@@ -260,30 +260,33 @@ public class TestClassContainer {
         }
     }
 
-    @Verifyica.TestClassContainer
+    @Verifyica.Testable
     public static class NestedTestClassContainer {
 
-        @Verifyica.ArgumentSupplier
-        public static Collection<Argument<String>> arguments() {
-            Collection<Argument<String>> collection = new ArrayList<>();
+        public static class DeepNestedTestClass {
 
-            for (int i = 0; i < 10; i++) {
-                collection.add(Argument.ofString("NestedTestClassContainerString " + i));
+            @Verifyica.ArgumentSupplier
+            public static Collection<Argument<String>> arguments() {
+                Collection<Argument<String>> collection = new ArrayList<>();
+
+                for (int i = 0; i < 10; i++) {
+                    collection.add(Argument.ofString("DeepNestedTestClass String " + i));
+                }
+
+                return collection;
             }
 
-            return collection;
-        }
+            @Verifyica.Test
+            public void test(ArgumentContext argumentContext) {
+                System.out.printf(
+                        "test(index=[%d], name=[%s])%n",
+                        argumentContext.getTestArgumentIndex(),
+                        argumentContext.getTestArgument().getName());
 
-        @Verifyica.Test
-        public void test(ArgumentContext argumentContext) {
-            System.out.printf(
-                    "test(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
+                assertThat(argumentContext).isNotNull();
+                assertThat(argumentContext.getStore()).isNotNull();
+                assertThat(argumentContext.getTestArgument()).isNotNull();
+            }
         }
     }
 }

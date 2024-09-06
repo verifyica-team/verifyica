@@ -21,7 +21,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.junit.platform.commons.annotation.Testable;
 
 /** Interface that contains all Verifyica annotations */
 public @interface Verifyica {
@@ -55,16 +54,10 @@ public @interface Verifyica {
     @interface BeforeEach {}
 
     /** Test annotation */
-    @Testable
+    @org.junit.platform.commons.annotation.Testable
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Test {}
-
-    /** Test annotation */
-    @Testable
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface TestClassContainer {}
 
     /** AfterEach annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
@@ -148,4 +141,10 @@ public @interface Verifyica {
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface AutowiredInterceptor {}
+
+    /** Testable annotation */
+    @org.junit.platform.commons.annotation.Testable
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Testable {}
 }
