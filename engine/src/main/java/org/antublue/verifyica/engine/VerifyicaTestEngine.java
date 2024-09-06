@@ -432,11 +432,11 @@ public class VerifyicaTestEngine implements TestEngine {
         ChainedEngineExecutionListener chainedEngineExecutionListener =
                 new ChainedEngineExecutionListener(new TracingEngineExecutionListener());
 
-        if (!isRunningViaConsoleLauncher()) {
+        if (!isRunningViaVerifyicaMavenPlugin()) {
             chainedEngineExecutionListener.add(executionRequest.getEngineExecutionListener());
         }
 
-        if (isRunningViaVerifyicaMavenPlugin() || isRunningViaConsoleLauncher()) {
+        if (isRunningViaVerifyicaMavenPlugin()) { // || isRunningViaConsoleLauncher()) {
             chainedEngineExecutionListener
                     .add(new StatusEngineExecutionListener())
                     .add(new SummaryEngineExecutionListener());
@@ -497,6 +497,7 @@ public class VerifyicaTestEngine implements TestEngine {
      *
      * @return true if running via the Junit Console launcher, else false
      */
+    /*
     private static boolean isRunningViaConsoleLauncher() {
         boolean isRunningViaConsoleLauncher =
                 Arrays.stream(Thread.currentThread().getStackTrace())
@@ -510,6 +511,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
         return isRunningViaConsoleLauncher;
     }
+    */
 
     /**
      * Method trace log a test descriptor tree
