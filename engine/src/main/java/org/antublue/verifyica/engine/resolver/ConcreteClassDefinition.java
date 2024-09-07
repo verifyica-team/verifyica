@@ -16,13 +16,13 @@
 
 package org.antublue.verifyica.engine.resolver;
 
-import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
+import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
@@ -32,32 +32,32 @@ public class ConcreteClassDefinition implements ClassDefinition {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConcreteClassDefinition.class);
 
     private final Class<?> testClass;
-    private final Set<Method> testMethods;
-    private final List<Argument<?>> testArguments;
+    private final Set<MethodDefinition> testMethodDefinitions;
+    private final List<Argument<?>> arguments;
 
-    private String testClassDisplayName;
-    private int testArgumentParallelism;
+    private String displayName;
+    private int argumentParallelism;
 
     /**
      * Constructor
      *
      * @param testClass testClass
-     * @param testClassDisplayName testClassDisplayName
-     * @param testMethods testMethods
-     * @param testArguments testArguments
-     * @param testArgumentParallelism testArgumentParallelism
+     * @param displayName displayName
+     * @param testMethodDefinitions testMethodDefinitions
+     * @param arguments arguments
+     * @param argumentParallelism testArgumentParallelism
      */
     public ConcreteClassDefinition(
             Class<?> testClass,
-            String testClassDisplayName,
-            List<Method> testMethods,
-            List<Argument<?>> testArguments,
-            int testArgumentParallelism) {
+            String displayName,
+            List<MethodDefinition> testMethodDefinitions,
+            List<Argument<?>> arguments,
+            int argumentParallelism) {
         this.testClass = testClass;
-        this.testClassDisplayName = testClassDisplayName;
-        this.testMethods = new LinkedHashSet<>(testMethods);
-        this.testArguments = testArguments;
-        this.testArgumentParallelism = testArgumentParallelism;
+        this.displayName = displayName;
+        this.testMethodDefinitions = new LinkedHashSet<>(testMethodDefinitions);
+        this.arguments = arguments;
+        this.argumentParallelism = argumentParallelism;
     }
 
     @Override
@@ -66,42 +66,42 @@ public class ConcreteClassDefinition implements ClassDefinition {
     }
 
     @Override
-    public void setTestClassDisplayName(String displayName) {
+    public void setDisplayName(String displayName) {
         if (displayName != null && !displayName.trim().isEmpty()) {
-            this.testClassDisplayName = displayName.trim();
+            this.displayName = displayName.trim();
         }
     }
 
     @Override
-    public String getTestClassDisplayName() {
-        return testClassDisplayName;
+    public String getDisplayName() {
+        return displayName;
     }
 
     @Override
-    public Set<Method> getTestMethods() {
-        return testMethods;
+    public Set<MethodDefinition> getTestMethodDefinitions() {
+        return testMethodDefinitions;
     }
 
     @Override
-    public List<Argument<?>> getTestArguments() {
-        return testArguments;
+    public List<Argument<?>> getArguments() {
+        return arguments;
     }
 
     @Override
-    public int getTestArgumentParallelism() {
-        return testArgumentParallelism;
+    public int getArgumentParallelism() {
+        return argumentParallelism;
     }
 
     @Override
-    public void setTestArgumentParallelism(int testArgumentParallelism) {
-        if (testArgumentParallelism < 1) {
+    public void setArgumentParallelism(int argumentParallelism) {
+        if (argumentParallelism < 1) {
             LOGGER.warn(
                     "Test class [%s] test argument parallelism [%d] less than [1], defaulting to"
                             + " [1]",
-                    testClass.getName(), testArgumentParallelism);
+                    testClass.getName(), argumentParallelism);
         }
 
-        this.testArgumentParallelism = Math.max(testArgumentParallelism, 1);
+        this.argumentParallelism = Math.max(argumentParallelism, 1);
     }
 
     @Override
@@ -109,10 +109,12 @@ public class ConcreteClassDefinition implements ClassDefinition {
         return "ConcreteClassDefinition{"
                 + "testClass="
                 + testClass
-                + ", testMethods="
-                + testMethods
+                + ", displayName="
+                + displayName
+                + ", testMethodDefinitions="
+                + testMethodDefinitions
                 + ", testArguments="
-                + testArguments
+                + arguments
                 + '}';
     }
 
@@ -122,12 +124,13 @@ public class ConcreteClassDefinition implements ClassDefinition {
         if (o == null || getClass() != o.getClass()) return false;
         ConcreteClassDefinition that = (ConcreteClassDefinition) o;
         return Objects.equals(testClass, that.testClass)
-                && Objects.equals(testMethods, that.testMethods)
-                && Objects.equals(testArguments, that.testArguments);
+                && Objects.equals(displayName, that.displayName)
+                && Objects.equals(testMethodDefinitions, that.testMethodDefinitions)
+                && Objects.equals(arguments, that.arguments);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(testClass, testMethods, testArguments);
+        return Objects.hash(testClass, testMethodDefinitions, arguments);
     }
 }

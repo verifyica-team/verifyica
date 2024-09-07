@@ -19,13 +19,15 @@ package org.antublue.verifyica.test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.function.Consumer;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
+import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
 
-public class DisplayNameRenamedTest {
+public class TestMethodRenameTest {
 
     @Verifyica.AutowiredInterceptor
     public static class DisplayNameEngineInterceptor implements EngineInterceptor {
@@ -37,16 +39,30 @@ public class DisplayNameRenamedTest {
             classDefinitions.stream()
                     .filter(
                             classDefinition ->
-                                    classDefinition.getTestClass() == DisplayNameRenamedTest.class)
+                                    classDefinition.getTestClass() == TestMethodRenameTest.class)
                     .forEach(
                             classDefinition -> {
-                                String fullDisplayName = classDefinition.getTestClassDisplayName();
-                                String displayName = classDefinition.getTestClass().getSimpleName();
-                                String newDisplayName = displayName + "Renamed";
-                                System.out.printf(
-                                        "Renaming test class from [%s] to [%s]%n",
-                                        fullDisplayName, newDisplayName);
-                                classDefinition.setTestClassDisplayName(newDisplayName);
+                                classDefinition
+                                        .getTestMethodDefinitions()
+                                        .forEach(
+                                                new Consumer<MethodDefinition>() {
+                                                    @Override
+                                                    public void accept(
+                                                            MethodDefinition methodDefinition) {
+                                                        String displayName =
+                                                                methodDefinition
+                                                                        .getMethod()
+                                                                        .getName();
+                                                        String newDisplayName =
+                                                                displayName + "Renamed";
+                                                        System.out.printf(
+                                                                "Renaming test class from [%s] to"
+                                                                        + " [%s]%n",
+                                                                displayName, newDisplayName);
+                                                        methodDefinition.setDisplayName(
+                                                                newDisplayName);
+                                                    }
+                                                });
                             });
         }
     }

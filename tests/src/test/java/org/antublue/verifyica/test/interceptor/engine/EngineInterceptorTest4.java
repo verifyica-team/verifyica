@@ -40,7 +40,7 @@ public class EngineInterceptorTest4 {
                 ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest4.class) {
                 // Change test argument parallelism
-                classDefinition.setTestArgumentParallelism(Integer.MAX_VALUE);
+                classDefinition.setArgumentParallelism(Integer.MAX_VALUE);
             }
         }
     }

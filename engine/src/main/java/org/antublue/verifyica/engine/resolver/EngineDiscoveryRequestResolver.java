@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.EngineContext;
@@ -35,6 +36,7 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
+import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
@@ -163,11 +165,25 @@ public class EngineDiscoveryRequestResolver {
                                 String testClassDisplayName =
                                         DisplayNameSupport.getDisplayName(testClass);
 
+                                List<MethodDefinition> testMethodDefinitions = new ArrayList<>();
+
+                                testMethods.forEach(
+                                        new Consumer<Method>() {
+                                            @Override
+                                            public void accept(Method method) {
+                                                String methodDisplayName =
+                                                        DisplayNameSupport.getDisplayName(method);
+                                                testMethodDefinitions.add(
+                                                        new ConcreteMethodDefinition(
+                                                                method, methodDisplayName));
+                                            }
+                                        });
+
                                 classDefinitions.add(
                                         new ConcreteClassDefinition(
                                                 testClass,
                                                 testClassDisplayName,
-                                                testMethods,
+                                                testMethodDefinitions,
                                                 testArguments,
                                                 testArgumentParallelism));
                             });
@@ -361,8 +377,8 @@ public class EngineDiscoveryRequestResolver {
 
         classDefinitions.removeIf(
                 classDefinition ->
-                        classDefinition.getTestArguments().isEmpty()
-                                || classDefinition.getTestMethods().isEmpty());
+                        classDefinition.getArguments().isEmpty()
+                                || classDefinition.getTestMethodDefinitions().isEmpty());
     }
 
     /**
@@ -492,16 +508,16 @@ public class EngineDiscoveryRequestResolver {
             ClassTestDescriptor classTestDescriptor =
                     new ClassTestDescriptor(
                             classTestDescriptorUniqueId,
-                            classDefinition.getTestClassDisplayName(),
+                            classDefinition.getDisplayName(),
                             testClass,
-                            classDefinition.getTestArgumentParallelism(),
+                            classDefinition.getArgumentParallelism(),
                             prepareMethods,
                             concludeMethods);
 
             engineDescriptor.addChild(classTestDescriptor);
 
             int testArgumentIndex = 0;
-            for (Argument<?> testArgument : classDefinition.getTestArguments()) {
+            for (Argument<?> testArgument : classDefinition.getArguments()) {
                 UniqueId argumentTestDescriptorUniqueId =
                         classTestDescriptorUniqueId.append(
                                 "argument", String.valueOf(testArgumentIndex));
@@ -532,9 +548,11 @@ public class EngineDiscoveryRequestResolver {
 
                 classTestDescriptor.addChild(argumentTestDescriptor);
 
-                for (Method testMethod : classDefinition.getTestMethods()) {
+                for (MethodDefinition testMethodDefinition :
+                        classDefinition.getTestMethodDefinitions()) {
                     UniqueId testMethodDescriptorUniqueId =
-                            argumentTestDescriptorUniqueId.append("method", testMethod.getName());
+                            argumentTestDescriptorUniqueId.append(
+                                    "method", testMethodDefinition.getMethod().getName());
 
                     List<Method> beforeEachMethods =
                             groupOrderFlatten(
@@ -553,9 +571,9 @@ public class EngineDiscoveryRequestResolver {
                     TestMethodTestDescriptor testMethodTestDescriptor =
                             new TestMethodTestDescriptor(
                                     testMethodDescriptorUniqueId,
-                                    DisplayNameSupport.getDisplayName(testMethod),
+                                    testMethodDefinition.getDisplayName(),
                                     beforeEachMethods,
-                                    testMethod,
+                                    testMethodDefinition.getMethod(),
                                     afterEachMethods);
 
                     argumentTestDescriptor.addChild(testMethodTestDescriptor);

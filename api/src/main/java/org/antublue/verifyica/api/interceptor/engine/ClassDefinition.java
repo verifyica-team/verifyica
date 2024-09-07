@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.api.interceptor.engine;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 import org.antublue.verifyica.api.Argument;
@@ -36,40 +35,40 @@ public interface ClassDefinition {
      *
      * @return the test class display name
      */
-    String getTestClassDisplayName();
+    String getDisplayName();
 
     /**
      * Set the test class display name
      *
      * @param displayName displayName
      */
-    void setTestClassDisplayName(String displayName);
+    void setDisplayName(String displayName);
 
     /**
      * Get the test methods
      *
      * @return the test methods
      */
-    Set<Method> getTestMethods();
+    Set<MethodDefinition> getTestMethodDefinitions();
 
     /**
      * Get the test arguments
      *
      * @return the test arguments
      */
-    List<Argument<?>> getTestArguments();
+    List<Argument<?>> getArguments();
 
     /**
      * Set the test argument parallelism
      *
-     * @param testArgumentParallelism testArgumentParallelism
+     * @param argumentParallelism argumentParallelism
      */
-    void setTestArgumentParallelism(int testArgumentParallelism);
+    void setArgumentParallelism(int argumentParallelism);
 
     /**
      * Get the test argument parallelism
      *
      * @return the test argument parallelism
      */
-    int getTestArgumentParallelism();
+    int getArgumentParallelism();
 }

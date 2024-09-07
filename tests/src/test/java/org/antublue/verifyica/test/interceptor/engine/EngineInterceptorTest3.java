@@ -40,14 +40,14 @@ public class EngineInterceptorTest3 {
                 ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest3.class) {
                 // Change test argument parallelism
-                int testArgumentParallelism = classDefinition.getTestArgumentParallelism();
-                classDefinition.setTestArgumentParallelism(1);
+                int testArgumentParallelism = classDefinition.getArgumentParallelism();
+                classDefinition.setArgumentParallelism(1);
 
                 System.out.printf(
                         "changing test class [%s] test argument parallelism from [%d] to [%d]%n",
                         classDefinition.getTestClass().getName(),
                         testArgumentParallelism,
-                        classDefinition.getTestArgumentParallelism());
+                        classDefinition.getArgumentParallelism());
             }
         }
     }
