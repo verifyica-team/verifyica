@@ -29,10 +29,13 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
@@ -203,20 +206,50 @@ public class ClassSupport {
     }
 
     /**
-     * Method to return whether a Class has a default (empty) constructor
+     * Method to group a List of Methods by declaring Class.
+     *
+     * <p>Map keys are ordered by superclass to subclass
+     *
+     * @param methods methods
+     * @return a Map
+     */
+    public static Map<Class<?>, List<Method>> groupMethodsByDeclaringClass(List<Method> methods) {
+        return methods.stream()
+                .sorted(
+                        Comparator.comparingInt(
+                                method -> getClassDepth(method.getDeclaringClass())))
+                .collect(
+                        Collectors.groupingBy(
+                                Method::getDeclaringClass,
+                                LinkedHashMap::new,
+                                Collectors.toList()));
+    }
+
+    /**
+     * Method to flatten a Map of List of Methods
+     *
+     * @param classMethodMap classMethodMap
+     * @return a flattened List of Methods
+     */
+    public static List<Method> flattenMethods(Map<Class<?>, List<Method>> classMethodMap) {
+        List<Method> list = new ArrayList<>();
+        classMethodMap.forEach((clazz, methods) -> list.addAll(methods));
+        return list;
+    }
+
+    /**
+     * Method to get a Class' depth
      *
      * @param clazz clazz
-     * @return true if the Class has a default (empty) constructor, else false
+     * @return the Class depth
      */
-    public static boolean hasDefaultConstructor(Class<?> clazz) {
-        Precondition.notNull(clazz, "clazz is null");
-
-        try {
-            clazz.getDeclaredConstructor();
-            return true;
-        } catch (Throwable t) {
-            return false;
+    private static int getClassDepth(Class<?> clazz) {
+        int depth = 0;
+        while (clazz.getSuperclass() != null) {
+            clazz = clazz.getSuperclass();
+            depth++;
         }
+        return depth;
     }
 
     /**
