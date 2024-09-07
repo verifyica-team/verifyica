@@ -29,47 +29,43 @@ public class NonStaticPrepareConcludeMethodTest {
         return "test";
     }
 
-    @Verifyica
+    @Verifyica.Prepare
     public void prepare(ClassContext classContext) {
+        System.out.println("prepare()");
+
         assertThat(classContext).isNotNull();
-
         assertThat(classContext.getStore()).isNotNull();
-
         assertThat(classContext.getConfiguration())
                 .isSameAs(classContext.getEngineContext().getConfiguration());
-
         assertThat(classContext.getConfiguration().getPropertiesFilename())
                 .isEqualTo(
                         classContext.getEngineContext().getConfiguration().getPropertiesFilename());
-
         assertThat(classContext.getTestInstance()).isNotNull();
     }
 
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
+        System.out.printf(
+                "test(name[%s], payload[%s])%n",
+                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
         assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo("test");
-
-        System.out.printf(
-                "test(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Conclude
     public void conclude(ClassContext classContext) {
+        System.out.println("conclude()");
+
         assertThat(classContext).isNotNull();
-
         assertThat(classContext.getStore()).isNotNull();
-
         assertThat(classContext.getConfiguration())
                 .isSameAs(classContext.getEngineContext().getConfiguration());
-
         assertThat(classContext.getConfiguration().getPropertiesFilename())
                 .isEqualTo(
                         classContext.getEngineContext().getConfiguration().getPropertiesFilename());
-
         assertThat(classContext.getTestInstance()).isNotNull();
     }
 }
