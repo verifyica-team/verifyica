@@ -272,12 +272,11 @@ public class ClassInterceptorRegistry {
                     () -> {
                         try {
                             for (Method prepareMethod : prepareMethods) {
-                                if (Modifier.isStatic(prepareMethod.getModifiers())) {
-                                    prepareMethod.invoke(null, classContext);
-                                } else {
-                                    prepareMethod.invoke(
-                                            classContext.getTestInstance(), classContext);
-                                }
+                                prepareMethod.invoke(
+                                        Modifier.isStatic(prepareMethod.getModifiers())
+                                                ? null
+                                                : classContext.getTestInstance(),
+                                        classContext);
                             }
                         } catch (InvocationTargetException e) {
                             throw e.getCause();
@@ -640,12 +639,11 @@ public class ClassInterceptorRegistry {
                     () -> {
                         try {
                             for (Method concludeMethod : concludeMethods) {
-                                if (Modifier.isStatic(concludeMethod.getModifiers())) {
-                                    concludeMethod.invoke(null, classContext);
-                                } else {
-                                    concludeMethod.invoke(
-                                            classContext.getTestInstance(), classContext);
-                                }
+                                concludeMethod.invoke(
+                                        Modifier.isStatic(concludeMethod.getModifiers())
+                                                ? null
+                                                : classContext.getTestInstance(),
+                                        classContext);
                             }
                         } catch (InvocationTargetException e) {
                             throw e.getCause();
