@@ -54,8 +54,6 @@ import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.EngineInterceptorRegistry;
 import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
-import org.antublue.verifyica.engine.listener.StatusEngineExecutionListener;
-import org.antublue.verifyica.engine.listener.SummaryEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.TracingEngineExecutionListener;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -429,30 +427,13 @@ public class VerifyicaTestEngine implements TestEngine {
             ExecutionRequest executionRequest) {
         LOGGER.trace("configureEngineExecutionListeners()");
 
-        ChainedEngineExecutionListener chainedEngineExecutionListener =
-                new ChainedEngineExecutionListener(new TracingEngineExecutionListener());
-
-        if (!isRunningViaVerifyicaMavenPlugin()) {
-            chainedEngineExecutionListener.add(executionRequest.getEngineExecutionListener());
+        if (isRunningViaVerifyicaMavenPlugin()) {
+            return executionRequest.getEngineExecutionListener();
         }
 
-        if (isRunningViaVerifyicaMavenPlugin()) { // || isRunningViaConsoleLauncher()) {
-            chainedEngineExecutionListener
-                    .add(new StatusEngineExecutionListener())
-                    .add(new SummaryEngineExecutionListener());
-        }
-
-        if (LOGGER.isTraceEnabled()) {
-            chainedEngineExecutionListener
-                    .getEngineExecutionListeners()
-                    .forEach(
-                            engineExecutionListener ->
-                                    LOGGER.trace(
-                                            "engineExecutionListener [%s]",
-                                            engineExecutionListener.getClass().getName()));
-        }
-
-        return chainedEngineExecutionListener;
+        return new ChainedEngineExecutionListener(
+                new TracingEngineExecutionListener(),
+                executionRequest.getEngineExecutionListener());
     }
 
     /**
@@ -462,7 +443,7 @@ public class VerifyicaTestEngine implements TestEngine {
      */
     private static boolean isRunningViaVerifyicaMavenPlugin() {
         boolean isRunningViaVerifyicaMavenPlugin =
-                "true".equals(System.getProperty(Constants.PLUGIN));
+                "true".equals(System.getProperty(Constants.MAVEN_PLUGIN));
 
         LOGGER.trace("isRunningViaVerifyicaMavenPlugin [%b]", isRunningViaVerifyicaMavenPlugin);
 
@@ -491,27 +472,6 @@ public class VerifyicaTestEngine implements TestEngine {
 
         return isRunningViaMavenSurefirePlugin;
     }
-
-    /**
-     * Method to return whether the code is running via the Junit Console launcher
-     *
-     * @return true if running via the Junit Console launcher, else false
-     */
-    /*
-    private static boolean isRunningViaConsoleLauncher() {
-        boolean isRunningViaConsoleLauncher =
-                Arrays.stream(Thread.currentThread().getStackTrace())
-                        .anyMatch(
-                                stackTraceElement ->
-                                        stackTraceElement
-                                                .getClassName()
-                                                .startsWith("org.junit.platform.console"));
-
-        LOGGER.trace("isRunningViaConsoleLauncher [%b]", isRunningViaConsoleLauncher);
-
-        return isRunningViaConsoleLauncher;
-    }
-    */
 
     /**
      * Method trace log a test descriptor tree
