@@ -16,11 +16,13 @@
 
 package org.antublue.verifyica.test.support;
 
+import static java.lang.String.format;
+
 /** Class to implement Repeater */
 @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 public class Repeater {
 
-    private final int count;
+    private final int iterations;
     private Throttle throttle;
     private ThrowableRunnable beforeEach;
     private ThrowableRunnable test;
@@ -30,13 +32,14 @@ public class Repeater {
     /**
      * Constructor
      *
-     * @param count count
+     * @param iterations iterations
      */
-    public Repeater(int count) {
-        if (count < 1) {
-            throw new IllegalStateException("count must be greater than 0");
+    public Repeater(int iterations) {
+        if (iterations < 1) {
+            throw new IllegalArgumentException(
+                    format("iterations [%d] is less than 1", iterations));
         }
-        this.count = count;
+        this.iterations = iterations;
     }
 
     /**
@@ -113,7 +116,7 @@ public class Repeater {
     public void execute() throws Throwable {
         Throwable throwable = null;
 
-        for (int i = 1; i <= count; i++) {
+        for (int i = 1; i <= iterations; i++) {
             try {
                 beforeEach.run();
                 test.run();
@@ -142,7 +145,7 @@ public class Repeater {
                 throw throwable;
             }
 
-            if (i < count && throttle != null) {
+            if (i < iterations && throttle != null) {
                 throttle.throttle();
             }
         }
