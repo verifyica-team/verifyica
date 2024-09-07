@@ -40,10 +40,13 @@ public class AnsiColor {
     /** Configuration constant */
     private static final String NO_COLOR_ENVIRONMENT_VARIABLE = "NO_COLOR";
 
+    /* Configuration constant */
     private static final String EMPTY_STRING = "";
 
+    /* Configuration constant */
     private static final String ONE = "1";
 
+    /* Configuration constant */
     private static final String TRUE = "true";
 
     /** AnsiColor constant */
