@@ -206,7 +206,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to group a List of Methods by declaring Class.
+     * Method to group a List of Methods by declaring Class
      *
      * <p>Map keys are ordered by superclass to subclass
      *
