@@ -244,9 +244,10 @@ public class ClassSupport {
      * @return the Class depth
      */
     private static int getClassDepth(Class<?> clazz) {
+        Class<?> currentClass = clazz;
         int depth = 0;
-        while (clazz.getSuperclass() != null) {
-            clazz = clazz.getSuperclass();
+        while (currentClass.getSuperclass() != null) {
+            currentClass = currentClass.getSuperclass();
             depth++;
         }
         return depth;
