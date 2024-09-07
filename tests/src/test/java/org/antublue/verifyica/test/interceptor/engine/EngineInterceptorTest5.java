@@ -40,7 +40,7 @@ public class EngineInterceptorTest5 {
                 EngineInterceptorContext engineInterceptorContext,
                 ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest5.class) {
-                List<Argument<?>> arguments = classDefinition.getTestArguments();
+                List<Argument<?>> arguments = classDefinition.getArguments();
                 assertThat(arguments).hasSize(10);
                 arguments.subList(0, arguments.size() - 1).clear();
                 assertThat(arguments).hasSize(1);

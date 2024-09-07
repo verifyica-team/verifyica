@@ -16,7 +16,6 @@
 
 package org.antublue.verifyica.test.interceptor.engine;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +25,7 @@ import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
+import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
 
 @Verifyica.AutowiredInterceptor
 public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
@@ -55,12 +55,14 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
                             "org.antublue.verifyica.test.interceptor.engine.EngineInterceptorTest1")) {
 
                 // Reverse test methods
-                reverseMethods(classDefinition.getTestMethods());
+                reverseMethodsDefinitions(classDefinition.getTestMethodDefinitions());
 
                 // Filter test method "test4"
                 classDefinition
-                        .getTestMethods()
-                        .removeIf(method -> method.getName().equals("test4"));
+                        .getTestMethodDefinitions()
+                        .removeIf(
+                                methodDefinition ->
+                                        methodDefinition.getMethod().getName().equals("test4"));
             }
         }
     }
@@ -83,12 +85,12 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
     /**
      * Method to reverse a Set of Methods
      *
-     * @param methods methods
+     * @param methodDefinitions methodDefinitions
      */
-    private static void reverseMethods(Set<Method> methods) {
-        List<Method> list = new ArrayList<>(methods);
+    private static void reverseMethodsDefinitions(Set<MethodDefinition> methodDefinitions) {
+        List<MethodDefinition> list = new ArrayList<>(methodDefinitions);
         Collections.reverse(list);
-        methods.clear();
-        methods.addAll(list);
+        methodDefinitions.clear();
+        methodDefinitions.addAll(list);
     }
 }
