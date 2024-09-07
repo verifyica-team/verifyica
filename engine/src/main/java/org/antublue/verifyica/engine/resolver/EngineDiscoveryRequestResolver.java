@@ -130,7 +130,9 @@ public class EngineDiscoveryRequestResolver {
                         discoverySelector ->
                                 LOGGER.trace(
                                         "discoverySelector [%s]",
-                                        discoverySelector.toIdentifier().get()));
+                                        discoverySelector.toIdentifier().isPresent()
+                                                ? discoverySelector.toIdentifier().get()
+                                                : "null"));
             }
 
             new ClasspathRootSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
@@ -470,20 +472,31 @@ public class EngineDiscoveryRequestResolver {
             UniqueId classTestDescriptorUniqueId =
                     engineDescriptor.getUniqueId().append("class", testClass.getName());
 
+            List<Method> prepareMethods =
+                    groupOrderFlatten(
+                            ClassSupport.findMethods(
+                                    testClass,
+                                    ResolverPredicates.PREPARE_METHOD,
+                                    HierarchyTraversalMode.TOP_DOWN));
+
+            List<Method> concludeMethods =
+                    groupOrderFlatten(
+                            ClassSupport.findMethods(
+                                    testClass,
+                                    ResolverPredicates.CONCLUDE_METHOD,
+                                    HierarchyTraversalMode.BOTTOM_UP));
+
+            OrderSupport.orderMethods(concludeMethods);
+            Collections.reverse(concludeMethods);
+
             ClassTestDescriptor classTestDescriptor =
                     new ClassTestDescriptor(
                             classTestDescriptorUniqueId,
                             classDefinition.getTestClassDisplayName(),
                             testClass,
                             classDefinition.getTestArgumentParallelism(),
-                            ClassSupport.findMethods(
-                                    testClass,
-                                    ResolverPredicates.PREPARE_METHOD,
-                                    HierarchyTraversalMode.TOP_DOWN),
-                            ClassSupport.findMethods(
-                                    testClass,
-                                    ResolverPredicates.CONCLUDE_METHOD,
-                                    HierarchyTraversalMode.BOTTOM_UP));
+                            prepareMethods,
+                            concludeMethods);
 
             engineDescriptor.addChild(classTestDescriptor);
 
@@ -493,6 +506,20 @@ public class EngineDiscoveryRequestResolver {
                         classTestDescriptorUniqueId.append(
                                 "argument", String.valueOf(testArgumentIndex));
 
+                List<Method> beforeAllMethods =
+                        groupOrderFlatten(
+                                ClassSupport.findMethods(
+                                        testClass,
+                                        ResolverPredicates.BEFORE_ALL_METHOD,
+                                        HierarchyTraversalMode.TOP_DOWN));
+
+                List<Method> afterAllMethods =
+                        groupOrderFlatten(
+                                ClassSupport.findMethods(
+                                        testClass,
+                                        ResolverPredicates.AFTER_ALL_METHOD,
+                                        HierarchyTraversalMode.BOTTOM_UP));
+
                 ArgumentTestDescriptor argumentTestDescriptor =
                         new ArgumentTestDescriptor(
                                 argumentTestDescriptorUniqueId,
@@ -500,14 +527,8 @@ public class EngineDiscoveryRequestResolver {
                                 testClass,
                                 testArgumentIndex,
                                 testArgument,
-                                ClassSupport.findMethods(
-                                        testClass,
-                                        ResolverPredicates.BEFORE_ALL_METHOD,
-                                        HierarchyTraversalMode.TOP_DOWN),
-                                ClassSupport.findMethods(
-                                        testClass,
-                                        ResolverPredicates.AFTER_ALL_METHOD,
-                                        HierarchyTraversalMode.BOTTOM_UP));
+                                beforeAllMethods,
+                                afterAllMethods);
 
                 classTestDescriptor.addChild(argumentTestDescriptor);
 
@@ -515,19 +536,27 @@ public class EngineDiscoveryRequestResolver {
                     UniqueId testMethodDescriptorUniqueId =
                             argumentTestDescriptorUniqueId.append("method", testMethod.getName());
 
-                    TestMethodTestDescriptor testMethodTestDescriptor =
-                            new TestMethodTestDescriptor(
-                                    testMethodDescriptorUniqueId,
-                                    DisplayNameSupport.getDisplayName(testMethod),
+                    List<Method> beforeEachMethods =
+                            groupOrderFlatten(
                                     ClassSupport.findMethods(
                                             testClass,
                                             ResolverPredicates.BEFORE_EACH_METHOD,
-                                            HierarchyTraversalMode.TOP_DOWN),
-                                    testMethod,
+                                            HierarchyTraversalMode.TOP_DOWN));
+
+                    List<Method> afterEachMethods =
+                            groupOrderFlatten(
                                     ClassSupport.findMethods(
                                             testClass,
                                             ResolverPredicates.AFTER_EACH_METHOD,
                                             HierarchyTraversalMode.BOTTOM_UP));
+
+                    TestMethodTestDescriptor testMethodTestDescriptor =
+                            new TestMethodTestDescriptor(
+                                    testMethodDescriptorUniqueId,
+                                    DisplayNameSupport.getDisplayName(testMethod),
+                                    beforeEachMethods,
+                                    testMethod,
+                                    afterEachMethods);
 
                     argumentTestDescriptor.addChild(testMethodTestDescriptor);
                 }
@@ -538,6 +567,19 @@ public class EngineDiscoveryRequestResolver {
 
         LOGGER.trace(
                 "buildEngineDescriptor() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
+    }
+
+    /**
+     * Method to group Methods by declaring Class, order the Methods, then flatten back to a List of
+     * Methods
+     *
+     * @param methods methods
+     * @return a List of Methods
+     */
+    private static List<Method> groupOrderFlatten(List<Method> methods) {
+        Map<Class<?>, List<Method>> map = ClassSupport.groupMethodsByDeclaringClass(methods);
+        map.forEach((key, value) -> OrderSupport.orderMethods(value));
+        return ClassSupport.flattenMethods(map);
     }
 
     /**
