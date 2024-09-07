@@ -184,36 +184,36 @@ public class VerifyicaTestEngine implements TestEngine {
             return;
         }
 
+        Stopwatch stopWatch = new Stopwatch();
+
         EngineContext engineContext = ConcreteEngineContext.getInstance();
+
+        EngineExecutionListener engineExecutionListener =
+                configureEngineExecutionListeners(executionRequest);
+
+        final ExecutionRequest engineExecutionRequest =
+                new ExecutionRequest(
+                        executionRequest.getRootTestDescriptor(),
+                        engineExecutionListener,
+                        new ConcreteConfigurationParameters(engineContext.getConfiguration()));
 
         EngineInterceptorContext engineInterceptorContext =
                 new ConcreteEngineInterceptorContext(engineContext);
 
-        try {
-            Stopwatch stopWatch = new Stopwatch();
+        ThrowableCollector throwableCollector = new ThrowableCollector();
 
+        try {
             LOGGER.trace("execute()");
 
             if (LOGGER.isTraceEnabled()) {
                 traceEngineDescriptor(executionRequest.getRootTestDescriptor());
             }
 
-            EngineExecutionListener engineExecutionListener =
-                    configureEngineExecutionListeners(executionRequest);
-
-            final ExecutionRequest engineExecutionRequest =
-                    new ExecutionRequest(
-                            executionRequest.getRootTestDescriptor(),
-                            engineExecutionListener,
-                            new ConcreteConfigurationParameters(engineContext.getConfiguration()));
-
             ExecutorService classExecutorService =
                     ExecutorSupport.newExecutorService(getEngineClassParallelism());
 
             ExecutorService argumentExecutorService =
                     new FairExecutorService(getEngineArgumentParallelism());
-
-            ThrowableCollector throwableCollector = new ThrowableCollector();
 
             try {
                 EngineInterceptorRegistry.getInstance().preExecute(engineInterceptorContext);
@@ -290,6 +290,8 @@ public class VerifyicaTestEngine implements TestEngine {
                     throwableCollector.add(t);
                 }
             }
+        } finally {
+            EngineInterceptorRegistry.getInstance().onDestroy(engineInterceptorContext);
 
             TestExecutionResult testExecutionResult = throwableCollector.toTestExecutionResult();
 
@@ -299,8 +301,6 @@ public class VerifyicaTestEngine implements TestEngine {
                             executionRequest.getRootTestDescriptor(), testExecutionResult);
 
             LOGGER.trace("execute() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
-        } finally {
-            EngineInterceptorRegistry.getInstance().onDestroy(engineInterceptorContext);
         }
     }
 
