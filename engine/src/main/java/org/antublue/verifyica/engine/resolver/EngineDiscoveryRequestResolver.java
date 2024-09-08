@@ -536,6 +536,8 @@ public class EngineDiscoveryRequestResolver {
                                         ResolverPredicates.AFTER_ALL_METHOD,
                                         HierarchyTraversalMode.BOTTOM_UP));
 
+                Collections.reverse(afterAllMethods);
+
                 ArgumentTestDescriptor argumentTestDescriptor =
                         new ArgumentTestDescriptor(
                                 argumentTestDescriptorUniqueId,
@@ -567,6 +569,8 @@ public class EngineDiscoveryRequestResolver {
                                             testClass,
                                             ResolverPredicates.AFTER_EACH_METHOD,
                                             HierarchyTraversalMode.BOTTOM_UP));
+
+                    Collections.reverse(afterEachMethods);
 
                     TestMethodTestDescriptor testMethodTestDescriptor =
                             new TestMethodTestDescriptor(
