@@ -64,6 +64,20 @@ public class LifecycleInheritanceTest {
             actual.add("baseClassBeforeAll2");
         }
 
+        @Verifyica.BeforeEach
+        public void baseClassBeforeEach(ArgumentContext argumentContext) {
+            System.out.println("baseClassBeforeEach()");
+
+            actual.add("baseClassBeforeEach");
+        }
+
+        @Verifyica.BeforeEach
+        public void baseClassBeforeEach2(ArgumentContext argumentContext) {
+            System.out.println("baseClassBeforeEach2()");
+
+            actual.add("baseClassBeforeEach2");
+        }
+
         @Verifyica.Test
         public void test(ArgumentContext argumentContext) {
             System.out.println("baseClassTest()");
@@ -76,6 +90,20 @@ public class LifecycleInheritanceTest {
             System.out.println("baseClassTest3()");
 
             actual.add("baseClassTest3");
+        }
+
+        @Verifyica.AfterEach
+        public void baseClassAfterEach2(ArgumentContext argumentContext) {
+            System.out.println("baseClassAfterEach2()");
+
+            actual.add("baseClassAfterEach2");
+        }
+
+        @Verifyica.AfterEach
+        public void baseClassAfterEach(ArgumentContext argumentContext) {
+            System.out.println("baseClassAfterEach()");
+
+            actual.add("baseClassAfterEach");
         }
 
         @Verifyica.AfterAll
@@ -115,9 +143,33 @@ public class LifecycleInheritanceTest {
             expected.add("baseClassBeforeAll2");
             expected.add("subClassBeforeAll");
             expected.add("subClassBeforeAll2");
+            expected.add("baseClassBeforeEach");
+            expected.add("baseClassBeforeEach2");
+            expected.add("subClassBeforeEach");
+            expected.add("subClassBeforeEach2");
             expected.add("baseClassTest");
+            expected.add("subClassAfterEach2");
+            expected.add("subClassAfterEach");
+            expected.add("baseClassAfterEach2");
+            expected.add("baseClassAfterEach");
+            expected.add("baseClassBeforeEach");
+            expected.add("baseClassBeforeEach2");
+            expected.add("subClassBeforeEach");
+            expected.add("subClassBeforeEach2");
             expected.add("subClassTest2");
+            expected.add("subClassAfterEach2");
+            expected.add("subClassAfterEach");
+            expected.add("baseClassAfterEach2");
+            expected.add("baseClassAfterEach");
+            expected.add("baseClassBeforeEach");
+            expected.add("baseClassBeforeEach2");
+            expected.add("subClassBeforeEach");
+            expected.add("subClassBeforeEach2");
             expected.add("baseClassTest3");
+            expected.add("subClassAfterEach2");
+            expected.add("subClassAfterEach");
+            expected.add("baseClassAfterEach2");
+            expected.add("baseClassAfterEach");
             expected.add("subClassAfterAll2");
             expected.add("subClassAfterAll");
             expected.add("baseClassAfterAll2");
@@ -181,11 +233,39 @@ public class LifecycleInheritanceTest {
             actual.add("subClassBeforeAll2");
         }
 
+        @Verifyica.BeforeEach
+        public void subClassBeforeEach(ArgumentContext argumentContext) {
+            System.out.println("subClassBeforeEach()");
+
+            actual.add("subClassBeforeEach");
+        }
+
+        @Verifyica.BeforeEach
+        public void subClassBeforeEach2(ArgumentContext argumentContext) {
+            System.out.println("subClassBeforeEach2()");
+
+            actual.add("subClassBeforeEach2");
+        }
+
         @Verifyica.Test
         public void test2(ArgumentContext argumentContext) {
             System.out.println("subClassTest2()");
 
             actual.add("subClassTest2");
+        }
+
+        @Verifyica.AfterEach
+        public void subClassAfterEach(ArgumentContext argumentContext) {
+            System.out.println("subClassAfterEach()");
+
+            actual.add("subClassAfterEach");
+        }
+
+        @Verifyica.AfterEach
+        public void subClassAfterEach2(ArgumentContext argumentContext) {
+            System.out.println("subClassAfterEach2()");
+
+            actual.add("subClassAfterEach2");
         }
 
         @Verifyica.AfterAll
@@ -216,334 +296,6 @@ public class LifecycleInheritanceTest {
             actual.add("subClassConclude");
         }
     }
-
-    /*
-    public String string;
-
-    @Verifyica.ClassInterceptorSupplier
-    public static Object classInterceptors() {
-        return new ConcreteClassInterceptor();
-    }
-
-    @Verifyica.ArgumentSupplier
-    public static Collection<AutoClosableArgument> arguments() {
-        Collection<AutoClosableArgument> autoClosableArguments = new ArrayList<>();
-        for (int i = 0; i < ARGUMENT_COUNT; i++) {
-            autoClosableArguments.add(new AutoClosableArgument("argument[" + i + "]"));
-        }
-        return autoClosableArguments;
-    }
-
-    @Verifyica.Prepare
-    public static void prepare(ClassContext classContext) throws Throwable {
-        System.out.printf("  %s prepare()%n", classContext.getTestClass().getName());
-
-        assertThat(classContext).isNotNull();
-        assertThat(classContext.getTestInstance()).isNotNull();
-
-        LifecycleInheritanceTest lifecycleTest = classContext.getTestInstance(LifecycleInheritanceTest.class);
-
-        assertThat(lifecycleTest).isNotNull();
-        lifecycleTest.string = "FOO";
-
-        actual.add("prepare");
-    }
-
-    @Verifyica.BeforeAll
-    public void beforeAll(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s beforeAll()%n", argumentContext.getTestArgument().getPayload());
-
-        actual.add("beforeAll");
-    }
-
-    @Verifyica.BeforeEach
-    public void beforeEach(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s beforeEach()%n", argumentContext.getTestArgument().getPayload());
-
-        actual.add("beforeEach");
-    }
-
-    @Verifyica.Test
-    @Verifyica.Order(order = 0)
-    public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s test1()%n", argumentContext.getTestArgument().getPayload());
-
-        actual.add("test1");
-    }
-
-    @Verifyica.Test
-    @Verifyica.Order(order = 1)
-    public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s test2()%n", argumentContext.getTestArgument().getPayload());
-
-        actual.add("test2");
-    }
-
-    @Verifyica.Test
-    @Verifyica.Order(order = 2)
-    public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s test3()%n", argumentContext.getTestArgument().getPayload());
-
-        actual.add("test3");
-    }
-
-    @Verifyica.AfterEach
-    public void afterEach(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s afterEach()%n", argumentContext.getTestArgument().getPayload());
-
-        actual.add("afterEach");
-    }
-
-    @Verifyica.AfterAll
-    public void afterAll(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s afterAll()%n", argumentContext.getTestArgument().getPayload());
-
-        actual.add("afterAll");
-    }
-
-    @Verifyica.Conclude
-    public static void conclude(ClassContext classContext) throws Throwable {
-        System.out.printf("  %s conclude()%n", classContext.getTestClass().getName());
-
-        assertThat(classContext).isNotNull();
-        assertThat(classContext.getTestInstance()).isNotNull();
-
-        LifecycleInheritanceTest lifecycleTest = classContext.getTestInstance(LifecycleInheritanceTest.class);
-
-        assertThat(lifecycleTest).isNotNull();
-        assertThat(lifecycleTest.string).isEqualTo("FOO");
-
-        actual.add("conclude");
-    }
-
-    public static class ConcreteClassInterceptor implements ClassInterceptor {
-
-        @Override
-        public void preInstantiate(
-                EngineInterceptorContext engineInterceptorContext, Class<?> testClass)
-                throws Throwable {
-            System.out.printf("%s preInstantiate()%n", getClass().getName());
-
-            actual.add("preInstantiate");
-        }
-
-        @Override
-        public void postInstantiate(
-                EngineInterceptorContext engineInterceptorContext,
-                Class<?> testClass,
-                Object testInstance,
-                Throwable throwable)
-                throws Throwable {
-            System.out.printf("%s postInstantiate()%n", getClass().getName());
-
-            assertThat(throwable).isNull();
-            actual.add("postInstantiate");
-        }
-
-        @Override
-        public void prePrepare(ClassInterceptorContext classInterceptorContext) throws Throwable {
-            System.out.printf("%s prePrepare()%n", getClass().getName());
-
-            assertThat(classInterceptorContext).isNotNull();
-            assertThat(classInterceptorContext.getClassContext()).isNotNull();
-
-            actual.add("prePrepare");
-        }
-
-        @Override
-        public void postPrepare(
-                ClassInterceptorContext classInterceptorContext, Throwable throwable)
-                throws Throwable {
-            System.out.printf("%s postPrepare()%n", getClass().getName());
-
-            assertThat(throwable).isNull();
-            actual.add("postPrepare");
-        }
-
-        @Override
-        public void preBeforeAll(ArgumentInterceptorContext argumentInterceptorContext)
-                throws Throwable {
-            System.out.printf("%s preBeforeAll()%n", getClass().getName());
-
-            actual.add("preBeforeAll");
-        }
-
-        @Override
-        public void postBeforeAll(
-                ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-                throws Throwable {
-            System.out.printf("%s postBeforeAll()%n", getClass().getName());
-
-            assertThat(throwable).isNull();
-            actual.add("postBeforeAll");
-        }
-
-        @Override
-        public void preBeforeEach(ArgumentInterceptorContext argumentInterceptorContext)
-                throws Throwable {
-            System.out.printf("%s preBeforeEach()%n", getClass().getName());
-
-            actual.add("preBeforeEach");
-        }
-
-        @Override
-        public void postBeforeEach(
-                ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-                throws Throwable {
-            System.out.printf("%s postBeforeEach()%n", getClass().getName());
-
-            assertThat(throwable).isNull();
-            actual.add("postBeforeEach");
-        }
-
-        @Override
-        public void preTest(
-                ArgumentInterceptorContext argumentInterceptorContext, Method testMethod)
-                throws Throwable {
-            System.out.printf("%s preTest()%n", getClass().getName());
-
-            actual.add("preTest");
-        }
-
-        @Override
-        public void postTest(
-                ArgumentInterceptorContext argumentInterceptorContext,
-                Method testMethod,
-                Throwable throwable)
-                throws Throwable {
-            System.out.printf("%s postTest()%n", getClass().getName());
-
-            assertThat(throwable).isNull();
-            actual.add("postTest");
-        }
-
-        @Override
-        public void preAfterEach(ArgumentInterceptorContext argumentInterceptorContext)
-                throws Throwable {
-            System.out.printf("%s preAfterEach()%n", getClass().getName());
-
-            actual.add("preAfterEach");
-        }
-
-        @Override
-        public void postAfterEach(
-                ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-                throws Throwable {
-            System.out.printf("%s postAfterEach()%n", getClass().getName());
-
-            assertThat(throwable).isNull();
-            actual.add("postAfterEach");
-        }
-
-        @Override
-        public void preAfterAll(ArgumentInterceptorContext argumentInterceptorContext)
-                throws Throwable {
-            System.out.printf("%s preAfterAll()%n", getClass().getName());
-
-            actual.add("preAfterAll");
-        }
-
-        @Override
-        public void postAfterAll(
-                ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-                throws Throwable {
-            System.out.printf("%s postAfterAll()%n", getClass().getName());
-
-            assertThat(throwable).isNull();
-            actual.add("postAfterAll");
-        }
-
-        @Override
-        public void preConclude(ClassInterceptorContext classInterceptorContext) throws Throwable {
-            System.out.printf("%s preConclude()%n", getClass().getName());
-
-            actual.add("preConclude");
-        }
-
-        @Override
-        public void postConclude(
-                ClassInterceptorContext classInterceptorContext, Throwable throwable)
-                throws Throwable {
-            System.out.printf("%s postConclude()%n", getClass().getName());
-
-            assertThat(throwable).isNull();
-            actual.add("postConclude");
-        }
-
-        @Override
-        public void onDestroy(ClassInterceptorContext classInterceptorContext) throws Throwable {
-            System.out.printf("%s onDestroy()%n", getClass().getName());
-
-            assertThat(classInterceptorContext).isNotNull();
-            assertThat(classInterceptorContext.getClassContext()).isNotNull();
-            assertThat(classInterceptorContext.getClassContext().getTestInstance()).isNotNull();
-
-            LifecycleInheritanceTest lifecycleTest =
-                    classInterceptorContext.getClassContext().getTestInstance(LifecycleInheritanceTest.class);
-
-            assertThat(lifecycleTest).isNotNull();
-
-            List<String> expected = new ArrayList<>();
-
-            expected.add("preInstantiate");
-            expected.add("postInstantiate");
-
-            String state = "prepare";
-            expected.add("pre" + capitalize(state));
-            expected.add(state);
-            expected.add("post" + capitalize(state));
-
-            for (int i = 0; i < ARGUMENT_COUNT; i++) {
-                state = "beforeAll";
-                expected.add("pre" + capitalize(state));
-                expected.add(state);
-                expected.add("post" + capitalize(state));
-
-                for (int j = 1; j < 4; j++) {
-                    state = "beforeEach";
-                    expected.add("pre" + capitalize(state));
-                    expected.add(state);
-                    expected.add("post" + capitalize(state));
-
-                    state = "test";
-                    expected.add("pre" + capitalize(state));
-                    expected.add(state + j);
-                    expected.add("post" + capitalize(state));
-
-                    state = "afterEach";
-                    expected.add("pre" + capitalize(state));
-                    expected.add(state);
-                    expected.add("post" + capitalize(state));
-                }
-
-                state = "afterAll";
-                expected.add("pre" + capitalize(state));
-                expected.add(state);
-                expected.add("post" + capitalize(state));
-
-                expected.add("argumentClose");
-            }
-
-            state = "conclude";
-            expected.add("pre" + capitalize(state));
-            expected.add(state);
-            expected.add("post" + capitalize(state));
-
-            assertThat(actual.size()).isEqualTo(expected.size());
-
-            int pad = pad(expected);
-
-            for (int i = 0; i < expected.size(); i++) {
-                System.out.printf(
-                        "expected [%-" + pad + "s] actual [%-" + pad + "s]%n",
-                        expected.get(i),
-                        actual.get(i));
-
-                assertThat(actual.get(i)).isEqualTo(expected.get(i));
-            }
-        }
-    }
-    */
 
     private static int pad(List<String> strings) {
         int pad = 0;
