@@ -72,7 +72,7 @@ public class TryLockTest {
                 lockReference.unlock();
             }
         } else {
-            System.out.println("Couldn't acquire lock");
+            System.out.println("Could not acquire lock");
         }
     }
 
@@ -97,7 +97,7 @@ public class TryLockTest {
                 lockReference.unlock();
             }
         } else {
-            System.out.println("Couldn't acquire lock");
+            System.out.println("Could not acquire lock");
         }
     }
 

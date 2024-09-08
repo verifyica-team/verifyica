@@ -68,7 +68,7 @@ public class TryLockTest {
                 Locks.unlock(LOCK_KEY);
             }
         } else {
-            System.out.println("Couldn't acquire lock");
+            System.out.println("Could not acquire lock");
         }
     }
 
@@ -90,7 +90,7 @@ public class TryLockTest {
                 Locks.unlock(LOCK_KEY);
             }
         } else {
-            System.out.println("Couldn't acquire lock");
+            System.out.println("Could not acquire lock");
         }
     }
 

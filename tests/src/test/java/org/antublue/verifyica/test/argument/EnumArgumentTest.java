@@ -69,7 +69,7 @@ public class EnumArgumentTest {
                 }
             default:
                 {
-                    fail("Shouldn't happen");
+                    fail("Should not happen");
                 }
         }
 
