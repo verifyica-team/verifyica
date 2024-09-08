@@ -18,14 +18,14 @@ package org.antublue.verifyica.test;
 
 import static org.assertj.core.api.Fail.fail;
 
+import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
 @Verifyica.Testable
-public class NoTestMethodsTest {
+public class NoArgumentSupplierMethodTest {
 
-    @Verifyica.ArgumentSupplier
-    public static String arguments() {
+    @Verifyica.Test
+    public void test(ArgumentContext argumentContext) {
         fail("Should not be called");
-        return null;
     }
 }

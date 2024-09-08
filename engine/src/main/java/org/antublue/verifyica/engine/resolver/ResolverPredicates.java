@@ -68,6 +68,9 @@ public class ResolverPredicates {
                                         clazz,
                                         ARGUMENT_SUPPLIER_METHOD,
                                         HierarchyTraversalMode.BOTTOM_UP)
+                                .isEmpty()
+                        && !ClassSupport.findMethods(
+                                        clazz, TEST_METHOD, HierarchyTraversalMode.TOP_DOWN)
                                 .isEmpty();
             };
 
