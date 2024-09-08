@@ -168,15 +168,12 @@ public class EngineDiscoveryRequestResolver {
                                 List<MethodDefinition> testMethodDefinitions = new ArrayList<>();
 
                                 testMethods.forEach(
-                                        new Consumer<Method>() {
-                                            @Override
-                                            public void accept(Method method) {
-                                                String methodDisplayName =
-                                                        DisplayNameSupport.getDisplayName(method);
-                                                testMethodDefinitions.add(
-                                                        new ConcreteMethodDefinition(
-                                                                method, methodDisplayName));
-                                            }
+                                        method -> {
+                                            String methodDisplayName =
+                                                    DisplayNameSupport.getDisplayName(method);
+                                            testMethodDefinitions.add(
+                                                    new ConcreteMethodDefinition(
+                                                            method, methodDisplayName));
                                         });
 
                                 classDefinitions.add(

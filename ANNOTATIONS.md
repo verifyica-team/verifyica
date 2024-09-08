@@ -120,6 +120,16 @@ All methods annotated with `@Verifyica.Prepare` or `@Verifyica.Conclude`:
 - must define a single parameter [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
 - may throw `Throwable`
 
+**Notes**
+
+When using test class inheritance, `@Verifyica.Prepare` and `@Verifyica.Conclude` are "wrapped".
+
+- `@Verifyica.Prepare`
+  - superclass methods before subclass methods
+
+- `@Verifyica.Conclude`
+  - subclass methods before superclass methods
+ 
 ---
 
 ### @Verifyica.BeforeAll / @Verifyica.AfterAll
@@ -136,6 +146,16 @@ All methods annotated with `@Verifyica.BeforeAll` or `@Verifyica.AfterAll`:
 - must not be static
 - must defined a single parameter [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
+
+**Notes**
+
+When using test class inheritance, `@Verifyica.BeforeAll` and `@Verifyica.AfterAll` are "wrapped".
+
+- `@Verifyica.BeforeAll`
+  - superclass methods before subclass methods
+
+- `@Verifyica.AfterAll`
+  - subclass methods before superclass methods
 
 ---
 
@@ -154,6 +174,16 @@ All methods annotated with `@Verifyica.BeforeEach` or `@Verifyica.AfterEach`:
 - must defined a single parameter [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
 
+**Notes**
+
+When using test class inheritance, `@Verifyica.BeforeEach` and `@Verifyica.AfterEach` are "wrapped".
+
+- `@Verifyica.BeforeEach`
+  - superclass methods before subclass methods
+
+- `@Verifyica.AfterEach`
+  - subclass methods before superclass methods
+
 ---
 
 ### @Verifyica.Test
@@ -166,6 +196,10 @@ All methods annotated with `@Verifyica.Test`:
 - must not be static
 - must defined a single parameter [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
+
+**Notes**
+
+`@Verifyica.Test` methods are not "flattened"
 
 ---
 
