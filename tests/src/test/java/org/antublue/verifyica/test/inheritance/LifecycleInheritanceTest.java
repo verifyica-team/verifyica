@@ -50,6 +50,20 @@ public class LifecycleInheritanceTest {
             actual.add("baseClassPrepare2");
         }
 
+        @Verifyica.BeforeAll
+        public void baseClassBeforeAll(ArgumentContext argumentContext) {
+            System.out.println("baseClassBeforeAll()");
+
+            actual.add("baseClassBeforeAll");
+        }
+
+        @Verifyica.BeforeAll
+        public void baseClassBeforeAll2(ArgumentContext argumentContext) {
+            System.out.println("baseClassBeforeAll2()");
+
+            actual.add("baseClassBeforeAll2");
+        }
+
         @Verifyica.Test
         public void test(ArgumentContext argumentContext) {
             System.out.println("baseClassTest()");
@@ -62,6 +76,20 @@ public class LifecycleInheritanceTest {
             System.out.println("baseClassTest3()");
 
             actual.add("baseClassTest3");
+        }
+
+        @Verifyica.AfterAll
+        public void baseClassAfterAll2(ArgumentContext argumentContext) {
+            System.out.println("baseClassAfterAll2()");
+
+            actual.add("baseClassAfterAll2");
+        }
+
+        @Verifyica.AfterAll
+        public void baseClassAfterAll(ArgumentContext argumentContext) {
+            System.out.println("baseClassAfterAll()");
+
+            actual.add("baseClassAfterAll");
         }
 
         @Verifyica.Conclude
@@ -83,9 +111,17 @@ public class LifecycleInheritanceTest {
             expected.add("baseClassPrepare2");
             expected.add("subClassPrepare");
             expected.add("subClassPrepare2");
+            expected.add("baseClassBeforeAll");
+            expected.add("baseClassBeforeAll2");
+            expected.add("subClassBeforeAll");
+            expected.add("subClassBeforeAll2");
             expected.add("baseClassTest");
             expected.add("subClassTest2");
             expected.add("baseClassTest3");
+            expected.add("subClassAfterAll2");
+            expected.add("subClassAfterAll");
+            expected.add("baseClassAfterAll2");
+            expected.add("baseClassAfterAll");
             expected.add("subClassConclude2");
             expected.add("subClassConclude");
             expected.add("baseClassConclude2");
@@ -131,11 +167,39 @@ public class LifecycleInheritanceTest {
             actual.add("subClassPrepare2");
         }
 
+        @Verifyica.BeforeAll
+        public void subClassBeforeAll(ArgumentContext argumentContext) {
+            System.out.println("subClassBeforeAll()");
+
+            actual.add("subClassBeforeAll");
+        }
+
+        @Verifyica.BeforeAll
+        public void subClassBeforeAll2(ArgumentContext argumentContext) {
+            System.out.println("subClassBeforeAll2()");
+
+            actual.add("subClassBeforeAll2");
+        }
+
         @Verifyica.Test
         public void test2(ArgumentContext argumentContext) {
             System.out.println("subClassTest2()");
 
             actual.add("subClassTest2");
+        }
+
+        @Verifyica.AfterAll
+        public void subClassAfterAll2(ArgumentContext argumentContext) {
+            System.out.println("subClassAfterAll2()");
+
+            actual.add("subClassAfterAll2");
+        }
+
+        @Verifyica.AfterAll
+        public void subClassAfterAll(ArgumentContext argumentContext) {
+            System.out.println("subClassAfterAll()");
+
+            actual.add("subClassAfterAll");
         }
 
         @Verifyica.Conclude
