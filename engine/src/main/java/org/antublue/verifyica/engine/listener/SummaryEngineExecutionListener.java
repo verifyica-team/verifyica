@@ -409,8 +409,9 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
                     if (count == 0) {
                         // Revert display message and count display message to TEST_WRITE_BRIGHT
-                        messageDisplayString = AnsiColor.stripAnsiCodes(messageDisplayString);
-                        countDisplayString = AnsiColor.stripAnsiCodes(countDisplayString);
+                        messageDisplayString =
+                                AnsiColor.stripAnsiEscapeSequences(messageDisplayString);
+                        countDisplayString = AnsiColor.stripAnsiEscapeSequences(countDisplayString);
 
                         messageDisplayString =
                                 AnsiColor.TEXT_WHITE_BRIGHT.wrap(messageDisplayString);

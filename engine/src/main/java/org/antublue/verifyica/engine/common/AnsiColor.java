@@ -16,6 +16,7 @@
 
 package org.antublue.verifyica.engine.common;
 
+import java.io.Console;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -42,12 +43,6 @@ public class AnsiColor {
 
     /* Configuration constant */
     private static final String EMPTY_STRING = "";
-
-    /* Configuration constant */
-    private static final String ONE = "1";
-
-    /* Configuration constant */
-    private static final String TRUE = "true";
 
     /** AnsiColor constant */
     public static final AnsiColor NONE = new AnsiColor("\033[0m");
@@ -237,18 +232,32 @@ public class AnsiColor {
     private static boolean ANSI_COLOR_SUPPORTED;
 
     static {
-        ANSI_COLOR_SUPPORTED = System.console() != null;
-
-        if (ONE.equals(System.getenv(NO_COLOR_ENVIRONMENT_VARIABLE))) {
+        Console console = System.console();
+        if (console == null) {
             ANSI_COLOR_SUPPORTED = false;
+        } else {
+            try {
+                ANSI_COLOR_SUPPORTED =
+                        (Boolean)
+                                Class.forName("java.io.Console")
+                                        .getDeclaredMethod("isTerminal")
+                                        .invoke(console);
+            } catch (Throwable t) {
+                ANSI_COLOR_SUPPORTED = true;
+            }
         }
 
         if (MAVEN_PLUGIN_BATCH.equals(System.getenv(MAVEN_PLUGIN_MODE))) {
             ANSI_COLOR_SUPPORTED = false;
         }
 
-        if (ONE.equals(System.getenv(ANSI_COLOR_ENVIRONMENT_VARIABLE))
-                || TRUE.equals(System.getenv(ANSI_COLOR_ENVIRONMENT_VARIABLE))) {
+        String noColor = System.getenv(NO_COLOR_ENVIRONMENT_VARIABLE);
+        if (noColor != null && !noColor.trim().isEmpty()) {
+            ANSI_COLOR_SUPPORTED = false;
+        }
+
+        String ansiColorForce = System.getenv(ANSI_COLOR_ENVIRONMENT_VARIABLE);
+        if (ansiColorForce != null && !ansiColorForce.trim().isEmpty()) {
             ANSI_COLOR_SUPPORTED = true;
         }
     }
@@ -279,7 +288,7 @@ public class AnsiColor {
     /**
      * Method to get the ANSI color escape sequence String
      *
-     * @return the ANSI color escape sequence if ANSI color is supported else an empty string
+     * @return if ANSI color is supported, the ANSI color escape sequence, else an empty string
      */
     @Override
     public String toString() {
@@ -300,19 +309,19 @@ public class AnsiColor {
     }
 
     /**
-     * Method to strip ANSI codes
+     * Method to strip ANSI escape sequences
      *
      * @param string string
-     * @return a String stripped of ANSI codes
+     * @return a String stripped of ANSI escape sequences
      */
-    public static String stripAnsiCodes(String string) {
+    public static String stripAnsiEscapeSequences(String string) {
         return string == null ? null : ANSI_PATTERN.matcher(string).replaceAll("");
     }
 
     /**
      * Method to indicate whether ANSI color escape sequences are supported
      *
-     * @return the return value
+     * @return true if ANSI color escape sequences are supported, else false
      */
     public static boolean isSupported() {
         return ANSI_COLOR_SUPPORTED;
