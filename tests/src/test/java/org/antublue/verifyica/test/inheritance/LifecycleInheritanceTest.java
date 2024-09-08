@@ -37,14 +37,14 @@ public class LifecycleInheritanceTest {
     public abstract static class BaseClass {
 
         @Verifyica.Prepare
-        public void prepare(ClassContext classContext) {
+        public void baseClassPrepare(ClassContext classContext) {
             System.out.println("baseClassPrepare()");
 
             actual.add("baseClassPrepare");
         }
 
         @Verifyica.Prepare
-        public void prepare2(ClassContext classContext) {
+        public void baseClassPrepare2(ClassContext classContext) {
             System.out.println("baseClassPrepare2()");
 
             actual.add("baseClassPrepare2");
@@ -65,14 +65,14 @@ public class LifecycleInheritanceTest {
         }
 
         @Verifyica.Conclude
-        public void conclude2(ClassContext classContext) {
+        public void baseClassConclude2(ClassContext classContext) {
             System.out.println("baseClassConclude2()");
 
             actual.add("baseClassConclude2");
         }
 
         @Verifyica.Conclude
-        public void conclude(ClassContext classContext) {
+        public void baseClassConclude(ClassContext classContext) {
             System.out.println("baseClassConclude()");
 
             actual.add("baseClassConclude");
@@ -118,14 +118,14 @@ public class LifecycleInheritanceTest {
         }
 
         @Verifyica.Prepare
-        public void sprepare(ClassContext classContext) {
+        public void subClassPrepare(ClassContext classContext) {
             System.out.println("subClassPrepare()");
 
             actual.add("subClassPrepare");
         }
 
         @Verifyica.Prepare
-        public void sprepare2(ClassContext classContext) {
+        public void subClassPrepare2(ClassContext classContext) {
             System.out.println("subClassPrepare2()");
 
             actual.add("subClassPrepare2");
@@ -139,14 +139,14 @@ public class LifecycleInheritanceTest {
         }
 
         @Verifyica.Conclude
-        public void sconclude2(ClassContext classContext) {
+        public void subClassConclude2(ClassContext classContext) {
             System.out.println("subClassConclude2()");
 
             actual.add("subClassConclude2");
         }
 
         @Verifyica.Conclude
-        public void sconclude(ClassContext classContext) {
+        public void subClassConclude(ClassContext classContext) {
             System.out.println("subClassConclude()");
 
             actual.add("subClassConclude");
