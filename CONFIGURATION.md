@@ -82,7 +82,17 @@ Verifyica is designed to use either platform threads or virtual threads dependin
 - Java 8 through Java 20
   - platform threads
 
-# Logging
+**Notes**
+
+- `verifyica.engine.threads=platform` can be used to force use of platform threads on a Java version that supports virtual threads.
+
+- When using platform threads, `verifyica.engine.threads.platform=ephemeral` can be use to create ephemeral threads;
+  - new thread per class
+  - new thread per argument (when argument supplier parallelism is greater than 1)
+
+- When use virtual threads, threads are automatically ephemeral
+
+## Logging
 
 ## Configuration Logging
 
