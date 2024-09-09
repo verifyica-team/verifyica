@@ -66,26 +66,26 @@ for (TestClass testClass : TestClasses) {
 
     instantiate test class instance {
 
-        execute @Verifyica.Prepare methods {
+        execute @Verifyica.Prepare methods (superclass then subclass) {
     
             for (TestArgument testArgument : TestArguments) {
             
-               execute @Verifyica.BeforeAll methods
+               execute @Verifyica.BeforeAll methods (superclass then subclass)
               
                for (test method : Test methods) {
                
-                  execute @Verifyica.BeforeEach methods
+                  execute @Verifyica.BeforeEach methods (superclass then subclass)
                   
                       execute test method
                   
-                  execute @Verifyica.AfterEach methods
+                  execute @Verifyica.AfterEach methods (subclass then superclass)
                }
                
-               execute @Verifyica.AfterAll methods
+               execute @Verifyica.AfterAll methods (subclass then superclass)
             }
         }
     
-        execute @Verificya.Conclude methods
+        execute @Verificya.Conclude methods (subclass then superclass)
     }
     
     destroy test class instance
