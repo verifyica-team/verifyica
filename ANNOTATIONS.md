@@ -199,7 +199,7 @@ All methods annotated with `@Verifyica.Test`:
 
 **Notes**
 
-`@Verifyica.Test` methods are not "flattened"
+- `@Verifyica.Test` methods are not "flattened"
 
 ---
 
@@ -210,6 +210,18 @@ Used by Verifyica to order test classes / test methods.
 - optional
 
 **Notes**
+
+- Order is relative to the class which declares the methods for the following annotations...
+  - `@Verifyica.Prepare`
+  - `@Verifyica.BeforeAll`
+  - `@Verifyica.BeforeEach`
+  - `@Verifyica.AfterEach`
+  - `@Verifyica.AfterAll`
+  - `@Verifyica.Conclude`
+
+
+- `Verifyica.Test` ordering is irrespective of which class (superclass / subclass) the method is defined.
+
 
 - If `verifyica.engine.class.parallelism` is greater than `1`, orders test class **execution submission order**.
   - Test class execution will still be in parallel.
