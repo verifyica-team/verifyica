@@ -17,12 +17,34 @@
 package org.antublue.verifyica.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
 public class LocksTest {
+
+    @Test
+    public void testLockUnlockSequence() {
+        String key = "key";
+
+        for (int i = 0; i < 10; i++) {
+            Locks.assertEmpty();
+            assertThat(Locks.isLocked(key)).isFalse();
+            Locks.lock(key);
+            Locks.assertNotEmpty();
+            assertThat(Locks.isLocked(key)).isTrue();
+            Locks.unlock(key);
+            assertThat(Locks.isLocked(key)).isFalse();
+        }
+    }
+
+    @Test
+    public void testUnlockWithoutLock() {
+        assertThatExceptionOfType(IllegalMonitorStateException.class)
+                .isThrownBy(() -> Locks.unlock("key"));
+    }
 
     @Test
     public void testMultithreading() throws InterruptedException {

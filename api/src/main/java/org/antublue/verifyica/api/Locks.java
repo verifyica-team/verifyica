@@ -16,6 +16,8 @@
 
 package org.antublue.verifyica.api;
 
+import static java.lang.String.format;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +43,7 @@ public class Locks {
      */
     public static void lock(Object key) {
         notNull(key, "key is null");
+
         INTERNAL_LOCK_MANAGER.lock(key);
     }
 
@@ -52,6 +55,7 @@ public class Locks {
      */
     public static boolean tryLock(Object key) {
         notNull(key, "key is null");
+
         return INTERNAL_LOCK_MANAGER.tryLock(key);
     }
 
@@ -68,6 +72,7 @@ public class Locks {
             throws InterruptedException {
         notNull(key, "key is null");
         notNull(timeUnit, "timeUnit is null");
+
         return INTERNAL_LOCK_MANAGER.tryLock(key, time, timeUnit);
     }
 
@@ -77,7 +82,15 @@ public class Locks {
      * @param key key
      */
     public static void unlock(Object key) {
+        notNull(key, "key is null");
+
         INTERNAL_LOCK_MANAGER.unlock(key);
+    }
+
+    public static boolean isLocked(Object key) {
+        notNull(key, "key is null");
+
+        return INTERNAL_LOCK_MANAGER.isLocked(key);
     }
 
     /**
@@ -250,6 +263,11 @@ public class Locks {
         INTERNAL_LOCK_MANAGER.assertEmpty();
     }
 
+    /** For testing */
+    static void assertNotEmpty() {
+        INTERNAL_LOCK_MANAGER.assertNotEmpty();
+    }
+
     /** Class to implement InternalLockManager */
     private static class InternalLockManager {
 
@@ -266,7 +284,7 @@ public class Locks {
          *
          * @param key key
          */
-        public void lock(Object key) {
+        private void lock(Object key) {
             notNull(key, "key is null");
 
             compute(key).getLock().lock();
@@ -278,7 +296,7 @@ public class Locks {
          * @param key key
          * @return true if the Lock was locked, else false
          */
-        public boolean tryLock(Object key) {
+        private boolean tryLock(Object key) {
             notNull(key, "key is null");
 
             return compute(key).getLock().tryLock();
@@ -290,7 +308,7 @@ public class Locks {
          * @param key key
          * @return true if the Lock was locked, else false
          */
-        public boolean tryLock(Object key, long time, TimeUnit timeUnit)
+        private boolean tryLock(Object key, long time, TimeUnit timeUnit)
                 throws InterruptedException {
             notNull(key, "key is null");
             notNull(timeUnit, "timeUnit is null");
@@ -303,14 +321,23 @@ public class Locks {
          *
          * @param key key
          */
-        public void unlock(Object key) {
+        private void unlock(Object key) {
             notNull(key, "key is null");
 
             LockReference lockReference = lockReferences.get(key);
+            if (lockReference == null) {
+                throw new IllegalMonitorStateException(format("Lock key [%s] is not locked", key));
+            }
             lockReference.reentrantLock.unlock();
             if (lockReference.decrementThreadCount() == 0) {
                 lockReferences.remove(key, lockReference);
             }
+        }
+
+        private boolean isLocked(Object key) {
+            notNull(key, "key is null");
+
+            return lockReferences.containsKey(key);
         }
 
         /**
@@ -328,6 +355,13 @@ public class Locks {
         private void assertEmpty() {
             if (!lockReferences.isEmpty()) {
                 throw new IllegalStateException("size should be 0");
+            }
+        }
+
+        /** For testing */
+        private void assertNotEmpty() {
+            if (lockReferences.isEmpty()) {
+                throw new IllegalStateException("size should be greater than 0");
             }
         }
 
