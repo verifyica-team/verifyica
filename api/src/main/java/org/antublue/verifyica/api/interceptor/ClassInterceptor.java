@@ -242,13 +242,4 @@ public interface ClassInterceptor {
             throw throwable;
         }
     }
-
-    /** Class to implement NoOp */
-    final class NoOp implements ClassInterceptor {
-
-        /** Constructor */
-        private NoOp() {
-            // INTENTIONALLY BLANK
-        }
-    }
 }
