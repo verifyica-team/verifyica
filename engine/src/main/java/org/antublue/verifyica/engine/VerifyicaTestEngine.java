@@ -251,7 +251,7 @@ public class VerifyicaTestEngine implements TestEngine {
                                 futures.add(
                                         classExecutorService.submit(
                                                 new ThreadNameRunnable(
-                                                        "verifyica/" + HashSupport.alphanumeric(4),
+                                                        HashSupport.alphanumeric(4),
                                                         new ClassTestDescriptorRunnable(
                                                                 engineExecutionRequest,
                                                                 argumentExecutorService,
