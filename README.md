@@ -344,7 +344,9 @@ When using Maven, the Verifyica Maven plugin is required.
 
 To perform integration testing, you need a test context/environment. Typically this is created using [testcontainers-java](https://java.testcontainers.org/) and [Docker](https://www.docker.com/) (or another compatible container environment.)
 
-Alternatively, tests can be performed on an external environment. Ideally the external environment would have an API to initialize and destroy it.
+Alternatively, tests can be performed on an external environment/resource. Ideally the external environment/resource would have an API to initialize and destroy it.
+
+An [EngineInterceptor](api/src/main/java/org/antublue/verifyica/api/interceptor/engine/EngineInterceptor.java) can be used to initialize and destroy an external environment/resource before and after execution of tests.
 
 # Documentation
 
