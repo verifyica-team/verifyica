@@ -102,7 +102,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     private final Map<TestMethodTestDescriptor, TestExecutionResult>
             methodTestDescriptorTestExecutionResultMap;
 
-    private final Map<TestMethodTestDescriptor, String> methodTestDescriptorSkippedMap;
+    private final Map<TestMethodTestDescriptor, String> testMethodTestDescriptorSkippedMap;
 
     private final Map<String, AtomicLong> counterMap;
     private final Stopwatch stopWatch;
@@ -118,7 +118,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         argumentTestDescriptorSkippedMap = new ConcurrentHashMap<>();
 
         methodTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
-        methodTestDescriptorSkippedMap = new ConcurrentHashMap<>();
+        testMethodTestDescriptorSkippedMap = new ConcurrentHashMap<>();
 
         counterMap = new ConcurrentHashMap<>();
         stopWatch = new Stopwatch();
@@ -146,7 +146,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         } else if (testDescriptor instanceof ArgumentTestDescriptor) {
             argumentTestDescriptorSkippedMap.put((ArgumentTestDescriptor) testDescriptor, reason);
         } else if (testDescriptor instanceof TestMethodTestDescriptor) {
-            methodTestDescriptorSkippedMap.put((TestMethodTestDescriptor) testDescriptor, reason);
+            testMethodTestDescriptorSkippedMap.put((TestMethodTestDescriptor) testDescriptor, reason);
         }
     }
 
@@ -198,7 +198,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                         .incrementAndGet();
             }
 
-            for (int i = 0; i < methodTestDescriptorSkippedMap.size(); i++) {
+            for (int i = 0; i < testMethodTestDescriptorSkippedMap.size(); i++) {
                 String key = "test.method.count";
                 counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
 
