@@ -31,7 +31,7 @@ import org.antublue.verifyica.test.support.RandomSupport;
 
 public class EngineInterceptorTest4 {
 
-    @Verifyica.AutowiredInterceptor
+    @Verifyica.Autowired
     public static class LocalEngineInterceptor implements EngineInterceptor {
 
         @Override

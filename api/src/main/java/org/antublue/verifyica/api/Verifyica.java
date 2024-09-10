@@ -137,9 +137,15 @@ public @interface Verifyica {
     @Retention(RetentionPolicy.RUNTIME)
     @interface ClassInterceptorSupplier {}
 
+    /** Autowired annotation */
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Autowired {}
+
     /** AutowiredInterceptor annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
+    @Deprecated
     @interface AutowiredInterceptor {}
 
     /** Testable annotation */

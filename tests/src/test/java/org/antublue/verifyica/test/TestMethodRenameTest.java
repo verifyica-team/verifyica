@@ -29,7 +29,7 @@ import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
 
 public class TestMethodRenameTest {
 
-    @Verifyica.AutowiredInterceptor
+    @Verifyica.Autowired
     public static class DisplayNameEngineInterceptor implements EngineInterceptor {
 
         public void onTestDiscovery(

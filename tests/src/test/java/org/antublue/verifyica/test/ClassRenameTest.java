@@ -27,7 +27,7 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
 public class ClassRenameTest {
 
-    @Verifyica.AutowiredInterceptor
+    @Verifyica.Autowired
     public static class DisplayNameEngineInterceptor implements EngineInterceptor {
 
         public void onTestDiscovery(

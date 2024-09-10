@@ -27,7 +27,7 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
 
-@Verifyica.AutowiredInterceptor
+@Verifyica.Autowired
 public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
 
     public static final String KEY = ExampleAutowiredEngineInterceptor1.class.getName() + ".key";
