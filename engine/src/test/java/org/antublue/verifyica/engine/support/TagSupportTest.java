@@ -57,6 +57,14 @@ public class TagSupportTest {
         assertThat(list.get(0)).isEqualTo("tag1");
     }
 
+    @Test
+    public void testClassEmptyTag() {
+        Set<String> tags = TagSupport.getTags(TestClass4.class);
+
+        assertThat(tags).isNotNull();
+        assertThat(tags).hasSize(0);
+    }
+
     private static class TestClass1 {
         // INTENTIONALLY BLANK
     }
@@ -69,6 +77,11 @@ public class TagSupportTest {
 
     @Verifyica.Tag(tag = "\r\n\ttag1\r\n\t ")
     private static class TestClass3 {
+        // INTENTIONALLY BLANK
+    }
+
+    @Verifyica.Tag(tag = "")
+    private static class TestClass4 {
         // INTENTIONALLY BLANK
     }
 }
