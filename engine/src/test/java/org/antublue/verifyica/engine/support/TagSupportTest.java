@@ -18,7 +18,9 @@ package org.antublue.verifyica.engine.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.antublue.verifyica.api.Verifyica;
 import org.junit.jupiter.api.Test;
 
@@ -32,12 +34,27 @@ public class TagSupportTest {
 
     @Test
     public void testClassTags() {
-        List<String> tags = TagSupport.getTags(TestClass2.class);
+        Set<String> tags = TagSupport.getTags(TestClass2.class);
 
         assertThat(tags).isNotNull();
         assertThat(tags).hasSize(2);
-        assertThat(tags.get(0)).isEqualTo("tag1");
-        assertThat(tags.get(1)).isEqualTo("tag2");
+
+        List<String> list = new ArrayList<>(tags);
+
+        assertThat(list.get(0)).isEqualTo("tag1");
+        assertThat(list.get(1)).isEqualTo("tag2");
+    }
+
+    @Test
+    public void testClassTagTrimming() {
+        Set<String> tags = TagSupport.getTags(TestClass3.class);
+
+        assertThat(tags).isNotNull();
+        assertThat(tags).hasSize(1);
+
+        List<String> list = new ArrayList<>(tags);
+
+        assertThat(list.get(0)).isEqualTo("tag1");
     }
 
     private static class TestClass1 {
@@ -47,6 +64,11 @@ public class TagSupportTest {
     @Verifyica.Tag(tag = "tag1")
     @Verifyica.Tag(tag = "tag2")
     private static class TestClass2 {
+        // INTENTIONALLY BLANK
+    }
+
+    @Verifyica.Tag(tag = "\r\n\ttag1\r\n\t ")
+    private static class TestClass3 {
         // INTENTIONALLY BLANK
     }
 }
