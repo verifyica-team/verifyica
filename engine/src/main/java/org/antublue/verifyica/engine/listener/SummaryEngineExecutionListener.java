@@ -146,7 +146,8 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         } else if (testDescriptor instanceof ArgumentTestDescriptor) {
             argumentTestDescriptorSkippedMap.put((ArgumentTestDescriptor) testDescriptor, reason);
         } else if (testDescriptor instanceof TestMethodTestDescriptor) {
-            testMethodTestDescriptorSkippedMap.put((TestMethodTestDescriptor) testDescriptor, reason);
+            testMethodTestDescriptorSkippedMap.put(
+                    (TestMethodTestDescriptor) testDescriptor, reason);
         }
     }
 
