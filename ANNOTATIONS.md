@@ -245,6 +245,8 @@ Used by Verifyica to set the test class / test method display name.
 Repeatable annotation used to tag test classes for filtering.
 
 - optional
+- values are trimmed of leading / trailing whitespace
+- tags with empty values are ignored
 
 ---
 
