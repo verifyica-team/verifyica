@@ -33,6 +33,7 @@ public class ResolverPredicates {
                 return Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
                         && method.getParameterCount() == 0
+                        && !method.getReturnType().equals(Void.TYPE)
                         && method.isAnnotationPresent(Verifyica.ClassInterceptorSupplier.class);
             };
 
@@ -43,6 +44,7 @@ public class ResolverPredicates {
                 return Modifier.isPublic(modifiers)
                         && Modifier.isStatic(modifiers)
                         && method.getParameterCount() == 0
+                        && !method.getReturnType().equals(Void.TYPE)
                         && method.isAnnotationPresent(Verifyica.ArgumentSupplier.class);
             };
 
@@ -53,6 +55,7 @@ public class ResolverPredicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
+                        && method.getReturnType().equals(Void.TYPE)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.Test.class);
             };
@@ -80,6 +83,7 @@ public class ResolverPredicates {
                 int modifiers = method.getModifiers();
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
+                        && method.getReturnType().equals(Void.TYPE)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.Prepare.class);
             };
@@ -91,6 +95,7 @@ public class ResolverPredicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
+                        && method.getReturnType().equals(Void.TYPE)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.BeforeAll.class);
             };
@@ -102,6 +107,7 @@ public class ResolverPredicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
+                        && method.getReturnType().equals(Void.TYPE)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.BeforeEach.class);
             };
@@ -113,6 +119,7 @@ public class ResolverPredicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
+                        && method.getReturnType().equals(Void.TYPE)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.AfterEach.class);
             };
@@ -124,6 +131,7 @@ public class ResolverPredicates {
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
                         && !Modifier.isStatic(modifiers)
+                        && method.getReturnType().equals(Void.TYPE)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.AfterAll.class);
             };
@@ -134,6 +142,7 @@ public class ResolverPredicates {
                 int modifiers = method.getModifiers();
                 return !Modifier.isAbstract(modifiers)
                         && Modifier.isPublic(modifiers)
+                        && method.getReturnType().equals(Void.TYPE)
                         && !method.isAnnotationPresent(Verifyica.Disabled.class)
                         && method.isAnnotationPresent(Verifyica.Conclude.class);
             };
