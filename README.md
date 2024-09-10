@@ -352,6 +352,7 @@ An [EngineInterceptor](api/src/main/java/org/antublue/verifyica/api/interceptor/
 
 - [Annotations](ANNOTATIONS.md)
 - [API](API.md)
+- [Interceptors](INTERCEPTORS.md)
 - [Concurrency](CONCURRENCY.md)
 - [Configuration](CONFIGURATION.md)
 - [Filters](FILTERS.md)
