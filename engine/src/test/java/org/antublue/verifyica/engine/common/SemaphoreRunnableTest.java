@@ -16,7 +16,7 @@
 
 package org.antublue.verifyica.engine.common;
 
-import static org.antublue.verifyica.api.Fail.failIfTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +66,6 @@ public class SemaphoreRunnableTest {
             thread.join();
         }
 
-        failIfTrue(failed.get() != null, failed.get());
+        assertThat(failed.get()).isNull();
     }
 }

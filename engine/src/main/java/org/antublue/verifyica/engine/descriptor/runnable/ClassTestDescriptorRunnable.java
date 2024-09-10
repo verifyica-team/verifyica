@@ -20,13 +20,12 @@ import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 import org.antublue.verifyica.api.ClassContext;
-import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.engine.ExecutionContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateMachine;
@@ -46,7 +45,7 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptorRunnable.class);
 
     private final ExecutionRequest executionRequest;
-    private final ExecutorService argumentExecutorService;
+    private final ExecutionContext executionContext;
     private final ClassTestDescriptor classTestDescriptor;
     private final Class<?> testClass;
     private final List<Method> prepareMethods;
@@ -79,23 +78,20 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
     /**
      * Constructor
      *
+     * @param executionContext executionContext
      * @param executionRequest executionRequest
-     * @param argumentExecutorService argumentExecutorService
-     * @param engineContext engineContext
      * @param classTestDescriptor classTestDescriptor
      */
     public ClassTestDescriptorRunnable(
+            ExecutionContext executionContext,
             ExecutionRequest executionRequest,
-            ExecutorService argumentExecutorService,
-            EngineContext engineContext,
             ClassTestDescriptor classTestDescriptor) {
+        Precondition.notNull(executionContext, "executionContext is null");
         Precondition.notNull(executionRequest, "executionRequest is null");
-        Precondition.notNull(argumentExecutorService, "argumentExecutorService is null");
-        Precondition.notNull(engineContext, "engineContext is null");
         Precondition.notNull(classTestDescriptor, "classTestDescriptor is null");
 
         this.executionRequest = executionRequest;
-        this.argumentExecutorService = argumentExecutorService;
+        this.executionContext = executionContext;
         this.classTestDescriptor = classTestDescriptor;
         this.testClass = classTestDescriptor.getTestClass();
         this.prepareMethods = classTestDescriptor.getPrepareMethods();
@@ -104,7 +100,10 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
 
         this.testInstanceReference = new AtomicReference<>();
         this.classContext =
-                new ConcreteClassContext(engineContext, classTestDescriptor, testInstanceReference);
+                new ConcreteClassContext(
+                        executionContext.getEngineContext(),
+                        classTestDescriptor,
+                        testInstanceReference);
     }
 
     @Override
@@ -120,7 +119,8 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 () -> {
                                     try {
                                         Object testInstance =
-                                                getClassInterceptorRegistry()
+                                                executionContext
+                                                        .getClassInterceptorManager()
                                                         .instantiate(
                                                                 classContext.getEngineContext(),
                                                                 testClass);
@@ -136,7 +136,8 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 State.INSTANTIATE_SUCCESS,
                                 () -> {
                                     try {
-                                        getClassInterceptorRegistry()
+                                        executionContext
+                                                .getClassInterceptorManager()
                                                 .prepare(classContext, prepareMethods);
                                         return StateMachine.Result.of(State.PREPARE_SUCCESS);
                                     } catch (Throwable t) {
@@ -158,8 +159,6 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                                 "testArgumentParallelism [%d]",
                                                 testArgumentParallelism);
 
-                                        String threadName = Thread.currentThread().getName();
-
                                         if (testArgumentParallelism > 1) {
                                             List<Future<?>> futures = new ArrayList<>();
 
@@ -167,39 +166,45 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                                     new Semaphore(testArgumentParallelism, true);
 
                                             argumentTestDescriptors.forEach(
-                                                    argumentTestDescriptor ->
-                                                            futures.add(
-                                                                    argumentExecutorService.submit(
-                                                                            new SemaphoreRunnable(
-                                                                                    semaphore,
-                                                                                    new ThreadNameRunnable(
-                                                                                            threadName
-                                                                                                    + "/"
-                                                                                                    + HashSupport
-                                                                                                            .alphanumeric(
-                                                                                                                    4),
-                                                                                            new ArgumentTestDescriptorRunnable(
-                                                                                                    executionRequest,
-                                                                                                    classContext,
-                                                                                                    argumentTestDescriptor))))));
+                                                    argumentTestDescriptor -> {
+                                                        String threadName =
+                                                                Thread.currentThread().getName();
+
+                                                        threadName =
+                                                                threadName.substring(
+                                                                                0,
+                                                                                threadName.indexOf(
+                                                                                                "/")
+                                                                                        + 1)
+                                                                        + HashSupport.alphanumeric(
+                                                                                6);
+
+                                                        futures.add(
+                                                                executionContext
+                                                                        .getArgumentExecutorService()
+                                                                        .submit(
+                                                                                new SemaphoreRunnable(
+                                                                                        semaphore,
+                                                                                        new ThreadNameRunnable(
+                                                                                                threadName,
+                                                                                                new ArgumentTestDescriptorRunnable(
+                                                                                                        executionContext,
+                                                                                                        executionRequest,
+                                                                                                        classContext,
+                                                                                                        argumentTestDescriptor)))));
+                                                    });
 
                                             ExecutorSupport.waitForAllFutures(
-                                                    futures, argumentExecutorService);
+                                                    futures,
+                                                    executionContext.getArgumentExecutorService());
                                         } else {
-                                            String threadNameSuffix =
-                                                    threadName.substring(
-                                                            threadName.lastIndexOf("/") + 1);
-
                                             argumentTestDescriptors.forEach(
                                                     argumentTestDescriptor ->
-                                                            new ThreadNameRunnable(
-                                                                            threadName
-                                                                                    + "/"
-                                                                                    + threadNameSuffix,
-                                                                            new ArgumentTestDescriptorRunnable(
+                                                            new ArgumentTestDescriptorRunnable(
+                                                                            executionContext,
                                                                                     executionRequest,
-                                                                                    classContext,
-                                                                                    argumentTestDescriptor))
+                                                                            classContext,
+                                                                                    argumentTestDescriptor)
                                                                     .run());
                                         }
 
@@ -216,9 +221,10 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                         argumentTestDescriptors.forEach(
                                                 argumentTestDescriptor ->
                                                         new ArgumentTestDescriptorRunnable(
-                                                                        executionRequest,
+                                                                        executionContext,
+                                                                                executionRequest,
                                                                         classContext,
-                                                                        argumentTestDescriptor)
+                                                                                argumentTestDescriptor)
                                                                 .skip());
 
                                         executionRequest
@@ -239,7 +245,8 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                         State.SKIP_FAILURE),
                                 () -> {
                                     try {
-                                        getClassInterceptorRegistry()
+                                        executionContext
+                                                .getClassInterceptorManager()
                                                 .conclude(classContext, concludeMethods);
 
                                         return StateMachine.Result.of(State.CONCLUDE_SUCCESS);
@@ -252,7 +259,9 @@ public class ClassTestDescriptorRunnable extends AbstractTestDescriptorRunnable 
                                 StateMachine.asList(State.CONCLUDE_SUCCESS, State.CONCLUDE_FAILURE),
                                 () -> {
                                     try {
-                                        getClassInterceptorRegistry().onDestroy(classContext);
+                                        executionContext
+                                                .getClassInterceptorManager()
+                                                .onDestroy(classContext);
                                         return StateMachine.Result.of(State.ON_DESTROY_SUCCESS);
                                     } catch (Throwable t) {
                                         t.printStackTrace(System.err);

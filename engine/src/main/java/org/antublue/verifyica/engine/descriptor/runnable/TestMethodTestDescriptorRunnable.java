@@ -19,6 +19,7 @@ package org.antublue.verifyica.engine.descriptor.runnable;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.engine.ExecutionContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.StateMachine;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
@@ -34,6 +35,7 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
             LoggerFactory.getLogger(TestMethodTestDescriptorRunnable.class);
 
     private final ExecutionRequest executionRequest;
+    private final ExecutionContext executionContext;
     private final ArgumentContext argumentContext;
     private final TestMethodTestDescriptor testMethodTestDescriptor;
     private final List<Method> beforeEachMethods;
@@ -54,19 +56,23 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
     /**
      * Constructor
      *
+     * @param executionContext executionContext
      * @param executionRequest executionRequest
      * @param argumentContext argumentContext
      * @param testMethodTestDescriptor testMethodTestDescriptor
      */
     public TestMethodTestDescriptorRunnable(
+            ExecutionContext executionContext,
             ExecutionRequest executionRequest,
             ArgumentContext argumentContext,
             TestMethodTestDescriptor testMethodTestDescriptor) {
+        Precondition.notNull(executionContext, "executionContext is null");
         Precondition.notNull(executionRequest, "executionRequest is null");
         Precondition.notNull(argumentContext, "argumentContext is null");
         Precondition.notNull(testMethodTestDescriptor, "testMethodTestDescriptor is null");
 
         this.executionRequest = executionRequest;
+        this.executionContext = executionContext;
         this.argumentContext = argumentContext;
         this.testMethodTestDescriptor = testMethodTestDescriptor;
         this.beforeEachMethods = testMethodTestDescriptor.getBeforeEachMethods();
@@ -86,7 +92,8 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
                                 State.START,
                                 () -> {
                                     try {
-                                        getClassInterceptorRegistry()
+                                        executionContext
+                                                .getClassInterceptorManager()
                                                 .beforeEach(argumentContext, beforeEachMethods);
                                         return StateMachine.Result.of(State.BEFORE_EACH_SUCCESS);
                                     } catch (Throwable t) {
@@ -98,7 +105,8 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
                                 State.BEFORE_EACH_SUCCESS,
                                 () -> {
                                     try {
-                                        getClassInterceptorRegistry()
+                                        executionContext
+                                                .getClassInterceptorManager()
                                                 .test(argumentContext, testMethod);
                                         return StateMachine.Result.of(State.TEST_SUCCESS);
                                     } catch (Throwable t) {
@@ -113,7 +121,8 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
                                         State.TEST_FAILURE),
                                 () -> {
                                     try {
-                                        getClassInterceptorRegistry()
+                                        executionContext
+                                                .getClassInterceptorManager()
                                                 .afterEach(argumentContext, afterEachMethods);
                                         return StateMachine.Result.of(State.AFTER_EACH_SUCCESS);
                                     } catch (Throwable t) {

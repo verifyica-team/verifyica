@@ -23,6 +23,7 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 
 /** Class to implement InterceptorPredicates */
+@SuppressWarnings("deprecation")
 public class InterceptorPredicates {
 
     /** Predicate to filter autowired engine interceptors classes */

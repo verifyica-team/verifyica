@@ -30,8 +30,8 @@ import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.Precondition;
+import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.internal.engine.filter.EngineFiltersInterceptor;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -40,33 +40,33 @@ import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
 
-/** Class to implement DefaultEngineInterceptorRegistry */
+/** Class to implement EngineInterceptorManager */
 @SuppressWarnings("PMD.EmptyCatchBlock")
-public class EngineInterceptorRegistry {
+public class EngineInterceptorManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EngineInterceptorRegistry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EngineInterceptorManager.class);
 
     private final ReentrantReadWriteLock readWriteLock;
     private final List<EngineInterceptor> engineInterceptors;
     private boolean initialized;
 
     /** Constructor */
-    private EngineInterceptorRegistry() {
+    public EngineInterceptorManager() {
         readWriteLock = new ReentrantReadWriteLock(true);
         engineInterceptors = new ArrayList<>();
 
         engineInterceptors.add(new EngineFiltersInterceptor());
 
-        loadEngineInterceptors();
+        initialize();
     }
 
     /**
-     * Method to register an engine interceptor
+     * Method to register an EngineInterceptor
      *
      * @param engineInterceptor engineInterceptor
      * @return this EngineInterceptorRegistry
      */
-    public EngineInterceptorRegistry register(EngineInterceptor engineInterceptor) {
+    public EngineInterceptorManager register(EngineInterceptor engineInterceptor) {
         Precondition.notNull(engineInterceptor, "engineInterceptor is null");
 
         getReadWriteLock().writeLock().lock();
@@ -80,12 +80,12 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to unregister an engine interceptor
+     * Method to unregister an EngineInterceptor
      *
      * @param engineInterceptor engineInterceptor
      * @return this EngineInterceptorRegistry
      */
-    public EngineInterceptorRegistry remove(EngineInterceptor engineInterceptor) {
+    public EngineInterceptorManager remove(EngineInterceptor engineInterceptor) {
         Precondition.notNull(engineInterceptor, "testClass is null");
 
         getReadWriteLock().writeLock().lock();
@@ -99,7 +99,7 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to get the number of engine interceptors
+     * Method to get the number of EngineInterceptors
      *
      * @return the number of class interceptors
      */
@@ -113,7 +113,7 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to call engine interceptors
+     * Method to call EngineInterceptor callbacks
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable
@@ -135,7 +135,7 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to call engine interceptors
+     * Method to call EngineInterceptor callbacks
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @param classDefinitions classDefinitions
@@ -162,7 +162,7 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to call engine interceptors
+     * Method to call EngineInterceptor callbacks
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable
@@ -183,7 +183,7 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to call engine interceptors
+     * Method to call EngineInterceptor callbacks
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable
@@ -205,7 +205,7 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to call engine interceptors
+     * Method to call EngineInterceptor callbacks
      *
      * @param engineInterceptorContext engineInterceptorContext
      */
@@ -271,12 +271,13 @@ public class EngineInterceptorRegistry {
         return readWriteLock;
     }
 
-    /** Method to load test engine interceptors */
-    private void loadEngineInterceptors() {
+    /** Method to initialize by loading autowired EngineInterceptors */
+    private void initialize() {
         getReadWriteLock().writeLock().lock();
         try {
             if (!initialized) {
-                LOGGER.trace("loading engine interceptors");
+                LOGGER.trace("initialize()");
+                LOGGER.trace("loading autowired engine interceptors");
 
                 List<Class<?>> autowiredEngineInterceptors =
                         new ArrayList<>(
@@ -318,24 +319,14 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to get a singleton instance
-     *
-     * @return the singleton instance
-     */
-    public static EngineInterceptorRegistry getInstance() {
-        return SingletonHolder.SINGLETON;
-    }
-
-    /**
-     * Method to filter engine interceptors
+     * Method to filter EngineInterceptors
      *
      * @param classes classes
      */
     private static void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        ConcreteEngineContext.getInstance()
-                .getConfiguration()
+        ConcreteConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX)
                 .ifPresent(
                         regex -> {
@@ -360,8 +351,7 @@ public class EngineInterceptorRegistry {
                             }
                         });
 
-        ConcreteEngineContext.getInstance()
-                .getConfiguration()
+        ConcreteConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX)
                 .ifPresent(
                         regex -> {
@@ -384,12 +374,5 @@ public class EngineInterceptorRegistry {
 
         classes.clear();
         classes.addAll(filteredClasses);
-    }
-
-    /** Class to hold the singleton instance */
-    private static class SingletonHolder {
-
-        /** The singleton instance */
-        private static final EngineInterceptorRegistry SINGLETON = new EngineInterceptorRegistry();
     }
 }

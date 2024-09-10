@@ -37,12 +37,13 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.interceptor.ArgumentInterceptorContext;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
+import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
+import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.ConcreteArgumentInterceptorContext;
 import org.antublue.verifyica.engine.context.ConcreteClassInterceptorContext;
-import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -51,35 +52,42 @@ import org.antublue.verifyica.engine.support.ClassSupport;
 import org.antublue.verifyica.engine.support.ObjectSupport;
 import org.antublue.verifyica.engine.support.OrderSupport;
 
-/** Class to implement DefaultClassInterceptorRegistry */
+/** Class to implement ClassInterceptorManager */
 @SuppressWarnings("PMD.EmptyCatchBlock")
-public class ClassInterceptorRegistry {
+public class ClassInterceptorManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorManager.class);
 
+    private final EngineInterceptorContext engineInterceptorContext;
     private final ReadWriteLock readWriteLock;
     private final List<ClassInterceptor> classInterceptors;
     private final Map<Class<?>, List<ClassInterceptor>> mappedClassInterceptors;
     private boolean initialized;
 
-    /** Constructor */
-    private ClassInterceptorRegistry() {
-        readWriteLock = new ReentrantReadWriteLock(true);
-        classInterceptors = new ArrayList<>();
-        mappedClassInterceptors = new LinkedHashMap<>();
+    /**
+     * Constructor
+     *
+     * @param engineInterceptorContext engineInterceptorContext
+     */
+    public ClassInterceptorManager(EngineInterceptorContext engineInterceptorContext) {
+        Precondition.notNull(engineInterceptorContext, "engineInterceptorContext is null");
 
-        loadClassInterceptors();
+        this.engineInterceptorContext = engineInterceptorContext;
+        this.readWriteLock = new ReentrantReadWriteLock(true);
+        this.classInterceptors = new ArrayList<>();
+        this.mappedClassInterceptors = new LinkedHashMap<>();
+
+        initialize();
     }
 
     /**
-     * Method to register a class interceptor
+     * Method to register a ClassInterceptor
      *
      * @param testClass testClass
      * @param classInterceptor classInterceptors
      * @return this ClassInterceptorRegistry
      */
-    public ClassInterceptorRegistry register(
-            Class<?> testClass, ClassInterceptor classInterceptor) {
+    public ClassInterceptorManager register(Class<?> testClass, ClassInterceptor classInterceptor) {
         Precondition.notNull(testClass, "testClass is null");
         Precondition.notNull(classInterceptor, "classInterceptor is null");
 
@@ -96,13 +104,13 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to remove a class interceptor
+     * Method to remove a ClassInterceptor
      *
      * @param testClass testClass
      * @param classInterceptor classInterceptor
      * @return this ClassInterceptorRegistry
      */
-    public ClassInterceptorRegistry remove(Class<?> testClass, ClassInterceptor classInterceptor) {
+    public ClassInterceptorManager remove(Class<?> testClass, ClassInterceptor classInterceptor) {
         Precondition.notNull(testClass, "testClass is null");
         Precondition.notNull(classInterceptor, "classInterceptor is null");
 
@@ -117,7 +125,7 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to get the number of class interceptors
+     * Method to get the number of ClassInterceptor for a Class
      *
      * @param testClass testClass
      * @return the number of class interceptors
@@ -135,12 +143,12 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to remove all class interceptors
+     * Method to remove all ClassInterceptors
      *
      * @param testClass testClass
      * @return this ClassInterceptorRegistry
      */
-    public ClassInterceptorRegistry clear(Class<?> testClass) {
+    public ClassInterceptorManager clear(Class<?> testClass) {
         Precondition.notNull(testClass, "testClass is null");
 
         getReadWriteLock().writeLock().lock();
@@ -154,7 +162,7 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to execute class interceptors
+     * Method to execute ClassInterceptor callbacks
      *
      * @param engineContext engineContext
      * @param testClass testClass
@@ -164,9 +172,6 @@ public class ClassInterceptorRegistry {
     public Object instantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
         Object testInstance = null;
         Throwable throwable = null;
-
-        ConcreteEngineInterceptorContext engineInterceptorContext =
-                new ConcreteEngineInterceptorContext(engineContext);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -211,7 +216,7 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to execute class interceptors
+     * Method to execute ClassInterceptor callbacks
      *
      * @param engineContext engineContext
      * @param testClass testClass
@@ -242,7 +247,7 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to execute class interceptors
+     * Method to execute ClassInterceptor callbacks
      *
      * @param classContext classContext
      * @param prepareMethods prepareMethods
@@ -303,7 +308,7 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to execute class interceptors
+     * Method to execute ClassInterceptor callbacks
      *
      * @param argumentContext argumentContext
      * @param beforeAllMethods beforeAllMethods
@@ -364,7 +369,7 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to execute class interceptors
+     * Method to execute ClassInterceptor callbacks
      *
      * @param argumentContext argumentContext
      * @param beforeEachMethods beforeEachMethods
@@ -425,7 +430,7 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to execute class interceptors
+     * Method to execute ClassInterceptor callbacks
      *
      * @param argumentContext argumentContext
      * @param testMethod testMethod
@@ -485,7 +490,7 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to execute class interceptors
+     * Method to execute ClassInterceptor callbacks
      *
      * @param argumentContext argumentContext
      * @param afterEachMethods afterEachMethods
@@ -547,7 +552,7 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to execute class interceptors
+     * Method to execute ClassInterceptor callbacks
      *
      * @param argumentContext argumentContext
      * @param afterAllMethods afterAllMethods
@@ -609,7 +614,7 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to execute class interceptors
+     * Method to execute ClassInterceptor callbacks
      *
      * @param classContext classContext
      * @param concludeMethods concludeMethods
@@ -671,7 +676,7 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to execute class interceptors
+     * Method to execute ClassInterceptor callbacks
      *
      * @param classContext classContext
      * @throws Throwable Throwable
@@ -734,12 +739,13 @@ public class ClassInterceptorRegistry {
         return readWriteLock;
     }
 
-    /** Method to load class interceptors */
-    private void loadClassInterceptors() {
+    /** Method initialize by loading autowired ClassInterceptors */
+    private void initialize() {
         getReadWriteLock().writeLock().lock();
         try {
             if (!initialized) {
-                LOGGER.trace("loadClassInterceptors()");
+                LOGGER.trace("initialize()");
+                LOGGER.trace("loading autowired class interceptors");
 
                 List<Class<?>> autowiredClassInterceptors =
                         new ArrayList<>(
@@ -782,15 +788,14 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to filter class interceptors
+     * Method to filter ClassInterceptors
      *
      * @param classes classes
      */
     private static void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        ConcreteEngineContext.getInstance()
-                .getConfiguration()
+        ConcreteConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX)
                 .ifPresent(
                         regex -> {
@@ -815,8 +820,7 @@ public class ClassInterceptorRegistry {
                             }
                         });
 
-        ConcreteEngineContext.getInstance()
-                .getConfiguration()
+        ConcreteConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX)
                 .ifPresent(
                         regex -> {
@@ -839,21 +843,5 @@ public class ClassInterceptorRegistry {
 
         classes.clear();
         classes.addAll(filteredClasses);
-    }
-
-    /**
-     * Method to get a singleton instance
-     *
-     * @return the singleton instance
-     */
-    public static ClassInterceptorRegistry getInstance() {
-        return SingletonHolder.SINGLETON;
-    }
-
-    /** Class to hold the singleton instance */
-    private static class SingletonHolder {
-
-        /** The singleton instance */
-        private static final ClassInterceptorRegistry SINGLETON = new ClassInterceptorRegistry();
     }
 }

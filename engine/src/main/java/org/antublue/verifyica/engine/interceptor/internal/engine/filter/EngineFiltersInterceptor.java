@@ -52,7 +52,7 @@ public class EngineFiltersInterceptor implements EngineInterceptor {
     private static void applyFilters(List<ClassDefinition> classDefinitions) {
         LOGGER.trace("applyFilters()");
 
-        List<Filter> filters = FilterFactory.getInstance().loadFilters();
+        List<Filter> filters = FilterFactory.loadFilters();
 
         Map<Class<?>, Map<Method, MethodDefinition>> workingClassMethodDefinitionMap =
                 new LinkedHashMap<>();

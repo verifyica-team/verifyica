@@ -40,7 +40,7 @@ import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 
-/** Class to implement DefaultConfiguration */
+/** Class to implement ConcreteConfiguration */
 public class ConcreteConfiguration implements Configuration {
 
     private static final String VERIFYICA_CONFIGURATION_TRACE = "VERIFYICA_CONFIGURATION_TRACE";
@@ -64,7 +64,7 @@ public class ConcreteConfiguration implements Configuration {
         map = new TreeMap<>();
         readWriteLock = new ReentrantReadWriteLock(true);
 
-        loadConfiguration();
+        initialize();
     }
 
     /**
@@ -337,10 +337,10 @@ public class ConcreteConfiguration implements Configuration {
         private static final ConcreteConfiguration SINGLETON = new ConcreteConfiguration();
     }
 
-    /** Method to load configuration */
-    private void loadConfiguration() {
+    /** Method to initialize configuration */
+    private void initialize() {
         if (IS_TRACE_ENABLED) {
-            trace("loadConfiguration()");
+            trace("initialize()");
         }
 
         try {

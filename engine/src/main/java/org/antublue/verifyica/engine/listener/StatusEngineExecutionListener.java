@@ -24,8 +24,8 @@ import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.common.AnsiColor;
 import org.antublue.verifyica.engine.common.AnsiColoredString;
 import org.antublue.verifyica.engine.common.Stopwatch;
+import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
@@ -66,7 +66,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     /** Constructor */
     public StatusEngineExecutionListener() {
-        Configuration configuration = ConcreteEngineContext.getInstance().getConfiguration();
+        Configuration configuration = ConcreteConfiguration.getInstance();
 
         consoleLogTimingUnits =
                 Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_TIMING_UNITS))
