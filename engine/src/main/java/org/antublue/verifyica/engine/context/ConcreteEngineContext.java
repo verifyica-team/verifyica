@@ -19,24 +19,32 @@ package org.antublue.verifyica.engine.context;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.VerifyicaTestEngine;
-import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement ConcreteEngineContext */
 public class ConcreteEngineContext implements EngineContext {
 
     private final Configuration configuration;
+    private final String version;
     private final Store store;
 
-    /** Constructor */
-    private ConcreteEngineContext() {
-        configuration = ConcreteConfiguration.getInstance();
-        store = new ConcreteStore();
+    /**
+     * Constructor
+     *
+     * @param configuration configuration
+     */
+    public ConcreteEngineContext(Configuration configuration, String version) {
+        Precondition.notNull(configuration, "configuration is null");
+        Precondition.notNull(version, "version is null");
+
+        this.configuration = configuration;
+        this.version = version;
+        this.store = new ConcreteStore();
     }
 
     @Override
     public String getVersion() {
-        return VerifyicaTestEngine.staticGetVersion();
+        return version;
     }
 
     @Override
@@ -57,21 +65,5 @@ public class ConcreteEngineContext implements EngineContext {
                 + ", store="
                 + store
                 + '}';
-    }
-
-    /**
-     * Method to get the singleton instance
-     *
-     * @return the singleton instance
-     */
-    public static ConcreteEngineContext getInstance() {
-        return SingletonHolder.SINGLETON;
-    }
-
-    /** Class to hold the singleton instance */
-    private static class SingletonHolder {
-
-        /** The singleton instance */
-        private static final ConcreteEngineContext SINGLETON = new ConcreteEngineContext();
     }
 }

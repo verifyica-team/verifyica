@@ -23,6 +23,7 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.engine.ExecutionContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.StateMachine;
 import org.antublue.verifyica.engine.context.ConcreteArgumentContext;
@@ -40,6 +41,7 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
             LoggerFactory.getLogger(ArgumentTestDescriptorRunnable.class);
 
     private final ExecutionRequest executionRequest;
+    private final ExecutionContext executionContext;
     private final ArgumentTestDescriptor argumentTestDescriptor;
     private final List<Method> beforeAllMethods;
     private final List<TestMethodTestDescriptor> testMethodTestDescriptors;
@@ -66,19 +68,23 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
     /**
      * Constructor
      *
+     * @param executionContext executionContext
      * @param executionRequest executionRequest
      * @param classContext classContext
      * @param argumentTestDescriptor argumentTestDescriptor
      */
     public ArgumentTestDescriptorRunnable(
+            ExecutionContext executionContext,
             ExecutionRequest executionRequest,
             ClassContext classContext,
             ArgumentTestDescriptor argumentTestDescriptor) {
+        Precondition.notNull(executionContext, "executionContext is null");
         Precondition.notNull(executionRequest, "executionRequest is null");
         Precondition.notNull(classContext, "classContext is null");
         Precondition.notNull(argumentTestDescriptor, "argumentTestDescriptor is null");
 
         this.executionRequest = executionRequest;
+        this.executionContext = executionContext;
         this.argumentTestDescriptor = argumentTestDescriptor;
         this.beforeAllMethods = argumentTestDescriptor.getBeforeAllMethods();
         this.testMethodTestDescriptors = getTestMethodTestDescriptors(argumentTestDescriptor);
@@ -98,7 +104,8 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
                                 State.START,
                                 () -> {
                                     try {
-                                        getClassInterceptorRegistry()
+                                        executionContext
+                                                .getClassInterceptorManager()
                                                 .beforeAll(argumentContext, beforeAllMethods);
                                         return StateMachine.Result.of(State.BEFORE_ALL_SUCCESS);
                                     } catch (Throwable t) {
@@ -113,9 +120,10 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
                                         testMethodTestDescriptors.forEach(
                                                 methodTestDescriptor ->
                                                         new TestMethodTestDescriptorRunnable(
-                                                                        executionRequest,
+                                                                        executionContext,
+                                                                                executionRequest,
                                                                         argumentContext,
-                                                                        methodTestDescriptor)
+                                                                                methodTestDescriptor)
                                                                 .run());
                                         return StateMachine.Result.of(State.EXECUTE_SUCCESS);
                                     } catch (Throwable t) {
@@ -130,9 +138,10 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
                                         testMethodTestDescriptors.forEach(
                                                 methodTestDescriptor ->
                                                         new TestMethodTestDescriptorRunnable(
-                                                                        executionRequest,
+                                                                        executionContext,
+                                                                                executionRequest,
                                                                         argumentContext,
-                                                                        methodTestDescriptor)
+                                                                                methodTestDescriptor)
                                                                 .skip());
                                         return StateMachine.Result.of(State.SKIP_SUCCESS);
                                     } catch (Throwable t) {
@@ -148,7 +157,8 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
                                         State.SKIP_FAILURE),
                                 () -> {
                                     try {
-                                        getClassInterceptorRegistry()
+                                        executionContext
+                                                .getClassInterceptorManager()
                                                 .afterAll(argumentContext, afterAllMethods);
                                         return StateMachine.Result.of(State.AFTER_ALL_SUCCESS);
                                     } catch (Throwable t) {
@@ -230,7 +240,8 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
         testMethodTestDescriptors.forEach(
                 methodTestDescriptor ->
                         new TestMethodTestDescriptorRunnable(
-                                        executionRequest, argumentContext, methodTestDescriptor)
+                                        executionContext, executionRequest,
+                                        argumentContext, methodTestDescriptor)
                                 .skip());
 
         executionRequest

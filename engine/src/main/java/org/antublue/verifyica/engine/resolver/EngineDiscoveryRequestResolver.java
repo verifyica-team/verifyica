@@ -30,22 +30,22 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 import org.antublue.verifyica.api.Argument;
-import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
+import org.antublue.verifyica.engine.ExecutionContext;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.Stopwatch;
-import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.exception.TestClassDefinitionException;
-import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
-import org.antublue.verifyica.engine.interceptor.EngineInterceptorRegistry;
+import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
+import org.antublue.verifyica.engine.interceptor.EngineInterceptorManager;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ClassSupport;
@@ -76,10 +76,13 @@ public class EngineDiscoveryRequestResolver {
 
     private static final List<Class<? extends DiscoverySelector>> DISCOVERY_SELECTORS_CLASSES;
 
-    private static Comparator<Object> getClassComparator() {
-        return Comparator.comparing(clazz -> OrderSupport.getOrder((Class<?>) clazz))
-                .thenComparing(clazz -> DisplayNameSupport.getDisplayName((Class<?>) clazz));
-    }
+    private static final Comparator<Object> CLASS_COMPARATOR =
+            Comparator.comparing(clazz -> OrderSupport.getOrder((Class<?>) clazz))
+                    .thenComparing(clazz -> DisplayNameSupport.getDisplayName((Class<?>) clazz));
+
+    private final EngineInterceptorManager engineInterceptorManager;
+    private final ClassInterceptorManager classInterceptorManager;
+    private final EngineInterceptorContext engineInterceptorContext;
 
     static {
         DISCOVERY_SELECTORS_CLASSES = new ArrayList<>();
@@ -96,9 +99,18 @@ public class EngineDiscoveryRequestResolver {
         DISCOVERY_SELECTORS_CLASSES.add(UniqueIdSelector.class);
     }
 
-    /** Constructor */
-    public EngineDiscoveryRequestResolver() {
-        // INTENTIONALLY BLANK
+    /**
+     * Constructor
+     *
+     * @param executionContext executionContext
+     */
+    public EngineDiscoveryRequestResolver(ExecutionContext executionContext) {
+        Precondition.notNull(executionContext, "executionContext is null");
+
+        this.engineInterceptorManager = executionContext.getEngineInterceptorManager();
+        this.classInterceptorManager = executionContext.getClassInterceptorManager();
+        this.engineInterceptorContext =
+                new ConcreteEngineInterceptorContext(executionContext.getEngineContext());
     }
 
     /**
@@ -113,9 +125,9 @@ public class EngineDiscoveryRequestResolver {
 
         Stopwatch stopWatch = new Stopwatch();
 
-        Map<Class<?>, List<Method>> testClassMethodMap = new TreeMap<>(getClassComparator());
-        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new TreeMap<>(getClassComparator());
-        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new TreeMap<>(getClassComparator());
+        Map<Class<?>, List<Method>> testClassMethodMap = new TreeMap<>(CLASS_COMPARATOR);
+        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new TreeMap<>(CLASS_COMPARATOR);
+        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new TreeMap<>(CLASS_COMPARATOR);
 
         try {
             List<DiscoverySelector> discoverySelectors = new ArrayList<>();
@@ -338,28 +350,19 @@ public class EngineDiscoveryRequestResolver {
      * @param classDefinitions classDefinitions
      * @throws Throwable Throwable
      */
-    private static void onTestDiscovery(List<ClassDefinition> classDefinitions) throws Throwable {
+    private void onTestDiscovery(List<ClassDefinition> classDefinitions) throws Throwable {
         LOGGER.trace("onTestDiscovery()");
 
         if (!classDefinitions.isEmpty()) {
-            ConcreteEngineInterceptorContext concreteEngineInterceptorContext =
-                    new ConcreteEngineInterceptorContext(ConcreteEngineContext.getInstance());
-
-            EngineInterceptorRegistry.getInstance()
-                    .onTestDiscovery(concreteEngineInterceptorContext, classDefinitions);
+            engineInterceptorManager.onTestDiscovery(engineInterceptorContext, classDefinitions);
         }
     }
 
-    private static void onInitialize(List<ClassDefinition> classDefinitions) throws Throwable {
+    private void onInitialize(List<ClassDefinition> classDefinitions) throws Throwable {
         LOGGER.trace("onInitialize()");
 
         if (!classDefinitions.isEmpty()) {
-            EngineContext engineContext = ConcreteEngineContext.getInstance();
-
-            EngineInterceptorContext engineInterceptorContext =
-                    new ConcreteEngineInterceptorContext(engineContext);
-
-            EngineInterceptorRegistry.getInstance().onInitialize(engineInterceptorContext);
+            engineInterceptorManager.onInitialize(engineInterceptorContext);
         }
     }
 
@@ -383,8 +386,7 @@ public class EngineDiscoveryRequestResolver {
      * @param classDefinitions classDefinitions
      * @throws Throwable Throwable
      */
-    private static void loadClassInterceptors(List<ClassDefinition> classDefinitions)
-            throws Throwable {
+    private void loadClassInterceptors(List<ClassDefinition> classDefinitions) throws Throwable {
         LOGGER.trace("loadClassInterceptors()");
 
         for (ClassDefinition classDefinition : classDefinitions) {
@@ -407,16 +409,14 @@ public class EngineDiscoveryRequestResolver {
                                             + " method",
                                     testClass.getName()));
                 } else if (object instanceof ClassInterceptor) {
-                    ClassInterceptorRegistry.getInstance()
-                            .register(testClass, (ClassInterceptor) object);
+                    classInterceptorManager.register(testClass, (ClassInterceptor) object);
                 } else if (object.getClass().isArray()) {
                     Object[] objects = (Object[]) object;
                     if (objects.length > 0) {
                         int index = 0;
                         for (Object o : objects) {
                             if (o instanceof ClassInterceptor) {
-                                ClassInterceptorRegistry.getInstance()
-                                        .register(testClass, (ClassInterceptor) o);
+                                classInterceptorManager.register(testClass, (ClassInterceptor) o);
                             } else {
                                 throw new TestClassDefinitionException(
                                         format(
@@ -450,8 +450,7 @@ public class EngineDiscoveryRequestResolver {
                     while (iterator.hasNext()) {
                         Object o = iterator.next();
                         if (o instanceof ClassInterceptor) {
-                            ClassInterceptorRegistry.getInstance()
-                                    .register(testClass, (ClassInterceptor) o);
+                            classInterceptorManager.register(testClass, (ClassInterceptor) o);
                         } else {
                             throw new TestClassDefinitionException(
                                     format(

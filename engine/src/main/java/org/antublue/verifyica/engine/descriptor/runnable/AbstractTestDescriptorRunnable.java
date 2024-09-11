@@ -24,7 +24,6 @@ import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
-import org.antublue.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.junit.platform.engine.TestDescriptor;
 
 /** Class to implement AbstractTestDescriptorRunnable */
@@ -99,14 +98,5 @@ public abstract class AbstractTestDescriptorRunnable implements Runnable {
                 .filter(TEST_METHOD_DESCRIPTOR)
                 .map(TEST_METHOD_DESCRIPTOR_MAPPER)
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Method to get the ClassInterceptorRegistry
-     *
-     * @return the ClassInterceptorRegistry
-     */
-    protected static ClassInterceptorRegistry getClassInterceptorRegistry() {
-        return ClassInterceptorRegistry.getInstance();
     }
 }

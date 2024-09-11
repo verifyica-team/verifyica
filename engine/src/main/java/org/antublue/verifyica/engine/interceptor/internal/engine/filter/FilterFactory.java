@@ -28,8 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.yaml.snakeyaml.Yaml;
 
@@ -57,15 +57,14 @@ public class FilterFactory {
      *
      * @return a List of Filters
      */
-    public List<Filter> loadFilters() {
+    public static List<Filter> loadFilters() {
         String filtersFilename = null;
 
         try {
             List<Filter> filters = new ArrayList<>();
 
             filtersFilename =
-                    ConcreteEngineContext.getInstance()
-                            .getConfiguration()
+                    ConcreteConfiguration.getInstance()
                             .getOptional(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME)
                             .orElse(null);
 
@@ -129,15 +128,6 @@ public class FilterFactory {
     }
 
     /**
-     * Method to get a singleton instance
-     *
-     * @return the singleton instance
-     */
-    public static FilterFactory getInstance() {
-        return SingletonHolder.SINGLETON;
-    }
-
-    /**
      * Method to load a File contents
      *
      * @param file file
@@ -148,12 +138,5 @@ public class FilterFactory {
         Path path = Paths.get(file.getAbsolutePath());
         byte[] bytes = Files.readAllBytes(path);
         return new String(bytes, StandardCharsets.UTF_8);
-    }
-
-    /** Class to hold the singleton instance */
-    private static class SingletonHolder {
-
-        /** The singleton instance */
-        private static final FilterFactory SINGLETON = new FilterFactory();
     }
 }

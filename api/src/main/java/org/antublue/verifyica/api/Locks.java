@@ -87,6 +87,12 @@ public class Locks {
         INTERNAL_LOCK_MANAGER.unlock(key);
     }
 
+    /**
+     * Check if a key is locked
+     *
+     * @param key key
+     * @return true if the key is locked, else false
+     */
     public static boolean isLocked(Object key) {
         notNull(key, "key is null");
 
@@ -334,6 +340,12 @@ public class Locks {
             }
         }
 
+        /**
+         * Method to return if a key is locked
+         *
+         * @param key key
+         * @return true if the key is locked, else false
+         */
         private boolean isLocked(Object key) {
             notNull(key, "key is null");
 

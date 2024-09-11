@@ -23,7 +23,7 @@ import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.junit.platform.engine.ConfigurationParameters;
 
-/** Class to implement DefaultConfigurationParameters */
+/** Class to implement ConcreteConfigurationParameters */
 @SuppressWarnings("deprecation")
 public class ConcreteConfigurationParameters implements ConfigurationParameters {
 
