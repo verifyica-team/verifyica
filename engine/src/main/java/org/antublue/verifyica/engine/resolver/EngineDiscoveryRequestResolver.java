@@ -81,6 +81,10 @@ public class EngineDiscoveryRequestResolver {
                 .thenComparing(clazz -> DisplayNameSupport.getDisplayName((Class<?>) clazz));
     }
 
+    private final EngineInterceptorManager engineInterceptorManager;
+    private final ClassInterceptorManager classInterceptorManager;
+    private final EngineInterceptorContext engineInterceptorContext;
+
     static {
         DISCOVERY_SELECTORS_CLASSES = new ArrayList<>();
         DISCOVERY_SELECTORS_CLASSES.add(FileSelector.class);
@@ -95,10 +99,6 @@ public class EngineDiscoveryRequestResolver {
         DISCOVERY_SELECTORS_CLASSES.add(MethodSelector.class);
         DISCOVERY_SELECTORS_CLASSES.add(UniqueIdSelector.class);
     }
-
-    private final EngineInterceptorManager engineInterceptorManager;
-    private final ClassInterceptorManager classInterceptorManager;
-    private final EngineInterceptorContext engineInterceptorContext;
 
     /**
      * Constructor
