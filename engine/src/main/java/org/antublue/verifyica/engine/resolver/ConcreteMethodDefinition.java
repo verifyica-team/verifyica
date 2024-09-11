@@ -17,6 +17,7 @@
 package org.antublue.verifyica.engine.resolver;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
 
 /** Class to implement ConcreteMethodDefinition */
@@ -51,5 +52,29 @@ public class ConcreteMethodDefinition implements MethodDefinition {
     @Override
     public String getDisplayName() {
         return displayName;
+    }
+
+    @Override
+    public String toString() {
+        return "ConcreteMethodDefinition{"
+                + "method="
+                + method
+                + ", displayName='"
+                + displayName
+                + '\''
+                + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConcreteMethodDefinition that = (ConcreteMethodDefinition) o;
+        return Objects.equals(method, that.method) && Objects.equals(displayName, that.displayName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(method, displayName);
     }
 }
