@@ -62,7 +62,6 @@ public class ClassInterceptorManager {
     private final ReadWriteLock readWriteLock;
     private final List<ClassInterceptor> classInterceptors;
     private final Map<Class<?>, List<ClassInterceptor>> mappedClassInterceptors;
-    private boolean initialized;
 
     /**
      * Constructor
@@ -85,7 +84,7 @@ public class ClassInterceptorManager {
      *
      * @param testClass testClass
      * @param classInterceptor classInterceptors
-     * @return this ClassInterceptorRegistry
+     * @return this
      */
     public ClassInterceptorManager register(Class<?> testClass, ClassInterceptor classInterceptor) {
         Precondition.notNull(testClass, "testClass is null");
@@ -108,7 +107,7 @@ public class ClassInterceptorManager {
      *
      * @param testClass testClass
      * @param classInterceptor classInterceptor
-     * @return this ClassInterceptorRegistry
+     * @return this
      */
     public ClassInterceptorManager remove(Class<?> testClass, ClassInterceptor classInterceptor) {
         Precondition.notNull(testClass, "testClass is null");
@@ -146,7 +145,7 @@ public class ClassInterceptorManager {
      * Method to remove all ClassInterceptors
      *
      * @param testClass testClass
-     * @return this ClassInterceptorRegistry
+     * @return this
      */
     public ClassInterceptorManager clear(Class<?> testClass) {
         Precondition.notNull(testClass, "testClass is null");
@@ -708,7 +707,7 @@ public class ClassInterceptorManager {
             }
 
             classInterceptors.addAll(
-                    mappedClassInterceptors.computeIfAbsent(testClass, o -> new ArrayList<>()));
+                    mappedClassInterceptors.computeIfAbsent(testClass, k -> new ArrayList<>()));
 
             return classInterceptors;
         } finally {
@@ -743,44 +742,39 @@ public class ClassInterceptorManager {
     private void initialize() {
         getReadWriteLock().writeLock().lock();
         try {
-            if (!initialized) {
-                LOGGER.trace("initialize()");
-                LOGGER.trace("loading autowired class interceptors");
+            LOGGER.trace("initialize()");
+            LOGGER.trace("loading autowired class interceptors");
 
-                List<Class<?>> autowiredClassInterceptors =
-                        new ArrayList<>(
-                                ClassSupport.findAllClasses(
-                                        InterceptorPredicates.AUTOWIRED_CLASS_INTERCEPTOR_CLASS));
+            List<Class<?>> autowiredClassInterceptors =
+                    new ArrayList<>(
+                            ClassSupport.findAllClasses(
+                                    InterceptorPredicates.AUTOWIRED_CLASS_INTERCEPTOR_CLASS));
 
-                filter(autowiredClassInterceptors);
+            filter(autowiredClassInterceptors);
 
-                OrderSupport.orderClasses(autowiredClassInterceptors);
+            OrderSupport.orderClasses(autowiredClassInterceptors);
 
-                LOGGER.trace(
-                        "autowired class interceptor count [%d]",
-                        autowiredClassInterceptors.size());
+            LOGGER.trace(
+                    "autowired class interceptor count [%d]", autowiredClassInterceptors.size());
 
-                for (Class<?> classInterceptorClass : autowiredClassInterceptors) {
-                    try {
-                        LOGGER.trace(
-                                "loading autowired class interceptor [%s]",
-                                classInterceptorClass.getName());
+            for (Class<?> classInterceptorClass : autowiredClassInterceptors) {
+                try {
+                    LOGGER.trace(
+                            "loading autowired class interceptor [%s]",
+                            classInterceptorClass.getName());
 
-                        Object object = ObjectSupport.createObject(classInterceptorClass);
+                    Object object = ObjectSupport.createObject(classInterceptorClass);
 
-                        classInterceptors.add((ClassInterceptor) object);
+                    classInterceptors.add((ClassInterceptor) object);
 
-                        LOGGER.trace(
-                                "autowired class interceptor [%s] loaded",
-                                classInterceptorClass.getName());
-                    } catch (EngineException e) {
-                        throw e;
-                    } catch (Throwable t) {
-                        throw new EngineException(t);
-                    }
+                    LOGGER.trace(
+                            "autowired class interceptor [%s] loaded",
+                            classInterceptorClass.getName());
+                } catch (EngineException e) {
+                    throw e;
+                } catch (Throwable t) {
+                    throw new EngineException(t);
                 }
-
-                initialized = true;
             }
         } finally {
             getReadWriteLock().writeLock().unlock();

@@ -64,7 +64,7 @@ public class EngineInterceptorManager {
      * Method to register an EngineInterceptor
      *
      * @param engineInterceptor engineInterceptor
-     * @return this EngineInterceptorRegistry
+     * @return this
      */
     public EngineInterceptorManager register(EngineInterceptor engineInterceptor) {
         Precondition.notNull(engineInterceptor, "engineInterceptor is null");
@@ -83,7 +83,7 @@ public class EngineInterceptorManager {
      * Method to unregister an EngineInterceptor
      *
      * @param engineInterceptor engineInterceptor
-     * @return this EngineInterceptorRegistry
+     * @return this
      */
     public EngineInterceptorManager remove(EngineInterceptor engineInterceptor) {
         Precondition.notNull(engineInterceptor, "testClass is null");

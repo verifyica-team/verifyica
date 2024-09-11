@@ -183,28 +183,28 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
             for (int i = 0; i < classTestDescriptorSkippedMap.size(); i++) {
                 String key = "test.class.count";
-                counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
+                counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
 
                 counterMap
-                        .computeIfAbsent(key + ".skipped", o -> new AtomicLong())
+                        .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
                         .incrementAndGet();
             }
 
             for (int i = 0; i < argumentTestDescriptorSkippedMap.size(); i++) {
                 String key = "test.argument.count";
-                counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
+                counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
 
                 counterMap
-                        .computeIfAbsent(key + ".skipped", o -> new AtomicLong())
+                        .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
                         .incrementAndGet();
             }
 
             for (int i = 0; i < testMethodTestDescriptorSkippedMap.size(); i++) {
                 String key = "test.method.count";
-                counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
+                counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
 
                 counterMap
-                        .computeIfAbsent(key + ".skipped", o -> new AtomicLong())
+                        .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
                         .incrementAndGet();
             }
 
@@ -214,27 +214,27 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 TestExecutionResult.Status status = testExecutionResult.getStatus();
                 String key = "test.class.count";
 
-                counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
+                counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
 
                 switch (status) {
                     case SUCCESSFUL:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".successful", o -> new AtomicLong())
+                                    .computeIfAbsent(key + ".successful", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
                     case FAILED:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".failed", o -> new AtomicLong())
+                                    .computeIfAbsent(key + ".failed", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
                     case ABORTED:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".aborted", o -> new AtomicLong())
+                                    .computeIfAbsent(key + ".aborted", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
@@ -251,27 +251,27 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 TestExecutionResult.Status status = testExecutionResult.getStatus();
                 String key = "test.argument.count";
 
-                counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
+                counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
 
                 switch (status) {
                     case SUCCESSFUL:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".successful", o -> new AtomicLong())
+                                    .computeIfAbsent(key + ".successful", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
                     case FAILED:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".failed", o -> new AtomicLong())
+                                    .computeIfAbsent(key + ".failed", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
                     case ABORTED:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".aborted", o -> new AtomicLong())
+                                    .computeIfAbsent(key + ".aborted", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
@@ -288,27 +288,27 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 TestExecutionResult.Status status = testExecutionResult.getStatus();
                 String key = "test.method.count";
 
-                counterMap.computeIfAbsent(key, o -> new AtomicLong()).incrementAndGet();
+                counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
 
                 switch (status) {
                     case SUCCESSFUL:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".successful", o -> new AtomicLong())
+                                    .computeIfAbsent(key + ".successful", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
                     case FAILED:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".failed", o -> new AtomicLong())
+                                    .computeIfAbsent(key + ".failed", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
                     case ABORTED:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".aborted", o -> new AtomicLong())
+                                    .computeIfAbsent(key + ".aborted", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
@@ -375,7 +375,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                 AnsiColor.TEXT_WHITE_BRIGHT.wrap(
                                         pad(
                                                 counterMap
-                                                        .computeIfAbsent(key, o -> new AtomicLong())
+                                                        .computeIfAbsent(key, k -> new AtomicLong())
                                                         .get(),
                                                 countPad)));
 
@@ -385,7 +385,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
                 for (String subKey : subKeys) {
                     String messageDisplayString = counterKeyToMessageDisplayStringMap.get(subKey);
-                    long count = counterMap.computeIfAbsent(subKey, o -> new AtomicLong()).get();
+                    long count = counterMap.computeIfAbsent(subKey, k -> new AtomicLong()).get();
                     String countDisplayString;
 
                     if (subKey.endsWith(".successful")) {
