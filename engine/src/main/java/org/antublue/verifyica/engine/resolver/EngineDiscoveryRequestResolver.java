@@ -196,6 +196,7 @@ public class EngineDiscoveryRequestResolver {
                                                 testArgumentParallelism));
                             });
 
+            pruneClassDefinitions(classDefinitions);
             onTestDiscovery(classDefinitions);
             pruneClassDefinitions(classDefinitions);
             loadClassInterceptors(classDefinitions);
