@@ -76,10 +76,9 @@ public class EngineDiscoveryRequestResolver {
 
     private static final List<Class<? extends DiscoverySelector>> DISCOVERY_SELECTORS_CLASSES;
 
-    private static Comparator<Object> getClassComparator() {
-        return Comparator.comparing(clazz -> OrderSupport.getOrder((Class<?>) clazz))
-                .thenComparing(clazz -> DisplayNameSupport.getDisplayName((Class<?>) clazz));
-    }
+    private static final Comparator<Object> CLASS_COMPARATOR =
+            Comparator.comparing(clazz -> OrderSupport.getOrder((Class<?>) clazz))
+                    .thenComparing(clazz -> DisplayNameSupport.getDisplayName((Class<?>) clazz));
 
     private final EngineInterceptorManager engineInterceptorManager;
     private final ClassInterceptorManager classInterceptorManager;
@@ -126,9 +125,9 @@ public class EngineDiscoveryRequestResolver {
 
         Stopwatch stopWatch = new Stopwatch();
 
-        Map<Class<?>, List<Method>> testClassMethodMap = new TreeMap<>(getClassComparator());
-        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new TreeMap<>(getClassComparator());
-        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new TreeMap<>(getClassComparator());
+        Map<Class<?>, List<Method>> testClassMethodMap = new TreeMap<>(CLASS_COMPARATOR);
+        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new TreeMap<>(CLASS_COMPARATOR);
+        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new TreeMap<>(CLASS_COMPARATOR);
 
         try {
             List<DiscoverySelector> discoverySelectors = new ArrayList<>();
