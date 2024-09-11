@@ -52,6 +52,11 @@ public class InterceptorPredicates {
                         && hasDefaultConstructor(clazz);
             };
 
+    /** Constructor */
+    private InterceptorPredicates() {
+        // INTENTIONALLY BLANK
+    }
+
     /**
      * Method to return if a Class has a default constructor
      *
@@ -65,10 +70,5 @@ public class InterceptorPredicates {
         } catch (Throwable t) {
             return false;
         }
-    }
-
-    /** Constructor */
-    private InterceptorPredicates() {
-        // INTENTIONALLY BLANK
     }
 }

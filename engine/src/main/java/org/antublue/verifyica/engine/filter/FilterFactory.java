@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.interceptor.internal.engine.filter;
+package org.antublue.verifyica.engine.filter;
 
 import static java.lang.String.format;
 

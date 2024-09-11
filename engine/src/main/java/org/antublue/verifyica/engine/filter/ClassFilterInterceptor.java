@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.interceptor.internal.engine.filter;
+package org.antublue.verifyica.engine.filter;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -29,14 +29,14 @@ import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement EngineFiltersInterceptor */
+/** Class to implement ClassFilterInterceptor */
 @SuppressWarnings("PMD.UnusedPrivateMethod")
-public class EngineFiltersInterceptor implements EngineInterceptor {
+public class ClassFilterInterceptor implements EngineInterceptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EngineFiltersInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassFilterInterceptor.class);
 
     /** Constructor */
-    public EngineFiltersInterceptor() {
+    public ClassFilterInterceptor() {
         // INTENTIONALLY BLANK
     }
 

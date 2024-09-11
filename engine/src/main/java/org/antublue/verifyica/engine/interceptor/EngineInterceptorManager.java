@@ -33,7 +33,7 @@ import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.exception.EngineException;
-import org.antublue.verifyica.engine.interceptor.internal.engine.filter.EngineFiltersInterceptor;
+import org.antublue.verifyica.engine.filter.ClassFilterInterceptor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ClassSupport;
@@ -55,7 +55,7 @@ public class EngineInterceptorManager {
         readWriteLock = new ReentrantReadWriteLock(true);
         engineInterceptors = new ArrayList<>();
 
-        engineInterceptors.add(new EngineFiltersInterceptor());
+        engineInterceptors.add(new ClassFilterInterceptor());
 
         initialize();
     }

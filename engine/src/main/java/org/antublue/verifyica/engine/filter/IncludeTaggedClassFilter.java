@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.interceptor.internal.engine.filter;
+package org.antublue.verifyica.engine.filter;
 
 import java.lang.reflect.Method;
+import org.antublue.verifyica.engine.support.TagSupport;
 
-/** Class to implement IncludeClassFilter */
-public class IncludeClassFilter extends AbstractFilter {
+/** Class to implement IncludeTaggedClassFilter */
+public class IncludeTaggedClassFilter extends AbstractFilter {
 
     /**
      * Constructor
@@ -27,29 +28,33 @@ public class IncludeClassFilter extends AbstractFilter {
      * @param classNameRegex classNameRegex
      * @param methodNameRegex methodNameRegex
      */
-    private IncludeClassFilter(String classNameRegex, String methodNameRegex) {
+    private IncludeTaggedClassFilter(String classNameRegex, String methodNameRegex) {
         super(classNameRegex, methodNameRegex);
     }
 
     @Override
     public Type getType() {
-        return Type.INCLUDE_CLASS;
+        return Type.INCLUDE_TAGGED_CLASS;
     }
 
     @Override
     public boolean matches(Class<?> testClass, Method testMethod) {
-        return getClassNamePattern().matcher(testClass.getName()).find()
-                && getMethodNamePattern().matcher(testMethod.getName()).find();
+        for (String tag : TagSupport.getTags(testClass)) {
+            if (getClassNamePattern().matcher(tag).find()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
      * Method to create an IncludeFilter
      *
      * @param classRegex classRegex
-     * @param methodRegex methodRegex
      * @return an IncludeFilter
      */
-    public static IncludeClassFilter create(String classRegex, String methodRegex) {
-        return new IncludeClassFilter(classRegex, methodRegex);
+    public static IncludeTaggedClassFilter create(String classRegex) {
+        return new IncludeTaggedClassFilter(classRegex, "");
     }
 }
