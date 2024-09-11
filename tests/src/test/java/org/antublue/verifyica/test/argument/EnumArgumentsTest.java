@@ -23,7 +23,7 @@ import java.util.Arrays;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
-public class EnumArgumentTest {
+public class EnumArgumentsTest {
 
     private int index = 0;
 
