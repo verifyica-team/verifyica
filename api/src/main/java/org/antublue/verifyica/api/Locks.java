@@ -336,7 +336,7 @@ public class Locks {
             }
 
             lockReference.reentrantLock.unlock();
-            if (lockReference.decrementThreadCount() == 0) {
+            if (lockReference.decrementReferenceCount() == 0) {
                 lockReferences.remove(key, lockReference);
             }
         }
@@ -361,7 +361,7 @@ public class Locks {
          */
         private LockReference compute(Object key) {
             return lockReferences.compute(
-                    key, (k, v) -> v == null ? new LockReference() : v.incrementThreadCount());
+                    key, (k, v) -> v == null ? new LockReference() : v.incrementReferenceCount());
         }
 
         /** For testing */
@@ -382,12 +382,12 @@ public class Locks {
         private static class LockReference {
 
             private final ReentrantLock reentrantLock;
-            private final AtomicInteger numberOfThreadsInQueue;
+            private final AtomicInteger referenceCount;
 
             /** Constructor */
             private LockReference() {
                 reentrantLock = new ReentrantLock(true);
-                numberOfThreadsInQueue = new AtomicInteger(1);
+                referenceCount = new AtomicInteger(1);
             }
 
             /**
@@ -400,22 +400,22 @@ public class Locks {
             }
 
             /**
-             * Increment the thread count
+             * Increment the reference count
              *
              * @return this
              */
-            private LockReference incrementThreadCount() {
-                numberOfThreadsInQueue.incrementAndGet();
+            private LockReference incrementReferenceCount() {
+                referenceCount.incrementAndGet();
                 return this;
             }
 
             /**
-             * Decrement the thread count
+             * Decrement the reference count
              *
              * @return this
              */
-            private int decrementThreadCount() {
-                return numberOfThreadsInQueue.decrementAndGet();
+            private int decrementReferenceCount() {
+                return referenceCount.decrementAndGet();
             }
         }
     }
