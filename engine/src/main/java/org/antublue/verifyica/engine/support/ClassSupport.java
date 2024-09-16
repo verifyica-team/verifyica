@@ -208,7 +208,7 @@ public class ClassSupport {
     /**
      * Method to group a List of Methods by declaring Class
      *
-     * <p>Map keys are ordered by superclass to subclass
+     * <p>Map keys are ordered by superclass then subclass
      *
      * @param methods methods
      * @return a Map
