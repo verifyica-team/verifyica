@@ -25,33 +25,24 @@ import java.util.concurrent.TimeUnit;
 /** Class to implement NewPlatformThreadExecutorService */
 public class NewPlatformThreadExecutorService extends AbstractExecutorService {
 
-    private volatile boolean isShutdown = false;
-    private final List<Thread> runningThreads = Collections.synchronizedList(new ArrayList<>());
-    private final List<Runnable> pendingRunnables = Collections.synchronizedList(new ArrayList<>());
+    private volatile boolean isShutdown;
+    private final List<Thread> runningThreads;
 
     /** Constructor */
     public NewPlatformThreadExecutorService() {
-        // INTENTIONALLY BLANK
+        runningThreads = Collections.synchronizedList(new ArrayList<>());
     }
 
     @Override
     public void execute(Runnable runnable) {
         if (isShutdown) {
-            throw new IllegalStateException("Executor service is shut down.");
-        }
-
-        synchronized (pendingRunnables) {
-            pendingRunnables.add(runnable);
+            throw new IllegalStateException("Executor service is shut down");
         }
 
         Thread thread =
                 new Thread(
                         () -> {
                             try {
-                                synchronized (pendingRunnables) {
-                                    pendingRunnables.remove(runnable);
-                                }
-
                                 runningThreads.add(Thread.currentThread());
                                 runnable.run();
                             } finally {
@@ -77,13 +68,7 @@ public class NewPlatformThreadExecutorService extends AbstractExecutorService {
             }
         }
 
-        List<Runnable> remainingTasks;
-        synchronized (pendingRunnables) {
-            remainingTasks = new ArrayList<>(pendingRunnables);
-            pendingRunnables.clear();
-        }
-
-        return remainingTasks;
+        return new ArrayList<>();
     }
 
     @Override
@@ -93,7 +78,7 @@ public class NewPlatformThreadExecutorService extends AbstractExecutorService {
 
     @Override
     public boolean isTerminated() {
-        return isShutdown && runningThreads.isEmpty() && pendingRunnables.isEmpty();
+        return isShutdown && runningThreads.isEmpty();
     }
 
     @Override
@@ -104,10 +89,7 @@ public class NewPlatformThreadExecutorService extends AbstractExecutorService {
             if (remainingTime <= 0) {
                 return false;
             }
-            Thread.sleep(
-                    Math.min(
-                            TimeUnit.NANOSECONDS.toMillis(remainingTime),
-                            100)); // Sleep for a short duration
+            Thread.sleep(Math.min(TimeUnit.NANOSECONDS.toMillis(remainingTime), 100));
         }
         return true;
     }
