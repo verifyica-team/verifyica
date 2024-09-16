@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.descriptor.runnable;
+package org.antublue.verifyica.engine.descriptor.execution;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -34,11 +34,11 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 
-/** Class to implement ArgumentTestDescriptorRunnable */
-public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnable {
+/** Class to implement ArgumentTestDescriptorExecution */
+public class ArgumentTestDescriptorExecution extends AbstractTestDescriptorExecution {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(ArgumentTestDescriptorRunnable.class);
+            LoggerFactory.getLogger(ArgumentTestDescriptorExecution.class);
 
     private final ExecutionRequest executionRequest;
     private final ExecutionContext executionContext;
@@ -73,7 +73,7 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
      * @param classContext classContext
      * @param argumentTestDescriptor argumentTestDescriptor
      */
-    public ArgumentTestDescriptorRunnable(
+    public ArgumentTestDescriptorExecution(
             ExecutionContext executionContext,
             ExecutionRequest executionRequest,
             ClassContext classContext,
@@ -119,12 +119,12 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
                                     try {
                                         testMethodTestDescriptors.forEach(
                                                 methodTestDescriptor ->
-                                                        new TestMethodTestDescriptorRunnable(
+                                                        new TestMethodTestDescriptorExecution(
                                                                         executionContext,
                                                                                 executionRequest,
                                                                         argumentContext,
                                                                                 methodTestDescriptor)
-                                                                .run());
+                                                                .execute());
                                         return StateMachine.Result.of(State.EXECUTE_SUCCESS);
                                     } catch (Throwable t) {
                                         t.printStackTrace(System.err);
@@ -137,7 +137,7 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
                                     try {
                                         testMethodTestDescriptors.forEach(
                                                 methodTestDescriptor ->
-                                                        new TestMethodTestDescriptorRunnable(
+                                                        new TestMethodTestDescriptorExecution(
                                                                         executionContext,
                                                                                 executionRequest,
                                                                         argumentContext,
@@ -239,7 +239,7 @@ public class ArgumentTestDescriptorRunnable extends AbstractTestDescriptorRunnab
 
         testMethodTestDescriptors.forEach(
                 methodTestDescriptor ->
-                        new TestMethodTestDescriptorRunnable(
+                        new TestMethodTestDescriptorExecution(
                                         executionContext, executionRequest,
                                         argumentContext, methodTestDescriptor)
                                 .skip());

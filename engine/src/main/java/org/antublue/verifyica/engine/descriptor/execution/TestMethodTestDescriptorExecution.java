@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.descriptor.runnable;
+package org.antublue.verifyica.engine.descriptor.execution;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -28,11 +28,11 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 
-/** Class to implement TestMethodTestDescriptorRunnable */
-public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunnable {
+/** Class to implement TestMethodTestDescriptorExecution */
+public class TestMethodTestDescriptorExecution extends AbstractTestDescriptorExecution {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(TestMethodTestDescriptorRunnable.class);
+            LoggerFactory.getLogger(TestMethodTestDescriptorExecution.class);
 
     private final ExecutionRequest executionRequest;
     private final ExecutionContext executionContext;
@@ -61,7 +61,7 @@ public class TestMethodTestDescriptorRunnable extends AbstractTestDescriptorRunn
      * @param argumentContext argumentContext
      * @param testMethodTestDescriptor testMethodTestDescriptor
      */
-    public TestMethodTestDescriptorRunnable(
+    public TestMethodTestDescriptorExecution(
             ExecutionContext executionContext,
             ExecutionRequest executionRequest,
             ArgumentContext argumentContext,

@@ -44,7 +44,7 @@ import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
-import org.antublue.verifyica.engine.descriptor.runnable.ClassTestDescriptorRunnable;
+import org.antublue.verifyica.engine.descriptor.execution.ClassTestDescriptorExecution;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.EngineInterceptorManager;
 import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
@@ -256,10 +256,12 @@ public class VerifyicaTestEngine implements TestEngine {
                                     classExecutorService.submit(
                                             new ThreadNameRunnable(
                                                     threadName,
-                                                    new ClassTestDescriptorRunnable(
-                                                            executionContext,
-                                                            engineExecutionRequest,
-                                                            classTestDescriptor))));
+                                                    () ->
+                                                            new ClassTestDescriptorExecution(
+                                                                            executionContext,
+                                                                            engineExecutionRequest,
+                                                                            classTestDescriptor)
+                                                                    .execute())));
                         });
 
                 ExecutorSupport.waitForAllFutures(futures, classExecutorService);

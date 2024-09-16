@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.descriptor.runnable;
+package org.antublue.verifyica.engine.descriptor.execution;
 
 import java.util.List;
 import java.util.function.Function;
@@ -26,9 +26,9 @@ import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.junit.platform.engine.TestDescriptor;
 
-/** Class to implement AbstractTestDescriptorRunnable */
+/** Class to implement AbstractTestDescriptorExecution */
 @SuppressWarnings("PMD.EmptyCatchBlock")
-public abstract class AbstractTestDescriptorRunnable implements Runnable {
+public abstract class AbstractTestDescriptorExecution {
 
     /** ArgumentTestDescriptor predicate */
     private static final Predicate<TestDescriptor> ARGUMENT_TEST_DESCRIPTOR =
@@ -49,17 +49,8 @@ public abstract class AbstractTestDescriptorRunnable implements Runnable {
                     testDescriptor -> (TestMethodTestDescriptor) testDescriptor;
 
     /** Constructor */
-    public AbstractTestDescriptorRunnable() {
+    public AbstractTestDescriptorExecution() {
         // INTENTIONALLY BLANK
-    }
-
-    @Override
-    public void run() {
-        try {
-            execute();
-        } catch (Throwable t) {
-            t.printStackTrace(System.err);
-        }
     }
 
     /** Method to execute */
