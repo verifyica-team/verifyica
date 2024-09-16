@@ -334,6 +334,7 @@ public class Locks {
             if (lockReference == null) {
                 throw new IllegalMonitorStateException(format("Lock key [%s] is not locked", key));
             }
+
             lockReference.reentrantLock.unlock();
             if (lockReference.decrementThreadCount() == 0) {
                 lockReferences.remove(key, lockReference);
