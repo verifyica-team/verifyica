@@ -32,7 +32,7 @@ public interface EngineInterceptor {
     }
 
     /**
-     * Engine on onTestDiscovery callback
+     * Engine onTestDiscovery callback
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @param classDefinitions classDefinitions
@@ -48,7 +48,7 @@ public interface EngineInterceptor {
     }
 
     /**
-     * Engine on onTestDiscovery callback
+     * Engine onTestDiscovery callback
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @param classDefinition classDefinition
