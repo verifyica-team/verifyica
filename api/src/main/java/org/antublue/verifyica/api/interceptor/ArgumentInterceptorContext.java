@@ -22,7 +22,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 public interface ArgumentInterceptorContext {
 
     /**
-     * Returns the ArgumentContext
+     * Get the ArgumentContext
      *
      * @return the ArgumentContext
      */

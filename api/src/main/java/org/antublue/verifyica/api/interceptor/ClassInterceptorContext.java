@@ -22,7 +22,7 @@ import org.antublue.verifyica.api.ClassContext;
 public interface ClassInterceptorContext {
 
     /**
-     * Returns the ClassContext
+     * Get the ClassContext
      *
      * @return the ClassContext
      */

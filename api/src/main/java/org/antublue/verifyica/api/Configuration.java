@@ -96,7 +96,7 @@ public interface Configuration {
     Optional<String> removeOptional(String key);
 
     /**
-     * Clear
+     * Clear all configuration
      *
      * @return this
      */
