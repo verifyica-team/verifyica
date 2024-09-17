@@ -19,13 +19,17 @@ package org.antublue.verifyica.engine.descriptor.execution;
 import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.ExecutionContext;
+import org.antublue.verifyica.engine.VerifyicaEngineExecutionContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.StateMachine;
@@ -39,16 +43,16 @@ import org.antublue.verifyica.engine.support.HashSupport;
 import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement ClassTestDescriptorExecution */
-public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorExecutionContext {
+public class ClassTestDescriptorExecutionContext implements TestDescriptorExecutionContext {
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(ClassTestDescriptorExecutionContext.class);
 
-    private final ExecutionContext executionContext;
+    private final VerifyicaEngineExecutionContext verifyicaEngineExecutionContext;
     private final ClassTestDescriptor classTestDescriptor;
     private final Class<?> testClass;
     private final List<Method> prepareMethods;
-    private final List<ArgumentTestDescriptor> argumentTestDescriptors;
+    private final Set<ArgumentTestDescriptor> argumentTestDescriptors;
     private final List<Method> concludeMethods;
     private final ClassContext classContext;
     private final AtomicReference<Object> testInstanceReference;
@@ -77,34 +81,45 @@ public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorE
     /**
      * Constructor
      *
-     * @param executionContext executionContext
+     * @param verifyicaEngineExecutionContext verifyicaEngineExecutionContext
      * @param classTestDescriptor classTestDescriptor
      */
     public ClassTestDescriptorExecutionContext(
-            ExecutionContext executionContext, ClassTestDescriptor classTestDescriptor) {
-        Precondition.notNull(executionContext, "executionContext is null");
+            VerifyicaEngineExecutionContext verifyicaEngineExecutionContext,
+            ClassTestDescriptor classTestDescriptor) {
+        Precondition.notNull(verifyicaEngineExecutionContext, "executionContext is null");
         Precondition.notNull(classTestDescriptor, "classTestDescriptor is null");
 
-        this.executionContext = executionContext;
+        this.verifyicaEngineExecutionContext = verifyicaEngineExecutionContext;
         this.classTestDescriptor = classTestDescriptor;
         this.testClass = classTestDescriptor.getTestClass();
         this.prepareMethods = classTestDescriptor.getPrepareMethods();
-        this.argumentTestDescriptors = getArgumentTestDescriptors(classTestDescriptor);
+
+        this.argumentTestDescriptors =
+                classTestDescriptor.getChildren().stream()
+                        .map(ArgumentTestDescriptor.class::cast)
+                        .collect(
+                                Collectors.toCollection(
+                                        (Supplier<Set<ArgumentTestDescriptor>>)
+                                                LinkedHashSet::new));
+
         this.concludeMethods = classTestDescriptor.getConcludeMethods();
 
         this.testInstanceReference = new AtomicReference<>();
         this.classContext =
                 new ConcreteClassContext(
-                        executionContext.getEngineContext(),
+                        verifyicaEngineExecutionContext.getEngineContext(),
                         classTestDescriptor,
                         testInstanceReference);
     }
 
     @Override
     public void test() {
-        LOGGER.trace("execute() %s", classTestDescriptor);
+        LOGGER.trace("test() %s", classTestDescriptor);
 
-        executionContext.getEngineExecutionListener().executionStarted(classTestDescriptor);
+        verifyicaEngineExecutionContext
+                .getEngineExecutionListener()
+                .executionStarted(classTestDescriptor);
 
         StateMachine<State> stateMachine =
                 new StateMachine<State>()
@@ -113,7 +128,7 @@ public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorE
                                 () -> {
                                     try {
                                         Object testInstance =
-                                                executionContext
+                                                verifyicaEngineExecutionContext
                                                         .getClassInterceptorManager()
                                                         .instantiate(
                                                                 classContext.getEngineContext(),
@@ -130,7 +145,7 @@ public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorE
                                 State.INSTANTIATE_SUCCESS,
                                 () -> {
                                     try {
-                                        executionContext
+                                        verifyicaEngineExecutionContext
                                                 .getClassInterceptorManager()
                                                 .prepare(classContext, prepareMethods);
                                         return StateMachine.Result.of(State.PREPARE_SUCCESS);
@@ -174,7 +189,7 @@ public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorE
                                                                                 6);
 
                                                         futures.add(
-                                                                executionContext
+                                                                verifyicaEngineExecutionContext
                                                                         .getArgumentExecutorService()
                                                                         .submit(
                                                                                 new SemaphoreRunnable(
@@ -183,7 +198,7 @@ public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorE
                                                                                                 threadName,
                                                                                                 () ->
                                                                                                         new ArgumentTestDescriptorExecutionContext(
-                                                                                                                        executionContext,
+                                                                                                                        verifyicaEngineExecutionContext,
                                                                                                                         classContext,
                                                                                                                         argumentTestDescriptor)
                                                                                                                 .test()))));
@@ -191,12 +206,13 @@ public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorE
 
                                             ExecutorSupport.waitForAllFutures(
                                                     futures,
-                                                    executionContext.getArgumentExecutorService());
+                                                    verifyicaEngineExecutionContext
+                                                            .getArgumentExecutorService());
                                         } else {
                                             argumentTestDescriptors.forEach(
                                                     argumentTestDescriptor ->
                                                             new ArgumentTestDescriptorExecutionContext(
-                                                                            executionContext,
+                                                                            verifyicaEngineExecutionContext,
                                                                             classContext,
                                                                             argumentTestDescriptor)
                                                                     .test());
@@ -215,12 +231,12 @@ public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorE
                                         argumentTestDescriptors.forEach(
                                                 argumentTestDescriptor ->
                                                         new ArgumentTestDescriptorExecutionContext(
-                                                                        executionContext,
+                                                                        verifyicaEngineExecutionContext,
                                                                         classContext,
                                                                         argumentTestDescriptor)
                                                                 .skip());
 
-                                        executionContext
+                                        verifyicaEngineExecutionContext
                                                 .getEngineExecutionListener()
                                                 .executionSkipped(classTestDescriptor, "Skipped");
 
@@ -238,7 +254,7 @@ public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorE
                                         State.SKIP_FAILURE),
                                 () -> {
                                     try {
-                                        executionContext
+                                        verifyicaEngineExecutionContext
                                                 .getClassInterceptorManager()
                                                 .conclude(classContext, concludeMethods);
 
@@ -252,7 +268,7 @@ public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorE
                                 StateMachine.asList(State.CONCLUDE_SUCCESS, State.CONCLUDE_FAILURE),
                                 () -> {
                                     try {
-                                        executionContext
+                                        verifyicaEngineExecutionContext
                                                 .getClassInterceptorManager()
                                                 .onDestroy(classContext);
                                         return StateMachine.Result.of(State.ON_DESTROY_SUCCESS);
@@ -323,7 +339,7 @@ public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorE
                         .map(result -> TestExecutionResult.failed(result.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
-        executionContext
+        verifyicaEngineExecutionContext
                 .getEngineExecutionListener()
                 .executionFinished(classTestDescriptor, testExecutionResult);
     }

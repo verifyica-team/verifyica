@@ -35,7 +35,7 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
-import org.antublue.verifyica.engine.ExecutionContext;
+import org.antublue.verifyica.engine.VerifyicaEngineExecutionContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
@@ -102,15 +102,18 @@ public class EngineDiscoveryRequestResolver {
     /**
      * Constructor
      *
-     * @param executionContext executionContext
+     * @param verifyicaEngineExecutionContext verifyicaEngineExecutionContext
      */
-    public EngineDiscoveryRequestResolver(ExecutionContext executionContext) {
-        Precondition.notNull(executionContext, "executionContext is null");
+    public EngineDiscoveryRequestResolver(
+            VerifyicaEngineExecutionContext verifyicaEngineExecutionContext) {
+        Precondition.notNull(verifyicaEngineExecutionContext, "executionContext is null");
 
-        this.engineInterceptorManager = executionContext.getEngineInterceptorManager();
-        this.classInterceptorManager = executionContext.getClassInterceptorManager();
+        this.engineInterceptorManager =
+                verifyicaEngineExecutionContext.getEngineInterceptorManager();
+        this.classInterceptorManager = verifyicaEngineExecutionContext.getClassInterceptorManager();
         this.engineInterceptorContext =
-                new ConcreteEngineInterceptorContext(executionContext.getEngineContext());
+                new ConcreteEngineInterceptorContext(
+                        verifyicaEngineExecutionContext.getEngineContext());
     }
 
     /**

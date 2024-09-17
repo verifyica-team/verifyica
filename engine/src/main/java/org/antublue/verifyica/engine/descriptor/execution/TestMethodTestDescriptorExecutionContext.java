@@ -19,7 +19,7 @@ package org.antublue.verifyica.engine.descriptor.execution;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.engine.ExecutionContext;
+import org.antublue.verifyica.engine.VerifyicaEngineExecutionContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.StateMachine;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
@@ -28,13 +28,12 @@ import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement TestMethodTestDescriptorExecution */
-public class TestMethodTestDescriptorExecutionContext
-        extends AbstractTestDescriptorExecutionContext {
+public class TestMethodTestDescriptorExecutionContext implements TestDescriptorExecutionContext {
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(TestMethodTestDescriptorExecutionContext.class);
 
-    private final ExecutionContext executionContext;
+    private final VerifyicaEngineExecutionContext verifyicaEngineExecutionContext;
     private final ArgumentContext argumentContext;
     private final TestMethodTestDescriptor testMethodTestDescriptor;
     private final List<Method> beforeEachMethods;
@@ -55,19 +54,19 @@ public class TestMethodTestDescriptorExecutionContext
     /**
      * Constructor
      *
-     * @param executionContext executionContext
+     * @param verifyicaEngineExecutionContext verifyicaEngineExecutionContext
      * @param argumentContext argumentContext
      * @param testMethodTestDescriptor testMethodTestDescriptor
      */
     public TestMethodTestDescriptorExecutionContext(
-            ExecutionContext executionContext,
+            VerifyicaEngineExecutionContext verifyicaEngineExecutionContext,
             ArgumentContext argumentContext,
             TestMethodTestDescriptor testMethodTestDescriptor) {
-        Precondition.notNull(executionContext, "executionContext is null");
+        Precondition.notNull(verifyicaEngineExecutionContext, "executionContext is null");
         Precondition.notNull(argumentContext, "argumentContext is null");
         Precondition.notNull(testMethodTestDescriptor, "testMethodTestDescriptor is null");
 
-        this.executionContext = executionContext;
+        this.verifyicaEngineExecutionContext = verifyicaEngineExecutionContext;
         this.argumentContext = argumentContext;
         this.testMethodTestDescriptor = testMethodTestDescriptor;
         this.beforeEachMethods = testMethodTestDescriptor.getBeforeEachMethods();
@@ -77,9 +76,11 @@ public class TestMethodTestDescriptorExecutionContext
 
     @Override
     public void test() {
-        LOGGER.trace("execute() %s", testMethodTestDescriptor);
+        LOGGER.trace("test() %s", testMethodTestDescriptor);
 
-        executionContext.getEngineExecutionListener().executionStarted(testMethodTestDescriptor);
+        verifyicaEngineExecutionContext
+                .getEngineExecutionListener()
+                .executionStarted(testMethodTestDescriptor);
 
         StateMachine<State> stateMachine =
                 new StateMachine<State>()
@@ -87,7 +88,7 @@ public class TestMethodTestDescriptorExecutionContext
                                 State.START,
                                 () -> {
                                     try {
-                                        executionContext
+                                        verifyicaEngineExecutionContext
                                                 .getClassInterceptorManager()
                                                 .beforeEach(argumentContext, beforeEachMethods);
                                         return StateMachine.Result.of(State.BEFORE_EACH_SUCCESS);
@@ -100,7 +101,7 @@ public class TestMethodTestDescriptorExecutionContext
                                 State.BEFORE_EACH_SUCCESS,
                                 () -> {
                                     try {
-                                        executionContext
+                                        verifyicaEngineExecutionContext
                                                 .getClassInterceptorManager()
                                                 .test(argumentContext, testMethod);
                                         return StateMachine.Result.of(State.TEST_SUCCESS);
@@ -116,7 +117,7 @@ public class TestMethodTestDescriptorExecutionContext
                                         State.TEST_FAILURE),
                                 () -> {
                                     try {
-                                        executionContext
+                                        verifyicaEngineExecutionContext
                                                 .getClassInterceptorManager()
                                                 .afterEach(argumentContext, afterEachMethods);
                                         return StateMachine.Result.of(State.AFTER_EACH_SUCCESS);
@@ -139,7 +140,7 @@ public class TestMethodTestDescriptorExecutionContext
                         .map(result -> TestExecutionResult.failed(result.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
-        executionContext
+        verifyicaEngineExecutionContext
                 .getEngineExecutionListener()
                 .executionFinished(testMethodTestDescriptor, testExecutionResult);
     }
@@ -148,9 +149,11 @@ public class TestMethodTestDescriptorExecutionContext
     public void skip() {
         LOGGER.trace("skip() %s", testMethodTestDescriptor);
 
-        executionContext.getEngineExecutionListener().executionStarted(testMethodTestDescriptor);
+        verifyicaEngineExecutionContext
+                .getEngineExecutionListener()
+                .executionStarted(testMethodTestDescriptor);
 
-        executionContext
+        verifyicaEngineExecutionContext
                 .getEngineExecutionListener()
                 .executionFinished(testMethodTestDescriptor, TestExecutionResult.aborted(null));
     }

@@ -103,7 +103,7 @@ public class VerifyicaTestEngine implements TestEngine {
     private static final Function<TestDescriptor, ClassTestDescriptor> MAP_CLASS_TEST_DESCRIPTOR =
             testDescriptor -> (ClassTestDescriptor) testDescriptor;
 
-    private ExecutionContext executionContext;
+    private VerifyicaEngineExecutionContext verifyicaEngineExecutionContext;
 
     @Override
     public String getId() {
@@ -157,9 +157,9 @@ public class VerifyicaTestEngine implements TestEngine {
         EngineDescriptor engineDescriptor = new StatusEngineDescriptor(uniqueId, DISPLAY_NAME);
 
         try {
-            executionContext = new ExecutionContext();
+            verifyicaEngineExecutionContext = new VerifyicaEngineExecutionContext();
 
-            new EngineDiscoveryRequestResolver(executionContext)
+            new EngineDiscoveryRequestResolver(verifyicaEngineExecutionContext)
                     .resolveSelectors(engineDiscoveryRequest, engineDescriptor);
         } catch (EngineException e) {
             throw e;
@@ -179,7 +179,7 @@ public class VerifyicaTestEngine implements TestEngine {
             return;
         }
 
-        if (executionContext == null) {
+        if (verifyicaEngineExecutionContext == null) {
             throw new IllegalStateException("Not initialized");
         }
 
@@ -190,19 +190,20 @@ public class VerifyicaTestEngine implements TestEngine {
         EngineExecutionListener engineExecutionListener =
                 configureEngineExecutionListeners(executionRequest);
 
-        executionContext.setEngineExecutionListener(engineExecutionListener);
+        verifyicaEngineExecutionContext.setEngineExecutionListener(engineExecutionListener);
 
-        ExecutorService classExecutorService = executionContext.getClassExecutorService();
+        ExecutorService classExecutorService =
+                verifyicaEngineExecutionContext.getClassExecutorService();
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
-        EngineContext engineContext = executionContext.getEngineContext();
+        EngineContext engineContext = verifyicaEngineExecutionContext.getEngineContext();
 
         EngineInterceptorContext engineInterceptorContext =
-                executionContext.getEngineInterceptorContext();
+                verifyicaEngineExecutionContext.getEngineInterceptorContext();
 
         EngineInterceptorManager engineInterceptorManager =
-                executionContext.getEngineInterceptorManager();
+                verifyicaEngineExecutionContext.getEngineInterceptorManager();
 
         try {
             if (LOGGER.isTraceEnabled()) {
@@ -253,7 +254,7 @@ public class VerifyicaTestEngine implements TestEngine {
                                                     threadName,
                                                     () ->
                                                             new ClassTestDescriptorExecutionContext(
-                                                                            executionContext,
+                                                                            verifyicaEngineExecutionContext,
                                                                             classTestDescriptor)
                                                                     .test())));
                         });
@@ -263,9 +264,9 @@ public class VerifyicaTestEngine implements TestEngine {
                 throwableCollector.add(t);
             } finally {
                 ExecutorSupport.shutdownAndAwaitTermination(
-                        executionContext.getArgumentExecutorService());
+                        verifyicaEngineExecutionContext.getArgumentExecutorService());
                 ExecutorSupport.shutdownAndAwaitTermination(
-                        executionContext.getClassExecutorService());
+                        verifyicaEngineExecutionContext.getClassExecutorService());
 
                 Store store = engineContext.getStore();
                 for (Object key : store.keySet()) {
@@ -295,7 +296,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
             TestExecutionResult testExecutionResult = throwableCollector.toTestExecutionResult();
 
-            executionContext
+            verifyicaEngineExecutionContext
                     .getEngineExecutionListener()
                     .executionFinished(
                             executionRequest.getRootTestDescriptor(), testExecutionResult);

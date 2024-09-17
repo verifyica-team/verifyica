@@ -37,9 +37,10 @@ import org.antublue.verifyica.engine.support.ExecutorSupport;
 import org.junit.platform.engine.EngineExecutionListener;
 
 /** Class to implement ExecutionContext */
-public class ExecutionContext {
+public class VerifyicaEngineExecutionContext {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutionContext.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(VerifyicaEngineExecutionContext.class);
 
     private final Configuration configuration;
 
@@ -58,7 +59,7 @@ public class ExecutionContext {
     private EngineExecutionListener engineExecutionListener;
 
     /** Constructor */
-    ExecutionContext() {
+    VerifyicaEngineExecutionContext() {
         configuration = ConcreteConfiguration.getInstance();
 
         engineInterceptorManager = new EngineInterceptorManager();
