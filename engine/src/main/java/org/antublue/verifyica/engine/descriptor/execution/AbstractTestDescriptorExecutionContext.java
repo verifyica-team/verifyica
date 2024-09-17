@@ -28,7 +28,7 @@ import org.junit.platform.engine.TestDescriptor;
 
 /** Class to implement AbstractTestDescriptorExecution */
 @SuppressWarnings("PMD.EmptyCatchBlock")
-public abstract class AbstractTestDescriptorExecution {
+public abstract class AbstractTestDescriptorExecutionContext {
 
     /** ArgumentTestDescriptor predicate */
     private static final Predicate<TestDescriptor> ARGUMENT_TEST_DESCRIPTOR =
@@ -49,12 +49,12 @@ public abstract class AbstractTestDescriptorExecution {
                     testDescriptor -> (TestMethodTestDescriptor) testDescriptor;
 
     /** Constructor */
-    public AbstractTestDescriptorExecution() {
+    public AbstractTestDescriptorExecutionContext() {
         // INTENTIONALLY BLANK
     }
 
-    /** Method to execute */
-    public abstract void execute();
+    /** Method to test */
+    public abstract void test();
 
     /** Method to skip */
     public abstract void skip();

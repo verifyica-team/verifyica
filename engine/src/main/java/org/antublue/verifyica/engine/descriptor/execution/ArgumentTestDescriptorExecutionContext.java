@@ -31,16 +31,14 @@ import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement ArgumentTestDescriptorExecution */
-public class ArgumentTestDescriptorExecution extends AbstractTestDescriptorExecution {
+public class ArgumentTestDescriptorExecutionContext extends AbstractTestDescriptorExecutionContext {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(ArgumentTestDescriptorExecution.class);
+            LoggerFactory.getLogger(ArgumentTestDescriptorExecutionContext.class);
 
-    private final ExecutionRequest executionRequest;
     private final ExecutionContext executionContext;
     private final ArgumentTestDescriptor argumentTestDescriptor;
     private final List<Method> beforeAllMethods;
@@ -69,21 +67,17 @@ public class ArgumentTestDescriptorExecution extends AbstractTestDescriptorExecu
      * Constructor
      *
      * @param executionContext executionContext
-     * @param executionRequest executionRequest
      * @param classContext classContext
      * @param argumentTestDescriptor argumentTestDescriptor
      */
-    public ArgumentTestDescriptorExecution(
+    public ArgumentTestDescriptorExecutionContext(
             ExecutionContext executionContext,
-            ExecutionRequest executionRequest,
             ClassContext classContext,
             ArgumentTestDescriptor argumentTestDescriptor) {
         Precondition.notNull(executionContext, "executionContext is null");
-        Precondition.notNull(executionRequest, "executionRequest is null");
         Precondition.notNull(classContext, "classContext is null");
         Precondition.notNull(argumentTestDescriptor, "argumentTestDescriptor is null");
 
-        this.executionRequest = executionRequest;
         this.executionContext = executionContext;
         this.argumentTestDescriptor = argumentTestDescriptor;
         this.beforeAllMethods = argumentTestDescriptor.getBeforeAllMethods();
@@ -93,10 +87,10 @@ public class ArgumentTestDescriptorExecution extends AbstractTestDescriptorExecu
     }
 
     @Override
-    public void execute() {
+    public void test() {
         LOGGER.trace("execute() %s", argumentTestDescriptor);
 
-        executionRequest.getEngineExecutionListener().executionStarted(argumentTestDescriptor);
+        executionContext.getEngineExecutionListener().executionStarted(argumentTestDescriptor);
 
         StateMachine<State> stateMachine =
                 new StateMachine<State>()
@@ -119,12 +113,11 @@ public class ArgumentTestDescriptorExecution extends AbstractTestDescriptorExecu
                                     try {
                                         testMethodTestDescriptors.forEach(
                                                 methodTestDescriptor ->
-                                                        new TestMethodTestDescriptorExecution(
+                                                        new TestMethodTestDescriptorExecutionContext(
                                                                         executionContext,
-                                                                                executionRequest,
                                                                         argumentContext,
-                                                                                methodTestDescriptor)
-                                                                .execute());
+                                                                        methodTestDescriptor)
+                                                                .test());
                                         return StateMachine.Result.of(State.EXECUTE_SUCCESS);
                                     } catch (Throwable t) {
                                         t.printStackTrace(System.err);
@@ -137,11 +130,10 @@ public class ArgumentTestDescriptorExecution extends AbstractTestDescriptorExecu
                                     try {
                                         testMethodTestDescriptors.forEach(
                                                 methodTestDescriptor ->
-                                                        new TestMethodTestDescriptorExecution(
+                                                        new TestMethodTestDescriptorExecutionContext(
                                                                         executionContext,
-                                                                                executionRequest,
                                                                         argumentContext,
-                                                                                methodTestDescriptor)
+                                                                        methodTestDescriptor)
                                                                 .skip());
                                         return StateMachine.Result.of(State.SKIP_SUCCESS);
                                     } catch (Throwable t) {
@@ -226,7 +218,7 @@ public class ArgumentTestDescriptorExecution extends AbstractTestDescriptorExecu
                         .map(result -> TestExecutionResult.failed(result.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
-        executionRequest
+        executionContext
                 .getEngineExecutionListener()
                 .executionFinished(argumentTestDescriptor, testExecutionResult);
     }
@@ -235,16 +227,15 @@ public class ArgumentTestDescriptorExecution extends AbstractTestDescriptorExecu
     public void skip() {
         LOGGER.trace("skip() %s", argumentTestDescriptor);
 
-        executionRequest.getEngineExecutionListener().executionStarted(argumentTestDescriptor);
+        executionContext.getEngineExecutionListener().executionStarted(argumentTestDescriptor);
 
         testMethodTestDescriptors.forEach(
                 methodTestDescriptor ->
-                        new TestMethodTestDescriptorExecution(
-                                        executionContext, executionRequest,
-                                        argumentContext, methodTestDescriptor)
+                        new TestMethodTestDescriptorExecutionContext(
+                                        executionContext, argumentContext, methodTestDescriptor)
                                 .skip());
 
-        executionRequest
+        executionContext
                 .getEngineExecutionListener()
                 .executionFinished(argumentTestDescriptor, TestExecutionResult.aborted(null));
     }

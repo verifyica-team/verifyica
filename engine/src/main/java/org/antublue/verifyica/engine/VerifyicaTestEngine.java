@@ -38,13 +38,12 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.common.Streams;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
-import org.antublue.verifyica.engine.configuration.ConcreteConfigurationParameters;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
-import org.antublue.verifyica.engine.descriptor.execution.ClassTestDescriptorExecution;
+import org.antublue.verifyica.engine.descriptor.execution.ClassTestDescriptorExecutionContext;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.interceptor.EngineInterceptorManager;
 import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
@@ -188,16 +187,12 @@ public class VerifyicaTestEngine implements TestEngine {
 
         LOGGER.trace("execute()");
 
-        ExecutorService classExecutorService = executionContext.getClassExecutorService();
-
         EngineExecutionListener engineExecutionListener =
                 configureEngineExecutionListeners(executionRequest);
 
-        final ExecutionRequest engineExecutionRequest =
-                new ExecutionRequest(
-                        executionRequest.getRootTestDescriptor(),
-                        engineExecutionListener,
-                        new ConcreteConfigurationParameters(executionContext.getConfiguration()));
+        executionContext.setEngineExecutionListener(engineExecutionListener);
+
+        ExecutorService classExecutorService = executionContext.getClassExecutorService();
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
 
@@ -257,11 +252,10 @@ public class VerifyicaTestEngine implements TestEngine {
                                             new ThreadNameRunnable(
                                                     threadName,
                                                     () ->
-                                                            new ClassTestDescriptorExecution(
+                                                            new ClassTestDescriptorExecutionContext(
                                                                             executionContext,
-                                                                            engineExecutionRequest,
                                                                             classTestDescriptor)
-                                                                    .execute())));
+                                                                    .test())));
                         });
 
                 ExecutorSupport.waitForAllFutures(futures, classExecutorService);
@@ -301,7 +295,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
             TestExecutionResult testExecutionResult = throwableCollector.toTestExecutionResult();
 
-            engineExecutionRequest
+            executionContext
                     .getEngineExecutionListener()
                     .executionFinished(
                             executionRequest.getRootTestDescriptor(), testExecutionResult);

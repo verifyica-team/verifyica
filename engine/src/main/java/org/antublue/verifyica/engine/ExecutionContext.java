@@ -23,6 +23,7 @@ import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.FairExecutorService;
+import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.ConcreteEngineContext;
@@ -33,6 +34,7 @@ import org.antublue.verifyica.engine.interceptor.EngineInterceptorManager;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ExecutorSupport;
+import org.junit.platform.engine.EngineExecutionListener;
 
 /** Class to implement ExecutionContext */
 public class ExecutionContext {
@@ -52,6 +54,8 @@ public class ExecutionContext {
     private final ExecutorService classExecutorService;
 
     private final ExecutorService argumentExecutorService;
+
+    private EngineExecutionListener engineExecutionListener;
 
     /** Constructor */
     ExecutionContext() {
@@ -134,6 +138,26 @@ public class ExecutionContext {
      */
     public EngineContext getEngineContext() {
         return engineContext;
+    }
+
+    /**
+     * Method to set the EngineExecutionListener
+     *
+     * @param engineExecutionListener engineExecutionListener
+     */
+    public void setEngineExecutionListener(EngineExecutionListener engineExecutionListener) {
+        Precondition.notNull(engineExecutionListener, "engineExecutionListener is null");
+
+        this.engineExecutionListener = engineExecutionListener;
+    }
+
+    /**
+     * Method to get the EngineExecutionListener
+     *
+     * @return the EngineExecutionListener
+     */
+    public EngineExecutionListener getEngineExecutionListener() {
+        return engineExecutionListener;
     }
 
     /**

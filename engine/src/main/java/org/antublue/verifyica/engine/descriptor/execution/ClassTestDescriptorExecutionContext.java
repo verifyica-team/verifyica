@@ -36,16 +36,14 @@ import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ExecutorSupport;
 import org.antublue.verifyica.engine.support.HashSupport;
-import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement ClassTestDescriptorExecution */
-public class ClassTestDescriptorExecution extends AbstractTestDescriptorExecution {
+public class ClassTestDescriptorExecutionContext extends AbstractTestDescriptorExecutionContext {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(ClassTestDescriptorExecution.class);
+            LoggerFactory.getLogger(ClassTestDescriptorExecutionContext.class);
 
-    private final ExecutionRequest executionRequest;
     private final ExecutionContext executionContext;
     private final ClassTestDescriptor classTestDescriptor;
     private final Class<?> testClass;
@@ -80,18 +78,13 @@ public class ClassTestDescriptorExecution extends AbstractTestDescriptorExecutio
      * Constructor
      *
      * @param executionContext executionContext
-     * @param executionRequest executionRequest
      * @param classTestDescriptor classTestDescriptor
      */
-    public ClassTestDescriptorExecution(
-            ExecutionContext executionContext,
-            ExecutionRequest executionRequest,
-            ClassTestDescriptor classTestDescriptor) {
+    public ClassTestDescriptorExecutionContext(
+            ExecutionContext executionContext, ClassTestDescriptor classTestDescriptor) {
         Precondition.notNull(executionContext, "executionContext is null");
-        Precondition.notNull(executionRequest, "executionRequest is null");
         Precondition.notNull(classTestDescriptor, "classTestDescriptor is null");
 
-        this.executionRequest = executionRequest;
         this.executionContext = executionContext;
         this.classTestDescriptor = classTestDescriptor;
         this.testClass = classTestDescriptor.getTestClass();
@@ -108,10 +101,10 @@ public class ClassTestDescriptorExecution extends AbstractTestDescriptorExecutio
     }
 
     @Override
-    public void execute() {
+    public void test() {
         LOGGER.trace("execute() %s", classTestDescriptor);
 
-        executionRequest.getEngineExecutionListener().executionStarted(classTestDescriptor);
+        executionContext.getEngineExecutionListener().executionStarted(classTestDescriptor);
 
         StateMachine<State> stateMachine =
                 new StateMachine<State>()
@@ -189,12 +182,11 @@ public class ClassTestDescriptorExecution extends AbstractTestDescriptorExecutio
                                                                                         new ThreadNameRunnable(
                                                                                                 threadName,
                                                                                                 () ->
-                                                                                                        new ArgumentTestDescriptorExecution(
+                                                                                                        new ArgumentTestDescriptorExecutionContext(
                                                                                                                         executionContext,
-                                                                                                                        executionRequest,
                                                                                                                         classContext,
                                                                                                                         argumentTestDescriptor)
-                                                                                                                .execute()))));
+                                                                                                                .test()))));
                                                     });
 
                                             ExecutorSupport.waitForAllFutures(
@@ -203,12 +195,11 @@ public class ClassTestDescriptorExecution extends AbstractTestDescriptorExecutio
                                         } else {
                                             argumentTestDescriptors.forEach(
                                                     argumentTestDescriptor ->
-                                                            new ArgumentTestDescriptorExecution(
+                                                            new ArgumentTestDescriptorExecutionContext(
                                                                             executionContext,
-                                                                                    executionRequest,
                                                                             classContext,
-                                                                                    argumentTestDescriptor)
-                                                                    .execute());
+                                                                            argumentTestDescriptor)
+                                                                    .test());
                                         }
 
                                         return StateMachine.Result.of(State.EXECUTE_SUCCESS);
@@ -223,14 +214,13 @@ public class ClassTestDescriptorExecution extends AbstractTestDescriptorExecutio
                                     try {
                                         argumentTestDescriptors.forEach(
                                                 argumentTestDescriptor ->
-                                                        new ArgumentTestDescriptorExecution(
+                                                        new ArgumentTestDescriptorExecutionContext(
                                                                         executionContext,
-                                                                                executionRequest,
                                                                         classContext,
-                                                                                argumentTestDescriptor)
+                                                                        argumentTestDescriptor)
                                                                 .skip());
 
-                                        executionRequest
+                                        executionContext
                                                 .getEngineExecutionListener()
                                                 .executionSkipped(classTestDescriptor, "Skipped");
 
@@ -333,7 +323,7 @@ public class ClassTestDescriptorExecution extends AbstractTestDescriptorExecutio
                         .map(result -> TestExecutionResult.failed(result.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
-        executionRequest
+        executionContext
                 .getEngineExecutionListener()
                 .executionFinished(classTestDescriptor, testExecutionResult);
     }

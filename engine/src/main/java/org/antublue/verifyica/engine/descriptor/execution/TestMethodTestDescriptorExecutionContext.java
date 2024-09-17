@@ -25,16 +25,15 @@ import org.antublue.verifyica.engine.common.StateMachine;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
-import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestExecutionResult;
 
 /** Class to implement TestMethodTestDescriptorExecution */
-public class TestMethodTestDescriptorExecution extends AbstractTestDescriptorExecution {
+public class TestMethodTestDescriptorExecutionContext
+        extends AbstractTestDescriptorExecutionContext {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(TestMethodTestDescriptorExecution.class);
+            LoggerFactory.getLogger(TestMethodTestDescriptorExecutionContext.class);
 
-    private final ExecutionRequest executionRequest;
     private final ExecutionContext executionContext;
     private final ArgumentContext argumentContext;
     private final TestMethodTestDescriptor testMethodTestDescriptor;
@@ -57,21 +56,17 @@ public class TestMethodTestDescriptorExecution extends AbstractTestDescriptorExe
      * Constructor
      *
      * @param executionContext executionContext
-     * @param executionRequest executionRequest
      * @param argumentContext argumentContext
      * @param testMethodTestDescriptor testMethodTestDescriptor
      */
-    public TestMethodTestDescriptorExecution(
+    public TestMethodTestDescriptorExecutionContext(
             ExecutionContext executionContext,
-            ExecutionRequest executionRequest,
             ArgumentContext argumentContext,
             TestMethodTestDescriptor testMethodTestDescriptor) {
         Precondition.notNull(executionContext, "executionContext is null");
-        Precondition.notNull(executionRequest, "executionRequest is null");
         Precondition.notNull(argumentContext, "argumentContext is null");
         Precondition.notNull(testMethodTestDescriptor, "testMethodTestDescriptor is null");
 
-        this.executionRequest = executionRequest;
         this.executionContext = executionContext;
         this.argumentContext = argumentContext;
         this.testMethodTestDescriptor = testMethodTestDescriptor;
@@ -81,10 +76,10 @@ public class TestMethodTestDescriptorExecution extends AbstractTestDescriptorExe
     }
 
     @Override
-    public void execute() {
+    public void test() {
         LOGGER.trace("execute() %s", testMethodTestDescriptor);
 
-        executionRequest.getEngineExecutionListener().executionStarted(testMethodTestDescriptor);
+        executionContext.getEngineExecutionListener().executionStarted(testMethodTestDescriptor);
 
         StateMachine<State> stateMachine =
                 new StateMachine<State>()
@@ -144,7 +139,7 @@ public class TestMethodTestDescriptorExecution extends AbstractTestDescriptorExe
                         .map(result -> TestExecutionResult.failed(result.getThrowable()))
                         .orElse(TestExecutionResult.successful());
 
-        executionRequest
+        executionContext
                 .getEngineExecutionListener()
                 .executionFinished(testMethodTestDescriptor, testExecutionResult);
     }
@@ -153,9 +148,9 @@ public class TestMethodTestDescriptorExecution extends AbstractTestDescriptorExe
     public void skip() {
         LOGGER.trace("skip() %s", testMethodTestDescriptor);
 
-        executionRequest.getEngineExecutionListener().executionStarted(testMethodTestDescriptor);
+        executionContext.getEngineExecutionListener().executionStarted(testMethodTestDescriptor);
 
-        executionRequest
+        executionContext
                 .getEngineExecutionListener()
                 .executionFinished(testMethodTestDescriptor, TestExecutionResult.aborted(null));
     }
