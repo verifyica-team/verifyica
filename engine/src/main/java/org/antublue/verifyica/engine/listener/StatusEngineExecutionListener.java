@@ -53,15 +53,35 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     .append(AnsiColor.NONE)
                     .build();
 
-    private final String consoleLogTimingUnits;
-    private final boolean consoleLogMessagesStarted;
-    private final String consoleTestMessage;
-    private final boolean consoleLogMessagesSkipped;
-    private final String consoleSkipMessage;
-    private final boolean consoleLogMessagesFinished;
-    private final String consolePassMessage;
-    private final String consoleFailMessage;
+    private static final String TEST =
+            new AnsiColoredString()
+                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                    .append("TEST")
+                    .append(AnsiColor.NONE)
+                    .build();
 
+    private static final String PASS =
+            new AnsiColoredString()
+                    .append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT)
+                    .append("PASS")
+                    .append(AnsiColor.NONE)
+                    .build();
+
+    private static final String FAIL =
+            new AnsiColoredString()
+                    .append(AnsiColor.TEXT_RED_BOLD_BRIGHT)
+                    .append("FAIL")
+                    .append(AnsiColor.NONE)
+                    .build();
+
+    private static final String SKIP =
+            new AnsiColoredString()
+                    .append(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
+                    .append("SKIP")
+                    .append(AnsiColor.NONE)
+                    .build();
+
+    private final String consoleLogTimingUnits;
     private final Map<TestDescriptor, Stopwatch> stopWatchMap;
 
     /** Constructor */
@@ -76,83 +96,12 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 "configuration property [%s] = [%s]",
                 Constants.MAVEN_PLUGIN_TIMING_UNITS, consoleLogTimingUnits);
 
-        consoleLogMessagesStarted =
-                Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_LOG_MESSAGES_STARTED))
-                        .map(Boolean::parseBoolean)
-                        .orElse(true);
-
-        LOGGER.trace(
-                "configuration property [%s] = [%b]",
-                Constants.MAVEN_PLUGIN_LOG_MESSAGES_STARTED, consoleLogMessagesStarted);
-
-        consoleLogMessagesFinished =
-                Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_LOG_MESSAGES_FINISHED))
-                        .map(Boolean::parseBoolean)
-                        .orElse(true);
-
-        LOGGER.trace(
-                "configuration property [%s] = [%b]",
-                Constants.MAVEN_PLUGIN_LOG_MESSAGES_FINISHED, consoleLogMessagesFinished);
-
-        consoleLogMessagesSkipped =
-                Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_LOG_MESSAGES_SKIPPED))
-                        .map(Boolean::parseBoolean)
-                        .orElse(true);
-
-        LOGGER.trace(
-                "configuration property [%s] = [%b]",
-                Constants.MAVEN_PLUGIN_LOG_MESSAGES_SKIPPED, consoleLogMessagesSkipped);
-
-        consoleTestMessage =
-                new AnsiColoredString()
-                        .append(AnsiColor.TEXT_WHITE_BRIGHT)
-                        .append(
-                                Optional.ofNullable(
-                                                configuration.get(
-                                                        Constants.MAVEN_PLUGIN_LOG_TEST_MESSAGE))
-                                        .orElse("TEST"))
-                        .append(AnsiColor.NONE)
-                        .build();
-
-        consolePassMessage =
-                new AnsiColoredString()
-                        .append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT)
-                        .append(
-                                Optional.ofNullable(
-                                                configuration.get(
-                                                        Constants.MAVEN_PLUGIN_LOG_PASS_MESSAGE))
-                                        .orElse("PASS"))
-                        .append(AnsiColor.NONE)
-                        .build();
-
-        consoleSkipMessage =
-                new AnsiColoredString()
-                        .append(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
-                        .append(
-                                Optional.ofNullable(
-                                                configuration.get(
-                                                        Constants.MAVEN_PLUGIN_LOG_SKIP_MESSAGE))
-                                        .orElse("SKIP"))
-                        .append(AnsiColor.NONE)
-                        .build();
-
-        consoleFailMessage =
-                new AnsiColoredString()
-                        .append(AnsiColor.TEXT_RED_BOLD_BRIGHT)
-                        .append(
-                                Optional.ofNullable(
-                                                configuration.get(
-                                                        Constants.MAVEN_PLUGIN_LOG_FAIL_MESSAGE))
-                                        .orElse("FAIL"))
-                        .append(AnsiColor.NONE)
-                        .build();
-
         stopWatchMap = new ConcurrentHashMap<>();
     }
 
     @Override
     public void executionStarted(TestDescriptor testDescriptor) {
-        if (consoleLogMessagesStarted && shouldProcessDescriptor(testDescriptor)) {
+        if (shouldProcessDescriptor(testDescriptor)) {
             stopWatchMap.put(testDescriptor, new Stopwatch());
 
             try {
@@ -179,7 +128,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                 .append(" ")
                                 .append(Thread.currentThread().getName())
                                 .append(" | ")
-                                .append(consoleTestMessage)
+                                .append(TEST)
                                 .append(AnsiColor.NONE);
 
                 if (testArgumentDisplayName != null) {
@@ -203,7 +152,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     @Override
     public void executionSkipped(TestDescriptor testDescriptor, String reason) {
-        if (consoleLogMessagesSkipped && shouldProcessDescriptor(testDescriptor)) {
+        if (shouldProcessDescriptor(testDescriptor)) {
             Duration elapsedTime = stopWatchMap.remove(testDescriptor).stop().elapsedTime();
 
             try {
@@ -224,7 +173,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
 
-                AnsiColoredString ansiColorAnsiColoredString =
+                AnsiColoredString ansiColoredString =
                         new AnsiColoredString()
                                 .append(INFO)
                                 .append(" ")
@@ -232,27 +181,27 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                                 .append(" | ")
                                 .append(AnsiColor.TEXT_WHITE_BRIGHT);
 
-                ansiColorAnsiColoredString.append(consoleSkipMessage).append(AnsiColor.NONE);
+                ansiColoredString.append(SKIP).append(AnsiColor.NONE);
 
                 if (testArgumentDisplayName != null) {
-                    ansiColorAnsiColoredString.append(" | ").append(testArgumentDisplayName);
+                    ansiColoredString.append(" | ").append(testArgumentDisplayName);
                 }
 
-                ansiColorAnsiColoredString.append(" | ").append(testClassDisplayName);
+                ansiColoredString.append(" | ").append(testClassDisplayName);
 
                 if (testMethodDisplayName != null) {
-                    ansiColorAnsiColoredString.append(" | ").append(testMethodDisplayName);
+                    ansiColoredString.append(" | ").append(testMethodDisplayName);
                 }
 
-                ansiColorAnsiColoredString
+                ansiColoredString
                         .append(" ")
                         .append(
                                 HumanReadableTimeSupport.toTimingUnit(
                                         elapsedTime.toNanos(), consoleLogTimingUnits));
 
-                ansiColorAnsiColoredString.append(AnsiColor.NONE);
+                ansiColoredString.append(AnsiColor.NONE);
 
-                System.out.println(ansiColorAnsiColoredString);
+                System.out.println(ansiColoredString);
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
             }
@@ -262,7 +211,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     @Override
     public void executionFinished(
             TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
-        if (consoleLogMessagesFinished && shouldProcessDescriptor(testDescriptor)) {
+        if (shouldProcessDescriptor(testDescriptor)) {
             Duration elapsedTime = stopWatchMap.remove(testDescriptor).stop().elapsedTime();
 
             try {
@@ -283,7 +232,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
 
-                AnsiColoredString ansiColorAnsiColoredString =
+                AnsiColoredString ansiColoredString =
                         new AnsiColoredString()
                                 .append(INFO)
                                 .append(" ")
@@ -296,46 +245,45 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 switch (status) {
                     case SUCCESSFUL:
                         {
-                            ansiColorAnsiColoredString.append(consolePassMessage);
+                            ansiColoredString.append(PASS);
                             break;
                         }
                     case FAILED:
                         {
-                            ansiColorAnsiColoredString.append(consoleFailMessage);
+                            ansiColoredString.append(FAIL);
                             break;
                         }
                     case ABORTED:
                         {
-                            ansiColorAnsiColoredString.append(consoleSkipMessage);
+                            ansiColoredString.append(SKIP);
                             break;
                         }
                     default:
                         {
-                            ansiColorAnsiColoredString.append(
-                                    AnsiColor.TEXT_CYAN_BOLD.wrap("????"));
+                            ansiColoredString.append(AnsiColor.TEXT_CYAN_BOLD.wrap("????"));
                         }
                 }
 
-                ansiColorAnsiColoredString.append(AnsiColor.NONE);
+                ansiColoredString.append(AnsiColor.NONE);
 
                 if (testArgumentDisplayName != null) {
-                    ansiColorAnsiColoredString.append(" | ").append(testArgumentDisplayName);
+                    ansiColoredString.append(" | ").append(testArgumentDisplayName);
                 }
 
-                ansiColorAnsiColoredString.append(" | ").append(testClassDisplayName);
+                ansiColoredString.append(" | ").append(testClassDisplayName);
 
                 if (testMethodDisplayName != null) {
-                    ansiColorAnsiColoredString.append(" | ").append(testMethodDisplayName);
+                    ansiColoredString.append(" | ").append(testMethodDisplayName);
                 }
 
-                ansiColorAnsiColoredString
+                ansiColoredString
                         .append(" ")
                         .append(
                                 HumanReadableTimeSupport.toTimingUnit(
                                         elapsedTime.toNanos(), consoleLogTimingUnits))
                         .append(AnsiColor.NONE);
 
-                System.out.println(ansiColorAnsiColoredString);
+                System.out.println(ansiColoredString);
             } catch (Throwable t) {
                 t.printStackTrace(System.err);
             }

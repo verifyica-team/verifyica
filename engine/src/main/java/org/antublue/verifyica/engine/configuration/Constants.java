@@ -126,30 +126,6 @@ public final class Constants {
     /** Configuration constant */
     public static final String MAVEN_PLUGIN_TIMING_UNITS = MAVEN_PLUGIN_LOG + ".units";
 
-    /** Configuration constant */
-    public static final String MAVEN_PLUGIN_LOG_TEST_MESSAGE = MAVEN_PLUGIN_LOG + ".test.message";
-
-    /** Configuration constant */
-    public static final String MAVEN_PLUGIN_LOG_MESSAGES_STARTED =
-            MAVEN_PLUGIN_LOG + ".messages.started";
-
-    /** Configuration constant */
-    public static final String MAVEN_PLUGIN_LOG_SKIP_MESSAGE = MAVEN_PLUGIN_LOG + ".skip.message";
-
-    /** Configuration constant */
-    public static final String MAVEN_PLUGIN_LOG_MESSAGES_SKIPPED =
-            MAVEN_PLUGIN_LOG + ".skip.messages";
-
-    /** Configuration constant */
-    public static final String MAVEN_PLUGIN_LOG_PASS_MESSAGE = MAVEN_PLUGIN_LOG + ".pass.message";
-
-    /** Configuration constant */
-    public static final String MAVEN_PLUGIN_LOG_MESSAGES_FINISHED =
-            MAVEN_PLUGIN_LOG + ".messages.finished";
-
-    /** Configuration constant */
-    public static final String MAVEN_PLUGIN_LOG_FAIL_MESSAGE = MAVEN_PLUGIN_LOG + ".fail.message";
-
     /** Constructor */
     private Constants() {
         // INTENTIONALLY BLANK

@@ -72,17 +72,14 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         counterKeyToMessageDisplayStringMap.put("test.class.count", "Test classes   ");
         counterKeyToMessageDisplayStringMap.put("test.class.count.successful", "Passed");
         counterKeyToMessageDisplayStringMap.put("test.class.count.failed", "Failed");
-        counterKeyToMessageDisplayStringMap.put("test.class.count.aborted", "Aborted");
         counterKeyToMessageDisplayStringMap.put("test.class.count.skipped", "Skipped");
         counterKeyToMessageDisplayStringMap.put("test.argument.count", "Test arguments ");
         counterKeyToMessageDisplayStringMap.put("test.argument.count.successful", "Passed");
         counterKeyToMessageDisplayStringMap.put("test.argument.count.failed", "Failed");
-        counterKeyToMessageDisplayStringMap.put("test.argument.count.aborted", "Aborted");
         counterKeyToMessageDisplayStringMap.put("test.argument.count.skipped", "Skipped");
         counterKeyToMessageDisplayStringMap.put("test.method.count", "Test methods   ");
         counterKeyToMessageDisplayStringMap.put("test.method.count.successful", "Passed");
         counterKeyToMessageDisplayStringMap.put("test.method.count.failed", "Failed");
-        counterKeyToMessageDisplayStringMap.put("test.method.count.aborted", "Aborted");
         counterKeyToMessageDisplayStringMap.put("test.method.count.skipped", "Skipped");
     }
 
@@ -234,7 +231,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     case ABORTED:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".aborted", k -> new AtomicLong())
+                                    .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
@@ -271,7 +268,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     case ABORTED:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".aborted", k -> new AtomicLong())
+                                    .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
@@ -308,7 +305,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     case ABORTED:
                         {
                             counterMap
-                                    .computeIfAbsent(key + ".aborted", k -> new AtomicLong())
+                                    .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
                                     .incrementAndGet();
                             break;
                         }
@@ -346,13 +343,6 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                     .map(Map.Entry::getValue)
                                     .collect(Collectors.toList()));
 
-            int abortedPad =
-                    getPad(
-                            counterMap.entrySet().stream()
-                                    .filter(mapEntry -> mapEntry.getKey().endsWith(".aborted"))
-                                    .map(Map.Entry::getValue)
-                                    .collect(Collectors.toList()));
-
             int skipPad =
                     getPad(
                             counterMap.entrySet().stream()
@@ -379,9 +369,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                                         .get(),
                                                 countPad)));
 
-                String[] subKeys = {
-                    key + ".successful", key + ".failed", key + ".aborted", key + ".skipped"
-                };
+                String[] subKeys = {key + ".successful", key + ".failed", key + ".skipped"};
 
                 for (String subKey : subKeys) {
                     String messageDisplayString = counterKeyToMessageDisplayStringMap.get(subKey);
@@ -398,11 +386,11 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                                 AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(messageDisplayString);
                         countDisplayString =
                                 AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(pad(count, failedPad));
-                    } else if (subKey.endsWith(".aborted")) {
+                    } else if (subKey.endsWith(".skipped")) {
                         messageDisplayString =
                                 AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(messageDisplayString);
                         countDisplayString =
-                                AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(pad(count, abortedPad));
+                                AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(pad(count, skipPad));
                     } else {
                         messageDisplayString = AnsiColor.TEXT_WHITE_BOLD.wrap(messageDisplayString);
                         countDisplayString = AnsiColor.TEXT_WHITE_BOLD.wrap(pad(count, skipPad));
