@@ -126,11 +126,11 @@ public class ArgumentTestDescriptorExecutionContext implements TestDescriptorExe
                                 () -> {
                                     try {
                                         testMethodTestDescriptors.forEach(
-                                                methodTestDescriptor ->
+                                                testMethodTestDescriptor ->
                                                         new TestMethodTestDescriptorExecutionContext(
                                                                         verifyicaEngineExecutionContext,
                                                                         argumentContext,
-                                                                        methodTestDescriptor)
+                                                                        testMethodTestDescriptor)
                                                                 .test());
                                         return StateMachine.Result.of(State.EXECUTE_SUCCESS);
                                     } catch (Throwable t) {
@@ -143,11 +143,11 @@ public class ArgumentTestDescriptorExecutionContext implements TestDescriptorExe
                                 () -> {
                                     try {
                                         testMethodTestDescriptors.forEach(
-                                                methodTestDescriptor ->
+                                                testMethodTestDescriptor ->
                                                         new TestMethodTestDescriptorExecutionContext(
                                                                         verifyicaEngineExecutionContext,
                                                                         argumentContext,
-                                                                        methodTestDescriptor)
+                                                                        testMethodTestDescriptor)
                                                                 .skip());
                                         return StateMachine.Result.of(State.SKIP_SUCCESS);
                                     } catch (Throwable t) {
@@ -246,11 +246,11 @@ public class ArgumentTestDescriptorExecutionContext implements TestDescriptorExe
                 .executionStarted(argumentTestDescriptor);
 
         testMethodTestDescriptors.forEach(
-                methodTestDescriptor ->
+                testMethodTestDescriptor ->
                         new TestMethodTestDescriptorExecutionContext(
                                         verifyicaEngineExecutionContext,
                                         argumentContext,
-                                        methodTestDescriptor)
+                                        testMethodTestDescriptor)
                                 .skip());
 
         verifyicaEngineExecutionContext
