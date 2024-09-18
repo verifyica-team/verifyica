@@ -276,6 +276,20 @@ public class Locks {
      */
     @Deprecated
     public static <V> V call(Configuration configuration, Callable<V> callable) throws Throwable {
+        return execute(configuration, callable);
+    }
+
+    /**
+     * Execute a Callable in a Context lock
+     *
+     * @param configuration configuration
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     * @param <V> the type
+     */
+    public static <V> V execute(Configuration configuration, Callable<V> callable)
+            throws Throwable {
         notNull(configuration, "configuration is null");
         notNull(callable, "callable is null");
 
@@ -293,6 +307,19 @@ public class Locks {
      */
     @Deprecated
     public static <V> V call(Context context, Callable<V> callable) throws Throwable {
+        return execute(context, callable);
+    }
+
+    /**
+     * Execute a Callable in a Context lock
+     *
+     * @param context context
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     * @param <V> the type
+     */
+    public static <V> V execute(Context context, Callable<V> callable) throws Throwable {
         notNull(context, "context is null");
         notNull(callable, "callable is null");
 
