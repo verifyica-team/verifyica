@@ -100,7 +100,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     private final Map<ArgumentTestDescriptor, String> argumentTestDescriptorSkippedMap;
 
     private final Map<TestMethodTestDescriptor, TestExecutionResult>
-            methodTestDescriptorTestExecutionResultMap;
+            testMethodTestDescriptorTestExecutionResultMap;
 
     private final Map<TestMethodTestDescriptor, String> testMethodTestDescriptorSkippedMap;
 
@@ -117,7 +117,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         argumentTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
         argumentTestDescriptorSkippedMap = new ConcurrentHashMap<>();
 
-        methodTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
+        testMethodTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
         testMethodTestDescriptorSkippedMap = new ConcurrentHashMap<>();
 
         counterMap = new ConcurrentHashMap<>();
@@ -161,7 +161,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             argumentTestDescriptorTestExecutionResultMap.put(
                     (ArgumentTestDescriptor) testDescriptor, testExecutionResult);
         } else if (testDescriptor instanceof TestMethodTestDescriptor) {
-            methodTestDescriptorTestExecutionResultMap.put(
+            testMethodTestDescriptorTestExecutionResultMap.put(
                     (TestMethodTestDescriptor) testDescriptor, testExecutionResult);
         }
 
@@ -283,7 +283,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             }
 
             for (Map.Entry<TestMethodTestDescriptor, TestExecutionResult> mapEntry :
-                    methodTestDescriptorTestExecutionResultMap.entrySet()) {
+                    testMethodTestDescriptorTestExecutionResultMap.entrySet()) {
                 TestExecutionResult testExecutionResult = mapEntry.getValue();
                 TestExecutionResult.Status status = testExecutionResult.getStatus();
                 String key = "test.method.count";
