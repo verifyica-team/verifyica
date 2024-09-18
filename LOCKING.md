@@ -10,7 +10,7 @@ Annotations require static values for locking semantics...
 - a scope
   - i.e. self / self + children
 
-Annotations also don't address scenarios when threads created/used in test.
+Annotations also don't address scenarios when threads are created/used in test (i.e. async testing.)
 
 ## LockManager
 
