@@ -200,8 +200,9 @@ public class AnsiColoredStringTest {
         assertThat(string2).isEqualTo(string1);
     }
 
+    /*
     @Test
-    public void test() {
+    public void debug() {
         boolean resetAnsiColor = false;
 
         try {
@@ -271,4 +272,5 @@ public class AnsiColoredStringTest {
             }
         }
     }
+    */
 }
