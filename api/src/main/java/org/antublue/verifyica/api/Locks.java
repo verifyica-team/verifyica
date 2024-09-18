@@ -16,12 +16,12 @@
 
 package org.antublue.verifyica.api;
 
-import static java.lang.String.format;
-
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @SuppressWarnings("PMD.UnusedPrivateMethod")
 public class Locks {
 
-    private static final InternalLockManager INTERNAL_LOCK_MANAGER = new InternalLockManager();
+    private static final LockManager LOCK_MANAGER = new LockManager();
 
     /** Constructor */
     private Locks() {
@@ -44,7 +44,7 @@ public class Locks {
     public static void lock(Object key) {
         notNull(key, "key is null");
 
-        INTERNAL_LOCK_MANAGER.lock(key);
+        LOCK_MANAGER.lock(key);
     }
 
     /**
@@ -56,7 +56,7 @@ public class Locks {
     public static boolean tryLock(Object key) {
         notNull(key, "key is null");
 
-        return INTERNAL_LOCK_MANAGER.tryLock(key);
+        return LOCK_MANAGER.tryLock(key);
     }
 
     /**
@@ -73,7 +73,7 @@ public class Locks {
         notNull(key, "key is null");
         notNull(timeUnit, "timeUnit is null");
 
-        return INTERNAL_LOCK_MANAGER.tryLock(key, time, timeUnit);
+        return LOCK_MANAGER.tryLock(key, time, timeUnit);
     }
 
     /**
@@ -84,11 +84,12 @@ public class Locks {
     public static void unlock(Object key) {
         notNull(key, "key is null");
 
-        INTERNAL_LOCK_MANAGER.unlock(key);
+        LOCK_MANAGER.unlock(key);
     }
 
     /**
-     * Check if a key is locked
+     * Check if a key is locked. Use cautiously since locking/unlocking may be called by another
+     * thread before/after the lock check
      *
      * @param key key
      * @return true if the key is locked, else false
@@ -96,7 +97,7 @@ public class Locks {
     public static boolean isLocked(Object key) {
         notNull(key, "key is null");
 
-        return INTERNAL_LOCK_MANAGER.isLocked(key);
+        return LOCK_MANAGER.isLocked(key);
     }
 
     /**
@@ -105,7 +106,18 @@ public class Locks {
      * @param key key
      * @param runnable runnable
      */
+    @Deprecated
     public static void run(Object key, Runnable runnable) {
+        execute(key, runnable);
+    }
+
+    /**
+     * Execute a Runnable in a Lock
+     *
+     * @param key key
+     * @param runnable runnable
+     */
+    public static void execute(Object key, Runnable runnable) {
         notNull(key, "key is null");
         notNull(runnable, "runnable is null");
 
@@ -123,11 +135,22 @@ public class Locks {
      * @param configuration configuration
      * @param runnable runnable
      */
-    public static void run(Configuration configuration, Runnable runnable) {
+    @Deprecated
+    public void run(Configuration configuration, Runnable runnable) {
+        execute(configuration, runnable);
+    }
+
+    /**
+     * Execute a Runnable in a Configuration Lock
+     *
+     * @param configuration configuration
+     * @param runnable runnable
+     */
+    public static void execute(Configuration configuration, Runnable runnable) {
         notNull(configuration, "configuration is null");
         notNull(runnable, "runnable is null");
 
-        run(configuration.getLock(), runnable);
+        execute(configuration.getLock(), runnable);
     }
 
     /**
@@ -136,11 +159,22 @@ public class Locks {
      * @param context context
      * @param runnable runnable
      */
+    @Deprecated
     public static void run(Context context, Runnable runnable) {
+        execute(context, runnable);
+    }
+
+    /**
+     * Execute a Runnable in a Context Lock
+     *
+     * @param context context
+     * @param runnable runnable
+     */
+    public static void execute(Context context, Runnable runnable) {
         notNull(context, "context is null");
         notNull(runnable, "runnable is null");
 
-        run(context.getLock(), runnable);
+        execute(context.getLock(), runnable);
     }
 
     /**
@@ -149,11 +183,22 @@ public class Locks {
      * @param store store
      * @param runnable runnable
      */
+    @Deprecated
     public static void run(Store store, Runnable runnable) {
+        execute(store, runnable);
+    }
+
+    /**
+     * Execute a Runnable in a Store Lock
+     *
+     * @param store store
+     * @param runnable runnable
+     */
+    public static void execute(Store store, Runnable runnable) {
         notNull(store, "store is null");
         notNull(runnable, "runnable is null");
 
-        run(store.getLock(), runnable);
+        execute(store.getLock(), runnable);
     }
 
     /**
@@ -162,7 +207,18 @@ public class Locks {
      * @param lock lock
      * @param runnable runnable
      */
+    @Deprecated
     public static void run(Lock lock, Runnable runnable) {
+        execute(lock, runnable);
+    }
+
+    /**
+     * Execute a Runnable in a Store Lock
+     *
+     * @param lock lock
+     * @param runnable runnable
+     */
+    public static void execute(Lock lock, Runnable runnable) {
         notNull(lock, "lock is null");
         notNull(runnable, "runnable is null");
 
@@ -183,7 +239,21 @@ public class Locks {
      * @throws Throwable Throwable
      * @param <V> the type
      */
+    @Deprecated
     public static <V> V call(Object key, Callable<V> callable) throws Throwable {
+        return execute(key, callable);
+    }
+
+    /**
+     * Execute a Callable in a Lock
+     *
+     * @param key key
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     * @param <V> the type
+     */
+    public static <V> V execute(Object key, Callable<V> callable) throws Throwable {
         notNull(key, "key is null");
         notNull(callable, "callable is null");
 
@@ -204,11 +274,12 @@ public class Locks {
      * @throws Throwable Throwable
      * @param <V> the type
      */
+    @Deprecated
     public static <V> V call(Configuration configuration, Callable<V> callable) throws Throwable {
         notNull(configuration, "configuration is null");
         notNull(callable, "callable is null");
 
-        return call(configuration.getLock(), callable);
+        return execute(configuration.getLock(), callable);
     }
 
     /**
@@ -220,11 +291,12 @@ public class Locks {
      * @throws Throwable Throwable
      * @param <V> the type
      */
+    @Deprecated
     public static <V> V call(Context context, Callable<V> callable) throws Throwable {
         notNull(context, "context is null");
         notNull(callable, "callable is null");
 
-        return call(context.getLock(), callable);
+        return execute(context.getLock(), callable);
     }
 
     /**
@@ -236,11 +308,25 @@ public class Locks {
      * @throws Throwable Throwable
      * @param <V> the type
      */
+    @Deprecated
     public static <V> V call(Store store, Callable<V> callable) throws Throwable {
+        return execute(store, callable);
+    }
+
+    /**
+     * Execute a Callable in a Store lock
+     *
+     * @param store store
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     * @param <V> the type
+     */
+    public static <V> V execute(Store store, Callable<V> callable) throws Throwable {
         notNull(store, "store is null");
         notNull(callable, "callable is null");
 
-        return call(store.getLock(), callable);
+        return execute(store.getLock(), callable);
     }
 
     /**
@@ -252,7 +338,21 @@ public class Locks {
      * @throws Throwable Throwable
      * @param <V> the type
      */
+    @Deprecated
     public static <V> V call(Lock lock, Callable<V> callable) throws Throwable {
+        return execute(lock, callable);
+    }
+
+    /**
+     * Execute a Callable in a Store lock
+     *
+     * @param lock lock
+     * @param callable callable
+     * @return the callable result
+     * @throws Throwable Throwable
+     * @param <V> the type
+     */
+    public static <V> V execute(Lock lock, Callable<V> callable) throws Throwable {
         notNull(lock, "lock is null");
         notNull(callable, "callable is null");
 
@@ -266,78 +366,131 @@ public class Locks {
 
     /** For testing */
     static void assertEmpty() {
-        INTERNAL_LOCK_MANAGER.assertEmpty();
+        LOCK_MANAGER.assertEmpty();
     }
 
     /** For testing */
     static void assertNotEmpty() {
-        INTERNAL_LOCK_MANAGER.assertNotEmpty();
+        LOCK_MANAGER.assertNotEmpty();
     }
 
-    /** Class to implement InternalLockManager */
-    private static class InternalLockManager {
+    /** For testing */
+    static void assertSize(int size) {
+        LOCK_MANAGER.assertSize(size);
+    }
 
-        private final ConcurrentHashMap<Object, LockReference> lockReferences =
-                new ConcurrentHashMap<>();
+    /** Class to implement LockManager */
+    private static class LockManager {
+
+        private final Lock lockManagerLock;
+        private final Map<Object, LockReference> lockReferences;
 
         /** Constructor */
-        private InternalLockManager() {
-            // INTENTIONALLY BLANK
+        public LockManager() {
+            lockManagerLock = new ReentrantLock(true);
+            lockReferences = new HashMap<>();
         }
 
         /**
-         * Lock a Lock
+         * Method to try to lock a key
+         *
+         * @param key key
+         * @return true if the lock was free or locked the current Thread, else false
+         */
+        private boolean tryLock(Object key) {
+            LockReference lockReference;
+
+            lockManagerLock.lock();
+            try {
+                lockReference = lockReferences.get(key);
+                if (lockReference == null) {
+                    lockReference = new LockReference();
+                    lockReferences.put(key, lockReference);
+                }
+                lockReference.addThread();
+            } finally {
+                lockManagerLock.unlock();
+            }
+
+            return lockReference.getLock().tryLock();
+        }
+
+        /**
+         * Method to try to lock a key
+         *
+         * @param key key
+         * @param timeout timeout
+         * @param timeUnit timeUnit
+         * @return true if the lock was free or locked the current Thread, else false
+         * @throws InterruptedException InterruptedException
+         */
+        private boolean tryLock(Object key, long timeout, TimeUnit timeUnit)
+                throws InterruptedException {
+            LockReference lockReference;
+
+            lockManagerLock.lock();
+            try {
+                lockReference = lockReferences.get(key);
+                if (lockReference == null) {
+                    lockReference = new LockReference();
+                    lockReferences.put(key, lockReference);
+                }
+                lockReference.addThread();
+            } finally {
+                lockManagerLock.unlock();
+            }
+
+            return lockReference.getLock().tryLock(timeout, timeUnit);
+        }
+
+        /**
+         * Method to lock a key
          *
          * @param key key
          */
         private void lock(Object key) {
-            notNull(key, "key is null");
+            LockReference lockReference;
 
-            compute(key).getLock().lock();
+            lockManagerLock.lock();
+            try {
+                lockReference = lockReferences.get(key);
+                if (lockReference == null) {
+                    lockReference = new LockReference();
+                    lockReferences.put(key, lockReference);
+                }
+                lockReference.addThread();
+            } finally {
+                lockManagerLock.unlock();
+            }
+
+            lockReference.getLock().lock();
         }
 
         /**
-         * Try to lock a Lock
-         *
-         * @param key key
-         * @return true if the Lock was locked, else false
-         */
-        private boolean tryLock(Object key) {
-            notNull(key, "key is null");
-
-            return compute(key).getLock().tryLock();
-        }
-
-        /**
-         * Try to lock a Lock
-         *
-         * @param key key
-         * @return true if the Lock was locked, else false
-         */
-        private boolean tryLock(Object key, long time, TimeUnit timeUnit)
-                throws InterruptedException {
-            notNull(key, "key is null");
-            notNull(timeUnit, "timeUnit is null");
-
-            return compute(key).getLock().tryLock(time, timeUnit);
-        }
-
-        /**
-         * Unlock a lock
+         * Method to unlock a key
          *
          * @param key key
          */
         private void unlock(Object key) {
-            notNull(key, "key is null");
+            lockManagerLock.lock();
+            try {
+                LockReference lockReference = lockReferences.get(key);
+                if (lockReference == null || lockReference.getThreadCount() == 0) {
+                    throw new IllegalMonitorStateException("Key is not locked");
+                }
 
-            LockReference lockReference = lockReferences.get(key);
-            if (lockReference == null) {
-                throw new IllegalMonitorStateException(format("Lock key [%s] is not locked", key));
-            }
+                if (!lockReference.getLock().isHeldByCurrentThread()) {
+                    throw new IllegalMonitorStateException("Current thread does not own the Lock");
+                }
 
-            lockReference.reentrantLock.unlock();
-            if (lockReference.decrementReferenceCount() == 0) {
-                lockReferences.remove(key, lockReference);
+                lockReference.getLock().unlock();
+                lockReference.removeThread();
+
+                if (lockReference.getThreadCount() == 0) {
+                    lockReferences.remove(key);
+                }
+            } finally {
+                lockManagerLock.unlock();
             }
         }
 
@@ -348,33 +501,51 @@ public class Locks {
          * @return true if the key is locked, else false
          */
         private boolean isLocked(Object key) {
-            notNull(key, "key is null");
-
-            return lockReferences.containsKey(key);
-        }
-
-        /**
-         * Method to compute (get or modify) a LockReference
-         *
-         * @param key key
-         * @return a LockReference
-         */
-        private LockReference compute(Object key) {
-            return lockReferences.compute(
-                    key, (k, v) -> v == null ? new LockReference() : v.incrementReferenceCount());
-        }
-
-        /** For testing */
-        private void assertEmpty() {
-            if (!lockReferences.isEmpty()) {
-                throw new IllegalStateException("size should be 0");
+            lockManagerLock.lock();
+            try {
+                return lockReferences.get(key) != null;
+            } finally {
+                lockManagerLock.unlock();
             }
         }
 
-        /** For testing */
+        /** Method to assert there are no LockReferences */
+        private void assertEmpty() {
+            lockManagerLock.lock();
+            try {
+                if (!lockReferences.isEmpty()) {
+                    throw new IllegalStateException("lockReferences is not empty");
+                }
+            } finally {
+                lockManagerLock.unlock();
+            }
+        }
+
+        /** Method to assert there are LockReferences */
         private void assertNotEmpty() {
-            if (lockReferences.isEmpty()) {
-                throw new IllegalStateException("size should be greater than 0");
+            lockManagerLock.lock();
+            try {
+                if (lockReferences.isEmpty()) {
+                    throw new IllegalStateException("lockReferences is empty");
+                }
+            } finally {
+                lockManagerLock.unlock();
+            }
+        }
+
+        /**
+         * Method to assert the number of LockReferences
+         *
+         * @param size size
+         */
+        private void assertSize(int size) {
+            lockManagerLock.lock();
+            try {
+                if (lockReferences.size() != size) {
+                    throw new IllegalStateException("lockReferences size is incorrect");
+                }
+            } finally {
+                lockManagerLock.unlock();
             }
         }
 
@@ -382,40 +553,40 @@ public class Locks {
         private static class LockReference {
 
             private final ReentrantLock reentrantLock;
-            private final AtomicInteger referenceCount;
+            private final Set<Thread> threads;
 
             /** Constructor */
-            private LockReference() {
+            public LockReference() {
                 reentrantLock = new ReentrantLock(true);
-                referenceCount = new AtomicInteger(1);
+                threads = new HashSet<>();
             }
 
             /**
-             * Method to get the LockContainer's Lock
+             * Method to get the Lock
              *
-             * @return the LockContainer's lock
+             * @return the Lock
              */
-            public Lock getLock() {
+            public ReentrantLock getLock() {
                 return reentrantLock;
             }
 
-            /**
-             * Increment the reference count
-             *
-             * @return this
-             */
-            private LockReference incrementReferenceCount() {
-                referenceCount.incrementAndGet();
-                return this;
+            /** Method to add the current Thread */
+            public void addThread() {
+                threads.add(Thread.currentThread());
+            }
+
+            /** Method to remove the current Thread */
+            public void removeThread() {
+                threads.remove(Thread.currentThread());
             }
 
             /**
-             * Decrement the reference count
+             * Method to get the Thread count
              *
-             * @return this
+             * @return the Thread count
              */
-            private int decrementReferenceCount() {
-                return referenceCount.decrementAndGet();
+            public int getThreadCount() {
+                return threads.size();
             }
         }
     }
