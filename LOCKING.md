@@ -1,4 +1,4 @@
-# Concurrency
+# Locking
 
 Verifyica does not (by design) have an annotation to perform locking.
 
@@ -49,7 +49,7 @@ try {
 
 ## Context / Store Locking
 
-All Contexts and it's associated Store have a `Lock` that can be use for locking on the object.
+All Contexts (and it's associated Store) have a `Lock` that can be used for locking on the object.
 
 ### Examples
 
