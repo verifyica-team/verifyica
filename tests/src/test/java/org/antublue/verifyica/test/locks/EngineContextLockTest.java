@@ -49,7 +49,7 @@ public class EngineContextLockTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Locks.call(
+        Locks.execute(
                 argumentContext.getClassContext().getEngineContext(),
                 () -> {
                     System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());

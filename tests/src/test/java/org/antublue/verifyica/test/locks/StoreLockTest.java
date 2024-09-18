@@ -59,7 +59,7 @@ public class StoreLockTest {
                         .getStore()
                         .computeIfAbsent(LOCK_KEY, k -> new ReentrantLock(true), Lock.class);
 
-        Locks.call(
+        Locks.execute(
                 lock,
                 () -> {
                     System.out.printf("test2(%s) acquired%n", argumentContext.getTestArgument());
