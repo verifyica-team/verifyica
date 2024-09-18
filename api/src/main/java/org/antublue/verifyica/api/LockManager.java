@@ -27,8 +27,8 @@ import java.util.concurrent.locks.ReentrantLock;
 /** Class to implement LockManager */
 public class LockManager {
 
-    private static final Lock lockManagerLock = new ReentrantLock(true);
-    private static final Map<Object, LockReference> lockReferences = new HashMap<>();
+    private static final Lock LOCK = new ReentrantLock(true);
+    private static final Map<Object, LockReference> LOCK_REFERENCES = new HashMap<>();
 
     /** Constructor */
     private LockManager() {
@@ -46,16 +46,16 @@ public class LockManager {
 
         LockReference lockReference;
 
-        lockManagerLock.lock();
+        LOCK.lock();
         try {
-            lockReference = lockReferences.get(key);
+            lockReference = LOCK_REFERENCES.get(key);
             if (lockReference == null) {
                 lockReference = new LockReference();
-                lockReferences.put(key, lockReference);
+                LOCK_REFERENCES.put(key, lockReference);
             }
             lockReference.addThread();
         } finally {
-            lockManagerLock.unlock();
+            LOCK.unlock();
         }
 
         return lockReference.getLock().tryLock();
@@ -77,16 +77,16 @@ public class LockManager {
 
         LockReference lockReference;
 
-        lockManagerLock.lock();
+        LOCK.lock();
         try {
-            lockReference = lockReferences.get(key);
+            lockReference = LOCK_REFERENCES.get(key);
             if (lockReference == null) {
                 lockReference = new LockReference();
-                lockReferences.put(key, lockReference);
+                LOCK_REFERENCES.put(key, lockReference);
             }
             lockReference.addThread();
         } finally {
-            lockManagerLock.unlock();
+            LOCK.unlock();
         }
 
         return lockReference.getLock().tryLock(timeout, timeUnit);
@@ -102,16 +102,16 @@ public class LockManager {
 
         LockReference lockReference;
 
-        lockManagerLock.lock();
+        LOCK.lock();
         try {
-            lockReference = lockReferences.get(key);
+            lockReference = LOCK_REFERENCES.get(key);
             if (lockReference == null) {
                 lockReference = new LockReference();
-                lockReferences.put(key, lockReference);
+                LOCK_REFERENCES.put(key, lockReference);
             }
             lockReference.addThread();
         } finally {
-            lockManagerLock.unlock();
+            LOCK.unlock();
         }
 
         lockReference.getLock().lock();
@@ -125,9 +125,9 @@ public class LockManager {
     public static void unlock(Object key) {
         notNull(key, "key is null");
 
-        lockManagerLock.lock();
+        LOCK.lock();
         try {
-            LockReference lockReference = lockReferences.get(key);
+            LockReference lockReference = LOCK_REFERENCES.get(key);
             if (lockReference == null || lockReference.getThreadCount() == 0) {
                 throw new IllegalMonitorStateException("Key is not locked");
             }
@@ -140,10 +140,10 @@ public class LockManager {
             lockReference.removeThread();
 
             if (lockReference.getThreadCount() == 0) {
-                lockReferences.remove(key);
+                LOCK_REFERENCES.remove(key);
             }
         } finally {
-            lockManagerLock.unlock();
+            LOCK.unlock();
         }
     }
 
@@ -156,11 +156,11 @@ public class LockManager {
     public static boolean isLocked(Object key) {
         notNull(key, "key is null");
 
-        lockManagerLock.lock();
+        LOCK.lock();
         try {
-            return lockReferences.get(key) != null;
+            return LOCK_REFERENCES.get(key) != null;
         } finally {
-            lockManagerLock.unlock();
+            LOCK.unlock();
         }
     }
 
@@ -170,13 +170,13 @@ public class LockManager {
      * @param size size
      */
     static void assertSize(int size) {
-        lockManagerLock.lock();
+        LOCK.lock();
         try {
-            if (lockReferences.size() != size) {
+            if (LOCK_REFERENCES.size() != size) {
                 throw new IllegalStateException("lockReferences size is incorrect");
             }
         } finally {
-            lockManagerLock.unlock();
+            LOCK.unlock();
         }
     }
 
