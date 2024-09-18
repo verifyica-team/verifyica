@@ -22,10 +22,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Locks;
 import org.antublue.verifyica.api.Verifyica;
 
-public class ClassContextLockTest {
+public class EngineContextStoreLockTest {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -49,22 +48,22 @@ public class ClassContextLockTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Locks.execute(
-                argumentContext.getClassContext(),
-                () -> {
-                    System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
-                    System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+        argumentContext.getClassContext().getEngineContext().getStore().getLock().lock();
+        try {
+            System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
 
-                    assertThat(argumentContext).isNotNull();
-                    assertThat(argumentContext.getStore()).isNotNull();
-                    assertThat(argumentContext.getTestArgument()).isNotNull();
+            System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
-                    Thread.sleep(1000);
+            assertThat(argumentContext).isNotNull();
+            assertThat(argumentContext.getStore()).isNotNull();
+            assertThat(argumentContext.getTestArgument()).isNotNull();
 
-                    System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
+            Thread.sleep(1000);
 
-                    return null;
-                });
+            System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
+        } finally {
+            argumentContext.getClassContext().getEngineContext().getStore().getLock().unlock();
+        }
     }
 
     @Verifyica.Test

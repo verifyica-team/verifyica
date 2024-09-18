@@ -27,82 +27,80 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
-public class LocksTest {
+public class LockManagerTest {
 
     @Test
     public void testLockUnlockSequence() {
         String key = "key";
 
         for (int i = 0; i < 10; i++) {
-            Locks.assertEmpty();
+            LockManager.assertSize(0);
 
-            assertThat(Locks.isLocked(key)).isFalse();
+            assertThat(LockManager.isLocked(key)).isFalse();
 
-            Locks.lock(key);
-            Locks.assertNotEmpty();
-            Locks.assertSize(1);
+            LockManager.lock(key);
 
-            assertThat(Locks.isLocked(key)).isTrue();
+            LockManager.assertSize(1);
 
-            Locks.unlock(key);
+            assertThat(LockManager.isLocked(key)).isTrue();
 
-            assertThat(Locks.isLocked(key)).isFalse();
+            LockManager.unlock(key);
 
-            Locks.assertEmpty();
-            Locks.assertSize(0);
+            assertThat(LockManager.isLocked(key)).isFalse();
+
+            LockManager.assertSize(0);
         }
 
-        Locks.assertEmpty();
-        Locks.assertSize(0);
+        LockManager.assertSize(0);
+        LockManager.assertSize(0);
     }
 
     @Test
     public void testUnlockWithoutLock() {
         assertThatExceptionOfType(IllegalMonitorStateException.class)
-                .isThrownBy(() -> Locks.unlock("key"));
+                .isThrownBy(() -> LockManager.unlock("key"));
 
-        Locks.assertEmpty();
-        Locks.assertSize(0);
+        LockManager.assertSize(0);
+        LockManager.assertSize(0);
     }
 
     @Test
     public void testMultiLockUnlock() {
         String key = "key";
 
-        Locks.lock(key);
+        LockManager.lock(key);
 
-        Locks.assertSize(1);
+        LockManager.assertSize(1);
 
-        Locks.lock(key);
+        LockManager.lock(key);
 
-        Locks.assertSize(1);
+        LockManager.assertSize(1);
 
-        Locks.lock(key);
+        LockManager.lock(key);
 
-        Locks.assertSize(1);
+        LockManager.assertSize(1);
 
-        assertThat(Locks.tryLock(key)).isTrue();
-        assertThat(Locks.tryLock(key)).isTrue();
-        assertThat(Locks.tryLock(key)).isTrue();
+        assertThat(LockManager.tryLock(key)).isTrue();
+        assertThat(LockManager.tryLock(key)).isTrue();
+        assertThat(LockManager.tryLock(key)).isTrue();
 
-        Locks.assertSize(1);
+        LockManager.assertSize(1);
 
-        assertThat(Locks.isLocked(key)).isTrue();
+        assertThat(LockManager.isLocked(key)).isTrue();
 
-        Locks.assertNotEmpty();
-        Locks.assertSize(1);
+        LockManager.assertSize(1);
 
-        Locks.unlock(key);
+        LockManager.unlock(key);
 
-        Locks.assertEmpty();
+        LockManager.assertSize(0);
 
         assertThatExceptionOfType(IllegalMonitorStateException.class)
-                .isThrownBy(() -> Locks.unlock(key));
+                .isThrownBy(() -> LockManager.unlock(key));
 
-        assertThat(Locks.isLocked(key)).isFalse();
+        assertThat(LockManager.isLocked(key)).isFalse();
 
-        Locks.assertEmpty();
-        Locks.assertSize(0);
+        LockManager.assertSize(0);
+        LockManager.assertSize(0);
     }
 
     @Test
@@ -116,7 +114,7 @@ public class LocksTest {
             threads[i] =
                     new Thread(
                             () -> {
-                                Locks.lock(uuid);
+                                LockManager.lock(uuid);
                                 try {
                                     System.out.printf(
                                             "thread [%s] locked%n",
@@ -135,7 +133,7 @@ public class LocksTest {
                                     System.out.printf(
                                             "thread [%s] unlocked%n",
                                             Thread.currentThread().getName());
-                                    Locks.unlock(uuid);
+                                    LockManager.unlock(uuid);
                                 }
                             });
             threads[i].setName("thread-" + i);
@@ -159,7 +157,7 @@ public class LocksTest {
 
         assertThat(atomicInteger).hasValue(0);
 
-        Locks.assertEmpty();
+        LockManager.assertSize(0);
     }
 
     @Test
@@ -170,7 +168,7 @@ public class LocksTest {
         Thread lockThread =
                 new Thread(
                         () -> {
-                            Locks.lock(key);
+                            LockManager.lock(key);
 
                             try {
                                 countDownLatch.await();
@@ -178,7 +176,7 @@ public class LocksTest {
                                 // INTENTIONALLY BLANK
                             }
 
-                            Locks.unlock(key);
+                            LockManager.unlock(key);
                         });
         lockThread.start();
 
@@ -186,7 +184,7 @@ public class LocksTest {
                 new Thread(
                         () -> {
                             assertThatExceptionOfType(IllegalMonitorStateException.class)
-                                    .isThrownBy(() -> Locks.unlock(key));
+                                    .isThrownBy(() -> LockManager.unlock(key));
                             countDownLatch.countDown();
                         });
         unlockThread.start();
@@ -194,6 +192,6 @@ public class LocksTest {
 
         lockThread.join();
 
-        Locks.assertEmpty();
+        LockManager.assertSize(0);
     }
 }

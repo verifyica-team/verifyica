@@ -20,16 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Locks;
 import org.antublue.verifyica.api.Verifyica;
 
-public class StoreLockTest {
-
-    private static final String LOCK_KEY = StoreLockTest.class.getName() + ".lockKey";
+public class ClassContextStoreLockTest {
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -53,28 +48,22 @@ public class StoreLockTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Lock lock =
-                argumentContext
-                        .getClassContext()
-                        .getStore()
-                        .computeIfAbsent(LOCK_KEY, k -> new ReentrantLock(true), Lock.class);
+        argumentContext.getClassContext().getStore().getLock().lock();
+        try {
+            System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
 
-        Locks.execute(
-                lock,
-                () -> {
-                    System.out.printf("test2(%s) acquired%n", argumentContext.getTestArgument());
-                    System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+            System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
-                    assertThat(argumentContext).isNotNull();
-                    assertThat(argumentContext.getStore()).isNotNull();
-                    assertThat(argumentContext.getTestArgument()).isNotNull();
+            assertThat(argumentContext).isNotNull();
+            assertThat(argumentContext.getStore()).isNotNull();
+            assertThat(argumentContext.getTestArgument()).isNotNull();
 
-                    Thread.sleep(1000);
+            Thread.sleep(1000);
 
-                    System.out.printf("test2(%s) released%n", argumentContext.getTestArgument());
-
-                    return null;
-                });
+            System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
+        } finally {
+            argumentContext.getClassContext().getStore().getLock().unlock();
+        }
     }
 
     @Verifyica.Test

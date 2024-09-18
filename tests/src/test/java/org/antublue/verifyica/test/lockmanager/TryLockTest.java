@@ -20,12 +20,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Locks;
+import org.antublue.verifyica.api.LockManager;
 import org.antublue.verifyica.api.Verifyica;
 
-public class ClassContextStoreLockTest {
+public class TryLockTest {
+
+    private static final String LOCK_KEY = TryLockTest.class.getName() + ".lockKey";
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -49,27 +52,50 @@ public class ClassContextStoreLockTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Locks.execute(
-                argumentContext.getClassContext().getStore(),
-                () -> {
-                    System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
+        if (LockManager.tryLock(LOCK_KEY, 100, TimeUnit.MILLISECONDS)) {
+            try {
+                System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
+                System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
-                    System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+                assertThat(argumentContext).isNotNull();
+                assertThat(argumentContext.getStore()).isNotNull();
+                assertThat(argumentContext.getTestArgument()).isNotNull();
 
-                    assertThat(argumentContext).isNotNull();
-                    assertThat(argumentContext.getStore()).isNotNull();
-                    assertThat(argumentContext.getTestArgument()).isNotNull();
+                Thread.sleep(1000);
 
-                    Thread.sleep(1000);
-
-                    System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
-
-                    return null;
-                });
+                System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
+            } finally {
+                LockManager.unlock(LOCK_KEY);
+            }
+        } else {
+            System.out.println("Could not acquire lock");
+        }
     }
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
+        if (LockManager.tryLock(LOCK_KEY)) {
+            try {
+                System.out.printf("test3(%s) locked%n", argumentContext.getTestArgument());
+                System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
+
+                assertThat(argumentContext).isNotNull();
+                assertThat(argumentContext.getStore()).isNotNull();
+                assertThat(argumentContext.getTestArgument()).isNotNull();
+
+                Thread.sleep(1000);
+
+                System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
+            } finally {
+                LockManager.unlock(LOCK_KEY);
+            }
+        } else {
+            System.out.println("Could not acquire lock");
+        }
+    }
+
+    @Verifyica.Test
+    public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();

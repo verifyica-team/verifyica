@@ -22,10 +22,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Locks;
+import org.antublue.verifyica.api.Key;
+import org.antublue.verifyica.api.LockManager;
 import org.antublue.verifyica.api.Verifyica;
 
-public class EngineContextStoreLockTest {
+public class LockTest2 {
+
+    private static final Key LOCK_KEY = Key.of(LockTest2.class);
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -49,23 +52,21 @@ public class EngineContextStoreLockTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Locks.execute(
-                argumentContext.getClassContext().getEngineContext().getStore(),
-                () -> {
-                    System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
+        LockManager.lock(LOCK_KEY);
+        try {
+            System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
+            System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
-                    System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+            assertThat(argumentContext).isNotNull();
+            assertThat(argumentContext.getStore()).isNotNull();
+            assertThat(argumentContext.getTestArgument()).isNotNull();
 
-                    assertThat(argumentContext).isNotNull();
-                    assertThat(argumentContext.getStore()).isNotNull();
-                    assertThat(argumentContext.getTestArgument()).isNotNull();
+            Thread.sleep(1000);
 
-                    Thread.sleep(1000);
-
-                    System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
-
-                    return null;
-                });
+            System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
+        } finally {
+            LockManager.unlock(LOCK_KEY);
+        }
     }
 
     @Verifyica.Test

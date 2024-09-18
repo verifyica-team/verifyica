@@ -22,12 +22,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.Locks;
+import org.antublue.verifyica.api.LockManager;
 import org.antublue.verifyica.api.Verifyica;
 
-public class LockTest1 {
+public class ObjectLockTest {
 
-    private static final String LOCK_KEY = LockTest1.class.getName() + ".lockKey";
+    private static final String LOCK_KEY = ObjectLockTest.class.getName() + ".lockKey";
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -51,9 +51,10 @@ public class LockTest1 {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Locks.lock(LOCK_KEY);
+        LockManager.lock(LOCK_KEY);
         try {
             System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
+
             System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
             assertThat(argumentContext).isNotNull();
@@ -64,7 +65,7 @@ public class LockTest1 {
 
             System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
         } finally {
-            Locks.unlock(LOCK_KEY);
+            LockManager.unlock(LOCK_KEY);
         }
     }
 
