@@ -247,10 +247,6 @@ public class AnsiColor {
             }
         }
 
-        if (MAVEN_PLUGIN_BATCH.equals(System.getenv(MAVEN_PLUGIN_MODE))) {
-            ANSI_COLOR_SUPPORTED = false;
-        }
-
         String noColor = System.getenv(NO_COLOR_ENVIRONMENT_VARIABLE);
         if (noColor != null && !noColor.trim().isEmpty()) {
             ANSI_COLOR_SUPPORTED = false;

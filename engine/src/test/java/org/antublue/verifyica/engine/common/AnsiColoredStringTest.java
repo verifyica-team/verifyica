@@ -21,14 +21,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-public class AnsiColorStringTest {
+public class AnsiColoredStringTest {
 
     @Test
     public void testEmptyBuilder() {
-        AnsiColoredString ansiColorString = new AnsiColoredString().append(AnsiColor.NONE);
+        AnsiColoredString ansiColoredString = new AnsiColoredString().append(AnsiColor.NONE);
 
-        String string1 = ansiColorString.toString();
-        String string2 = ansiColorString.build();
+        String string1 = ansiColoredString.toString();
+        String string2 = ansiColoredString.build();
 
         assertThat(string1).isNotNull();
         assertThat(string2).isNotNull();
@@ -41,10 +41,10 @@ public class AnsiColorStringTest {
     public void testNoColorBeforeAppend() {
         String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColorString =
+        AnsiColoredString ansiColoredString =
                 new AnsiColoredString().append(AnsiColor.NONE).append(displayString);
 
-        String string = ansiColorString.build();
+        String string = ansiColoredString.build();
 
         assertThat(string).isNotNull();
         assertThat(string.length()).isEqualTo(displayString.length());
@@ -55,30 +55,32 @@ public class AnsiColorStringTest {
     public void testNoColorAfterAppend() {
         String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColorString =
+        AnsiColoredString ansiColoredString =
                 new AnsiColoredString().append(displayString).append(AnsiColor.NONE);
 
-        String string = ansiColorString.build();
+        String string = ansiColoredString.build();
+        int expectedLength = displayString.length() + AnsiColor.NONE.toString().length();
 
         assertThat(string).isNotNull();
-        assertThat(string.length()).isEqualTo(displayString.length());
-        assertThat(string.toCharArray()).hasSize(displayString.length());
+        assertThat(string.length()).isEqualTo(expectedLength);
+        assertThat(string.toCharArray()).hasSize(expectedLength);
     }
 
     @Test
     public void testReuseColor() {
         String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColorString =
+        AnsiColoredString ansiColoredString =
                 new AnsiColoredString(AnsiColor.TEXT_RED)
                         .append(displayString)
                         .append(AnsiColor.TEXT_RED);
 
-        String string = ansiColorString.build();
+        String string = ansiColoredString.build();
+        int expectedLength = AnsiColor.TEXT_RED.toString().length() + displayString.length();
 
         assertThat(string).isNotNull();
-        assertThat(string.length()).isEqualTo(displayString.length());
-        assertThat(string.toCharArray()).hasSize(displayString.length());
+        assertThat(string.length()).isEqualTo(expectedLength);
+        assertThat(string.toCharArray()).hasSize(expectedLength);
 
         assertThat(string).isEqualTo(AnsiColor.TEXT_RED + displayString);
     }
@@ -87,10 +89,10 @@ public class AnsiColorStringTest {
     public void testAppendColor() {
         String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColorString =
+        AnsiColoredString ansiColoredString =
                 new AnsiColoredString().append(displayString).append(AnsiColor.TEXT_RED);
 
-        String string = ansiColorString.build();
+        String string = ansiColoredString.build();
 
         assertThat(string).isNotNull();
 
@@ -196,5 +198,77 @@ public class AnsiColorStringTest {
         assertThat(string2.toCharArray()).hasSizeGreaterThan(0);
 
         assertThat(string2).isEqualTo(string1);
+    }
+
+    @Test
+    public void test() {
+        boolean resetAnsiColor = false;
+
+        try {
+            if (!AnsiColor.isSupported()) {
+                AnsiColor.setSupported(true);
+                resetAnsiColor = true;
+            }
+
+            AnsiColoredString baseString =
+                    new AnsiColoredString()
+                            .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                            .append("White String")
+                            .append(AnsiColor.NONE);
+
+            System.out.println(baseString);
+
+            AnsiColoredString string1 =
+                    new AnsiColoredString()
+                            .append(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
+                            .append("Yellow String")
+                            .append(AnsiColor.NONE);
+
+            System.out.println(string1);
+
+            AnsiColoredString string2 =
+                    new AnsiColoredString()
+                            .append(AnsiColor.TEXT_RED_BOLD_BRIGHT)
+                            .append("Red String")
+                            .append(AnsiColor.NONE);
+
+            System.out.println(string2);
+
+            AnsiColoredString string3 =
+                    new AnsiColoredString()
+                            .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                            .append("Another White String")
+                            .append(AnsiColor.NONE);
+
+            System.out.println(string3);
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder
+                    .append(baseString)
+                    .append(" ")
+                    .append(string1)
+                    .append(" ")
+                    .append(string2)
+                    .append(" ")
+                    .append(string3);
+
+            System.out.println(stringBuilder);
+
+            AnsiColoredString ansiColoredString = new AnsiColoredString();
+            ansiColoredString
+                    .append(baseString)
+                    .append(" ")
+                    .append(string1)
+                    .append(" ")
+                    .append(string2)
+                    .append(" ")
+                    .append(string3);
+
+            System.out.println(ansiColoredString);
+        } finally {
+            if (resetAnsiColor) {
+                AnsiColor.setSupported(false);
+            }
+        }
     }
 }

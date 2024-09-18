@@ -37,6 +37,7 @@ public class AnsiColoredString {
     public AnsiColoredString(String string) {
         stringBuilder = new StringBuilder();
         stringBuilder.append(string);
+        lastAnsiColor = null;
     }
 
     /**
@@ -205,19 +206,14 @@ public class AnsiColoredString {
      * @return this
      */
     public AnsiColoredString append(AnsiColor ansiColor) {
-        if (ansiColor != lastAnsiColor) {
-            if (stringBuilder.length() > 0) {
-                if (ansiColor != null) {
-                    stringBuilder.append(ansiColor);
-                    lastAnsiColor = ansiColor;
-                } else {
-                    stringBuilder.append(AnsiColor.NONE);
-                    lastAnsiColor = AnsiColor.NONE;
-                }
-            } else if (ansiColor != null && ansiColor != AnsiColor.NONE) {
-                stringBuilder.append(ansiColor);
-                lastAnsiColor = ansiColor;
-            }
+        if (ansiColor == null
+                || (ansiColor.equals(AnsiColor.NONE) && stringBuilder.length() == 0)) {
+            return this;
+        }
+
+        if (!ansiColor.equals(lastAnsiColor)) {
+            stringBuilder.append(ansiColor);
+            lastAnsiColor = ansiColor;
         }
 
         return this;
