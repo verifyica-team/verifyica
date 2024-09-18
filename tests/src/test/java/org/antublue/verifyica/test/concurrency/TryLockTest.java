@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.LockManager;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 @SuppressWarnings("deprecation")
 public class TryLockTest {
@@ -53,10 +53,7 @@ public class TryLockTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        ConcurrencySupport.LockReference lockReference =
-                ConcurrencySupport.getLockReference(LOCK_KEY);
-
-        if (lockReference.tryLock(100, TimeUnit.MILLISECONDS)) {
+        if (LockManager.tryLock(LOCK_KEY, 100, TimeUnit.MILLISECONDS)) {
             try {
                 System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
                 System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
@@ -69,7 +66,7 @@ public class TryLockTest {
 
                 System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
             } finally {
-                lockReference.unlock();
+                LockManager.unlock(LOCK_KEY);
             }
         } else {
             System.out.println("Could not acquire lock");
@@ -78,10 +75,7 @@ public class TryLockTest {
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        ConcurrencySupport.LockReference lockReference =
-                ConcurrencySupport.getLockReference(LOCK_KEY);
-
-        if (lockReference.tryLock()) {
+        if (LockManager.tryLock(LOCK_KEY, 100, TimeUnit.MILLISECONDS)) {
             try {
                 System.out.printf("test3(%s) locked%n", argumentContext.getTestArgument());
                 System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
@@ -94,7 +88,7 @@ public class TryLockTest {
 
                 System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
             } finally {
-                lockReference.unlock();
+                LockManager.unlock(LOCK_KEY);
             }
         } else {
             System.out.println("Could not acquire lock");

@@ -23,7 +23,6 @@ import java.util.Collection;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 @SuppressWarnings("deprecation")
 public class ClassContextLockTest {
@@ -50,22 +49,21 @@ public class ClassContextLockTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        ConcurrencySupport.call(
-                argumentContext.getClassContext(),
-                () -> {
-                    System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
-                    System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+        argumentContext.getClassContext().getLock().lock();
+        try {
+            System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
+            System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
-                    assertThat(argumentContext).isNotNull();
-                    assertThat(argumentContext.getStore()).isNotNull();
-                    assertThat(argumentContext.getTestArgument()).isNotNull();
+            assertThat(argumentContext).isNotNull();
+            assertThat(argumentContext.getStore()).isNotNull();
+            assertThat(argumentContext.getTestArgument()).isNotNull();
 
-                    Thread.sleep(1000);
+            Thread.sleep(1000);
 
-                    System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
-
-                    return null;
-                });
+            System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
+        } finally {
+            argumentContext.getClassContext().getLock().unlock();
+        }
     }
 
     @Verifyica.Test

@@ -24,9 +24,7 @@ import java.util.concurrent.Semaphore;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
-@SuppressWarnings("deprecation")
 public class EngineContextStoreSemaphoreTest {
 
     private static final String SEMAPHORE_KEY =
@@ -61,22 +59,21 @@ public class EngineContextStoreSemaphoreTest {
                         .getStore()
                         .computeIfAbsent(SEMAPHORE_KEY, k -> new Semaphore(2), Semaphore.class);
 
-        ConcurrencySupport.call(
-                semaphore,
-                () -> {
-                    System.out.printf("test2(%s) acquired%n", argumentContext.getTestArgument());
-                    System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+        semaphore.acquire();
+        try {
+            System.out.printf("test2(%s) acquired%n", argumentContext.getTestArgument());
+            System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
-                    assertThat(argumentContext).isNotNull();
-                    assertThat(argumentContext.getStore()).isNotNull();
-                    assertThat(argumentContext.getTestArgument()).isNotNull();
+            assertThat(argumentContext).isNotNull();
+            assertThat(argumentContext.getStore()).isNotNull();
+            assertThat(argumentContext.getTestArgument()).isNotNull();
 
-                    Thread.sleep(1000);
+            Thread.sleep(1000);
 
-                    System.out.printf("test2(%s) released%n", argumentContext.getTestArgument());
-
-                    return null;
-                });
+            System.out.printf("test2(%s) released%n", argumentContext.getTestArgument());
+        } finally {
+            semaphore.release();
+        }
     }
 
     @Verifyica.Test

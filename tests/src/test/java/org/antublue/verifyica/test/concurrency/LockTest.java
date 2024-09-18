@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.LockManager;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 @SuppressWarnings("deprecation")
 public class LockTest {
@@ -52,8 +52,7 @@ public class LockTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        ConcurrencySupport.getLockReference(LOCK_KEY).lock();
-
+        LockManager.lock(LOCK_KEY);
         try {
             System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
             System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
@@ -66,7 +65,7 @@ public class LockTest {
 
             System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
         } finally {
-            ConcurrencySupport.getLockReference(LOCK_KEY).unlock();
+            LockManager.unlock(LOCK_KEY);
         }
     }
 

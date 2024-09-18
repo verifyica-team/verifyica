@@ -25,7 +25,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.concurrency.ConcurrencySupport;
 
 @SuppressWarnings("deprecation")
 public class StoreLockTest {
@@ -60,22 +59,21 @@ public class StoreLockTest {
                         .getStore()
                         .computeIfAbsent(LOCK_KEY, k -> new ReentrantLock(true), Lock.class);
 
-        ConcurrencySupport.call(
-                lock,
-                () -> {
-                    System.out.printf("test2(%s) acquired%n", argumentContext.getTestArgument());
-                    System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+        lock.lock();
+        try {
+            System.out.printf("test2(%s) acquired%n", argumentContext.getTestArgument());
+            System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
-                    assertThat(argumentContext).isNotNull();
-                    assertThat(argumentContext.getStore()).isNotNull();
-                    assertThat(argumentContext.getTestArgument()).isNotNull();
+            assertThat(argumentContext).isNotNull();
+            assertThat(argumentContext.getStore()).isNotNull();
+            assertThat(argumentContext.getTestArgument()).isNotNull();
 
-                    Thread.sleep(1000);
+            Thread.sleep(1000);
 
-                    System.out.printf("test2(%s) released%n", argumentContext.getTestArgument());
-
-                    return null;
-                });
+            System.out.printf("test2(%s) released%n", argumentContext.getTestArgument());
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Verifyica.Test
