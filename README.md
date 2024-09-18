@@ -50,11 +50,12 @@ for (TestArgument testArgument : TestArguments) {
 - Engine interceptors (extensions)
 - Test class / test argument parallel testing with configurable constraints
 - Cleanup of `AutoClosable` test classes / test arguments
-- Cleanup of `AutoClosable` Objects in a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java)
+- Cleanup of `AutoClosable` objects in a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java)
 - Object / resource sharing via contexts
   - [EngineContext](api/src/main/java/org/antublue/verifyica/api/EngineContext.java)
   - [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
   - [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java) 
+- LockManager for globally exclusive locks
 - [IntelliJ](https://www.jetbrains.com/idea/) support
 - [Maven](https://maven.apache.org/) support
 - [JUnit5 ConsoleLauncher](https://junit.org/junit5/docs/5.0.0-M5/user-guide/#running-tests-console-launcher) support
