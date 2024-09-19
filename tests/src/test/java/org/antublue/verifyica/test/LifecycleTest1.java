@@ -31,7 +31,7 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-public class LifecycleMultipleMethodTest {
+public class LifecycleTest1 {
 
     private static final int ARGUMENT_COUNT = 3;
 
@@ -61,29 +61,12 @@ public class LifecycleMultipleMethodTest {
         assertThat(classContext).isNotNull();
         assertThat(classContext.getTestInstance()).isNotNull();
 
-        LifecycleMultipleMethodTest lifecycleTest =
-                classContext.getTestInstance(LifecycleMultipleMethodTest.class);
+        LifecycleTest1 lifecycleTest1 = classContext.getTestInstance(LifecycleTest1.class);
 
-        assertThat(lifecycleTest).isNotNull();
-        lifecycleTest.string = "FOO";
+        assertThat(lifecycleTest1).isNotNull();
+        lifecycleTest1.string = "FOO";
 
         actual.add("prepare");
-    }
-
-    @Verifyica.Prepare
-    public static void prepare2(ClassContext classContext) throws Throwable {
-        System.out.printf("  %s prepare2()%n", classContext.getTestClass().getName());
-
-        assertThat(classContext).isNotNull();
-        assertThat(classContext.getTestInstance()).isNotNull();
-
-        LifecycleMultipleMethodTest lifecycleTest =
-                classContext.getTestInstance(LifecycleMultipleMethodTest.class);
-
-        assertThat(lifecycleTest).isNotNull();
-        lifecycleTest.string = "FOO";
-
-        actual.add("prepare2");
     }
 
     @Verifyica.BeforeAll
@@ -93,25 +76,11 @@ public class LifecycleMultipleMethodTest {
         actual.add("beforeAll");
     }
 
-    @Verifyica.BeforeAll
-    public void beforeAll2(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s beforeAll2()%n", argumentContext.getTestArgument().getPayload());
-
-        actual.add("beforeAll2");
-    }
-
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s beforeEac2h()%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("  %s beforeEach()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("beforeEach");
-    }
-
-    @Verifyica.BeforeEach
-    public void beforeEach2(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s beforeEach2()%n", argumentContext.getTestArgument().getPayload());
-
-        actual.add("beforeEach2");
     }
 
     @Verifyica.Test
@@ -145,25 +114,11 @@ public class LifecycleMultipleMethodTest {
         actual.add("afterEach");
     }
 
-    @Verifyica.AfterEach
-    public void afterEach2(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s afterEach2()%n", argumentContext.getTestArgument().getPayload());
-
-        actual.add("afterEach2");
-    }
-
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s afterAll()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("afterAll");
-    }
-
-    @Verifyica.AfterAll
-    public void afterAll2(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s afterAll2()%n", argumentContext.getTestArgument().getPayload());
-
-        actual.add("afterAll2");
     }
 
     @Verifyica.Conclude
@@ -173,29 +128,12 @@ public class LifecycleMultipleMethodTest {
         assertThat(classContext).isNotNull();
         assertThat(classContext.getTestInstance()).isNotNull();
 
-        LifecycleMultipleMethodTest lifecycleTest =
-                classContext.getTestInstance(LifecycleMultipleMethodTest.class);
+        LifecycleTest1 lifecycleTest1 = classContext.getTestInstance(LifecycleTest1.class);
 
-        assertThat(lifecycleTest).isNotNull();
-        assertThat(lifecycleTest.string).isEqualTo("FOO");
+        assertThat(lifecycleTest1).isNotNull();
+        assertThat(lifecycleTest1.string).isEqualTo("FOO");
 
         actual.add("conclude");
-    }
-
-    @Verifyica.Conclude
-    public static void conclude2(ClassContext classContext) throws Throwable {
-        System.out.printf("  %s conclude2()%n", classContext.getTestClass().getName());
-
-        assertThat(classContext).isNotNull();
-        assertThat(classContext.getTestInstance()).isNotNull();
-
-        LifecycleMultipleMethodTest lifecycleTest =
-                classContext.getTestInstance(LifecycleMultipleMethodTest.class);
-
-        assertThat(lifecycleTest).isNotNull();
-        assertThat(lifecycleTest.string).isEqualTo("FOO");
-
-        actual.add("conclude2");
     }
 
     public static class ConcreteClassInterceptor implements ClassInterceptor {
@@ -360,12 +298,10 @@ public class LifecycleMultipleMethodTest {
             assertThat(classInterceptorContext.getClassContext()).isNotNull();
             assertThat(classInterceptorContext.getClassContext().getTestInstance()).isNotNull();
 
-            LifecycleMultipleMethodTest lifecycleTest =
-                    classInterceptorContext
-                            .getClassContext()
-                            .getTestInstance(LifecycleMultipleMethodTest.class);
+            LifecycleTest1 lifecycleTest1 =
+                    classInterceptorContext.getClassContext().getTestInstance(LifecycleTest1.class);
 
-            assertThat(lifecycleTest).isNotNull();
+            assertThat(lifecycleTest1).isNotNull();
 
             List<String> expected = new ArrayList<>();
 
@@ -375,21 +311,18 @@ public class LifecycleMultipleMethodTest {
             String state = "prepare";
             expected.add("pre" + capitalize(state));
             expected.add(state);
-            expected.add(state + "2");
             expected.add("post" + capitalize(state));
 
             for (int i = 0; i < ARGUMENT_COUNT; i++) {
                 state = "beforeAll";
                 expected.add("pre" + capitalize(state));
                 expected.add(state);
-                expected.add(state + "2");
                 expected.add("post" + capitalize(state));
 
                 for (int j = 1; j < 4; j++) {
                     state = "beforeEach";
                     expected.add("pre" + capitalize(state));
                     expected.add(state);
-                    expected.add(state + "2");
                     expected.add("post" + capitalize(state));
 
                     state = "test";
@@ -399,14 +332,12 @@ public class LifecycleMultipleMethodTest {
 
                     state = "afterEach";
                     expected.add("pre" + capitalize(state));
-                    expected.add(state + "2");
                     expected.add(state);
                     expected.add("post" + capitalize(state));
                 }
 
                 state = "afterAll";
                 expected.add("pre" + capitalize(state));
-                expected.add(state + "2");
                 expected.add(state);
                 expected.add("post" + capitalize(state));
 
@@ -415,7 +346,6 @@ public class LifecycleMultipleMethodTest {
 
             state = "conclude";
             expected.add("pre" + capitalize(state));
-            expected.add(state + "2");
             expected.add(state);
             expected.add("post" + capitalize(state));
 

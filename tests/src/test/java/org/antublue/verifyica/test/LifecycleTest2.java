@@ -31,7 +31,7 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-public class LifecycleTest {
+public class LifecycleTest2 {
 
     private static final int ARGUMENT_COUNT = 3;
 
@@ -61,10 +61,10 @@ public class LifecycleTest {
         assertThat(classContext).isNotNull();
         assertThat(classContext.getTestInstance()).isNotNull();
 
-        LifecycleTest lifecycleTest = classContext.getTestInstance(LifecycleTest.class);
+        LifecycleTest2 lifecycleTest1 = classContext.getTestInstance(LifecycleTest2.class);
 
-        assertThat(lifecycleTest).isNotNull();
-        lifecycleTest.string = "FOO";
+        assertThat(lifecycleTest1).isNotNull();
+        lifecycleTest1.string = "FOO";
 
         actual.add("prepare");
     }
@@ -83,24 +83,21 @@ public class LifecycleTest {
         actual.add("beforeEach");
     }
 
-    @Verifyica.Test
-    @Verifyica.Order(order = 0)
+    @Verifyica.Test(order = 1)
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test1()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("test1");
     }
 
-    @Verifyica.Test
-    @Verifyica.Order(order = 1)
+    @Verifyica.Test(order = 2)
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test2()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("test2");
     }
 
-    @Verifyica.Test
-    @Verifyica.Order(order = 2)
+    @Verifyica.Test(order = 3)
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test3()%n", argumentContext.getTestArgument().getPayload());
 
@@ -128,10 +125,10 @@ public class LifecycleTest {
         assertThat(classContext).isNotNull();
         assertThat(classContext.getTestInstance()).isNotNull();
 
-        LifecycleTest lifecycleTest = classContext.getTestInstance(LifecycleTest.class);
+        LifecycleTest2 lifecycleTest1 = classContext.getTestInstance(LifecycleTest2.class);
 
-        assertThat(lifecycleTest).isNotNull();
-        assertThat(lifecycleTest.string).isEqualTo("FOO");
+        assertThat(lifecycleTest1).isNotNull();
+        assertThat(lifecycleTest1.string).isEqualTo("FOO");
 
         actual.add("conclude");
     }
@@ -298,10 +295,10 @@ public class LifecycleTest {
             assertThat(classInterceptorContext.getClassContext()).isNotNull();
             assertThat(classInterceptorContext.getClassContext().getTestInstance()).isNotNull();
 
-            LifecycleTest lifecycleTest =
-                    classInterceptorContext.getClassContext().getTestInstance(LifecycleTest.class);
+            LifecycleTest2 lifecycleTest1 =
+                    classInterceptorContext.getClassContext().getTestInstance(LifecycleTest2.class);
 
-            assertThat(lifecycleTest).isNotNull();
+            assertThat(lifecycleTest1).isNotNull();
 
             List<String> expected = new ArrayList<>();
 

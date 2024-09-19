@@ -6,33 +6,12 @@ All Verifyica annotations are defined in a container class `Verifyica`.
 
 ---
 
-### @Verifyica.Stepwise
-
-Indicates to that test methods of a test class should be executed in a "stepwise" manner.
-
-For each argument...
-
-- execute test method 1
-- if test method 1 passes, execute test method 2
-- if test method 2 passed, execute test method 3
-- ... etc ...
-
-**Notes**
-
-- Runs the test methods in the order defined by `@Verifyica.Order`
-
-- If a test method fails, all remaining test methods will be skipped
-
-- Testing of arguments is independent
-  - A failure of a test method for argument 1 doesn't affect testing of argument 2
-
----
-
 ### @Verifyica.ArgumentSupplier
 
 All test classes must define a single method annotated with `@Verifyica.ArgumentSupplier`.
 
 - required
+- one method per class
 - valid types:
   - `Collection`
   - `Enumeration`
@@ -49,6 +28,7 @@ All test classes must define a single method annotated with `@Verifyica.Argument
 **Notes**
 
 - may return mixed types
+
 
 - `Argument.EMPTY` may be used in scenarios where the argument is irrelevant
 
@@ -136,6 +116,7 @@ public static Object arguments() {
 All methods annotated with `@Verifyica.Prepare` or `@Verifyica.Conclude`:
 
 - optional
+- one method per class
 - must return `void`
 - must be public
 - may be static
@@ -144,13 +125,14 @@ All methods annotated with `@Verifyica.Prepare` or `@Verifyica.Conclude`:
 
 **Notes**
 
-When using test class inheritance, `@Verifyica.Prepare` and `@Verifyica.Conclude` are "wrapped".
+When using test class inheritance, `@Verifyica.Prepare` and `@Verifyica.Conclude` are hierarchical.
 
 - `@Verifyica.Prepare`
-  - superclass methods before subclass methods
+  - superclass method before subclass method
+
 
 - `@Verifyica.Conclude`
-  - subclass methods before superclass methods
+  - subclass method before superclass method
  
 ---
 
@@ -163,6 +145,7 @@ When using test class inheritance, `@Verifyica.Prepare` and `@Verifyica.Conclude
 All methods annotated with `@Verifyica.BeforeAll` or `@Verifyica.AfterAll`:
 
 - optional
+- one method per class
 - must return `void`
 - must be public
 - must not be static
@@ -171,13 +154,14 @@ All methods annotated with `@Verifyica.BeforeAll` or `@Verifyica.AfterAll`:
 
 **Notes**
 
-When using test class inheritance, `@Verifyica.BeforeAll` and `@Verifyica.AfterAll` are "wrapped".
+When using test class inheritance, `@Verifyica.BeforeAll` and `@Verifyica.AfterAll` are hierarchical.
 
 - `@Verifyica.BeforeAll`
-  - superclass methods before subclass methods
+  - superclass method before subclass method
+
 
 - `@Verifyica.AfterAll`
-  - subclass methods before superclass methods
+  - subclass method before superclass method
 
 ---
 
@@ -190,6 +174,7 @@ When using test class inheritance, `@Verifyica.BeforeAll` and `@Verifyica.AfterA
 All methods annotated with `@Verifyica.BeforeEach` or `@Verifyica.AfterEach`:
 
 - optional
+- one method per class
 - must return `void`
 - must be public
 - must not be static
@@ -198,13 +183,14 @@ All methods annotated with `@Verifyica.BeforeEach` or `@Verifyica.AfterEach`:
 
 **Notes**
 
-When using test class inheritance, `@Verifyica.BeforeEach` and `@Verifyica.AfterEach` are "wrapped".
+When using test class inheritance, `@Verifyica.BeforeEach` and `@Verifyica.AfterEach` are hierarchical.
 
 - `@Verifyica.BeforeEach`
-  - superclass methods before subclass methods
+  - superclass method before subclass method
+
 
 - `@Verifyica.AfterEach`
-  - subclass methods before superclass methods
+  - subclass method before superclass method
 
 ---
 
@@ -221,7 +207,14 @@ All methods annotated with `@Verifyica.Test`:
 
 **Notes**
 
-- `@Verifyica.Test` methods are not "flattened"
+- `@Verifyica.Test` methods are not hierarchical
+
+
+- An optional order value can be used for ordering
+  - `@Verifyica.Test(order = X)`
+
+
+- If both `@Verifyica.Test(order = x)` and `@Verifyica.Order(order = x)` are defined, the lowest order value is used
 
 ---
 
@@ -242,7 +235,7 @@ Used by Verifyica to order test classes / test methods.
   - `@Verifyica.Conclude`
 
 
-- `Verifyica.Test` ordering is irrespective of which class (superclass / subclass) the method is defined.
+- `@Verifyica.Test` test method ordering is irrespective of which class (superclass / subclass) the method is defined.
 
 
 - If `verifyica.engine.class.parallelism` is greater than `1`, orders test class **execution submission order**.
@@ -290,6 +283,28 @@ Used to register a test class specific [ClassInterceptor](api/src/main/java/org/
 - must be static
 - must not define any parameters
 - may throw `Throwable`
+
+---
+
+### @Verifyica.ScenarioTest
+
+Indicates to that test methods of a test class should be executed as a scenario.
+
+The first test method that fails will cause remaining test methods to be skipped.
+
+**Notes**
+
+- Runs the test methods in the order defined by
+  - `@Verifyica.Test(order = x)`
+  - `@Verifyica.Order(order = x)`
+  - If both `@Verifyica.Test(order = x)` and `@Verifyica.Order(order = x)` are defined, the lowest order value is used
+
+
+- Testing of arguments is independent
+  - A failure of a test method for argument 1 doesn't affect testing of argument 2
+
+
+- When using IntelliJ, all methods of a scenario test class are executed regardless of the step test method that is selected
 
 ---
 

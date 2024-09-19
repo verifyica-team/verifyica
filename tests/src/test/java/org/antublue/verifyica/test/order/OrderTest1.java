@@ -24,7 +24,7 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
-public class OrderTest {
+public class OrderTest1 {
 
     @Verifyica.ArgumentSupplier
     public static Collection<Argument<String>> arguments() {

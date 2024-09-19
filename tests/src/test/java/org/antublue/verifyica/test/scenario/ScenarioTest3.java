@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test;
+package org.antublue.verifyica.test.scenario;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,8 +23,8 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
 @Verifyica.Disabled
-@Verifyica.Stepwise
-public class StepwiseTest {
+@Verifyica.ScenarioTest
+public class ScenarioTest3 {
 
     private static final String FAIL_ON_STEP_1 = "failOnStep1";
     private static final String FAIL_ON_STEP_2 = "failOnStep2";
@@ -39,29 +39,29 @@ public class StepwiseTest {
         return collection;
     }
 
-    @Verifyica.Test
+    @Verifyica.Test(order = 1)
     public void step1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step1(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
 
         if (argumentContext.getTestArgument().getPayload(String.class).equals(FAIL_ON_STEP_1)) {
-            throw new java.lang.AssertionError("Forced");
+            throw new AssertionError("Forced");
         }
     }
 
-    @Verifyica.Test
+    @Verifyica.Test(order = 2)
     public void step2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step2(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
 
         if (argumentContext.getTestArgument().getPayload(String.class).equals(FAIL_ON_STEP_2)) {
-            throw new java.lang.AssertionError("Forced");
+            throw new AssertionError("Forced");
         }
     }
 
-    @Verifyica.Test
+    @Verifyica.Test(order = 3)
     public void step3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step3(name[%s], payload[%s])%n",

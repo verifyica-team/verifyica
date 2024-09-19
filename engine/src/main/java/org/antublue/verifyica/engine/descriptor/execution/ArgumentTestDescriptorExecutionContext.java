@@ -126,7 +126,7 @@ public class ArgumentTestDescriptorExecutionContext implements TestDescriptorExe
         if (argumentContext
                 .getClassContext()
                 .getTestClass()
-                .isAnnotationPresent(Verifyica.Stepwise.class)) {
+                .isAnnotationPresent(Verifyica.ScenarioTest.class)) {
             stateMachine.onState(
                     State.BEFORE_ALL_SUCCESS,
                     () -> {

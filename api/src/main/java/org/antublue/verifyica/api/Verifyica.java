@@ -57,7 +57,15 @@ public @interface Verifyica {
     @org.junit.platform.commons.annotation.Testable
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface Test {}
+    @interface Test {
+
+        /**
+         * Order value
+         *
+         * @return the order value
+         */
+        int order() default Integer.MAX_VALUE;
+    }
 
     /** AfterEach annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
@@ -154,9 +162,9 @@ public @interface Verifyica {
     @Retention(RetentionPolicy.RUNTIME)
     @interface Testable {}
 
-    /** Stepwise annotation */
+    /** ScenarioTest annotation */
     @org.junit.platform.commons.annotation.Testable
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface Stepwise {}
+    @interface ScenarioTest {}
 }

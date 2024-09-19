@@ -18,6 +18,8 @@ package org.antublue.verifyica.engine.descriptor.execution;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.engine.VerifyicaEngineExecutionContext;
 import org.antublue.verifyica.engine.common.Precondition;
@@ -82,6 +84,9 @@ public class TestMethodTestDescriptorExecutionContext implements TestDescriptorE
                 .getEngineExecutionListener()
                 .executionStarted(testMethodTestDescriptor);
 
+        AtomicBoolean isSkipped = new AtomicBoolean();
+        AtomicReference<String> skippedMessage = new AtomicReference<>();
+
         StateMachine<State> stateMachine =
                 new StateMachine<State>()
                         .onState(
@@ -134,15 +139,25 @@ public class TestMethodTestDescriptorExecutionContext implements TestDescriptorE
 
         LOGGER.trace("state machine [%s]", stateMachine);
 
-        TestExecutionResult testExecutionResult =
-                stateMachine
-                        .getFirstResultWithThrowable()
-                        .map(result -> TestExecutionResult.failed(result.getThrowable()))
-                        .orElse(TestExecutionResult.successful());
+        TestExecutionResult testExecutionResult;
 
-        verifyicaEngineExecutionContext
-                .getEngineExecutionListener()
-                .executionFinished(testMethodTestDescriptor, testExecutionResult);
+        if (!isSkipped.get()) {
+            testExecutionResult =
+                    stateMachine
+                            .getFirstResultWithThrowable()
+                            .map(result -> TestExecutionResult.failed(result.getThrowable()))
+                            .orElse(TestExecutionResult.successful());
+
+            verifyicaEngineExecutionContext
+                    .getEngineExecutionListener()
+                    .executionFinished(testMethodTestDescriptor, testExecutionResult);
+        } else {
+            testExecutionResult = TestExecutionResult.aborted(null);
+
+            verifyicaEngineExecutionContext
+                    .getEngineExecutionListener()
+                    .executionSkipped(testMethodTestDescriptor, skippedMessage.get());
+        }
 
         return testExecutionResult;
     }

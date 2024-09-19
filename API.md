@@ -112,6 +112,8 @@ A Store is thread safe, but allow locking the Store lock for chained atomic oper
 **Notes**
 
 - **Objects used to build a key must be immutable**
+
+
 - a `Key` is immutable, but methods exists to derive new a `Key`
   - `append()`
   - `remove()`

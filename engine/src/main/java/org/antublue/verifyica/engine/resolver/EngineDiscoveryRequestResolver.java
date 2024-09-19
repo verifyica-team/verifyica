@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -202,6 +203,7 @@ public class EngineDiscoveryRequestResolver {
             pruneClassDefinitions(classDefinitions);
             onTestDiscovery(classDefinitions);
             pruneClassDefinitions(classDefinitions);
+            processScenarioClassDefinitions(classDefinitions);
             loadClassInterceptors(classDefinitions);
             buildEngineDescriptor(classDefinitions, engineDescriptor);
             onInitialize(classDefinitions);
@@ -338,12 +340,7 @@ public class EngineDiscoveryRequestResolver {
                         ResolverPredicates.ARGUMENT_SUPPLIER_METHOD,
                         HierarchyTraversalMode.BOTTOM_UP);
 
-        if (methods.size() > 1) {
-            // Defensive code to get the first argument supplier method
-            final Class<?> declaredClass = methods.get(0).getDeclaringClass();
-            methods.removeIf(m -> !m.getDeclaringClass().equals(declaredClass));
-            OrderSupport.orderMethods(methods);
-        }
+        validateSingleMethodPerClass(Verifyica.ArgumentSupplier.class, methods);
 
         return methods.get(0);
     }
@@ -385,6 +382,41 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
+     * Method to process ClassDefinitions setting up scenario method execution when a test method is
+     * selected
+     *
+     * @param classDefinitions classDefinitions
+     */
+    private static void processScenarioClassDefinitions(List<ClassDefinition> classDefinitions) {
+        classDefinitions.forEach(
+                classDefinition -> {
+                    Class<?> testClass = classDefinition.getTestClass();
+                    if (testClass.isAnnotationPresent(Verifyica.ScenarioTest.class)) {
+                        classDefinition.getTestMethodDefinitions().clear();
+
+                        List<Method> testMethods =
+                                ClassSupport.findMethods(
+                                        testClass,
+                                        ResolverPredicates.TEST_METHOD,
+                                        HierarchyTraversalMode.BOTTOM_UP);
+
+                        OrderSupport.orderMethods(testMethods);
+
+                        testMethods.forEach(
+                                method -> {
+                                    String methodDisplayName =
+                                            DisplayNameSupport.getDisplayName(method);
+                                    classDefinition
+                                            .getTestMethodDefinitions()
+                                            .add(
+                                                    new ConcreteMethodDefinition(
+                                                            method, methodDisplayName));
+                                });
+                    }
+                });
+    }
+
+    /**
      * Method to load test class ClassInterceptors
      *
      * @param classDefinitions classDefinitions
@@ -402,7 +434,11 @@ public class EngineDiscoveryRequestResolver {
                             ResolverPredicates.CLASS_INTERCEPTOR_SUPPLIER,
                             HierarchyTraversalMode.BOTTOM_UP);
 
-            for (Method classInterceptorSupplierMethod : classInterceptorSupplierMethods) {
+            validateSingleMethodPerClass(
+                    Verifyica.ClassInterceptorSupplier.class, classInterceptorSupplierMethods);
+
+            if (!classInterceptorSupplierMethods.isEmpty()) {
+                Method classInterceptorSupplierMethod = classInterceptorSupplierMethods.get(0);
                 Object object = classInterceptorSupplierMethod.invoke(null);
 
                 if (object == null) {
@@ -488,21 +524,20 @@ public class EngineDiscoveryRequestResolver {
                     engineDescriptor.getUniqueId().append("class", testClass.getName());
 
             List<Method> prepareMethods =
-                    groupOrderFlatten(
-                            ClassSupport.findMethods(
-                                    testClass,
-                                    ResolverPredicates.PREPARE_METHOD,
-                                    HierarchyTraversalMode.TOP_DOWN));
+                    ClassSupport.findMethods(
+                            testClass,
+                            ResolverPredicates.PREPARE_METHOD,
+                            HierarchyTraversalMode.TOP_DOWN);
+
+            validateSingleMethodPerClass(Verifyica.Prepare.class, prepareMethods);
 
             List<Method> concludeMethods =
-                    groupOrderFlatten(
-                            ClassSupport.findMethods(
-                                    testClass,
-                                    ResolverPredicates.CONCLUDE_METHOD,
-                                    HierarchyTraversalMode.BOTTOM_UP));
+                    ClassSupport.findMethods(
+                            testClass,
+                            ResolverPredicates.CONCLUDE_METHOD,
+                            HierarchyTraversalMode.BOTTOM_UP);
 
-            OrderSupport.orderMethods(concludeMethods);
-            Collections.reverse(concludeMethods);
+            validateSingleMethodPerClass(Verifyica.Conclude.class, concludeMethods);
 
             ClassTestDescriptor classTestDescriptor =
                     new ClassTestDescriptor(
@@ -522,20 +557,20 @@ public class EngineDiscoveryRequestResolver {
                                 "argument", String.valueOf(testArgumentIndex));
 
                 List<Method> beforeAllMethods =
-                        groupOrderFlatten(
-                                ClassSupport.findMethods(
-                                        testClass,
-                                        ResolverPredicates.BEFORE_ALL_METHOD,
-                                        HierarchyTraversalMode.TOP_DOWN));
+                        ClassSupport.findMethods(
+                                testClass,
+                                ResolverPredicates.BEFORE_ALL_METHOD,
+                                HierarchyTraversalMode.TOP_DOWN);
+
+                validateSingleMethodPerClass(Verifyica.BeforeAll.class, beforeAllMethods);
 
                 List<Method> afterAllMethods =
-                        groupOrderFlatten(
-                                ClassSupport.findMethods(
-                                        testClass,
-                                        ResolverPredicates.AFTER_ALL_METHOD,
-                                        HierarchyTraversalMode.BOTTOM_UP));
+                        ClassSupport.findMethods(
+                                testClass,
+                                ResolverPredicates.AFTER_ALL_METHOD,
+                                HierarchyTraversalMode.BOTTOM_UP);
 
-                Collections.reverse(afterAllMethods);
+                validateSingleMethodPerClass(Verifyica.AfterAll.class, afterAllMethods);
 
                 ArgumentTestDescriptor argumentTestDescriptor =
                         new ArgumentTestDescriptor(
@@ -556,20 +591,20 @@ public class EngineDiscoveryRequestResolver {
                                     "method", testMethodDefinition.getMethod().getName());
 
                     List<Method> beforeEachMethods =
-                            groupOrderFlatten(
-                                    ClassSupport.findMethods(
-                                            testClass,
-                                            ResolverPredicates.BEFORE_EACH_METHOD,
-                                            HierarchyTraversalMode.TOP_DOWN));
+                            ClassSupport.findMethods(
+                                    testClass,
+                                    ResolverPredicates.BEFORE_EACH_METHOD,
+                                    HierarchyTraversalMode.TOP_DOWN);
+
+                    validateSingleMethodPerClass(Verifyica.BeforeEach.class, beforeEachMethods);
 
                     List<Method> afterEachMethods =
-                            groupOrderFlatten(
-                                    ClassSupport.findMethods(
-                                            testClass,
-                                            ResolverPredicates.AFTER_EACH_METHOD,
-                                            HierarchyTraversalMode.BOTTOM_UP));
+                            ClassSupport.findMethods(
+                                    testClass,
+                                    ResolverPredicates.AFTER_EACH_METHOD,
+                                    HierarchyTraversalMode.BOTTOM_UP);
 
-                    Collections.reverse(afterEachMethods);
+                    validateSingleMethodPerClass(Verifyica.AfterEach.class, beforeEachMethods);
 
                     TestMethodTestDescriptor testMethodTestDescriptor =
                             new TestMethodTestDescriptor(
@@ -591,16 +626,35 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
-     * Method to group Methods by declaring Class, order the Methods, then flatten back to a List of
-     * Methods
+     * Method to validate only a single method per declared class is annotation with the given
+     * annotation
      *
+     * @param annotationClass annotationClass
      * @param methods methods
-     * @return a List of Methods
      */
-    private static List<Method> groupOrderFlatten(List<Method> methods) {
-        Map<Class<?>, List<Method>> map = ClassSupport.groupMethodsByDeclaringClass(methods);
-        map.forEach((key, value) -> OrderSupport.orderMethods(value));
-        return ClassSupport.flattenMethods(map);
+    private static void validateSingleMethodPerClass(
+            Class<?> annotationClass, List<Method> methods) {
+        Precondition.notNull(annotationClass, "annotationClass is null");
+
+        if (methods != null) {
+            Set<Class<?>> classes = new HashSet<>();
+
+            methods.forEach(
+                    method -> {
+                        if (classes.contains(method.getDeclaringClass())) {
+                            String annotationDisplayName =
+                                    "@Verifyica." + annotationClass.getSimpleName();
+                            throw new TestClassDefinitionException(
+                                    format(
+                                            "Test class [%s] contains more than one method"
+                                                    + " annotated with [%s]",
+                                            method.getDeclaringClass().getName(),
+                                            annotationDisplayName));
+                        }
+
+                        classes.add(method.getDeclaringClass());
+                    });
+        }
     }
 
     /**
