@@ -410,7 +410,8 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     stringBuilder
                             .append(" ")
                             .append(messageDisplayString)
-                            .append(": ")
+                            .append(AnsiColor.TEXT_WHITE_BOLD)
+                            .append(" : ")
                             .append(countDisplayString);
                 }
 
