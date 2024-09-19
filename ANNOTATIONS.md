@@ -216,6 +216,9 @@ All methods annotated with `@Verifyica.Test`:
 
 - If both `@Verifyica.Test(order = x)` and `@Verifyica.Order(order = x)` are defined, the lowest order value is used
 
+
+- order is lowest value to highest value
+
 ---
 
 ### @Verifyica.Order
@@ -298,7 +301,7 @@ The first test method that fails will cause remaining test methods to be skipped
   - `@Verifyica.Test(order = x)`
   - `@Verifyica.Order(order = x)`
   - If both `@Verifyica.Test(order = x)` and `@Verifyica.Order(order = x)` are defined, the lowest order value is used
-
+  - order is lowest value to highest value
 
 - Testing of arguments is independent
   - A failure of a test method for argument 1 doesn't affect testing of argument 2
