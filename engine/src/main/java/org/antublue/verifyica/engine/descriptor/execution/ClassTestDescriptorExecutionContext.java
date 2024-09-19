@@ -114,7 +114,7 @@ public class ClassTestDescriptorExecutionContext implements TestDescriptorExecut
     }
 
     @Override
-    public void test() {
+    public TestExecutionResult test() {
         LOGGER.trace("test() %s", classTestDescriptor);
 
         verifyicaEngineExecutionContext
@@ -342,6 +342,8 @@ public class ClassTestDescriptorExecutionContext implements TestDescriptorExecut
         verifyicaEngineExecutionContext
                 .getEngineExecutionListener()
                 .executionFinished(classTestDescriptor, testExecutionResult);
+
+        return testExecutionResult;
     }
 
     @Override

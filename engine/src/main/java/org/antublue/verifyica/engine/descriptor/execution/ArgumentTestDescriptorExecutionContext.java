@@ -27,6 +27,7 @@ import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.engine.VerifyicaEngineExecutionContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.StateMachine;
@@ -99,7 +100,7 @@ public class ArgumentTestDescriptorExecutionContext implements TestDescriptorExe
     }
 
     @Override
-    public void test() {
+    public TestExecutionResult test() {
         LOGGER.trace("test() %s", argumentTestDescriptor);
 
         verifyicaEngineExecutionContext
@@ -120,109 +121,144 @@ public class ArgumentTestDescriptorExecutionContext implements TestDescriptorExe
                                         t.printStackTrace(System.err);
                                         return StateMachine.Result.of(State.BEFORE_ALL_FAILURE, t);
                                     }
-                                })
-                        .onState(
-                                State.BEFORE_ALL_SUCCESS,
-                                () -> {
-                                    try {
-                                        testMethodTestDescriptors.forEach(
-                                                testMethodTestDescriptor ->
-                                                        new TestMethodTestDescriptorExecutionContext(
-                                                                        verifyicaEngineExecutionContext,
-                                                                        argumentContext,
-                                                                        testMethodTestDescriptor)
-                                                                .test());
-                                        return StateMachine.Result.of(State.EXECUTE_SUCCESS);
-                                    } catch (Throwable t) {
-                                        t.printStackTrace(System.err);
-                                        return StateMachine.Result.of(State.EXECUTE_FAILURE, t);
-                                    }
-                                })
-                        .onState(
-                                State.BEFORE_ALL_FAILURE,
-                                () -> {
-                                    try {
-                                        testMethodTestDescriptors.forEach(
-                                                testMethodTestDescriptor ->
-                                                        new TestMethodTestDescriptorExecutionContext(
-                                                                        verifyicaEngineExecutionContext,
-                                                                        argumentContext,
-                                                                        testMethodTestDescriptor)
-                                                                .skip());
-                                        return StateMachine.Result.of(State.SKIP_SUCCESS);
-                                    } catch (Throwable t) {
-                                        t.printStackTrace(System.err);
-                                        return StateMachine.Result.of(State.SKIP_FAILURE, t);
-                                    }
-                                })
-                        .onStates(
-                                StateMachine.asList(
-                                        State.EXECUTE_SUCCESS,
+                                });
+
+        if (argumentContext
+                .getClassContext()
+                .getTestClass()
+                .isAnnotationPresent(Verifyica.Stepwise.class)) {
+            stateMachine.onState(
+                    State.BEFORE_ALL_SUCCESS,
+                    () -> {
+                        TestExecutionResult failedTestExecutionResult = null;
+
+                        for (TestMethodTestDescriptor testMethodTestDescriptor :
+                                testMethodTestDescriptors) {
+                            TestMethodTestDescriptorExecutionContext
+                                    testMethodTestDescriptorExecutionContext =
+                                            new TestMethodTestDescriptorExecutionContext(
+                                                    verifyicaEngineExecutionContext,
+                                                    argumentContext,
+                                                    testMethodTestDescriptor);
+
+                            if (failedTestExecutionResult == null) {
+                                TestExecutionResult testExecutionResult =
+                                        testMethodTestDescriptorExecutionContext.test();
+                                if (testExecutionResult.getStatus()
+                                        == TestExecutionResult.Status.FAILED) {
+                                    failedTestExecutionResult = testExecutionResult;
+                                }
+                            } else {
+                                testMethodTestDescriptorExecutionContext.skip();
+                            }
+                        }
+
+                        return failedTestExecutionResult != null
+                                ? StateMachine.Result.of(
                                         State.EXECUTE_FAILURE,
-                                        State.SKIP_SUCCESS,
-                                        State.SKIP_FAILURE),
-                                () -> {
+                                        failedTestExecutionResult.getThrowable().get())
+                                : StateMachine.Result.of(State.EXECUTE_SUCCESS);
+                    });
+        } else {
+            stateMachine.onState(
+                    State.BEFORE_ALL_SUCCESS,
+                    () -> {
+                        try {
+                            testMethodTestDescriptors.forEach(
+                                    testMethodTestDescriptor ->
+                                            new TestMethodTestDescriptorExecutionContext(
+                                                            verifyicaEngineExecutionContext,
+                                                            argumentContext,
+                                                            testMethodTestDescriptor)
+                                                    .test());
+                            return StateMachine.Result.of(State.EXECUTE_SUCCESS);
+                        } catch (Throwable t) {
+                            t.printStackTrace(System.err);
+                            return StateMachine.Result.of(State.EXECUTE_FAILURE, t);
+                        }
+                    });
+        }
+
+        stateMachine
+                .onState(
+                        State.BEFORE_ALL_FAILURE,
+                        () -> {
+                            try {
+                                testMethodTestDescriptors.forEach(
+                                        testMethodTestDescriptor ->
+                                                new TestMethodTestDescriptorExecutionContext(
+                                                                verifyicaEngineExecutionContext,
+                                                                argumentContext,
+                                                                testMethodTestDescriptor)
+                                                        .skip());
+                                return StateMachine.Result.of(State.SKIP_SUCCESS);
+                            } catch (Throwable t) {
+                                t.printStackTrace(System.err);
+                                return StateMachine.Result.of(State.SKIP_FAILURE, t);
+                            }
+                        })
+                .onStates(
+                        StateMachine.asList(
+                                State.EXECUTE_SUCCESS,
+                                State.EXECUTE_FAILURE,
+                                State.SKIP_SUCCESS,
+                                State.SKIP_FAILURE),
+                        () -> {
+                            try {
+                                verifyicaEngineExecutionContext
+                                        .getClassInterceptorManager()
+                                        .afterAll(argumentContext, afterAllMethods);
+                                return StateMachine.Result.of(State.AFTER_ALL_SUCCESS);
+                            } catch (Throwable t) {
+                                t.printStackTrace(System.err);
+                                return StateMachine.Result.of(State.AFTER_ALL_FAILURE, t);
+                            }
+                        })
+                .onStates(
+                        StateMachine.asList(State.AFTER_ALL_SUCCESS, State.AFTER_ALL_FAILURE),
+                        () -> {
+                            try {
+                                Argument<?> testArgument = argumentContext.getTestArgument();
+                                if (testArgument instanceof AutoCloseable) {
+                                    ((AutoCloseable) testArgument).close();
+                                }
+                                return StateMachine.Result.of(State.AUTO_CLOSE_ARGUMENT_SUCCESS);
+                            } catch (Throwable t) {
+                                t.printStackTrace(System.err);
+                                return StateMachine.Result.of(State.AUTO_CLOSE_ARGUMENT_FAILURE, t);
+                            }
+                        })
+                .onStates(
+                        StateMachine.asList(
+                                State.AUTO_CLOSE_ARGUMENT_SUCCESS,
+                                State.AUTO_CLOSE_ARGUMENT_FAILURE),
+                        () -> {
+                            List<Throwable> throwables = new ArrayList<>();
+                            Store store = argumentContext.getStore();
+                            for (Object key : store.keySet()) {
+                                Object value = store.remove(key);
+                                if (value instanceof AutoCloseable) {
                                     try {
-                                        verifyicaEngineExecutionContext
-                                                .getClassInterceptorManager()
-                                                .afterAll(argumentContext, afterAllMethods);
-                                        return StateMachine.Result.of(State.AFTER_ALL_SUCCESS);
+                                        ((AutoCloseable) value).close();
                                     } catch (Throwable t) {
                                         t.printStackTrace(System.err);
-                                        return StateMachine.Result.of(State.AFTER_ALL_FAILURE, t);
+                                        throwables.add(t);
                                     }
-                                })
-                        .onStates(
-                                StateMachine.asList(
-                                        State.AFTER_ALL_SUCCESS, State.AFTER_ALL_FAILURE),
-                                () -> {
-                                    try {
-                                        Argument<?> testArgument =
-                                                argumentContext.getTestArgument();
-                                        if (testArgument instanceof AutoCloseable) {
-                                            ((AutoCloseable) testArgument).close();
-                                        }
-                                        return StateMachine.Result.of(
-                                                State.AUTO_CLOSE_ARGUMENT_SUCCESS);
-                                    } catch (Throwable t) {
-                                        t.printStackTrace(System.err);
-                                        return StateMachine.Result.of(
-                                                State.AUTO_CLOSE_ARGUMENT_FAILURE, t);
-                                    }
-                                })
-                        .onStates(
-                                StateMachine.asList(
-                                        State.AUTO_CLOSE_ARGUMENT_SUCCESS,
-                                        State.AUTO_CLOSE_ARGUMENT_FAILURE),
-                                () -> {
-                                    List<Throwable> throwables = new ArrayList<>();
-                                    Store store = argumentContext.getStore();
-                                    for (Object key : store.keySet()) {
-                                        Object value = store.remove(key);
-                                        if (value instanceof AutoCloseable) {
-                                            try {
-                                                ((AutoCloseable) value).close();
-                                            } catch (Throwable t) {
-                                                t.printStackTrace(System.err);
-                                                throwables.add(t);
-                                            }
-                                        }
-                                    }
-                                    store.clear();
-                                    if (throwables.isEmpty()) {
-                                        return StateMachine.Result.of(
-                                                State.AUTO_CLOSE_STORE_SUCCESS);
-                                    } else {
-                                        return StateMachine.Result.of(
-                                                State.AUTO_CLOSE_STORE_FAILURE, throwables.get(0));
-                                    }
-                                })
-                        .onStates(
-                                StateMachine.asList(
-                                        State.AUTO_CLOSE_STORE_SUCCESS,
-                                        State.AUTO_CLOSE_STORE_FAILURE),
-                                () -> StateMachine.Result.of(State.END))
-                        .run(State.START, State.END);
+                                }
+                            }
+                            store.clear();
+                            if (throwables.isEmpty()) {
+                                return StateMachine.Result.of(State.AUTO_CLOSE_STORE_SUCCESS);
+                            } else {
+                                return StateMachine.Result.of(
+                                        State.AUTO_CLOSE_STORE_FAILURE, throwables.get(0));
+                            }
+                        })
+                .onStates(
+                        StateMachine.asList(
+                                State.AUTO_CLOSE_STORE_SUCCESS, State.AUTO_CLOSE_STORE_FAILURE),
+                        () -> StateMachine.Result.of(State.END))
+                .run(State.START, State.END);
 
         LOGGER.trace("state machine [%s]", stateMachine);
 
@@ -235,6 +271,8 @@ public class ArgumentTestDescriptorExecutionContext implements TestDescriptorExe
         verifyicaEngineExecutionContext
                 .getEngineExecutionListener()
                 .executionFinished(argumentTestDescriptor, testExecutionResult);
+
+        return testExecutionResult;
     }
 
     @Override

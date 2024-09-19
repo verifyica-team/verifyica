@@ -16,11 +16,17 @@
 
 package org.antublue.verifyica.engine.descriptor.execution;
 
+import org.junit.platform.engine.TestExecutionResult;
+
 /** Interface to implement TestDescriptorExecutionContext */
 public interface TestDescriptorExecutionContext {
 
-    /** Method to test */
-    void test();
+    /**
+     * Method to test
+     *
+     * @return the TestExecutionResult
+     */
+    TestExecutionResult test();
 
     /** Method to skip */
     void skip();

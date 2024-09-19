@@ -153,4 +153,10 @@ public @interface Verifyica {
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Testable {}
+
+    /** Stepwise annotation */
+    @org.junit.platform.commons.annotation.Testable
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Stepwise {}
 }
