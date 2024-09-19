@@ -304,7 +304,7 @@ Verifyica is compiled against/targets Java 8, but Java 21+ is recommended for vi
 
 ### Maven
 
-When using Maven, the Verifyica Maven plugin is required.
+When using Maven, the Verifyica Maven Plugin is required.
 
 #### Plugin XML
 
@@ -340,6 +340,10 @@ When using Maven, the Verifyica Maven plugin is required.
     <scope>test</scope>
 </dependency>
 ```
+
+**Notes**
+
+- Verifyica test classes should be excluded from the Maven Surefire plugin
 
 # Ancillary Requirements
 
