@@ -120,6 +120,15 @@ public interface Store {
     boolean containsKey(Object key);
 
     /**
+     * Return if a key with a specific value exists
+     *
+     * @param key key
+     * @param value value
+     * @return true if a key with the value exists, else false
+     */
+    boolean contains(Object key, Object value);
+
+    /**
      * Remove a key-value pair
      *
      * @param key key

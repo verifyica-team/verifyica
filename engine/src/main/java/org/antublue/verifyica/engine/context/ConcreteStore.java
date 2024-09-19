@@ -197,6 +197,18 @@ public class ConcreteStore implements Store {
     }
 
     @Override
+    public boolean contains(Object key, Object value) {
+        Precondition.notNull(key, "key is null");
+
+        getReadWriteLock().readLock().lock();
+        try {
+            return Objects.equals(map.get(key), value);
+        } finally {
+            getReadWriteLock().readLock().unlock();
+        }
+    }
+
+    @Override
     public Object remove(Object key) {
         Precondition.notNull(key, "key is null");
 
