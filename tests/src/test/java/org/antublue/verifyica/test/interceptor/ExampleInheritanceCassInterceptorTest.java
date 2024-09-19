@@ -26,7 +26,7 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
-        return "dummy";
+        return "ignored";
     }
 
     @Verifyica.Test

@@ -49,7 +49,7 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
-        return "dummy";
+        return "ignored";
     }
 
     @Verifyica.Test

@@ -37,7 +37,7 @@ public class ClassInterceptorTest1 {
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
-        return "dummy";
+        return "ignored";
     }
 
     @Verifyica.Prepare
