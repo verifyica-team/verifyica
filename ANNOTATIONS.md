@@ -304,7 +304,9 @@ The first test method that fails will cause remaining test methods to be skipped
   - A failure of a test method for argument 1 doesn't affect testing of argument 2
 
 
-- When using IntelliJ, all methods of a scenario test class are executed regardless of the step test method that is selected
+- When using IntelliJ, all methods of a scenario test class are executed regardless of the test method that is selected
+
+[Examples](tests/src/test/java/org/antublue/verifyica/test/scenario)
 
 ---
 
