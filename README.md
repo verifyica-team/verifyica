@@ -356,6 +356,11 @@ An [EngineInterceptor](api/src/main/java/org/antublue/verifyica/api/interceptor/
 - [Configuration](CONFIGURATION.md)
 - [Filters](FILTERS.md)
 - [FAQ](https://github.com/antublue/verifyica/wiki/FAQ)
+
+**Notes**
+
+- **Documentation is specific to a release**
+
 # Contributing
 
 See [Contributing](CONTRIBUTING.md) for details.
