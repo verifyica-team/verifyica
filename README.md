@@ -40,13 +40,13 @@ for (TestArgument testArgument : TestArguments) {
 
 - Purpose built for integration testing using [testcontainers-java](https://java.testcontainers.org/)
   - i.e. for each test argument, execute a set of test methods
+- Scenario based testing
 - Annotation driven
 - Multithreaded test class / test argument testing
 - Virtual thread support (Java 21+)
 - Properties file driven configuration
 - Test class / test method filtering
 - Test class tag filtering
-- Scenario based testing
 - Test class interceptors (extensions)
 - Engine interceptors (extensions)
 - Test class / test argument parallel testing with configurable constraints
