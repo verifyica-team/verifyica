@@ -59,6 +59,7 @@ for (TestArgument testArgument : TestArguments) {
 - LockManager for globally exclusive locks
 - [IntelliJ](https://www.jetbrains.com/idea/) support
 - [Maven](https://maven.apache.org/) support
+  - via the Verifyica Maven Plugin
 - [JUnit5 ConsoleLauncher](https://junit.org/junit5/docs/5.0.0-M5/user-guide/#running-tests-console-launcher) support
 
 # High Level Design
