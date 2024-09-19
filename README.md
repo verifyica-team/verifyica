@@ -46,6 +46,7 @@ for (TestArgument testArgument : TestArguments) {
 - Properties file driven configuration
 - Test class / test method filtering
 - Test class tag filtering
+- Stepwise execution of test methods
 - Test class interceptors (extensions)
 - Engine interceptors (extensions)
 - Test class / test argument parallel testing with configurable constraints
