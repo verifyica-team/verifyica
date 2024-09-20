@@ -14,7 +14,7 @@ Annotations also don't address scenarios when threads are created/used in test (
 
 ## LockManager
 
-[LockManager](api/src/main/java/org/antublue/verifyica/api/LockManager.java) provides a mechanism to create globally exclusive locks.
+[LockManager](api/src/main/java/org/antublue/verifyica/api/LockManager.java) provides way to implement locking semantics.
 
 **Notes**
 
