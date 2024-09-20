@@ -77,26 +77,6 @@ public class ClasspathRootSelectorResolver {
                             List<ClassNameFilter> classNameFilters =
                                     engineDiscoveryRequest.getFiltersByType(ClassNameFilter.class);
 
-                            /*
-                             * Code remove default ConsoleLauncher test-classname filter
-                             */
-                            /*
-                            if (classNameFilters.size() == 1) {
-                                Iterator<ClassNameFilter> classNameFilterIterator =
-                                        classNameFilters.iterator();
-                                while (classNameFilterIterator.hasNext()) {
-                                    ClassNameFilter classNameFilter =
-                                            classNameFilterIterator.next();
-                                    String classNameFilterString = classNameFilter.toString();
-                                    if (classNameFilterString.startsWith("IncludeClassNameFilter")
-                                            && classNameFilterString.endsWith(
-                                                    "'^(Test.*|.+[.$]Test.*|.*Tests?)$'")) {
-                                        classNameFilterIterator.remove();
-                                    }
-                                }
-                            }
-                            */
-
                             Predicate<String> classNamePredicate =
                                     composeFilters(classNameFilters).toPredicate();
 
