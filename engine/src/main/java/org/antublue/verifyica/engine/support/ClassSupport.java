@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -96,7 +97,13 @@ public class ClassSupport {
                                         ReflectionSupport.findAllClassesInClasspathRoot(
                                                 uri, predicate, classNameFilter -> true)));
 
-        return new ArrayList<>(set);
+        List<Class<?>> list = new ArrayList<>(set);
+        list.sort(Comparator.comparing(Class::getName));
+        return list;
+    }
+
+    public static List<Class<?>> findNestedClasses(Class<?> clazz, Predicate<Class<?>> predicate) {
+        return new ArrayList<>(ReflectionSupport.findNestedClasses(clazz, predicate));
     }
 
     /**

@@ -16,69 +16,55 @@
 
 package org.antublue.verifyica.test.scenario;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import org.antublue.verifyica.api.Argument;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
+@Verifyica.Disabled
 @Verifyica.ScenarioTest
-public class ScenarioTest8 {
+public class ScenarioTest30 {
+
+    private static final String FAIL_ON_STEP_1 = "failOnStep1";
+    private static final String FAIL_ON_STEP_2 = "failOnStep2";
 
     @Verifyica.ArgumentSupplier
-    public static String arguments() {
-        return "ignored";
+    public static Collection<Argument<?>> arguments() {
+        Collection<Argument<?>> collection = new ArrayList<>();
+
+        collection.add(Argument.ofString(FAIL_ON_STEP_1));
+        collection.add(Argument.ofString(FAIL_ON_STEP_2));
+
+        return collection;
     }
 
-    @Verifyica.Test
-    @Verifyica.Order(order = 1)
-    public void step0(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf(
-                "step0(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
-    }
-
-    @Verifyica.Test
-    @Verifyica.Order(order = 2)
-    public void step2(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf(
-                "step2(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
-    }
-
-    @Verifyica.Test
-    @Verifyica.Order(order = 3)
-    public void step4(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf(
-                "step4(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
-    }
-
-    @Verifyica.Test
-    @Verifyica.Order(order = 4)
+    @Verifyica.Test(order = 1)
     public void step1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step1(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+
+        if (argumentContext.getTestArgument().getPayload(String.class).equals(FAIL_ON_STEP_1)) {
+            throw new AssertionError("Forced");
+        }
     }
 
-    @Verifyica.Test
-    @Verifyica.Order(order = 5)
+    @Verifyica.Test(order = 2)
+    public void step2(ArgumentContext argumentContext) throws Throwable {
+        System.out.printf(
+                "step2(name[%s], payload[%s])%n",
+                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+
+        if (argumentContext.getTestArgument().getPayload(String.class).equals(FAIL_ON_STEP_2)) {
+            throw new AssertionError("Forced");
+        }
+    }
+
+    @Verifyica.Test(order = 3)
     public void step3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step3(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
-    }
-
-    @Verifyica.Test
-    @Verifyica.Order(order = 6)
-    public void step5(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf(
-                "step5(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
-    }
-
-    @Verifyica.Test
-    public void random(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf(
-                "random(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
     }
 }
