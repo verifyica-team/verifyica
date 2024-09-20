@@ -33,7 +33,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
-import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.interceptor.ArgumentInterceptorContext;
 import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
@@ -44,7 +43,6 @@ import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.ConcreteArgumentInterceptorContext;
 import org.antublue.verifyica.engine.context.ConcreteClassInterceptorContext;
-import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -163,12 +161,11 @@ public class ClassInterceptorManager {
     /**
      * Method to execute ClassInterceptor callbacks
      *
-     * @param engineContext engineContext
      * @param testClass testClass
      * @return a test instance
      * @throws Throwable Throwable
      */
-    public Object instantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
+    public Object instantiate(Class<?> testClass) throws Throwable {
         Object testInstance = null;
         Throwable throwable = null;
 
@@ -212,37 +209,6 @@ public class ClassInterceptorManager {
         throwableCollector.assertEmpty();
 
         return testInstance;
-    }
-
-    /**
-     * Method to execute ClassInterceptor callbacks
-     *
-     * @param engineContext engineContext
-     * @param testClass testClass
-     * @param testInstance testInstance
-     * @param throwable throwable
-     * @throws Throwable Throwable
-     */
-    public void postInstantiate(
-            EngineContext engineContext,
-            Class<?> testClass,
-            Object testInstance,
-            Throwable throwable)
-            throws Throwable {
-        ConcreteEngineInterceptorContext engineInterceptorContext =
-                new ConcreteEngineInterceptorContext(engineContext);
-
-        final List<ClassInterceptor> classInterceptorsReversed =
-                getClassInterceptorsReversed(testClass);
-
-        if (!classInterceptorsReversed.isEmpty()) {
-            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postInstantiate(
-                        engineInterceptorContext, testClass, testInstance, throwable);
-            }
-        } else if (throwable != null) {
-            throw throwable;
-        }
     }
 
     /**

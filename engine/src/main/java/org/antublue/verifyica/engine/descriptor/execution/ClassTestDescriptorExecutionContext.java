@@ -130,9 +130,7 @@ public class ClassTestDescriptorExecutionContext implements TestDescriptorExecut
                                         Object testInstance =
                                                 verifyicaEngineExecutionContext
                                                         .getClassInterceptorManager()
-                                                        .instantiate(
-                                                                classContext.getEngineContext(),
-                                                                testClass);
+                                                        .instantiate(testClass);
 
                                         testInstanceReference.set(testInstance);
 
