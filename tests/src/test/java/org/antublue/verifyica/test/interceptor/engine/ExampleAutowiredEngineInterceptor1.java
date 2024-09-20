@@ -49,10 +49,7 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
 
         for (ClassDefinition classDefinition : classDefinitions) {
             if (classDefinition
-                    .getTestClass()
-                    .getName()
-                    .equals(
-                            "org.antublue.verifyica.test.interceptor.engine.EngineInterceptorTest1")) {
+                    .getTestClass() == EngineInterceptorTest1.class) {
 
                 // Reverse test methods
                 reverseMethodsDefinitions(classDefinition.getTestMethodDefinitions());
