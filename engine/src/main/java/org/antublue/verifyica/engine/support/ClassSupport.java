@@ -102,6 +102,13 @@ public class ClassSupport {
         return list;
     }
 
+    /**
+     * Method to find nested classes
+     *
+     * @param clazz clazz
+     * @param predicate predicate
+     * @return a List of Classes
+     */
     public static List<Class<?>> findNestedClasses(Class<?> clazz, Predicate<Class<?>> predicate) {
         return new ArrayList<>(ReflectionSupport.findNestedClasses(clazz, predicate));
     }
