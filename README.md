@@ -56,7 +56,8 @@ for (TestArgument testArgument : TestArguments) {
   - [EngineContext](api/src/main/java/org/antublue/verifyica/api/EngineContext.java)
   - [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
   - [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java) 
-- LockManager for globally exclusive locks
+- LockManager
+  - provides way to implement locking semantics
 - [IntelliJ](https://www.jetbrains.com/idea/) support
 - [Maven](https://maven.apache.org/) support
   - via the Verifyica Maven Plugin
