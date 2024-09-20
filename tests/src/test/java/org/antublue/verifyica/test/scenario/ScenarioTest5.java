@@ -46,7 +46,7 @@ public class ScenarioTest5 {
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
 
         if (argumentContext.getTestArgument().getPayload(String.class).equals(FAIL_ON_STEP_1)) {
-            throw new java.lang.AssertionError("Forced");
+            throw new AssertionError("Forced");
         }
     }
 
@@ -57,7 +57,7 @@ public class ScenarioTest5 {
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
 
         if (argumentContext.getTestArgument().getPayload(String.class).equals(FAIL_ON_STEP_2)) {
-            throw new java.lang.AssertionError("Forced");
+            throw new AssertionError("Forced");
         }
     }
 
