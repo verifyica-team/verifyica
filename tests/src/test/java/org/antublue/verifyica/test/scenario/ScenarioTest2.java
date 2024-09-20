@@ -20,7 +20,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
 @Verifyica.ScenarioTest
-public class ScenarioTest7 {
+public class ScenarioTest2 {
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {

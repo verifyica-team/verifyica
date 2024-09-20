@@ -24,7 +24,7 @@ import org.antublue.verifyica.api.Verifyica;
 
 @Verifyica.Disabled
 @Verifyica.ScenarioTest
-public class ScenarioTest20 {
+public class ScenarioTest7 {
 
     private static final String FAIL_ON_STEP_1 = "failOnStep1";
     private static final String FAIL_ON_STEP_2 = "failOnStep2";

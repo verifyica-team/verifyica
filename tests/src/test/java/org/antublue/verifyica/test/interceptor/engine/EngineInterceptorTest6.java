@@ -27,7 +27,7 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
 @Verifyica.Autowired
-public class EngineInterceptorTest2 implements EngineInterceptor {
+public class EngineInterceptorTest6 implements EngineInterceptor {
 
     @Override
     public void onTestDiscovery(
@@ -35,16 +35,22 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
             List<ClassDefinition> classDefinitions) {
         System.out.printf("%s onTestDiscovery()%n", getClass().getName());
 
-        for (ClassDefinition classDefinition : classDefinitions) {
-            if (classDefinition.getTestClass() == EngineInterceptorTest2.class) {
-                // Filter test method "test2"
-                classDefinition
-                        .getTestMethodDefinitions()
-                        .removeIf(
-                                methodDefinition ->
-                                        methodDefinition.getMethod().getName().equals("test2"));
-            }
-        }
+        classDefinitions.stream()
+                .filter(
+                        classDefinition ->
+                                classDefinition.getTestClass() == EngineInterceptorTest6.class)
+                .forEach(
+                        classDefinition -> {
+                            // Filter test method "test2"
+                            classDefinition
+                                    .getTestMethodDefinitions()
+                                    .removeIf(
+                                            methodDefinition ->
+                                                    methodDefinition
+                                                            .getMethod()
+                                                            .getName()
+                                                            .equals("test2"));
+                        });
     }
 
     @Verifyica.ArgumentSupplier

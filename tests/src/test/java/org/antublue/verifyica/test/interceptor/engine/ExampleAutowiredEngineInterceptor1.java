@@ -48,8 +48,7 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
         System.out.printf("%s onTestDiscovery()%n", getClass().getName());
 
         for (ClassDefinition classDefinition : classDefinitions) {
-            if (classDefinition
-                    .getTestClass() == EngineInterceptorTest1.class) {
+            if (classDefinition.getTestClass() == EngineInterceptorTest1.class) {
 
                 // Reverse test methods
                 reverseMethodsDefinitions(classDefinition.getTestMethodDefinitions());
