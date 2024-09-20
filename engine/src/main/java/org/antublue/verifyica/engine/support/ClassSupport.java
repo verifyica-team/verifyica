@@ -103,7 +103,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to find nested classes
+     * Method to find nested classes in a Class
      *
      * @param clazz clazz
      * @param predicate predicate
