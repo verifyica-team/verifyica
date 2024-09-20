@@ -62,12 +62,6 @@ The [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentConte
 
 ---
 
-## Configuration
-
-[Configuration](api/src/main/java/org/antublue/verifyica/api/Configuration.java) has method/is used for configuration.
-
----
-
 ## Store
 
 A [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) is used to ...
@@ -105,6 +99,22 @@ A Store is thread safe, but allow locking the Store lock for chained atomic oper
 
 ---
 
+## Configuration
+
+[Configuration](api/src/main/java/org/antublue/verifyica/api/Configuration.java) has method/is used for configuration.
+
+---
+
+## LockManager
+
+[LockManager](api/src/main/java/org/antublue/verifyica/api/LockManager.java) provides way to implement locking semantics.
+
+**Notes**
+
+- a lock key should be immutable
+
+---
+
 ## Key
 
 [Key](api/src/main/java/org/antublue/verifyica/api/Key.java) is a helper to easily build a key used for a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java).
@@ -118,24 +128,6 @@ A Store is thread safe, but allow locking the Store lock for chained atomic oper
   - `append()`
   - `remove()`
   - `duplicate()`
-
----
-
-## Fail
-
-[Fail](api/src/main/java/org/antublue/verifyica/api/Fail.java) can be used to fail a test.
-
-**Notes**
-
-- It's **strongly** recommended to use [Assert4j](https://github.com/assertj/assertj) for test assertions.
-
----
-
-## ConcurrencySupport
-
-[ConcurrencySupport](api/src/main/java/org/antublue/verifyica/api/concurrency/ConcurrencySupport.java) is a helper used to provide synchronization of code.
-
-Additionally, `ConcurrencySupport` provides a global Lock manager.
 
 ---
 
