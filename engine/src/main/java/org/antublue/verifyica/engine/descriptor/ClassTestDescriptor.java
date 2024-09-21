@@ -241,7 +241,8 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
 
             this.classInterceptorManager = invocationContext.get(ClassInterceptorManager.class);
 
-            this.argumentExecutorService = invocationContext.get("argumentExecutorService");
+            this.argumentExecutorService =
+                    invocationContext.get(InvocationConstant.ARGUMENT_EXECUTOR_SERVICE);
 
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
         }

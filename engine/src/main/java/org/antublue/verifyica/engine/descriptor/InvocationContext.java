@@ -48,7 +48,12 @@ public class InvocationContext {
      * @return this
      */
     public InvocationContext set(Class<?> clazz, Object value) {
-        return set(clazz.getName(), value);
+        Precondition.notNull(clazz, "clazz is null");
+        Precondition.notNull(value, "value is null");
+
+        map.put(clazz.getName(), value);
+
+        return this;
     }
 
     /**
@@ -58,11 +63,11 @@ public class InvocationContext {
      * @param value value
      * @return this
      */
-    public InvocationContext set(String key, Object value) {
-        Precondition.notBlank(key, "key is null", "key is blank");
+    public InvocationContext set(InvocationConstant key, Object value) {
+        Precondition.notNull(key, "key is null");
         Precondition.notNull(value, "value is null");
 
-        map.put(key, value);
+        map.put(key.value(), value);
 
         return this;
     }
@@ -74,10 +79,10 @@ public class InvocationContext {
      * @return a value
      * @param <V> type
      */
-    public <V> V get(String key) {
-        Precondition.notBlank(key, "key is blank", "key is null");
+    public <V> V get(InvocationConstant key) {
+        Precondition.notNull(key, "key is null");
 
-        return (V) map.get(key);
+        return (V) map.get(key.value());
     }
 
     /**
@@ -101,11 +106,11 @@ public class InvocationContext {
      * @return a value
      * @param <V> type
      */
-    public <V> V get(String key, Class<V> type) {
-        Precondition.notBlank(key, "key is null", "key is blank");
+    public <V> V get(InvocationConstant key, Class<V> type) {
+        Precondition.notNull(key, "key is null");
         Precondition.notNull(type, "type is null");
 
-        return type.cast(map.get(key));
+        return type.cast(map.get(key.value()));
     }
 
     /**
