@@ -29,14 +29,14 @@ import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
 public class EngineInterceptorTest2 implements EngineInterceptor {
 
     @Verifyica.Autowired
-    public static class ReorderTestMethods implements EngineInterceptor {
+    public static class ReverseTestMethodOrder implements EngineInterceptor {
 
         @Override
         public void onTestDiscovery(
                 EngineInterceptorContext engineInterceptorContext,
                 ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest2.class) {
-                System.out.printf("re-ordering test methods%n");
+                System.out.printf("reversing test method order%n");
                 reverseOrder(classDefinition.getTestMethodDefinitions());
             }
         }
