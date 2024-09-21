@@ -36,12 +36,11 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
-import org.antublue.verifyica.engine.VerifyicaEngineExecutionContext;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.Stopwatch;
-import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.InvocationContext;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineException;
 import org.antublue.verifyica.engine.exception.TestClassDefinitionException;
@@ -103,18 +102,14 @@ public class EngineDiscoveryRequestResolver {
     /**
      * Constructor
      *
-     * @param verifyicaEngineExecutionContext verifyicaEngineExecutionContext
+     * @param invocationContext invocationContext
      */
-    public EngineDiscoveryRequestResolver(
-            VerifyicaEngineExecutionContext verifyicaEngineExecutionContext) {
-        Precondition.notNull(verifyicaEngineExecutionContext, "executionContext is null");
+    public EngineDiscoveryRequestResolver(InvocationContext invocationContext) {
+        Precondition.notNull(invocationContext, "engineExecutionContext is null");
 
-        this.engineInterceptorManager =
-                verifyicaEngineExecutionContext.getEngineInterceptorManager();
-        this.classInterceptorManager = verifyicaEngineExecutionContext.getClassInterceptorManager();
-        this.engineInterceptorContext =
-                new ConcreteEngineInterceptorContext(
-                        verifyicaEngineExecutionContext.getEngineContext());
+        this.engineInterceptorManager = invocationContext.get(EngineInterceptorManager.class);
+        this.classInterceptorManager = invocationContext.get(ClassInterceptorManager.class);
+        this.engineInterceptorContext = invocationContext.get(EngineInterceptorContext.class);
     }
 
     /**

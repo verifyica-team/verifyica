@@ -39,7 +39,7 @@ public class ScenarioTest5 {
         return collection;
     }
 
-    @Verifyica.Test(order = 1)
+    @Verifyica.Test(order = 3)
     public void step1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step1(name[%s], payload[%s])%n",
@@ -61,7 +61,7 @@ public class ScenarioTest5 {
         }
     }
 
-    @Verifyica.Test(order = 3)
+    @Verifyica.Test(order = 1)
     public void step3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step3(name[%s], payload[%s])%n",

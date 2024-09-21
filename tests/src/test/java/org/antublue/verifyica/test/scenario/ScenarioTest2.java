@@ -69,7 +69,7 @@ public class ScenarioTest2 {
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
     }
 
-    @Verifyica.Test
+    @Verifyica.Test(order = 0)
     public void random(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "random(name[%s], payload[%s])%n",

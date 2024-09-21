@@ -19,14 +19,24 @@ package org.antublue.verifyica.engine.descriptor;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.engine.common.Precondition;
+import org.antublue.verifyica.engine.common.StateMachine;
+import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
+import org.antublue.verifyica.engine.logger.Logger;
+import org.antublue.verifyica.engine.logger.LoggerFactory;
+import org.junit.platform.engine.EngineExecutionListener;
+import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.junit.platform.engine.support.descriptor.MethodSource;
 
 /** Class to implement TestMethodTestDescriptor */
-public class TestMethodTestDescriptor extends AbstractTestDescriptor {
+public class TestMethodTestDescriptor extends AbstractTestDescriptor
+        implements InvocableTestDescriptor {
 
     private final List<Method> beforeEachMethods;
     private final Method testMethod;
@@ -96,6 +106,20 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor {
     }
 
     @Override
+    public TestExecutionResult testInvocation(InvocationContext invocationContext) {
+        Precondition.notNull(invocationContext, "engineExecutionContext is null");
+
+        return new Executor(invocationContext, this).test();
+    }
+
+    @Override
+    public void skipInvocation(InvocationContext invocationContext) {
+        Precondition.notNull(invocationContext, "engineExecutionContext is null");
+
+        new Executor(invocationContext, this).skip();
+    }
+
+    @Override
     public String toString() {
         return "TestMethodTestDescriptor{"
                 + "uniqueId="
@@ -109,5 +133,139 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor {
                 + ", afterEachMethods="
                 + afterEachMethods
                 + '}';
+    }
+
+    /** Class to implement Executor */
+    private static class Executor {
+
+        private static final Logger LOGGER = LoggerFactory.getLogger(Executor.class);
+
+        private final ArgumentContext argumentContext;
+        private final TestMethodTestDescriptor testMethodTestDescriptor;
+        private final List<Method> beforeEachMethods;
+        private final Method testMethod;
+        private final List<Method> afterEachMethods;
+        private final ClassInterceptorManager classInterceptorManager;
+        private final EngineExecutionListener engineExecutionListener;
+
+        private enum State {
+            START,
+            BEFORE_EACH_SUCCESS,
+            BEFORE_EACH_FAILURE,
+            TEST_SUCCESS,
+            TEST_FAILURE,
+            AFTER_EACH_SUCCESS,
+            AFTER_EACH_FAILURE,
+            END
+        }
+
+        /**
+         * Constructor
+         *
+         * @param invocationContext invocationContext
+         * @param testMethodTestDescriptor testMethodTestDescriptor
+         */
+        private Executor(
+                InvocationContext invocationContext,
+                TestMethodTestDescriptor testMethodTestDescriptor) {
+            this.argumentContext = invocationContext.get(ArgumentContext.class);
+            this.testMethodTestDescriptor = testMethodTestDescriptor;
+            this.beforeEachMethods = testMethodTestDescriptor.getBeforeEachMethods();
+            this.testMethod = testMethodTestDescriptor.getTestMethod();
+            this.afterEachMethods = testMethodTestDescriptor.getAfterEachMethods();
+
+            this.classInterceptorManager = invocationContext.get(ClassInterceptorManager.class);
+            this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
+        }
+
+        public TestExecutionResult test() {
+            LOGGER.trace("test() %s", testMethodTestDescriptor);
+
+            engineExecutionListener.executionStarted(testMethodTestDescriptor);
+
+            AtomicBoolean isSkipped = new AtomicBoolean();
+            AtomicReference<String> skippedMessage = new AtomicReference<>();
+
+            StateMachine<State> stateMachine =
+                    new StateMachine<State>()
+                            .onState(
+                                    State.START,
+                                    () -> {
+                                        try {
+                                            classInterceptorManager.beforeEach(
+                                                    argumentContext, beforeEachMethods);
+                                            return StateMachine.Result.of(
+                                                    State.BEFORE_EACH_SUCCESS);
+                                        } catch (Throwable t) {
+                                            t.printStackTrace(System.err);
+                                            return StateMachine.Result.of(
+                                                    State.BEFORE_EACH_FAILURE, t);
+                                        }
+                                    })
+                            .onState(
+                                    State.BEFORE_EACH_SUCCESS,
+                                    () -> {
+                                        try {
+                                            classInterceptorManager.test(
+                                                    argumentContext, testMethod);
+                                            return StateMachine.Result.of(State.TEST_SUCCESS);
+                                        } catch (Throwable t) {
+                                            t.printStackTrace(System.err);
+                                            return StateMachine.Result.of(State.TEST_FAILURE, t);
+                                        }
+                                    })
+                            .onStates(
+                                    StateMachine.asList(
+                                            State.BEFORE_EACH_FAILURE,
+                                            State.TEST_SUCCESS,
+                                            State.TEST_FAILURE),
+                                    () -> {
+                                        try {
+                                            classInterceptorManager.afterEach(
+                                                    argumentContext, afterEachMethods);
+                                            return StateMachine.Result.of(State.AFTER_EACH_SUCCESS);
+                                        } catch (Throwable t) {
+                                            t.printStackTrace(System.err);
+                                            return StateMachine.Result.of(
+                                                    State.AFTER_EACH_FAILURE, t);
+                                        }
+                                    })
+                            .onStates(
+                                    StateMachine.asList(
+                                            State.AFTER_EACH_SUCCESS, State.AFTER_EACH_FAILURE),
+                                    () -> StateMachine.Result.of(State.END))
+                            .run(State.START, State.END);
+
+            LOGGER.trace("state machine [%s]", stateMachine);
+
+            TestExecutionResult testExecutionResult;
+
+            if (!isSkipped.get()) {
+                testExecutionResult =
+                        stateMachine
+                                .getFirstResultWithThrowable()
+                                .map(result -> TestExecutionResult.failed(result.getThrowable()))
+                                .orElse(TestExecutionResult.successful());
+
+                engineExecutionListener.executionFinished(
+                        testMethodTestDescriptor, testExecutionResult);
+            } else {
+                testExecutionResult = TestExecutionResult.aborted(null);
+
+                engineExecutionListener.executionSkipped(
+                        testMethodTestDescriptor, skippedMessage.get());
+            }
+
+            return testExecutionResult;
+        }
+
+        private void skip() {
+            LOGGER.trace("skip() %s", testMethodTestDescriptor);
+
+            engineExecutionListener.executionStarted(testMethodTestDescriptor);
+
+            engineExecutionListener.executionFinished(
+                    testMethodTestDescriptor, TestExecutionResult.aborted(null));
+        }
     }
 }

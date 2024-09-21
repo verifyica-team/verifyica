@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.descriptor.execution;
+package org.antublue.verifyica.engine.descriptor;
 
 import org.junit.platform.engine.TestExecutionResult;
 
-/** Interface to implement TestDescriptorExecutionContext */
-public interface TestDescriptorExecutionContext {
+/** Interface to implement InvocableTestDescriptor */
+public interface InvocableTestDescriptor {
 
     /**
      * Method to test
      *
+     * @param invocationContext invocationContext
      * @return the TestExecutionResult
      */
-    TestExecutionResult test();
+    TestExecutionResult testInvocation(InvocationContext invocationContext);
 
-    /** Method to skip */
-    void skip();
+    /**
+     * Method to skip
+     *
+     * @param invocationContext invocationContext
+     */
+    void skipInvocation(InvocationContext invocationContext);
 }

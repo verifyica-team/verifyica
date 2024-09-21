@@ -16,6 +16,8 @@
 
 package org.antublue.verifyica.engine;
 
+import static java.lang.String.format;
+
 import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,19 +34,26 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
+import org.antublue.verifyica.engine.common.FairExecutorService;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.common.Streams;
 import org.antublue.verifyica.engine.common.ThrowableCollector;
+import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
+import org.antublue.verifyica.engine.context.ConcreteEngineContext;
+import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
+import org.antublue.verifyica.engine.descriptor.InvocationContext;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
-import org.antublue.verifyica.engine.descriptor.execution.ClassTestDescriptorExecutionContext;
+import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.antublue.verifyica.engine.exception.EngineException;
+import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.antublue.verifyica.engine.interceptor.EngineInterceptorManager;
 import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.TracingEngineExecutionListener;
@@ -103,7 +112,7 @@ public class VerifyicaTestEngine implements TestEngine {
     private static final Function<TestDescriptor, ClassTestDescriptor> MAP_CLASS_TEST_DESCRIPTOR =
             testDescriptor -> (ClassTestDescriptor) testDescriptor;
 
-    private VerifyicaEngineExecutionContext verifyicaEngineExecutionContext;
+    private InvocationContext invocationContext;
 
     @Override
     public String getId() {
@@ -143,6 +152,36 @@ public class VerifyicaTestEngine implements TestEngine {
         return VERSION;
     }
 
+    private void initialize() {
+        Configuration configuration = ConcreteConfiguration.getInstance();
+
+        EngineInterceptorManager engineInterceptorManager = new EngineInterceptorManager();
+
+        EngineContext engineContext = new ConcreteEngineContext(configuration, staticGetVersion());
+
+        EngineInterceptorContext engineInterceptorContext =
+                new ConcreteEngineInterceptorContext(engineContext);
+
+        ClassInterceptorManager classInterceptorManager =
+                new ClassInterceptorManager(engineInterceptorContext);
+
+        ExecutorService classExecutorService =
+                ExecutorSupport.newExecutorService(getEngineClassParallelism(configuration));
+
+        ExecutorService argumentExecutorService =
+                new FairExecutorService(getEngineArgumentParallelism(configuration));
+
+        invocationContext =
+                new InvocationContext()
+                        .set(Configuration.class, configuration)
+                        .set(EngineContext.class, engineContext)
+                        .set(EngineInterceptorContext.class, engineInterceptorContext)
+                        .set(EngineInterceptorManager.class, engineInterceptorManager)
+                        .set(ClassInterceptorManager.class, classInterceptorManager)
+                        .set("classExecutorService", classExecutorService)
+                        .set("argumentExecutorService", argumentExecutorService);
+    }
+
     @Override
     public TestDescriptor discover(
             EngineDiscoveryRequest engineDiscoveryRequest, UniqueId uniqueId) {
@@ -157,9 +196,9 @@ public class VerifyicaTestEngine implements TestEngine {
         EngineDescriptor engineDescriptor = new StatusEngineDescriptor(uniqueId, DISPLAY_NAME);
 
         try {
-            verifyicaEngineExecutionContext = new VerifyicaEngineExecutionContext();
+            initialize();
 
-            new EngineDiscoveryRequestResolver(verifyicaEngineExecutionContext)
+            new EngineDiscoveryRequestResolver(invocationContext)
                     .resolveSelectors(engineDiscoveryRequest, engineDescriptor);
         } catch (EngineException e) {
             throw e;
@@ -179,7 +218,7 @@ public class VerifyicaTestEngine implements TestEngine {
             return;
         }
 
-        if (verifyicaEngineExecutionContext == null) {
+        if (invocationContext == null) {
             throw new IllegalStateException("Not initialized");
         }
 
@@ -187,23 +226,20 @@ public class VerifyicaTestEngine implements TestEngine {
 
         LOGGER.trace("execute()");
 
+        invocationContext.set(
+                EngineExecutionListener.class, configureEngineExecutionListeners(executionRequest));
+
+        ExecutorService classExecutorService = invocationContext.get("classExecutorService");
+        ExecutorService argumentExecutorService = invocationContext.get("argumentExecutorService");
+        EngineContext engineContext = invocationContext.get(EngineContext.class);
+        EngineInterceptorContext engineInterceptorContext =
+                invocationContext.get(EngineInterceptorContext.class);
+        EngineInterceptorManager engineInterceptorManager =
+                invocationContext.get(EngineInterceptorManager.class);
         EngineExecutionListener engineExecutionListener =
-                configureEngineExecutionListeners(executionRequest);
-
-        verifyicaEngineExecutionContext.setEngineExecutionListener(engineExecutionListener);
-
-        ExecutorService classExecutorService =
-                verifyicaEngineExecutionContext.getClassExecutorService();
+                invocationContext.get(EngineExecutionListener.class);
 
         ThrowableCollector throwableCollector = new ThrowableCollector();
-
-        EngineContext engineContext = verifyicaEngineExecutionContext.getEngineContext();
-
-        EngineInterceptorContext engineInterceptorContext =
-                verifyicaEngineExecutionContext.getEngineInterceptorContext();
-
-        EngineInterceptorManager engineInterceptorManager =
-                verifyicaEngineExecutionContext.getEngineInterceptorManager();
 
         try {
             if (LOGGER.isTraceEnabled()) {
@@ -253,20 +289,16 @@ public class VerifyicaTestEngine implements TestEngine {
                                             new ThreadNameRunnable(
                                                     threadName,
                                                     () ->
-                                                            new ClassTestDescriptorExecutionContext(
-                                                                            verifyicaEngineExecutionContext,
-                                                                            classTestDescriptor)
-                                                                    .test())));
+                                                            classTestDescriptor.testInvocation(
+                                                                    invocationContext.copy()))));
                         });
 
                 ExecutorSupport.waitForAllFutures(futures, classExecutorService);
             } catch (Throwable t) {
                 throwableCollector.add(t);
             } finally {
-                ExecutorSupport.shutdownAndAwaitTermination(
-                        verifyicaEngineExecutionContext.getArgumentExecutorService());
-                ExecutorSupport.shutdownAndAwaitTermination(
-                        verifyicaEngineExecutionContext.getClassExecutorService());
+                ExecutorSupport.shutdownAndAwaitTermination(argumentExecutorService);
+                ExecutorSupport.shutdownAndAwaitTermination(classExecutorService);
 
                 Store store = engineContext.getStore();
                 for (Object key : store.keySet()) {
@@ -296,10 +328,8 @@ public class VerifyicaTestEngine implements TestEngine {
 
             TestExecutionResult testExecutionResult = throwableCollector.toTestExecutionResult();
 
-            verifyicaEngineExecutionContext
-                    .getEngineExecutionListener()
-                    .executionFinished(
-                            executionRequest.getRootTestDescriptor(), testExecutionResult);
+            engineExecutionListener.executionFinished(
+                    executionRequest.getRootTestDescriptor(), testExecutionResult);
 
             LOGGER.trace("execute() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
         }
@@ -406,5 +436,97 @@ public class VerifyicaTestEngine implements TestEngine {
                         (Consumer<TestDescriptor>)
                                 childTestDescriptor ->
                                         traceTestDescriptor(childTestDescriptor, level + 2));
+    }
+
+    /**
+     * Method to get the engine class parallelism configuration value
+     *
+     * @return the engine parallelism value
+     */
+    private static int getEngineClassParallelism(Configuration configuration) {
+        LOGGER.trace("getEngineClassParallelism()");
+
+        int engineClassParallelism =
+                configuration
+                        .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
+                        .map(
+                                value -> {
+                                    int intValue;
+                                    try {
+                                        intValue = Integer.parseInt(value);
+                                        if (intValue < 1) {
+                                            throw new EngineConfigurationException(
+                                                    format(
+                                                            "Invalid %s value [%d]",
+                                                            Constants.ENGINE_CLASS_PARALLELISM,
+                                                            intValue));
+                                        }
+                                        return intValue;
+                                    } catch (NumberFormatException e) {
+                                        throw new EngineConfigurationException(
+                                                format(
+                                                        "Invalid %s value [%s]",
+                                                        Constants.ENGINE_CLASS_PARALLELISM, value),
+                                                e);
+                                    }
+                                })
+                        .orElse(Runtime.getRuntime().availableProcessors());
+
+        LOGGER.trace("engineClassParallelism [%d]", engineClassParallelism);
+
+        return engineClassParallelism;
+    }
+
+    /**
+     * Method to get the engine argument parallelism configuration value
+     *
+     * @return the engine parallelism value
+     */
+    private static int getEngineArgumentParallelism(Configuration configuration) {
+        LOGGER.trace("getEngineArgumentParallelism()");
+
+        int engineClassParallelism = getEngineClassParallelism(configuration);
+
+        int engineArgumentParallelism =
+                configuration
+                        .getOptional(Constants.ENGINE_ARGUMENT_PARALLELISM)
+                        .map(
+                                value -> {
+                                    int intValue;
+                                    try {
+                                        intValue = Integer.parseInt(value);
+                                        if (intValue < 1) {
+                                            throw new EngineConfigurationException(
+                                                    format(
+                                                            "Invalid %s value [%d]",
+                                                            Constants.ENGINE_ARGUMENT_PARALLELISM,
+                                                            intValue));
+                                        }
+                                        return intValue;
+                                    } catch (NumberFormatException e) {
+                                        throw new EngineConfigurationException(
+                                                format(
+                                                        "Invalid %s value [%s]",
+                                                        Constants.ENGINE_ARGUMENT_PARALLELISM,
+                                                        value),
+                                                e);
+                                    }
+                                })
+                        .orElse(engineClassParallelism);
+
+        if (engineArgumentParallelism < engineClassParallelism) {
+            LOGGER.warn(
+                    "[%s] is less than [%s], setting [%s] to [%d]",
+                    Constants.ENGINE_ARGUMENT_PARALLELISM,
+                    Constants.ENGINE_CLASS_PARALLELISM,
+                    Constants.ENGINE_ARGUMENT_PARALLELISM,
+                    engineClassParallelism);
+
+            engineArgumentParallelism = engineClassParallelism;
+        }
+
+        LOGGER.trace("engineArgumentParallelism [%d]", engineArgumentParallelism);
+
+        return engineArgumentParallelism;
     }
 }
