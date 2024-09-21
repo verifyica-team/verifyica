@@ -48,7 +48,6 @@ import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
-import org.antublue.verifyica.engine.descriptor.InvocationConstant;
 import org.antublue.verifyica.engine.descriptor.InvocationContext;
 import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
@@ -179,8 +178,8 @@ public class VerifyicaTestEngine implements TestEngine {
                         .set(EngineInterceptorContext.class, engineInterceptorContext)
                         .set(EngineInterceptorManager.class, engineInterceptorManager)
                         .set(ClassInterceptorManager.class, classInterceptorManager)
-                        .set(InvocationConstant.CLASS_EXECUTOR_SERVICE, classExecutorService)
-                        .set(InvocationConstant.ARGUMENT_EXECUTOR_SERVICE, argumentExecutorService);
+                        .set(InvocationContext.CLASS_EXECUTOR_SERVICE, classExecutorService)
+                        .set(InvocationContext.ARGUMENT_EXECUTOR_SERVICE, argumentExecutorService);
     }
 
     @Override
@@ -231,9 +230,9 @@ public class VerifyicaTestEngine implements TestEngine {
                 EngineExecutionListener.class, configureEngineExecutionListeners(executionRequest));
 
         ExecutorService classExecutorService =
-                invocationContext.get(InvocationConstant.CLASS_EXECUTOR_SERVICE);
+                invocationContext.get(InvocationContext.CLASS_EXECUTOR_SERVICE);
         ExecutorService argumentExecutorService =
-                invocationContext.get(InvocationConstant.ARGUMENT_EXECUTOR_SERVICE);
+                invocationContext.get(InvocationContext.ARGUMENT_EXECUTOR_SERVICE);
         EngineContext engineContext = invocationContext.get(EngineContext.class);
         EngineInterceptorContext engineInterceptorContext =
                 invocationContext.get(EngineInterceptorContext.class);

@@ -18,11 +18,19 @@ package org.antublue.verifyica.engine.descriptor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.antublue.verifyica.engine.common.Precondition;
 
 /** Class to implement InvocationContext */
 @SuppressWarnings("unchecked")
 public class InvocationContext {
+
+    /** Invocation constant for the test class ExecutorService */
+    public static final Constant CLASS_EXECUTOR_SERVICE = new Constant("CLASS_EXECUTOR_SERVICE");
+
+    /** Invocation constant from the test argument ExecutorService */
+    public static final Constant ARGUMENT_EXECUTOR_SERVICE =
+            new Constant("ARGUMENT_EXECUTOR_SERVICE");
 
     private final Map<String, Object> map;
 
@@ -63,7 +71,7 @@ public class InvocationContext {
      * @param value value
      * @return this
      */
-    public InvocationContext set(InvocationConstant key, Object value) {
+    public InvocationContext set(Constant key, Object value) {
         Precondition.notNull(key, "key is null");
         Precondition.notNull(value, "value is null");
 
@@ -79,7 +87,7 @@ public class InvocationContext {
      * @return a value
      * @param <V> type
      */
-    public <V> V get(InvocationConstant key) {
+    public <V> V get(Constant key) {
         Precondition.notNull(key, "key is null");
 
         return (V) map.get(key.value());
@@ -106,7 +114,7 @@ public class InvocationContext {
      * @return a value
      * @param <V> type
      */
-    public <V> V get(InvocationConstant key, Class<V> type) {
+    public <V> V get(Constant key, Class<V> type) {
         Precondition.notNull(key, "key is null");
         Precondition.notNull(type, "type is null");
 
@@ -120,5 +128,47 @@ public class InvocationContext {
      */
     public InvocationContext copy() {
         return new InvocationContext(new HashMap<>(this.map));
+    }
+
+    /** Class to implement Constant */
+    public static class Constant {
+
+        private final String value;
+
+        /**
+         * Constructor
+         *
+         * @param value value
+         */
+        private Constant(String value) {
+            this.value = getClass().getName() + "." + value;
+        }
+
+        /**
+         * Method to get the value
+         *
+         * @return the value
+         */
+        public String value() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Constant that = (Constant) o;
+            return Objects.equals(value, that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(value);
+        }
     }
 }
