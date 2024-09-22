@@ -270,11 +270,11 @@ public class VerifyicaTestEngine implements TestEngine {
 
                 for (TestDescriptor testDescriptor :
                         executionRequest.getRootTestDescriptor().getChildren()) {
-                    for (TestDescriptor testDescriptor1 : testDescriptor.getChildren()) {
-                        argumentTestDescriptors.add((ArgumentTestDescriptor) testDescriptor1);
-                        for (TestDescriptor testDescriptor2 : testDescriptor1.getChildren()) {
+                    for (TestDescriptor childTestDescriptor : testDescriptor.getChildren()) {
+                        argumentTestDescriptors.add((ArgumentTestDescriptor) childTestDescriptor);
+                        for (TestDescriptor grandChildTestDescriptor : childTestDescriptor.getChildren()) {
                             testMethodTestDescriptors.add(
-                                    (TestMethodTestDescriptor) testDescriptor2);
+                                    (TestMethodTestDescriptor) grandChildTestDescriptor);
                         }
                     }
                 }
@@ -295,8 +295,11 @@ public class VerifyicaTestEngine implements TestEngine {
                                             new ThreadNameRunnable(
                                                     threadName,
                                                     () ->
-                                                            classTestDescriptor.testInvocation(
-                                                                    invocationContext.copy()))));
+                                                            classTestDescriptor
+                                                                    .getInvocation(
+                                                                            invocationContext
+                                                                                    .copy())
+                                                                    .proceed())));
                         });
 
                 ExecutorSupport.waitForAllFutures(futures, classExecutorService);

@@ -39,7 +39,9 @@ import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.antublue.verifyica.engine.context.ConcreteClassContext;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.antublue.verifyica.engine.invocation.InvocableTestDescriptor;
+import org.antublue.verifyica.engine.invocation.Invocation;
 import org.antublue.verifyica.engine.invocation.InvocationContext;
+import org.antublue.verifyica.engine.invocation.InvocationResult;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ExecutorSupport;
@@ -155,21 +157,12 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
     }
 
     @Override
-    public TestExecutionResult testInvocation(InvocationContext invocationContext) {
-        Precondition.notNull(invocationContext, "engineExecutionContext is null");
-
-        return new Invocation(invocationContext, this).test();
+    public Invocation getInvocation(InvocationContext invocationContext) {
+        return new ConcreteInvocation(this, invocationContext);
     }
 
-    @Override
-    public void skipInvocation(InvocationContext invocationContext) {
-        Precondition.notNull(invocationContext, "engineExecutionContext is null");
-
-        new Invocation(invocationContext, this).skip();
-    }
-
-    /** Class to implement Executor */
-    public static class Invocation {
+    /** Class to implement ConcreteInvocation */
+    private static class ConcreteInvocation implements Invocation {
 
         private static final Logger LOGGER = LoggerFactory.getLogger(Invocation.class);
 
@@ -209,11 +202,11 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
         /**
          * Constructor
          *
-         * @param invocationContext invocationContext
          * @param classTestDescriptor classTestDescriptor
+         * @param invocationContext invocationContext
          */
-        private Invocation(
-                InvocationContext invocationContext, ClassTestDescriptor classTestDescriptor) {
+        private ConcreteInvocation(
+                ClassTestDescriptor classTestDescriptor, InvocationContext invocationContext) {
             this.invocationContext = invocationContext;
 
             this.classTestDescriptor = classTestDescriptor;
@@ -250,13 +243,9 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
         }
 
-        /**
-         * Method to test
-         *
-         * @return a TestExecutionResult
-         */
-        private TestExecutionResult test() {
-            LOGGER.trace("test() %s", classTestDescriptor);
+        @Override
+        public InvocationResult proceed() {
+            LOGGER.trace("proceed() %s", classTestDescriptor);
 
             engineExecutionListener.executionStarted(classTestDescriptor);
 
@@ -334,9 +323,10 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                                                                             threadName,
                                                                                             () ->
                                                                                                     argumentTestDescriptor
-                                                                                                            .testInvocation(
+                                                                                                            .getInvocation(
                                                                                                                     invocationContext
-                                                                                                                            .copy())))));
+                                                                                                                            .copy())
+                                                                                                            .proceed()))));
                                                         });
 
                                                 ExecutorSupport.waitForAllFutures(
@@ -345,8 +335,9 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                                 argumentTestDescriptors.forEach(
                                                         argumentTestDescriptor ->
                                                                 argumentTestDescriptor
-                                                                        .testInvocation(
-                                                                                invocationContext));
+                                                                        .getInvocation(
+                                                                                invocationContext)
+                                                                        .proceed());
                                             }
 
                                             return Result.of(State.EXECUTE_SUCCESS);
@@ -361,8 +352,10 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                         try {
                                             argumentTestDescriptors.forEach(
                                                     argumentTestDescriptor ->
-                                                            argumentTestDescriptor.skipInvocation(
-                                                                    invocationContext));
+                                                            argumentTestDescriptor
+                                                                    .getInvocation(
+                                                                            invocationContext)
+                                                                    .skip());
 
                                             engineExecutionListener.executionSkipped(
                                                     classTestDescriptor, "Skipped");
@@ -464,12 +457,16 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
 
             engineExecutionListener.executionFinished(classTestDescriptor, testExecutionResult);
 
-            return testExecutionResult;
+            if (testExecutionResult.getStatus() == TestExecutionResult.Status.FAILED) {
+                return InvocationResult.create(InvocationResult.Type.FAILURE);
+            } else {
+                return InvocationResult.create(InvocationResult.Type.SUCCESS);
+            }
         }
 
-        /** Method to skip */
-        private void skip() {
-            throw new IllegalStateException("Not implemented");
+        @Override
+        public InvocationResult skip() {
+            throw new IllegalStateException("skip() not implemented");
         }
     }
 }

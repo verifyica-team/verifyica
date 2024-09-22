@@ -16,24 +16,14 @@
 
 package org.antublue.verifyica.engine.invocation;
 
-import org.junit.platform.engine.TestExecutionResult;
-
 /** Interface to implement InvocableTestDescriptor */
 public interface InvocableTestDescriptor {
 
     /**
-     * Method to test
+     * Method to crete an Invocation
      *
      * @param invocationContext invocationContext
-     * @return the TestExecutionResult
+     * @return an Invocation
      */
-    TestExecutionResult testInvocation(InvocationContext invocationContext)
-            throws InvocationException;
-
-    /**
-     * Method to skip
-     *
-     * @param invocationContext invocationContext
-     */
-    void skipInvocation(InvocationContext invocationContext);
+    Invocation getInvocation(InvocationContext invocationContext);
 }

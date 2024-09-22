@@ -18,6 +18,7 @@ package org.antublue.verifyica.engine.descriptor;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +36,9 @@ import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.antublue.verifyica.engine.context.ConcreteArgumentContext;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.antublue.verifyica.engine.invocation.InvocableTestDescriptor;
+import org.antublue.verifyica.engine.invocation.Invocation;
 import org.antublue.verifyica.engine.invocation.InvocationContext;
+import org.antublue.verifyica.engine.invocation.InvocationResult;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.EngineExecutionListener;
@@ -136,17 +139,8 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
     }
 
     @Override
-    public TestExecutionResult testInvocation(InvocationContext invocationContext) {
-        Precondition.notNull(invocationContext, "engineExecutionContext is null");
-
-        return new Invocation(invocationContext, this).test();
-    }
-
-    @Override
-    public void skipInvocation(InvocationContext invocationContext) {
-        Precondition.notNull(invocationContext, "engineExecutionContext is null");
-
-        new Invocation(invocationContext, this).skip();
+    public Invocation getInvocation(InvocationContext invocationContext) {
+        return new ConcreteInvocation(this, invocationContext);
     }
 
     @Override
@@ -169,10 +163,10 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                 + '}';
     }
 
-    /** Class to implement Invocation */
-    private static class Invocation {
+    /** Class to implement ConcreteInvocation */
+    private static class ConcreteInvocation implements Invocation {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(Invocation.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(ConcreteInvocation.class);
 
         private final InvocationContext invocationContext;
         private final ArgumentTestDescriptor argumentTestDescriptor;
@@ -203,12 +197,12 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
         /**
          * Constructor
          *
-         * @param invocationContext invocationContext
          * @param argumentTestDescriptor argumentTestDescriptor
+         * @param invocationContext invocationContext
          */
-        private Invocation(
-                InvocationContext invocationContext,
-                ArgumentTestDescriptor argumentTestDescriptor) {
+        private ConcreteInvocation(
+                ArgumentTestDescriptor argumentTestDescriptor,
+                InvocationContext invocationContext) {
             this.invocationContext = invocationContext;
 
             this.argumentTestDescriptor = argumentTestDescriptor;
@@ -236,13 +230,9 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
         }
 
-        /**
-         * Method to test
-         *
-         * @return a TestExecutionResult
-         */
-        private TestExecutionResult test() {
-            LOGGER.trace("test() %s", argumentTestDescriptor);
+        @Override
+        public InvocationResult proceed() {
+            LOGGER.trace("proceed() %s", argumentTestDescriptor);
 
             engineExecutionListener.executionStarted(argumentTestDescriptor);
 
@@ -268,28 +258,44 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                 stateMachine.onState(
                         State.BEFORE_ALL_SUCCESS,
                         () -> {
-                            TestExecutionResult failedTestExecutionResult = null;
+                            List<InvocationResult> invocationResults = new ArrayList<>();
 
-                            for (TestMethodTestDescriptor testMethodTestDescriptor :
-                                    testMethodTestDescriptors) {
-                                if (failedTestExecutionResult == null) {
-                                    TestExecutionResult testExecutionResult =
-                                            testMethodTestDescriptor.testInvocation(
-                                                    invocationContext);
-                                    if (testExecutionResult.getStatus()
-                                            == TestExecutionResult.Status.FAILED) {
-                                        failedTestExecutionResult = testExecutionResult;
-                                    }
-                                } else {
-                                    testMethodTestDescriptor.skipInvocation(invocationContext);
+                            Iterator<TestMethodTestDescriptor> testMethodTestDescriptorIterator =
+                                    testMethodTestDescriptors.iterator();
+
+                            while (testMethodTestDescriptorIterator.hasNext()) {
+                                TestMethodTestDescriptor testMethodTestDescriptor =
+                                        testMethodTestDescriptorIterator.next();
+                                InvocationResult invocationResult =
+                                        testMethodTestDescriptor
+                                                .getInvocation(invocationContext)
+                                                .proceed();
+                                invocationResults.add(invocationResult);
+                                if (invocationResult.isSkipped()) {
+                                    break;
                                 }
                             }
 
-                            return failedTestExecutionResult != null
-                                    ? Result.of(
-                                            State.EXECUTE_FAILURE,
-                                            failedTestExecutionResult.getThrowable().get())
-                                    : Result.of(State.EXECUTE_SUCCESS);
+                            while (testMethodTestDescriptorIterator.hasNext()) {
+                                TestMethodTestDescriptor testMethodTestDescriptor =
+                                        testMethodTestDescriptorIterator.next();
+                                InvocationResult invocationResult =
+                                        testMethodTestDescriptor
+                                                .getInvocation(invocationContext)
+                                                .skip();
+                                invocationResults.add(invocationResult);
+                            }
+
+                            Optional<InvocationResult> optionalInvocationResult =
+                                    invocationResults.stream()
+                                            .filter(InvocationResult::isFailure)
+                                            .findFirst();
+
+                            if (!optionalInvocationResult.isPresent()) {
+                                return Result.of(State.EXECUTE_SUCCESS);
+                            } else {
+                                return Result.of(State.EXECUTE_FAILURE);
+                            }
                         });
             } else {
                 stateMachine.onState(
@@ -298,8 +304,9 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                             try {
                                 testMethodTestDescriptors.forEach(
                                         testMethodTestDescriptor ->
-                                                testMethodTestDescriptor.testInvocation(
-                                                        invocationContext));
+                                                testMethodTestDescriptor
+                                                        .getInvocation(invocationContext)
+                                                        .proceed());
                                 return Result.of(State.EXECUTE_SUCCESS);
                             } catch (Throwable t) {
                                 t.printStackTrace(System.err);
@@ -315,8 +322,9 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                 try {
                                     testMethodTestDescriptors.forEach(
                                             testMethodTestDescriptor ->
-                                                    testMethodTestDescriptor.skipInvocation(
-                                                            invocationContext));
+                                                    testMethodTestDescriptor
+                                                            .getInvocation(invocationContext)
+                                                            .skip());
                                     return Result.of(State.SKIP_SUCCESS);
                                 } catch (Throwable t) {
                                     t.printStackTrace(System.err);
@@ -395,21 +403,27 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
 
             engineExecutionListener.executionFinished(argumentTestDescriptor, testExecutionResult);
 
-            return testExecutionResult;
+            if (testExecutionResult.getStatus() == TestExecutionResult.Status.FAILED) {
+                return InvocationResult.create(InvocationResult.Type.FAILURE);
+            } else {
+                return InvocationResult.create(InvocationResult.Type.SUCCESS);
+            }
         }
 
-        /** Method to skip */
-        private void skip() {
+        @Override
+        public InvocationResult skip() {
             LOGGER.trace("skip() %s", argumentTestDescriptor);
 
             engineExecutionListener.executionStarted(argumentTestDescriptor);
 
             testMethodTestDescriptors.forEach(
                     testMethodTestDescriptor ->
-                            testMethodTestDescriptor.skipInvocation(invocationContext));
+                            testMethodTestDescriptor.getInvocation(invocationContext).skip());
 
             engineExecutionListener.executionFinished(
                     argumentTestDescriptor, TestExecutionResult.aborted(null));
+
+            return InvocationResult.create(InvocationResult.Type.SKIPPED);
         }
     }
 }

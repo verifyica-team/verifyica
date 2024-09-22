@@ -27,7 +27,9 @@ import org.antublue.verifyica.engine.common.statemachine.Result;
 import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.antublue.verifyica.engine.invocation.InvocableTestDescriptor;
+import org.antublue.verifyica.engine.invocation.Invocation;
 import org.antublue.verifyica.engine.invocation.InvocationContext;
+import org.antublue.verifyica.engine.invocation.InvocationResult;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.EngineExecutionListener;
@@ -109,17 +111,8 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
     }
 
     @Override
-    public TestExecutionResult testInvocation(InvocationContext invocationContext) {
-        Precondition.notNull(invocationContext, "engineExecutionContext is null");
-
-        return new Invocation(invocationContext, this).test();
-    }
-
-    @Override
-    public void skipInvocation(InvocationContext invocationContext) {
-        Precondition.notNull(invocationContext, "engineExecutionContext is null");
-
-        new Invocation(invocationContext, this).skip();
+    public Invocation getInvocation(InvocationContext invocationContext) {
+        return new ConcreteInvocation(this, invocationContext);
     }
 
     @Override
@@ -138,8 +131,8 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                 + '}';
     }
 
-    /** Class to implement Executor */
-    private static class Invocation {
+    /** Class to implement ConcreteInvocation */
+    private static class ConcreteInvocation implements Invocation {
 
         private static final Logger LOGGER = LoggerFactory.getLogger(Invocation.class);
 
@@ -165,12 +158,12 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
         /**
          * Constructor
          *
-         * @param invocationContext invocationContext
          * @param testMethodTestDescriptor testMethodTestDescriptor
+         * @param invocationContext invocationContext
          */
-        private Invocation(
-                InvocationContext invocationContext,
-                TestMethodTestDescriptor testMethodTestDescriptor) {
+        private ConcreteInvocation(
+                TestMethodTestDescriptor testMethodTestDescriptor,
+                InvocationContext invocationContext) {
             this.argumentContext = invocationContext.get(ArgumentContext.class);
             this.testMethodTestDescriptor = testMethodTestDescriptor;
             this.beforeEachMethods = testMethodTestDescriptor.getBeforeEachMethods();
@@ -181,8 +174,9 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
         }
 
-        public TestExecutionResult test() {
-            LOGGER.trace("test() %s", testMethodTestDescriptor);
+        @Override
+        public InvocationResult proceed() {
+            LOGGER.trace("proceed() %s", testMethodTestDescriptor);
 
             engineExecutionListener.executionStarted(testMethodTestDescriptor);
 
@@ -249,23 +243,30 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
 
                 engineExecutionListener.executionFinished(
                         testMethodTestDescriptor, testExecutionResult);
-            } else {
-                testExecutionResult = TestExecutionResult.aborted(null);
 
+                if (testExecutionResult.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
+                    return InvocationResult.create(InvocationResult.Type.SUCCESS);
+                } else {
+                    return InvocationResult.create(InvocationResult.Type.FAILURE);
+                }
+            } else {
                 engineExecutionListener.executionSkipped(
                         testMethodTestDescriptor, skippedMessage.get());
-            }
 
-            return testExecutionResult;
+                return InvocationResult.create(InvocationResult.Type.SKIPPED);
+            }
         }
 
-        private void skip() {
+        @Override
+        public InvocationResult skip() {
             LOGGER.trace("skip() %s", testMethodTestDescriptor);
 
             engineExecutionListener.executionStarted(testMethodTestDescriptor);
 
             engineExecutionListener.executionFinished(
                     testMethodTestDescriptor, TestExecutionResult.aborted(null));
+
+            return InvocationResult.create(InvocationResult.Type.SKIPPED);
         }
     }
 }
