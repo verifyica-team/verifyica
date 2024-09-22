@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.scenario;
+package org.antublue.verifyica.test.scenario.order;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +24,7 @@ import org.antublue.verifyica.api.Verifyica;
 
 @Verifyica.Disabled
 @Verifyica.ScenarioTest
-public class ScenarioTest5 {
+public class ScenarioTest4 {
 
     private static final String FAIL_ON_STEP_1 = "failOnStep1";
     private static final String FAIL_ON_STEP_2 = "failOnStep2";
@@ -39,7 +39,7 @@ public class ScenarioTest5 {
         return collection;
     }
 
-    @Verifyica.Test(order = 3)
+    @Verifyica.Test(order = 1)
     public void step1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step1(name[%s], payload[%s])%n",
@@ -61,7 +61,7 @@ public class ScenarioTest5 {
         }
     }
 
-    @Verifyica.Test(order = 1)
+    @Verifyica.Test(order = 3)
     public void step3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step3(name[%s], payload[%s])%n",
