@@ -16,23 +16,9 @@
 
 package org.antublue.verifyica.engine.invocation;
 
-import org.antublue.verifyica.engine.common.Precondition;
+public interface Invocation {
 
-/** Class to implement InvocationException */
-public class InvocationException extends RuntimeException {
+    InvocationResult proceed();
 
-    /**
-     * Constructor
-     *
-     * @param throwable throwable
-     */
-    public InvocationException(Throwable throwable) {
-        super(throwable);
-    }
-
-    public static void rethrow(Throwable throwable) {
-        Precondition.notNull(throwable, "throwable is null");
-
-        throw new InvocationException(throwable);
-    }
+    InvocationResult skip();
 }

@@ -16,14 +16,33 @@
 
 package org.antublue.verifyica.engine.invocation;
 
-/** Interface to implement InvocableTestDescriptor */
-public interface InvocableTestDescriptor {
+public class InvocationResult {
 
-    /**
-     * Method to crete an Invocation
-     *
-     * @param invocationContext invocationContext
-     * @return an Invocation
-     */
-    Invocation getInvocation(InvocationContext invocationContext);
+    public enum Type {
+        SUCCESS,
+        FAILURE,
+        SKIPPED
+    }
+
+    private final Type type;
+
+    private InvocationResult(Type type) {
+        this.type = type;
+    }
+
+    public boolean isSuccess() {
+        return type == Type.SUCCESS;
+    }
+
+    public boolean isFailure() {
+        return type == Type.FAILURE;
+    }
+
+    public boolean isSkipped() {
+        return type == Type.SKIPPED;
+    }
+
+    public static InvocationResult create(Type type) {
+        return new InvocationResult(type);
+    }
 }
