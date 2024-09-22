@@ -263,10 +263,8 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                     State.START,
                                     () -> {
                                         try {
-                                            Object testInstance =
-                                                    classInterceptorManager.instantiate(testClass);
-
-                                            testInstanceReference.set(testInstance);
+                                            classInterceptorManager.instantiate(
+                                                    testClass, testInstanceReference);
 
                                             return StateMachine.Result.of(
                                                     State.INSTANTIATE_SUCCESS);

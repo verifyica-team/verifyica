@@ -41,7 +41,6 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.FairExecutorService;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.common.Streams;
-import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.ConcreteEngineContext;
@@ -231,17 +230,22 @@ public class VerifyicaTestEngine implements TestEngine {
 
         ExecutorService classExecutorService =
                 invocationContext.get(InvocationContext.CLASS_EXECUTOR_SERVICE);
+
         ExecutorService argumentExecutorService =
                 invocationContext.get(InvocationContext.ARGUMENT_EXECUTOR_SERVICE);
+
         EngineContext engineContext = invocationContext.get(EngineContext.class);
+
         EngineInterceptorContext engineInterceptorContext =
                 invocationContext.get(EngineInterceptorContext.class);
+
         EngineInterceptorManager engineInterceptorManager =
                 invocationContext.get(EngineInterceptorManager.class);
+
         EngineExecutionListener engineExecutionListener =
                 invocationContext.get(EngineExecutionListener.class);
 
-        ThrowableCollector throwableCollector = new ThrowableCollector();
+        List<Throwable> throwables = new ArrayList<>();
 
         try {
             if (LOGGER.isTraceEnabled()) {
@@ -297,7 +301,8 @@ public class VerifyicaTestEngine implements TestEngine {
 
                 ExecutorSupport.waitForAllFutures(futures, classExecutorService);
             } catch (Throwable t) {
-                throwableCollector.add(t);
+                t.printStackTrace(System.err);
+                throwables.add(t);
             } finally {
                 ExecutorSupport.shutdownAndAwaitTermination(argumentExecutorService);
                 ExecutorSupport.shutdownAndAwaitTermination(classExecutorService);
@@ -313,7 +318,7 @@ public class VerifyicaTestEngine implements TestEngine {
                         } catch (Throwable t) {
                             LOGGER.trace("storeAutoClose(" + key + ").failure");
                             t.printStackTrace(System.err);
-                            throwableCollector.add(t);
+                            throwables.add(t);
                         }
                     }
                 }
@@ -322,13 +327,17 @@ public class VerifyicaTestEngine implements TestEngine {
                 try {
                     engineInterceptorManager.postExecute(engineInterceptorContext);
                 } catch (Throwable t) {
-                    throwableCollector.add(t);
+                    t.printStackTrace(System.err);
+                    throwables.add(t);
                 }
             }
         } finally {
             engineInterceptorManager.onDestroy(engineInterceptorContext);
 
-            TestExecutionResult testExecutionResult = throwableCollector.toTestExecutionResult();
+            TestExecutionResult testExecutionResult =
+                    throwables.isEmpty()
+                            ? TestExecutionResult.successful()
+                            : TestExecutionResult.failed(throwables.get(0));
 
             engineExecutionListener.executionFinished(
                     executionRequest.getRootTestDescriptor(), testExecutionResult);

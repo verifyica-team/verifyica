@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -38,7 +39,6 @@ import org.antublue.verifyica.api.interceptor.ClassInterceptor;
 import org.antublue.verifyica.api.interceptor.ClassInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.engine.common.Precondition;
-import org.antublue.verifyica.engine.common.ThrowableCollector;
 import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
 import org.antublue.verifyica.engine.context.ConcreteArgumentInterceptorContext;
@@ -162,23 +162,23 @@ public class ClassInterceptorManager {
      * Method to execute ClassInterceptor callbacks
      *
      * @param testClass testClass
-     * @return a test instance
+     * @param testInstanceReference testInstanceReference
      * @throws Throwable Throwable
      */
-    public Object instantiate(Class<?> testClass) throws Throwable {
+    public void instantiate(Class<?> testClass, AtomicReference<Object> testInstanceReference)
+            throws Throwable {
         Object testInstance = null;
         Throwable throwable = null;
 
-        ThrowableCollector throwableCollector = new ThrowableCollector();
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
+                classInterceptor.preInstantiate(engineInterceptorContext, testClass);
+            }
+        } catch (Throwable t) {
+            throwable = t;
+        }
 
-        throwableCollector.execute(
-                () -> {
-                    for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
-                        classInterceptor.preInstantiate(engineInterceptorContext, testClass);
-                    }
-                });
-
-        if (throwableCollector.isEmpty()) {
+        if (throwable == null) {
             try {
                 testInstance =
                         testClass
@@ -189,26 +189,20 @@ public class ClassInterceptorManager {
             }
         }
 
-        final List<ClassInterceptor> classInterceptorsReversed =
-                getClassInterceptorsReversed(testClass);
-
-        throwable =
-                throwableCollector.getThrowable() != null
-                        ? throwableCollector.getThrowable()
-                        : throwable;
-
-        for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+        for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
             try {
                 classInterceptor.postInstantiate(
                         engineInterceptorContext, testClass, testInstance, throwable);
             } catch (Throwable t) {
-                throwableCollector.add(t);
+                throwable = t;
             }
         }
 
-        throwableCollector.assertEmpty();
+        if (throwable != null) {
+            throw throwable;
+        }
 
-        return testInstance;
+        testInstanceReference.set(testInstance);
     }
 
     /**
@@ -224,52 +218,41 @@ public class ClassInterceptorManager {
         ClassInterceptorContext argumentInterceptorContext =
                 new ConcreteClassInterceptorContext(classContext);
 
-        ThrowableCollector throwableCollector = new ThrowableCollector();
+        Throwable throwable = null;
 
-        final List<ClassInterceptor> classInterceptors = getClassInterceptors(testClass);
-
-        if (!classInterceptors.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptors) {
-                            classInterceptor.prePrepare(argumentInterceptorContext);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
+                classInterceptor.prePrepare(argumentInterceptorContext);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        try {
-                            for (Method prepareMethod : prepareMethods) {
-                                prepareMethod.invoke(
-                                        Modifier.isStatic(prepareMethod.getModifiers())
-                                                ? null
-                                                : classContext.getTestInstance(),
-                                        classContext);
-                            }
-                        } catch (InvocationTargetException e) {
-                            throw e.getCause();
-                        }
-                    });
+        if (throwable == null) {
+            try {
+                for (Method prepareMethod : prepareMethods) {
+                    prepareMethod.invoke(
+                            Modifier.isStatic(prepareMethod.getModifiers())
+                                    ? null
+                                    : classContext.getTestInstance(),
+                            classContext);
+                }
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
+            }
         }
 
-        final List<ClassInterceptor> classInterceptorsReversed =
-                getClassInterceptorsReversed(testClass);
-
-        if (!classInterceptorsReversed.isEmpty()) {
-            Throwable throwable = throwableCollector.getThrowable();
-            throwableCollector.clear();
-
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postPrepare(argumentInterceptorContext, throwable);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
+                classInterceptor.postPrepare(argumentInterceptorContext, throwable);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        throwableCollector.assertEmpty();
+        if (throwable != null) {
+            throw throwable;
+        }
     }
 
     /**
@@ -284,53 +267,43 @@ public class ClassInterceptorManager {
         ClassContext classContext = argumentContext.getClassContext();
 
         Class<?> testClass = classContext.getTestClass();
+
         Object testInstance = classContext.getTestInstance();
 
         ArgumentInterceptorContext argumentInterceptorContext =
                 new ConcreteArgumentInterceptorContext(argumentContext);
 
-        ThrowableCollector throwableCollector = new ThrowableCollector();
+        Throwable throwable = null;
 
-        final List<ClassInterceptor> classInterceptors = getClassInterceptors(testClass);
-
-        if (!classInterceptors.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptors) {
-                            classInterceptor.preBeforeAll(argumentInterceptorContext);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
+                classInterceptor.preBeforeAll(argumentInterceptorContext);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        try {
-                            for (Method beforeAllMethod : beforeAllMethods) {
-                                beforeAllMethod.invoke(testInstance, argumentContext);
-                            }
-                        } catch (InvocationTargetException e) {
-                            throw e.getCause();
-                        }
-                    });
+        if (throwable == null) {
+            try {
+                for (Method beforeAllMethod : beforeAllMethods) {
+                    beforeAllMethod.invoke(testInstance, argumentContext);
+                }
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
+            }
         }
 
-        final List<ClassInterceptor> classInterceptorsReversed =
-                getClassInterceptorsReversed(testClass);
-
-        if (!classInterceptorsReversed.isEmpty()) {
-            Throwable throwable = throwableCollector.getThrowable();
-            throwableCollector.clear();
-
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postBeforeAll(argumentInterceptorContext, throwable);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
+                classInterceptor.postBeforeAll(argumentInterceptorContext, throwable);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        throwableCollector.assertEmpty();
+        if (throwable != null) {
+            throw throwable;
+        }
     }
 
     /**
@@ -345,53 +318,43 @@ public class ClassInterceptorManager {
         ClassContext classContext = argumentContext.getClassContext();
 
         Class<?> testClass = classContext.getTestClass();
+
         Object testInstance = classContext.getTestInstance();
 
         ArgumentInterceptorContext argumentInterceptorContext =
                 new ConcreteArgumentInterceptorContext(argumentContext);
 
-        ThrowableCollector throwableCollector = new ThrowableCollector();
+        Throwable throwable = null;
 
-        final List<ClassInterceptor> classInterceptors = getClassInterceptors(testClass);
-
-        if (!classInterceptors.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptors) {
-                            classInterceptor.preBeforeEach(argumentInterceptorContext);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
+                classInterceptor.preBeforeEach(argumentInterceptorContext);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        try {
-                            for (Method beforEachMethod : beforeEachMethods) {
-                                beforEachMethod.invoke(testInstance, argumentContext);
-                            }
-                        } catch (InvocationTargetException e) {
-                            throw e.getCause();
-                        }
-                    });
+        if (throwable == null) {
+            try {
+                for (Method beforEachMethod : beforeEachMethods) {
+                    beforEachMethod.invoke(testInstance, argumentContext);
+                }
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
+            }
         }
 
-        final List<ClassInterceptor> classInterceptorsReversed =
-                getClassInterceptorsReversed(testClass);
-
-        if (!classInterceptorsReversed.isEmpty()) {
-            Throwable throwable = throwableCollector.getThrowable();
-            throwableCollector.clear();
-
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postBeforeEach(argumentInterceptorContext, throwable);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
+                classInterceptor.postBeforeEach(argumentInterceptorContext, throwable);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        throwableCollector.assertEmpty();
+        if (throwable != null) {
+            throw throwable;
+        }
     }
 
     /**
@@ -411,47 +374,35 @@ public class ClassInterceptorManager {
         ArgumentInterceptorContext argumentInterceptorContext =
                 new ConcreteArgumentInterceptorContext(argumentContext);
 
-        ThrowableCollector throwableCollector = new ThrowableCollector();
+        Throwable throwable = null;
 
-        final List<ClassInterceptor> classInterceptors = getClassInterceptors(testClass);
-
-        if (!classInterceptors.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptors) {
-                            classInterceptor.preTest(argumentInterceptorContext, testMethod);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
+                classInterceptor.preTest(argumentInterceptorContext, testMethod);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        try {
-                            testMethod.invoke(testInstance, argumentContext);
-                        } catch (InvocationTargetException e) {
-                            throw e.getCause();
-                        }
-                    });
+        if (throwable == null) {
+            try {
+                testMethod.invoke(testInstance, argumentContext);
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
+            }
         }
 
-        final List<ClassInterceptor> classInterceptorsReversed =
-                getClassInterceptorsReversed(testClass);
-
-        if (!classInterceptorsReversed.isEmpty()) {
-            Throwable throwable = throwableCollector.getThrowable();
-            throwableCollector.clear();
-
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postTest(
-                                    argumentInterceptorContext, testMethod, throwable);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
+                classInterceptor.postTest(argumentInterceptorContext, testMethod, throwable);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        throwableCollector.assertEmpty();
+        if (throwable != null) {
+            throw throwable;
+        }
     }
 
     /**
@@ -472,48 +423,37 @@ public class ClassInterceptorManager {
         ArgumentInterceptorContext argumentInterceptorContext =
                 new ConcreteArgumentInterceptorContext(argumentContext);
 
-        ThrowableCollector throwableCollector = new ThrowableCollector();
+        Throwable throwable = null;
 
-        final List<ClassInterceptor> classInterceptors = getClassInterceptors(testClass);
-
-        if (!classInterceptors.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptors) {
-                            classInterceptor.preAfterEach(argumentInterceptorContext);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
+                classInterceptor.preAfterEach(argumentInterceptorContext);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        try {
-                            for (Method afterEachMethod : afterEachMethods) {
-                                afterEachMethod.invoke(testInstance, argumentContext);
-                            }
-                        } catch (InvocationTargetException e) {
-                            throw e.getCause();
-                        }
-                    });
+        if (throwable == null) {
+            try {
+                for (Method afterEachMethod : afterEachMethods) {
+                    afterEachMethod.invoke(testInstance, argumentContext);
+                }
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
+            }
         }
 
-        final List<ClassInterceptor> classInterceptorsReversed =
-                getClassInterceptorsReversed(testClass);
-
-        if (!classInterceptorsReversed.isEmpty()) {
-            Throwable throwable = throwableCollector.getThrowable();
-            throwableCollector.clear();
-
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postAfterEach(argumentInterceptorContext, throwable);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
+                classInterceptor.postAfterEach(argumentInterceptorContext, throwable);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        throwableCollector.assertEmpty();
+        if (throwable != null) {
+            throw throwable;
+        }
     }
 
     /**
@@ -534,48 +474,37 @@ public class ClassInterceptorManager {
         ArgumentInterceptorContext argumentInterceptorContext =
                 new ConcreteArgumentInterceptorContext(argumentContext);
 
-        ThrowableCollector throwableCollector = new ThrowableCollector();
+        Throwable throwable = null;
 
-        final List<ClassInterceptor> classInterceptors = getClassInterceptors(testClass);
-
-        if (!classInterceptors.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
-                            classInterceptor.preAfterAll(argumentInterceptorContext);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
+                classInterceptor.preAfterAll(argumentInterceptorContext);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        try {
-                            for (Method afterAllMethod : afterAllMethods) {
-                                afterAllMethod.invoke(testInstance, argumentContext);
-                            }
-                        } catch (InvocationTargetException e) {
-                            throw e.getCause();
-                        }
-                    });
+        if (throwable == null) {
+            try {
+                for (Method afterAllMethod : afterAllMethods) {
+                    afterAllMethod.invoke(testInstance, argumentContext);
+                }
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
+            }
         }
 
-        final List<ClassInterceptor> classInterceptorsReversed =
-                getClassInterceptorsReversed(testClass);
-
-        if (!classInterceptorsReversed.isEmpty()) {
-            Throwable throwable = throwableCollector.getThrowable();
-            throwableCollector.clear();
-
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postAfterAll(argumentInterceptorContext, throwable);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
+                classInterceptor.postAfterAll(argumentInterceptorContext, throwable);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        throwableCollector.assertEmpty();
+        if (throwable != null) {
+            throw throwable;
+        }
     }
 
     /**
@@ -591,53 +520,41 @@ public class ClassInterceptorManager {
         ClassInterceptorContext defaultClassInterceptorContext =
                 new ConcreteClassInterceptorContext(classContext);
 
-        ThrowableCollector throwableCollector = new ThrowableCollector();
+        Throwable throwable = null;
 
-        final List<ClassInterceptor> classInterceptors = getClassInterceptors(testClass);
-
-        if (!classInterceptors.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
-                            classInterceptor.preConclude(defaultClassInterceptorContext);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptors(testClass)) {
+                classInterceptor.preConclude(defaultClassInterceptorContext);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        if (throwableCollector.isEmpty()) {
-            throwableCollector.execute(
-                    () -> {
-                        try {
-                            for (Method concludeMethod : concludeMethods) {
-                                concludeMethod.invoke(
-                                        Modifier.isStatic(concludeMethod.getModifiers())
-                                                ? null
-                                                : classContext.getTestInstance(),
-                                        classContext);
-                            }
-                        } catch (InvocationTargetException e) {
-                            throw e.getCause();
-                        }
-                    });
+        if (throwable == null) {
+            try {
+                for (Method concludeMethod : concludeMethods) {
+                    concludeMethod.invoke(
+                            Modifier.isStatic(concludeMethod.getModifiers())
+                                    ? null
+                                    : classContext.getTestInstance(),
+                            classContext);
+                }
+            } catch (Throwable t) {
+                throwable = t.getCause();
+            }
         }
 
-        final List<ClassInterceptor> classInterceptorsReversed =
-                getClassInterceptorsReversed(testClass);
-
-        if (!classInterceptorsReversed.isEmpty()) {
-            Throwable throwable = throwableCollector.getThrowable();
-            throwableCollector.clear();
-
-            throwableCollector.execute(
-                    () -> {
-                        for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                            classInterceptor.postConclude(
-                                    defaultClassInterceptorContext, throwable);
-                        }
-                    });
+        try {
+            for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
+                classInterceptor.postConclude(defaultClassInterceptorContext, throwable);
+            }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
-        throwableCollector.assertEmpty();
+        if (throwable != null) {
+            throw throwable;
+        }
     }
 
     /**
