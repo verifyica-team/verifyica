@@ -81,15 +81,15 @@ public class StateMachine<T extends Enum<T>> {
     /**
      * Method to run the StateMachine
      *
-     * @param startState startState
-     * @param endState endState
+     * @param initialState initialState
+     * @param finalState finalState
      * @return the StateMachine
      */
-    public StateMachine<T> run(T startState, T endState) {
-        Precondition.notNull(startState, "startState is null");
-        Precondition.notNull(endState, "endState is null");
+    public StateMachine<T> run(T initialState, T finalState) {
+        Precondition.notNull(initialState, "initialState is null");
+        Precondition.notNull(finalState, "finalState is null");
 
-        T state = startState;
+        T state = initialState;
         results.add(Result.of(state));
         Action<T> action;
         Result<T> result;
@@ -114,7 +114,7 @@ public class StateMachine<T extends Enum<T>> {
 
             results.add(result);
             state = result.getState();
-        } while (state != endState && state.compareTo(endState) != 0);
+        } while (state != finalState && state.compareTo(finalState) != 0);
 
         return this;
     }
