@@ -271,7 +271,7 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                                 .getInvocation(invocationContext)
                                                 .proceed();
                                 invocationResults.add(invocationResult);
-                                if (invocationResult.isSkipped()) {
+                                if (invocationResult.isFailure()) {
                                     break;
                                 }
                             }
@@ -302,12 +302,32 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                         State.BEFORE_ALL_SUCCESS,
                         () -> {
                             try {
-                                testMethodTestDescriptors.forEach(
-                                        testMethodTestDescriptor ->
-                                                testMethodTestDescriptor
-                                                        .getInvocation(invocationContext)
-                                                        .proceed());
-                                return Result.of(State.EXECUTE_SUCCESS);
+                                List<InvocationResult> invocationResults = new ArrayList<>();
+
+                                Iterator<TestMethodTestDescriptor>
+                                        testMethodTestDescriptorIterator =
+                                                testMethodTestDescriptors.iterator();
+
+                                while (testMethodTestDescriptorIterator.hasNext()) {
+                                    TestMethodTestDescriptor testMethodTestDescriptor =
+                                            testMethodTestDescriptorIterator.next();
+                                    InvocationResult invocationResult =
+                                            testMethodTestDescriptor
+                                                    .getInvocation(invocationContext)
+                                                    .proceed();
+                                    invocationResults.add(invocationResult);
+                                }
+
+                                Optional<InvocationResult> optionalInvocationResult =
+                                        invocationResults.stream()
+                                                .filter(InvocationResult::isFailure)
+                                                .findFirst();
+
+                                if (!optionalInvocationResult.isPresent()) {
+                                    return Result.of(State.EXECUTE_SUCCESS);
+                                } else {
+                                    return Result.of(State.EXECUTE_FAILURE);
+                                }
                             } catch (Throwable t) {
                                 t.printStackTrace(System.err);
                                 return Result.of(State.EXECUTE_FAILURE, t);

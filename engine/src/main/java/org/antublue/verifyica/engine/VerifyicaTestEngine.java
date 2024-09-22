@@ -272,7 +272,8 @@ public class VerifyicaTestEngine implements TestEngine {
                         executionRequest.getRootTestDescriptor().getChildren()) {
                     for (TestDescriptor childTestDescriptor : testDescriptor.getChildren()) {
                         argumentTestDescriptors.add((ArgumentTestDescriptor) childTestDescriptor);
-                        for (TestDescriptor grandChildTestDescriptor : childTestDescriptor.getChildren()) {
+                        for (TestDescriptor grandChildTestDescriptor :
+                                childTestDescriptor.getChildren()) {
                             testMethodTestDescriptors.add(
                                     (TestMethodTestDescriptor) grandChildTestDescriptor);
                         }
