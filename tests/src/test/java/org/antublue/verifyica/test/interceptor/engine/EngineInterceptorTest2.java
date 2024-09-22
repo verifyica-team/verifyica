@@ -36,7 +36,7 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
                 EngineInterceptorContext engineInterceptorContext,
                 ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest2.class) {
-                System.out.printf("reversing test method order%n");
+                System.out.println("reversing test method order");
                 reverseOrder(classDefinition.getTestMethodDefinitions());
             }
         }
