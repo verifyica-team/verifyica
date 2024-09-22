@@ -41,6 +41,8 @@ for (TestArgument testArgument : TestArguments) {
 - Purpose built for integration testing using [testcontainers-java](https://java.testcontainers.org/)
   - i.e. for each test argument, execute a set of test methods
 - Scenario based testing
+  - test method execution based on ordering
+  - if a test method fails, remaining test methods will be marked as skipped
 - Annotation driven
 - Multithreaded test class / test argument testing
 - Virtual thread support (Java 21+)
