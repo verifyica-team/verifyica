@@ -295,6 +295,8 @@ Indicates to that test methods of a test class should be executed as a scenario.
 
 The first test method that fails will cause remaining test methods to be skipped.
 
+[Examples](tests/src/test/java/org/antublue/verifyica/test/scenario)
+
 **Notes**
 
 - Runs the test methods in the order defined by
@@ -308,8 +310,6 @@ The first test method that fails will cause remaining test methods to be skipped
 
 
 - When using IntelliJ, all methods of a scenario test class are executed regardless of the test method that is selected
-
-[Examples](tests/src/test/java/org/antublue/verifyica/test/scenario)
 
 ---
 
