@@ -22,6 +22,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.antublue.verifyica.engine.common.statemachine.Result;
+import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.junit.jupiter.api.Test;
 
 public class StateMachineTest {
@@ -54,31 +56,30 @@ public class StateMachineTest {
                                 State.START,
                                 () -> {
                                     actual.add(State.START);
-                                    return StateMachine.Result.of(State.ONE);
+                                    return Result.of(State.ONE);
                                 })
                         .onState(
                                 State.ONE,
                                 () -> {
                                     actual.add(State.ONE);
-                                    return StateMachine.Result.of(State.TWO);
+                                    return Result.of(State.TWO);
                                 })
                         .onState(
                                 State.TWO,
                                 () -> {
                                     actual.add(State.TWO);
-                                    return StateMachine.Result.of(State.THREE, runtimeException);
+                                    return Result.of(State.THREE, runtimeException);
                                 })
                         .onState(
                                 State.THREE,
                                 () -> {
                                     actual.add(State.THREE);
-                                    return StateMachine.Result.of(State.END);
+                                    return Result.of(State.END);
                                 });
 
         stateMachine.run(State.START, State.END);
 
-        Optional<StateMachine.Result<State>> stateResult =
-                stateMachine.getFirstResultWithThrowable();
+        Optional<Result<State>> stateResult = stateMachine.getFirstResultWithThrowable();
 
         assertThat(stateResult).isNotNull();
         assertThat(stateResult).isPresent();
@@ -91,20 +92,17 @@ public class StateMachineTest {
     public void testDuplicateAction() {
         StateMachine<State> stateMachine = new StateMachine<>();
 
-        stateMachine.onState(State.TEST1, () -> StateMachine.Result.of(State.RANDOM));
+        stateMachine.onState(State.TEST1, () -> Result.of(State.RANDOM));
 
         assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(
-                        () ->
-                                stateMachine.onState(
-                                        State.TEST1, () -> StateMachine.Result.of(State.RANDOM)));
+                .isThrownBy(() -> stateMachine.onState(State.TEST1, () -> Result.of(State.RANDOM)));
 
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(
                         () ->
                                 stateMachine.onStates(
                                         StateMachine.asList(State.TEST1, State.TEST2),
-                                        () -> StateMachine.Result.of(State.RANDOM)));
+                                        () -> Result.of(State.RANDOM)));
     }
 
     @Test
@@ -116,14 +114,14 @@ public class StateMachineTest {
                         () ->
                                 stateMachine.onStates(
                                         StateMachine.asList(State.TEST1, State.TEST1),
-                                        () -> StateMachine.Result.of(State.RANDOM)));
+                                        () -> Result.of(State.RANDOM)));
     }
 
     @Test
     public void testNoAction() {
         StateMachine<State> stateMachine = new StateMachine<>();
 
-        stateMachine.onState(State.TEST1, () -> StateMachine.Result.of(State.RANDOM));
+        stateMachine.onState(State.TEST1, () -> Result.of(State.RANDOM));
 
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(() -> stateMachine.run(State.START, State.END));

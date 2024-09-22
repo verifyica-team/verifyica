@@ -23,7 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.engine.common.Precondition;
-import org.antublue.verifyica.engine.common.StateMachine;
+import org.antublue.verifyica.engine.common.statemachine.Result;
+import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
@@ -194,12 +195,10 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                                         try {
                                             classInterceptorManager.beforeEach(
                                                     argumentContext, beforeEachMethods);
-                                            return StateMachine.Result.of(
-                                                    State.BEFORE_EACH_SUCCESS);
+                                            return Result.of(State.BEFORE_EACH_SUCCESS);
                                         } catch (Throwable t) {
                                             t.printStackTrace(System.err);
-                                            return StateMachine.Result.of(
-                                                    State.BEFORE_EACH_FAILURE, t);
+                                            return Result.of(State.BEFORE_EACH_FAILURE, t);
                                         }
                                     })
                             .onState(
@@ -208,10 +207,10 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                                         try {
                                             classInterceptorManager.test(
                                                     argumentContext, testMethod);
-                                            return StateMachine.Result.of(State.TEST_SUCCESS);
+                                            return Result.of(State.TEST_SUCCESS);
                                         } catch (Throwable t) {
                                             t.printStackTrace(System.err);
-                                            return StateMachine.Result.of(State.TEST_FAILURE, t);
+                                            return Result.of(State.TEST_FAILURE, t);
                                         }
                                     })
                             .onStates(
@@ -223,17 +222,16 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                                         try {
                                             classInterceptorManager.afterEach(
                                                     argumentContext, afterEachMethods);
-                                            return StateMachine.Result.of(State.AFTER_EACH_SUCCESS);
+                                            return Result.of(State.AFTER_EACH_SUCCESS);
                                         } catch (Throwable t) {
                                             t.printStackTrace(System.err);
-                                            return StateMachine.Result.of(
-                                                    State.AFTER_EACH_FAILURE, t);
+                                            return Result.of(State.AFTER_EACH_FAILURE, t);
                                         }
                                     })
                             .onStates(
                                     StateMachine.asList(
                                             State.AFTER_EACH_SUCCESS, State.AFTER_EACH_FAILURE),
-                                    () -> StateMachine.Result.of(State.END))
+                                    () -> Result.of(State.END))
                             .run(State.START, State.END);
 
             LOGGER.trace("state machine [%s]", stateMachine);

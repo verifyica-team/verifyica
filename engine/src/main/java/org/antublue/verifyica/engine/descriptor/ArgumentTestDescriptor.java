@@ -30,7 +30,8 @@ import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.engine.common.Precondition;
-import org.antublue.verifyica.engine.common.StateMachine;
+import org.antublue.verifyica.engine.common.statemachine.Result;
+import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.antublue.verifyica.engine.context.ConcreteArgumentContext;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -251,11 +252,10 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                         try {
                                             classInterceptorManager.beforeAll(
                                                     argumentContext, beforeAllMethods);
-                                            return StateMachine.Result.of(State.BEFORE_ALL_SUCCESS);
+                                            return Result.of(State.BEFORE_ALL_SUCCESS);
                                         } catch (Throwable t) {
                                             t.printStackTrace(System.err);
-                                            return StateMachine.Result.of(
-                                                    State.BEFORE_ALL_FAILURE, t);
+                                            return Result.of(State.BEFORE_ALL_FAILURE, t);
                                         }
                                     });
 
@@ -284,10 +284,10 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                             }
 
                             return failedTestExecutionResult != null
-                                    ? StateMachine.Result.of(
+                                    ? Result.of(
                                             State.EXECUTE_FAILURE,
                                             failedTestExecutionResult.getThrowable().get())
-                                    : StateMachine.Result.of(State.EXECUTE_SUCCESS);
+                                    : Result.of(State.EXECUTE_SUCCESS);
                         });
             } else {
                 stateMachine.onState(
@@ -298,10 +298,10 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                         testMethodTestDescriptor ->
                                                 testMethodTestDescriptor.testInvocation(
                                                         invocationContext));
-                                return StateMachine.Result.of(State.EXECUTE_SUCCESS);
+                                return Result.of(State.EXECUTE_SUCCESS);
                             } catch (Throwable t) {
                                 t.printStackTrace(System.err);
-                                return StateMachine.Result.of(State.EXECUTE_FAILURE, t);
+                                return Result.of(State.EXECUTE_FAILURE, t);
                             }
                         });
             }
@@ -315,10 +315,10 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                             testMethodTestDescriptor ->
                                                     testMethodTestDescriptor.skipInvocation(
                                                             invocationContext));
-                                    return StateMachine.Result.of(State.SKIP_SUCCESS);
+                                    return Result.of(State.SKIP_SUCCESS);
                                 } catch (Throwable t) {
                                     t.printStackTrace(System.err);
-                                    return StateMachine.Result.of(State.SKIP_FAILURE, t);
+                                    return Result.of(State.SKIP_FAILURE, t);
                                 }
                             })
                     .onStates(
@@ -331,10 +331,10 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                 try {
                                     classInterceptorManager.afterAll(
                                             argumentContext, afterAllMethods);
-                                    return StateMachine.Result.of(State.AFTER_ALL_SUCCESS);
+                                    return Result.of(State.AFTER_ALL_SUCCESS);
                                 } catch (Throwable t) {
                                     t.printStackTrace(System.err);
-                                    return StateMachine.Result.of(State.AFTER_ALL_FAILURE, t);
+                                    return Result.of(State.AFTER_ALL_FAILURE, t);
                                 }
                             })
                     .onStates(
@@ -345,12 +345,10 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                     if (testArgument instanceof AutoCloseable) {
                                         ((AutoCloseable) testArgument).close();
                                     }
-                                    return StateMachine.Result.of(
-                                            State.AUTO_CLOSE_ARGUMENT_SUCCESS);
+                                    return Result.of(State.AUTO_CLOSE_ARGUMENT_SUCCESS);
                                 } catch (Throwable t) {
                                     t.printStackTrace(System.err);
-                                    return StateMachine.Result.of(
-                                            State.AUTO_CLOSE_ARGUMENT_FAILURE, t);
+                                    return Result.of(State.AUTO_CLOSE_ARGUMENT_FAILURE, t);
                                 }
                             })
                     .onStates(
@@ -373,16 +371,16 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                 }
                                 store.clear();
                                 if (throwables.isEmpty()) {
-                                    return StateMachine.Result.of(State.AUTO_CLOSE_STORE_SUCCESS);
+                                    return Result.of(State.AUTO_CLOSE_STORE_SUCCESS);
                                 } else {
-                                    return StateMachine.Result.of(
+                                    return Result.of(
                                             State.AUTO_CLOSE_STORE_FAILURE, throwables.get(0));
                                 }
                             })
                     .onStates(
                             StateMachine.asList(
                                     State.AUTO_CLOSE_STORE_SUCCESS, State.AUTO_CLOSE_STORE_FAILURE),
-                            () -> StateMachine.Result.of(State.END))
+                            () -> Result.of(State.END))
                     .run(State.START, State.END);
 
             LOGGER.trace("state machine [%s]", stateMachine);

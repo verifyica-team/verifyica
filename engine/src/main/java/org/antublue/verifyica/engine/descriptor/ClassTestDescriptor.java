@@ -34,7 +34,8 @@ import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
-import org.antublue.verifyica.engine.common.StateMachine;
+import org.antublue.verifyica.engine.common.statemachine.Result;
+import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.antublue.verifyica.engine.context.ConcreteClassContext;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -266,11 +267,9 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                             classInterceptorManager.instantiate(
                                                     testClass, testInstanceReference);
 
-                                            return StateMachine.Result.of(
-                                                    State.INSTANTIATE_SUCCESS);
+                                            return Result.of(State.INSTANTIATE_SUCCESS);
                                         } catch (Throwable t) {
-                                            return StateMachine.Result.of(
-                                                    State.INSTANTIATE_FAILURE, t);
+                                            return Result.of(State.INSTANTIATE_FAILURE, t);
                                         }
                                     })
                             .onState(
@@ -279,10 +278,10 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                         try {
                                             classInterceptorManager.prepare(
                                                     classContext, prepareMethods);
-                                            return StateMachine.Result.of(State.PREPARE_SUCCESS);
+                                            return Result.of(State.PREPARE_SUCCESS);
                                         } catch (Throwable t) {
                                             t.printStackTrace(System.err);
-                                            return StateMachine.Result.of(State.PREPARE_FAILURE, t);
+                                            return Result.of(State.PREPARE_FAILURE, t);
                                         }
                                     })
                             .onState(
@@ -348,10 +347,10 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                                                                 invocationContext));
                                             }
 
-                                            return StateMachine.Result.of(State.EXECUTE_SUCCESS);
+                                            return Result.of(State.EXECUTE_SUCCESS);
                                         } catch (Throwable t) {
                                             t.printStackTrace(System.err);
-                                            return StateMachine.Result.of(State.EXECUTE_FAILURE, t);
+                                            return Result.of(State.EXECUTE_FAILURE, t);
                                         }
                                     })
                             .onState(
@@ -366,10 +365,10 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                             engineExecutionListener.executionSkipped(
                                                     classTestDescriptor, "Skipped");
 
-                                            return StateMachine.Result.of(State.SKIP_SUCCESS);
+                                            return Result.of(State.SKIP_SUCCESS);
                                         } catch (Throwable t) {
                                             t.printStackTrace(System.err);
-                                            return StateMachine.Result.of(State.SKIP_FAILURE, t);
+                                            return Result.of(State.SKIP_FAILURE, t);
                                         }
                                     })
                             .onStates(
@@ -383,11 +382,10 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                             classInterceptorManager.conclude(
                                                     classContext, concludeMethods);
 
-                                            return StateMachine.Result.of(State.CONCLUDE_SUCCESS);
+                                            return Result.of(State.CONCLUDE_SUCCESS);
                                         } catch (Throwable t) {
                                             t.printStackTrace(System.err);
-                                            return StateMachine.Result.of(
-                                                    State.CONCLUDE_FAILURE, t);
+                                            return Result.of(State.CONCLUDE_FAILURE, t);
                                         }
                                     })
                             .onStates(
@@ -396,11 +394,10 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                     () -> {
                                         try {
                                             classInterceptorManager.onDestroy(classContext);
-                                            return StateMachine.Result.of(State.ON_DESTROY_SUCCESS);
+                                            return Result.of(State.ON_DESTROY_SUCCESS);
                                         } catch (Throwable t) {
                                             t.printStackTrace(System.err);
-                                            return StateMachine.Result.of(
-                                                    State.ON_DESTROY_FAILURE, t);
+                                            return Result.of(State.ON_DESTROY_FAILURE, t);
                                         }
                                     })
                             .onStates(
@@ -412,12 +409,10 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                             if (testInstance instanceof AutoCloseable) {
                                                 ((AutoCloseable) testInstance).close();
                                             }
-                                            return StateMachine.Result.of(
-                                                    State.AUTO_CLOSE_INSTANCE_SUCCESS);
+                                            return Result.of(State.AUTO_CLOSE_INSTANCE_SUCCESS);
                                         } catch (Throwable t) {
                                             t.printStackTrace(System.err);
-                                            return StateMachine.Result.of(
-                                                    State.AUTO_CLOSE_INSTANCE_FAILURE, t);
+                                            return Result.of(State.AUTO_CLOSE_INSTANCE_FAILURE, t);
                                         } finally {
                                             testInstanceReference.set(null);
                                         }
@@ -442,10 +437,9 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                         }
                                         store.clear();
                                         if (throwables.isEmpty()) {
-                                            return StateMachine.Result.of(
-                                                    State.AUTO_CLOSE_STORE_SUCCESS);
+                                            return Result.of(State.AUTO_CLOSE_STORE_SUCCESS);
                                         } else {
-                                            return StateMachine.Result.of(
+                                            return Result.of(
                                                     State.AUTO_CLOSE_STORE_FAILURE,
                                                     throwables.get(0));
                                         }
@@ -455,7 +449,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                             State.INSTANTIATE_FAILURE,
                                             State.AUTO_CLOSE_STORE_SUCCESS,
                                             State.AUTO_CLOSE_STORE_FAILURE),
-                                    () -> StateMachine.Result.of(State.END))
+                                    () -> Result.of(State.END))
                             .run(State.START, State.END);
 
             LOGGER.trace("state machine [%s]", stateMachine);

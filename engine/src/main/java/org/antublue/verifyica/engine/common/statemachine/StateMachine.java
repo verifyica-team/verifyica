@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.common;
+package org.antublue.verifyica.engine.common.statemachine;
 
 import static java.lang.String.format;
 
@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.antublue.verifyica.engine.common.Precondition;
 
 /**
  * Class to implement StateMachine
@@ -149,102 +150,5 @@ public class StateMachine<T extends Enum<T>> {
         }
 
         return Arrays.asList(states);
-    }
-
-    /**
-     * Interface to implement an Action
-     *
-     * @param <T> the State type
-     */
-    public interface Action<T> {
-
-        /**
-         * Method to execute the Action
-         *
-         * @return a Result
-         */
-        Result<T> execute();
-    }
-
-    /**
-     * Class to implement a Result
-     *
-     * @param <T> the State type
-     */
-    public static class Result<T> {
-
-        private final T state;
-        private final Throwable throwable;
-
-        /**
-         * Constructor
-         *
-         * @param state state
-         * @param throwable throwable
-         */
-        private Result(T state, Throwable throwable) {
-            this.state = state;
-            this.throwable = throwable;
-        }
-
-        /**
-         * Constructor
-         *
-         * @param state state
-         */
-        private Result(T state) {
-            this(state, null);
-        }
-
-        /**
-         * Method to get the State
-         *
-         * @return the State
-         */
-        public T getState() {
-            return state;
-        }
-
-        /**
-         * Method to get the Throwable
-         *
-         * @return the Throwable
-         */
-        public Throwable getThrowable() {
-            return throwable;
-        }
-
-        @Override
-        public String toString() {
-            return "Result{" + "state=" + state + ", throwable=" + throwable + '}';
-        }
-
-        /**
-         * Method to create a Result
-         *
-         * @param state state
-         * @return a Result
-         * @param <T> the State type
-         */
-        public static <T> Result<T> of(T state) {
-            Precondition.notNull(state, "state is null");
-
-            return new Result<>(state);
-        }
-
-        /**
-         * Method to create a Result
-         *
-         * @param state state
-         * @param throwable throwable
-         * @return a Result
-         * @param <T> the State type
-         */
-        public static <T> Result<T> of(T state, Throwable throwable) {
-            Precondition.notNull(state, "state is null");
-            Precondition.notNull(throwable, "throwable is null");
-
-            return new Result<>(state, throwable);
-        }
     }
 }
