@@ -16,32 +16,63 @@
 
 package org.antublue.verifyica.engine.invocation;
 
+/** Class to implement InvocationResult */
 public class InvocationResult {
 
+    /** InvocationResult Type */
     public enum Type {
+        /** Success */
         SUCCESS,
+        /** Failure */
         FAILURE,
+        /** Skipped */
         SKIPPED
     }
 
     private final Type type;
 
+    /**
+     * Constructor
+     *
+     * @param type typee
+     */
     private InvocationResult(Type type) {
         this.type = type;
     }
 
+    /**
+     * Method to return if the result is success
+     *
+     * @return true if the result is success, else false
+     */
     public boolean isSuccess() {
         return type == Type.SUCCESS;
     }
 
+    /**
+     * Method to return if the result is failure
+     *
+     * @return true if the result is failure, else false
+     */
     public boolean isFailure() {
         return type == Type.FAILURE;
     }
 
+    /**
+     * Method to return if the result is skipped
+     *
+     * @return true if the result is skipped, else false
+     */
     public boolean isSkipped() {
         return type == Type.SKIPPED;
     }
 
+    /**
+     * Method to create an InvocationResult
+     *
+     * @param type type
+     * @return an InvocationResult
+     */
     public static InvocationResult create(Type type) {
         return new InvocationResult(type);
     }

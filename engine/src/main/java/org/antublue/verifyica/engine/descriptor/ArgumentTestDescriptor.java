@@ -280,7 +280,9 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                 TestMethodTestDescriptor testMethodTestDescriptor =
                                         testMethodTestDescriptorIterator.next();
                                 InvocationResult invocationResult =
-                                        testMethodTestDescriptor.getInvocation(invocationContext).skip();
+                                        testMethodTestDescriptor
+                                                .getInvocation(invocationContext)
+                                                .skip();
                                 invocationResults.add(invocationResult);
                             }
 

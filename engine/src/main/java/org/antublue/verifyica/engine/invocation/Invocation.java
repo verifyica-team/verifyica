@@ -16,9 +16,20 @@
 
 package org.antublue.verifyica.engine.invocation;
 
+/** Interface to implement Invocation */
 public interface Invocation {
 
+    /**
+     * Method to proceed with the invocation
+     *
+     * @return an InvocationResult
+     */
     InvocationResult proceed();
 
+    /**
+     * Method to skip the invocation
+     *
+     * @return an InvocationResult
+     */
     InvocationResult skip();
 }

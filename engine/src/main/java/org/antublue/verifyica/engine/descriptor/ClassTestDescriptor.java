@@ -335,7 +335,8 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                                 argumentTestDescriptors.forEach(
                                                         argumentTestDescriptor ->
                                                                 argumentTestDescriptor
-                                                                        .getInvocation(invocationContext)
+                                                                        .getInvocation(
+                                                                                invocationContext)
                                                                         .proceed());
                                             }
 
@@ -352,7 +353,8 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                             argumentTestDescriptors.forEach(
                                                     argumentTestDescriptor ->
                                                             argumentTestDescriptor
-                                                                    .getInvocation(invocationContext)
+                                                                    .getInvocation(
+                                                                            invocationContext)
                                                                     .skip());
 
                                             engineExecutionListener.executionSkipped(
