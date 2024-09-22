@@ -313,9 +313,9 @@ The first test method that fails will cause remaining test methods to be skipped
 
 ---
 
-### @Verifyica.TestClassContainer
+### @Verifyica.Testable
 
-Used to mark a class as having nested test classes
+Used to mark a class as having inner test classes when using IntelliJ.
 
 ---
 
