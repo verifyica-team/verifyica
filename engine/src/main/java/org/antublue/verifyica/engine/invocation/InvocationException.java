@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.descriptor;
+package org.antublue.verifyica.engine.invocation;
 
-import org.junit.platform.engine.TestExecutionResult;
+import org.antublue.verifyica.engine.common.Precondition;
 
-/** Interface to implement InvocableTestDescriptor */
-public interface InvocableTestDescriptor {
-
-    /**
-     * Method to test
-     *
-     * @param invocationContext invocationContext
-     * @return the TestExecutionResult
-     */
-    TestExecutionResult testInvocation(InvocationContext invocationContext);
+/** Class to implement InvocationException */
+public class InvocationException extends RuntimeException {
 
     /**
-     * Method to skip
+     * Constructor
      *
-     * @param invocationContext invocationContext
+     * @param throwable throwable
      */
-    void skipInvocation(InvocationContext invocationContext);
+    public InvocationException(Throwable throwable) {
+        super(throwable);
+    }
+
+    public static void rethrow(Throwable throwable) {
+        Precondition.notNull(throwable, "throwable is null");
+
+        throw new InvocationException(throwable);
+    }
 }

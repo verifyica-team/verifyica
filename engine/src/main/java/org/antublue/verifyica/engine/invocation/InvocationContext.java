@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.engine.descriptor;
+package org.antublue.verifyica.engine.invocation;
 
 import java.util.HashMap;
 import java.util.Map;

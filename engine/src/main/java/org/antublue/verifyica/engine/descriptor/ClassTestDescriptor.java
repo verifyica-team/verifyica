@@ -38,6 +38,8 @@ import org.antublue.verifyica.engine.common.statemachine.Result;
 import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.antublue.verifyica.engine.context.ConcreteClassContext;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
+import org.antublue.verifyica.engine.invocation.InvocableTestDescriptor;
+import org.antublue.verifyica.engine.invocation.InvocationContext;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.antublue.verifyica.engine.support.ExecutorSupport;
@@ -156,20 +158,20 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
     public TestExecutionResult testInvocation(InvocationContext invocationContext) {
         Precondition.notNull(invocationContext, "engineExecutionContext is null");
 
-        return new Executor(invocationContext, this).test();
+        return new Invocation(invocationContext, this).test();
     }
 
     @Override
     public void skipInvocation(InvocationContext invocationContext) {
         Precondition.notNull(invocationContext, "engineExecutionContext is null");
 
-        new Executor(invocationContext, this).skip();
+        new Invocation(invocationContext, this).skip();
     }
 
     /** Class to implement Executor */
-    public static class Executor {
+    public static class Invocation {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(Executor.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(Invocation.class);
 
         private final InvocationContext invocationContext;
         private final ClassTestDescriptor classTestDescriptor;
@@ -210,7 +212,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
          * @param invocationContext invocationContext
          * @param classTestDescriptor classTestDescriptor
          */
-        private Executor(
+        private Invocation(
                 InvocationContext invocationContext, ClassTestDescriptor classTestDescriptor) {
             this.invocationContext = invocationContext;
 

@@ -26,6 +26,8 @@ import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.statemachine.Result;
 import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
+import org.antublue.verifyica.engine.invocation.InvocableTestDescriptor;
+import org.antublue.verifyica.engine.invocation.InvocationContext;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.EngineExecutionListener;
@@ -110,14 +112,14 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
     public TestExecutionResult testInvocation(InvocationContext invocationContext) {
         Precondition.notNull(invocationContext, "engineExecutionContext is null");
 
-        return new Executor(invocationContext, this).test();
+        return new Invocation(invocationContext, this).test();
     }
 
     @Override
     public void skipInvocation(InvocationContext invocationContext) {
         Precondition.notNull(invocationContext, "engineExecutionContext is null");
 
-        new Executor(invocationContext, this).skip();
+        new Invocation(invocationContext, this).skip();
     }
 
     @Override
@@ -137,9 +139,9 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
     }
 
     /** Class to implement Executor */
-    private static class Executor {
+    private static class Invocation {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(Executor.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(Invocation.class);
 
         private final ArgumentContext argumentContext;
         private final TestMethodTestDescriptor testMethodTestDescriptor;
@@ -166,7 +168,7 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
          * @param invocationContext invocationContext
          * @param testMethodTestDescriptor testMethodTestDescriptor
          */
-        private Executor(
+        private Invocation(
                 InvocationContext invocationContext,
                 TestMethodTestDescriptor testMethodTestDescriptor) {
             this.argumentContext = invocationContext.get(ArgumentContext.class);

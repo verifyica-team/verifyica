@@ -34,6 +34,8 @@ import org.antublue.verifyica.engine.common.statemachine.Result;
 import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.antublue.verifyica.engine.context.ConcreteArgumentContext;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
+import org.antublue.verifyica.engine.invocation.InvocableTestDescriptor;
+import org.antublue.verifyica.engine.invocation.InvocationContext;
 import org.antublue.verifyica.engine.logger.Logger;
 import org.antublue.verifyica.engine.logger.LoggerFactory;
 import org.junit.platform.engine.EngineExecutionListener;
@@ -137,14 +139,14 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
     public TestExecutionResult testInvocation(InvocationContext invocationContext) {
         Precondition.notNull(invocationContext, "engineExecutionContext is null");
 
-        return new Executor(invocationContext, this).test();
+        return new Invocation(invocationContext, this).test();
     }
 
     @Override
     public void skipInvocation(InvocationContext invocationContext) {
         Precondition.notNull(invocationContext, "engineExecutionContext is null");
 
-        new Executor(invocationContext, this).skip();
+        new Invocation(invocationContext, this).skip();
     }
 
     @Override
@@ -167,10 +169,10 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                 + '}';
     }
 
-    /** Class to implement Executor */
-    private static class Executor {
+    /** Class to implement Invocation */
+    private static class Invocation {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(Executor.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(Invocation.class);
 
         private final InvocationContext invocationContext;
         private final ArgumentTestDescriptor argumentTestDescriptor;
@@ -204,7 +206,7 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
          * @param invocationContext invocationContext
          * @param argumentTestDescriptor argumentTestDescriptor
          */
-        private Executor(
+        private Invocation(
                 InvocationContext invocationContext,
                 ArgumentTestDescriptor argumentTestDescriptor) {
             this.invocationContext = invocationContext;
