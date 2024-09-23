@@ -251,10 +251,40 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                         }
                                     });
 
-            if (argumentContext
-                    .getClassContext()
-                    .getTestClass()
-                    .isAnnotationPresent(Verifyica.ScenarioTest.class)) {
+            Class<?> testClass = argumentContext.getClassContext().getTestClass();
+
+            if (testClass.isAnnotationPresent(Verifyica.IndependentTests.class)) {
+                stateMachine.onState(
+                        State.BEFORE_ALL_SUCCESS,
+                        () -> {
+                            try {
+                                List<InvocationResult> invocationResults = new ArrayList<>();
+
+                                for (TestMethodTestDescriptor testMethodTestDescriptor :
+                                        testMethodTestDescriptors) {
+                                    InvocationResult invocationResult =
+                                            testMethodTestDescriptor
+                                                    .getInvocation(invocationContext)
+                                                    .proceed();
+                                    invocationResults.add(invocationResult);
+                                }
+
+                                Optional<InvocationResult> optionalInvocationResult =
+                                        invocationResults.stream()
+                                                .filter(InvocationResult::isFailure)
+                                                .findFirst();
+
+                                if (!optionalInvocationResult.isPresent()) {
+                                    return Result.of(State.EXECUTE_SUCCESS);
+                                } else {
+                                    return Result.of(State.EXECUTE_FAILURE);
+                                }
+                            } catch (Throwable t) {
+                                t.printStackTrace(System.err);
+                                return Result.of(State.EXECUTE_FAILURE, t);
+                            }
+                        });
+            } else {
                 stateMachine.onState(
                         State.BEFORE_ALL_SUCCESS,
                         () -> {
@@ -295,42 +325,6 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                 return Result.of(State.EXECUTE_SUCCESS);
                             } else {
                                 return Result.of(State.EXECUTE_FAILURE);
-                            }
-                        });
-            } else {
-                stateMachine.onState(
-                        State.BEFORE_ALL_SUCCESS,
-                        () -> {
-                            try {
-                                List<InvocationResult> invocationResults = new ArrayList<>();
-
-                                Iterator<TestMethodTestDescriptor>
-                                        testMethodTestDescriptorIterator =
-                                                testMethodTestDescriptors.iterator();
-
-                                while (testMethodTestDescriptorIterator.hasNext()) {
-                                    TestMethodTestDescriptor testMethodTestDescriptor =
-                                            testMethodTestDescriptorIterator.next();
-                                    InvocationResult invocationResult =
-                                            testMethodTestDescriptor
-                                                    .getInvocation(invocationContext)
-                                                    .proceed();
-                                    invocationResults.add(invocationResult);
-                                }
-
-                                Optional<InvocationResult> optionalInvocationResult =
-                                        invocationResults.stream()
-                                                .filter(InvocationResult::isFailure)
-                                                .findFirst();
-
-                                if (!optionalInvocationResult.isPresent()) {
-                                    return Result.of(State.EXECUTE_SUCCESS);
-                                } else {
-                                    return Result.of(State.EXECUTE_FAILURE);
-                                }
-                            } catch (Throwable t) {
-                                t.printStackTrace(System.err);
-                                return Result.of(State.EXECUTE_FAILURE, t);
                             }
                         });
             }

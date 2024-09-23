@@ -166,5 +166,12 @@ public @interface Verifyica {
     @org.junit.platform.commons.annotation.Testable
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
+    @Deprecated
     @interface ScenarioTest {}
+
+    /** IndependentTests annotation */
+    @org.junit.platform.commons.annotation.Testable
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface IndependentTests {}
 }

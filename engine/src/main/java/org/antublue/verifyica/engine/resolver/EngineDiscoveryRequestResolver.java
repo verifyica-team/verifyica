@@ -196,7 +196,6 @@ public class EngineDiscoveryRequestResolver {
                             });
 
             pruneClassDefinitions(classDefinitions);
-            processScenarioClassDefinitions(classDefinitions);
             onTestDiscovery(classDefinitions);
             pruneClassDefinitions(classDefinitions);
             loadClassInterceptors(classDefinitions);
@@ -374,41 +373,6 @@ public class EngineDiscoveryRequestResolver {
                 classDefinition ->
                         classDefinition.getArguments().isEmpty()
                                 || classDefinition.getTestMethodDefinitions().isEmpty());
-    }
-
-    /**
-     * Method to process ClassDefinitions setting up scenario method execution when a test method is
-     * selected
-     *
-     * @param classDefinitions classDefinitions
-     */
-    private static void processScenarioClassDefinitions(List<ClassDefinition> classDefinitions) {
-        classDefinitions.forEach(
-                classDefinition -> {
-                    Class<?> testClass = classDefinition.getTestClass();
-                    if (testClass.isAnnotationPresent(Verifyica.ScenarioTest.class)) {
-                        classDefinition.getTestMethodDefinitions().clear();
-
-                        List<Method> testMethods =
-                                ClassSupport.findMethods(
-                                        testClass,
-                                        ResolverPredicates.TEST_METHOD,
-                                        HierarchyTraversalMode.BOTTOM_UP);
-
-                        OrderSupport.orderMethods(testMethods);
-
-                        testMethods.forEach(
-                                method -> {
-                                    String methodDisplayName =
-                                            DisplayNameSupport.getDisplayName(method);
-                                    classDefinition
-                                            .getTestMethodDefinitions()
-                                            .add(
-                                                    new ConcreteMethodDefinition(
-                                                            method, methodDisplayName));
-                                });
-                    }
-                });
     }
 
     /**

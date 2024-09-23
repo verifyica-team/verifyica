@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.scenario.step;
+package org.antublue.verifyica.test.order;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,7 +27,7 @@ import org.antublue.verifyica.api.Verifyica;
 @Verifyica.Test
 @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@interface Step {
+public @interface Step {
 
     String tag();
 

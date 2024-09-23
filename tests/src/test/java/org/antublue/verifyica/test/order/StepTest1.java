@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.scenario.step;
+package org.antublue.verifyica.test.order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,8 +28,7 @@ import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-@Verifyica.ScenarioTest
-public class ScenarioTest1 {
+public class StepTest1 {
 
     private static List<String> actual = new ArrayList<>();
 
@@ -43,14 +42,14 @@ public class ScenarioTest1 {
 
         @Override
         public Predicate<ClassDefinition> onTestDiscoveryPredicate() {
-            return classDefinition -> classDefinition.getTestClass() == ScenarioTest1.class;
+            return classDefinition -> classDefinition.getTestClass() == StepTest1.class;
         }
 
         @Override
         public void onTestDiscovery(
                 EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
                 throws Throwable {
-            assertThat(classDefinition.getTestClass()).isEqualTo(ScenarioTest1.class);
+            assertThat(classDefinition.getTestClass()).isEqualTo(StepTest1.class);
 
             new StepMethodOrderer().orderMethods(classDefinition.getTestMethodDefinitions());
 

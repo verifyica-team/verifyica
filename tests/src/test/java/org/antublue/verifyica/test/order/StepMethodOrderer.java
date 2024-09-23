@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.scenario.step;
+package org.antublue.verifyica.test.order;
 
 import java.util.*;
 import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;

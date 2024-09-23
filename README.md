@@ -8,9 +8,11 @@
 
 ![Verifyica](assets/verifyica.png)
 
-A multithreaded Java test engine for integration and scenario testing based on [JUnit 5](https://junit.org/junit5/) Platform.
+A multithreaded Java test engine for parameterized / scenario / integration testing based on [JUnit 5](https://junit.org/junit5/) Platform.
 
 # Purpose
+
+### Parameterized Testing
 
 Parameterized testing is traditionally test method oriented ...
 
@@ -35,6 +37,28 @@ for (TestArgument testArgument : TestArguments) {
    }
 }
 ```
+
+### Scenario Testing
+
+Unit testing is traditionally used where test methods in a test class are isolated and independent of each other ...
+
+- for a test class
+  - all test methods are executed 
+  - i.e. a failure of one test method doesn't affect the testing of other test methods 
+
+Verifyica uses a dependent test method paradigm ...
+
+- for a test class
+  - order the test methods
+  - execute the test methods sequentially
+  - if a test method fails, remaining test methods are skipped
+
+**Notes**
+
+- Verifyica provides the `@Verifyica.IndependentTests` test class annotation to allow independent test method execution
+  - order the test methods
+  - execute the test methods sequentially
+  - all test methods are executed
 
 # Features
 

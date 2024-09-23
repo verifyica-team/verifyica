@@ -287,29 +287,24 @@ Used to register a test class specific [ClassInterceptor](api/src/main/java/org/
 - must not define any parameters
 - may throw `Throwable`
 
+### @Verifyica.IndependentTests
+
+Used to indicate that test methods in a test class are independent of each other.
+
+- for a test class
+  - order the test methods
+  - execute the test methods sequentially
+  - all test methods are executed
+
 ---
 
 ### @Verifyica.ScenarioTest
 
-Indicates to that test methods of a test class should be executed as a scenario.
+**DEPRECATED**
 
-The first test method that fails will cause remaining test methods to be skipped.
+For a test class, all test methods are considered dependent.
 
-[Examples](tests/src/test/java/org/antublue/verifyica/test/scenario)
-
-**Notes**
-
-- Runs the test methods in the order defined by
-  - `@Verifyica.Test(order = x)`
-  - `@Verifyica.Order(order = x)`
-  - If both `@Verifyica.Test(order = x)` and `@Verifyica.Order(order = x)` are defined, the lowest order value is used
-  - order is lowest value to highest value
-
-- Testing of arguments is independent
-  - A failure of a test method for argument 1 doesn't affect testing of argument 2
-
-
-- When using IntelliJ, all methods of a scenario test class are executed regardless of the test method that is selected
+Verifyica default behavior since version `0.0.18`
 
 ---
 
