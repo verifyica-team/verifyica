@@ -42,9 +42,10 @@ public interface EngineInterceptor {
     }
 
     /**
-     * Engine onTestDiscovery callback.
+     * Engine onTestDiscovery callback
      *
-     * <p>Default dispatches to onTestDiscovery(ClassDefinition)
+     * <p>Default implementation checks/tests onTestDiscoveryPredicate and dispatches to
+     * onTestDiscovery(ClassDefinition)
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @param classDefinitions classDefinitions
