@@ -45,9 +45,9 @@ public interface ClassDefinition {
     void setDisplayName(String displayName);
 
     /**
-     * Get the set test method definitions
+     * Get the set test method definition set
      *
-     * @return a set test method definitions
+     * @return a set test method definition set
      */
     Set<MethodDefinition> getTestMethodDefinitions();
 
