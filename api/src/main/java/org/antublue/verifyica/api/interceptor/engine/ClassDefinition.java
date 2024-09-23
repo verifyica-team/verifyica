@@ -45,16 +45,16 @@ public interface ClassDefinition {
     void setDisplayName(String displayName);
 
     /**
-     * Get the test methods
+     * Get the set test method definitions
      *
-     * @return the test methods
+     * @return a set test method definitions
      */
     Set<MethodDefinition> getTestMethodDefinitions();
 
     /**
-     * Get the test arguments
+     * Get the test argument list
      *
-     * @return the test arguments
+     * @return the test argument list
      */
     List<Argument<?>> getArguments();
 
