@@ -22,23 +22,23 @@ import java.lang.reflect.Method;
 public interface MethodDefinition {
 
     /**
-     * Get the Method
+     * Get the test method
      *
-     * @return the Method
+     * @return the test method
      */
     Method getMethod();
 
     /**
-     * Set the Method display name
+     * Set the test method display name
      *
      * @param displayName displayName
      */
     void setDisplayName(String displayName);
 
     /**
-     * Get the Method display name
+     * Get the test method display name
      *
-     * @return the Method display name
+     * @return the test method display name
      */
     String getDisplayName();
 }
