@@ -53,7 +53,7 @@ for (TestArgument testArgument : TestArguments) {
 - Test class interceptors (extensions)
 - Engine interceptors (extensions)
   - order test methods
-  - filter test method
+  - filter test methods
   - set test class display name
   - set test method display name
   - set up / tear down resources
