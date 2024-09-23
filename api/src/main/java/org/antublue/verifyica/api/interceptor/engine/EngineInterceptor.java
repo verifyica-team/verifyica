@@ -17,6 +17,7 @@
 package org.antublue.verifyica.api.interceptor.engine;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /** Interface to implement EngineInterceptor */
 public interface EngineInterceptor {
@@ -32,7 +33,18 @@ public interface EngineInterceptor {
     }
 
     /**
-     * Engine onTestDiscovery callback
+     * Method to get a Predicate to filter onTestDiscovery
+     *
+     * @return a ClassDefinition Predicate
+     */
+    default Predicate<ClassDefinition> onTestDiscoveryPredicate() {
+        return classDefinition -> true;
+    }
+
+    /**
+     * Engine onTestDiscovery callback.
+     *
+     * <p>Default dispatches to onTestDiscovery(ClassDefinition)
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @param classDefinitions classDefinitions
@@ -42,8 +54,13 @@ public interface EngineInterceptor {
             EngineInterceptorContext engineInterceptorContext,
             List<ClassDefinition> classDefinitions)
             throws Throwable {
+        Predicate<ClassDefinition> classDefinitionPredicate = onTestDiscoveryPredicate();
+
         for (ClassDefinition classDefinition : classDefinitions) {
-            onTestDiscovery(engineInterceptorContext, classDefinition);
+            if (classDefinitionPredicate != null
+                    && classDefinitionPredicate.test(classDefinition)) {
+                onTestDiscovery(engineInterceptorContext, classDefinition);
+            }
         }
     }
 

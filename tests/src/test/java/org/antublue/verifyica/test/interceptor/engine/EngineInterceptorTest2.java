@@ -16,9 +16,12 @@
 
 package org.antublue.verifyica.test.interceptor.engine;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Predicate;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
@@ -32,13 +35,24 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
     public static class ReverseTestMethodOrder implements EngineInterceptor {
 
         @Override
+        public Predicate<ClassDefinition> onTestDiscoveryPredicate() {
+            return classDefinition ->
+                    classDefinition.getTestClass() == EngineInterceptorTest2.class;
+        }
+
+        @Override
         public void onTestDiscovery(
                 EngineInterceptorContext engineInterceptorContext,
                 ClassDefinition classDefinition) {
-            if (classDefinition.getTestClass() == EngineInterceptorTest2.class) {
-                System.out.println("reversing test method order");
-                reverseOrder(classDefinition.getTestMethodDefinitions());
-            }
+            assertThat(classDefinition.getTestClass()).isEqualTo(EngineInterceptorTest2.class);
+
+            System.out.println("reversing test method order");
+
+            Set<MethodDefinition> methodDefinitions = classDefinition.getTestMethodDefinitions();
+            ArrayList<MethodDefinition> list = new ArrayList<>(methodDefinitions);
+            Collections.reverse(list);
+            methodDefinitions.clear();
+            methodDefinitions.addAll(list);
         }
     }
 
@@ -65,12 +79,5 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
     @Verifyica.Test(order = 4)
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument().getPayload());
-    }
-
-    private static void reverseOrder(Set<MethodDefinition> methodDefinitions) {
-        ArrayList<MethodDefinition> list = new ArrayList<>(methodDefinitions);
-        Collections.reverse(list);
-        methodDefinitions.clear();
-        methodDefinitions.addAll(list);
     }
 }

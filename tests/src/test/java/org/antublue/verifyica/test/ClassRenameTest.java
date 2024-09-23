@@ -18,7 +18,7 @@ package org.antublue.verifyica.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
+import java.util.function.Predicate;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
@@ -30,24 +30,22 @@ public class ClassRenameTest {
     @Verifyica.Autowired
     public static class DisplayNameEngineInterceptor implements EngineInterceptor {
 
+        @Override
+        public Predicate<ClassDefinition> onTestDiscoveryPredicate() {
+            return classDefinition -> classDefinition.getTestClass() == ClassRenameTest.class;
+        }
+
         public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext,
-                List<ClassDefinition> classDefinitions)
+                EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
                 throws Throwable {
-            classDefinitions.stream()
-                    .filter(
-                            classDefinition ->
-                                    classDefinition.getTestClass() == ClassRenameTest.class)
-                    .forEach(
-                            classDefinition -> {
-                                String fullDisplayName = classDefinition.getDisplayName();
-                                String displayName = classDefinition.getTestClass().getSimpleName();
-                                String newDisplayName = displayName + "Renamed";
-                                System.out.printf(
-                                        "Renaming test class from [%s] to [%s]%n",
-                                        fullDisplayName, newDisplayName);
-                                classDefinition.setDisplayName(newDisplayName);
-                            });
+            assertThat(classDefinition.getTestClass()).isEqualTo(ClassRenameTest.class);
+
+            String fullDisplayName = classDefinition.getDisplayName();
+            String displayName = classDefinition.getTestClass().getSimpleName();
+            String newDisplayName = displayName + "Renamed";
+            System.out.printf(
+                    "Renaming test class from [%s] to [%s]%n", fullDisplayName, newDisplayName);
+            classDefinition.setDisplayName(newDisplayName);
         }
     }
 

@@ -16,6 +16,9 @@
 
 package org.antublue.verifyica.test.scenario.step;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.function.Predicate;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
@@ -33,20 +36,26 @@ public class ScenarioTest2 {
     @Verifyica.Autowired
     public static class StepMethodOrderEngineInterceptor implements EngineInterceptor {
 
+        @Override
+        public Predicate<ClassDefinition> onTestDiscoveryPredicate() {
+            return classDefinition -> classDefinition.getTestClass() == ScenarioTest2.class;
+        }
+
+        @Override
         public void onTestDiscovery(
                 EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
                 throws Throwable {
-            if (classDefinition.getTestClass() == ScenarioTest2.class) {
-                new StepMethodOrderer().orderMethods(classDefinition.getTestMethodDefinitions());
+            assertThat(classDefinition.getTestClass()).isEqualTo(ScenarioTest2.class);
 
-                classDefinition
-                        .getTestMethodDefinitions()
-                        .forEach(
-                                methodDefinition ->
-                                        System.out.printf(
-                                                "testMethod -> %s%n",
-                                                methodDefinition.getMethod().getName()));
-            }
+            new StepMethodOrderer().orderMethods(classDefinition.getTestMethodDefinitions());
+
+            classDefinition
+                    .getTestMethodDefinitions()
+                    .forEach(
+                            methodDefinition ->
+                                    System.out.printf(
+                                            "testMethod -> %s%n",
+                                            methodDefinition.getMethod().getName()));
         }
     }
 
