@@ -52,6 +52,11 @@ for (TestArgument testArgument : TestArguments) {
 - Test class tag filtering
 - Test class interceptors (extensions)
 - Engine interceptors (extensions)
+  - order test methods
+  - filter test method
+  - set test class display name
+  - set test method display name
+  - set up / tear down resources
 - Test class / test argument parallel testing with configurable constraints
 - Cleanup of `AutoClosable` test classes / test arguments
 - Cleanup of `AutoClosable` objects in a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java)
