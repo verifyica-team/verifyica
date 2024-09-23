@@ -45,8 +45,9 @@ for (TestArgument testArgument : TestArguments) {
   - default test method execution based on `@Verifyica.Order` or `@Verifyica.Test(order = X)` annotation
   - ability to use an `EngineInterceptor` to order test methods by custom ordering algorithm
 - Annotation driven
-- Multithreaded test class / test argument  testing
+- Multithreaded test class / test argument testing
   - configurable constraints
+  - test methods are always tested sequentially for a test argument 
 - Virtual thread support (Java 21+)
 - Properties file driven configuration
 - Test class / test method filtering
