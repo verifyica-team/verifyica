@@ -8,7 +8,7 @@
 
 ![Verifyica](assets/verifyica.png)
 
-A Java annotation driven, multithreaded test engine for integration testing based on [JUnit 5](https://junit.org/junit5/) Platform.
+A multithreaded Java test engine for scenario and integration testing based on [JUnit 5](https://junit.org/junit5/) Platform.
 
 # Purpose
 
