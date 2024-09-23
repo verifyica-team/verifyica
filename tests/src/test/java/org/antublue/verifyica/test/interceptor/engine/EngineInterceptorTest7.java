@@ -16,16 +16,15 @@
 
 package org.antublue.verifyica.test.interceptor.engine;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 import org.antublue.verifyica.api.interceptor.engine.MethodDefinition;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Set;
 
 public class EngineInterceptorTest7 implements EngineInterceptor {
 
