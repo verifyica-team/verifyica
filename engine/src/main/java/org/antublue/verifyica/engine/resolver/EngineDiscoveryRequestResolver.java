@@ -196,9 +196,9 @@ public class EngineDiscoveryRequestResolver {
                             });
 
             pruneClassDefinitions(classDefinitions);
+            processScenarioClassDefinitions(classDefinitions);
             onTestDiscovery(classDefinitions);
             pruneClassDefinitions(classDefinitions);
-            processScenarioClassDefinitions(classDefinitions);
             loadClassInterceptors(classDefinitions);
             buildEngineDescriptor(classDefinitions, engineDescriptor);
             onInitialize(classDefinitions);
