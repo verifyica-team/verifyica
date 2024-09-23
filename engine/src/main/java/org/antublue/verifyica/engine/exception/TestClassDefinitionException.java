@@ -16,8 +16,8 @@
 
 package org.antublue.verifyica.engine.exception;
 
-/** Class to implement EngineException */
-public class TestClassDefinitionException extends RuntimeException {
+/** Class to implement TestClassDefinitionException */
+public class TestClassDefinitionException extends EngineException {
 
     /**
      * Constructor

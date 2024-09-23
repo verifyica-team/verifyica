@@ -198,6 +198,7 @@ public class EngineDiscoveryRequestResolver {
             pruneClassDefinitions(classDefinitions);
             onTestDiscovery(classDefinitions);
             pruneClassDefinitions(classDefinitions);
+            orderStepMethods(classDefinitions);
             loadClassInterceptors(classDefinitions);
             buildEngineDescriptor(classDefinitions, engineDescriptor);
             onInitialize(classDefinitions);
@@ -373,6 +374,13 @@ public class EngineDiscoveryRequestResolver {
                 classDefinition ->
                         classDefinition.getArguments().isEmpty()
                                 || classDefinition.getTestMethodDefinitions().isEmpty());
+    }
+
+    private static void orderStepMethods(List<ClassDefinition> classDefinitions) {
+        LOGGER.trace("orderStepMethods()");
+
+        StepMethodOrderer stepMethodOrderer = new StepMethodOrderer();
+        classDefinitions.forEach(stepMethodOrderer::orderMethods);
     }
 
     /**

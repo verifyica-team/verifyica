@@ -24,7 +24,8 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 
-public class StepTest1 {
+@Verifyica.Disabled
+public class StepTest3 {
 
     private static List<String> actual = new ArrayList<>();
 
@@ -34,25 +35,7 @@ public class StepTest1 {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) {
-        System.out.printf(
-                "test(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
-
-        actual.add("test");
-    }
-
-    @Verifyica.Test
-    public void testA(ArgumentContext argumentContext) {
-        System.out.printf(
-                "testA(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
-
-        actual.add("testA");
-    }
-
-    @Verifyica.Test
-    @Verifyica.Step(id = "step0", nextId = "step2")
+    @Verifyica.Step(id = "step0")
     public void test0(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test0(name[%s], payload[%s])%n",
@@ -62,7 +45,7 @@ public class StepTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Step(id = "step2", nextId = "step4")
+    @Verifyica.Step(id = "step2")
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test2(name[%s], payload[%s])%n",
@@ -72,7 +55,7 @@ public class StepTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Step(id = "step4", nextId = "step1")
+    @Verifyica.Step(id = "step4")
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test4(name[%s], payload[%s])%n",
@@ -82,7 +65,7 @@ public class StepTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Step(id = "step1", nextId = "step3")
+    @Verifyica.Step(id = "step1")
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test1(name[%s], payload[%s])%n",
@@ -92,7 +75,7 @@ public class StepTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Step(id = "step3", nextId = "step5")
+    @Verifyica.Step(id = "step3")
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test3(name[%s], payload[%s])%n",
@@ -115,14 +98,14 @@ public class StepTest1 {
     public void conclude(ClassContext classContext) {
         List<String> expected = new ArrayList<>();
 
+        expected.add("test");
+        expected.add("testA");
         expected.add("test0");
         expected.add("test2");
         expected.add("test4");
         expected.add("test1");
         expected.add("test3");
         expected.add("test5");
-        expected.add("test");
-        expected.add("testA");
 
         assertThat(actual.size()).isEqualTo(expected.size());
 
