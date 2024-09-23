@@ -55,7 +55,7 @@ Verifyica uses a dependent test method paradigm ...
 
 **Notes**
 
-- Verifyica provides the `@Verifyica.IndependentTests` test class annotation to allow independent test method execution
+- Verifyica provides the `@Verifyica.IndependentTests` test class annotation to allow independent test method execution.
   - order the test methods
   - execute the test methods sequentially
   - all test methods are executed
