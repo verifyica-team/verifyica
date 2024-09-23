@@ -45,7 +45,8 @@ for (TestArgument testArgument : TestArguments) {
   - default test method execution based on `@Verifyica.Order` or `@Verifyica.Test(order = X)` annotation
   - ability to use an `EngineInterceptor` to order test methods by custom ordering algorithm
 - Annotation driven
-- Multithreaded test class / test argument testing
+- Multithreaded test class / test argument  testing
+  - configurable constraints
 - Virtual thread support (Java 21+)
 - Properties file driven configuration
 - Test class / test method filtering
@@ -57,7 +58,6 @@ for (TestArgument testArgument : TestArguments) {
   - set test class display names
   - set test method display names
   - set up / tear down resources
-- Test class / test argument parallel testing with configurable constraints
 - Cleanup of `AutoClosable` test classes / test arguments
 - Cleanup of `AutoClosable` objects in a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java)
 - Object / resource sharing via contexts
