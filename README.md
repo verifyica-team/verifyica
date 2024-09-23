@@ -43,7 +43,7 @@ for (TestArgument testArgument : TestArguments) {
 - Scenario based testing
   - if a test method fails, remaining test methods will be marked as skipped
   - default test method execution based on `@Verifyica.Order` or `@Verifyica.Test(order = X)` annotation
-  - ability to use an `EngineInterceptor` to order test methods by ordering algorithm
+  - ability to use an `EngineInterceptor` to order test methods by custom ordering algorithm
 - Annotation driven
 - Multithreaded test class / test argument testing
 - Virtual thread support (Java 21+)
