@@ -26,7 +26,7 @@ import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
 @Verifyica.ScenarioTest
-public class ScenarioTest2 {
+public class ScenarioTest1 {
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
@@ -38,14 +38,14 @@ public class ScenarioTest2 {
 
         @Override
         public Predicate<ClassDefinition> onTestDiscoveryPredicate() {
-            return classDefinition -> classDefinition.getTestClass() == ScenarioTest2.class;
+            return classDefinition -> classDefinition.getTestClass() == ScenarioTest1.class;
         }
 
         @Override
         public void onTestDiscovery(
                 EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
                 throws Throwable {
-            assertThat(classDefinition.getTestClass()).isEqualTo(ScenarioTest2.class);
+            assertThat(classDefinition.getTestClass()).isEqualTo(ScenarioTest1.class);
 
             new StepMethodOrderer().orderMethods(classDefinition.getTestMethodDefinitions());
 
