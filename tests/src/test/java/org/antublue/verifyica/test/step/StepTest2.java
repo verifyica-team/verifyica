@@ -14,53 +14,25 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.order;
+package org.antublue.verifyica.test.step;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
-import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
-import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
-import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
-public class StepTest1 {
+// @Verifyica.Disabled
+@Verifyica.IndependentTests
+public class StepTest3 {
 
     private static List<String> actual = new ArrayList<>();
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
         return "ignored";
-    }
-
-    @Verifyica.Autowired
-    public static class StepMethodOrderEngineInterceptor implements EngineInterceptor {
-
-        @Override
-        public Predicate<ClassDefinition> onTestDiscoveryPredicate() {
-            return classDefinition -> classDefinition.getTestClass() == StepTest1.class;
-        }
-
-        @Override
-        public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
-                throws Throwable {
-            assertThat(classDefinition.getTestClass()).isEqualTo(StepTest1.class);
-
-            new StepMethodOrderer().orderMethods(classDefinition.getTestMethodDefinitions());
-
-            classDefinition
-                    .getTestMethodDefinitions()
-                    .forEach(
-                            methodDefinition ->
-                                    System.out.printf(
-                                            "testMethod -> %s%n",
-                                            methodDefinition.getMethod().getName()));
-        }
     }
 
     @Verifyica.Test
@@ -73,7 +45,7 @@ public class StepTest1 {
     }
 
     @Verifyica.Test
-    @Step(tag = "step0", nextTag = "step2")
+    @Verifyica.Step(id = "step0", nextId = "step2")
     public void test0(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test0(name[%s], payload[%s])%n",
@@ -83,7 +55,7 @@ public class StepTest1 {
     }
 
     @Verifyica.Test
-    @Step(tag = "step2", nextTag = "step4")
+    @Verifyica.Step(id = "step2", nextId = "step4")
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test2(name[%s], payload[%s])%n",
@@ -93,7 +65,7 @@ public class StepTest1 {
     }
 
     @Verifyica.Test
-    @Step(tag = "step4", nextTag = "step1")
+    @Verifyica.Step(id = "step4", nextId = "step1")
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test4(name[%s], payload[%s])%n",
@@ -103,17 +75,17 @@ public class StepTest1 {
     }
 
     @Verifyica.Test
-    @Step(tag = "step1", nextTag = "step3")
+    @Verifyica.Step(id = "step1", nextId = "step3")
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test1(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
 
-        actual.add("test1");
+        throw new AssertionError("Forced");
     }
 
     @Verifyica.Test
-    @Step(tag = "step3", nextTag = "step5")
+    @Verifyica.Step(id = "step3", nextId = "step5")
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test3(name[%s], payload[%s])%n",
@@ -123,7 +95,7 @@ public class StepTest1 {
     }
 
     @Verifyica.Test
-    @Step(tag = "step5")
+    @Verifyica.Step(id = "step5")
     public void test5(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test5(name[%s], payload[%s])%n",
@@ -139,10 +111,6 @@ public class StepTest1 {
         expected.add("test0");
         expected.add("test2");
         expected.add("test4");
-        expected.add("test1");
-        expected.add("test3");
-        expected.add("test5");
-        expected.add("test");
 
         assertThat(actual.size()).isEqualTo(expected.size());
 

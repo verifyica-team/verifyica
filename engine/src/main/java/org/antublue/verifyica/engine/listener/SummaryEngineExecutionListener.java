@@ -119,10 +119,6 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
         counterMap = new ConcurrentHashMap<>();
         stopWatch = new Stopwatch();
-
-        println(INFO + SEPARATOR);
-        println(INFO + BANNER);
-        println(INFO + SEPARATOR);
     }
 
     @Override

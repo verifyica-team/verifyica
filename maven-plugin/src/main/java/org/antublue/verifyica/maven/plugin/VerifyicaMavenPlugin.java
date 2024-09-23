@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -36,6 +37,9 @@ import java.util.Set;
 import java.util.StringJoiner;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
+import org.antublue.verifyica.engine.common.AnsiColor;
+import org.antublue.verifyica.engine.common.AnsiColoredString;
+import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.common.Streams;
 import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.ConcreteConfigurationParameters;
@@ -45,10 +49,10 @@ import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.StatusEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.SummaryEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.TracingEngineExecutionListener;
+import org.antublue.verifyica.engine.support.HumanReadableTimeSupport;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -93,6 +97,45 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     /** Constant */
     public static final String VERSION = version();
 
+    private static final String BANNER =
+            new AnsiColoredString()
+                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                    .append("Verifyica ")
+                    .append(VerifyicaTestEngine.staticGetVersion())
+                    .append(AnsiColor.NONE)
+                    .build();
+
+    private static final String SUMMARY_BANNER =
+            BANNER + AnsiColor.TEXT_WHITE_BRIGHT.wrap(" Summary");
+
+    private static final String SEPARATOR =
+            AnsiColor.TEXT_WHITE_BRIGHT.wrap(
+                    "------------------------------------------------------------------------");
+
+    private static final String INFO =
+            new AnsiColoredString()
+                    .append(AnsiColor.TEXT_WHITE)
+                    .append("[")
+                    .append(AnsiColor.TEXT_BLUE_BOLD)
+                    .append("INFO")
+                    .append(AnsiColor.TEXT_WHITE)
+                    .append("]")
+                    .append(AnsiColor.NONE)
+                    .append(" ")
+                    .build();
+
+    private static final String ERROR =
+            new AnsiColoredString()
+                    .append(AnsiColor.TEXT_WHITE)
+                    .append("[")
+                    .append(AnsiColor.TEXT_RED_BOLD)
+                    .append("ERROR")
+                    .append(AnsiColor.TEXT_WHITE)
+                    .append("]")
+                    .append(AnsiColor.NONE)
+                    .append(" ")
+                    .build();
+
     @Parameter(defaultValue = "${session}", required = true, readonly = true)
     private MavenSession mavenSession;
 
@@ -103,6 +146,8 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     private Map<String, String> properties;
 
     private Logger logger;
+
+    private VerifyicaTestEngine verifyicaTestEngine;
 
     static {
         Streams.fix();
@@ -126,102 +171,159 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     /**
      * Method to execute the plugin
      *
-     * @throws MojoExecutionException MojoExecutionException
+     * @throws MojoFailureException MojoFailureException
      */
-    public void execute() throws MojoFailureException, MojoExecutionException {
-        logger = Logger.create(getLog());
+    public void execute() throws MojoFailureException {
+        initialize();
+
+        Stopwatch stopwatch = new Stopwatch();
+
+        System.out.println(INFO + SEPARATOR);
+        System.out.println(INFO + BANNER);
+        System.out.println(INFO + SEPARATOR);
+
+        TestDescriptor testDescriptor;
 
         try {
-            Configuration configuration = ConcreteConfiguration.getInstance();
+            testDescriptor = discovery();
+        } catch (Throwable t) {
+            t.printStackTrace(System.err);
 
-            configuration.put(Constants.MAVEN_PLUGIN, Constants.TRUE);
-            logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN, Constants.TRUE);
+            System.out.println(ERROR + SEPARATOR);
+            System.out.println(ERROR + SUMMARY_BANNER);
+            System.out.println(ERROR + SEPARATOR);
+            System.out.println(
+                    new AnsiColoredString()
+                            .append(ERROR)
+                            .append(AnsiColor.TEXT_RED_BOLD)
+                            .append("ERROR DURING TEST DISCOVERY")
+                            .append(AnsiColor.NONE));
+            System.out.println(ERROR + SEPARATOR);
 
-            configuration.put(Constants.MAVEN_PLUGIN_VERSION, VERSION);
-            logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_VERSION, VERSION);
+            Duration elapsedTime = stopwatch.elapsedTime();
 
-            if (mavenSession.getRequest().isInteractiveMode()) {
-                configuration.put(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
-                logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
-            } else {
-                configuration.put(Constants.MAVEN_PLUGIN_MODE, BATCH);
-                logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, BATCH);
-            }
+            System.out.println(
+                    new AnsiColoredString()
+                            .append(ERROR)
+                            .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                            .append("Total time  : ")
+                            .append(
+                                    HumanReadableTimeSupport.toHumanReadable(
+                                            elapsedTime.toNanos(),
+                                            HumanReadableTimeSupport.Format.SHORT))
+                            .append(" (")
+                            .append(elapsedTime.toNanos() / 1e+6D)
+                            .append(" ms)")
+                            .append(AnsiColor.NONE));
 
-            if (properties != null) {
-                for (Map.Entry<String, String> entry : properties.entrySet()) {
-                    if (entry.getKey() != null && entry.getValue() != null) {
-                        System.setProperty(entry.getKey(), entry.getValue());
-                        logger.debug("property [%s] = [%s]", entry.getKey(), entry.getValue());
-                    }
-                }
-            }
+            System.out.println(
+                    new AnsiColoredString()
+                            .append(ERROR)
+                            .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                            .append("Finished at : ")
+                            .append(HumanReadableTimeSupport.now())
+                            .append(AnsiColor.NONE));
 
-            Set<Path> artifactPaths = new LinkedHashSet<>();
+            System.out.println(ERROR + SEPARATOR);
 
-            artifactPaths.addAll(
-                    resolveClasspathElements(mavenProject.getCompileClasspathElements()));
-            artifactPaths.addAll(
-                    resolveClasspathElements(mavenProject.getCompileClasspathElements()));
-            artifactPaths.addAll(
-                    resolveClasspathElements(mavenProject.getRuntimeClasspathElements()));
-            artifactPaths.addAll(resolveClasspathElements(mavenProject.getTestClasspathElements()));
-            artifactPaths.addAll(resolveArtifact(mavenProject.getArtifact()));
-            artifactPaths.addAll(resolveArtifacts(mavenProject.getDependencyArtifacts()));
-            artifactPaths.addAll(resolveArtifacts(mavenProject.getAttachedArtifacts()));
+            throw new MojoFailureException("");
+        }
 
-            Map<String, URL> urls = new LinkedHashMap<>();
-
-            for (Path path : artifactPaths) {
-                URL url = path.toUri().toURL();
-                urls.putIfAbsent(url.getPath(), url);
-            }
-
-            System.setProperty("java.class.path", buildClasspath(urls.values()));
-
-            ClassLoader classLoader =
-                    new URLClassLoader(
-                            urls.values().toArray(new URL[0]),
-                            Thread.currentThread().getContextClassLoader());
-
-            Thread.currentThread().setContextClassLoader(classLoader);
-
-            LauncherDiscoveryRequest launcherDiscoveryRequest =
-                    LauncherDiscoveryRequestBuilder.request()
-                            .selectors(DiscoverySelectors.selectClasspathRoots(artifactPaths))
-                            .filters(includeClassNamePatterns(".*"))
-                            .configurationParameters(Collections.emptyMap())
-                            .build();
-
-            VerifyicaTestEngine verifyicaTestEngine = new VerifyicaTestEngine();
-
-            TestDescriptor testDescriptor =
-                    verifyicaTestEngine.discover(
-                            launcherDiscoveryRequest,
-                            UniqueId.forEngine(verifyicaTestEngine.getId()));
-
-            ChainedEngineExecutionListener chainedEngineExecutionListener =
-                    new ChainedEngineExecutionListener(
-                            new TracingEngineExecutionListener(),
-                            new StatusEngineExecutionListener(),
-                            new SummaryEngineExecutionListener());
-
-            ExecutionRequest executionRequest =
-                    new ExecutionRequest(
-                            testDescriptor,
-                            chainedEngineExecutionListener,
-                            new ConcreteConfigurationParameters(
-                                    ConcreteConfiguration.getInstance()));
-
-            verifyicaTestEngine.execute(executionRequest);
+        try {
+            execute(testDescriptor);
 
             if (((StatusEngineDescriptor) testDescriptor).getFailureCount() > 0) {
                 throw new MojoFailureException("");
             }
-        } catch (MojoFailureException e) {
-            throw e;
         } catch (Throwable t) {
-            throw new MojoExecutionException(t);
+            throw new MojoFailureException(t);
+        }
+    }
+
+    private void initialize() {
+        logger = Logger.create(getLog());
+        verifyicaTestEngine = new VerifyicaTestEngine();
+    }
+
+    private TestDescriptor discovery() throws Throwable {
+        Configuration configuration = ConcreteConfiguration.getInstance();
+
+        configuration.put(Constants.MAVEN_PLUGIN, Constants.TRUE);
+        logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN, Constants.TRUE);
+
+        configuration.put(Constants.MAVEN_PLUGIN_VERSION, VERSION);
+        logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_VERSION, VERSION);
+
+        if (mavenSession.getRequest().isInteractiveMode()) {
+            configuration.put(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
+            logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
+        } else {
+            configuration.put(Constants.MAVEN_PLUGIN_MODE, BATCH);
+            logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, BATCH);
+        }
+
+        if (properties != null) {
+            for (Map.Entry<String, String> entry : properties.entrySet()) {
+                if (entry.getKey() != null && entry.getValue() != null) {
+                    System.setProperty(entry.getKey(), entry.getValue());
+                    logger.debug("property [%s] = [%s]", entry.getKey(), entry.getValue());
+                }
+            }
+        }
+
+        Set<Path> artifactPaths = new LinkedHashSet<>();
+
+        artifactPaths.addAll(resolveClasspathElements(mavenProject.getCompileClasspathElements()));
+        artifactPaths.addAll(resolveClasspathElements(mavenProject.getCompileClasspathElements()));
+        artifactPaths.addAll(resolveClasspathElements(mavenProject.getRuntimeClasspathElements()));
+        artifactPaths.addAll(resolveClasspathElements(mavenProject.getTestClasspathElements()));
+        artifactPaths.addAll(resolveArtifact(mavenProject.getArtifact()));
+        artifactPaths.addAll(resolveArtifacts(mavenProject.getDependencyArtifacts()));
+        artifactPaths.addAll(resolveArtifacts(mavenProject.getAttachedArtifacts()));
+
+        Map<String, URL> urls = new LinkedHashMap<>();
+
+        for (Path path : artifactPaths) {
+            URL url = path.toUri().toURL();
+            urls.putIfAbsent(url.getPath(), url);
+        }
+
+        System.setProperty("java.class.path", buildClasspath(urls.values()));
+
+        ClassLoader classLoader =
+                new URLClassLoader(
+                        urls.values().toArray(new URL[0]),
+                        Thread.currentThread().getContextClassLoader());
+
+        Thread.currentThread().setContextClassLoader(classLoader);
+
+        LauncherDiscoveryRequest launcherDiscoveryRequest =
+                LauncherDiscoveryRequestBuilder.request()
+                        .selectors(DiscoverySelectors.selectClasspathRoots(artifactPaths))
+                        .filters(includeClassNamePatterns(".*"))
+                        .configurationParameters(Collections.emptyMap())
+                        .build();
+        return verifyicaTestEngine.discover(
+                launcherDiscoveryRequest, UniqueId.forEngine(verifyicaTestEngine.getId()));
+    }
+
+    private void execute(TestDescriptor testDescriptor) throws Throwable {
+        ChainedEngineExecutionListener chainedEngineExecutionListener =
+                new ChainedEngineExecutionListener(
+                        new TracingEngineExecutionListener(),
+                        new StatusEngineExecutionListener(),
+                        new SummaryEngineExecutionListener());
+
+        ExecutionRequest executionRequest =
+                new ExecutionRequest(
+                        testDescriptor,
+                        chainedEngineExecutionListener,
+                        new ConcreteConfigurationParameters(ConcreteConfiguration.getInstance()));
+
+        verifyicaTestEngine.execute(executionRequest);
+
+        if (((StatusEngineDescriptor) testDescriptor).getFailureCount() > 0) {
+            throw new MojoFailureException("");
         }
     }
 

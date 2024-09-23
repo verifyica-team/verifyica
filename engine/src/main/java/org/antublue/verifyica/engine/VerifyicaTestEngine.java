@@ -199,7 +199,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
             new EngineDiscoveryRequestResolver(invocationContext)
                     .resolveSelectors(engineDiscoveryRequest, engineDescriptor);
-        } catch (EngineException e) {
+        } catch (RuntimeException e) {
             throw e;
         } catch (Throwable t) {
             throw new EngineException(t);
