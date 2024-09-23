@@ -220,18 +220,6 @@ public interface Argument<T> {
     }
 
     /**
-     * Deprecated - use Argument.EMPTY
-     *
-     * <p>Use when an argument is not required for tests
-     *
-     * @return an empty Argument
-     */
-    @Deprecated
-    static Argument<Object> empty() {
-        return EMPTY;
-    }
-
-    /**
      * Method to validate an Object is not null, throwing an IllegalArgumentException if it is null
      *
      * @param object object

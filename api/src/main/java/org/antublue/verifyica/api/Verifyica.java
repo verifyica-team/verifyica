@@ -150,24 +150,11 @@ public @interface Verifyica {
     @Retention(RetentionPolicy.RUNTIME)
     @interface Autowired {}
 
-    /** AutowiredInterceptor annotation */
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
-    @Retention(RetentionPolicy.RUNTIME)
-    @Deprecated
-    @interface AutowiredInterceptor {}
-
     /** Testable annotation */
     @org.junit.platform.commons.annotation.Testable
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Testable {}
-
-    /** ScenarioTest annotation */
-    @org.junit.platform.commons.annotation.Testable
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
-    @Retention(RetentionPolicy.RUNTIME)
-    @Deprecated
-    @interface ScenarioTest {}
 
     /** IndependentTests annotation */
     @org.junit.platform.commons.annotation.Testable

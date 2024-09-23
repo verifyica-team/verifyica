@@ -298,16 +298,6 @@ Used to indicate that test methods in a test class are independent of each other
 
 ---
 
-### @Verifyica.ScenarioTest
-
-**DEPRECATED**
-
-For a test class, all test methods are considered dependent.
-
-Verifyica default behavior since version `0.0.18`
-
----
-
 ### @Verifyica.Testable
 
 Used to mark a class as having inner test classes when using IntelliJ.

@@ -34,8 +34,7 @@ public class InterceptorPredicates {
                         && !Modifier.isAbstract(modifiers)
                         && EngineInterceptor.class.isAssignableFrom(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && (clazz.isAnnotationPresent(Verifyica.Autowired.class)
-                                || clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class))
+                        && clazz.isAnnotationPresent(Verifyica.Autowired.class)
                         && hasDefaultConstructor(clazz);
             };
 
@@ -47,8 +46,7 @@ public class InterceptorPredicates {
                         && !Modifier.isAbstract(modifiers)
                         && ClassInterceptor.class.isAssignableFrom(clazz)
                         && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && (clazz.isAnnotationPresent(Verifyica.Autowired.class)
-                                || clazz.isAnnotationPresent(Verifyica.AutowiredInterceptor.class))
+                        && clazz.isAnnotationPresent(Verifyica.Autowired.class)
                         && hasDefaultConstructor(clazz);
             };
 

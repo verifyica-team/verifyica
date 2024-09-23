@@ -85,11 +85,6 @@ public class KeyTest {
         Key barKey = classContextKey.append("bar");
 
         assertThat(barKey.segments()).hasSize(3);
-
-        Key duplicateFooKey = fooKey.duplicate();
-
         assertThat(classContextKey.segments()).hasSize(2);
-        assertThat(duplicateFooKey.segments()).hasSize(3);
-        assertThat(duplicateFooKey).isEqualTo(fooKey);
     }
 }

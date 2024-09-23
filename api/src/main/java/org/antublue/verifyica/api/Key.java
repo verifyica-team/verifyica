@@ -79,16 +79,6 @@ public class Key {
     }
 
     /**
-     * Method to duplicate a Key
-     *
-     * @return a duplicate Key
-     */
-    @Deprecated
-    public Key duplicate() {
-        return new Key(new ArrayList<>(segments));
-    }
-
-    /**
      * Method to create a Key from an array of Objects
      *
      * @param segments segments
