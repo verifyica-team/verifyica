@@ -54,8 +54,8 @@ for (TestArgument testArgument : TestArguments) {
 - Engine interceptors (extensions)
   - order test methods
   - filter test methods
-  - set test class display name
-  - set test method display name
+  - set test class display names
+  - set test method display names
   - set up / tear down resources
 - Test class / test argument parallel testing with configurable constraints
 - Cleanup of `AutoClosable` test classes / test arguments
