@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.scenario.order;
+package org.antublue.verifyica.test.order;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,8 +23,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
 @Verifyica.Disabled
-@Verifyica.ScenarioTest
-public class ScenarioTest4 {
+public class OrderTest5 {
 
     private static final String FAIL_ON_STEP_1 = "failOnStep1";
     private static final String FAIL_ON_STEP_2 = "failOnStep2";

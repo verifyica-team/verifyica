@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.scenario.step;
+package org.antublue.verifyica.test.order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Verifyica;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
 
 @Verifyica.Disabled
-public class NonScenarioTest {
+@Verifyica.IndependentTests
+public class StepTest2 {
+
+    private static List<String> actual = new ArrayList<>();
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
@@ -38,14 +44,14 @@ public class NonScenarioTest {
 
         @Override
         public Predicate<ClassDefinition> onTestDiscoveryPredicate() {
-            return classDefinition -> classDefinition.getTestClass() == NonScenarioTest.class;
+            return classDefinition -> classDefinition.getTestClass() == StepTest2.class;
         }
 
         @Override
         public void onTestDiscovery(
                 EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
                 throws Throwable {
-            assertThat(classDefinition.getTestClass()).isEqualTo(NonScenarioTest.class);
+            assertThat(classDefinition.getTestClass()).isEqualTo(StepTest2.class);
 
             new StepMethodOrderer().orderMethods(classDefinition.getTestMethodDefinitions());
 
@@ -64,55 +70,99 @@ public class NonScenarioTest {
         System.out.printf(
                 "test(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+
+        actual.add("test");
     }
 
     @Verifyica.Test
     @Step(tag = "step0", nextTag = "step2")
-    public void step0(ArgumentContext argumentContext) throws Throwable {
+    public void test0(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
-                "step0(name[%s], payload[%s])%n",
+                "test0(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+
+        actual.add("test0");
     }
 
     @Verifyica.Test
     @Step(tag = "step2", nextTag = "step4")
-    public void step2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
-                "step2(name[%s], payload[%s])%n",
+                "test2(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+
+        actual.add("test2");
     }
 
     @Verifyica.Test
     @Step(tag = "step4", nextTag = "step1")
-    public void step4(ArgumentContext argumentContext) throws Throwable {
+    public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
-                "step4(name[%s], payload[%s])%n",
+                "test4(name[%s], payload[%s])%n",
+                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+
+        actual.add("test4");
+    }
+
+    @Verifyica.Test
+    @Step(tag = "step1", nextTag = "step3")
+    public void test1(ArgumentContext argumentContext) throws Throwable {
+        System.out.printf(
+                "test1(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
 
         throw new AssertionError("Forced");
     }
 
     @Verifyica.Test
-    @Step(tag = "step1", nextTag = "step3")
-    public void step1(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf(
-                "step1(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
-    }
-
-    @Verifyica.Test
     @Step(tag = "step3", nextTag = "step5")
-    public void step3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
-                "step3(name[%s], payload[%s])%n",
+                "test3(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+
+        actual.add("test3");
     }
 
     @Verifyica.Test
     @Step(tag = "step5")
-    public void step5(ArgumentContext argumentContext) throws Throwable {
+    public void test5(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
-                "step5(name[%s], payload[%s])%n",
+                "test5(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+
+        actual.add("test5");
+    }
+
+    @Verifyica.Conclude
+    public void conclude(ClassContext classContext) {
+        List<String> expected = new ArrayList<>();
+
+        expected.add("test0");
+        expected.add("test2");
+        expected.add("test4");
+
+        assertThat(actual.size()).isEqualTo(expected.size());
+
+        int pad = pad(expected);
+
+        for (int i = 0; i < expected.size(); i++) {
+            System.out.printf(
+                    "expected [%-" + pad + "s] actual [%-" + pad + "s]%n",
+                    expected.get(i),
+                    actual.get(i));
+
+            assertThat(actual.get(i)).isEqualTo(expected.get(i));
+        }
+    }
+
+    private static int pad(List<String> strings) {
+        int pad = 0;
+
+        for (String string : strings) {
+            pad = Math.max(string.length(), pad);
+        }
+
+        return pad;
     }
 }

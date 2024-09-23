@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.antublue.verifyica.test.scenario.order;
+package org.antublue.verifyica.test.order;
 
 import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.Verifyica;
 
-@Verifyica.ScenarioTest
-public class ScenarioTest2 {
+public class OrderTest4 {
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
