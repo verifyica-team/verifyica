@@ -58,8 +58,8 @@ public interface EngineInterceptor {
         Predicate<ClassDefinition> classDefinitionPredicate = onTestDiscoveryPredicate();
 
         for (ClassDefinition classDefinition : classDefinitions) {
-            if (classDefinitionPredicate != null
-                    && classDefinitionPredicate.test(classDefinition)) {
+            if (classDefinitionPredicate == null
+                    || classDefinitionPredicate.test(classDefinition)) {
                 onTestDiscovery(engineInterceptorContext, classDefinition);
             }
         }
