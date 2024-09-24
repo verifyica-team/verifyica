@@ -38,6 +38,7 @@ import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
+import org.antublue.verifyica.engine.common.AnsiColorStackTrace;
 import org.antublue.verifyica.engine.common.FairExecutorService;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.common.Streams;
@@ -305,7 +306,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
                 ExecutorSupport.waitForAllFutures(futures, classExecutorService);
             } catch (Throwable t) {
-                t.printStackTrace(System.err);
+                AnsiColorStackTrace.printStackTrace(t, System.err);
                 throwables.add(t);
             } finally {
                 ExecutorSupport.shutdownAndAwaitTermination(argumentExecutorService);
@@ -321,7 +322,7 @@ public class VerifyicaTestEngine implements TestEngine {
                             LOGGER.trace("storeAutoClose(" + key + ").success");
                         } catch (Throwable t) {
                             LOGGER.trace("storeAutoClose(" + key + ").failure");
-                            t.printStackTrace(System.err);
+                            AnsiColorStackTrace.printStackTrace(t, System.err);
                             throwables.add(t);
                         }
                     }
@@ -331,7 +332,7 @@ public class VerifyicaTestEngine implements TestEngine {
                 try {
                     engineInterceptorManager.postExecute(engineInterceptorContext);
                 } catch (Throwable t) {
-                    t.printStackTrace(System.err);
+                    AnsiColorStackTrace.printStackTrace(t, System.err);
                     throwables.add(t);
                 }
             }

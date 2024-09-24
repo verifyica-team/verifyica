@@ -22,6 +22,7 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 /** Class to implement StatusEngineDescriptor */
 public class StatusEngineDescriptor extends EngineDescriptor {
 
+    private long testCount;
     private long failureCount;
 
     /**
@@ -32,6 +33,24 @@ public class StatusEngineDescriptor extends EngineDescriptor {
      */
     public StatusEngineDescriptor(UniqueId uniqueId, String displayName) {
         super(uniqueId, displayName);
+    }
+
+    /**
+     * Method to set the test descriptor count
+     *
+     * @param testCount testCount
+     */
+    public void setTestCount(long testCount) {
+        this.testCount = testCount;
+    }
+
+    /**
+     * Method to get the test descriptor count
+     *
+     * @return the test descriptor count
+     */
+    public long getTestCount() {
+        return testCount;
     }
 
     /**

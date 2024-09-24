@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.antublue.verifyica.api.ArgumentContext;
+import org.antublue.verifyica.engine.common.AnsiColorStackTrace;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.statemachine.Result;
 import org.antublue.verifyica.engine.common.statemachine.StateMachine;
@@ -193,7 +194,7 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                                                     argumentContext, beforeEachMethods);
                                             return Result.of(State.BEFORE_EACH_SUCCESS);
                                         } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
+                                            AnsiColorStackTrace.printStackTrace(t, System.err);
                                             return Result.of(State.BEFORE_EACH_FAILURE, t);
                                         }
                                     })
@@ -205,7 +206,7 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                                                     argumentContext, testMethod);
                                             return Result.of(State.TEST_SUCCESS);
                                         } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
+                                            AnsiColorStackTrace.printStackTrace(t, System.err);
                                             return Result.of(State.TEST_FAILURE, t);
                                         }
                                     })
@@ -220,7 +221,7 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                                                     argumentContext, afterEachMethods);
                                             return Result.of(State.AFTER_EACH_SUCCESS);
                                         } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
+                                            AnsiColorStackTrace.printStackTrace(t, System.err);
                                             return Result.of(State.AFTER_EACH_FAILURE, t);
                                         }
                                     })
@@ -247,7 +248,9 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                 if (testExecutionResult.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
                     return InvocationResult.create(InvocationResult.Type.SUCCESS);
                 } else {
-                    return InvocationResult.create(InvocationResult.Type.FAILURE);
+                    return InvocationResult.create(
+                            InvocationResult.Type.FAILURE,
+                            stateMachine.getFirstResultWithThrowable().get().getThrowable());
                 }
             } else {
                 engineExecutionListener.executionSkipped(

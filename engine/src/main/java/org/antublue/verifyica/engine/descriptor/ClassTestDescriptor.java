@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
+import org.antublue.verifyica.engine.common.AnsiColorStackTrace;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.statemachine.Result;
@@ -271,7 +272,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                                     classContext, prepareMethods);
                                             return Result.of(State.PREPARE_SUCCESS);
                                         } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
+                                            AnsiColorStackTrace.printStackTrace(t, System.err);
                                             return Result.of(State.PREPARE_FAILURE, t);
                                         }
                                     })
@@ -342,7 +343,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
 
                                             return Result.of(State.EXECUTE_SUCCESS);
                                         } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
+                                            AnsiColorStackTrace.printStackTrace(t, System.err);
                                             return Result.of(State.EXECUTE_FAILURE, t);
                                         }
                                     })
@@ -362,7 +363,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
 
                                             return Result.of(State.SKIP_SUCCESS);
                                         } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
+                                            AnsiColorStackTrace.printStackTrace(t, System.err);
                                             return Result.of(State.SKIP_FAILURE, t);
                                         }
                                     })
@@ -379,7 +380,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
 
                                             return Result.of(State.CONCLUDE_SUCCESS);
                                         } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
+                                            AnsiColorStackTrace.printStackTrace(t, System.err);
                                             return Result.of(State.CONCLUDE_FAILURE, t);
                                         }
                                     })
@@ -391,7 +392,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                             classInterceptorManager.onDestroy(classContext);
                                             return Result.of(State.ON_DESTROY_SUCCESS);
                                         } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
+                                            AnsiColorStackTrace.printStackTrace(t, System.err);
                                             return Result.of(State.ON_DESTROY_FAILURE, t);
                                         }
                                     })
@@ -406,7 +407,7 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                             }
                                             return Result.of(State.AUTO_CLOSE_INSTANCE_SUCCESS);
                                         } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
+                                            AnsiColorStackTrace.printStackTrace(t, System.err);
                                             return Result.of(State.AUTO_CLOSE_INSTANCE_FAILURE, t);
                                         } finally {
                                             testInstanceReference.set(null);
@@ -425,7 +426,8 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                                 try {
                                                     ((AutoCloseable) value).close();
                                                 } catch (Throwable t) {
-                                                    t.printStackTrace(System.err);
+                                                    AnsiColorStackTrace.printStackTrace(
+                                                            t, System.err);
                                                     throwables.add(t);
                                                 }
                                             }

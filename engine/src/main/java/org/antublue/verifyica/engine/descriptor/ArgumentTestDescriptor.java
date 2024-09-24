@@ -30,6 +30,7 @@ import org.antublue.verifyica.api.ArgumentContext;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.Verifyica;
+import org.antublue.verifyica.engine.common.AnsiColorStackTrace;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.statemachine.Result;
 import org.antublue.verifyica.engine.common.statemachine.StateMachine;
@@ -246,7 +247,7 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                                     argumentContext, beforeAllMethods);
                                             return Result.of(State.BEFORE_ALL_SUCCESS);
                                         } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
+                                            AnsiColorStackTrace.printStackTrace(t, System.err);
                                             return Result.of(State.BEFORE_ALL_FAILURE, t);
                                         }
                                     });
@@ -262,11 +263,10 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
 
                                 for (TestMethodTestDescriptor testMethodTestDescriptor :
                                         testMethodTestDescriptors) {
-                                    InvocationResult invocationResult =
+                                    invocationResults.add(
                                             testMethodTestDescriptor
                                                     .getInvocation(invocationContext)
-                                                    .proceed();
-                                    invocationResults.add(invocationResult);
+                                                    .proceed());
                                 }
 
                                 Optional<InvocationResult> optionalInvocationResult =
@@ -274,13 +274,15 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                                 .filter(InvocationResult::isFailure)
                                                 .findFirst();
 
-                                if (!optionalInvocationResult.isPresent()) {
-                                    return Result.of(State.EXECUTE_SUCCESS);
-                                } else {
-                                    return Result.of(State.EXECUTE_FAILURE);
-                                }
+                                return optionalInvocationResult
+                                        .map(
+                                                invocationResult ->
+                                                        Result.of(
+                                                                State.EXECUTE_FAILURE,
+                                                                invocationResult.getThrowable()))
+                                        .orElseGet(() -> Result.of(State.EXECUTE_SUCCESS));
                             } catch (Throwable t) {
-                                t.printStackTrace(System.err);
+                                AnsiColorStackTrace.printStackTrace(t, System.err);
                                 return Result.of(State.EXECUTE_FAILURE, t);
                             }
                         });
@@ -294,10 +296,9 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                     testMethodTestDescriptors.iterator();
 
                             while (testMethodTestDescriptorIterator.hasNext()) {
-                                TestMethodTestDescriptor testMethodTestDescriptor =
-                                        testMethodTestDescriptorIterator.next();
                                 InvocationResult invocationResult =
-                                        testMethodTestDescriptor
+                                        testMethodTestDescriptorIterator
+                                                .next()
                                                 .getInvocation(invocationContext)
                                                 .proceed();
                                 invocationResults.add(invocationResult);
@@ -307,13 +308,11 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                             }
 
                             while (testMethodTestDescriptorIterator.hasNext()) {
-                                TestMethodTestDescriptor testMethodTestDescriptor =
-                                        testMethodTestDescriptorIterator.next();
-                                InvocationResult invocationResult =
-                                        testMethodTestDescriptor
+                                invocationResults.add(
+                                        testMethodTestDescriptorIterator
+                                                .next()
                                                 .getInvocation(invocationContext)
-                                                .skip();
-                                invocationResults.add(invocationResult);
+                                                .skip());
                             }
 
                             Optional<InvocationResult> optionalInvocationResult =
@@ -321,11 +320,13 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                             .filter(InvocationResult::isFailure)
                                             .findFirst();
 
-                            if (!optionalInvocationResult.isPresent()) {
-                                return Result.of(State.EXECUTE_SUCCESS);
-                            } else {
-                                return Result.of(State.EXECUTE_FAILURE);
-                            }
+                            return optionalInvocationResult
+                                    .map(
+                                            invocationResult ->
+                                                    Result.of(
+                                                            State.EXECUTE_FAILURE,
+                                                            invocationResult.getThrowable()))
+                                    .orElseGet(() -> Result.of(State.EXECUTE_SUCCESS));
                         });
             }
 
@@ -341,7 +342,7 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                                             .skip());
                                     return Result.of(State.SKIP_SUCCESS);
                                 } catch (Throwable t) {
-                                    t.printStackTrace(System.err);
+                                    AnsiColorStackTrace.printStackTrace(t, System.err);
                                     return Result.of(State.SKIP_FAILURE, t);
                                 }
                             })
@@ -357,7 +358,7 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                             argumentContext, afterAllMethods);
                                     return Result.of(State.AFTER_ALL_SUCCESS);
                                 } catch (Throwable t) {
-                                    t.printStackTrace(System.err);
+                                    AnsiColorStackTrace.printStackTrace(t, System.err);
                                     return Result.of(State.AFTER_ALL_FAILURE, t);
                                 }
                             })
@@ -371,7 +372,7 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                     }
                                     return Result.of(State.AUTO_CLOSE_ARGUMENT_SUCCESS);
                                 } catch (Throwable t) {
-                                    t.printStackTrace(System.err);
+                                    AnsiColorStackTrace.printStackTrace(t, System.err);
                                     return Result.of(State.AUTO_CLOSE_ARGUMENT_FAILURE, t);
                                 }
                             })
@@ -388,7 +389,7 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
                                         try {
                                             ((AutoCloseable) value).close();
                                         } catch (Throwable t) {
-                                            t.printStackTrace(System.err);
+                                            AnsiColorStackTrace.printStackTrace(t, System.err);
                                             throwables.add(t);
                                         }
                                     }
@@ -418,7 +419,9 @@ public class ArgumentTestDescriptor extends AbstractTestDescriptor
             engineExecutionListener.executionFinished(argumentTestDescriptor, testExecutionResult);
 
             if (testExecutionResult.getStatus() == TestExecutionResult.Status.FAILED) {
-                return InvocationResult.create(InvocationResult.Type.FAILURE);
+                return InvocationResult.create(
+                        InvocationResult.Type.FAILURE,
+                        stateMachine.getFirstResultWithThrowable().get().getThrowable());
             } else {
                 return InvocationResult.create(InvocationResult.Type.SUCCESS);
             }

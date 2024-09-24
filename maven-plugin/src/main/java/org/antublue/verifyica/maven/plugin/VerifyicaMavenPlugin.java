@@ -234,6 +234,8 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
             if (((StatusEngineDescriptor) testDescriptor).getFailureCount() > 0) {
                 throw new MojoFailureException("");
+            } else if (((StatusEngineDescriptor) testDescriptor).getTestCount() == 0) {
+                // TODO
             }
         } catch (Throwable t) {
             throw new MojoFailureException(t);

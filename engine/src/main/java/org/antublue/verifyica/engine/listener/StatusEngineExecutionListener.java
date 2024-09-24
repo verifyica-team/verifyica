@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.engine.common.AnsiColor;
+import org.antublue.verifyica.engine.common.AnsiColorStackTrace;
 import org.antublue.verifyica.engine.common.AnsiColoredString;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
@@ -145,7 +146,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
                 System.out.println(ansiColorAnsiColoredString);
             } catch (Throwable t) {
-                t.printStackTrace(System.err);
+                AnsiColorStackTrace.printStackTrace(t, System.err);
             }
         }
     }
@@ -203,7 +204,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
                 System.out.println(ansiColoredString);
             } catch (Throwable t) {
-                t.printStackTrace(System.err);
+                AnsiColorStackTrace.printStackTrace(t, System.err);
             }
         }
     }
@@ -285,7 +286,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
                 System.out.println(ansiColoredString);
             } catch (Throwable t) {
-                t.printStackTrace(System.err);
+                AnsiColorStackTrace.printStackTrace(t, System.err);
             }
         }
     }

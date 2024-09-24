@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import org.antublue.verifyica.api.interceptor.engine.ClassDefinition;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptor;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
+import org.antublue.verifyica.engine.common.AnsiColorStackTrace;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.Constants;
@@ -228,7 +229,7 @@ public class EngineInterceptorManager {
                         "engine interceptor [%s] onDestroy() failure",
                         engineInterceptor.getClass().getName());
 
-                t.printStackTrace(System.err);
+                AnsiColorStackTrace.printStackTrace(t, System.err);
             }
         }
     }

@@ -16,6 +16,8 @@
 
 package org.antublue.verifyica.engine.invocation;
 
+import java.util.Objects;
+
 /** Class to implement InvocationResult */
 public class InvocationResult {
 
@@ -30,6 +32,7 @@ public class InvocationResult {
     }
 
     private final Type type;
+    private final Throwable throwable;
 
     /**
      * Constructor
@@ -37,7 +40,20 @@ public class InvocationResult {
      * @param type typee
      */
     private InvocationResult(Type type) {
+        this(type, null);
+    }
+
+    private InvocationResult(Type type, Throwable throwable) {
         this.type = type;
+        this.throwable = throwable;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Throwable getThrowable() {
+        return throwable;
     }
 
     /**
@@ -67,6 +83,24 @@ public class InvocationResult {
         return type == Type.SKIPPED;
     }
 
+    @Override
+    public String toString() {
+        return "InvocationResult{" + "type=" + type + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InvocationResult that = (InvocationResult) o;
+        return type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(type);
+    }
+
     /**
      * Method to create an InvocationResult
      *
@@ -75,5 +109,9 @@ public class InvocationResult {
      */
     public static InvocationResult create(Type type) {
         return new InvocationResult(type);
+    }
+
+    public static InvocationResult create(Type type, Throwable throwable) {
+        return new InvocationResult(type, throwable);
     }
 }

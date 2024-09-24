@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.common.AnsiColor;
+import org.antublue.verifyica.engine.common.AnsiColorStackTrace;
 import org.antublue.verifyica.engine.common.AnsiColoredString;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
@@ -83,7 +84,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         counterKeyToMessageDisplayStringMap.put("test.method.count.skipped", "Skipped");
     }
 
-    private boolean hasTests;
+    private final AtomicLong testCount;
     private final AtomicLong failureCount;
 
     private final Map<ClassTestDescriptor, TestExecutionResult>
@@ -106,6 +107,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     /** Constructor */
     public SummaryEngineExecutionListener() {
+        testCount = new AtomicLong();
         failureCount = new AtomicLong();
 
         classTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
@@ -127,8 +129,8 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             stopWatch.reset();
         }
 
-        if (!testDescriptor.isRoot()) {
-            hasTests = true;
+        if (!testDescriptor.isRoot() && testDescriptor instanceof ClassTestDescriptor) {
+            testCount.incrementAndGet();
         }
     }
 
@@ -164,6 +166,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         }
 
         if (testDescriptor instanceof StatusEngineDescriptor) {
+            ((StatusEngineDescriptor) testDescriptor).setTestCount(testCount.get());
             ((StatusEngineDescriptor) testDescriptor).setFailureCount(failureCount.get());
             summary();
         }
@@ -312,7 +315,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 }
             }
 
-            if (hasTests) {
+            if (testCount.get() > 0) {
                 println(INFO + SEPARATOR);
                 println(INFO + SUMMARY_BANNER);
                 println(INFO + SEPARATOR);
@@ -452,7 +455,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 println(INFO + SEPARATOR);
             }
         } catch (Throwable t) {
-            t.printStackTrace(System.err);
+            AnsiColorStackTrace.printStackTrace(t, System.err);
         }
     }
 
