@@ -287,6 +287,25 @@ Used to register a test class specific [ClassInterceptor](api/src/main/java/org/
 - must not define any parameters
 - may throw `Throwable`
 
+---
+
+### @Verifyica.Step
+
+Used to define _scenario_ test method execution order
+
+- optional
+- `id` is required
+  - must not effectively be blank
+- `nextId` defines the next _step_ in the _scenario_
+  - an empty `nextId` signals the end of the scenario 
+
+**Notes**
+
+- The `id` -> `nextId` defines a DAG (Directed Acyclic Graph)
+
+- A test class can only have `id` -> `nextId` mappings that define a single DAG
+  - multiple DAGs are not supported 
+
 ### @Verifyica.IndependentTests
 
 Used to indicate that test methods in a test class are independent of each other.
