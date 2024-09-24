@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import org.antublue.verifyica.api.ClassContext;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
-import org.antublue.verifyica.engine.common.AnsiColorStackTrace;
+import org.antublue.verifyica.engine.common.AnsiColoredStackTrace;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.SemaphoreRunnable;
 import org.antublue.verifyica.engine.common.statemachine.Result;
@@ -40,7 +40,6 @@ import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.antublue.verifyica.engine.context.ConcreteClassContext;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.antublue.verifyica.engine.invocation.InvocableTestDescriptor;
-import org.antublue.verifyica.engine.invocation.Invocation;
 import org.antublue.verifyica.engine.invocation.InvocationContext;
 import org.antublue.verifyica.engine.invocation.InvocationResult;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -51,11 +50,10 @@ import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
-import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.junit.platform.engine.support.descriptor.ClassSource;
 
 /** Class to implement ClassTestDescriptor */
-public class ClassTestDescriptor extends AbstractTestDescriptor implements InvocableTestDescriptor {
+public class ClassTestDescriptor extends InvocableTestDescriptor {
 
     private final int testArgumentParallelism;
     private final Class<?> testClass;
@@ -158,14 +156,19 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
     }
 
     @Override
-    public Invocation getInvocation(InvocationContext invocationContext) {
-        return new ConcreteInvocation(this, invocationContext);
+    public void test(InvocationContext invocationContext) {
+        setInvocationResult(new Invoker(invocationContext, this).test());
     }
 
-    /** Class to implement ConcreteInvocation */
-    private static class ConcreteInvocation implements Invocation {
+    @Override
+    public void skip(InvocationContext invocationContext) {
+        setInvocationResult(new Invoker(invocationContext, this).skip());
+    }
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(Invocation.class);
+    /** Class to implement Invoker */
+    private static class Invoker {
+
+        private static final Logger LOGGER = LoggerFactory.getLogger(Invoker.class);
 
         private final InvocationContext invocationContext;
         private final ClassTestDescriptor classTestDescriptor;
@@ -203,11 +206,11 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
         /**
          * Constructor
          *
-         * @param classTestDescriptor classTestDescriptor
          * @param invocationContext invocationContext
+         * @param classTestDescriptor classTestDescriptor
          */
-        private ConcreteInvocation(
-                ClassTestDescriptor classTestDescriptor, InvocationContext invocationContext) {
+        private Invoker(
+                InvocationContext invocationContext, ClassTestDescriptor classTestDescriptor) {
             this.invocationContext = invocationContext;
 
             this.classTestDescriptor = classTestDescriptor;
@@ -244,9 +247,8 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
         }
 
-        @Override
-        public InvocationResult proceed() {
-            LOGGER.trace("proceed() %s", classTestDescriptor);
+        private InvocationResult test() {
+            LOGGER.trace("test() %s", classTestDescriptor);
 
             engineExecutionListener.executionStarted(classTestDescriptor);
 
@@ -272,7 +274,8 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                                     classContext, prepareMethods);
                                             return Result.of(State.PREPARE_SUCCESS);
                                         } catch (Throwable t) {
-                                            AnsiColorStackTrace.printStackTrace(t, System.err);
+                                            AnsiColoredStackTrace.printRedBoldStackTrace(
+                                                    System.err, t);
                                             return Result.of(State.PREPARE_FAILURE, t);
                                         }
                                     })
@@ -324,10 +327,9 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                                                                             threadName,
                                                                                             () ->
                                                                                                     argumentTestDescriptor
-                                                                                                            .getInvocation(
+                                                                                                            .test(
                                                                                                                     invocationContext
-                                                                                                                            .copy())
-                                                                                                            .proceed()))));
+                                                                                                                            .copy())))));
                                                         });
 
                                                 ExecutorSupport.waitForAllFutures(
@@ -335,15 +337,27 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                             } else {
                                                 argumentTestDescriptors.forEach(
                                                         argumentTestDescriptor ->
-                                                                argumentTestDescriptor
-                                                                        .getInvocation(
-                                                                                invocationContext)
-                                                                        .proceed());
+                                                                argumentTestDescriptor.test(
+                                                                        invocationContext));
+                                            }
+
+                                            for (ArgumentTestDescriptor argumentTestDescriptor :
+                                                    argumentTestDescriptors) {
+                                                if (argumentTestDescriptor
+                                                        .getInvocationResult()
+                                                        .isFailure()) {
+                                                    return Result.of(
+                                                            State.EXECUTE_FAILURE,
+                                                            argumentTestDescriptor
+                                                                    .getInvocationResult()
+                                                                    .getThrowable());
+                                                }
                                             }
 
                                             return Result.of(State.EXECUTE_SUCCESS);
                                         } catch (Throwable t) {
-                                            AnsiColorStackTrace.printStackTrace(t, System.err);
+                                            AnsiColoredStackTrace.printRedBoldStackTrace(
+                                                    System.err, t);
                                             return Result.of(State.EXECUTE_FAILURE, t);
                                         }
                                     })
@@ -353,17 +367,16 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                         try {
                                             argumentTestDescriptors.forEach(
                                                     argumentTestDescriptor ->
-                                                            argumentTestDescriptor
-                                                                    .getInvocation(
-                                                                            invocationContext)
-                                                                    .skip());
+                                                            argumentTestDescriptor.skip(
+                                                                    invocationContext));
 
                                             engineExecutionListener.executionSkipped(
                                                     classTestDescriptor, "Skipped");
 
                                             return Result.of(State.SKIP_SUCCESS);
                                         } catch (Throwable t) {
-                                            AnsiColorStackTrace.printStackTrace(t, System.err);
+                                            AnsiColoredStackTrace.printRedBoldStackTrace(
+                                                    System.err, t);
                                             return Result.of(State.SKIP_FAILURE, t);
                                         }
                                     })
@@ -380,7 +393,8 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
 
                                             return Result.of(State.CONCLUDE_SUCCESS);
                                         } catch (Throwable t) {
-                                            AnsiColorStackTrace.printStackTrace(t, System.err);
+                                            AnsiColoredStackTrace.printRedBoldStackTrace(
+                                                    System.err, t);
                                             return Result.of(State.CONCLUDE_FAILURE, t);
                                         }
                                     })
@@ -392,7 +406,8 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                             classInterceptorManager.onDestroy(classContext);
                                             return Result.of(State.ON_DESTROY_SUCCESS);
                                         } catch (Throwable t) {
-                                            AnsiColorStackTrace.printStackTrace(t, System.err);
+                                            AnsiColoredStackTrace.printRedBoldStackTrace(
+                                                    System.err, t);
                                             return Result.of(State.ON_DESTROY_FAILURE, t);
                                         }
                                     })
@@ -407,7 +422,8 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                             }
                                             return Result.of(State.AUTO_CLOSE_INSTANCE_SUCCESS);
                                         } catch (Throwable t) {
-                                            AnsiColorStackTrace.printStackTrace(t, System.err);
+                                            AnsiColoredStackTrace.printRedBoldStackTrace(
+                                                    System.err, t);
                                             return Result.of(State.AUTO_CLOSE_INSTANCE_FAILURE, t);
                                         } finally {
                                             testInstanceReference.set(null);
@@ -426,8 +442,8 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
                                                 try {
                                                     ((AutoCloseable) value).close();
                                                 } catch (Throwable t) {
-                                                    AnsiColorStackTrace.printStackTrace(
-                                                            t, System.err);
+                                                    AnsiColoredStackTrace.printRedBoldStackTrace(
+                                                            System.err, t);
                                                     throwables.add(t);
                                                 }
                                             }
@@ -459,15 +475,14 @@ public class ClassTestDescriptor extends AbstractTestDescriptor implements Invoc
 
             engineExecutionListener.executionFinished(classTestDescriptor, testExecutionResult);
 
-            if (testExecutionResult.getStatus() == TestExecutionResult.Status.FAILED) {
-                return InvocationResult.create(InvocationResult.Type.FAILURE);
+            if (testExecutionResult.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
+                return InvocationResult.pass();
             } else {
-                return InvocationResult.create(InvocationResult.Type.SUCCESS);
+                return InvocationResult.fail(testExecutionResult.getThrowable().get());
             }
         }
 
-        @Override
-        public InvocationResult skip() {
+        private InvocationResult skip() {
             throw new IllegalStateException("skip() not implemented");
         }
     }

@@ -22,13 +22,12 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.engine.common.AnsiColorStackTrace;
+import org.antublue.verifyica.engine.common.AnsiColoredStackTrace;
 import org.antublue.verifyica.engine.common.Precondition;
 import org.antublue.verifyica.engine.common.statemachine.Result;
 import org.antublue.verifyica.engine.common.statemachine.StateMachine;
 import org.antublue.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.antublue.verifyica.engine.invocation.InvocableTestDescriptor;
-import org.antublue.verifyica.engine.invocation.Invocation;
 import org.antublue.verifyica.engine.invocation.InvocationContext;
 import org.antublue.verifyica.engine.invocation.InvocationResult;
 import org.antublue.verifyica.engine.logger.Logger;
@@ -37,12 +36,10 @@ import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
-import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.junit.platform.engine.support.descriptor.MethodSource;
 
 /** Class to implement TestMethodTestDescriptor */
-public class TestMethodTestDescriptor extends AbstractTestDescriptor
-        implements InvocableTestDescriptor {
+public class TestMethodTestDescriptor extends InvocableTestDescriptor {
 
     private final List<Method> beforeEachMethods;
     private final Method testMethod;
@@ -112,8 +109,13 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
     }
 
     @Override
-    public Invocation getInvocation(InvocationContext invocationContext) {
-        return new ConcreteInvocation(this, invocationContext);
+    public void test(InvocationContext invocationContext) {
+        setInvocationResult(new Invoker(invocationContext, this).test());
+    }
+
+    @Override
+    public void skip(InvocationContext invocationContext) {
+        setInvocationResult(new Invoker(invocationContext, this).skip());
     }
 
     @Override
@@ -132,10 +134,10 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                 + '}';
     }
 
-    /** Class to implement ConcreteInvocation */
-    private static class ConcreteInvocation implements Invocation {
+    /** Class to implement Invoker */
+    private static class Invoker {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(Invocation.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(Invoker.class);
 
         private final ArgumentContext argumentContext;
         private final TestMethodTestDescriptor testMethodTestDescriptor;
@@ -159,12 +161,12 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
         /**
          * Constructor
          *
-         * @param testMethodTestDescriptor testMethodTestDescriptor
          * @param invocationContext invocationContext
+         * @param testMethodTestDescriptor testMethodTestDescriptor
          */
-        private ConcreteInvocation(
-                TestMethodTestDescriptor testMethodTestDescriptor,
-                InvocationContext invocationContext) {
+        private Invoker(
+                InvocationContext invocationContext,
+                TestMethodTestDescriptor testMethodTestDescriptor) {
             this.argumentContext = invocationContext.get(ArgumentContext.class);
             this.testMethodTestDescriptor = testMethodTestDescriptor;
             this.beforeEachMethods = testMethodTestDescriptor.getBeforeEachMethods();
@@ -175,9 +177,8 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
         }
 
-        @Override
-        public InvocationResult proceed() {
-            LOGGER.trace("proceed() %s", testMethodTestDescriptor);
+        private InvocationResult test() {
+            LOGGER.trace("test() %s", testMethodTestDescriptor);
 
             engineExecutionListener.executionStarted(testMethodTestDescriptor);
 
@@ -194,7 +195,8 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                                                     argumentContext, beforeEachMethods);
                                             return Result.of(State.BEFORE_EACH_SUCCESS);
                                         } catch (Throwable t) {
-                                            AnsiColorStackTrace.printStackTrace(t, System.err);
+                                            AnsiColoredStackTrace.printRedBoldStackTrace(
+                                                    System.err, t);
                                             return Result.of(State.BEFORE_EACH_FAILURE, t);
                                         }
                                     })
@@ -206,7 +208,8 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                                                     argumentContext, testMethod);
                                             return Result.of(State.TEST_SUCCESS);
                                         } catch (Throwable t) {
-                                            AnsiColorStackTrace.printStackTrace(t, System.err);
+                                            AnsiColoredStackTrace.printRedBoldStackTrace(
+                                                    System.err, t);
                                             return Result.of(State.TEST_FAILURE, t);
                                         }
                                     })
@@ -221,7 +224,8 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                                                     argumentContext, afterEachMethods);
                                             return Result.of(State.AFTER_EACH_SUCCESS);
                                         } catch (Throwable t) {
-                                            AnsiColorStackTrace.printStackTrace(t, System.err);
+                                            AnsiColoredStackTrace.printRedBoldStackTrace(
+                                                    System.err, t);
                                             return Result.of(State.AFTER_EACH_FAILURE, t);
                                         }
                                     })
@@ -246,22 +250,20 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
                         testMethodTestDescriptor, testExecutionResult);
 
                 if (testExecutionResult.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
-                    return InvocationResult.create(InvocationResult.Type.SUCCESS);
+                    return InvocationResult.pass();
                 } else {
-                    return InvocationResult.create(
-                            InvocationResult.Type.FAILURE,
+                    return InvocationResult.fail(
                             stateMachine.getFirstResultWithThrowable().get().getThrowable());
                 }
             } else {
                 engineExecutionListener.executionSkipped(
                         testMethodTestDescriptor, skippedMessage.get());
 
-                return InvocationResult.create(InvocationResult.Type.SKIPPED);
+                return InvocationResult.skipped();
             }
         }
 
-        @Override
-        public InvocationResult skip() {
+        private InvocationResult skip() {
             LOGGER.trace("skip() %s", testMethodTestDescriptor);
 
             engineExecutionListener.executionStarted(testMethodTestDescriptor);
@@ -269,7 +271,7 @@ public class TestMethodTestDescriptor extends AbstractTestDescriptor
             engineExecutionListener.executionFinished(
                     testMethodTestDescriptor, TestExecutionResult.aborted(null));
 
-            return InvocationResult.create(InvocationResult.Type.SKIPPED);
+            return InvocationResult.skipped();
         }
     }
 }

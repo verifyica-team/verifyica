@@ -25,12 +25,11 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import org.antublue.verifyica.engine.VerifyicaTestEngine;
 import org.antublue.verifyica.engine.common.AnsiColor;
-import org.antublue.verifyica.engine.common.AnsiColorStackTrace;
+import org.antublue.verifyica.engine.common.AnsiColoredStackTrace;
 import org.antublue.verifyica.engine.common.AnsiColoredString;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
-import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.support.HumanReadableTimeSupport;
 import org.junit.platform.engine.EngineExecutionListener;
@@ -84,9 +83,6 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         counterKeyToMessageDisplayStringMap.put("test.method.count.skipped", "Skipped");
     }
 
-    private final AtomicLong testCount;
-    private final AtomicLong failureCount;
-
     private final Map<ClassTestDescriptor, TestExecutionResult>
             classTestDescriptorTestExecutionResultMap;
 
@@ -102,14 +98,12 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     private final Map<TestMethodTestDescriptor, String> testMethodTestDescriptorSkippedMap;
 
+    private final AtomicLong failureCount;
     private final Map<String, AtomicLong> counterMap;
     private final Stopwatch stopWatch;
 
     /** Constructor */
     public SummaryEngineExecutionListener() {
-        testCount = new AtomicLong();
-        failureCount = new AtomicLong();
-
         classTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
         classTestDescriptorSkippedMap = new ConcurrentHashMap<>();
 
@@ -119,6 +113,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         testMethodTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
         testMethodTestDescriptorSkippedMap = new ConcurrentHashMap<>();
 
+        failureCount = new AtomicLong();
         counterMap = new ConcurrentHashMap<>();
         stopWatch = new Stopwatch();
     }
@@ -127,10 +122,6 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     public void executionStarted(TestDescriptor testDescriptor) {
         if (testDescriptor.isRoot()) {
             stopWatch.reset();
-        }
-
-        if (!testDescriptor.isRoot() && testDescriptor instanceof ClassTestDescriptor) {
-            testCount.incrementAndGet();
         }
     }
 
@@ -160,14 +151,11 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     (TestMethodTestDescriptor) testDescriptor, testExecutionResult);
         }
 
-        if (!testDescriptor.isRoot()
-                && testExecutionResult.getStatus() != TestExecutionResult.Status.SUCCESSFUL) {
+        if (testExecutionResult.getStatus() == TestExecutionResult.Status.FAILED) {
             failureCount.incrementAndGet();
         }
 
-        if (testDescriptor instanceof StatusEngineDescriptor) {
-            ((StatusEngineDescriptor) testDescriptor).setTestCount(testCount.get());
-            ((StatusEngineDescriptor) testDescriptor).setFailureCount(failureCount.get());
+        if (testDescriptor.isRoot()) {
             summary();
         }
     }
@@ -315,11 +303,9 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 }
             }
 
-            if (testCount.get() > 0) {
-                println(INFO + SEPARATOR);
-                println(INFO + SUMMARY_BANNER);
-                println(INFO + SEPARATOR);
-            }
+            println(INFO + SEPARATOR);
+            println(INFO + SUMMARY_BANNER);
+            println(INFO + SEPARATOR);
 
             int countPad =
                     getPad(
@@ -455,7 +441,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 println(INFO + SEPARATOR);
             }
         } catch (Throwable t) {
-            AnsiColorStackTrace.printStackTrace(t, System.err);
+            AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
         }
     }
 

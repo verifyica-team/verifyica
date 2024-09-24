@@ -18,16 +18,24 @@ package org.antublue.verifyica.engine.common;
 
 import java.io.PrintStream;
 
-public class AnsiColorStackTrace {
+/** Class to implement AnsiColorStackTrace */
+public class AnsiColoredStackTrace {
 
-    private AnsiColorStackTrace() {
+    /** Constructor */
+    private AnsiColoredStackTrace() {
         // INTENTIONALLY BLANK
     }
 
-    public static void printStackTrace(Throwable t, PrintStream printStream) {
+    /**
+     * Method to print the stacktrace in red bold text
+     *
+     * @param printStream printStream
+     * @param throwable throwable
+     */
+    public static void printRedBoldStackTrace(PrintStream printStream, Throwable throwable) {
         synchronized (printStream) {
             printStream.print(AnsiColor.TEXT_RED_BOLD);
-            t.printStackTrace(printStream);
+            throwable.printStackTrace(printStream);
             printStream.print(AnsiColor.NONE);
         }
     }

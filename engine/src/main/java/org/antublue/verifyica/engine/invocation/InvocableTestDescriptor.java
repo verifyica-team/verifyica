@@ -16,14 +16,53 @@
 
 package org.antublue.verifyica.engine.invocation;
 
-/** Interface to implement InvocableTestDescriptor */
-public interface InvocableTestDescriptor {
+import org.junit.platform.engine.UniqueId;
+import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
+
+/** Class to implement InvocableTestDescriptor */
+public abstract class InvocableTestDescriptor extends AbstractTestDescriptor {
+
+    private InvocationResult invocationResult;
 
     /**
-     * Method to crete an Invocation
+     * Constructor
+     *
+     * @param uniqueId uniqueId
+     * @param displayName displayName
+     */
+    protected InvocableTestDescriptor(UniqueId uniqueId, String displayName) {
+        super(uniqueId, displayName);
+    }
+
+    /**
+     * Method to test execution
      *
      * @param invocationContext invocationContext
-     * @return an Invocation
      */
-    Invocation getInvocation(InvocationContext invocationContext);
+    public abstract void test(InvocationContext invocationContext);
+
+    /**
+     * Method to skip execution
+     *
+     * @param invocationContext invocationContext
+     */
+    public abstract void skip(InvocationContext invocationContext);
+
+    /**
+     * Method to set the invocation result
+     *
+     * @param invocationResult invocationResult
+     */
+    protected void setInvocationResult(InvocationResult invocationResult) {
+        this.invocationResult = invocationResult;
+    }
+
+    /**
+     * Method to get the invocation result
+     *
+     * @return an InvocationResult
+     */
+    public InvocationResult getInvocationResult() {
+        return invocationResult;
+    }
 }
