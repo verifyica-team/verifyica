@@ -54,7 +54,7 @@
   classRegex: "EngineInterceptorTest2"
   methodRegex: ".*"
 
-- type: ExcludeClass
-  enabled: true
-  classRegex: "concurrency"
+- type: IncludeClass
+  enabled: false
+  classRegex: StepTest2
   methodRegex: ".*"
