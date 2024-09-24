@@ -168,8 +168,10 @@ public @interface Verifyica {
     @Retention(RetentionPolicy.RUNTIME)
     @interface Step {
 
+        /** Id value */
         String id();
 
+        /** nextId value */
         String nextId() default "";
     }
 }

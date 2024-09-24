@@ -37,12 +37,18 @@ public class InvocationResult {
     /**
      * Constructor
      *
-     * @param type typee
+     * @param type type
      */
     private InvocationResult(Type type) {
         this(type, null);
     }
 
+    /**
+     * Constructor
+     *
+     * @param type
+     * @param throwable
+     */
     private InvocationResult(Type type, Throwable throwable) {
         this.type = type;
         this.throwable = throwable;
@@ -85,7 +91,7 @@ public class InvocationResult {
 
     @Override
     public String toString() {
-        return "InvocationResult{" + "type=" + type + '}';
+        return "InvocationResult{" + "type=" + type + ", throwable=" + throwable + '}';
     }
 
     @Override
@@ -93,25 +99,49 @@ public class InvocationResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         InvocationResult that = (InvocationResult) o;
-        return type == that.type;
+        return type == that.type && Objects.equals(throwable, that.throwable);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(type);
+        return Objects.hash(type, throwable);
     }
 
     /**
-     * Method to create an InvocationResult
+     * Method to create successful invocation result
      *
-     * @param type type
      * @return an InvocationResult
      */
-    public static InvocationResult create(Type type) {
-        return new InvocationResult(type);
+    public static InvocationResult pass() {
+        return new InvocationResult(Type.SUCCESS);
     }
 
-    public static InvocationResult create(Type type, Throwable throwable) {
-        return new InvocationResult(type, throwable);
+    /**
+     * Method to create a skipped invocation result
+     *
+     * @return an InvocationResult
+     */
+    public static InvocationResult skipped() {
+        return skipped(null);
+    }
+
+    /**
+     * Method to create a skipped invocation result
+     *
+     * @param throwable throwable
+     * @return an InvocationResult
+     */
+    public static InvocationResult skipped(Throwable throwable) {
+        return new InvocationResult(Type.SKIPPED, throwable);
+    }
+
+    /**
+     * Method to create a failure invocation result
+     *
+     * @param throwable throwable
+     * @return an InvocationResult
+     */
+    public static InvocationResult fail(Throwable throwable) {
+        return new InvocationResult(Type.FAILURE, throwable);
     }
 }

@@ -38,7 +38,7 @@ import org.antublue.verifyica.api.Configuration;
 import org.antublue.verifyica.api.EngineContext;
 import org.antublue.verifyica.api.Store;
 import org.antublue.verifyica.api.interceptor.engine.EngineInterceptorContext;
-import org.antublue.verifyica.engine.common.AnsiColorStackTrace;
+import org.antublue.verifyica.engine.common.AnsiColoredStackTrace;
 import org.antublue.verifyica.engine.common.FairExecutorService;
 import org.antublue.verifyica.engine.common.Stopwatch;
 import org.antublue.verifyica.engine.common.Streams;
@@ -48,7 +48,6 @@ import org.antublue.verifyica.engine.context.ConcreteEngineContext;
 import org.antublue.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.antublue.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.antublue.verifyica.engine.descriptor.ClassTestDescriptor;
-import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
 import org.antublue.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.antublue.verifyica.engine.exception.EngineConfigurationException;
 import org.antublue.verifyica.engine.exception.EngineException;
@@ -193,7 +192,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
         LOGGER.trace("discover()");
 
-        EngineDescriptor engineDescriptor = new StatusEngineDescriptor(uniqueId, DISPLAY_NAME);
+        EngineDescriptor engineDescriptor = new EngineDescriptor(uniqueId, DISPLAY_NAME);
 
         try {
             initialize();
@@ -297,16 +296,13 @@ public class VerifyicaTestEngine implements TestEngine {
                                             new ThreadNameRunnable(
                                                     threadName,
                                                     () ->
-                                                            classTestDescriptor
-                                                                    .getInvocation(
-                                                                            invocationContext
-                                                                                    .copy())
-                                                                    .proceed())));
+                                                            classTestDescriptor.test(
+                                                                    invocationContext.copy()))));
                         });
 
                 ExecutorSupport.waitForAllFutures(futures, classExecutorService);
             } catch (Throwable t) {
-                AnsiColorStackTrace.printStackTrace(t, System.err);
+                AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
                 throwables.add(t);
             } finally {
                 ExecutorSupport.shutdownAndAwaitTermination(argumentExecutorService);
@@ -322,7 +318,7 @@ public class VerifyicaTestEngine implements TestEngine {
                             LOGGER.trace("storeAutoClose(" + key + ").success");
                         } catch (Throwable t) {
                             LOGGER.trace("storeAutoClose(" + key + ").failure");
-                            AnsiColorStackTrace.printStackTrace(t, System.err);
+                            AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
                             throwables.add(t);
                         }
                     }
@@ -332,7 +328,7 @@ public class VerifyicaTestEngine implements TestEngine {
                 try {
                     engineInterceptorManager.postExecute(engineInterceptorContext);
                 } catch (Throwable t) {
-                    AnsiColorStackTrace.printStackTrace(t, System.err);
+                    AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
                     throwables.add(t);
                 }
             }

@@ -44,7 +44,7 @@ import org.antublue.verifyica.engine.common.Streams;
 import org.antublue.verifyica.engine.configuration.ConcreteConfiguration;
 import org.antublue.verifyica.engine.configuration.ConcreteConfigurationParameters;
 import org.antublue.verifyica.engine.configuration.Constants;
-import org.antublue.verifyica.engine.descriptor.StatusEngineDescriptor;
+import org.antublue.verifyica.engine.invocation.InvocableTestDescriptor;
 import org.antublue.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.StatusEngineExecutionListener;
 import org.antublue.verifyica.engine.listener.SummaryEngineExecutionListener;
@@ -232,10 +232,12 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         try {
             execute(testDescriptor);
 
-            if (((StatusEngineDescriptor) testDescriptor).getFailureCount() > 0) {
-                throw new MojoFailureException("");
-            } else if (((StatusEngineDescriptor) testDescriptor).getTestCount() == 0) {
-                // TODO
+            for (TestDescriptor ancestorTestDescriptor : testDescriptor.getAncestors()) {
+                InvocableTestDescriptor invocableTestDescriptor =
+                        (InvocableTestDescriptor) ancestorTestDescriptor;
+                if (invocableTestDescriptor.getInvocationResult().isFailure()) {
+                    throw new MojoFailureException("");
+                }
             }
         } catch (Throwable t) {
             throw new MojoFailureException(t);
@@ -309,7 +311,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                 launcherDiscoveryRequest, UniqueId.forEngine(verifyicaTestEngine.getId()));
     }
 
-    private void execute(TestDescriptor testDescriptor) throws Throwable {
+    private void execute(TestDescriptor testDescriptor) {
         ChainedEngineExecutionListener chainedEngineExecutionListener =
                 new ChainedEngineExecutionListener(
                         new TracingEngineExecutionListener(),
@@ -323,10 +325,6 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                         new ConcreteConfigurationParameters(ConcreteConfiguration.getInstance()));
 
         verifyicaTestEngine.execute(executionRequest);
-
-        if (((StatusEngineDescriptor) testDescriptor).getFailureCount() > 0) {
-            throw new MojoFailureException("");
-        }
     }
 
     /**
