@@ -2,12 +2,14 @@
 
 Contributions to Verifyica are both welcomed and appreciated.
 
-The project uses a [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow) branching strategy, with release branches for versioned documentation.
+The project uses an Enhanced GitHub Flow branching strategy.
 
-Release branch code is considered "locked" - no code changes accepted, but documentation changes are allowed.
+- `release` branch for the latest released code (default)
+- `development` for active development
 
-- The `main` branch contains the latest unreleased code
-- Release branches `release-<VERSION>` contain code and documentation for a specific release
+Release branch code is considered "**locked**" the source of truth for the latest release. Only documentation changes are allowed.
+
+- The `development` branch contains the latest unreleased code
 - Google checkstyle format is required
 - [Google Java Style](https://google.github.io/styleguide/javaguide.html) is required
 - [Spotless](https://github.com/diffplug/spotless) for checking/applying Google Java Style
@@ -18,10 +20,10 @@ Release branch code is considered "locked" - no code changes accepted, but docum
 For changes, you should...
 
 - Fork the repository
-- Create a branch for your work off of `main`
+- Create a branch for your work off of `development`
 - Make changes on your branch
 - Build and test your changes
-- Open a pull request targeting `main`, tagging `@antublue` for review
+- Open a pull request targeting `development`, tagging `@antublue` for review
 - A [Developer Certificate of Origin](DCO.md) (DCO) is required for all contributions
 
 ---
