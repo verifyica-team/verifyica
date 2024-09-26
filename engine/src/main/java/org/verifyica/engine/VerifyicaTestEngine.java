@@ -301,8 +301,11 @@ public class VerifyicaTestEngine implements TestEngine {
                                             new ThreadNameRunnable(
                                                     threadName,
                                                     () ->
-                                                            classTestDescriptor.getTestInvocation(
-                                                                    invocationContext.copy()))));
+                                                            classTestDescriptor
+                                                                    .getTestInvocation(
+                                                                            invocationContext
+                                                                                    .copy())
+                                                                    .invoke())));
                         });
 
                 ExecutorSupport.waitForAllFutures(futures, classExecutorService);

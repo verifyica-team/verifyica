@@ -138,8 +138,8 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
     }
 
     @Override
-    public void getTestInvocation(InvocationContext invocationContext) {
-        setInvocationResult(new TestInvocation(invocationContext, this).test());
+    public Invocation getTestInvocation(InvocationContext invocationContext) {
+        return new TestInvocation(this, invocationContext);
     }
 
     @Override
@@ -168,7 +168,7 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
     }
 
     /** Class to implement TestInvocation */
-    private static class TestInvocation {
+    private static class TestInvocation implements Invocation {
 
         private static final Logger LOGGER = LoggerFactory.getLogger(TestInvocation.class);
 
@@ -201,12 +201,12 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
         /**
          * Constructor
          *
-         * @param invocationContext invocationContext
          * @param argumentTestDescriptor argumentTestDescriptor
+         * @param invocationContext invocationContext
          */
         private TestInvocation(
-                InvocationContext invocationContext,
-                ArgumentTestDescriptor argumentTestDescriptor) {
+                ArgumentTestDescriptor argumentTestDescriptor,
+                InvocationContext invocationContext) {
             this.invocationContext = invocationContext;
 
             this.argumentTestDescriptor = argumentTestDescriptor;
@@ -234,8 +234,9 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
         }
 
-        private InvocationResult test() {
-            LOGGER.trace("test() %s", argumentTestDescriptor);
+        @Override
+        public void invoke() {
+            LOGGER.trace("invoke() %s", argumentTestDescriptor);
 
             engineExecutionListener.executionStarted(argumentTestDescriptor);
 
@@ -264,19 +265,19 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                             try {
                                 for (TestMethodTestDescriptor testMethodTestDescriptor :
                                         testMethodTestDescriptors) {
-                                    testMethodTestDescriptor.getTestInvocation(invocationContext);
+                                    testMethodTestDescriptor
+                                            .getTestInvocation(invocationContext)
+                                            .invoke();
                                 }
 
                                 for (TestMethodTestDescriptor testMethodTestDescriptor :
                                         testMethodTestDescriptors) {
-                                    if (testMethodTestDescriptor
-                                            .getInvocationResult()
-                                            .isFailure()) {
+                                    InvocationResult invocationResult =
+                                            testMethodTestDescriptor.getInvocationResult();
+                                    if (invocationResult.isFailure()) {
                                         return Result.of(
                                                 State.EXECUTE_FAILURE,
-                                                testMethodTestDescriptor
-                                                        .getInvocationResult()
-                                                        .getThrowable());
+                                                invocationResult.getThrowable());
                                     }
                                 }
 
@@ -290,18 +291,17 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                 stateMachine.onState(
                         State.BEFORE_ALL_SUCCESS,
                         () -> {
-                            InvocationResult failuredInvocationResult = null;
-
                             Iterator<TestMethodTestDescriptor> testMethodTestDescriptorIterator =
                                     testMethodTestDescriptors.iterator();
-
                             while (testMethodTestDescriptorIterator.hasNext()) {
                                 TestMethodTestDescriptor testMethodTestDescriptor =
                                         testMethodTestDescriptorIterator.next();
-                                testMethodTestDescriptor.getTestInvocation(invocationContext);
-                                if (testMethodTestDescriptor.getInvocationResult().isFailure()) {
-                                    failuredInvocationResult =
-                                            testMethodTestDescriptor.getInvocationResult();
+                                testMethodTestDescriptor
+                                        .getTestInvocation(invocationContext)
+                                        .invoke();
+                                InvocationResult invocationResult =
+                                        testMethodTestDescriptor.getInvocationResult();
+                                if (invocationResult.isFailure()) {
                                     break;
                                 }
                             }
@@ -309,16 +309,21 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                             while (testMethodTestDescriptorIterator.hasNext()) {
                                 testMethodTestDescriptorIterator
                                         .next()
-                                        .getSkipInvocation(invocationContext);
+                                        .getSkipInvocation(invocationContext)
+                                        .invoke();
                             }
 
-                            if (failuredInvocationResult != null) {
-                                return Result.of(
-                                        State.EXECUTE_FAILURE,
-                                        failuredInvocationResult.getThrowable());
-                            } else {
-                                return Result.of(State.EXECUTE_SUCCESS);
+                            for (TestMethodTestDescriptor testMethodTestDescriptor :
+                                    testMethodTestDescriptors) {
+                                InvocationResult invocationResult =
+                                        testMethodTestDescriptor.getInvocationResult();
+                                if (invocationResult.isFailure()) {
+                                    return Result.of(
+                                            State.EXECUTE_FAILURE, invocationResult.getThrowable());
+                                }
                             }
+
+                            return Result.of(State.EXECUTE_SUCCESS);
                         });
             }
 
@@ -412,10 +417,11 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
             engineExecutionListener.executionFinished(argumentTestDescriptor, testExecutionResult);
 
             if (testExecutionResult.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
-                return InvocationResult.success();
+                argumentTestDescriptor.setInvocationResult(InvocationResult.success());
             } else {
-                return InvocationResult.exception(
-                        stateMachine.getFirstResultWithThrowable().get().getThrowable());
+                argumentTestDescriptor.setInvocationResult(
+                        InvocationResult.exception(
+                                stateMachine.getFirstResultWithThrowable().get().getThrowable()));
             }
         }
     }

@@ -157,8 +157,8 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
     }
 
     @Override
-    public void getTestInvocation(InvocationContext invocationContext) {
-        setInvocationResult(new Invoker(invocationContext, this).test());
+    public Invocation getTestInvocation(InvocationContext invocationContext) {
+        return new TestInvocation(this, invocationContext);
     }
 
     @Override
@@ -166,10 +166,10 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
         return new SkipInvocation(this, invocationContext);
     }
 
-    /** Class to implement Invoker */
-    private static class Invoker {
+    /** Class to implement TestInvocation */
+    private static class TestInvocation implements Invocation {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(Invoker.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TestInvocation.class);
 
         private final InvocationContext invocationContext;
         private final ClassTestDescriptor classTestDescriptor;
@@ -207,11 +207,11 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
         /**
          * Constructor
          *
-         * @param invocationContext invocationContext
          * @param classTestDescriptor classTestDescriptor
+         * @param invocationContext invocationContext
          */
-        private Invoker(
-                InvocationContext invocationContext, ClassTestDescriptor classTestDescriptor) {
+        private TestInvocation(
+                ClassTestDescriptor classTestDescriptor, InvocationContext invocationContext) {
             this.invocationContext = invocationContext;
 
             this.classTestDescriptor = classTestDescriptor;
@@ -248,8 +248,9 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
         }
 
-        private InvocationResult test() {
-            LOGGER.trace("test() %s", classTestDescriptor);
+        @Override
+        public void invoke() {
+            LOGGER.trace("invoke() %s", classTestDescriptor);
 
             engineExecutionListener.executionStarted(classTestDescriptor);
 
@@ -330,7 +331,8 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
                                                                                                     argumentTestDescriptor
                                                                                                             .getTestInvocation(
                                                                                                                     invocationContext
-                                                                                                                            .copy())))));
+                                                                                                                            .copy())
+                                                                                                            .invoke()))));
                                                         });
 
                                                 ExecutorSupport.waitForAllFutures(
@@ -340,19 +342,19 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
                                                         argumentTestDescriptor ->
                                                                 argumentTestDescriptor
                                                                         .getTestInvocation(
-                                                                                invocationContext));
+                                                                                invocationContext)
+                                                                        .invoke());
                                             }
 
                                             for (ArgumentTestDescriptor argumentTestDescriptor :
                                                     argumentTestDescriptors) {
-                                                if (argumentTestDescriptor
-                                                        .getInvocationResult()
-                                                        .isFailure()) {
+                                                InvocationResult invocationResult =
+                                                        argumentTestDescriptor
+                                                                .getInvocationResult();
+                                                if (invocationResult.isFailure()) {
                                                     return Result.of(
                                                             State.EXECUTE_FAILURE,
-                                                            argumentTestDescriptor
-                                                                    .getInvocationResult()
-                                                                    .getThrowable());
+                                                            invocationResult.getThrowable());
                                                 }
                                             }
 
@@ -480,9 +482,10 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
             engineExecutionListener.executionFinished(classTestDescriptor, testExecutionResult);
 
             if (testExecutionResult.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
-                return InvocationResult.success();
+                classTestDescriptor.setInvocationResult(InvocationResult.success());
             } else {
-                return InvocationResult.exception(testExecutionResult.getThrowable().get());
+                classTestDescriptor.setInvocationResult(
+                        InvocationResult.exception(testExecutionResult.getThrowable().get()));
             }
         }
     }

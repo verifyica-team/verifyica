@@ -19,11 +19,12 @@ package org.verifyica.engine.invocation;
 import java.util.function.Consumer;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
+import org.verifyica.engine.descriptor.InvocableTestDescriptor;
 
 /** Class to implement SkipInvocation */
 public class SkipInvocation implements Invocation {
 
-    private final TestDescriptor testDescriptor;
+    private final InvocableTestDescriptor invocableTestDescriptor;
     private final InvocationContext invocationContext;
     private final EngineExecutionListener engineExecutionListener;
 
@@ -34,16 +35,16 @@ public class SkipInvocation implements Invocation {
      * @param invocationContext invocationContext
      */
     public SkipInvocation(TestDescriptor testDescriptor, InvocationContext invocationContext) {
-        this.testDescriptor = testDescriptor;
+        this.invocableTestDescriptor = (InvocableTestDescriptor) testDescriptor;
         this.invocationContext = invocationContext;
         this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
     }
 
     @Override
-    public InvocationResult invoke() {
-        engineExecutionListener.executionStarted(testDescriptor);
+    public void invoke() {
+        engineExecutionListener.executionStarted(invocableTestDescriptor);
 
-        testDescriptor
+        invocableTestDescriptor
                 .getChildren()
                 .forEach(
                         (Consumer<TestDescriptor>)
@@ -51,8 +52,8 @@ public class SkipInvocation implements Invocation {
                                         new SkipInvocation(testDescriptor, invocationContext)
                                                 .invoke());
 
-        engineExecutionListener.executionSkipped(testDescriptor, "Skipped");
+        engineExecutionListener.executionSkipped(invocableTestDescriptor, "Skipped");
 
-        return InvocationResult.skipped();
+        invocableTestDescriptor.setInvocationResult(InvocationResult.skipped());
     }
 }

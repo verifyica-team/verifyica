@@ -23,7 +23,7 @@ import org.verifyica.engine.invocation.InvocationContext;
 import org.verifyica.engine.invocation.InvocationResult;
 
 /** Class to implement InvocableTestDescriptor */
-public abstract class InvokableTestDescriptor extends AbstractTestDescriptor {
+public abstract class InvocableTestDescriptor extends AbstractTestDescriptor {
 
     private InvocationResult invocationResult;
 
@@ -33,7 +33,7 @@ public abstract class InvokableTestDescriptor extends AbstractTestDescriptor {
      * @param uniqueId uniqueId
      * @param displayName displayName
      */
-    protected InvokableTestDescriptor(UniqueId uniqueId, String displayName) {
+    protected InvocableTestDescriptor(UniqueId uniqueId, String displayName) {
         super(uniqueId, displayName);
     }
 

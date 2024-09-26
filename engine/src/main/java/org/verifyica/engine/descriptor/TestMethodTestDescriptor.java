@@ -106,8 +106,8 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
     }
 
     @Override
-    public void getTestInvocation(InvocationContext invocationContext) {
-        setInvocationResult(new TestInvocation(this, invocationContext).invoke());
+    public Invocation getTestInvocation(InvocationContext invocationContext) {
+        return new TestInvocation(this, invocationContext);
     }
 
     @Override
@@ -164,7 +164,7 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
         }
 
         @Override
-        public InvocationResult invoke() {
+        public void invoke() {
             engineExecutionListener.executionStarted(testMethodTestDescriptor);
 
             State state = State.BEFORE_EACH;
@@ -191,11 +191,12 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
             if (throwables.isEmpty()) {
                 engineExecutionListener.executionFinished(
                         testMethodTestDescriptor, TestExecutionResult.successful());
-                return InvocationResult.success();
+                testMethodTestDescriptor.setInvocationResult(InvocationResult.success());
             } else {
                 engineExecutionListener.executionFinished(
                         testMethodTestDescriptor, TestExecutionResult.failed(throwables.get(0)));
-                return InvocationResult.exception(throwables.get(0));
+                testMethodTestDescriptor.setInvocationResult(
+                        InvocationResult.exception(throwables.get(0)));
             }
         }
 
