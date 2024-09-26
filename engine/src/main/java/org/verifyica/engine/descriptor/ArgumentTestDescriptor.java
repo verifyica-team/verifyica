@@ -44,6 +44,7 @@ import org.verifyica.engine.invocation.InvocableTestDescriptor;
 import org.verifyica.engine.invocation.InvocationContext;
 import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.invocation.InvocationResult;
+import org.verifyica.engine.invocation.SkipInvocation;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
@@ -138,12 +139,12 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
 
     @Override
     public void test(InvocationContext invocationContext) {
-        setInvocationResult(new Invoker(invocationContext, this).test());
+        setInvocationResult(new TestInvocation(invocationContext, this).test());
     }
 
     @Override
     public void skip(InvocationContext invocationContext) {
-        setInvocationResult(new Invoker(invocationContext, this).skip());
+        setInvocationResult(new SkipInvocation(this, invocationContext).invoke());
     }
 
     @Override
@@ -166,10 +167,10 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                 + '}';
     }
 
-    /** Class to implement Invoker */
-    private static class Invoker {
+    /** Class to implement TestInvocation */
+    private static class TestInvocation {
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(Invoker.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(TestInvocation.class);
 
         private final InvocationContext invocationContext;
         private final ArgumentTestDescriptor argumentTestDescriptor;
@@ -203,7 +204,7 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
          * @param invocationContext invocationContext
          * @param argumentTestDescriptor argumentTestDescriptor
          */
-        private Invoker(
+        private TestInvocation(
                 InvocationContext invocationContext,
                 ArgumentTestDescriptor argumentTestDescriptor) {
             this.invocationContext = invocationContext;
@@ -413,20 +414,6 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                 return InvocationResult.exception(
                         stateMachine.getFirstResultWithThrowable().get().getThrowable());
             }
-        }
-
-        private InvocationResult skip() {
-            LOGGER.trace("skip() %s", argumentTestDescriptor);
-
-            engineExecutionListener.executionStarted(argumentTestDescriptor);
-
-            testMethodTestDescriptors.forEach(
-                    testMethodTestDescriptor -> testMethodTestDescriptor.skip(invocationContext));
-
-            engineExecutionListener.executionFinished(
-                    argumentTestDescriptor, TestExecutionResult.aborted(null));
-
-            return InvocationResult.skipped();
         }
     }
 }

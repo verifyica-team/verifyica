@@ -33,6 +33,7 @@ import org.verifyica.engine.invocation.InvocableTestDescriptor;
 import org.verifyica.engine.invocation.InvocationContext;
 import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.invocation.InvocationResult;
+import org.verifyica.engine.invocation.SkipInvocation;
 
 /** Class to implement TestMethodTestDescriptor */
 public class TestMethodTestDescriptor extends InvocableTestDescriptor {
@@ -254,39 +255,6 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
             }
 
             return State.END;
-        }
-    }
-
-    /** Class to implement SkipInvocation */
-    private static class SkipInvocation {
-
-        private final TestMethodTestDescriptor testMethodTestDescriptor;
-        private final EngineExecutionListener engineExecutionListener;
-
-        /**
-         * Constructor
-         *
-         * @param testMethodTestDescriptor testMethodTestDescriptor
-         * @param invocationContext invocationContext
-         */
-        private SkipInvocation(
-                TestMethodTestDescriptor testMethodTestDescriptor,
-                InvocationContext invocationContext) {
-            this.testMethodTestDescriptor = testMethodTestDescriptor;
-            this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
-        }
-
-        /**
-         * Method to invoke the invocation
-         *
-         * @return this
-         */
-        private InvocationResult invoke() {
-            engineExecutionListener.executionStarted(testMethodTestDescriptor);
-            engineExecutionListener.executionFinished(
-                    testMethodTestDescriptor, TestExecutionResult.aborted(null));
-
-            return InvocationResult.skipped();
         }
     }
 }

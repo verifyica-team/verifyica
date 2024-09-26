@@ -47,6 +47,7 @@ import org.verifyica.engine.invocation.InvocableTestDescriptor;
 import org.verifyica.engine.invocation.InvocationContext;
 import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.invocation.InvocationResult;
+import org.verifyica.engine.invocation.SkipInvocation;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ExecutorSupport;
@@ -162,7 +163,7 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
 
     @Override
     public void skip(InvocationContext invocationContext) {
-        setInvocationResult(new Invoker(invocationContext, this).skip());
+        setInvocationResult(new SkipInvocation(this, invocationContext).invoke());
     }
 
     /** Class to implement Invoker */
@@ -480,10 +481,6 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
             } else {
                 return InvocationResult.exception(testExecutionResult.getThrowable().get());
             }
-        }
-
-        private InvocationResult skip() {
-            throw new IllegalStateException("skip() not implemented");
         }
     }
 }
