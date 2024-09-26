@@ -75,7 +75,10 @@ public class Key {
         List<String> tempSegments = new ArrayList<>(segments.length);
 
         for (int i = 0; i < segments.length; i++) {
-            notBlank(segments[i], format("segments[%d] is null", i), format("segments[%d] is blank", i));
+            notBlank(
+                    segments[i],
+                    format("segments[%d] is null", i),
+                    format("segments[%d] is blank", i));
             tempSegments.add(segments[i]);
         }
 
@@ -101,7 +104,8 @@ public class Key {
 
         int i = 0;
         for (String segment : segments) {
-            notBlank(segment, format("segments[%d] is null", i), format("segments[%d] is blank", i));
+            notBlank(
+                    segment, format("segments[%d] is null", i), format("segments[%d] is blank", i));
             rootSegments.add(segment);
             i++;
         }
@@ -151,7 +155,10 @@ public class Key {
 
         List<String> tempSegments = new ArrayList<>(segments.length);
         for (int i = 0; i < segments.length; i++) {
-            notBlank(segments[i], format("segments[%d] is null", i), format("segments[%d] is blank", i));
+            notBlank(
+                    segments[i],
+                    format("segments[%d] is null", i),
+                    format("segments[%d] is blank", i));
             tempSegments.add(segments[i]);
         }
 
