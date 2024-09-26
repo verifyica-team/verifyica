@@ -309,11 +309,11 @@ public class ClassInterceptorManager {
     /**
      * Method to execute ClassInterceptor callbacks
      *
-     * @param argumentContext argumentContext
      * @param beforeEachMethods beforeEachMethods
+     * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void beforeEach(ArgumentContext argumentContext, List<Method> beforeEachMethods)
+    public void beforeAll(List<Method> beforeEachMethods, ArgumentContext argumentContext)
             throws Throwable {
         ClassContext classContext = argumentContext.getClassContext();
 
@@ -360,11 +360,11 @@ public class ClassInterceptorManager {
     /**
      * Method to execute ClassInterceptor callbacks
      *
-     * @param argumentContext argumentContext
      * @param testMethod testMethod
+     * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void test(ArgumentContext argumentContext, Method testMethod) throws Throwable {
+    public void test(Method testMethod, ArgumentContext argumentContext) throws Throwable {
         ClassContext classContext = argumentContext.getClassContext();
 
         Class<?> testClass = classContext.getTestClass();
@@ -408,11 +408,11 @@ public class ClassInterceptorManager {
     /**
      * Method to execute ClassInterceptor callbacks
      *
-     * @param argumentContext argumentContext
      * @param afterEachMethods afterEachMethods
+     * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void afterEach(ArgumentContext argumentContext, List<Method> afterEachMethods)
+    public void afterEach(List<Method> afterEachMethods, ArgumentContext argumentContext)
             throws Throwable {
         ClassContext classContext = argumentContext.getClassContext();
 
