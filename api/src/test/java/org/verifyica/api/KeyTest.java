@@ -19,24 +19,53 @@ package org.verifyica.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 public class KeyTest {
 
     @Test
-    public void test() {
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> Key.of((String) null));
+    public void test1() {
+        Key key1 = Key.of("a");
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> Key.of("foo", null));
+        assertThat(key1.flatten()).isEqualTo("/a");
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> Key.of(null, "bar"));
+        Key key2 = key1.append("b", "c", "d");
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> Key.of(null, null));
+        assertThat(key2.flatten()).isEqualTo("/a/b/c/d");
 
+        List<String> segments = new ArrayList<>();
+        segments.add("a");
+        segments.add("b");
+        segments.add("c");
+
+        Key key3 = key1.append(segments);
+
+        assertThat(key3.flatten()).isEqualTo("/a/a/b/c");
+    }
+
+    @Test
+    public void test2() {
+        Key key1 = Key.of("a");
+
+        assertThat(key1.flatten()).isEqualTo("/a");
+
+        Key key2 = Key.of("a", "b", "c");
+
+        assertThat(key2.flatten()).isEqualTo("/a/b/c");
+
+        Key key3 = key2.append("1");
+
+        assertThat(key3.flatten()).isEqualTo("/a/b/c/1");
+
+        Key key4 = key1.append(key2).append(key3);
+
+        assertThat(key4.flatten()).isEqualTo("/a/a/b/c/a/b/c/1");
+    }
+
+    @Test
+    public void test3() {
         Key key = Key.of("foo", "bar");
 
         assertThat(key).isNotNull();
@@ -72,7 +101,7 @@ public class KeyTest {
         assertThat(key2.segments().get(2)).isEqualTo("value");
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> key.append(null));
+                .isThrownBy(() -> key.append((String) null));
 
         Key classContextKey = Key.of(KeyTest.class.getName(), "class.context.key");
 
@@ -86,5 +115,34 @@ public class KeyTest {
 
         assertThat(barKey.segments()).hasSize(3);
         assertThat(classContextKey.segments()).hasSize(2);
+    }
+
+    @Test
+    public void test4() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> Key.of((String) null));
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> Key.of("foo", null));
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> Key.of(null, "bar"));
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> Key.of(null, null));
+
+        Key key = Key.of("a");
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> key.append((String) null));
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> key.append(null, null));
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> key.append(new ArrayList<>()));
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> key.append((Key) null));
     }
 }

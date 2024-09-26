@@ -63,6 +63,67 @@ public class Key {
     }
 
     /**
+     * Method to an array of Strings to the Key, returning a new Key.
+     *
+     * @param segments segments
+     * @return a new Key with the appended segment
+     */
+    public Key append(String... segments) {
+        notNull(segments, "segments is null");
+        isTrue(segments.length > 0, "segments is empty");
+
+        List<String> tempSegments = new ArrayList<>(segments.length);
+
+        for (int i = 0; i < segments.length; i++) {
+            notBlank(segments[i], format("segments[%d] is null", i), format("segments[%d] is blank", i));
+            tempSegments.add(segments[i]);
+        }
+
+        List<String> rootSegments = new ArrayList<>(this.segments.size() + tempSegments.size());
+        rootSegments.addAll(this.segments);
+        rootSegments.addAll(tempSegments);
+
+        return new Key(rootSegments);
+    }
+
+    /**
+     * Method to an array of Strings to the Key, returning a new Key.
+     *
+     * @param segments segments
+     * @return a new Key with the appended segment
+     */
+    public Key append(List<String> segments) {
+        notNull(segments, "segments is null");
+        isTrue(!segments.isEmpty(), "segments is empty");
+
+        List<String> rootSegments = new ArrayList<>(this.segments.size() + segments.size());
+        rootSegments.addAll(this.segments);
+
+        int i = 0;
+        for (String segment : segments) {
+            notBlank(segment, format("segments[%d] is null", i), format("segments[%d] is blank", i));
+            rootSegments.add(segment);
+            i++;
+        }
+
+        return new Key(rootSegments);
+    }
+
+    /**
+     * Method to append a Key to the Key, returning a new Key.
+     *
+     * <p>The String must not be null
+     *
+     * @param key key
+     * @return a new Key with the appended segment
+     */
+    public Key append(Key key) {
+        notNull(key, "key is null");
+
+        return append(key.segments());
+    }
+
+    /**
      * Method to remove the last segment from the Key, returning a new Key
      *
      * @return a new Key with the last appended segment removed
@@ -90,9 +151,8 @@ public class Key {
 
         List<String> tempSegments = new ArrayList<>(segments.length);
         for (int i = 0; i < segments.length; i++) {
-            String string = segments[i];
-            notBlank(string, format("segments[%d] is null", i), format("segments[%d] is blank", i));
-            tempSegments.add(string);
+            notBlank(segments[i], format("segments[%d] is null", i), format("segments[%d] is blank", i));
+            tempSegments.add(segments[i]);
         }
 
         return new Key(tempSegments);
@@ -118,9 +178,19 @@ public class Key {
         return new Key(tempSegments);
     }
 
+    /**
+     * Method to flatten a key, starting with a '/' character and adding a '/' character between
+     * segments
+     *
+     * @return a flattened key
+     */
+    public String flatten() {
+        return "/" + String.join("/", segments);
+    }
+
     @Override
     public String toString() {
-        return "Key{" + "segments=" + segments + '}';
+        return flatten();
     }
 
     @Override
