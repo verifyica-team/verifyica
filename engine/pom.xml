@@ -340,8 +340,9 @@
     <dependencies>
         <dependency>
             <groupId>org.verifyica</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>verifyica-api</artifactId>
             <version>0.1.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>

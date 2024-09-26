@@ -78,7 +78,7 @@
             </plugin>
             <plugin>
                 <groupId>org.verifyica</groupId>
-                <artifactId>maven-plugin</artifactId>
+                <artifactId>verifyica-maven-plugin</artifactId>
                 <version>0.1.0</version>
                 <executions>
                     <execution>
