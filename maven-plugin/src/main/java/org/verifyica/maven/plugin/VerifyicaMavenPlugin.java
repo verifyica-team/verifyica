@@ -58,7 +58,7 @@ import org.verifyica.engine.common.Streams;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.ConcreteConfigurationParameters;
 import org.verifyica.engine.configuration.Constants;
-import org.verifyica.engine.invocation.InvocableTestDescriptor;
+import org.verifyica.engine.descriptor.InvocableTestDescriptor;
 import org.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.verifyica.engine.listener.StatusEngineExecutionListener;
 import org.verifyica.engine.listener.SummaryEngineExecutionListener;

@@ -40,7 +40,7 @@ import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.common.statemachine.Result;
 import org.verifyica.engine.common.statemachine.StateMachine;
 import org.verifyica.engine.context.ConcreteArgumentContext;
-import org.verifyica.engine.invocation.InvocableTestDescriptor;
+import org.verifyica.engine.invocation.Invocation;
 import org.verifyica.engine.invocation.InvocationContext;
 import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.invocation.InvocationResult;
@@ -138,13 +138,13 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
     }
 
     @Override
-    public void test(InvocationContext invocationContext) {
+    public void getTestInvocation(InvocationContext invocationContext) {
         setInvocationResult(new TestInvocation(invocationContext, this).test());
     }
 
     @Override
-    public void skip(InvocationContext invocationContext) {
-        setInvocationResult(new SkipInvocation(this, invocationContext).invoke());
+    public Invocation getSkipInvocation(InvocationContext invocationContext) {
+        return new SkipInvocation(this, invocationContext);
     }
 
     @Override
@@ -264,7 +264,7 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                             try {
                                 for (TestMethodTestDescriptor testMethodTestDescriptor :
                                         testMethodTestDescriptors) {
-                                    testMethodTestDescriptor.test(invocationContext);
+                                    testMethodTestDescriptor.getTestInvocation(invocationContext);
                                 }
 
                                 for (TestMethodTestDescriptor testMethodTestDescriptor :
@@ -298,7 +298,7 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                             while (testMethodTestDescriptorIterator.hasNext()) {
                                 TestMethodTestDescriptor testMethodTestDescriptor =
                                         testMethodTestDescriptorIterator.next();
-                                testMethodTestDescriptor.test(invocationContext);
+                                testMethodTestDescriptor.getTestInvocation(invocationContext);
                                 if (testMethodTestDescriptor.getInvocationResult().isFailure()) {
                                     failuredInvocationResult =
                                             testMethodTestDescriptor.getInvocationResult();
@@ -307,7 +307,9 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                             }
 
                             while (testMethodTestDescriptorIterator.hasNext()) {
-                                testMethodTestDescriptorIterator.next().skip(invocationContext);
+                                testMethodTestDescriptorIterator
+                                        .next()
+                                        .getSkipInvocation(invocationContext);
                             }
 
                             if (failuredInvocationResult != null) {
@@ -327,8 +329,9 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                                 try {
                                     testMethodTestDescriptors.forEach(
                                             testMethodTestDescriptor ->
-                                                    testMethodTestDescriptor.skip(
-                                                            invocationContext));
+                                                    testMethodTestDescriptor
+                                                            .getSkipInvocation(invocationContext)
+                                                            .invoke());
                                     return Result.of(State.SKIP_SUCCESS);
                                 } catch (Throwable t) {
                                     AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);

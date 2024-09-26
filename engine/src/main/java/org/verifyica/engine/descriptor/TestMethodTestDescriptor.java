@@ -29,7 +29,7 @@ import org.junit.platform.engine.support.descriptor.MethodSource;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.engine.common.AnsiColoredStackTrace;
 import org.verifyica.engine.common.Precondition;
-import org.verifyica.engine.invocation.InvocableTestDescriptor;
+import org.verifyica.engine.invocation.Invocation;
 import org.verifyica.engine.invocation.InvocationContext;
 import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.invocation.InvocationResult;
@@ -106,13 +106,13 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
     }
 
     @Override
-    public void test(InvocationContext invocationContext) {
+    public void getTestInvocation(InvocationContext invocationContext) {
         setInvocationResult(new TestInvocation(this, invocationContext).invoke());
     }
 
     @Override
-    public void skip(InvocationContext invocationContext) {
-        setInvocationResult(new SkipInvocation(this, invocationContext).invoke());
+    public Invocation getSkipInvocation(InvocationContext invocationContext) {
+        return new SkipInvocation(this, invocationContext);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
     }
 
     /** Class to implement TestInvocation */
-    private static class TestInvocation {
+    private static class TestInvocation implements Invocation {
 
         private enum State {
             BEFORE_EACH,
@@ -163,12 +163,8 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
             this.throwables = new ArrayList<>();
         }
 
-        /**
-         * Method to invoke the invocation
-         *
-         * @return this
-         */
-        private InvocationResult invoke() {
+        @Override
+        public InvocationResult invoke() {
             engineExecutionListener.executionStarted(testMethodTestDescriptor);
 
             State state = State.BEFORE_EACH;

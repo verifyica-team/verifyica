@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.invocation;
+package org.verifyica.engine.descriptor;
 
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
+import org.verifyica.engine.invocation.Invocation;
+import org.verifyica.engine.invocation.InvocationContext;
+import org.verifyica.engine.invocation.InvocationResult;
 
 /** Class to implement InvocableTestDescriptor */
 public abstract class InvocableTestDescriptor extends AbstractTestDescriptor {
@@ -39,14 +42,15 @@ public abstract class InvocableTestDescriptor extends AbstractTestDescriptor {
      *
      * @param invocationContext invocationContext
      */
-    public abstract void test(InvocationContext invocationContext);
+    public abstract void getTestInvocation(InvocationContext invocationContext);
 
     /**
      * Method to skip execution
      *
      * @param invocationContext invocationContext
+     * @return an Invocation
      */
-    public abstract void skip(InvocationContext invocationContext);
+    public abstract Invocation getSkipInvocation(InvocationContext invocationContext);
 
     /**
      * Method to set the invocation result

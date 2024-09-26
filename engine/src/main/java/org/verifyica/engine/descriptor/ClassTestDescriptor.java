@@ -43,7 +43,7 @@ import org.verifyica.engine.common.SemaphoreRunnable;
 import org.verifyica.engine.common.statemachine.Result;
 import org.verifyica.engine.common.statemachine.StateMachine;
 import org.verifyica.engine.context.ConcreteClassContext;
-import org.verifyica.engine.invocation.InvocableTestDescriptor;
+import org.verifyica.engine.invocation.Invocation;
 import org.verifyica.engine.invocation.InvocationContext;
 import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.invocation.InvocationResult;
@@ -157,13 +157,13 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
     }
 
     @Override
-    public void test(InvocationContext invocationContext) {
+    public void getTestInvocation(InvocationContext invocationContext) {
         setInvocationResult(new Invoker(invocationContext, this).test());
     }
 
     @Override
-    public void skip(InvocationContext invocationContext) {
-        setInvocationResult(new SkipInvocation(this, invocationContext).invoke());
+    public Invocation getSkipInvocation(InvocationContext invocationContext) {
+        return new SkipInvocation(this, invocationContext);
     }
 
     /** Class to implement Invoker */
@@ -328,7 +328,7 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
                                                                                             threadName,
                                                                                             () ->
                                                                                                     argumentTestDescriptor
-                                                                                                            .test(
+                                                                                                            .getTestInvocation(
                                                                                                                     invocationContext
                                                                                                                             .copy())))));
                                                         });
@@ -338,8 +338,9 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
                                             } else {
                                                 argumentTestDescriptors.forEach(
                                                         argumentTestDescriptor ->
-                                                                argumentTestDescriptor.test(
-                                                                        invocationContext));
+                                                                argumentTestDescriptor
+                                                                        .getTestInvocation(
+                                                                                invocationContext));
                                             }
 
                                             for (ArgumentTestDescriptor argumentTestDescriptor :
@@ -368,8 +369,10 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
                                         try {
                                             argumentTestDescriptors.forEach(
                                                     argumentTestDescriptor ->
-                                                            argumentTestDescriptor.skip(
-                                                                    invocationContext));
+                                                            argumentTestDescriptor
+                                                                    .getSkipInvocation(
+                                                                            invocationContext)
+                                                                    .invoke());
 
                                             engineExecutionListener.executionSkipped(
                                                     classTestDescriptor, "Skipped");

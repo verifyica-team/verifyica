@@ -21,7 +21,7 @@ import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
 
 /** Class to implement SkipInvocation */
-public class SkipInvocation {
+public class SkipInvocation implements Invocation {
 
     private final TestDescriptor testDescriptor;
     private final InvocationContext invocationContext;
@@ -39,11 +39,7 @@ public class SkipInvocation {
         this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
     }
 
-    /**
-     * Method to invoke the invocation
-     *
-     * @return this
-     */
+    @Override
     public InvocationResult invoke() {
         engineExecutionListener.executionStarted(testDescriptor);
 
