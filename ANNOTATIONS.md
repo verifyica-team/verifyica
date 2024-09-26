@@ -2,7 +2,7 @@
 
 All Verifyica annotations are defined in a container class `Verifyica`.
 
-[Verifyica.java](api/src/main/java/org/antublue/verifyica/api/Verifyica.java)
+[Verifyica.java](api/src/main/java/org/verifyica/api/Verifyica.java)
 
 ---
 
@@ -120,7 +120,7 @@ All methods annotated with `@Verifyica.Prepare` or `@Verifyica.Conclude`:
 - must return `void`
 - must be public
 - may be static
-- must define a single parameter [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
+- must define a single parameter [ClassContext](api/src/main/java/org/verifyica/api/ClassContext.java)
 - may throw `Throwable`
 
 **Notes**
@@ -149,7 +149,7 @@ All methods annotated with `@Verifyica.BeforeAll` or `@Verifyica.AfterAll`:
 - must return `void`
 - must be public
 - must not be static
-- must defined a single parameter [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
+- must defined a single parameter [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
 
 **Notes**
@@ -178,7 +178,7 @@ All methods annotated with `@Verifyica.BeforeEach` or `@Verifyica.AfterEach`:
 - must return `void`
 - must be public
 - must not be static
-- must defined a single parameter [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
+- must defined a single parameter [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
 
 **Notes**
@@ -202,7 +202,7 @@ All methods annotated with `@Verifyica.Test`:
 - must return `void`
 - must be public
 - must not be static
-- must defined a single parameter [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java)
+- must defined a single parameter [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
 
 **Notes**
@@ -278,7 +278,7 @@ Indicates the Verifyica that a test class / test method is disabled/do not test.
 
 ### @Verifyica.ClassInterceptorSupplier
 
-Used to register a test class specific [ClassInterceptor](api/src/main/java/org/antublue/verifyica/api/interceptor/ClassInterceptor.java)
+Used to register a test class specific [ClassInterceptor](api/src/main/java/org/verifyica/api/interceptor/ClassInterceptor.java)
 
 - optional
 - may return a `Stream`, `Iterable`, `Collection`, arrays, or single `ClassInterceptor` instance

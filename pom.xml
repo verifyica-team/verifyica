@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.antublue.verifyica</groupId>
+    <groupId>org.verifyica</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.18</version>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
     <name>Verifyica Parent</name>
     <description>Verifyica Parent</description>
-    <url>http://github.com/antublue/verifyica</url>
+    <url>http://github.com/verifyica-team/verifyica</url>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

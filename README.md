@@ -1,10 +1,10 @@
-[![Build](https://github.com/verifyica-team/verifyica/actions/workflows/build.yml/badge.svg)](https://github.com/antublue/verifyica/actions/workflows/build.yml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0264117ec3e74d678551a03e67b4a6d2)](https://app.codacy.com/gh/verifyica-team/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) ![JDK Compatibility](https://img.shields.io/badge/JDK%20compatibility-8+-blue.svg) ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
+[![Build](https://github.com/verifyica-team/verifyica/actions/workflows/build.yml/badge.svg)](https://github.com/verifyica/actions/workflows/build.yml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0264117ec3e74d678551a03e67b4a6d2)](https://app.codacy.com/gh/verifyica-team/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) ![JDK Compatibility](https://img.shields.io/badge/JDK%20compatibility-8+-blue.svg) ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
 
 |              |   |
 |--------------|---|
-| API          | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/api) |
-| Engine       | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/engine/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/engine)  |
-| Maven Plugin | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.antublue.verifyica/maven-plugin)  |
+| API          | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.verifyica/api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.verifyica/api) |
+| Engine       | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.verifyica/engine/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.verifyica/engine)  |
+| Maven Plugin | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.verifyica/maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.verifyica/maven-plugin)  |
 
 ![Verifyica](assets/verifyica.png)
 
@@ -84,11 +84,11 @@ Verifyica uses a dependent test method paradigm ...
   - set test method display names
   - set up / tear down resources
 - Cleanup of `AutoClosable` test classes / test arguments
-- Cleanup of `AutoClosable` objects in a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java)
+- Cleanup of `AutoClosable` objects in a [Store](api/src/main/java/org/verifyica/api/Store.java)
 - Object / resource sharing via contexts
-  - [EngineContext](api/src/main/java/org/antublue/verifyica/api/EngineContext.java)
-  - [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
-  - [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java) 
+  - [EngineContext](api/src/main/java/org/verifyica/api/EngineContext.java)
+  - [ClassContext](api/src/main/java/org/verifyica/api/ClassContext.java)
+  - [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
 - LockManager
   - provides way to implement locking semantics
 - [IntelliJ](https://www.jetbrains.com/idea/) support
@@ -138,10 +138,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
-import org.antublue.verifyica.api.Argument;
-import org.antublue.verifyica.api.ArgumentContext;
-import org.antublue.verifyica.api.ClassContext;
-import org.antublue.verifyica.api.Verifyica;
+import org.verifyica.api.Argument;
+import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.ClassContext;
+import org.verifyica.api.Verifyica;
 
 /** Example */
 public class EnvironmentTest {
@@ -322,13 +322,13 @@ public class EnvironmentTest {
 
 Example tests using [testcontainers-java](https://java.testcontainers.org/)
 
-- [TestContainerTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/TestContainerTest.java)
+- [TestContainerTest.java](tests/src/test/java/org/verifyica/test/testcontainers/TestContainerTest.java)
   - Generic example showing multithreaded argument testing
 
 Examples using real test containers ...
 
-- [KafkaTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/KafkaTest.java)
-- [MongoDBTest.java](tests/src/test/java/org/antublue/verifyica/test/testcontainers/MongoDBTest.java)
+- [KafkaTest.java](tests/src/test/java/org/verifyica/test/testcontainers/KafkaTest.java)
+- [MongoDBTest.java](tests/src/test/java/org/verifyica/test/testcontainers/MongoDBTest.java)
 
 # Core Requirements
 
@@ -342,10 +342,31 @@ When using Maven, the Verifyica Maven Plugin is required.
 
 #### Plugin XML
 
+Configure the Maven Surefire plugin to include standard JUnit tests (or exclude Verifyica tests) ...
+
 ```xml
 <plugin>
-    <groupId>org.antublue.verifyica</groupId>
-    <artifactId>maven-plugin</artifactId>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.5.0</version>
+    <configuration>
+        <includes>
+            <include>%regex[.*org.junit.*]</include>
+        </includes>
+        <systemPropertyVariables>
+            <junit.jupiter.extensions.autodetection.enabled>true
+            </junit.jupiter.extensions.autodetection.enabled>
+        </systemPropertyVariables>
+    </configuration>
+</plugin>
+```
+
+Add the Verifyica Maven plugin ...
+
+```xml
+<plugin>
+    <groupId>org.verifyica</groupId>
+    <artifactId>verifyica-maven-plugin</artifactId>
     <version>VERSION</version>
     <executions>
         <execution>
@@ -358,18 +379,20 @@ When using Maven, the Verifyica Maven Plugin is required.
 </plugin>
 ```
 
+Add the Verifyica API and Engine artifacts ...
+
 #### Dependency XML
 
 ```xml
 <dependency>
-    <groupId>org.antublue.verifyica</groupId>
-    <artifactId>api</artifactId>
+    <groupId>org.verifyica</groupId>
+    <artifactId>verifyica-api</artifactId>
     <version>VERSION</version>
     <scope>test</scope>
 </dependency>
 <dependency>
-    <groupId>org.antublue.verifyica</groupId>
-    <artifactId>engine</artifactId>
+    <groupId>org.verifyica</groupId>
+    <artifactId>verifyica-engine</artifactId>
     <version>VERSION</version>
     <scope>test</scope>
 </dependency>
@@ -377,7 +400,7 @@ When using Maven, the Verifyica Maven Plugin is required.
 
 **Notes**
 
-- Verifyica test classes should be excluded from the Maven Surefire plugin
+- Verifyica test classes **must** be excluded from the Maven Surefire plugin
 
 # Ancillary Requirements
 
@@ -385,7 +408,7 @@ To perform integration testing, you need a test context/environment. Typically t
 
 Alternatively, tests can be performed on an external environment/resource. Ideally the external environment/resource would have an API to initialize and destroy it.
 
-An [EngineInterceptor](api/src/main/java/org/antublue/verifyica/api/interceptor/engine/EngineInterceptor.java) can be used to initialize and destroy an external environment/resource before and after execution of tests.
+An [EngineInterceptor](api/src/main/java/org/verifyica/api/interceptor/engine/EngineInterceptor.java) can be used to initialize and destroy an external environment/resource before and after execution of tests.
 
 # Documentation
 
@@ -395,7 +418,7 @@ An [EngineInterceptor](api/src/main/java/org/antublue/verifyica/api/interceptor/
 - [Locking](LOCKING.md)
 - [Configuration](CONFIGURATION.md)
 - [Filters](FILTERS.md)
-- [Wiki](https://github.com/antublue/verifyica/wiki)
+- [Wiki](https://github.com/verifyica/wiki)
 
 **Notes**
 

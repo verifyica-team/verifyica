@@ -6,7 +6,7 @@ Verifyica uses a concept of an interceptor to hook into the test engine and test
 
 ### EngineInterceptor
 
-An [EngineInterceptor](api/src/main/java/org/antublue/verifyica/api/interceptor/engine/EngineInterceptor.java) has callback methods for global events within the test engine.
+An [EngineInterceptor](api/src/main/java/org/verifyica/api/interceptor/engine/EngineInterceptor.java) has callback methods for global events within the test engine.
 
 - optional
 - global
@@ -16,7 +16,7 @@ An [EngineInterceptor](api/src/main/java/org/antublue/verifyica/api/interceptor/
 
 ### ClassInterceptor
 
-A [ClassInterceptor](api/src/main/java/org/antublue/verifyica/api/interceptor/ClassInterceptor.java) has pre/post test lifcycle callback methods.
+A [ClassInterceptor](api/src/main/java/org/verifyica/api/interceptor/ClassInterceptor.java) has pre/post test lifcycle callback methods.
 
 - optional
 - may be global
@@ -29,12 +29,12 @@ Examples:
 
 Examples can be found in the `tests` module.
 
-- EngineInterceptor [examples](tests/src/test/java/org/antublue/verifyica/test/interceptor/engine)
-- ClassInterceptor [examples](tests/src/test/java/org/antublue/verifyica/test/interceptor)
+- EngineInterceptor [examples](tests/src/test/java/org/verifyica/test/interceptor/engine)
+- ClassInterceptor [examples](tests/src/test/java/org/verifyica/test/interceptor)
 
 A concrete example using a `ClassInterceptor` to test the test engine lifecycle method functionality.
 
-- [LifecycleTest.java](tests/src/test/java/org/antublue/verifyica/test/LifecycleTest.java)
+- [LifecycleTest.java](tests/src/test/java/org/verifyica/test/LifecycleTest.java)
 
 ---
 

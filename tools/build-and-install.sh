@@ -27,6 +27,10 @@ function check_exit_code () {
   fi
 }
 
+echo "Needs to be refactored, exiting"
+
+exit 0
+
 # Usage
 if [ "$#" -ne 1 ];
 then

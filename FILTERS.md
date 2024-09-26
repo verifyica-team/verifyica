@@ -56,7 +56,7 @@ Example File:
 # Include a specific package of tests classes and all test methods
 - type: IncludeClass
   enabled: false
-  classRegex: "org.antublue.verifyica.test.argument"
+  classRegex: "org.verifyica.test.argument"
   methodRegex: ".*"
 
 # Include a specific test class and all test methods

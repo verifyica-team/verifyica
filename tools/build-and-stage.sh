@@ -35,6 +35,10 @@ function emit_error () {
   exit 1;
 }
 
+echo "Needs to be refactored, exiting"
+
+exit 0
+
 # Usage
 if [ "$#" -ne 1 ];
 then
@@ -62,7 +66,7 @@ then
 fi
 
 # Verify the code builds
-./mvnw -s ~/.m2/antublue.settings.xml -P release clean verify
+./mvnw -s ~/.m2/verifyica.settings.xml -P release clean verify
 check_exit_code "Maven build failed"
 
 # Checkout a release branch
@@ -83,7 +87,7 @@ git commit -m "${VERSION}"
 check_exit_code "Git commit failed"
 
 # Build and deploy
-./mvnw -s ~/.m2/antublue.settings.xml -P release clean deploy
+./mvnw -s ~/.m2/verifyica.settings.xml -P release clean deploy
 check_exit_code "Maven deploy [${VERSION}] failed"
 
 # Push the branch

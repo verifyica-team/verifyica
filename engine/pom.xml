@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.antublue.verifyica</groupId>
-    <artifactId>engine</artifactId>
-    <version>0.0.18</version>
+    <groupId>org.verifyica</groupId>
+    <artifactId>verifyica-engine</artifactId>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
     <name>Verifyica Engine</name>
     <description>Verifyica Engine</description>
-    <url>https://github.com/antublue/verifyica</url>
+    <url>https://github.com/verifyica-team/verifyica</url>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -35,22 +35,11 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/antublue/verifyica.git</connection>
-        <developerConnection>scm:git:git@github.com:antublue/verifyica.git</developerConnection>
-        <url>https://github.com/antblue/verifyica</url>
+        <connection>scm:git:git://github.com/verifyica-team/verifyica.git</connection>
+        <developerConnection>scm:git:git@github.com:verifyica-team/verifyica.git</developerConnection>
+        <url>https://github.com/verifyica-team/verifyica</url>
         <tag>HEAD</tag>
     </scm>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <profiles>
         <profile>
@@ -126,18 +115,14 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>3.1.3</version>
-                        <executions>
-                            <execution>
-                                <id>default-deploy</id>
-                                <phase>deploy</phase>
-                                <goals>
-                                    <goal>deploy</goal>
-                                </goals>
-                            </execution>
-                        </executions>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.5.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>false</autoPublish>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -220,7 +205,7 @@
                             <finalName>${project.artifactId}-${project.version}</finalName>
                             <artifactSet>
                                 <excludes>
-                                    <exclude>org.antublue.verifyica:api</exclude>
+                                    <exclude>org.verifyica:api</exclude>
                                     <exclude>org.apiguardian:apiguardian-api</exclude>
                                     <exclude>org.junit.jupiter:junit-jupiter-api</exclude>
                                     <exclude>org.junit.platform:junit-platform-commons</exclude>
@@ -331,7 +316,7 @@
                     <java>
                         <excludes>
                             <!-- Exclude specific files or directories -->
-                            <exclude>src/main/java/org/antublue/verifyica/engine/common/Streams.java</exclude>
+                            <exclude>src/main/java/org/verifyica/engine/common/Streams.java</exclude>
                         </excludes>
                         <googleJavaFormat>
                             <version>1.23.0</version>
@@ -354,9 +339,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.antublue.verifyica</groupId>
+            <groupId>org.verifyica</groupId>
             <artifactId>api</artifactId>
-            <version>0.0.18</version>
+            <version>0.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

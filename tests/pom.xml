@@ -5,9 +5,9 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.antublue.verifyica</groupId>
-    <artifactId>tests</artifactId>
-    <version>0.0.18</version>
+    <groupId>org.verifyica</groupId>
+    <artifactId>verfiyica-tests</artifactId>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
     <name>Verifyica Tests</name>
 
@@ -68,7 +68,7 @@
                 <version>3.5.0</version>
                 <configuration>
                     <includes>
-                        <include>%regex[.*JUnit5Test.*]</include>
+                        <include>%regex[.*org.junit.*]</include>
                     </includes>
                     <systemPropertyVariables>
                         <junit.jupiter.extensions.autodetection.enabled>true
@@ -77,9 +77,9 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.antublue.verifyica</groupId>
+                <groupId>org.verifyica</groupId>
                 <artifactId>maven-plugin</artifactId>
-                <version>0.0.18</version>
+                <version>0.1.0</version>
                 <executions>
                     <execution>
                         <phase>integration-test</phase>
@@ -184,15 +184,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.antublue.verifyica</groupId>
-            <artifactId>api</artifactId>
-            <version>0.0.18</version>
+            <groupId>org.verifyica</groupId>
+            <artifactId>verifyica-api</artifactId>
+            <version>0.1.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.antublue.verifyica</groupId>
-            <artifactId>engine</artifactId>
-            <version>0.0.18</version>
+            <groupId>org.verifyica</groupId>
+            <artifactId>verifyica-engine</artifactId>
+            <version>0.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -240,7 +240,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>5.1.4</version>
+            <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

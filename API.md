@@ -12,7 +12,7 @@ See [ANNOTATIONS](ANNOTATIONS.md) for details.
 
 ## Argument
 
-The [Argument](api/src/main/java/org/antublue/verifyica/api/Argument.java) interface is used to contain test arguments.
+The [Argument](api/src/main/java/org/verifyica/api/Argument.java) interface is used to contain test arguments.
 
 Any `ArgumentSupplier` method that returns a non-`Argument` Object will be wrapped as an `Argument`.
 
@@ -27,44 +27,44 @@ Any `ArgumentSupplier` method that returns a non-`Argument` Object will be wrapp
 
 ## Context
 
-Interface with common methods for all [Context](api/src/main/java/org/antublue/verifyica/api/Context.java) implementations.
+Interface with common methods for all [Context](api/src/main/java/org/verifyica/api/Context.java) implementations.
 
-It's common purpose to get a reference to the associated [Store](src/main/java/org/antublue/verifyica/api/Store.java).
+It's common purpose to get a reference to the associated [Store](src/main/java/org/verifyica/api/Store.java).
 
 ## EngineContext
 
-An [EngineContext](api/src/main/java/org/antublue/verifyica/api/EngineContext.java) is used to ...
+An [EngineContext](api/src/main/java/org/verifyica/api/EngineContext.java) is used to ...
 
-- get the Engine [Configuration](api/src/main/java/org/antublue/verifyica/api/Configuration.java)
-- get the Engine [Store](src/main/java/org/antublue/verifyica/api/Store.java)
+- get the Engine [Configuration](api/src/main/java/org/verifyica/api/Configuration.java)
+- get the Engine [Store](src/main/java/org/verifyica/api/Store.java)
 
 ## ClassContext
 
-The [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java) is used to ...
+The [ClassContext](api/src/main/java/org/verifyica/api/ClassContext.java) is used to ...
 
-- get the [EngineContext](api/src/main/java/org/antublue/verifyica/api/EngineContext.java)
+- get the [EngineContext](api/src/main/java/org/verifyica/api/EngineContext.java)
 - get information regarding the specific test class
   - test class name
   - test class instance
   - test class argument parallelism
-- get the associated test class [Store](src/main/java/org/antublue/verifyica/api/Store.java)
+- get the associated test class [Store](src/main/java/org/verifyica/api/Store.java)
 
 ## ArgumentContext
 
-The [ArgumentContext](api/src/main/java/org/antublue/verifyica/api/ArgumentContext.java) is used to ...
+The [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) is used to ...
 
-- get the [ClassContext](api/src/main/java/org/antublue/verifyica/api/ClassContext.java)
+- get the [ClassContext](api/src/main/java/org/verifyica/api/ClassContext.java)
 - get the test argument being tested
   - test argument name
   - test argument value
   - test argument index
-- get the associated test argument [Store](src/main/java/org/antublue/verifyica/api/Store.java)
+- get the associated test argument [Store](src/main/java/org/verifyica/api/Store.java)
 
 ---
 
 ## Store
 
-A [Store](api/src/main/java/org/antublue/verifyica/api/Store.java) is used to ...
+A [Store](api/src/main/java/org/verifyica/api/Store.java) is used to ...
 
 - store Objects/data that is to be shared
   - between test methods
@@ -101,13 +101,13 @@ A Store is thread safe, but allow locking the Store lock for chained atomic oper
 
 ## Configuration
 
-[Configuration](api/src/main/java/org/antublue/verifyica/api/Configuration.java) has method/is used for configuration.
+[Configuration](api/src/main/java/org/verifyica/api/Configuration.java) has method/is used for configuration.
 
 ---
 
 ## LockManager
 
-[LockManager](api/src/main/java/org/antublue/verifyica/api/LockManager.java) provides way to implement locking semantics.
+[LockManager](api/src/main/java/org/verifyica/api/LockManager.java) provides way to implement locking semantics.
 
 **Notes**
 
@@ -117,7 +117,7 @@ A Store is thread safe, but allow locking the Store lock for chained atomic oper
 
 ## Key
 
-[Key](api/src/main/java/org/antublue/verifyica/api/Key.java) is a helper to easily build a key used for a [Store](api/src/main/java/org/antublue/verifyica/api/Store.java).
+[Key](api/src/main/java/org/verifyica/api/Key.java) is a helper to easily build a key used for a [Store](api/src/main/java/org/verifyica/api/Store.java).
 
 **Notes**
 

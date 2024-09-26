@@ -14,7 +14,7 @@ Annotations also don't address scenarios when threads are created/used in test (
 
 ## LockManager
 
-[LockManager](api/src/main/java/org/antublue/verifyica/api/LockManager.java) provides way to implement locking semantics.
+[LockManager](api/src/main/java/org/verifyica/api/LockManager.java) provides way to implement locking semantics.
 
 **Notes**
 
@@ -49,7 +49,7 @@ try {
 
 ## Context / Store Locking
 
-All Contexts (and it's associated Store) have a `Lock` that can be used for locking on the object.
+All Contexts (and it's associated Store) have a `Lock` that can be used for locking on the Context or Context Store object.
 
 ### Examples
 
