@@ -209,7 +209,7 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
          */
         private State beforeEach() {
             try {
-                invocationController.invokeBeforeEach(
+                invocationController.invokeBeforeEachMethods(
                         testMethodTestDescriptor.getBeforeEachMethods(), argumentContext);
                 return State.TEST;
             } catch (Throwable t) {
@@ -226,7 +226,7 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
          */
         private State test() {
             try {
-                invocationController.invokeTest(
+                invocationController.invokeTestMethod(
                         testMethodTestDescriptor.getTestMethod(), argumentContext);
             } catch (InvocationTargetException e) {
                 AnsiColoredStackTrace.printRedBoldStackTrace(System.err, e.getCause());
@@ -246,7 +246,7 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
          */
         private State afterEach() {
             try {
-                invocationController.invokeAfterEach(
+                invocationController.invokeAfterEachMethods(
                         testMethodTestDescriptor.getAfterEachMethods(), argumentContext);
             } catch (Throwable t) {
                 AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);

@@ -18,7 +18,9 @@ package org.verifyica.engine.invocation;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.ClassContext;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.verifyica.engine.interceptor.EngineInterceptorManager;
@@ -42,9 +44,37 @@ public class InvocationController {
         this.classInterceptorManager = classInterceptorManager;
     }
 
+    /**
+     * Method to invoke onInitialize
+     *
+     * @param engineInterceptorContext engineInterceptorContext
+     * @throws Throwable Throwable
+     */
     public void invokeOnInitialize(EngineInterceptorContext engineInterceptorContext)
             throws Throwable {
         engineInterceptorManager.onInitialize(engineInterceptorContext);
+    }
+
+    public void invokeInstantiate(Class<?> testClass, AtomicReference<Object> testInstanceReference)
+            throws Throwable {
+        classInterceptorManager.instantiate(testClass, testInstanceReference);
+    }
+
+    public void invokePrepareMethods(List<Method> prepareMethods, ClassContext classContext)
+            throws Throwable {
+        classInterceptorManager.prepare(prepareMethods, classContext);
+    }
+
+    /**
+     * Method to invoke beforeAll methods
+     *
+     * @param beforeAllMethods beforeAllMethods
+     * @param argumentContext argumentContext
+     * @throws Throwable Throwable
+     */
+    public void invokeBeforeAllMethods(
+            List<Method> beforeAllMethods, ArgumentContext argumentContext) throws Throwable {
+        classInterceptorManager.beforeAll(beforeAllMethods, argumentContext);
     }
 
     /**
@@ -54,9 +84,9 @@ public class InvocationController {
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void invokeBeforeEach(List<Method> beforeEachMethods, ArgumentContext argumentContext)
-            throws Throwable {
-        classInterceptorManager.beforeAll(beforeEachMethods, argumentContext);
+    public void invokeBeforeEachMethods(
+            List<Method> beforeEachMethods, ArgumentContext argumentContext) throws Throwable {
+        classInterceptorManager.beforeEach(beforeEachMethods, argumentContext);
     }
 
     /**
@@ -66,7 +96,8 @@ public class InvocationController {
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void invokeTest(Method testMethod, ArgumentContext argumentContext) throws Throwable {
+    public void invokeTestMethod(Method testMethod, ArgumentContext argumentContext)
+            throws Throwable {
         classInterceptorManager.test(testMethod, argumentContext);
     }
 
@@ -77,8 +108,36 @@ public class InvocationController {
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void invokeAfterEach(List<Method> afterEachMethods, ArgumentContext argumentContext)
-            throws Throwable {
+    public void invokeAfterEachMethods(
+            List<Method> afterEachMethods, ArgumentContext argumentContext) throws Throwable {
         classInterceptorManager.afterEach(afterEachMethods, argumentContext);
+    }
+
+    /**
+     * Method to invoke afterAll methods
+     *
+     * @param afterAllMethods afterAllMethods
+     * @param argumentContext argumentContext
+     * @throws Throwable Throwable
+     */
+    public void invokeAfterAllMethods(List<Method> afterAllMethods, ArgumentContext argumentContext)
+            throws Throwable {
+        classInterceptorManager.afterAll(afterAllMethods, argumentContext);
+    }
+
+    /**
+     * Method to invoke conclude methods
+     *
+     * @param concludeMethods concludeMethods
+     * @param classContext classContext
+     * @throws Throwable Throwable
+     */
+    public void invokeConcludeMethods(List<Method> concludeMethods, ClassContext classContext)
+            throws Throwable {
+        classInterceptorManager.conclude(concludeMethods, classContext);
+    }
+
+    public void invokeOnDestroy(ClassContext classContext) throws Throwable {
+        classInterceptorManager.onDestroy(classContext);
     }
 }

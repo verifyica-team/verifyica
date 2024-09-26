@@ -40,9 +40,9 @@ import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.common.statemachine.Result;
 import org.verifyica.engine.common.statemachine.StateMachine;
 import org.verifyica.engine.context.ConcreteArgumentContext;
-import org.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.verifyica.engine.invocation.InvocableTestDescriptor;
 import org.verifyica.engine.invocation.InvocationContext;
+import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.invocation.InvocationResult;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
@@ -177,7 +177,7 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
         private final Set<TestMethodTestDescriptor> testMethodTestDescriptors;
         private final List<Method> afterAllMethods;
         private final ArgumentContext argumentContext;
-        private final ClassInterceptorManager classInterceptorManager;
+        private final InvocationController invocationController;
         private final EngineExecutionListener engineExecutionListener;
 
         private enum State {
@@ -228,7 +228,7 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
 
             invocationContext.set(ArgumentContext.class, argumentContext);
 
-            this.classInterceptorManager = invocationContext.get(ClassInterceptorManager.class);
+            this.invocationController = invocationContext.get(InvocationController.class);
 
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
         }
@@ -244,8 +244,8 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                                     State.START,
                                     () -> {
                                         try {
-                                            classInterceptorManager.beforeAll(
-                                                    argumentContext, beforeAllMethods);
+                                            invocationController.invokeBeforeAllMethods(
+                                                    beforeAllMethods, argumentContext);
                                             return Result.of(State.BEFORE_ALL_SUCCESS);
                                         } catch (Throwable t) {
                                             AnsiColoredStackTrace.printRedBoldStackTrace(
@@ -342,8 +342,8 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                                     State.SKIP_FAILURE),
                             () -> {
                                 try {
-                                    classInterceptorManager.afterAll(
-                                            argumentContext, afterAllMethods);
+                                    invocationController.invokeAfterAllMethods(
+                                            afterAllMethods, argumentContext);
                                     return Result.of(State.AFTER_ALL_SUCCESS);
                                 } catch (Throwable t) {
                                     AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);

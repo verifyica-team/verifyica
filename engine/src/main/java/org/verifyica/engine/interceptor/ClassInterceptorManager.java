@@ -208,11 +208,11 @@ public class ClassInterceptorManager {
     /**
      * Method to execute ClassInterceptor callbacks
      *
-     * @param classContext classContext
      * @param prepareMethods prepareMethods
+     * @param classContext classContext
      * @throws Throwable Throwable
      */
-    public void prepare(ClassContext classContext, List<Method> prepareMethods) throws Throwable {
+    public void prepare(List<Method> prepareMethods, ClassContext classContext) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
 
         ClassInterceptorContext argumentInterceptorContext =
@@ -258,11 +258,11 @@ public class ClassInterceptorManager {
     /**
      * Method to execute ClassInterceptor callbacks
      *
-     * @param argumentContext argumentContext
      * @param beforeAllMethods beforeAllMethods
+     * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void beforeAll(ArgumentContext argumentContext, List<Method> beforeAllMethods)
+    public void beforeAll(List<Method> beforeAllMethods, ArgumentContext argumentContext)
             throws Throwable {
         ClassContext classContext = argumentContext.getClassContext();
 
@@ -309,11 +309,11 @@ public class ClassInterceptorManager {
     /**
      * Method to execute ClassInterceptor callbacks
      *
-     * @param beforeEachMethods beforeEachMethods
+     * @param beforeEachMethods beforeAllMethods
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void beforeAll(List<Method> beforeEachMethods, ArgumentContext argumentContext)
+    public void beforeEach(List<Method> beforeEachMethods, ArgumentContext argumentContext)
             throws Throwable {
         ClassContext classContext = argumentContext.getClassContext();
 
@@ -459,11 +459,11 @@ public class ClassInterceptorManager {
     /**
      * Method to execute ClassInterceptor callbacks
      *
-     * @param argumentContext argumentContext
      * @param afterAllMethods afterAllMethods
+     * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void afterAll(ArgumentContext argumentContext, List<Method> afterAllMethods)
+    public void afterAll(List<Method> afterAllMethods, ArgumentContext argumentContext)
             throws Throwable {
         ClassContext classContext = argumentContext.getClassContext();
 
@@ -510,11 +510,11 @@ public class ClassInterceptorManager {
     /**
      * Method to execute ClassInterceptor callbacks
      *
-     * @param classContext classContext
      * @param concludeMethods concludeMethods
+     * @param classContext classContext
      * @throws Throwable Throwable
      */
-    public void conclude(ClassContext classContext, List<Method> concludeMethods) throws Throwable {
+    public void conclude(List<Method> concludeMethods, ClassContext classContext) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
 
         ClassInterceptorContext defaultClassInterceptorContext =

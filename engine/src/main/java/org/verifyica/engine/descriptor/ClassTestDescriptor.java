@@ -43,9 +43,9 @@ import org.verifyica.engine.common.SemaphoreRunnable;
 import org.verifyica.engine.common.statemachine.Result;
 import org.verifyica.engine.common.statemachine.StateMachine;
 import org.verifyica.engine.context.ConcreteClassContext;
-import org.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.verifyica.engine.invocation.InvocableTestDescriptor;
 import org.verifyica.engine.invocation.InvocationContext;
+import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.invocation.InvocationResult;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
@@ -177,7 +177,7 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
         private final Set<ArgumentTestDescriptor> argumentTestDescriptors;
         private final List<Method> concludeMethods;
         private final ClassContext classContext;
-        private final ClassInterceptorManager classInterceptorManager;
+        private final InvocationController invocationController;
         private final ExecutorService argumentExecutorService;
         private final EngineExecutionListener engineExecutionListener;
         private final AtomicReference<Object> testInstanceReference;
@@ -239,7 +239,7 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
 
             invocationContext.set(ClassContext.class, classContext);
 
-            this.classInterceptorManager = invocationContext.get(ClassInterceptorManager.class);
+            this.invocationController = invocationContext.get(InvocationController.class);
 
             this.argumentExecutorService =
                     invocationContext.get(InvocationContext.ARGUMENT_EXECUTOR_SERVICE);
@@ -258,7 +258,7 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
                                     State.START,
                                     () -> {
                                         try {
-                                            classInterceptorManager.instantiate(
+                                            invocationController.invokeInstantiate(
                                                     testClass, testInstanceReference);
 
                                             return Result.of(State.INSTANTIATE_SUCCESS);
@@ -270,8 +270,8 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
                                     State.INSTANTIATE_SUCCESS,
                                     () -> {
                                         try {
-                                            classInterceptorManager.prepare(
-                                                    classContext, prepareMethods);
+                                            invocationController.invokePrepareMethods(
+                                                    prepareMethods, classContext);
                                             return Result.of(State.PREPARE_SUCCESS);
                                         } catch (Throwable t) {
                                             AnsiColoredStackTrace.printRedBoldStackTrace(
@@ -388,8 +388,8 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
                                             State.SKIP_FAILURE),
                                     () -> {
                                         try {
-                                            classInterceptorManager.conclude(
-                                                    classContext, concludeMethods);
+                                            invocationController.invokeConcludeMethods(
+                                                    concludeMethods, classContext);
 
                                             return Result.of(State.CONCLUDE_SUCCESS);
                                         } catch (Throwable t) {
@@ -403,7 +403,7 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
                                             State.CONCLUDE_SUCCESS, State.CONCLUDE_FAILURE),
                                     () -> {
                                         try {
-                                            classInterceptorManager.onDestroy(classContext);
+                                            invocationController.invokeOnDestroy(classContext);
                                             return Result.of(State.ON_DESTROY_SUCCESS);
                                         } catch (Throwable t) {
                                             AnsiColoredStackTrace.printRedBoldStackTrace(
