@@ -29,8 +29,9 @@ import java.util.regex.Pattern;
 import org.verifyica.api.interceptor.ClassDefinition;
 import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
-import org.verifyica.engine.common.AnsiColoredStackTrace;
+import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.Precondition;
+import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.exception.EngineException;
@@ -144,8 +145,7 @@ public class EngineInterceptorManager {
      * @throws Throwable Throwable
      */
     public void onTestDiscovery(
-            EngineInterceptorContext engineInterceptorContext,
-            List<ClassDefinition> classDefinitions)
+            EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions)
             throws Throwable {
         Precondition.notNull(engineInterceptorContext, "engineInterceptorContext is null");
         Precondition.notNull(classDefinitions, "classDefinitions is null");
@@ -174,7 +174,8 @@ public class EngineInterceptorManager {
 
         for (EngineInterceptor engineInterceptor : getEngineInterceptors()) {
             LOGGER.trace(
-                    "engine interceptor [%s] preExecute()", engineInterceptor.getClass().getName());
+                    "engine interceptor [%s] preExecute()",
+                    engineInterceptor.getClass().getName());
 
             engineInterceptor.preExecute(engineInterceptorContext);
 
@@ -216,7 +217,8 @@ public class EngineInterceptorManager {
 
         for (EngineInterceptor engineInterceptor : getEngineInterceptorsReverse()) {
             LOGGER.trace(
-                    "engine interceptor [%s] onDestroy()", engineInterceptor.getClass().getName());
+                    "engine interceptor [%s] onDestroy()",
+                    engineInterceptor.getClass().getName());
 
             try {
                 engineInterceptor.onDestroy(engineInterceptorContext);
@@ -229,7 +231,7 @@ public class EngineInterceptorManager {
                         "engine interceptor [%s] onDestroy() failure",
                         engineInterceptor.getClass().getName());
 
-                AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
+                StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }
         }
     }
@@ -281,43 +283,29 @@ public class EngineInterceptorManager {
                 LOGGER.trace("initialize()");
                 LOGGER.trace("loading autowired engine interceptors");
 
-                List<Class<?>> autowiredEngineInterceptors =
-                        new ArrayList<>(
-                                ClassSupport.findAllClasses(
-                                        InterceptorPredicates.AUTOWIRED_ENGINE_INTERCEPTOR_CLASS));
+                List<Class<?>> autowiredEngineInterceptors = new ArrayList<>(
+                        ClassSupport.findAllClasses(InterceptorPredicates.AUTOWIRED_ENGINE_INTERCEPTOR_CLASS));
 
                 // TODO Refactor
-                List<Class<?>> testClasses =
-                        ClassSupport.findAllClasses(ResolverPredicates.TEST_CLASS);
+                List<Class<?>> testClasses = ClassSupport.findAllClasses(ResolverPredicates.TEST_CLASS);
 
-                testClasses.forEach(
-                        testClass ->
-                                autowiredEngineInterceptors.addAll(
-                                        ClassSupport.findNestedClasses(
-                                                testClass,
-                                                InterceptorPredicates
-                                                        .AUTOWIRED_ENGINE_INTERCEPTOR_CLASS)));
+                testClasses.forEach(testClass -> autowiredEngineInterceptors.addAll(ClassSupport.findNestedClasses(
+                        testClass, InterceptorPredicates.AUTOWIRED_ENGINE_INTERCEPTOR_CLASS)));
 
                 filter(autowiredEngineInterceptors);
 
                 OrderSupport.orderClasses(autowiredEngineInterceptors);
 
-                LOGGER.trace(
-                        "autowired engine interceptor count [%d]",
-                        autowiredEngineInterceptors.size());
+                LOGGER.trace("autowired engine interceptor count [%d]", autowiredEngineInterceptors.size());
 
                 for (Class<?> engineInterceptorClass : autowiredEngineInterceptors) {
                     try {
-                        LOGGER.trace(
-                                "loading autowired engine interceptor [%s]",
-                                engineInterceptorClass.getName());
+                        LOGGER.trace("loading autowired engine interceptor [%s]", engineInterceptorClass.getName());
 
                         Object object = ObjectSupport.createObject(engineInterceptorClass);
                         engineInterceptors.add((EngineInterceptor) object);
 
-                        LOGGER.trace(
-                                "autowired engine interceptor [%s] loaded",
-                                engineInterceptorClass.getName());
+                        LOGGER.trace("autowired engine interceptor [%s] loaded", engineInterceptorClass.getName());
                     } catch (EngineException e) {
                         throw e;
                     } catch (Throwable t) {
@@ -342,49 +330,40 @@ public class EngineInterceptorManager {
 
         ConcreteConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX)
-                .ifPresent(
-                        regex -> {
-                            LOGGER.trace(
-                                    "%s [%s]",
-                                    Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX,
-                                    regex);
+                .ifPresent(regex -> {
+                    LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX, regex);
 
-                            Pattern pattern = Pattern.compile(regex);
-                            Matcher matcher = pattern.matcher("");
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher("");
 
-                            Iterator<Class<?>> iterator = filteredClasses.iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
-                                matcher.reset(clazz.getName());
-                                if (matcher.find()) {
-                                    LOGGER.trace(
-                                            "removing engine interceptor [%s]", clazz.getName());
+                    Iterator<Class<?>> iterator = filteredClasses.iterator();
+                    while (iterator.hasNext()) {
+                        Class<?> clazz = iterator.next();
+                        matcher.reset(clazz.getName());
+                        if (matcher.find()) {
+                            LOGGER.trace("removing engine interceptor [%s]", clazz.getName());
 
-                                    iterator.remove();
-                                }
-                            }
-                        });
+                            iterator.remove();
+                        }
+                    }
+                });
 
         ConcreteConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX)
-                .ifPresent(
-                        regex -> {
-                            LOGGER.trace(
-                                    "%s [%s]",
-                                    Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX,
-                                    regex);
+                .ifPresent(regex -> {
+                    LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX, regex);
 
-                            Pattern pattern = Pattern.compile(regex);
-                            Matcher matcher = pattern.matcher("");
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher("");
 
-                            for (Class<?> clazz : classes) {
-                                matcher.reset(clazz.getName());
-                                if (matcher.find()) {
-                                    LOGGER.trace("adding engine interceptor [%s]", clazz.getName());
-                                    filteredClasses.add(clazz);
-                                }
-                            }
-                        });
+                    for (Class<?> clazz : classes) {
+                        matcher.reset(clazz.getName());
+                        if (matcher.find()) {
+                            LOGGER.trace("adding engine interceptor [%s]", clazz.getName());
+                            filteredClasses.add(clazz);
+                        }
+                    }
+                });
 
         classes.clear();
         classes.addAll(filteredClasses);

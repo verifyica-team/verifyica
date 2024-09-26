@@ -34,8 +34,7 @@ public class RandomSupport {
         }
 
         if (minimum > maximum) {
-            throw new IllegalArgumentException(
-                    format("Minimum [%d] is greater than maximum [%d]", minimum, maximum));
+            throw new IllegalArgumentException(format("Minimum [%d] is greater than maximum [%d]", minimum, maximum));
         }
 
         return (long) (RANDOM.nextDouble() * (maximum - minimum + 1)) + minimum;

@@ -44,19 +44,17 @@ public class RepeaterTest {
     public void test1(ArgumentContext argumentContext) throws Throwable {
         new Repeater(10)
                 .before(() -> beforeEach(argumentContext))
-                .execute(
-                        () -> {
-                            assertThat(argumentContext).isNotNull();
-                            assertThat(argumentContext.getStore()).isNotNull();
-                            assertThat(argumentContext.getTestArgument()).isNotNull();
-                            assertThat(argumentContext.getTestArgument().getPayload())
-                                    .isEqualTo("test");
+                .execute(() -> {
+                    assertThat(argumentContext).isNotNull();
+                    assertThat(argumentContext.getStore()).isNotNull();
+                    assertThat(argumentContext.getTestArgument()).isNotNull();
+                    assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo("test");
 
-                            System.out.printf(
-                                    "test1(name[%s], payload[%s])%n",
-                                    argumentContext.getTestArgument(),
-                                    argumentContext.getTestArgument().getPayload());
-                        })
+                    System.out.printf(
+                            "test1(name[%s], payload[%s])%n",
+                            argumentContext.getTestArgument(),
+                            argumentContext.getTestArgument().getPayload());
+                })
                 .after(() -> afterEach(argumentContext))
                 .throttle(new Repeater.FixedThrottle(100))
                 .execute();
@@ -64,42 +62,29 @@ public class RepeaterTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(
-                        () ->
-                                new Repeater(10)
-                                        .before(() -> beforeEach(argumentContext))
-                                        .execute(
-                                                () -> {
-                                                    assertThat(argumentContext).isNotNull();
-                                                    assertThat(argumentContext.getStore())
-                                                            .isNotNull();
-                                                    assertThat(argumentContext.getTestArgument())
-                                                            .isNotNull();
-                                                    assertThat(
-                                                                    argumentContext
-                                                                            .getTestArgument()
-                                                                            .getPayload())
-                                                            .isEqualTo("test");
+        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> new Repeater(10)
+                .before(() -> beforeEach(argumentContext))
+                .execute(() -> {
+                    assertThat(argumentContext).isNotNull();
+                    assertThat(argumentContext.getStore()).isNotNull();
+                    assertThat(argumentContext.getTestArgument()).isNotNull();
+                    assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo("test");
 
-                                                    System.out.printf(
-                                                            "test2(name[%s], payload[%s])%n",
-                                                            argumentContext.getTestArgument(),
-                                                            argumentContext
-                                                                    .getTestArgument()
-                                                                    .getPayload());
+                    System.out.printf(
+                            "test2(name[%s], payload[%s])%n",
+                            argumentContext.getTestArgument(),
+                            argumentContext.getTestArgument().getPayload());
 
-                                                    throw new RuntimeException("Forced");
-                                                })
-                                        .after(() -> afterEach(argumentContext))
-                                        .accept(
-                                                (counter, throwable) -> {
-                                                    if (counter >= 10) {
-                                                        Repeater.rethrow(throwable);
-                                                    }
-                                                })
-                                        .throttle(new Repeater.ExponentialBackoffThrottle(10000))
-                                        .execute());
+                    throw new RuntimeException("Forced");
+                })
+                .after(() -> afterEach(argumentContext))
+                .accept((counter, throwable) -> {
+                    if (counter >= 10) {
+                        Repeater.rethrow(throwable);
+                    }
+                })
+                .throttle(new Repeater.ExponentialBackoffThrottle(10000))
+                .execute());
     }
 
     public void afterEach(ArgumentContext argumentContext) {

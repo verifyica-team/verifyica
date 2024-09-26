@@ -46,31 +46,25 @@ public class EnumArgumentsTest {
 
         System.out.printf(
                 "test(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
 
         switch (index) {
-            case 0:
-                {
-                    assertThat(argumentContext.getTestArgument().getPayload())
-                            .isEqualTo(Arguments.ZERO);
-                    break;
-                }
-            case 1:
-                {
-                    assertThat(argumentContext.getTestArgument().getPayload())
-                            .isEqualTo(Arguments.ONE);
-                    break;
-                }
-            case 2:
-                {
-                    assertThat(argumentContext.getTestArgument().getPayload())
-                            .isEqualTo(Arguments.TWO);
-                    break;
-                }
-            default:
-                {
-                    fail("Should not happen");
-                }
+            case 0: {
+                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(Arguments.ZERO);
+                break;
+            }
+            case 1: {
+                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(Arguments.ONE);
+                break;
+            }
+            case 2: {
+                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(Arguments.TWO);
+                break;
+            }
+            default: {
+                fail("Should not happen");
+            }
         }
 
         index++;

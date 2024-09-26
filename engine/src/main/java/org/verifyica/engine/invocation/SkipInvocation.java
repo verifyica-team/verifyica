@@ -24,6 +24,8 @@ import org.verifyica.engine.descriptor.InvocableTestDescriptor;
 /** Class to implement SkipInvocation */
 public class SkipInvocation implements Invocation {
 
+    private static final InvocationResult SKIPPED = InvocationResult.skipped();
+
     private final InvocableTestDescriptor invocableTestDescriptor;
     private final InvocationContext invocationContext;
     private final EngineExecutionListener engineExecutionListener;
@@ -41,19 +43,16 @@ public class SkipInvocation implements Invocation {
     }
 
     @Override
-    public void invoke() {
+    public InvocationResult invoke() {
         engineExecutionListener.executionStarted(invocableTestDescriptor);
 
-        invocableTestDescriptor
-                .getChildren()
-                .forEach(
-                        (Consumer<TestDescriptor>)
-                                testDescriptor ->
-                                        new SkipInvocation(testDescriptor, invocationContext)
-                                                .invoke());
+        invocableTestDescriptor.getChildren().forEach((Consumer<TestDescriptor>)
+                testDescriptor -> new SkipInvocation(testDescriptor, invocationContext).invoke());
 
         engineExecutionListener.executionSkipped(invocableTestDescriptor, "Skipped");
 
-        invocableTestDescriptor.setInvocationResult(InvocationResult.skipped());
+        invocableTestDescriptor.setInvocationResult(SKIPPED);
+
+        return SKIPPED;
     }
 }

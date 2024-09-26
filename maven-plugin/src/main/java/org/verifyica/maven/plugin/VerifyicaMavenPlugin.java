@@ -97,44 +97,39 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     /** Constant */
     public static final String VERSION = version();
 
-    private static final String BANNER =
-            new AnsiColoredString()
-                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
-                    .append("Verifyica ")
-                    .append(VerifyicaTestEngine.staticGetVersion())
-                    .append(AnsiColor.NONE)
-                    .build();
+    private static final String BANNER = new AnsiColoredString()
+            .append(AnsiColor.TEXT_WHITE_BRIGHT)
+            .append("Verifyica ")
+            .append(VerifyicaTestEngine.staticGetVersion())
+            .append(AnsiColor.NONE)
+            .build();
 
-    private static final String SUMMARY_BANNER =
-            BANNER + AnsiColor.TEXT_WHITE_BRIGHT.wrap(" Summary");
+    private static final String SUMMARY_BANNER = BANNER + AnsiColor.TEXT_WHITE_BRIGHT.wrap(" Summary");
 
-    private static final String SEPARATOR =
-            AnsiColor.TEXT_WHITE_BRIGHT.wrap(
-                    "------------------------------------------------------------------------");
+    private static final String SEPARATOR = AnsiColor.TEXT_WHITE_BRIGHT.wrap(
+            "------------------------------------------------------------------------");
 
-    private static final String INFO =
-            new AnsiColoredString()
-                    .append(AnsiColor.TEXT_WHITE)
-                    .append("[")
-                    .append(AnsiColor.TEXT_BLUE_BOLD)
-                    .append("INFO")
-                    .append(AnsiColor.TEXT_WHITE)
-                    .append("]")
-                    .append(AnsiColor.NONE)
-                    .append(" ")
-                    .build();
+    private static final String INFO = new AnsiColoredString()
+            .append(AnsiColor.TEXT_WHITE)
+            .append("[")
+            .append(AnsiColor.TEXT_BLUE_BOLD)
+            .append("INFO")
+            .append(AnsiColor.TEXT_WHITE)
+            .append("]")
+            .append(AnsiColor.NONE)
+            .append(" ")
+            .build();
 
-    private static final String ERROR =
-            new AnsiColoredString()
-                    .append(AnsiColor.TEXT_WHITE)
-                    .append("[")
-                    .append(AnsiColor.TEXT_RED_BOLD)
-                    .append("ERROR")
-                    .append(AnsiColor.TEXT_WHITE)
-                    .append("]")
-                    .append(AnsiColor.NONE)
-                    .append(" ")
-                    .build();
+    private static final String ERROR = new AnsiColoredString()
+            .append(AnsiColor.TEXT_WHITE)
+            .append("[")
+            .append(AnsiColor.TEXT_RED_BOLD)
+            .append("ERROR")
+            .append(AnsiColor.TEXT_WHITE)
+            .append("]")
+            .append(AnsiColor.NONE)
+            .append(" ")
+            .build();
 
     @Parameter(defaultValue = "${session}", required = true, readonly = true)
     private MavenSession mavenSession;
@@ -192,37 +187,32 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             System.out.println(ERROR + SEPARATOR);
             System.out.println(ERROR + SUMMARY_BANNER);
             System.out.println(ERROR + SEPARATOR);
-            System.out.println(
-                    new AnsiColoredString()
-                            .append(ERROR)
-                            .append(AnsiColor.TEXT_RED_BOLD)
-                            .append("ERROR DURING TEST DISCOVERY")
-                            .append(AnsiColor.NONE));
+            System.out.println(new AnsiColoredString()
+                    .append(ERROR)
+                    .append(AnsiColor.TEXT_RED_BOLD)
+                    .append("ERROR DURING TEST DISCOVERY")
+                    .append(AnsiColor.NONE));
             System.out.println(ERROR + SEPARATOR);
 
             Duration elapsedTime = stopwatch.elapsedTime();
 
-            System.out.println(
-                    new AnsiColoredString()
-                            .append(ERROR)
-                            .append(AnsiColor.TEXT_WHITE_BRIGHT)
-                            .append("Total time  : ")
-                            .append(
-                                    HumanReadableTimeSupport.toHumanReadable(
-                                            elapsedTime.toNanos(),
-                                            HumanReadableTimeSupport.Format.SHORT))
-                            .append(" (")
-                            .append(elapsedTime.toNanos() / 1e+6D)
-                            .append(" ms)")
-                            .append(AnsiColor.NONE));
+            System.out.println(new AnsiColoredString()
+                    .append(ERROR)
+                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                    .append("Total time  : ")
+                    .append(HumanReadableTimeSupport.toHumanReadable(
+                            elapsedTime.toNanos(), HumanReadableTimeSupport.Format.SHORT))
+                    .append(" (")
+                    .append(elapsedTime.toNanos() / 1e+6D)
+                    .append(" ms)")
+                    .append(AnsiColor.NONE));
 
-            System.out.println(
-                    new AnsiColoredString()
-                            .append(ERROR)
-                            .append(AnsiColor.TEXT_WHITE_BRIGHT)
-                            .append("Finished at : ")
-                            .append(HumanReadableTimeSupport.now())
-                            .append(AnsiColor.NONE));
+            System.out.println(new AnsiColoredString()
+                    .append(ERROR)
+                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                    .append("Finished at : ")
+                    .append(HumanReadableTimeSupport.now())
+                    .append(AnsiColor.NONE));
 
             System.out.println(ERROR + SEPARATOR);
 
@@ -233,8 +223,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             execute(testDescriptor);
 
             for (TestDescriptor ancestorTestDescriptor : testDescriptor.getAncestors()) {
-                InvocableTestDescriptor invocableTestDescriptor =
-                        (InvocableTestDescriptor) ancestorTestDescriptor;
+                InvocableTestDescriptor invocableTestDescriptor = (InvocableTestDescriptor) ancestorTestDescriptor;
                 if (invocableTestDescriptor.getInvocationResult().isFailure()) {
                     throw new MojoFailureException("");
                 }
@@ -294,35 +283,29 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
         System.setProperty("java.class.path", buildClasspath(urls.values()));
 
-        ClassLoader classLoader =
-                new URLClassLoader(
-                        urls.values().toArray(new URL[0]),
-                        Thread.currentThread().getContextClassLoader());
+        ClassLoader classLoader = new URLClassLoader(
+                urls.values().toArray(new URL[0]), Thread.currentThread().getContextClassLoader());
 
         Thread.currentThread().setContextClassLoader(classLoader);
 
-        LauncherDiscoveryRequest launcherDiscoveryRequest =
-                LauncherDiscoveryRequestBuilder.request()
-                        .selectors(DiscoverySelectors.selectClasspathRoots(artifactPaths))
-                        .filters(includeClassNamePatterns(".*"))
-                        .configurationParameters(Collections.emptyMap())
-                        .build();
-        return verifyicaTestEngine.discover(
-                launcherDiscoveryRequest, UniqueId.forEngine(verifyicaTestEngine.getId()));
+        LauncherDiscoveryRequest launcherDiscoveryRequest = LauncherDiscoveryRequestBuilder.request()
+                .selectors(DiscoverySelectors.selectClasspathRoots(artifactPaths))
+                .filters(includeClassNamePatterns(".*"))
+                .configurationParameters(Collections.emptyMap())
+                .build();
+        return verifyicaTestEngine.discover(launcherDiscoveryRequest, UniqueId.forEngine(verifyicaTestEngine.getId()));
     }
 
     private void execute(TestDescriptor testDescriptor) {
-        ChainedEngineExecutionListener chainedEngineExecutionListener =
-                new ChainedEngineExecutionListener(
-                        new TracingEngineExecutionListener(),
-                        new StatusEngineExecutionListener(),
-                        new SummaryEngineExecutionListener());
+        ChainedEngineExecutionListener chainedEngineExecutionListener = new ChainedEngineExecutionListener(
+                new TracingEngineExecutionListener(),
+                new StatusEngineExecutionListener(),
+                new SummaryEngineExecutionListener());
 
-        ExecutionRequest executionRequest =
-                new ExecutionRequest(
-                        testDescriptor,
-                        chainedEngineExecutionListener,
-                        new ConcreteConfigurationParameters(ConcreteConfiguration.getInstance()));
+        ExecutionRequest executionRequest = new ExecutionRequest(
+                testDescriptor,
+                chainedEngineExecutionListener,
+                new ConcreteConfigurationParameters(ConcreteConfiguration.getInstance()));
 
         verifyicaTestEngine.execute(executionRequest);
     }

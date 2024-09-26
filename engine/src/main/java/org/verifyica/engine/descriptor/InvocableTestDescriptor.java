@@ -16,6 +16,10 @@
 
 package org.verifyica.engine.descriptor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.verifyica.engine.invocation.Invocation;
@@ -35,6 +39,23 @@ public abstract class InvocableTestDescriptor extends AbstractTestDescriptor {
      */
     protected InvocableTestDescriptor(UniqueId uniqueId, String displayName) {
         super(uniqueId, displayName);
+    }
+
+    /**
+     * Method to get invokable child test descriptor
+     *
+     * @return a List of invokable child test descriptors
+     */
+    protected List<InvocableTestDescriptor> getInvocableChildren() {
+        List<InvocableTestDescriptor> invocableTestDescriptors = new ArrayList<>();
+
+        getChildren().forEach((Consumer<TestDescriptor>) testDescriptor -> {
+            if (testDescriptor instanceof InvocableTestDescriptor) {
+                invocableTestDescriptors.add((InvocableTestDescriptor) testDescriptor);
+            }
+        });
+
+        return invocableTestDescriptors;
     }
 
     /**

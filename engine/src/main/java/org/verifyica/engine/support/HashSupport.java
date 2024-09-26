@@ -44,9 +44,7 @@ public class HashSupport {
 
         StringBuilder stringBuilder = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
-            stringBuilder.append(
-                    ALPHA_NUMERIC_CHARACTERS.charAt(
-                            RANDOM.nextInt(ALPHA_NUMERIC_CHARACTERS.length())));
+            stringBuilder.append(ALPHA_NUMERIC_CHARACTERS.charAt(RANDOM.nextInt(ALPHA_NUMERIC_CHARACTERS.length())));
         }
         return stringBuilder.toString();
     }

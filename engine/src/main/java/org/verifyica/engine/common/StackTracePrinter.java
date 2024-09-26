@@ -18,23 +18,24 @@ package org.verifyica.engine.common;
 
 import java.io.PrintStream;
 
-/** Class to implement AnsiColorStackTrace */
-public class AnsiColoredStackTrace {
+/** Class to implement StackTracePrinter */
+public class StackTracePrinter {
 
     /** Constructor */
-    private AnsiColoredStackTrace() {
+    private StackTracePrinter() {
         // INTENTIONALLY BLANK
     }
 
     /**
-     * Method to print the stacktrace in red bold text
+     * Method to print the stacktrace using a specific AnsiColor
      *
-     * @param printStream printStream
      * @param throwable throwable
+     * @param ansiColor ansiColor
+     * @param printStream printStream
      */
-    public static void printRedBoldStackTrace(PrintStream printStream, Throwable throwable) {
+    public static void printStackTrace(Throwable throwable, AnsiColor ansiColor, PrintStream printStream) {
         synchronized (printStream) {
-            printStream.print(AnsiColor.TEXT_RED_BOLD);
+            printStream.print(ansiColor);
             throwable.printStackTrace(printStream);
             printStream.print(AnsiColor.NONE);
         }

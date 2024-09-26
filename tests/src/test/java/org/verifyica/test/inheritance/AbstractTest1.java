@@ -44,7 +44,8 @@ public abstract class AbstractTest1 {
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         System.out.printf(
-                "  class(%s)%n", argumentContext.getClassContext().getTestClass().getName());
+                "  class(%s)%n",
+                argumentContext.getClassContext().getTestClass().getName());
         System.out.printf("  instance(%s)%n", argumentContext.getClassContext().getTestInstance());
         System.out.printf("  argument(%s)%n", argumentContext.getTestArgument().getName());
     }

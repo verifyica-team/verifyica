@@ -37,8 +37,7 @@ import org.verifyica.engine.support.HierarchyTraversalMode;
 /** Class to implement ClasspathRootSelectorResolver */
 public class ClasspathRootSelectorResolver {
 
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(ClasspathRootSelectorResolver.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathRootSelectorResolver.class);
 
     /** Constructor */
     public ClasspathRootSelectorResolver() {
@@ -51,62 +50,45 @@ public class ClasspathRootSelectorResolver {
      * @param engineDiscoveryRequest engineDiscoveryRequest
      * @param classMethodMap classMethodMap
      */
-    public void resolve(
-            EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, List<Method>> classMethodMap) {
+    public void resolve(EngineDiscoveryRequest engineDiscoveryRequest, Map<Class<?>, List<Method>> classMethodMap) {
         LOGGER.trace("resolve()");
 
-        Stopwatch stopWatch = new Stopwatch();
+        Stopwatch stopwatch = new Stopwatch();
 
         AtomicInteger classpathRootSelectorCount = new AtomicInteger();
 
-        engineDiscoveryRequest
-                .getSelectorsByType(ClasspathRootSelector.class)
-                .forEach(
-                        classpathRootSelector -> {
-                            classpathRootSelectorCount.incrementAndGet();
+        engineDiscoveryRequest.getSelectorsByType(ClasspathRootSelector.class).forEach(classpathRootSelector -> {
+            classpathRootSelectorCount.incrementAndGet();
 
-                            LOGGER.trace(
-                                    "classpathRoot [%s]", classpathRootSelector.getClasspathRoot());
+            LOGGER.trace("classpathRoot [%s]", classpathRootSelector.getClasspathRoot());
 
-                            List<Class<?>> testClasses =
-                                    ClassSupport.findAllClasses(
-                                            classpathRootSelector.getClasspathRoot(),
-                                            ResolverPredicates.TEST_CLASS);
+            List<Class<?>> testClasses = ClassSupport.findAllClasses(
+                    classpathRootSelector.getClasspathRoot(), ResolverPredicates.TEST_CLASS);
 
-                            List<ClassNameFilter> classNameFilters =
-                                    engineDiscoveryRequest.getFiltersByType(ClassNameFilter.class);
+            List<ClassNameFilter> classNameFilters = engineDiscoveryRequest.getFiltersByType(ClassNameFilter.class);
 
-                            Predicate<String> classNamePredicate =
-                                    composeFilters(classNameFilters).toPredicate();
+            Predicate<String> classNamePredicate =
+                    composeFilters(classNameFilters).toPredicate();
 
-                            List<? extends PackageNameFilter> packageNameFilters =
-                                    engineDiscoveryRequest.getFiltersByType(
-                                            PackageNameFilter.class);
+            List<? extends PackageNameFilter> packageNameFilters =
+                    engineDiscoveryRequest.getFiltersByType(PackageNameFilter.class);
 
-                            Predicate<String> packageNamePredicate =
-                                    composeFilters(packageNameFilters).toPredicate();
+            Predicate<String> packageNamePredicate =
+                    composeFilters(packageNameFilters).toPredicate();
 
-                            testClasses.forEach(
-                                    testClass -> {
-                                        if (classNamePredicate.test(testClass.getName())
-                                                && packageNamePredicate.test(
-                                                        testClass.getPackage().getName())) {
-                                            classMethodMap
-                                                    .computeIfAbsent(
-                                                            testClass, method -> new ArrayList<>())
-                                                    .addAll(
-                                                            ClassSupport.findMethods(
-                                                                    testClass,
-                                                                    ResolverPredicates.TEST_METHOD,
-                                                                    HierarchyTraversalMode
-                                                                            .BOTTOM_UP));
-                                        }
-                                    });
-                        });
+            testClasses.forEach(testClass -> {
+                if (classNamePredicate.test(testClass.getName())
+                        && packageNamePredicate.test(testClass.getPackage().getName())) {
+                    classMethodMap
+                            .computeIfAbsent(testClass, method -> new ArrayList<>())
+                            .addAll(ClassSupport.findMethods(
+                                    testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
+                }
+            });
+        });
 
         LOGGER.trace(
                 "resolve() classpathRootSelectors [%d] elapsedTime [%d] ms",
-                classpathRootSelectorCount.get(), stopWatch.elapsedTime().toMillis());
+                classpathRootSelectorCount.get(), stopwatch.elapsedTime().toMillis());
     }
 }

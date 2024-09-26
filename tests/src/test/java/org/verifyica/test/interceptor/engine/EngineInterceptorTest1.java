@@ -37,26 +37,23 @@ public class EngineInterceptorTest1 {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
-        assertThat(
-                        argumentContext.getClassContext().getEngineContext()
-                                == argumentContext.getClassContext().getEngineContext())
+        assertThat(argumentContext.getClassContext().getEngineContext()
+                        == argumentContext.getClassContext().getEngineContext())
                 .isTrue();
 
         // Validate that the interceptor added a global String to the EngineContext Store
-        assertThat(
-                        argumentContext
-                                .getClassContext()
-                                .getEngineContext()
-                                .getStore()
-                                .get(ExampleAutowiredEngineInterceptor1.KEY))
+        assertThat(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
-        assertThat(
-                        argumentContext
-                                .getClassContext()
-                                .getEngineContext()
-                                .getStore()
-                                .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+        assertThat(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
                 .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
@@ -68,26 +65,23 @@ public class EngineInterceptorTest1 {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
-        assertThat(
-                        argumentContext.getClassContext().getEngineContext()
-                                == argumentContext.getClassContext().getEngineContext())
+        assertThat(argumentContext.getClassContext().getEngineContext()
+                        == argumentContext.getClassContext().getEngineContext())
                 .isTrue();
 
         // Validate that the interceptor added a global String to the EngineContext Store
-        assertThat(
-                        argumentContext
-                                .getClassContext()
-                                .getEngineContext()
-                                .getStore()
-                                .get(ExampleAutowiredEngineInterceptor1.KEY))
+        assertThat(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
-        assertThat(
-                        argumentContext
-                                .getClassContext()
-                                .getEngineContext()
-                                .getStore()
-                                .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+        assertThat(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
                 .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
@@ -99,26 +93,23 @@ public class EngineInterceptorTest1 {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
-        assertThat(
-                        argumentContext.getClassContext().getEngineContext()
-                                == argumentContext.getClassContext().getEngineContext())
+        assertThat(argumentContext.getClassContext().getEngineContext()
+                        == argumentContext.getClassContext().getEngineContext())
                 .isTrue();
 
         // Validate that the interceptor added a global String to the EngineContext Store
-        assertThat(
-                        argumentContext
-                                .getClassContext()
-                                .getEngineContext()
-                                .getStore()
-                                .get(ExampleAutowiredEngineInterceptor1.KEY))
+        assertThat(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
-        assertThat(
-                        argumentContext
-                                .getClassContext()
-                                .getEngineContext()
-                                .getStore()
-                                .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+        assertThat(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
                 .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 

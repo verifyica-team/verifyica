@@ -36,8 +36,7 @@ public class EngineInterceptorTest4 {
 
         @Override
         public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext,
-                ClassDefinition classDefinition) {
+                EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest4.class) {
                 // Change test argument parallelism
                 classDefinition.setArgumentParallelism(Integer.MAX_VALUE);

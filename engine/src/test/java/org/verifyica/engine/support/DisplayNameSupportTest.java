@@ -25,14 +25,12 @@ public class DisplayNameSupportTest {
 
     @Test
     public void testDefaultDisplayName() {
-        assertThat(DisplayNameSupport.getDisplayName(TestClass1.class))
-                .isEqualTo(TestClass1.class.getName());
+        assertThat(DisplayNameSupport.getDisplayName(TestClass1.class)).isEqualTo(TestClass1.class.getName());
     }
 
     @Test
     public void testDisplayNameAnnotation() {
-        assertThat(DisplayNameSupport.getDisplayName(TestClass2.class))
-                .isEqualTo("CustomDisplayName");
+        assertThat(DisplayNameSupport.getDisplayName(TestClass2.class)).isEqualTo("CustomDisplayName");
     }
 
     private static class TestClass1 {

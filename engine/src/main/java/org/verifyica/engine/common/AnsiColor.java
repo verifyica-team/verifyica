@@ -237,11 +237,9 @@ public class AnsiColor {
             ANSI_COLOR_SUPPORTED = false;
         } else {
             try {
-                ANSI_COLOR_SUPPORTED =
-                        (Boolean)
-                                Class.forName("java.io.Console")
-                                        .getDeclaredMethod("isTerminal")
-                                        .invoke(console);
+                ANSI_COLOR_SUPPORTED = (Boolean) Class.forName("java.io.Console")
+                        .getDeclaredMethod("isTerminal")
+                        .invoke(console);
             } catch (Throwable t) {
                 ANSI_COLOR_SUPPORTED = true;
             }

@@ -37,46 +37,38 @@ public class StoreTest2 {
     @Verifyica.Test
     @Verifyica.Order(order = 0)
     public void putIntoStores(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("putIntoStores(%s)%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf(
+                "putIntoStores(%s)%n", argumentContext.getTestArgument().getPayload());
 
         argumentContext.getStore().put(ARGUMENT_CONTEXT_KEY, "argument");
         argumentContext.getClassContext().getStore().put(CLASS_CONTEXT_KEY, "class");
-        argumentContext
-                .getClassContext()
-                .getEngineContext()
-                .getStore()
-                .put(ENGINE_CONTEXT_KEY, "engine");
+        argumentContext.getClassContext().getEngineContext().getStore().put(ENGINE_CONTEXT_KEY, "engine");
     }
 
     @Verifyica.Test
     @Verifyica.Order(order = 1)
     public void getOutOfStores(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("getOutOfStores(%s)%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf(
+                "getOutOfStores(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext.getStore().get(ARGUMENT_CONTEXT_KEY, String.class))
                 .isEqualTo("argument");
 
-        assertThat(
-                        argumentContext
-                                .getClassContext()
-                                .getStore()
-                                .get(CLASS_CONTEXT_KEY, String.class))
+        assertThat(argumentContext.getClassContext().getStore().get(CLASS_CONTEXT_KEY, String.class))
                 .isEqualTo("class");
 
-        assertThat(
-                        argumentContext
-                                .getClassContext()
-                                .getEngineContext()
-                                .getStore()
-                                .get(ENGINE_CONTEXT_KEY, String.class))
+        assertThat(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .get(ENGINE_CONTEXT_KEY, String.class))
                 .isEqualTo("engine");
 
-        assertThat(
-                        argumentContext
-                                .getClassContext()
-                                .getEngineContext()
-                                .getStore()
-                                .get(ENGINE_CONTEXT_KEY, String.class))
+        assertThat(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .get(ENGINE_CONTEXT_KEY, String.class))
                 .isEqualTo("engine");
     }
 
@@ -87,11 +79,7 @@ public class StoreTest2 {
         assertThat(classContext.getStore().remove(CLASS_CONTEXT_KEY, String.class))
                 .isEqualTo("class");
 
-        assertThat(
-                        classContext
-                                .getEngineContext()
-                                .getStore()
-                                .remove(ENGINE_CONTEXT_KEY, String.class))
+        assertThat(classContext.getEngineContext().getStore().remove(ENGINE_CONTEXT_KEY, String.class))
                 .isEqualTo("engine");
     }
 }

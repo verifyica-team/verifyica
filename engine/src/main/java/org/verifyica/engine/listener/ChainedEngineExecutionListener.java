@@ -47,8 +47,7 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
      */
     public ChainedEngineExecutionListener(EngineExecutionListener... engineExecutionListeners) {
         Precondition.notNull(engineExecutionListeners, "engineExecutionListeners is null");
-        Precondition.isTrue(
-                engineExecutionListeners.length > 0, "engineExecutionListeners is empty");
+        Precondition.isTrue(engineExecutionListeners.length > 0, "engineExecutionListeners is empty");
 
         for (EngineExecutionListener engineExecutionListener : engineExecutionListeners) {
             add(engineExecutionListener);
@@ -60,11 +59,9 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
      *
      * @param engineExecutionListeners engineExecutionListeners
      */
-    public ChainedEngineExecutionListener(
-            Collection<EngineExecutionListener> engineExecutionListeners) {
+    public ChainedEngineExecutionListener(Collection<EngineExecutionListener> engineExecutionListeners) {
         Precondition.notNull(engineExecutionListeners, "engineExecutionListeners is null");
-        Precondition.isFalse(
-                engineExecutionListeners.isEmpty(), "engineExecutionListeners is empty");
+        Precondition.isFalse(engineExecutionListeners.isEmpty(), "engineExecutionListeners is empty");
 
         engineExecutionListeners.forEach(this::add);
     }
@@ -95,37 +92,30 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
     @Override
     public void dynamicTestRegistered(TestDescriptor testDescriptor) {
         engineExecutionListeners.forEach(
-                engineExecutionListener ->
-                        engineExecutionListener.dynamicTestRegistered(testDescriptor));
+                engineExecutionListener -> engineExecutionListener.dynamicTestRegistered(testDescriptor));
     }
 
     @Override
     public void executionSkipped(TestDescriptor testDescriptor, String reason) {
         engineExecutionListeners.forEach(
-                engineExecutionListener ->
-                        engineExecutionListener.executionSkipped(testDescriptor, reason));
+                engineExecutionListener -> engineExecutionListener.executionSkipped(testDescriptor, reason));
     }
 
     @Override
     public void executionStarted(TestDescriptor testDescriptor) {
         engineExecutionListeners.forEach(
-                engineExecutionListener ->
-                        engineExecutionListener.executionStarted(testDescriptor));
+                engineExecutionListener -> engineExecutionListener.executionStarted(testDescriptor));
     }
 
     @Override
-    public void executionFinished(
-            TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
-        engineExecutionListeners.forEach(
-                engineExecutionListener ->
-                        engineExecutionListener.executionFinished(
-                                testDescriptor, testExecutionResult));
+    public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
+        engineExecutionListeners.forEach(engineExecutionListener ->
+                engineExecutionListener.executionFinished(testDescriptor, testExecutionResult));
     }
 
     @Override
     public void reportingEntryPublished(TestDescriptor testDescriptor, ReportEntry entry) {
         engineExecutionListeners.forEach(
-                engineExecutionListener ->
-                        engineExecutionListener.reportingEntryPublished(testDescriptor, entry));
+                engineExecutionListener -> engineExecutionListener.reportingEntryPublished(testDescriptor, entry));
     }
 }

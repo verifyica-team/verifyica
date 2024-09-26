@@ -43,8 +43,7 @@ public class ClassThreadLocalTest1 {
     @Verifyica.Prepare
     public void prepare(ClassContext classContext) {
         System.out.println("prepare()");
-        System.out.printf(
-                "test argument parallelism [%d]%n", classContext.getTestArgumentParallelism());
+        System.out.printf("test argument parallelism [%d]%n", classContext.getTestArgumentParallelism());
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();

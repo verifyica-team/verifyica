@@ -26,8 +26,7 @@ import org.verifyica.engine.logger.LoggerFactory;
 /** Class to implement TracingEngineExecutionListener */
 public class TracingEngineExecutionListener implements EngineExecutionListener {
 
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(TracingEngineExecutionListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TracingEngineExecutionListener.class);
 
     /** Constructor */
     public TracingEngineExecutionListener() {
@@ -50,8 +49,7 @@ public class TracingEngineExecutionListener implements EngineExecutionListener {
     }
 
     @Override
-    public void executionFinished(
-            TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
+    public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
         LOGGER.trace(
                 "executionFinished() testDescriptor [%s] testExecutionResult [%s]",
                 testDescriptor, testExecutionResult);
@@ -59,7 +57,6 @@ public class TracingEngineExecutionListener implements EngineExecutionListener {
 
     @Override
     public void reportingEntryPublished(TestDescriptor testDescriptor, ReportEntry entry) {
-        LOGGER.trace(
-                "reportingEntryPublished() testDescriptor [%s] entry [%s]", testDescriptor, entry);
+        LOGGER.trace("reportingEntryPublished() testDescriptor [%s] entry [%s]", testDescriptor, entry);
     }
 }

@@ -56,13 +56,7 @@ public class ConcreteMethodDefinition implements MethodDefinition {
 
     @Override
     public String toString() {
-        return "ConcreteMethodDefinition{"
-                + "method="
-                + method
-                + ", displayName='"
-                + displayName
-                + '\''
-                + '}';
+        return "ConcreteMethodDefinition{" + "method=" + method + ", displayName='" + displayName + '\'' + '}';
     }
 
     @Override

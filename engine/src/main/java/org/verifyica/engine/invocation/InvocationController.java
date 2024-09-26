@@ -38,8 +38,7 @@ public class InvocationController {
      * @param classInterceptorManager classInterceptorManager
      */
     public InvocationController(
-            EngineInterceptorManager engineInterceptorManager,
-            ClassInterceptorManager classInterceptorManager) {
+            EngineInterceptorManager engineInterceptorManager, ClassInterceptorManager classInterceptorManager) {
         this.engineInterceptorManager = engineInterceptorManager;
         this.classInterceptorManager = classInterceptorManager;
     }
@@ -50,19 +49,40 @@ public class InvocationController {
      * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable
      */
-    public void invokeOnInitialize(EngineInterceptorContext engineInterceptorContext)
-            throws Throwable {
+    public void invokeOnInitialize(EngineInterceptorContext engineInterceptorContext) throws Throwable {
         engineInterceptorManager.onInitialize(engineInterceptorContext);
     }
 
-    public void invokeInstantiate(Class<?> testClass, AtomicReference<Object> testInstanceReference)
-            throws Throwable {
-        classInterceptorManager.instantiate(testClass, testInstanceReference);
+    /**
+     * Method to invoke instantiate
+     *
+     * @param testClass testClass
+     * @param testInstanceReference testInstanceReference
+     * @return an InvocationResult
+     */
+    public InvocationResult invokeInstantiate(Class<?> testClass, AtomicReference<Object> testInstanceReference) {
+        try {
+            classInterceptorManager.instantiate(testClass, testInstanceReference);
+            return InvocationResult.success();
+        } catch (Throwable t) {
+            return InvocationResult.exception(t);
+        }
     }
 
-    public void invokePrepareMethods(List<Method> prepareMethods, ClassContext classContext)
-            throws Throwable {
-        classInterceptorManager.prepare(prepareMethods, classContext);
+    /**
+     * Method to invoke prepare methods
+     *
+     * @param prepareMethods prepareMethods
+     * @param classContext classContext
+     * @return an InvocationResult
+     */
+    public InvocationResult invokePrepareMethods(List<Method> prepareMethods, ClassContext classContext) {
+        try {
+            classInterceptorManager.prepare(prepareMethods, classContext);
+            return InvocationResult.success();
+        } catch (Throwable t) {
+            return InvocationResult.exception(t);
+        }
     }
 
     /**
@@ -70,11 +90,15 @@ public class InvocationController {
      *
      * @param beforeAllMethods beforeAllMethods
      * @param argumentContext argumentContext
-     * @throws Throwable Throwable
+     * @return an InvocationResult
      */
-    public void invokeBeforeAllMethods(
-            List<Method> beforeAllMethods, ArgumentContext argumentContext) throws Throwable {
-        classInterceptorManager.beforeAll(beforeAllMethods, argumentContext);
+    public InvocationResult invokeBeforeAllMethods(List<Method> beforeAllMethods, ArgumentContext argumentContext) {
+        try {
+            classInterceptorManager.beforeAll(beforeAllMethods, argumentContext);
+            return InvocationResult.success();
+        } catch (Throwable t) {
+            return InvocationResult.exception(t);
+        }
     }
 
     /**
@@ -82,11 +106,15 @@ public class InvocationController {
      *
      * @param beforeEachMethods beforeEachMethods
      * @param argumentContext argumentContext
-     * @throws Throwable Throwable
+     * @return an InvocationResult
      */
-    public void invokeBeforeEachMethods(
-            List<Method> beforeEachMethods, ArgumentContext argumentContext) throws Throwable {
-        classInterceptorManager.beforeEach(beforeEachMethods, argumentContext);
+    public InvocationResult invokeBeforeEachMethods(List<Method> beforeEachMethods, ArgumentContext argumentContext) {
+        try {
+            classInterceptorManager.beforeEach(beforeEachMethods, argumentContext);
+            return InvocationResult.success();
+        } catch (Throwable t) {
+            return InvocationResult.exception(t);
+        }
     }
 
     /**
@@ -94,11 +122,15 @@ public class InvocationController {
      *
      * @param testMethod testMethod
      * @param argumentContext argumentContext
-     * @throws Throwable Throwable
+     * @return an InvocationResult
      */
-    public void invokeTestMethod(Method testMethod, ArgumentContext argumentContext)
-            throws Throwable {
-        classInterceptorManager.test(testMethod, argumentContext);
+    public InvocationResult invokeTestMethod(Method testMethod, ArgumentContext argumentContext) {
+        try {
+            classInterceptorManager.test(testMethod, argumentContext);
+            return InvocationResult.success();
+        } catch (Throwable t) {
+            return InvocationResult.exception(t);
+        }
     }
 
     /**
@@ -106,11 +138,15 @@ public class InvocationController {
      *
      * @param afterEachMethods afterEachMethods
      * @param argumentContext argumentContext
-     * @throws Throwable Throwable
+     * @return an InvocationResult
      */
-    public void invokeAfterEachMethods(
-            List<Method> afterEachMethods, ArgumentContext argumentContext) throws Throwable {
-        classInterceptorManager.afterEach(afterEachMethods, argumentContext);
+    public InvocationResult invokeAfterEachMethods(List<Method> afterEachMethods, ArgumentContext argumentContext) {
+        try {
+            classInterceptorManager.afterEach(afterEachMethods, argumentContext);
+            return InvocationResult.success();
+        } catch (Throwable t) {
+            return InvocationResult.exception(t);
+        }
     }
 
     /**
@@ -118,11 +154,15 @@ public class InvocationController {
      *
      * @param afterAllMethods afterAllMethods
      * @param argumentContext argumentContext
-     * @throws Throwable Throwable
+     * @return an InvocationResult
      */
-    public void invokeAfterAllMethods(List<Method> afterAllMethods, ArgumentContext argumentContext)
-            throws Throwable {
-        classInterceptorManager.afterAll(afterAllMethods, argumentContext);
+    public InvocationResult invokeAfterAllMethods(List<Method> afterAllMethods, ArgumentContext argumentContext) {
+        try {
+            classInterceptorManager.afterAll(afterAllMethods, argumentContext);
+            return InvocationResult.success();
+        } catch (Throwable t) {
+            return InvocationResult.exception(t);
+        }
     }
 
     /**
@@ -130,14 +170,29 @@ public class InvocationController {
      *
      * @param concludeMethods concludeMethods
      * @param classContext classContext
-     * @throws Throwable Throwable
+     * @return an InvocationResult
      */
-    public void invokeConcludeMethods(List<Method> concludeMethods, ClassContext classContext)
-            throws Throwable {
-        classInterceptorManager.conclude(concludeMethods, classContext);
+    public InvocationResult invokeConcludeMethods(List<Method> concludeMethods, ClassContext classContext) {
+        try {
+            classInterceptorManager.conclude(concludeMethods, classContext);
+            return InvocationResult.success();
+        } catch (Throwable t) {
+            return InvocationResult.exception(t);
+        }
     }
 
-    public void invokeOnDestroy(ClassContext classContext) throws Throwable {
-        classInterceptorManager.onDestroy(classContext);
+    /**
+     * Method to invoke destroy
+     *
+     * @param classContext class
+     * @return an InvocationResult
+     */
+    public InvocationResult invokeOnDestroy(ClassContext classContext) {
+        try {
+            classInterceptorManager.onDestroy(classContext);
+            return InvocationResult.success();
+        } catch (Throwable t) {
+            return InvocationResult.exception(t);
+        }
     }
 }

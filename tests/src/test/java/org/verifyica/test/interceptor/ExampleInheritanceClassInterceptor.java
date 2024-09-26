@@ -25,8 +25,7 @@ public interface ExampleInheritanceClassInterceptor {
 
     @Verifyica.ClassInterceptorSupplier
     static Collection<ClassInterceptor> classInterceptors() {
-        System.out.printf(
-                "%s classInterceptors()%n", ExampleInheritanceClassInterceptor.class.getName());
+        System.out.printf("%s classInterceptors()%n", ExampleInheritanceClassInterceptor.class.getName());
 
         Collection<ClassInterceptor> collection = new ArrayList<>();
 

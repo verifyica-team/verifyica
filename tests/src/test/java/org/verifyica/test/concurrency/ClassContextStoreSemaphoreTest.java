@@ -28,8 +28,7 @@ import org.verifyica.api.Verifyica;
 @SuppressWarnings("deprecation")
 public class ClassContextStoreSemaphoreTest {
 
-    private static final String SEMAPHORE_KEY =
-            ClassContextStoreSemaphoreTest.class.getName() + ".semaphore";
+    private static final String SEMAPHORE_KEY = ClassContextStoreSemaphoreTest.class.getName() + ".semaphore";
 
     @Verifyica.ArgumentSupplier(parallelism = 10)
     public static Collection<Argument<String>> arguments() {
@@ -53,11 +52,10 @@ public class ClassContextStoreSemaphoreTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Semaphore semaphore =
-                argumentContext
-                        .getClassContext()
-                        .getStore()
-                        .computeIfAbsent(SEMAPHORE_KEY, k -> new Semaphore(2), Semaphore.class);
+        Semaphore semaphore = argumentContext
+                .getClassContext()
+                .getStore()
+                .computeIfAbsent(SEMAPHORE_KEY, k -> new Semaphore(2), Semaphore.class);
 
         semaphore.acquire();
         try {

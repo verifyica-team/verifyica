@@ -42,8 +42,7 @@ public enum HierarchyTraversalMode {
         } else if (hierarchyTraversalMode == BOTTOM_UP) {
             return org.junit.platform.commons.support.HierarchyTraversalMode.BOTTOM_UP;
         } else {
-            throw new IllegalArgumentException(
-                    format("Invalid hierarchyTraversalMode [%s]", hierarchyTraversalMode));
+            throw new IllegalArgumentException(format("Invalid hierarchyTraversalMode [%s]", hierarchyTraversalMode));
         }
     }
 }

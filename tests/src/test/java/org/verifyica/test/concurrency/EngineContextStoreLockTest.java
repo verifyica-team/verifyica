@@ -49,7 +49,12 @@ public class EngineContextStoreLockTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        argumentContext.getClassContext().getEngineContext().getStore().getLock().lock();
+        argumentContext
+                .getClassContext()
+                .getEngineContext()
+                .getStore()
+                .getLock()
+                .lock();
         try {
             System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
 
@@ -63,7 +68,12 @@ public class EngineContextStoreLockTest {
 
             System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
         } finally {
-            argumentContext.getClassContext().getEngineContext().getStore().getLock().unlock();
+            argumentContext
+                    .getClassContext()
+                    .getEngineContext()
+                    .getStore()
+                    .getLock()
+                    .unlock();
         }
     }
 

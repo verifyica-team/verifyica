@@ -47,12 +47,14 @@ public class ClassInterceptorTest1 {
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s beforeAll()%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf(
+                "  %s beforeAll()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s beforeEach()%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf(
+                "  %s beforeEach()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test
@@ -75,7 +77,8 @@ public class ClassInterceptorTest1 {
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("  %s afterEach()%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf(
+                "  %s afterEach()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.AfterAll

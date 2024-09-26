@@ -19,6 +19,7 @@ package org.verifyica.engine.descriptor;
 import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -37,11 +38,10 @@ import org.junit.platform.engine.support.descriptor.ClassSource;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Store;
-import org.verifyica.engine.common.AnsiColoredStackTrace;
+import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.common.SemaphoreRunnable;
-import org.verifyica.engine.common.statemachine.Result;
-import org.verifyica.engine.common.statemachine.StateMachine;
+import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.context.ConcreteClassContext;
 import org.verifyica.engine.invocation.Invocation;
 import org.verifyica.engine.invocation.InvocationContext;
@@ -171,6 +171,19 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
 
         private static final Logger LOGGER = LoggerFactory.getLogger(TestInvocation.class);
 
+        private enum State {
+            START,
+            INSTANTIATE,
+            PREPARE,
+            TEST,
+            SKIP,
+            CONCLUDE,
+            CLOSE,
+            CLEAR,
+            DESTROY,
+            END
+        }
+
         private final InvocationContext invocationContext;
         private final ClassTestDescriptor classTestDescriptor;
         private final Class<?> testClass;
@@ -183,310 +196,189 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
         private final EngineExecutionListener engineExecutionListener;
         private final AtomicReference<Object> testInstanceReference;
 
-        private enum State {
-            START,
-            INSTANTIATE_SUCCESS,
-            INSTANTIATE_FAILURE,
-            PREPARE_SUCCESS,
-            PREPARE_FAILURE,
-            EXECUTE_SUCCESS,
-            EXECUTE_FAILURE,
-            SKIP_SUCCESS,
-            SKIP_FAILURE,
-            CONCLUDE_SUCCESS,
-            CONCLUDE_FAILURE,
-            ON_DESTROY_SUCCESS,
-            ON_DESTROY_FAILURE,
-            AUTO_CLOSE_INSTANCE_SUCCESS,
-            AUTO_CLOSE_INSTANCE_FAILURE,
-            AUTO_CLOSE_STORE_SUCCESS,
-            AUTO_CLOSE_STORE_FAILURE,
-            END
-        }
-
         /**
          * Constructor
          *
          * @param classTestDescriptor classTestDescriptor
-         * @param invocationContext invocationContext
+         * @param invocationContext   invocationContext
          */
-        private TestInvocation(
-                ClassTestDescriptor classTestDescriptor, InvocationContext invocationContext) {
+        private TestInvocation(ClassTestDescriptor classTestDescriptor, InvocationContext invocationContext) {
             this.invocationContext = invocationContext;
-
             this.classTestDescriptor = classTestDescriptor;
-
             this.testClass = classTestDescriptor.getTestClass();
-
             this.prepareMethods = classTestDescriptor.getPrepareMethods();
-
-            this.argumentTestDescriptors =
-                    classTestDescriptor.getChildren().stream()
-                            .map(ArgumentTestDescriptor.class::cast)
-                            .collect(
-                                    Collectors.toCollection(
-                                            (Supplier<Set<ArgumentTestDescriptor>>)
-                                                    LinkedHashSet::new));
-
+            this.argumentTestDescriptors = classTestDescriptor.getChildren().stream()
+                    .map(ArgumentTestDescriptor.class::cast)
+                    .collect(Collectors.toCollection((Supplier<Set<ArgumentTestDescriptor>>) LinkedHashSet::new));
             this.concludeMethods = classTestDescriptor.getConcludeMethods();
-
             this.testInstanceReference = new AtomicReference<>();
-
-            this.classContext =
-                    new ConcreteClassContext(
-                            invocationContext.get(EngineContext.class),
-                            classTestDescriptor,
-                            testInstanceReference);
-
+            this.classContext = new ConcreteClassContext(
+                    invocationContext.get(EngineContext.class), classTestDescriptor, testInstanceReference);
             invocationContext.set(ClassContext.class, classContext);
-
             this.invocationController = invocationContext.get(InvocationController.class);
-
-            this.argumentExecutorService =
-                    invocationContext.get(InvocationContext.ARGUMENT_EXECUTOR_SERVICE);
-
+            this.argumentExecutorService = invocationContext.get(InvocationContext.ARGUMENT_EXECUTOR_SERVICE);
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
         }
 
         @Override
-        public void invoke() {
-            LOGGER.trace("invoke() %s", classTestDescriptor);
-
+        public InvocationResult invoke() {
             engineExecutionListener.executionStarted(classTestDescriptor);
 
-            StateMachine<State> stateMachine =
-                    new StateMachine<State>()
-                            .onState(
-                                    State.START,
-                                    () -> {
-                                        try {
-                                            invocationController.invokeInstantiate(
-                                                    testClass, testInstanceReference);
+            List<InvocationResult> invocationResults = Collections.synchronizedList(new ArrayList<>());
+            InvocationResult invocationResult;
 
-                                            return Result.of(State.INSTANTIATE_SUCCESS);
-                                        } catch (Throwable t) {
-                                            return Result.of(State.INSTANTIATE_FAILURE, t);
-                                        }
-                                    })
-                            .onState(
-                                    State.INSTANTIATE_SUCCESS,
-                                    () -> {
-                                        try {
-                                            invocationController.invokePrepareMethods(
-                                                    prepareMethods, classContext);
-                                            return Result.of(State.PREPARE_SUCCESS);
-                                        } catch (Throwable t) {
-                                            AnsiColoredStackTrace.printRedBoldStackTrace(
-                                                    System.err, t);
-                                            return Result.of(State.PREPARE_FAILURE, t);
-                                        }
-                                    })
-                            .onState(
-                                    State.PREPARE_SUCCESS,
-                                    () -> {
-                                        try {
-                                            int testArgumentParallelism =
-                                                    classTestDescriptor
-                                                            .getTestArgumentParallelism();
-
-                                            LOGGER.trace(
-                                                    "argumentTestDescriptors size [%d]",
-                                                    argumentTestDescriptors.size());
-
-                                            LOGGER.trace(
-                                                    "testArgumentParallelism [%d]",
-                                                    testArgumentParallelism);
-
-                                            if (testArgumentParallelism > 1) {
-                                                List<Future<?>> futures = new ArrayList<>();
-
-                                                Semaphore semaphore =
-                                                        new Semaphore(
-                                                                testArgumentParallelism, true);
-
-                                                argumentTestDescriptors.forEach(
-                                                        argumentTestDescriptor -> {
-                                                            String threadName =
-                                                                    Thread.currentThread()
-                                                                            .getName();
-
-                                                            threadName =
-                                                                    threadName.substring(
-                                                                                    0,
-                                                                                    threadName
-                                                                                                    .indexOf(
-                                                                                                            "/")
-                                                                                            + 1)
-                                                                            + HashSupport
-                                                                                    .alphanumeric(
-                                                                                            6);
-
-                                                            futures.add(
-                                                                    argumentExecutorService.submit(
-                                                                            new SemaphoreRunnable(
-                                                                                    semaphore,
-                                                                                    new ThreadNameRunnable(
-                                                                                            threadName,
-                                                                                            () ->
-                                                                                                    argumentTestDescriptor
-                                                                                                            .getTestInvocation(
-                                                                                                                    invocationContext
-                                                                                                                            .copy())
-                                                                                                            .invoke()))));
-                                                        });
-
-                                                ExecutorSupport.waitForAllFutures(
-                                                        futures, argumentExecutorService);
-                                            } else {
-                                                argumentTestDescriptors.forEach(
-                                                        argumentTestDescriptor ->
-                                                                argumentTestDescriptor
-                                                                        .getTestInvocation(
-                                                                                invocationContext)
-                                                                        .invoke());
-                                            }
-
-                                            for (ArgumentTestDescriptor argumentTestDescriptor :
-                                                    argumentTestDescriptors) {
-                                                InvocationResult invocationResult =
-                                                        argumentTestDescriptor
-                                                                .getInvocationResult();
-                                                if (invocationResult.isFailure()) {
-                                                    return Result.of(
-                                                            State.EXECUTE_FAILURE,
-                                                            invocationResult.getThrowable());
-                                                }
-                                            }
-
-                                            return Result.of(State.EXECUTE_SUCCESS);
-                                        } catch (Throwable t) {
-                                            AnsiColoredStackTrace.printRedBoldStackTrace(
-                                                    System.err, t);
-                                            return Result.of(State.EXECUTE_FAILURE, t);
-                                        }
-                                    })
-                            .onState(
-                                    State.PREPARE_FAILURE,
-                                    () -> {
-                                        try {
-                                            argumentTestDescriptors.forEach(
-                                                    argumentTestDescriptor ->
-                                                            argumentTestDescriptor
-                                                                    .getSkipInvocation(
-                                                                            invocationContext)
-                                                                    .invoke());
-
-                                            engineExecutionListener.executionSkipped(
-                                                    classTestDescriptor, "Skipped");
-
-                                            return Result.of(State.SKIP_SUCCESS);
-                                        } catch (Throwable t) {
-                                            AnsiColoredStackTrace.printRedBoldStackTrace(
-                                                    System.err, t);
-                                            return Result.of(State.SKIP_FAILURE, t);
-                                        }
-                                    })
-                            .onStates(
-                                    StateMachine.asList(
-                                            State.EXECUTE_SUCCESS,
-                                            State.EXECUTE_FAILURE,
-                                            State.SKIP_SUCCESS,
-                                            State.SKIP_FAILURE),
-                                    () -> {
-                                        try {
-                                            invocationController.invokeConcludeMethods(
-                                                    concludeMethods, classContext);
-
-                                            return Result.of(State.CONCLUDE_SUCCESS);
-                                        } catch (Throwable t) {
-                                            AnsiColoredStackTrace.printRedBoldStackTrace(
-                                                    System.err, t);
-                                            return Result.of(State.CONCLUDE_FAILURE, t);
-                                        }
-                                    })
-                            .onStates(
-                                    StateMachine.asList(
-                                            State.CONCLUDE_SUCCESS, State.CONCLUDE_FAILURE),
-                                    () -> {
-                                        try {
-                                            invocationController.invokeOnDestroy(classContext);
-                                            return Result.of(State.ON_DESTROY_SUCCESS);
-                                        } catch (Throwable t) {
-                                            AnsiColoredStackTrace.printRedBoldStackTrace(
-                                                    System.err, t);
-                                            return Result.of(State.ON_DESTROY_FAILURE, t);
-                                        }
-                                    })
-                            .onStates(
-                                    StateMachine.asList(
-                                            State.ON_DESTROY_SUCCESS, State.ON_DESTROY_FAILURE),
-                                    () -> {
-                                        try {
-                                            Object testInstance = testInstanceReference.get();
-                                            if (testInstance instanceof AutoCloseable) {
-                                                ((AutoCloseable) testInstance).close();
-                                            }
-                                            return Result.of(State.AUTO_CLOSE_INSTANCE_SUCCESS);
-                                        } catch (Throwable t) {
-                                            AnsiColoredStackTrace.printRedBoldStackTrace(
-                                                    System.err, t);
-                                            return Result.of(State.AUTO_CLOSE_INSTANCE_FAILURE, t);
-                                        } finally {
-                                            testInstanceReference.set(null);
-                                        }
-                                    })
-                            .onStates(
-                                    StateMachine.asList(
-                                            State.AUTO_CLOSE_INSTANCE_SUCCESS,
-                                            State.AUTO_CLOSE_INSTANCE_FAILURE),
-                                    () -> {
-                                        List<Throwable> throwables = new ArrayList<>();
-                                        Store store = classContext.getStore();
-                                        for (Object key : store.keySet()) {
-                                            Object value = store.remove(key);
-                                            if (value instanceof AutoCloseable) {
-                                                try {
-                                                    ((AutoCloseable) value).close();
-                                                } catch (Throwable t) {
-                                                    AnsiColoredStackTrace.printRedBoldStackTrace(
-                                                            System.err, t);
-                                                    throwables.add(t);
-                                                }
-                                            }
-                                        }
-                                        store.clear();
-                                        if (throwables.isEmpty()) {
-                                            return Result.of(State.AUTO_CLOSE_STORE_SUCCESS);
-                                        } else {
-                                            return Result.of(
-                                                    State.AUTO_CLOSE_STORE_FAILURE,
-                                                    throwables.get(0));
-                                        }
-                                    })
-                            .onStates(
-                                    StateMachine.asList(
-                                            State.INSTANTIATE_FAILURE,
-                                            State.AUTO_CLOSE_STORE_SUCCESS,
-                                            State.AUTO_CLOSE_STORE_FAILURE),
-                                    () -> Result.of(State.END))
-                            .run(State.START, State.END);
-
-            LOGGER.trace("state machine [%s]", stateMachine);
-
-            TestExecutionResult testExecutionResult =
-                    stateMachine
-                            .getFirstResultWithThrowable()
-                            .map(result -> TestExecutionResult.failed(result.getThrowable()))
-                            .orElse(TestExecutionResult.successful());
-
-            engineExecutionListener.executionFinished(classTestDescriptor, testExecutionResult);
-
-            if (testExecutionResult.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
-                classTestDescriptor.setInvocationResult(InvocationResult.success());
-            } else {
-                classTestDescriptor.setInvocationResult(
-                        InvocationResult.exception(testExecutionResult.getThrowable().get()));
+            State state = State.START;
+            while (state != TestInvocation.State.END) {
+                LOGGER.trace("testDescriptor [%s] state [%s]", classTestDescriptor, state);
+                switch (state) {
+                    case START: {
+                        state = State.INSTANTIATE;
+                        break;
+                    }
+                    case INSTANTIATE: {
+                        invocationResult = invocationController.invokeInstantiate(testClass, testInstanceReference);
+                        invocationResults.add(invocationResult);
+                        if (invocationResult.isFailure()) {
+                            StackTracePrinter.printStackTrace(
+                                    invocationResult.getThrowable(), AnsiColor.TEXT_RED_BOLD, System.err);
+                            state = State.SKIP;
+                        } else {
+                            state = State.PREPARE;
+                        }
+                        break;
+                    }
+                    case PREPARE: {
+                        invocationResult = invocationController.invokePrepareMethods(prepareMethods, classContext);
+                        invocationResults.add(invocationResult);
+                        if (invocationResult.isFailure()) {
+                            StackTracePrinter.printStackTrace(
+                                    invocationResult.getThrowable(), AnsiColor.TEXT_RED_BOLD, System.err);
+                            state = State.SKIP;
+                        } else {
+                            state = State.TEST;
+                        }
+                        break;
+                    }
+                    case TEST: {
+                        invocationResult = test();
+                        invocationResults.add(invocationResult);
+                        state = State.CONCLUDE;
+                        break;
+                    }
+                    case SKIP: {
+                        for (InvocableTestDescriptor invocableTestDescriptor :
+                                classTestDescriptor.getInvocableChildren()) {
+                            invocableTestDescriptor
+                                    .getSkipInvocation(invocationContext)
+                                    .invoke();
+                            invocationResults.add(invocableTestDescriptor.getInvocationResult());
+                        }
+                        state = State.CONCLUDE;
+                        break;
+                    }
+                    case CONCLUDE: {
+                        invocationResult = invocationController.invokeConcludeMethods(concludeMethods, classContext);
+                        invocationResults.add(invocationResult);
+                        if (invocationResult.isFailure()) {
+                            StackTracePrinter.printStackTrace(
+                                    invocationResult.getThrowable(), AnsiColor.TEXT_RED_BOLD, System.err);
+                        }
+                        state = State.DESTROY;
+                        break;
+                    }
+                    case DESTROY: {
+                        invocationResult = invocationController.invokeOnDestroy(classContext);
+                        invocationResults.add(invocationResult);
+                        if (invocationResult.isFailure()) {
+                            StackTracePrinter.printStackTrace(
+                                    invocationResult.getThrowable(), AnsiColor.TEXT_RED_BOLD, System.err);
+                        }
+                        state = State.CLOSE;
+                        break;
+                    }
+                    case CLOSE: {
+                        Object testInstance = testInstanceReference.get();
+                        try {
+                            if (testInstance instanceof AutoCloseable) {
+                                ((AutoCloseable) testInstance).close();
+                            }
+                            invocationResults.add(InvocationResult.success());
+                        } catch (Throwable t) {
+                            invocationResults.add(InvocationResult.exception(t));
+                            StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
+                        } finally {
+                            testInstanceReference.set(null);
+                        }
+                        state = State.CLEAR;
+                        break;
+                    }
+                    case CLEAR: {
+                        Store store = classContext.getStore();
+                        for (Object key : store.keySet()) {
+                            Object value = store.remove(key);
+                            if (value instanceof AutoCloseable) {
+                                try {
+                                    ((AutoCloseable) value).close();
+                                    invocationResults.add(InvocationResult.success());
+                                } catch (Throwable t) {
+                                    StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
+                                    invocationResults.add(InvocationResult.exception(t));
+                                }
+                            }
+                        }
+                        store.clear();
+                        state = State.END;
+                        break;
+                    }
+                }
             }
+
+            for (InvocationResult invocationResult2 : invocationResults) {
+                if (invocationResult2.isFailure()) {
+                    classTestDescriptor.setInvocationResult(invocationResult2);
+                    engineExecutionListener.executionFinished(
+                            classTestDescriptor, TestExecutionResult.failed(invocationResult2.getThrowable()));
+                    return invocationResult2;
+                }
+            }
+
+            classTestDescriptor.setInvocationResult(InvocationResult.success());
+            engineExecutionListener.executionFinished(classTestDescriptor, TestExecutionResult.successful());
+            return InvocationResult.success();
+        }
+
+        private InvocationResult test() {
+            int testArgumentParallelism = classTestDescriptor.getTestArgumentParallelism();
+            if (testArgumentParallelism > 1) {
+                List<Future<?>> futures = new ArrayList<>();
+
+                Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
+
+                argumentTestDescriptors.forEach(argumentTestDescriptor -> {
+                    String threadName = Thread.currentThread().getName();
+                    threadName = threadName.substring(0, threadName.indexOf("/") + 1) + HashSupport.alphanumeric(6);
+
+                    futures.add(argumentExecutorService.submit(new SemaphoreRunnable(
+                            semaphore, new ThreadNameRunnable(threadName, () -> argumentTestDescriptor
+                                    .getTestInvocation(invocationContext.copy())
+                                    .invoke()))));
+                });
+
+                ExecutorSupport.waitForAllFutures(futures, argumentExecutorService);
+            } else {
+                argumentTestDescriptors.forEach(argumentTestDescriptor -> argumentTestDescriptor
+                        .getTestInvocation(invocationContext)
+                        .invoke());
+            }
+
+            for (ArgumentTestDescriptor argumentTestDescriptor : argumentTestDescriptors) {
+                InvocationResult invocationResult = argumentTestDescriptor.getInvocationResult();
+                if (invocationResult.isFailure()) {
+                    return invocationResult;
+                }
+            }
+
+            return InvocationResult.success();
         }
     }
 }

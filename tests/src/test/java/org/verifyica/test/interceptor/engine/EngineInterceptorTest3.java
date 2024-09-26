@@ -36,8 +36,7 @@ public class EngineInterceptorTest3 {
 
         @Override
         public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext,
-                ClassDefinition classDefinition) {
+                EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest3.class) {
                 // Change test argument parallelism
                 int testArgumentParallelism = classDefinition.getArgumentParallelism();

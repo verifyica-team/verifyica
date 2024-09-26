@@ -83,8 +83,7 @@ public class LockManagerTest {
 
     @Test
     public void testUnlockWithoutLock() {
-        assertThatExceptionOfType(IllegalMonitorStateException.class)
-                .isThrownBy(() -> LockManager.unlock("key"));
+        assertThatExceptionOfType(IllegalMonitorStateException.class).isThrownBy(() -> LockManager.unlock("key"));
 
         LockManager.assertSize(0);
         LockManager.assertSize(0);
@@ -120,8 +119,7 @@ public class LockManagerTest {
 
         LockManager.assertSize(0);
 
-        assertThatExceptionOfType(IllegalMonitorStateException.class)
-                .isThrownBy(() -> LockManager.unlock(key));
+        assertThatExceptionOfType(IllegalMonitorStateException.class).isThrownBy(() -> LockManager.unlock(key));
 
         assertThat(LockManager.isLocked(key)).isFalse();
 
@@ -137,31 +135,27 @@ public class LockManagerTest {
 
         Thread[] threads = new Thread[threadCount];
         for (int i = 0; i < threadCount; i++) {
-            threads[i] =
-                    new Thread(
-                            () -> {
-                                LockManager.lock(uuid.toString());
-                                try {
-                                    System.out.printf(
-                                            "thread [%s] locked%n",
-                                            Thread.currentThread().getName());
+            threads[i] = new Thread(() -> {
+                LockManager.lock(uuid.toString());
+                try {
+                    System.out.printf(
+                            "thread [%s] locked%n", Thread.currentThread().getName());
 
-                                    assertThat(atomicInteger.incrementAndGet()).isEqualTo(1);
+                    assertThat(atomicInteger.incrementAndGet()).isEqualTo(1);
 
-                                    try {
-                                        Thread.sleep(RandomSupport.randomLong(0, 200));
-                                    } catch (InterruptedException e) {
-                                        // INTENTIONALLY BLANK
-                                    }
-                                } finally {
-                                    assertThat(atomicInteger.decrementAndGet()).isEqualTo(0);
+                    try {
+                        Thread.sleep(RandomSupport.randomLong(0, 200));
+                    } catch (InterruptedException e) {
+                        // INTENTIONALLY BLANK
+                    }
+                } finally {
+                    assertThat(atomicInteger.decrementAndGet()).isEqualTo(0);
 
-                                    System.out.printf(
-                                            "thread [%s] unlocked%n",
-                                            Thread.currentThread().getName());
-                                    LockManager.unlock(uuid.toString());
-                                }
-                            });
+                    System.out.printf(
+                            "thread [%s] unlocked%n", Thread.currentThread().getName());
+                    LockManager.unlock(uuid.toString());
+                }
+            });
             threads[i].setName("thread-" + i);
             threads[i].setDaemon(true);
         }
@@ -191,28 +185,23 @@ public class LockManagerTest {
         String key = "key";
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        Thread lockThread =
-                new Thread(
-                        () -> {
-                            LockManager.lock(key);
+        Thread lockThread = new Thread(() -> {
+            LockManager.lock(key);
 
-                            try {
-                                countDownLatch.await();
-                            } catch (InterruptedException e) {
-                                // INTENTIONALLY BLANK
-                            }
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                // INTENTIONALLY BLANK
+            }
 
-                            LockManager.unlock(key);
-                        });
+            LockManager.unlock(key);
+        });
         lockThread.start();
 
-        Thread unlockThread =
-                new Thread(
-                        () -> {
-                            assertThatExceptionOfType(IllegalMonitorStateException.class)
-                                    .isThrownBy(() -> LockManager.unlock(key));
-                            countDownLatch.countDown();
-                        });
+        Thread unlockThread = new Thread(() -> {
+            assertThatExceptionOfType(IllegalMonitorStateException.class).isThrownBy(() -> LockManager.unlock(key));
+            countDownLatch.countDown();
+        });
         unlockThread.start();
         unlockThread.join();
 

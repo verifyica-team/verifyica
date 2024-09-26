@@ -43,8 +43,7 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
 
     @Override
     public void onTestDiscovery(
-            EngineInterceptorContext engineInterceptorContext,
-            List<ClassDefinition> classDefinitions) {
+            EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions) {
         System.out.printf("%s onTestDiscovery()%n", getClass().getName());
 
         for (ClassDefinition classDefinition : classDefinitions) {
@@ -56,9 +55,8 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
                 // Filter test method "test4"
                 classDefinition
                         .getTestMethodDefinitions()
-                        .removeIf(
-                                methodDefinition ->
-                                        methodDefinition.getMethod().getName().equals("test4"));
+                        .removeIf(methodDefinition ->
+                                methodDefinition.getMethod().getName().equals("test4"));
             }
         }
     }

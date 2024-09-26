@@ -33,8 +33,7 @@ public class EngineInterceptorTest7 implements EngineInterceptor {
 
         @Override
         public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext,
-                ClassDefinition classDefinition) {
+                EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest7.class) {
                 System.out.println("reversing test method order");
                 shuffle(classDefinition.getTestMethodDefinitions());

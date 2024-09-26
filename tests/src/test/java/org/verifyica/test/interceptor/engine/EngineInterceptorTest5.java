@@ -37,8 +37,7 @@ public class EngineInterceptorTest5 {
 
         @Override
         public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext,
-                ClassDefinition classDefinition) {
+                EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest5.class) {
                 List<Argument<?>> arguments = classDefinition.getArguments();
                 assertThat(arguments).hasSize(10);
@@ -94,8 +93,7 @@ public class EngineInterceptorTest5 {
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
-                "test1(index=%d name=%s)%n",
-                argumentContext.getTestArgumentIndex(), argumentContext.getTestArgument());
+                "test1(index=%d name=%s)%n", argumentContext.getTestArgumentIndex(), argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -108,8 +106,7 @@ public class EngineInterceptorTest5 {
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
-                "test2(index=%d name=%s)%n",
-                argumentContext.getTestArgumentIndex(), argumentContext.getTestArgument());
+                "test2(index=%d name=%s)%n", argumentContext.getTestArgumentIndex(), argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();

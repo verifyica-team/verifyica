@@ -123,9 +123,7 @@ public class LifecycleInheritanceTest {
 
             for (int i = 0; i < expected.size(); i++) {
                 System.out.printf(
-                        "expected [%-" + pad + "s] actual [%-" + pad + "s]%n",
-                        expected.get(i),
-                        actual.get(i));
+                        "expected [%-" + pad + "s] actual [%-" + pad + "s]%n", expected.get(i), actual.get(i));
 
                 assertThat(actual.get(i)).isEqualTo(expected.get(i));
             }

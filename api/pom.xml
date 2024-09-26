@@ -236,6 +236,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -258,6 +259,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
@@ -275,11 +277,10 @@
                         <file>${project.basedir}/../assets/license-header.txt</file>
                     </licenseHeader>
                     <java>
-                        <googleJavaFormat>
-                            <version>1.23.0</version>
-                            <style>AOSP</style>
-                            <reflowLongStrings>true</reflowLongStrings>
-                        </googleJavaFormat>
+                        <palantirJavaFormat>
+                            <version>2.39.0</version>
+                            <style>PALANTIR</style>
+                        </palantirJavaFormat>
                     </java>
                 </configuration>
                 <executions>

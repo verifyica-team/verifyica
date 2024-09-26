@@ -21,6 +21,9 @@ import java.util.Objects;
 /** Class to implement InvocationResult */
 public class InvocationResult {
 
+    private static final InvocationResult SUCCESS = new InvocationResult(Type.SUCCESS);
+    private static final InvocationResult SKIPPED = new InvocationResult(Type.SKIPPED);
+
     /** InvocationResult Type */
     public enum Type {
         /** Success */
@@ -123,7 +126,7 @@ public class InvocationResult {
      * @return an InvocationResult
      */
     public static InvocationResult success() {
-        return new InvocationResult(Type.SUCCESS);
+        return SUCCESS;
     }
 
     /**
@@ -132,7 +135,7 @@ public class InvocationResult {
      * @return an InvocationResult
      */
     public static InvocationResult skipped() {
-        return skipped(null);
+        return SKIPPED;
     }
 
     /**

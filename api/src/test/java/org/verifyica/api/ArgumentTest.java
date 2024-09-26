@@ -64,14 +64,10 @@ public class ArgumentTest {
     @Test
     public void testOfBadNames() {
         String[] names =
-                new String[] {
-                    null, "", " ", " \t ", "\t", "\r", "\n", "\r\n", "\t\r\n", " \t", " \t\r",
-                    " \t\r\n"
-                };
+                new String[] {null, "", " ", " \t ", "\t", "\r", "\n", "\r\n", "\t\r\n", " \t", " \t\r", " \t\r\n"};
 
         for (String name : names) {
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                    .isThrownBy(() -> Argument.of(name, null));
+            assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Argument.of(name, null));
         }
     }
 
@@ -125,8 +121,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(Boolean.class)).isInstanceOf(Boolean.class);
         assertThat(argument.getPayload(Boolean.class)).isEqualTo(value);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -145,8 +140,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(Byte.class)).isInstanceOf(Byte.class);
         assertThat(argument.getPayload(Byte.class)).isEqualTo(value);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -165,8 +159,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(Character.class)).isInstanceOf(Character.class);
         assertThat(argument.getPayload(Character.class)).isEqualTo(value);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -185,8 +178,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(Short.class)).isInstanceOf(Short.class);
         assertThat(argument.getPayload(Short.class)).isEqualTo(value);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -205,8 +197,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(Integer.class)).isInstanceOf(Integer.class);
         assertThat(argument.getPayload(Integer.class)).isEqualTo(value);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -225,8 +216,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(Long.class)).isInstanceOf(Long.class);
         assertThat(argument.getPayload(Long.class)).isEqualTo(value);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -245,8 +235,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(Float.class)).isInstanceOf(Float.class);
         assertThat(argument.getPayload(Float.class)).isEqualTo(value);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -265,8 +254,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(Double.class)).isInstanceOf(Double.class);
         assertThat(argument.getPayload(Double.class)).isEqualTo(value);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -286,8 +274,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(BigInteger.class)).isInstanceOf(BigInteger.class);
         assertThat(argument.getPayload(BigInteger.class)).isEqualTo(bigIntegerValue);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -306,8 +293,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(BigInteger.class)).isInstanceOf(BigInteger.class);
         assertThat(argument.getPayload(BigInteger.class)).isEqualTo(bigIntegerValue);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -327,8 +313,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(BigDecimal.class)).isInstanceOf(BigDecimal.class);
         assertThat(argument.getPayload(BigDecimal.class)).isEqualTo(bigDecimalValue);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -347,8 +332,7 @@ public class ArgumentTest {
         assertThat(argument.getPayload(BigDecimal.class)).isInstanceOf(BigDecimal.class);
         assertThat(argument.getPayload(BigDecimal.class)).isEqualTo(bigDecimalValue);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(String.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
     }
 
     @Test
@@ -366,7 +350,6 @@ public class ArgumentTest {
         assertThat(argument.getPayload(String.class)).isInstanceOf(String.class);
         assertThat(argument.getPayload(String.class)).isEqualTo(nameAndValue);
 
-        assertThatExceptionOfType(ClassCastException.class)
-                .isThrownBy(() -> argument.getPayload(Integer.class));
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(Integer.class));
     }
 }

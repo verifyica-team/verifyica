@@ -36,14 +36,12 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
 
         @Override
         public Predicate<ClassDefinition> onTestDiscoveryPredicate() {
-            return classDefinition ->
-                    classDefinition.getTestClass() == EngineInterceptorTest2.class;
+            return classDefinition -> classDefinition.getTestClass() == EngineInterceptorTest2.class;
         }
 
         @Override
         public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext,
-                ClassDefinition classDefinition) {
+                EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
             assertThat(classDefinition.getTestClass()).isEqualTo(EngineInterceptorTest2.class);
 
             System.out.println("reversing test method order");

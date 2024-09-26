@@ -33,37 +33,23 @@ public class TestMethodRenameTest {
     public static class DisplayNameEngineInterceptor implements EngineInterceptor {
 
         public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext,
-                List<ClassDefinition> classDefinitions)
+                EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions)
                 throws Throwable {
             classDefinitions.stream()
-                    .filter(
-                            classDefinition ->
-                                    classDefinition.getTestClass() == TestMethodRenameTest.class)
-                    .forEach(
-                            classDefinition -> {
-                                classDefinition
-                                        .getTestMethodDefinitions()
-                                        .forEach(
-                                                new Consumer<MethodDefinition>() {
-                                                    @Override
-                                                    public void accept(
-                                                            MethodDefinition methodDefinition) {
-                                                        String displayName =
-                                                                methodDefinition
-                                                                        .getMethod()
-                                                                        .getName();
-                                                        String newDisplayName =
-                                                                displayName + "Renamed";
-                                                        System.out.printf(
-                                                                "Renaming test class from [%s] to"
-                                                                        + " [%s]%n",
-                                                                displayName, newDisplayName);
-                                                        methodDefinition.setDisplayName(
-                                                                newDisplayName);
-                                                    }
-                                                });
-                            });
+                    .filter(classDefinition -> classDefinition.getTestClass() == TestMethodRenameTest.class)
+                    .forEach(classDefinition -> {
+                        classDefinition.getTestMethodDefinitions().forEach(new Consumer<MethodDefinition>() {
+                            @Override
+                            public void accept(MethodDefinition methodDefinition) {
+                                String displayName =
+                                        methodDefinition.getMethod().getName();
+                                String newDisplayName = displayName + "Renamed";
+                                System.out.printf(
+                                        "Renaming test class from [%s] to" + " [%s]%n", displayName, newDisplayName);
+                                methodDefinition.setDisplayName(newDisplayName);
+                            }
+                        });
+                    });
         }
     }
 
@@ -81,6 +67,7 @@ public class TestMethodRenameTest {
 
         System.out.printf(
                 "test(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
     }
 }

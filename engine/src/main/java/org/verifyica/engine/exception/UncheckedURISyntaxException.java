@@ -42,7 +42,6 @@ public class UncheckedURISyntaxException extends RuntimeException {
      * @param uriSyntaxException uriSyntaxException
      */
     public static void throwUnchecked(URISyntaxException uriSyntaxException) {
-        new UncheckedURISyntaxException(uriSyntaxException.getMessage(), uriSyntaxException)
-                .throwUnchecked();
+        new UncheckedURISyntaxException(uriSyntaxException.getMessage(), uriSyntaxException).throwUnchecked();
     }
 }

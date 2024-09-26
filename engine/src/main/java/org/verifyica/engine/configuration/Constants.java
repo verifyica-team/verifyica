@@ -47,8 +47,7 @@ public final class Constants {
     public static final String ENGINE_AUTOWIRED_ENGINE = ENGINE_AUTOWIRED + ".engine";
 
     /** Configuration constant */
-    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS =
-            ENGINE_AUTOWIRED_ENGINE + ".interceptors";
+    public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS = ENGINE_AUTOWIRED_ENGINE + ".interceptors";
 
     /** Configuration constant */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE =
@@ -73,8 +72,7 @@ public final class Constants {
     public static final String ENGINE_AUTOWIRED_CLASS = ENGINE_AUTOWIRED + ".class";
 
     /** Configuration constant */
-    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS =
-            ENGINE_AUTOWIRED_CLASS + ".interceptors";
+    public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS = ENGINE_AUTOWIRED_CLASS + ".interceptors";
 
     /** Configuration constant */
     public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE =
@@ -99,8 +97,7 @@ public final class Constants {
     public static final String ENGINE_FILTER_DEFINITIONS = ENGINE_FILTER + ".definitions";
 
     /** Configuration constant */
-    public static final String ENGINE_FILTER_DEFINITIONS_FILENAME =
-            ENGINE_FILTER_DEFINITIONS + ".filename";
+    public static final String ENGINE_FILTER_DEFINITIONS_FILENAME = ENGINE_FILTER_DEFINITIONS + ".filename";
 
     /** Configuration constant */
     public static final String ENGINE_CLASS_PARALLELISM = ENGINE_CLASS + ".parallelism";

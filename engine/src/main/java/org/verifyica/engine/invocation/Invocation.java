@@ -19,6 +19,10 @@ package org.verifyica.engine.invocation;
 /** Interface to implement Invocation */
 public interface Invocation {
 
-    /** Method to invoke the invocation */
-    void invoke();
+    /**
+     * Method to invoke an invocation
+     *
+     * @return an InvocationResult
+     */
+    InvocationResult invoke();
 }

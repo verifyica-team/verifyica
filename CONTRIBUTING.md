@@ -9,9 +9,7 @@ The project uses an GitHub Flow branching strategy.
 
 Release branch code is considered "**locked**" except for documentation changes.
 
-- Google checkstyle format is required
-- [Google Java Style](https://google.github.io/styleguide/javaguide.html) is required
-- [Spotless](https://github.com/diffplug/spotless) for checking/applying Google Java Style
+- [Spotless](https://github.com/diffplug/spotless) is used to apply [Palantir Java Format](https://github.com/palantir/palantir-java-format)
 - PMD is used for static analysis
 - Expand all Java imports
 - Tags are used for releases

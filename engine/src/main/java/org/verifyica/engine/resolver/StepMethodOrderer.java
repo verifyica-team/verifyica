@@ -79,18 +79,16 @@ public class StepMethodOrderer {
 
         for (MethodDefinition methodDefinition : methodDefinitions) {
             if (methodDefinition.getMethod().isAnnotationPresent(Verifyica.Step.class)) {
-                Verifyica.Step stepAnnotation =
-                        methodDefinition.getMethod().getAnnotation(Verifyica.Step.class);
+                Verifyica.Step stepAnnotation = methodDefinition.getMethod().getAnnotation(Verifyica.Step.class);
 
                 String id = stepAnnotation.id().trim();
                 if (id.isEmpty()) {
-                    throw new TestClassDefinitionException(
-                            format(
-                                    "Incorrect usage of @Verifyica.Step annotation in test class"
-                                            + " [%s]. @Verifyica.Step \"id\" is effectively"
-                                            + " blank for test method [%s]",
-                                    classDefinition.getTestClass().getName(),
-                                    methodDefinition.getMethod().getName()));
+                    throw new TestClassDefinitionException(format(
+                            "Incorrect usage of @Verifyica.Step annotation in test class"
+                                    + " [%s]. @Verifyica.Step \"id\" is effectively"
+                                    + " blank for test method [%s]",
+                            classDefinition.getTestClass().getName(),
+                            methodDefinition.getMethod().getName()));
                 }
 
                 idToMethodDefinition.put(id, methodDefinition);
@@ -105,12 +103,11 @@ public class StepMethodOrderer {
                 }
 
                 if (emptyNextStepCount > 1) {
-                    throw new TestClassDefinitionException(
-                            format(
-                                    "Incorrect usage of @Verifyica.Step annotation in test class"
-                                            + " [%s]. Multiple @Verifyica.Step annotations found"
-                                            + " with a missing or blank \"nextId\"",
-                                    classDefinition.getTestClass().getName()));
+                    throw new TestClassDefinitionException(format(
+                            "Incorrect usage of @Verifyica.Step annotation in test class"
+                                    + " [%s]. Multiple @Verifyica.Step annotations found"
+                                    + " with a missing or blank \"nextId\"",
+                            classDefinition.getTestClass().getName()));
                 }
 
                 idToNextIdMap.put(stepAnnotation.id(), nextId);
@@ -173,11 +170,10 @@ public class StepMethodOrderer {
         }
 
         if (visitedIds.contains(id)) {
-            throw new TestClassDefinitionException(
-                    format(
-                            "Cycle detected in test class [%s] usage of @Verifyica.Step annotation."
-                                    + " Check ids and nextIds.",
-                            classDefinition.getTestClass().getName()));
+            throw new TestClassDefinitionException(format(
+                    "Cycle detected in test class [%s] usage of @Verifyica.Step annotation."
+                            + " Check ids and nextIds.",
+                    classDefinition.getTestClass().getName()));
         }
 
         visitedIds.add(id);

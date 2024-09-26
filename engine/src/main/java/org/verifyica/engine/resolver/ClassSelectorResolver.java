@@ -45,43 +45,34 @@ public class ClassSelectorResolver {
      * @param engineDiscoveryRequest engineDiscoveryRequest
      * @param classMethodMap classMethodMap
      */
-    public void resolve(
-            EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, List<Method>> classMethodMap) {
+    public void resolve(EngineDiscoveryRequest engineDiscoveryRequest, Map<Class<?>, List<Method>> classMethodMap) {
         LOGGER.trace("resolve()");
 
-        Stopwatch stopWatch = new Stopwatch();
+        Stopwatch stopwatch = new Stopwatch();
 
         AtomicInteger classSelectorCount = new AtomicInteger();
 
-        engineDiscoveryRequest
-                .getSelectorsByType(ClassSelector.class)
-                .forEach(
-                        classSelector -> {
-                            classSelectorCount.incrementAndGet();
+        engineDiscoveryRequest.getSelectorsByType(ClassSelector.class).forEach(classSelector -> {
+            classSelectorCount.incrementAndGet();
 
-                            Class<?> testClass = classSelector.getJavaClass();
+            Class<?> testClass = classSelector.getJavaClass();
 
-                            if (ResolverPredicates.TEST_CLASS.test(testClass)) {
-                                classMethodMap
-                                        .computeIfAbsent(testClass, method -> new ArrayList<>())
-                                        .addAll(
-                                                ClassSupport.findMethods(
-                                                        testClass,
-                                                        ResolverPredicates.TEST_METHOD,
-                                                        HierarchyTraversalMode.BOTTOM_UP));
-                            }
+            if (ResolverPredicates.TEST_CLASS.test(testClass)) {
+                classMethodMap
+                        .computeIfAbsent(testClass, method -> new ArrayList<>())
+                        .addAll(ClassSupport.findMethods(
+                                testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
+            }
 
-                            processInnerClasses(testClass, classMethodMap);
-                        });
+            processInnerClasses(testClass, classMethodMap);
+        });
 
         LOGGER.trace(
                 "resolve() classSelectors [%d] elapsedTime [%d] ms",
-                classSelectorCount.get(), stopWatch.elapsedTime().toMillis());
+                classSelectorCount.get(), stopwatch.elapsedTime().toMillis());
     }
 
-    private void processInnerClasses(
-            Class<?> testClass, Map<Class<?>, List<Method>> classMethodMap) {
+    private void processInnerClasses(Class<?> testClass, Map<Class<?>, List<Method>> classMethodMap) {
         Class<?>[] innerClasses = testClass.getDeclaredClasses();
         for (Class<?> innerClass : innerClasses) {
             processInnerClasses(innerClass, classMethodMap);
@@ -90,11 +81,8 @@ public class ClassSelectorResolver {
         if (ResolverPredicates.TEST_CLASS.test(testClass)) {
             classMethodMap
                     .computeIfAbsent(testClass, method -> new ArrayList<>())
-                    .addAll(
-                            ClassSupport.findMethods(
-                                    testClass,
-                                    ResolverPredicates.TEST_METHOD,
-                                    HierarchyTraversalMode.BOTTOM_UP));
+                    .addAll(ClassSupport.findMethods(
+                            testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
         }
     }
 }

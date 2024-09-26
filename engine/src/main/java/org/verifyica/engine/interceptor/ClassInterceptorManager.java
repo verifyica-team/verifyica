@@ -165,8 +165,7 @@ public class ClassInterceptorManager {
      * @param testInstanceReference testInstanceReference
      * @throws Throwable Throwable
      */
-    public void instantiate(Class<?> testClass, AtomicReference<Object> testInstanceReference)
-            throws Throwable {
+    public void instantiate(Class<?> testClass, AtomicReference<Object> testInstanceReference) throws Throwable {
         Object testInstance = null;
         Throwable throwable = null;
 
@@ -181,9 +180,7 @@ public class ClassInterceptorManager {
         if (throwable == null) {
             try {
                 testInstance =
-                        testClass
-                                .getDeclaredConstructor((Class<?>[]) null)
-                                .newInstance((Object[]) null);
+                        testClass.getDeclaredConstructor((Class<?>[]) null).newInstance((Object[]) null);
             } catch (Throwable t) {
                 throwable = t.getCause();
             }
@@ -191,8 +188,7 @@ public class ClassInterceptorManager {
 
         for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
             try {
-                classInterceptor.postInstantiate(
-                        engineInterceptorContext, testClass, testInstance, throwable);
+                classInterceptor.postInstantiate(engineInterceptorContext, testClass, testInstance, throwable);
             } catch (Throwable t) {
                 throwable = t;
             }
@@ -215,8 +211,7 @@ public class ClassInterceptorManager {
     public void prepare(List<Method> prepareMethods, ClassContext classContext) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
 
-        ClassInterceptorContext argumentInterceptorContext =
-                new ConcreteClassInterceptorContext(classContext);
+        ClassInterceptorContext argumentInterceptorContext = new ConcreteClassInterceptorContext(classContext);
 
         Throwable throwable = null;
 
@@ -232,9 +227,7 @@ public class ClassInterceptorManager {
             try {
                 for (Method prepareMethod : prepareMethods) {
                     prepareMethod.invoke(
-                            Modifier.isStatic(prepareMethod.getModifiers())
-                                    ? null
-                                    : classContext.getTestInstance(),
+                            Modifier.isStatic(prepareMethod.getModifiers()) ? null : classContext.getTestInstance(),
                             classContext);
                 }
             } catch (InvocationTargetException e) {
@@ -262,16 +255,14 @@ public class ClassInterceptorManager {
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void beforeAll(List<Method> beforeAllMethods, ArgumentContext argumentContext)
-            throws Throwable {
+    public void beforeAll(List<Method> beforeAllMethods, ArgumentContext argumentContext) throws Throwable {
         ClassContext classContext = argumentContext.getClassContext();
 
         Class<?> testClass = classContext.getTestClass();
 
         Object testInstance = classContext.getTestInstance();
 
-        ArgumentInterceptorContext argumentInterceptorContext =
-                new ConcreteArgumentInterceptorContext(argumentContext);
+        ArgumentInterceptorContext argumentInterceptorContext = new ConcreteArgumentInterceptorContext(argumentContext);
 
         Throwable throwable = null;
 
@@ -313,16 +304,14 @@ public class ClassInterceptorManager {
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void beforeEach(List<Method> beforeEachMethods, ArgumentContext argumentContext)
-            throws Throwable {
+    public void beforeEach(List<Method> beforeEachMethods, ArgumentContext argumentContext) throws Throwable {
         ClassContext classContext = argumentContext.getClassContext();
 
         Class<?> testClass = classContext.getTestClass();
 
         Object testInstance = classContext.getTestInstance();
 
-        ArgumentInterceptorContext argumentInterceptorContext =
-                new ConcreteArgumentInterceptorContext(argumentContext);
+        ArgumentInterceptorContext argumentInterceptorContext = new ConcreteArgumentInterceptorContext(argumentContext);
 
         Throwable throwable = null;
 
@@ -371,8 +360,7 @@ public class ClassInterceptorManager {
 
         Object testInstance = classContext.getTestInstance();
 
-        ArgumentInterceptorContext argumentInterceptorContext =
-                new ConcreteArgumentInterceptorContext(argumentContext);
+        ArgumentInterceptorContext argumentInterceptorContext = new ConcreteArgumentInterceptorContext(argumentContext);
 
         Throwable throwable = null;
 
@@ -412,16 +400,14 @@ public class ClassInterceptorManager {
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void afterEach(List<Method> afterEachMethods, ArgumentContext argumentContext)
-            throws Throwable {
+    public void afterEach(List<Method> afterEachMethods, ArgumentContext argumentContext) throws Throwable {
         ClassContext classContext = argumentContext.getClassContext();
 
         Class<?> testClass = classContext.getTestClass();
 
         Object testInstance = classContext.getTestInstance();
 
-        ArgumentInterceptorContext argumentInterceptorContext =
-                new ConcreteArgumentInterceptorContext(argumentContext);
+        ArgumentInterceptorContext argumentInterceptorContext = new ConcreteArgumentInterceptorContext(argumentContext);
 
         Throwable throwable = null;
 
@@ -463,16 +449,14 @@ public class ClassInterceptorManager {
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    public void afterAll(List<Method> afterAllMethods, ArgumentContext argumentContext)
-            throws Throwable {
+    public void afterAll(List<Method> afterAllMethods, ArgumentContext argumentContext) throws Throwable {
         ClassContext classContext = argumentContext.getClassContext();
 
         Class<?> testClass = classContext.getTestClass();
 
         Object testInstance = classContext.getTestInstance();
 
-        ArgumentInterceptorContext argumentInterceptorContext =
-                new ConcreteArgumentInterceptorContext(argumentContext);
+        ArgumentInterceptorContext argumentInterceptorContext = new ConcreteArgumentInterceptorContext(argumentContext);
 
         Throwable throwable = null;
 
@@ -517,8 +501,7 @@ public class ClassInterceptorManager {
     public void conclude(List<Method> concludeMethods, ClassContext classContext) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
 
-        ClassInterceptorContext defaultClassInterceptorContext =
-                new ConcreteClassInterceptorContext(classContext);
+        ClassInterceptorContext defaultClassInterceptorContext = new ConcreteClassInterceptorContext(classContext);
 
         Throwable throwable = null;
 
@@ -534,9 +517,7 @@ public class ClassInterceptorManager {
             try {
                 for (Method concludeMethod : concludeMethods) {
                     concludeMethod.invoke(
-                            Modifier.isStatic(concludeMethod.getModifiers())
-                                    ? null
-                                    : classContext.getTestInstance(),
+                            Modifier.isStatic(concludeMethod.getModifiers()) ? null : classContext.getTestInstance(),
                             classContext);
                 }
             } catch (Throwable t) {
@@ -566,8 +547,7 @@ public class ClassInterceptorManager {
     public void onDestroy(ClassContext classContext) throws Throwable {
         Class<?> testClass = classContext.getTestClass();
 
-        ClassInterceptorContext classInterceptorContext =
-                new ConcreteClassInterceptorContext(classContext);
+        ClassInterceptorContext classInterceptorContext = new ConcreteClassInterceptorContext(classContext);
 
         for (ClassInterceptor classInterceptor : getClassInterceptorsReversed(testClass)) {
             classInterceptor.onDestroy(classInterceptorContext);
@@ -589,8 +569,7 @@ public class ClassInterceptorManager {
                 classInterceptors.addAll(this.classInterceptors);
             }
 
-            classInterceptors.addAll(
-                    mappedClassInterceptors.computeIfAbsent(testClass, k -> new ArrayList<>()));
+            classInterceptors.addAll(mappedClassInterceptors.computeIfAbsent(testClass, k -> new ArrayList<>()));
 
             return classInterceptors;
         } finally {
@@ -628,31 +607,24 @@ public class ClassInterceptorManager {
             LOGGER.trace("initialize()");
             LOGGER.trace("loading autowired class interceptors");
 
-            List<Class<?>> autowiredClassInterceptors =
-                    new ArrayList<>(
-                            ClassSupport.findAllClasses(
-                                    InterceptorPredicates.AUTOWIRED_CLASS_INTERCEPTOR_CLASS));
+            List<Class<?>> autowiredClassInterceptors = new ArrayList<>(
+                    ClassSupport.findAllClasses(InterceptorPredicates.AUTOWIRED_CLASS_INTERCEPTOR_CLASS));
 
             filter(autowiredClassInterceptors);
 
             OrderSupport.orderClasses(autowiredClassInterceptors);
 
-            LOGGER.trace(
-                    "autowired class interceptor count [%d]", autowiredClassInterceptors.size());
+            LOGGER.trace("autowired class interceptor count [%d]", autowiredClassInterceptors.size());
 
             for (Class<?> classInterceptorClass : autowiredClassInterceptors) {
                 try {
-                    LOGGER.trace(
-                            "loading autowired class interceptor [%s]",
-                            classInterceptorClass.getName());
+                    LOGGER.trace("loading autowired class interceptor [%s]", classInterceptorClass.getName());
 
                     Object object = ObjectSupport.createObject(classInterceptorClass);
 
                     classInterceptors.add((ClassInterceptor) object);
 
-                    LOGGER.trace(
-                            "autowired class interceptor [%s] loaded",
-                            classInterceptorClass.getName());
+                    LOGGER.trace("autowired class interceptor [%s] loaded", classInterceptorClass.getName());
                 } catch (EngineException e) {
                     throw e;
                 } catch (Throwable t) {
@@ -674,49 +646,40 @@ public class ClassInterceptorManager {
 
         ConcreteConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX)
-                .ifPresent(
-                        regex -> {
-                            LOGGER.trace(
-                                    "%s [%s]",
-                                    Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX,
-                                    regex);
+                .ifPresent(regex -> {
+                    LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX, regex);
 
-                            Pattern pattern = Pattern.compile(regex);
-                            Matcher matcher = pattern.matcher("");
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher("");
 
-                            Iterator<Class<?>> iterator = filteredClasses.iterator();
-                            while (iterator.hasNext()) {
-                                Class<?> clazz = iterator.next();
-                                matcher.reset(clazz.getName());
-                                if (matcher.find()) {
-                                    LOGGER.trace(
-                                            "removing class interceptor [%s]", clazz.getName());
+                    Iterator<Class<?>> iterator = filteredClasses.iterator();
+                    while (iterator.hasNext()) {
+                        Class<?> clazz = iterator.next();
+                        matcher.reset(clazz.getName());
+                        if (matcher.find()) {
+                            LOGGER.trace("removing class interceptor [%s]", clazz.getName());
 
-                                    iterator.remove();
-                                }
-                            }
-                        });
+                            iterator.remove();
+                        }
+                    }
+                });
 
         ConcreteConfiguration.getInstance()
                 .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX)
-                .ifPresent(
-                        regex -> {
-                            LOGGER.trace(
-                                    "%s [%s]",
-                                    Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX,
-                                    regex);
+                .ifPresent(regex -> {
+                    LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX, regex);
 
-                            Pattern pattern = Pattern.compile(regex);
-                            Matcher matcher = pattern.matcher("");
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher("");
 
-                            for (Class<?> clazz : classes) {
-                                matcher.reset(clazz.getName());
-                                if (matcher.find()) {
-                                    LOGGER.trace("adding class interceptor [%s]", clazz.getName());
-                                    filteredClasses.add(clazz);
-                                }
-                            }
-                        });
+                    for (Class<?> clazz : classes) {
+                        matcher.reset(clazz.getName());
+                        if (matcher.find()) {
+                            LOGGER.trace("adding class interceptor [%s]", clazz.getName());
+                            filteredClasses.add(clazz);
+                        }
+                    }
+                });
 
         classes.clear();
         classes.addAll(filteredClasses);

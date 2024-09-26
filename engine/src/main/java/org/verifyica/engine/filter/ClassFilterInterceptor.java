@@ -42,8 +42,7 @@ public class ClassFilterInterceptor implements EngineInterceptor {
 
     @Override
     public void onTestDiscovery(
-            EngineInterceptorContext engineInterceptorContext,
-            List<ClassDefinition> classDefinitions) {
+            EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions) {
         LOGGER.trace("onTestDiscovery()");
 
         applyFilters(classDefinitions);
@@ -54,74 +53,48 @@ public class ClassFilterInterceptor implements EngineInterceptor {
 
         List<Filter> filters = FilterFactory.loadFilters();
 
-        Map<Class<?>, Map<Method, MethodDefinition>> workingClassMethodDefinitionMap =
-                new LinkedHashMap<>();
+        Map<Class<?>, Map<Method, MethodDefinition>> workingClassMethodDefinitionMap = new LinkedHashMap<>();
+
+        classDefinitions.forEach(classDefinition -> {
+            Class<?> testClass = classDefinition.getTestClass();
+            classDefinition.getTestMethodDefinitions().forEach(testMethodDefinition -> workingClassMethodDefinitionMap
+                    .computeIfAbsent(testClass, m -> new LinkedHashMap<>())
+                    .put(testMethodDefinition.getMethod(), testMethodDefinition));
+        });
 
         classDefinitions.forEach(
-                classDefinition -> {
-                    Class<?> testClass = classDefinition.getTestClass();
-                    classDefinition
-                            .getTestMethodDefinitions()
-                            .forEach(
-                                    testMethodDefinition ->
-                                            workingClassMethodDefinitionMap
-                                                    .computeIfAbsent(
-                                                            testClass, m -> new LinkedHashMap<>())
-                                                    .put(
-                                                            testMethodDefinition.getMethod(),
-                                                            testMethodDefinition));
-                });
+                classDefinition -> classDefinition.getTestMethodDefinitions().forEach(testMethodDefinition -> {
+                    for (Filter filter : filters) {
+                        Class<?> testClass = classDefinition.getTestClass();
+                        Method testMethod = testMethodDefinition.getMethod();
+                        switch (filter.getType()) {
+                            case INCLUDE_CLASS:
+                            case INCLUDE_TAGGED_CLASS: {
+                                if (filter.matches(testClass, testMethod)) {
+                                    workingClassMethodDefinitionMap
+                                            .computeIfAbsent(testClass, m -> new LinkedHashMap<>())
+                                            .put(testMethod, testMethodDefinition);
+                                }
+                                break;
+                            }
+                            case EXCLUDE_CLASS:
+                            case EXCLUDE_TAGGED_CLASS: {
+                                if (filter.matches(testClass, testMethod)) {
+                                    workingClassMethodDefinitionMap
+                                            .computeIfAbsent(testClass, m -> new LinkedHashMap<>())
+                                            .remove(testMethod);
+                                }
+                                break;
+                            }
+                            default: {
+                                // INTENTIONALLY BLANK
+                            }
+                        }
+                    }
+                }));
 
-        classDefinitions.forEach(
-                classDefinition ->
-                        classDefinition
-                                .getTestMethodDefinitions()
-                                .forEach(
-                                        testMethodDefinition -> {
-                                            for (Filter filter : filters) {
-                                                Class<?> testClass = classDefinition.getTestClass();
-                                                Method testMethod =
-                                                        testMethodDefinition.getMethod();
-                                                switch (filter.getType()) {
-                                                    case INCLUDE_CLASS:
-                                                    case INCLUDE_TAGGED_CLASS:
-                                                        {
-                                                            if (filter.matches(
-                                                                    testClass, testMethod)) {
-                                                                workingClassMethodDefinitionMap
-                                                                        .computeIfAbsent(
-                                                                                testClass,
-                                                                                m ->
-                                                                                        new LinkedHashMap<>())
-                                                                        .put(
-                                                                                testMethod,
-                                                                                testMethodDefinition);
-                                                            }
-                                                            break;
-                                                        }
-                                                    case EXCLUDE_CLASS:
-                                                    case EXCLUDE_TAGGED_CLASS:
-                                                        {
-                                                            if (filter.matches(
-                                                                    testClass, testMethod)) {
-                                                                workingClassMethodDefinitionMap
-                                                                        .computeIfAbsent(
-                                                                                testClass,
-                                                                                m ->
-                                                                                        new LinkedHashMap<>())
-                                                                        .remove(testMethod);
-                                                            }
-                                                            break;
-                                                        }
-                                                    default:
-                                                        {
-                                                            // INTENTIONALLY BLANK
-                                                        }
-                                                }
-                                            }
-                                        }));
-
-        workingClassMethodDefinitionMap.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+        workingClassMethodDefinitionMap.entrySet().removeIf(entry -> entry.getValue()
+                .isEmpty());
 
         Iterator<ClassDefinition> classDefinitionsIterator = classDefinitions.iterator();
         while (classDefinitionsIterator.hasNext()) {
@@ -133,9 +106,8 @@ public class ClassFilterInterceptor implements EngineInterceptor {
                 classDefinition.getTestMethodDefinitions().clear();
                 classDefinition
                         .getTestMethodDefinitions()
-                        .addAll(
-                                new LinkedHashSet<>(
-                                        workingClassMethodDefinitionMap.get(testClass).values()));
+                        .addAll(new LinkedHashSet<>(
+                                workingClassMethodDefinitionMap.get(testClass).values()));
             }
         }
     }

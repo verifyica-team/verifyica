@@ -96,8 +96,7 @@ public class ConcreteClassDefinition implements ClassDefinition {
     public void setArgumentParallelism(int argumentParallelism) {
         if (argumentParallelism < 1) {
             LOGGER.warn(
-                    "Test class [%s] test argument parallelism [%d] less than [1], defaulting to"
-                            + " [1]",
+                    "Test class [%s] test argument parallelism [%d] less than [1], defaulting to" + " [1]",
                     testClass.getName(), argumentParallelism);
         }
 

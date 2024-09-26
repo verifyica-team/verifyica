@@ -25,47 +25,46 @@ public class StopwatchTest {
 
     @Test
     public void test() {
-        Stopwatch stopWatch = new Stopwatch();
+        Stopwatch stopwatch = new Stopwatch();
 
-        assertThat(stopWatch.elapsedTime()).isNotNull();
+        assertThat(stopwatch.elapsedTime()).isNotNull();
 
         long start = System.currentTimeMillis();
         sleep();
         long stop = System.currentTimeMillis();
 
-        assertThat(stopWatch.elapsedTime().toMillis()).isBetween(0L, (stop - start) + 50);
+        assertThat(stopwatch.elapsedTime().toMillis()).isBetween(0L, (stop - start) + 50);
 
         sleep();
 
         stop = System.currentTimeMillis();
 
-        assertThat(stopWatch.elapsedTime().toMillis()).isBetween(0L, (stop - start) + 50);
+        assertThat(stopwatch.elapsedTime().toMillis()).isBetween(0L, (stop - start) + 50);
 
-        stopWatch.stop();
+        stopwatch.stop();
 
-        Duration duration = stopWatch.elapsedTime();
+        Duration duration = stopwatch.elapsedTime();
         assertThat(duration).isNotNull();
 
         sleep();
 
-        Duration duration2 = stopWatch.elapsedTime();
+        Duration duration2 = stopwatch.elapsedTime();
         assertThat(duration2).isEqualTo(duration);
 
         start = System.currentTimeMillis();
 
-        stopWatch.reset();
-        assertThat(stopWatch.elapsedTime()).isNotNull();
+        stopwatch.reset();
+        assertThat(stopwatch.elapsedTime()).isNotNull();
 
         sleep();
 
         stop = System.currentTimeMillis();
 
-        assertThat(stopWatch.elapsedTime().toMillis()).isBetween(0L, (stop - start) + 50);
+        assertThat(stopwatch.elapsedTime().toMillis()).isBetween(0L, (stop - start) + 50);
 
-        stopWatch.stop();
+        stopwatch.stop();
 
-        assertThat(stopWatch.elapsedTime().toNanos())
-                .isEqualTo(Long.parseLong(stopWatch.toString()));
+        assertThat(stopwatch.elapsedTime().toNanos()).isEqualTo(Long.parseLong(stopwatch.toString()));
     }
 
     private static void sleep() {

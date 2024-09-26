@@ -53,11 +53,10 @@ public class StoreLockTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        Lock lock =
-                argumentContext
-                        .getClassContext()
-                        .getStore()
-                        .computeIfAbsent(LOCK_KEY, k -> new ReentrantLock(true), Lock.class);
+        Lock lock = argumentContext
+                .getClassContext()
+                .getStore()
+                .computeIfAbsent(LOCK_KEY, k -> new ReentrantLock(true), Lock.class);
 
         lock.lock();
         try {

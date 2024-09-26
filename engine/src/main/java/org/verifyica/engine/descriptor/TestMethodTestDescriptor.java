@@ -16,7 +16,6 @@
 
 package org.verifyica.engine.descriptor;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +26,16 @@ import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.MethodSource;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.engine.common.AnsiColoredStackTrace;
+import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.Precondition;
+import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.invocation.Invocation;
 import org.verifyica.engine.invocation.InvocationContext;
 import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.invocation.InvocationResult;
 import org.verifyica.engine.invocation.SkipInvocation;
+import org.verifyica.engine.logger.Logger;
+import org.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement TestMethodTestDescriptor */
 public class TestMethodTestDescriptor extends InvocableTestDescriptor {
@@ -134,7 +136,10 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
     /** Class to implement TestInvocation */
     private static class TestInvocation implements Invocation {
 
+        private static final Logger LOGGER = LoggerFactory.getLogger(TestInvocation.class);
+
         private enum State {
+            START,
             BEFORE_EACH,
             TEST,
             AFTER_EACH,
@@ -145,7 +150,6 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
         private final EngineExecutionListener engineExecutionListener;
         private final ArgumentContext argumentContext;
         private final InvocationController invocationController;
-        private final List<Throwable> throwables;
 
         /**
          * Constructor
@@ -153,105 +157,78 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
          * @param testMethodTestDescriptor testMethodTestDescriptor
          * @param invocationContext invocationContext
          */
-        private TestInvocation(
-                TestMethodTestDescriptor testMethodTestDescriptor,
-                InvocationContext invocationContext) {
+        private TestInvocation(TestMethodTestDescriptor testMethodTestDescriptor, InvocationContext invocationContext) {
             this.testMethodTestDescriptor = testMethodTestDescriptor;
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
             this.invocationController = invocationContext.get(InvocationController.class);
             this.argumentContext = invocationContext.get(ArgumentContext.class);
-            this.throwables = new ArrayList<>();
         }
 
         @Override
-        public void invoke() {
+        public InvocationResult invoke() {
             engineExecutionListener.executionStarted(testMethodTestDescriptor);
 
-            State state = State.BEFORE_EACH;
+            List<InvocationResult> invocationResults = new ArrayList<>();
+            InvocationResult invocationResult;
+
+            State state = State.START;
             while (state != State.END) {
+                LOGGER.trace("testDescriptor [%s] state [%s]", testMethodTestDescriptor, state);
                 switch (state) {
-                    case BEFORE_EACH:
-                        {
-                            state = beforeEach();
-                            break;
+                    case START: {
+                        state = State.BEFORE_EACH;
+                        break;
+                    }
+                    case BEFORE_EACH: {
+                        invocationResult = invocationController.invokeBeforeEachMethods(
+                                testMethodTestDescriptor.getBeforeEachMethods(), argumentContext);
+                        invocationResults.add(invocationResult);
+                        if (invocationResult.isFailure()) {
+                            StackTracePrinter.printStackTrace(
+                                    invocationResult.getThrowable(), AnsiColor.TEXT_RED_BOLD, System.err);
+                            state = State.AFTER_EACH;
+                        } else {
+                            state = State.TEST;
                         }
-                    case TEST:
-                        {
-                            state = test();
-                            break;
+                        break;
+                    }
+                    case TEST: {
+                        invocationResult = invocationController.invokeTestMethod(
+                                testMethodTestDescriptor.getTestMethod(), argumentContext);
+                        invocationResults.add(invocationResult);
+                        if (invocationResult.isFailure()) {
+                            StackTracePrinter.printStackTrace(
+                                    invocationResult.getThrowable(), AnsiColor.TEXT_RED_BOLD, System.err);
                         }
-                    case AFTER_EACH:
-                        {
-                            state = afterEach();
-                            break;
+                        state = State.AFTER_EACH;
+                        break;
+                    }
+                    case AFTER_EACH: {
+                        invocationResult = invocationController.invokeAfterEachMethods(
+                                testMethodTestDescriptor.getAfterEachMethods(), argumentContext);
+                        invocationResults.add(invocationResult);
+                        if (invocationResult.isFailure()) {
+                            StackTracePrinter.printStackTrace(
+                                    invocationResult.getThrowable(), AnsiColor.TEXT_RED_BOLD, System.err);
                         }
+                        state = State.END;
+                        break;
+                    }
                 }
             }
 
-            if (throwables.isEmpty()) {
-                engineExecutionListener.executionFinished(
-                        testMethodTestDescriptor, TestExecutionResult.successful());
-                testMethodTestDescriptor.setInvocationResult(InvocationResult.success());
-            } else {
-                engineExecutionListener.executionFinished(
-                        testMethodTestDescriptor, TestExecutionResult.failed(throwables.get(0)));
-                testMethodTestDescriptor.setInvocationResult(
-                        InvocationResult.exception(throwables.get(0)));
-            }
-        }
-
-        /**
-         * Method to execute beforeEach logic
-         *
-         * @return the next state
-         */
-        private State beforeEach() {
-            try {
-                invocationController.invokeBeforeEachMethods(
-                        testMethodTestDescriptor.getBeforeEachMethods(), argumentContext);
-                return State.TEST;
-            } catch (Throwable t) {
-                AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
-                throwables.add(t);
-                return State.AFTER_EACH;
-            }
-        }
-
-        /**
-         * Method to execute test logic
-         *
-         * @return the next state
-         */
-        private State test() {
-            try {
-                invocationController.invokeTestMethod(
-                        testMethodTestDescriptor.getTestMethod(), argumentContext);
-            } catch (InvocationTargetException e) {
-                AnsiColoredStackTrace.printRedBoldStackTrace(System.err, e.getCause());
-                throwables.add(e.getCause());
-            } catch (Throwable t) {
-                AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
-                throwables.add(t);
+            for (InvocationResult invocationResult2 : invocationResults) {
+                if (invocationResult2.isFailure()) {
+                    testMethodTestDescriptor.setInvocationResult(invocationResult2);
+                    engineExecutionListener.executionFinished(
+                            testMethodTestDescriptor, TestExecutionResult.failed(invocationResult2.getThrowable()));
+                    return invocationResult2;
+                }
             }
 
-            return State.AFTER_EACH;
-        }
-
-        /**
-         * Method to execute afterEach logic
-         *
-         * @return the next state
-         */
-        private State afterEach() {
-            try {
-                invocationController.invokeAfterEachMethods(
-                        testMethodTestDescriptor.getAfterEachMethods(), argumentContext);
-            } catch (Throwable t) {
-                AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
-                throwables.add(t);
-            }
-
-            return State.END;
+            testMethodTestDescriptor.setInvocationResult(InvocationResult.success());
+            engineExecutionListener.executionFinished(testMethodTestDescriptor, TestExecutionResult.successful());
+            return InvocationResult.success();
         }
     }
 }

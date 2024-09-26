@@ -36,8 +36,7 @@ public class Repeater {
      */
     public Repeater(int iterations) {
         if (iterations < 1) {
-            throw new IllegalArgumentException(
-                    format("iterations [%d] is less than 1", iterations));
+            throw new IllegalArgumentException(format("iterations [%d] is less than 1", iterations));
         }
         this.iterations = iterations;
     }

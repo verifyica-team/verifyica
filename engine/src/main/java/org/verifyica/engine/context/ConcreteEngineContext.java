@@ -60,11 +60,6 @@ public class ConcreteEngineContext implements EngineContext {
 
     @Override
     public String toString() {
-        return "ConcreteEngineContext{"
-                + "configuration="
-                + configuration
-                + ", store="
-                + store
-                + '}';
+        return "ConcreteEngineContext{" + "configuration=" + configuration + ", store=" + store + '}';
     }
 }

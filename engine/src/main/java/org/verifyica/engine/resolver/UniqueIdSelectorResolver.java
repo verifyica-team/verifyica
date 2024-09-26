@@ -57,87 +57,67 @@ public class UniqueIdSelectorResolver {
             Map<Class<?>, Set<Integer>> argumentIndexMap) {
         LOGGER.trace("resolve()");
 
-        Stopwatch stopWatch = new Stopwatch();
+        Stopwatch stopwatch = new Stopwatch();
 
         AtomicInteger uniqueIdSelectorCount = new AtomicInteger();
 
-        engineDiscoveryRequest
-                .getSelectorsByType(UniqueIdSelector.class)
-                .forEach(
-                        uniqueIdSelector -> {
-                            uniqueIdSelectorCount.incrementAndGet();
+        engineDiscoveryRequest.getSelectorsByType(UniqueIdSelector.class).forEach(uniqueIdSelector -> {
+            uniqueIdSelectorCount.incrementAndGet();
 
-                            UniqueId uniqueId = uniqueIdSelector.getUniqueId();
-                            List<UniqueId.Segment> segments = uniqueId.getSegments();
+            UniqueId uniqueId = uniqueIdSelector.getUniqueId();
+            List<UniqueId.Segment> segments = uniqueId.getSegments();
 
-                            LOGGER.trace("uniqueId [%s]", uniqueId);
+            LOGGER.trace("uniqueId [%s]", uniqueId);
 
-                            // Specific argument selected
-                            if (segments.size() == 3) {
-                                UniqueId.Segment classSegment = segments.get(1);
-                                UniqueId.Segment argumentSegment = segments.get(2);
+            // Specific argument selected
+            if (segments.size() == 3) {
+                UniqueId.Segment classSegment = segments.get(1);
+                UniqueId.Segment argumentSegment = segments.get(2);
 
-                                Class<?> testClass = null;
+                Class<?> testClass = null;
 
-                                try {
-                                    testClass =
-                                            Thread.currentThread()
-                                                    .getContextClassLoader()
-                                                    .loadClass(classSegment.getValue());
-                                } catch (ClassNotFoundException e) {
-                                    UncheckedClassNotFoundException.throwUnchecked(e);
-                                }
+                try {
+                    testClass = Thread.currentThread().getContextClassLoader().loadClass(classSegment.getValue());
+                } catch (ClassNotFoundException e) {
+                    UncheckedClassNotFoundException.throwUnchecked(e);
+                }
 
-                                classMethodMap
-                                        .computeIfAbsent(testClass, method -> new ArrayList<>())
-                                        .addAll(
-                                                ClassSupport.findMethods(
-                                                        testClass,
-                                                        ResolverPredicates.TEST_METHOD,
-                                                        HierarchyTraversalMode.BOTTOM_UP));
+                classMethodMap
+                        .computeIfAbsent(testClass, method -> new ArrayList<>())
+                        .addAll(ClassSupport.findMethods(
+                                testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
 
-                                argumentIndexMap
-                                        .computeIfAbsent(testClass, clazz -> new LinkedHashSet<>())
-                                        .add(Integer.parseInt(argumentSegment.getValue()));
-                            } else {
-                                segments.forEach(
-                                        segment -> {
-                                            String segmentType = segment.getType();
+                argumentIndexMap
+                        .computeIfAbsent(testClass, clazz -> new LinkedHashSet<>())
+                        .add(Integer.parseInt(argumentSegment.getValue()));
+            } else {
+                segments.forEach(segment -> {
+                    String segmentType = segment.getType();
 
-                                            if (segmentType.equals(
-                                                    ClassTestDescriptor.class.getName())) {
-                                                String javaClassName = segment.getValue();
+                    if (segmentType.equals(ClassTestDescriptor.class.getName())) {
+                        String javaClassName = segment.getValue();
 
-                                                Class<?> testClass = null;
+                        Class<?> testClass = null;
 
-                                                try {
-                                                    testClass =
-                                                            Thread.currentThread()
-                                                                    .getContextClassLoader()
-                                                                    .loadClass(javaClassName);
-                                                } catch (ClassNotFoundException e) {
-                                                    UncheckedClassNotFoundException.throwUnchecked(
-                                                            e);
-                                                }
+                        try {
+                            testClass = Thread.currentThread()
+                                    .getContextClassLoader()
+                                    .loadClass(javaClassName);
+                        } catch (ClassNotFoundException e) {
+                            UncheckedClassNotFoundException.throwUnchecked(e);
+                        }
 
-                                                classMethodMap
-                                                        .computeIfAbsent(
-                                                                testClass,
-                                                                method -> new ArrayList<>())
-                                                        .addAll(
-                                                                ClassSupport.findMethods(
-                                                                        testClass,
-                                                                        ResolverPredicates
-                                                                                .TEST_METHOD,
-                                                                        HierarchyTraversalMode
-                                                                                .BOTTOM_UP));
-                                            }
-                                        });
-                            }
-                        });
+                        classMethodMap
+                                .computeIfAbsent(testClass, method -> new ArrayList<>())
+                                .addAll(ClassSupport.findMethods(
+                                        testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
+                    }
+                });
+            }
+        });
 
         LOGGER.trace(
                 "resolve() uniqueIdSelectors [%d] elapsedTime [%d] ms",
-                uniqueIdSelectorCount.get(), stopWatch.elapsedTime().toMillis());
+                uniqueIdSelectorCount.get(), stopwatch.elapsedTime().toMillis());
     }
 }

@@ -83,8 +83,7 @@ public class LockManager {
      * @return true if the lock was free or locked the current Thread, else false
      * @throws InterruptedException InterruptedException
      */
-    public static boolean tryLock(Key key, long timeout, TimeUnit timeUnit)
-            throws InterruptedException {
+    public static boolean tryLock(Key key, long timeout, TimeUnit timeUnit) throws InterruptedException {
         notNull(key, "key is null");
         return tryLock(key.toString(), timeout, timeUnit);
     }
@@ -98,8 +97,7 @@ public class LockManager {
      * @return true if the lock was free or locked the current Thread, else false
      * @throws InterruptedException InterruptedException
      */
-    public static boolean tryLock(String key, long timeout, TimeUnit timeUnit)
-            throws InterruptedException {
+    public static boolean tryLock(String key, long timeout, TimeUnit timeUnit) throws InterruptedException {
         notBlank(key, "key is null", "key is blank");
         notNull(timeUnit, "timeUnit is null");
 

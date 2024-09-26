@@ -220,13 +220,12 @@ public class ConcreteConfiguration implements Configuration {
         getReadWriteLock().writeLock().lock();
         try {
             map.entrySet().stream()
-                    .filter(
-                            entry ->
-                                    entry.getKey() != null
-                                            && !entry.getKey().trim().isEmpty()
-                                            && entry.getValue() != null
-                                            && !entry.getValue().trim().isEmpty())
-                    .forEach(entry -> map.put(entry.getKey().trim(), entry.getValue().trim()));
+                    .filter(entry -> entry.getKey() != null
+                            && !entry.getKey().trim().isEmpty()
+                            && entry.getValue() != null
+                            && !entry.getValue().trim().isEmpty())
+                    .forEach(entry ->
+                            map.put(entry.getKey().trim(), entry.getValue().trim()));
             return this;
         } finally {
             getReadWriteLock().writeLock().unlock();
@@ -243,11 +242,7 @@ public class ConcreteConfiguration implements Configuration {
             try {
                 configuration
                         .keySet()
-                        .forEach(
-                                key ->
-                                        configuration
-                                                .getOptional(key)
-                                                .ifPresent(value -> map.put(key, value)));
+                        .forEach(key -> configuration.getOptional(key).ifPresent(value -> map.put(key, value)));
                 return this;
             } finally {
                 configuration.getReadWriteLock().readLock().unlock();
@@ -345,9 +340,8 @@ public class ConcreteConfiguration implements Configuration {
 
         try {
             // Get the properties file from a system property
-            Optional<File> optional =
-                    Optional.ofNullable(System.getProperties().get(VERIFYICA_PROPERTIES_FILENAME))
-                            .map(value -> new File(value.toString()).getAbsoluteFile());
+            Optional<File> optional = Optional.ofNullable(System.getProperties().get(VERIFYICA_PROPERTIES_FILENAME))
+                    .map(value -> new File(value.toString()).getAbsoluteFile());
 
             // If a system property didn't exist, scan from the
             // current directory to the root directory
@@ -364,8 +358,7 @@ public class ConcreteConfiguration implements Configuration {
 
                 Properties properties = new Properties();
 
-                try (Reader reader =
-                        Files.newBufferedReader(optional.get().toPath(), StandardCharsets.UTF_8)) {
+                try (Reader reader = Files.newBufferedReader(optional.get().toPath(), StandardCharsets.UTF_8)) {
                     properties.load(reader);
                 }
 
@@ -385,15 +378,7 @@ public class ConcreteConfiguration implements Configuration {
 
         if (IS_TRACE_ENABLED) {
             trace("configuration properties ...");
-            map.keySet()
-                    .forEach(
-                            (key) ->
-                                    trace(
-                                            "configuration property ["
-                                                    + key
-                                                    + "] = ["
-                                                    + map.get(key)
-                                                    + "]"));
+            map.keySet().forEach((key) -> trace("configuration property [" + key + "] = [" + map.get(key) + "]"));
         }
     }
 
@@ -444,17 +429,16 @@ public class ConcreteConfiguration implements Configuration {
      */
     private static void trace(String message) {
         if (IS_TRACE_ENABLED) {
-            System.out.println(
-                    LocalDateTime.now().format(DATE_TIME_FORMATTER)
-                            + " | "
-                            + Thread.currentThread().getName()
-                            + " | "
-                            + "TRACE"
-                            + " | "
-                            + CLASS_NAME
-                            + " | "
-                            + message
-                            + " ");
+            System.out.println(LocalDateTime.now().format(DATE_TIME_FORMATTER)
+                    + " | "
+                    + Thread.currentThread().getName()
+                    + " | "
+                    + "TRACE"
+                    + " | "
+                    + CLASS_NAME
+                    + " | "
+                    + message
+                    + " ");
         }
     }
 }

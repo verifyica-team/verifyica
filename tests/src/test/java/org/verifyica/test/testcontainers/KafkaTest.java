@@ -66,16 +66,12 @@ public class KafkaTest {
 
         argumentContext.getStore().put("network", network);
 
-        argumentContext
-                .getTestArgument(KafkaTestEnvironment.class)
-                .getPayload()
-                .initialize(network);
+        argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload().initialize(network);
     }
 
     @Verifyica.Test
     @Verifyica.Order(order = 1)
-    public void testProduce(ArgumentContext argumentContext)
-            throws ExecutionException, InterruptedException {
+    public void testProduce(ArgumentContext argumentContext) throws ExecutionException, InterruptedException {
         info("testing testProduce() ...");
 
         KafkaTestEnvironment kafkaTestEnvironment =
@@ -89,10 +85,8 @@ public class KafkaTest {
 
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.setProperty(
-                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.setProperty(
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(properties)) {
             ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC, message);
@@ -118,10 +112,8 @@ public class KafkaTest {
 
         Properties properties = new Properties();
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.setProperty(
-                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(
-                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
         properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
 
@@ -133,8 +125,7 @@ public class KafkaTest {
             consumer = new KafkaConsumer<>(properties);
             consumer.subscribe(topicList);
 
-            ConsumerRecords<String, String> consumerRecords =
-                    consumer.poll(Duration.ofMillis(1000));
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 info("consumed message [%s] from [%s]", consumerRecord.value(), bootstrapServers);
                 assertThat(consumerRecord.value()).isEqualTo(message);
@@ -162,10 +153,8 @@ public class KafkaTest {
 
         Properties properties = new Properties();
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.setProperty(
-                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(
-                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
         properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
 
@@ -177,8 +166,7 @@ public class KafkaTest {
             consumer = new KafkaConsumer<>(properties);
             consumer.subscribe(topicList);
 
-            ConsumerRecords<String, String> consumerRecords =
-                    consumer.poll(Duration.ofMillis(1000));
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 info("consumed message [%s] from [%s]", consumerRecord.value(), bootstrapServers);
                 assertThat(consumerRecord.value()).isEqualTo(message);
@@ -196,10 +184,7 @@ public class KafkaTest {
 
         argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload().destroy();
 
-        argumentContext
-                .getStore()
-                .removeOptional("network", Network.class)
-                .ifPresent(Network::close);
+        argumentContext.getStore().removeOptional("network", Network.class).ifPresent(Network::close);
     }
 
     /** Class to implement a TestContext */
@@ -245,10 +230,8 @@ public class KafkaTest {
         public void initialize(Network network) {
             info("initialize test environment [%s] ...", dockerImageName);
 
-            kafkaContainer =
-                    new KafkaContainer(
-                            DockerImageName.parse(dockerImageName)
-                                    .asCompatibleSubstituteFor("apache/kafka"));
+            kafkaContainer = new KafkaContainer(
+                    DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"));
             kafkaContainer.withNetwork(network);
             kafkaContainer.start();
 

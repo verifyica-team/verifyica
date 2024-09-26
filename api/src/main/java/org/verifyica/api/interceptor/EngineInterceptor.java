@@ -52,14 +52,12 @@ public interface EngineInterceptor {
      * @throws Throwable Throwable
      */
     default void onTestDiscovery(
-            EngineInterceptorContext engineInterceptorContext,
-            List<ClassDefinition> classDefinitions)
+            EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions)
             throws Throwable {
         Predicate<ClassDefinition> classDefinitionPredicate = onTestDiscoveryPredicate();
 
         for (ClassDefinition classDefinition : classDefinitions) {
-            if (classDefinitionPredicate == null
-                    || classDefinitionPredicate.test(classDefinition)) {
+            if (classDefinitionPredicate == null || classDefinitionPredicate.test(classDefinition)) {
                 onTestDiscovery(engineInterceptorContext, classDefinition);
             }
         }
@@ -72,8 +70,7 @@ public interface EngineInterceptor {
      * @param classDefinition classDefinition
      * @throws Throwable Throwable
      */
-    default void onTestDiscovery(
-            EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
+    default void onTestDiscovery(EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
             throws Throwable {
         // INTENTIONALLY BLANK
     }
