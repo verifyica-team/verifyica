@@ -2,14 +2,13 @@
 
 Contributions to Verifyica are both welcomed and appreciated.
 
-The project uses an Enhanced GitHub Flow branching strategy.
+The project uses an GitHub Flow branching strategy.
 
-- `release` branch for the latest released code (default)
-- `development` for active development
+- `development` branch for active development / unreleased code
+- `release-<VERSION>` branches for releases.
 
-Release branch code is considered "**locked**" the source of truth for the latest release. Only documentation changes are allowed.
+Release branch code is considered "**locked**" except for documentation changes.
 
-- The `development` branch contains the latest unreleased code
 - Google checkstyle format is required
 - [Google Java Style](https://google.github.io/styleguide/javaguide.html) is required
 - [Spotless](https://github.com/diffplug/spotless) for checking/applying Google Java Style
