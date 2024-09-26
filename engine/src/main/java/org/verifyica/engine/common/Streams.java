@@ -1,5 +1,12 @@
 /*
- * Copyright (C) 1883 The Verifyica project authors
+ * Creative Commons Attribution-ShareAlike 3.0 Unported License
+ *
+ * Source: https://stackoverflow.com/questions/1883321/system-out-println-and-system-err-println-out-of-order
+ * Author: https://stackoverflow.com/users/1217178/markus-a
+ */
+
+/*
+ * Modifications Copyright (C) 2024 The Verifyica project authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +20,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.verifyica.engine.common;
 
 import java.io.IOException;
