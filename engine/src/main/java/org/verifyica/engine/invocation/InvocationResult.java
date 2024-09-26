@@ -26,7 +26,7 @@ public class InvocationResult {
         /** Success */
         SUCCESS,
         /** Failure */
-        FAILURE,
+        EXCEPTION,
         /** Skipped */
         SKIPPED
     }
@@ -87,7 +87,7 @@ public class InvocationResult {
      * @return true if the result is failure, else false
      */
     public boolean isFailure() {
-        return type == Type.FAILURE;
+        return type == Type.EXCEPTION;
     }
 
     /**
@@ -122,7 +122,7 @@ public class InvocationResult {
      *
      * @return an InvocationResult
      */
-    public static InvocationResult pass() {
+    public static InvocationResult success() {
         return new InvocationResult(Type.SUCCESS);
     }
 
@@ -146,12 +146,12 @@ public class InvocationResult {
     }
 
     /**
-     * Method to create a failure invocation result
+     * Method to create a exception invocation result
      *
      * @param throwable throwable
      * @return an InvocationResult
      */
-    public static InvocationResult fail(Throwable throwable) {
-        return new InvocationResult(Type.FAILURE, throwable);
+    public static InvocationResult exception(Throwable throwable) {
+        return new InvocationResult(Type.EXCEPTION, throwable);
     }
 }

@@ -476,9 +476,9 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
             engineExecutionListener.executionFinished(classTestDescriptor, testExecutionResult);
 
             if (testExecutionResult.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
-                return InvocationResult.pass();
+                return InvocationResult.success();
             } else {
-                return InvocationResult.fail(testExecutionResult.getThrowable().get());
+                return InvocationResult.exception(testExecutionResult.getThrowable().get());
             }
         }
 

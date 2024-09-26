@@ -408,9 +408,9 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
             engineExecutionListener.executionFinished(argumentTestDescriptor, testExecutionResult);
 
             if (testExecutionResult.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
-                return InvocationResult.pass();
+                return InvocationResult.success();
             } else {
-                return InvocationResult.fail(
+                return InvocationResult.exception(
                         stateMachine.getFirstResultWithThrowable().get().getThrowable());
             }
         }

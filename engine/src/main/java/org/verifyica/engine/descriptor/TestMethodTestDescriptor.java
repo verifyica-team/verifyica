@@ -194,11 +194,11 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
             if (throwables.isEmpty()) {
                 engineExecutionListener.executionFinished(
                         testMethodTestDescriptor, TestExecutionResult.successful());
-                return InvocationResult.pass();
+                return InvocationResult.success();
             } else {
                 engineExecutionListener.executionFinished(
                         testMethodTestDescriptor, TestExecutionResult.failed(throwables.get(0)));
-                return InvocationResult.fail(throwables.get(0));
+                return InvocationResult.exception(throwables.get(0));
             }
         }
 
