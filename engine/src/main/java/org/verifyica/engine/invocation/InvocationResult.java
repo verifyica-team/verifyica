@@ -25,7 +25,7 @@ public class InvocationResult {
     public enum Type {
         /** Success */
         SUCCESS,
-        /** Failure */
+        /** Exception */
         EXCEPTION,
         /** Skipped */
         SKIPPED
