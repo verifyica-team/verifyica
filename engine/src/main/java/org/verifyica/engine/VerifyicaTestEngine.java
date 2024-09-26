@@ -62,7 +62,7 @@ import org.verifyica.engine.exception.EngineException;
 import org.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.verifyica.engine.interceptor.EngineInterceptorManager;
 import org.verifyica.engine.invocation.InvocationContext;
-import org.verifyica.engine.invocation.InvocationManager;
+import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.verifyica.engine.listener.TracingEngineExecutionListener;
 import org.verifyica.engine.logger.Logger;
@@ -179,8 +179,8 @@ public class VerifyicaTestEngine implements TestEngine {
                         .set(EngineInterceptorManager.class, engineInterceptorManager)
                         .set(ClassInterceptorManager.class, classInterceptorManager)
                         .set(
-                                InvocationManager.class,
-                                new InvocationManager(
+                                InvocationController.class,
+                                new InvocationController(
                                         engineInterceptorManager, classInterceptorManager))
                         .set(InvocationContext.CLASS_EXECUTOR_SERVICE, classExecutorService)
                         .set(InvocationContext.ARGUMENT_EXECUTOR_SERVICE, argumentExecutorService);

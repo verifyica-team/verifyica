@@ -23,8 +23,8 @@ import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.verifyica.engine.interceptor.EngineInterceptorManager;
 
-/** Class to implement InvocationManager */
-public class InvocationManager {
+/** Class to implement InvocationController */
+public class InvocationController {
 
     private final EngineInterceptorManager engineInterceptorManager;
     private final ClassInterceptorManager classInterceptorManager;
@@ -35,7 +35,7 @@ public class InvocationManager {
      * @param engineInterceptorManager engineInterceptorManager
      * @param classInterceptorManager classInterceptorManager
      */
-    public InvocationManager(
+    public InvocationController(
             EngineInterceptorManager engineInterceptorManager,
             ClassInterceptorManager classInterceptorManager) {
         this.engineInterceptorManager = engineInterceptorManager;

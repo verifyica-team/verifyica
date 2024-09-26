@@ -31,7 +31,7 @@ import org.verifyica.engine.common.AnsiColoredStackTrace;
 import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.invocation.InvocableTestDescriptor;
 import org.verifyica.engine.invocation.InvocationContext;
-import org.verifyica.engine.invocation.InvocationManager;
+import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.invocation.InvocationResult;
 
 /** Class to implement TestMethodTestDescriptor */
@@ -143,7 +143,7 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
         private final TestMethodTestDescriptor testMethodTestDescriptor;
         private final EngineExecutionListener engineExecutionListener;
         private final ArgumentContext argumentContext;
-        private final InvocationManager invocationManager;
+        private final InvocationController invocationController;
         private final List<Throwable> throwables;
 
         /**
@@ -157,7 +157,7 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
                 InvocationContext invocationContext) {
             this.testMethodTestDescriptor = testMethodTestDescriptor;
             this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
-            this.invocationManager = invocationContext.get(InvocationManager.class);
+            this.invocationController = invocationContext.get(InvocationController.class);
             this.argumentContext = invocationContext.get(ArgumentContext.class);
             this.throwables = new ArrayList<>();
         }
@@ -209,7 +209,7 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
          */
         private State beforeEach() {
             try {
-                invocationManager.invokeBeforeEach(
+                invocationController.invokeBeforeEach(
                         testMethodTestDescriptor.getBeforeEachMethods(), argumentContext);
                 return State.TEST;
             } catch (Throwable t) {
@@ -226,7 +226,7 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
          */
         private State test() {
             try {
-                invocationManager.invokeTest(
+                invocationController.invokeTest(
                         testMethodTestDescriptor.getTestMethod(), argumentContext);
             } catch (InvocationTargetException e) {
                 AnsiColoredStackTrace.printRedBoldStackTrace(System.err, e.getCause());
@@ -246,7 +246,7 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
          */
         private State afterEach() {
             try {
-                invocationManager.invokeAfterEach(
+                invocationController.invokeAfterEach(
                         testMethodTestDescriptor.getAfterEachMethods(), argumentContext);
             } catch (Throwable t) {
                 AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
