@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.common.statemachine;
+package org.verifyica.engine.invocation;
 
-/**
- * Interface to implement an Action
- *
- * @param <T> the State type
- */
-public interface Action<T> {
+/** Interface to implement Invocation */
+public interface Invocation {
 
     /**
-     * Method to execute the Action
+     * Method to invoke an invocation
      *
-     * @return a Result
+     * @return an InvocationResult
      */
-    Result<T> execute();
+    InvocationResult invoke();
 }

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.verifyica.test.interceptor.engine;
+package org.verifyica.test.interceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
@@ -36,23 +37,17 @@ public class EngineInterceptorTest3 {
 
         @Override
         public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext,
-                ClassDefinition classDefinition) {
+                EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest3.class) {
-                // Change test argument parallelism
-                int testArgumentParallelism = classDefinition.getArgumentParallelism();
-                classDefinition.setArgumentParallelism(1);
-
-                System.out.printf(
-                        "changing test class [%s] test argument parallelism from [%d] to [%d]%n",
-                        classDefinition.getTestClass().getName(),
-                        testArgumentParallelism,
-                        classDefinition.getArgumentParallelism());
+                List<Argument<?>> arguments = classDefinition.getArguments();
+                assertThat(arguments).hasSize(10);
+                arguments.subList(0, arguments.size() - 1).clear();
+                assertThat(arguments).hasSize(1);
             }
         }
     }
 
-    @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
+    @Verifyica.ArgumentSupplier
     public static Collection<Argument<String>> arguments() {
         Collection<Argument<String>> collection = new ArrayList<>();
 
@@ -69,65 +64,80 @@ public class EngineInterceptorTest3 {
 
         assertThat(classContext).isNotNull();
         assertThat(classContext.getStore()).isNotNull();
-        assertThat(classContext.getTestArgumentParallelism()).isEqualTo(1);
     }
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) {
-        System.out.printf("beforeAll(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "beforeAll(index=%d name=%s)%n",
+                argumentContext.getTestArgumentIndex(), argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgumentIndex()).isEqualTo(0);
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) {
-        System.out.printf("beforeEach(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "beforeEach(index=%d name=%s)%n",
+                argumentContext.getTestArgumentIndex(), argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgumentIndex()).isEqualTo(0);
     }
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "test1(index=%d name=%s)%n", argumentContext.getTestArgumentIndex(), argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgumentIndex()).isEqualTo(0);
 
         Thread.sleep(RandomSupport.randomLong(0, 1000));
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "test2(index=%d name=%s)%n", argumentContext.getTestArgumentIndex(), argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgumentIndex()).isEqualTo(0);
 
         Thread.sleep(RandomSupport.randomLong(0, 1000));
     }
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) {
-        System.out.printf("afterEach(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "afterEach(index=%d name=%s)%n",
+                argumentContext.getTestArgumentIndex(), argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgumentIndex()).isEqualTo(0);
     }
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) {
-        System.out.printf("afterAll(%s)%n", argumentContext.getTestArgument());
+        System.out.printf(
+                "afterAll(index=%d name=%s)%n",
+                argumentContext.getTestArgumentIndex(), argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getTestArgumentIndex()).isEqualTo(0);
     }
 
     @Verifyica.Conclude

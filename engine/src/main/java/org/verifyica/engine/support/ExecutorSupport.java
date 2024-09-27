@@ -70,30 +70,24 @@ public class ExecutorSupport {
         if (!usePlatformThreads && ThreadTool.hasVirtualThreads()) {
             LOGGER.trace("using virtual threads");
 
-            executorService =
-                    new SemaphoreExecutor(
-                            ExecutorTool.newVirtualThreadPerTaskExecutor(),
-                            new Semaphore(parallelism, true));
+            executorService = new SemaphoreExecutor(
+                    ExecutorTool.newVirtualThreadPerTaskExecutor(), new Semaphore(parallelism, true));
         } else {
-            if (EPHEMERAL.equals(
-                    ConcreteConfiguration.getInstance().get(Constants.ENGINE_THREADS_PLATFORM))) {
+            if (EPHEMERAL.equals(ConcreteConfiguration.getInstance().get(Constants.ENGINE_THREADS_PLATFORM))) {
                 LOGGER.trace("using ephemeral platform threads");
 
                 executorService =
-                        new SemaphoreExecutor(
-                                new NewPlatformThreadExecutorService(),
-                                new Semaphore(parallelism, true));
+                        new SemaphoreExecutor(new NewPlatformThreadExecutorService(), new Semaphore(parallelism, true));
             } else {
                 LOGGER.trace("using platform thread pool");
 
-                executorService =
-                        new ThreadPoolExecutor(
-                                parallelism,
-                                parallelism,
-                                60L,
-                                TimeUnit.SECONDS,
-                                new ArrayBlockingQueue<>(parallelism * 10),
-                                new BlockingRejectedExecutionHandler());
+                executorService = new ThreadPoolExecutor(
+                        parallelism,
+                        parallelism,
+                        60L,
+                        TimeUnit.SECONDS,
+                        new ArrayBlockingQueue<>(parallelism * 10),
+                        new BlockingRejectedExecutionHandler());
             }
         }
 
@@ -106,15 +100,13 @@ public class ExecutorSupport {
      * @param futures futures
      * @param executorService executorService
      */
-    public static void waitForAllFutures(
-            Collection<Future<?>> futures, ExecutorService executorService) {
+    public static void waitForAllFutures(Collection<Future<?>> futures, ExecutorService executorService) {
         Precondition.notNull(futures, "futures is null");
         Precondition.notNull(executorService, "executorService is null");
 
         LOGGER.trace("waitForAllFutures() futures [%d]", futures.size());
 
-        CompletionService<Object> completionService =
-                new ExecutorCompletionService<>(executorService);
+        CompletionService<Object> completionService = new ExecutorCompletionService<>(executorService);
         Map<Future<?>, Future<?>> futureMap = new HashMap<>();
 
         for (Future<?> future : futures) {
@@ -158,8 +150,7 @@ public class ExecutorSupport {
     /** Class to implement BlockingRejectedExecutionHandler */
     private static class BlockingRejectedExecutionHandler implements RejectedExecutionHandler {
 
-        private static final Logger LOGGER =
-                LoggerFactory.getLogger(BlockingRejectedExecutionHandler.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(BlockingRejectedExecutionHandler.class);
 
         /** Constructor */
         public BlockingRejectedExecutionHandler() {

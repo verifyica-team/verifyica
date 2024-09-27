@@ -27,28 +27,26 @@ import org.verifyica.api.interceptor.EngineInterceptor;
 public class InterceptorPredicates {
 
     /** Predicate to filter autowired engine interceptors classes */
-    public static final Predicate<Class<?>> AUTOWIRED_ENGINE_INTERCEPTOR_CLASS =
-            clazz -> {
-                int modifiers = clazz.getModifiers();
-                return Modifier.isPublic(modifiers)
-                        && !Modifier.isAbstract(modifiers)
-                        && EngineInterceptor.class.isAssignableFrom(clazz)
-                        && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && clazz.isAnnotationPresent(Verifyica.Autowired.class)
-                        && hasDefaultConstructor(clazz);
-            };
+    public static final Predicate<Class<?>> AUTOWIRED_ENGINE_INTERCEPTOR_CLASS = clazz -> {
+        int modifiers = clazz.getModifiers();
+        return Modifier.isPublic(modifiers)
+                && !Modifier.isAbstract(modifiers)
+                && EngineInterceptor.class.isAssignableFrom(clazz)
+                && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
+                && clazz.isAnnotationPresent(Verifyica.Autowired.class)
+                && hasDefaultConstructor(clazz);
+    };
 
     /** Predicate to filter autowired class interceptor classes */
-    public static final Predicate<Class<?>> AUTOWIRED_CLASS_INTERCEPTOR_CLASS =
-            clazz -> {
-                int modifiers = clazz.getModifiers();
-                return Modifier.isPublic(modifiers)
-                        && !Modifier.isAbstract(modifiers)
-                        && ClassInterceptor.class.isAssignableFrom(clazz)
-                        && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                        && clazz.isAnnotationPresent(Verifyica.Autowired.class)
-                        && hasDefaultConstructor(clazz);
-            };
+    public static final Predicate<Class<?>> AUTOWIRED_CLASS_INTERCEPTOR_CLASS = clazz -> {
+        int modifiers = clazz.getModifiers();
+        return Modifier.isPublic(modifiers)
+                && !Modifier.isAbstract(modifiers)
+                && ClassInterceptor.class.isAssignableFrom(clazz)
+                && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
+                && clazz.isAnnotationPresent(Verifyica.Autowired.class)
+                && hasDefaultConstructor(clazz);
+    };
 
     /** Constructor */
     private InterceptorPredicates() {

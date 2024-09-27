@@ -21,12 +21,15 @@ import java.util.Objects;
 /** Class to implement InvocationResult */
 public class InvocationResult {
 
+    private static final InvocationResult SUCCESS = new InvocationResult(Type.SUCCESS);
+    private static final InvocationResult SKIPPED = new InvocationResult(Type.SKIPPED);
+
     /** InvocationResult Type */
     public enum Type {
         /** Success */
         SUCCESS,
-        /** Failure */
-        FAILURE,
+        /** Exception */
+        EXCEPTION,
         /** Skipped */
         SKIPPED
     }
@@ -87,7 +90,7 @@ public class InvocationResult {
      * @return true if the result is failure, else false
      */
     public boolean isFailure() {
-        return type == Type.FAILURE;
+        return type == Type.EXCEPTION;
     }
 
     /**
@@ -122,8 +125,8 @@ public class InvocationResult {
      *
      * @return an InvocationResult
      */
-    public static InvocationResult pass() {
-        return new InvocationResult(Type.SUCCESS);
+    public static InvocationResult success() {
+        return SUCCESS;
     }
 
     /**
@@ -132,7 +135,7 @@ public class InvocationResult {
      * @return an InvocationResult
      */
     public static InvocationResult skipped() {
-        return skipped(null);
+        return SKIPPED;
     }
 
     /**
@@ -146,12 +149,12 @@ public class InvocationResult {
     }
 
     /**
-     * Method to create a failure invocation result
+     * Method to create a exception invocation result
      *
      * @param throwable throwable
      * @return an InvocationResult
      */
-    public static InvocationResult fail(Throwable throwable) {
-        return new InvocationResult(Type.FAILURE, throwable);
+    public static InvocationResult exception(Throwable throwable) {
+        return new InvocationResult(Type.EXCEPTION, throwable);
     }
 }

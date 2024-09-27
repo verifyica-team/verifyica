@@ -39,7 +39,8 @@ public class StepTest2 {
     public void test(ArgumentContext argumentContext) {
         System.out.printf(
                 "test(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
 
         actual.add("test");
     }
@@ -49,7 +50,8 @@ public class StepTest2 {
     public void test0(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test0(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
 
         actual.add("test0");
     }
@@ -59,7 +61,8 @@ public class StepTest2 {
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test2(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
 
         actual.add("test2");
     }
@@ -69,7 +72,8 @@ public class StepTest2 {
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test4(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
 
         actual.add("test4");
     }
@@ -79,7 +83,8 @@ public class StepTest2 {
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test1(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
 
         throw new AssertionError("Forced");
     }
@@ -89,7 +94,8 @@ public class StepTest2 {
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test3(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
 
         actual.add("test3");
     }
@@ -99,7 +105,8 @@ public class StepTest2 {
     public void test5(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test5(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
 
         actual.add("test5");
     }
@@ -117,10 +124,7 @@ public class StepTest2 {
         int pad = pad(expected);
 
         for (int i = 0; i < expected.size(); i++) {
-            System.out.printf(
-                    "expected [%-" + pad + "s] actual [%-" + pad + "s]%n",
-                    expected.get(i),
-                    actual.get(i));
+            System.out.printf("expected [%-" + pad + "s] actual [%-" + pad + "s]%n", expected.get(i), actual.get(i));
 
             assertThat(actual.get(i)).isEqualTo(expected.get(i));
         }

@@ -28,8 +28,8 @@ import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
 import org.verifyica.engine.VerifyicaTestEngine;
 import org.verifyica.engine.common.AnsiColor;
-import org.verifyica.engine.common.AnsiColoredStackTrace;
 import org.verifyica.engine.common.AnsiColoredString;
+import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Stopwatch;
 import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.verifyica.engine.descriptor.ClassTestDescriptor;
@@ -39,32 +39,28 @@ import org.verifyica.engine.support.HumanReadableTimeSupport;
 /** Class to implement a SummaryEngineExecutionListener */
 public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
-    private static final String BANNER =
-            new AnsiColoredString()
-                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
-                    .append("Verifyica ")
-                    .append(VerifyicaTestEngine.staticGetVersion())
-                    .append(AnsiColor.NONE)
-                    .build();
+    private static final String BANNER = new AnsiColoredString()
+            .append(AnsiColor.TEXT_WHITE_BRIGHT)
+            .append("Verifyica ")
+            .append(VerifyicaTestEngine.staticGetVersion())
+            .append(AnsiColor.NONE)
+            .build();
 
-    private static final String SUMMARY_BANNER =
-            BANNER + AnsiColor.TEXT_WHITE_BRIGHT.wrap(" Summary");
+    private static final String SUMMARY_BANNER = BANNER + AnsiColor.TEXT_WHITE_BRIGHT.wrap(" Summary");
 
-    private static final String SEPARATOR =
-            AnsiColor.TEXT_WHITE_BRIGHT.wrap(
-                    "------------------------------------------------------------------------");
+    private static final String SEPARATOR = AnsiColor.TEXT_WHITE_BRIGHT.wrap(
+            "------------------------------------------------------------------------");
 
-    private static final String INFO =
-            new AnsiColoredString()
-                    .append(AnsiColor.TEXT_WHITE)
-                    .append("[")
-                    .append(AnsiColor.TEXT_BLUE_BOLD)
-                    .append("INFO")
-                    .append(AnsiColor.TEXT_WHITE)
-                    .append("]")
-                    .append(AnsiColor.NONE)
-                    .append(" ")
-                    .build();
+    private static final String INFO = new AnsiColoredString()
+            .append(AnsiColor.TEXT_WHITE)
+            .append("[")
+            .append(AnsiColor.TEXT_BLUE_BOLD)
+            .append("INFO")
+            .append(AnsiColor.TEXT_WHITE)
+            .append("]")
+            .append(AnsiColor.NONE)
+            .append(" ")
+            .build();
 
     private static final Map<String, String> counterKeyToMessageDisplayStringMap = new HashMap<>();
 
@@ -83,24 +79,21 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         counterKeyToMessageDisplayStringMap.put("test.method.count.skipped", "Skipped");
     }
 
-    private final Map<ClassTestDescriptor, TestExecutionResult>
-            classTestDescriptorTestExecutionResultMap;
+    private final Map<ClassTestDescriptor, TestExecutionResult> classTestDescriptorTestExecutionResultMap;
 
     private final Map<ClassTestDescriptor, String> classTestDescriptorSkippedMap;
 
-    private final Map<ArgumentTestDescriptor, TestExecutionResult>
-            argumentTestDescriptorTestExecutionResultMap;
+    private final Map<ArgumentTestDescriptor, TestExecutionResult> argumentTestDescriptorTestExecutionResultMap;
 
     private final Map<ArgumentTestDescriptor, String> argumentTestDescriptorSkippedMap;
 
-    private final Map<TestMethodTestDescriptor, TestExecutionResult>
-            testMethodTestDescriptorTestExecutionResultMap;
+    private final Map<TestMethodTestDescriptor, TestExecutionResult> testMethodTestDescriptorTestExecutionResultMap;
 
     private final Map<TestMethodTestDescriptor, String> testMethodTestDescriptorSkippedMap;
 
     private final AtomicLong failureCount;
     private final Map<String, AtomicLong> counterMap;
-    private final Stopwatch stopWatch;
+    private final Stopwatch stopwatch;
 
     /** Constructor */
     public SummaryEngineExecutionListener() {
@@ -115,13 +108,13 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
         failureCount = new AtomicLong();
         counterMap = new ConcurrentHashMap<>();
-        stopWatch = new Stopwatch();
+        stopwatch = new Stopwatch();
     }
 
     @Override
     public void executionStarted(TestDescriptor testDescriptor) {
         if (testDescriptor.isRoot()) {
-            stopWatch.reset();
+            stopwatch.reset();
         }
     }
 
@@ -138,11 +131,9 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     @Override
-    public void executionFinished(
-            TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
+    public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
         if (testDescriptor instanceof ClassTestDescriptor) {
-            classTestDescriptorTestExecutionResultMap.put(
-                    (ClassTestDescriptor) testDescriptor, testExecutionResult);
+            classTestDescriptorTestExecutionResultMap.put((ClassTestDescriptor) testDescriptor, testExecutionResult);
         } else if (testDescriptor instanceof ArgumentTestDescriptor) {
             argumentTestDescriptorTestExecutionResultMap.put(
                     (ArgumentTestDescriptor) testDescriptor, testExecutionResult);
@@ -163,7 +154,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     /** Method to print the summary */
     private void summary() {
         try {
-            stopWatch.stop();
+            stopwatch.stop();
 
             for (int i = 0; i < classTestDescriptorSkippedMap.size(); i++) {
                 String key = "test.class.count";
@@ -201,31 +192,27 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
 
                 switch (status) {
-                    case SUCCESSFUL:
-                        {
-                            counterMap
-                                    .computeIfAbsent(key + ".successful", k -> new AtomicLong())
-                                    .incrementAndGet();
-                            break;
-                        }
-                    case FAILED:
-                        {
-                            counterMap
-                                    .computeIfAbsent(key + ".failed", k -> new AtomicLong())
-                                    .incrementAndGet();
-                            break;
-                        }
-                    case ABORTED:
-                        {
-                            counterMap
-                                    .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
-                                    .incrementAndGet();
-                            break;
-                        }
-                    default:
-                        {
-                            // INTENTIONALLY BLANK
-                        }
+                    case SUCCESSFUL: {
+                        counterMap
+                                .computeIfAbsent(key + ".successful", k -> new AtomicLong())
+                                .incrementAndGet();
+                        break;
+                    }
+                    case FAILED: {
+                        counterMap
+                                .computeIfAbsent(key + ".failed", k -> new AtomicLong())
+                                .incrementAndGet();
+                        break;
+                    }
+                    case ABORTED: {
+                        counterMap
+                                .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
+                                .incrementAndGet();
+                        break;
+                    }
+                    default: {
+                        // INTENTIONALLY BLANK
+                    }
                 }
             }
 
@@ -238,31 +225,27 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
 
                 switch (status) {
-                    case SUCCESSFUL:
-                        {
-                            counterMap
-                                    .computeIfAbsent(key + ".successful", k -> new AtomicLong())
-                                    .incrementAndGet();
-                            break;
-                        }
-                    case FAILED:
-                        {
-                            counterMap
-                                    .computeIfAbsent(key + ".failed", k -> new AtomicLong())
-                                    .incrementAndGet();
-                            break;
-                        }
-                    case ABORTED:
-                        {
-                            counterMap
-                                    .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
-                                    .incrementAndGet();
-                            break;
-                        }
-                    default:
-                        {
-                            // INTENTIONALLY BLANK
-                        }
+                    case SUCCESSFUL: {
+                        counterMap
+                                .computeIfAbsent(key + ".successful", k -> new AtomicLong())
+                                .incrementAndGet();
+                        break;
+                    }
+                    case FAILED: {
+                        counterMap
+                                .computeIfAbsent(key + ".failed", k -> new AtomicLong())
+                                .incrementAndGet();
+                        break;
+                    }
+                    case ABORTED: {
+                        counterMap
+                                .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
+                                .incrementAndGet();
+                        break;
+                    }
+                    default: {
+                        // INTENTIONALLY BLANK
+                    }
                 }
             }
 
@@ -275,31 +258,27 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
 
                 switch (status) {
-                    case SUCCESSFUL:
-                        {
-                            counterMap
-                                    .computeIfAbsent(key + ".successful", k -> new AtomicLong())
-                                    .incrementAndGet();
-                            break;
-                        }
-                    case FAILED:
-                        {
-                            counterMap
-                                    .computeIfAbsent(key + ".failed", k -> new AtomicLong())
-                                    .incrementAndGet();
-                            break;
-                        }
-                    case ABORTED:
-                        {
-                            counterMap
-                                    .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
-                                    .incrementAndGet();
-                            break;
-                        }
-                    default:
-                        {
-                            // INTENTIONALLY BLANK
-                        }
+                    case SUCCESSFUL: {
+                        counterMap
+                                .computeIfAbsent(key + ".successful", k -> new AtomicLong())
+                                .incrementAndGet();
+                        break;
+                    }
+                    case FAILED: {
+                        counterMap
+                                .computeIfAbsent(key + ".failed", k -> new AtomicLong())
+                                .incrementAndGet();
+                        break;
+                    }
+                    case ABORTED: {
+                        counterMap
+                                .computeIfAbsent(key + ".skipped", k -> new AtomicLong())
+                                .incrementAndGet();
+                        break;
+                    }
+                    default: {
+                        // INTENTIONALLY BLANK
+                    }
                 }
             }
 
@@ -307,33 +286,25 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             println(INFO + SUMMARY_BANNER);
             println(INFO + SEPARATOR);
 
-            int countPad =
-                    getPad(
-                            counterMap.entrySet().stream()
-                                    .filter(mapEntry -> mapEntry.getKey().endsWith(".count"))
-                                    .map(Map.Entry::getValue)
-                                    .collect(Collectors.toList()));
+            int countPad = getPad(counterMap.entrySet().stream()
+                    .filter(mapEntry -> mapEntry.getKey().endsWith(".count"))
+                    .map(Map.Entry::getValue)
+                    .collect(Collectors.toList()));
 
-            int successPad =
-                    getPad(
-                            counterMap.entrySet().stream()
-                                    .filter(mapEntry -> mapEntry.getKey().endsWith(".successful"))
-                                    .map(Map.Entry::getValue)
-                                    .collect(Collectors.toList()));
+            int successPad = getPad(counterMap.entrySet().stream()
+                    .filter(mapEntry -> mapEntry.getKey().endsWith(".successful"))
+                    .map(Map.Entry::getValue)
+                    .collect(Collectors.toList()));
 
-            int failedPad =
-                    getPad(
-                            counterMap.entrySet().stream()
-                                    .filter(mapEntry -> mapEntry.getKey().endsWith(".failed"))
-                                    .map(Map.Entry::getValue)
-                                    .collect(Collectors.toList()));
+            int failedPad = getPad(counterMap.entrySet().stream()
+                    .filter(mapEntry -> mapEntry.getKey().endsWith(".failed"))
+                    .map(Map.Entry::getValue)
+                    .collect(Collectors.toList()));
 
-            int skipPad =
-                    getPad(
-                            counterMap.entrySet().stream()
-                                    .filter(mapEntry -> mapEntry.getKey().endsWith(".skipped"))
-                                    .map(Map.Entry::getValue)
-                                    .collect(Collectors.toList()));
+            int skipPad = getPad(counterMap.entrySet().stream()
+                    .filter(mapEntry -> mapEntry.getKey().endsWith(".skipped"))
+                    .map(Map.Entry::getValue)
+                    .collect(Collectors.toList()));
 
             String[] keys = {"test.class", "test.argument", "test.method"};
             for (String key : keys) {
@@ -342,40 +313,32 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 key += ".count";
                 stringBuilder
                         .append(INFO)
-                        .append(
-                                AnsiColor.TEXT_WHITE_BRIGHT.wrap(
-                                        counterKeyToMessageDisplayStringMap.get(key)))
+                        .append(AnsiColor.TEXT_WHITE_BRIGHT.wrap(counterKeyToMessageDisplayStringMap.get(key)))
                         .append(": ")
-                        .append(
-                                AnsiColor.TEXT_WHITE_BRIGHT.wrap(
-                                        pad(
-                                                counterMap
-                                                        .computeIfAbsent(key, k -> new AtomicLong())
-                                                        .get(),
-                                                countPad)));
+                        .append(AnsiColor.TEXT_WHITE_BRIGHT.wrap(pad(
+                                counterMap
+                                        .computeIfAbsent(key, k -> new AtomicLong())
+                                        .get(),
+                                countPad)));
 
                 String[] subKeys = {key + ".successful", key + ".failed", key + ".skipped"};
 
                 for (String subKey : subKeys) {
                     String messageDisplayString = counterKeyToMessageDisplayStringMap.get(subKey);
-                    long count = counterMap.computeIfAbsent(subKey, k -> new AtomicLong()).get();
+                    long count = counterMap
+                            .computeIfAbsent(subKey, k -> new AtomicLong())
+                            .get();
                     String countDisplayString;
 
                     if (subKey.endsWith(".successful")) {
-                        messageDisplayString =
-                                AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(messageDisplayString);
-                        countDisplayString =
-                                AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(pad(count, successPad));
+                        messageDisplayString = AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(messageDisplayString);
+                        countDisplayString = AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(pad(count, successPad));
                     } else if (subKey.endsWith(".failed")) {
-                        messageDisplayString =
-                                AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(messageDisplayString);
-                        countDisplayString =
-                                AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(pad(count, failedPad));
+                        messageDisplayString = AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(messageDisplayString);
+                        countDisplayString = AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(pad(count, failedPad));
                     } else if (subKey.endsWith(".skipped")) {
-                        messageDisplayString =
-                                AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(messageDisplayString);
-                        countDisplayString =
-                                AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(pad(count, skipPad));
+                        messageDisplayString = AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(messageDisplayString);
+                        countDisplayString = AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(pad(count, skipPad));
                     } else {
                         messageDisplayString = AnsiColor.TEXT_WHITE_BOLD.wrap(messageDisplayString);
                         countDisplayString = AnsiColor.TEXT_WHITE_BOLD.wrap(pad(count, skipPad));
@@ -383,12 +346,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
                     if (count == 0) {
                         // Revert display message and count display message to TEST_WRITE_BRIGHT
-                        messageDisplayString =
-                                AnsiColor.stripAnsiEscapeSequences(messageDisplayString);
+                        messageDisplayString = AnsiColor.stripAnsiEscapeSequences(messageDisplayString);
                         countDisplayString = AnsiColor.stripAnsiEscapeSequences(countDisplayString);
 
-                        messageDisplayString =
-                                AnsiColor.TEXT_WHITE_BRIGHT.wrap(messageDisplayString);
+                        messageDisplayString = AnsiColor.TEXT_WHITE_BRIGHT.wrap(messageDisplayString);
                         countDisplayString = AnsiColor.TEXT_WHITE_BRIGHT.wrap(countDisplayString);
                     }
 
@@ -405,43 +366,38 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
             println(INFO + SEPARATOR);
 
-            String message =
-                    failureCount.get() > 0
-                            ? AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("TESTS FAILED")
-                            : AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("TESTS PASSED");
+            String message = failureCount.get() > 0
+                    ? AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("TESTS FAILED")
+                    : AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("TESTS PASSED");
 
             println(INFO + message);
             println(INFO + SEPARATOR);
 
-            Duration elapsedTime = stopWatch.elapsedTime();
+            Duration elapsedTime = stopwatch.elapsedTime();
 
-            println(
-                    new AnsiColoredString()
-                            .append(INFO)
-                            .append(AnsiColor.TEXT_WHITE_BRIGHT)
-                            .append("Total time  : ")
-                            .append(
-                                    HumanReadableTimeSupport.toHumanReadable(
-                                            elapsedTime.toNanos(),
-                                            HumanReadableTimeSupport.Format.SHORT))
-                            .append(" (")
-                            .append(elapsedTime.toNanos() / 1e+6D)
-                            .append(" ms)")
-                            .append(AnsiColor.NONE));
+            println(new AnsiColoredString()
+                    .append(INFO)
+                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                    .append("Total time  : ")
+                    .append(HumanReadableTimeSupport.toHumanReadable(
+                            elapsedTime.toNanos(), HumanReadableTimeSupport.Format.SHORT))
+                    .append(" (")
+                    .append(elapsedTime.toNanos() / 1e+6D)
+                    .append(" ms)")
+                    .append(AnsiColor.NONE));
 
-            println(
-                    new AnsiColoredString()
-                            .append(INFO)
-                            .append(AnsiColor.TEXT_WHITE_BRIGHT)
-                            .append("Finished at : ")
-                            .append(HumanReadableTimeSupport.now())
-                            .append(AnsiColor.NONE));
+            println(new AnsiColoredString()
+                    .append(INFO)
+                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                    .append("Finished at : ")
+                    .append(HumanReadableTimeSupport.now())
+                    .append(AnsiColor.NONE));
 
             if (failureCount.get() == 0) {
                 println(INFO + SEPARATOR);
             }
         } catch (Throwable t) {
-            AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
+            StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
         }
     }
 

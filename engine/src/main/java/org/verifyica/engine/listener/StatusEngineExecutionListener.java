@@ -25,8 +25,8 @@ import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
 import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.AnsiColor;
-import org.verifyica.engine.common.AnsiColoredStackTrace;
 import org.verifyica.engine.common.AnsiColoredString;
+import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Stopwatch;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
@@ -40,47 +40,41 @@ import org.verifyica.engine.support.HumanReadableTimeSupport;
 /** Class to implement StatusEngineExecutionListener */
 public class StatusEngineExecutionListener implements EngineExecutionListener {
 
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(StatusEngineExecutionListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatusEngineExecutionListener.class);
 
-    private static final String INFO =
-            new AnsiColoredString()
-                    .append(AnsiColor.TEXT_WHITE)
-                    .append("[")
-                    .append(AnsiColor.TEXT_BLUE_BOLD)
-                    .append("INFO")
-                    .append(AnsiColor.TEXT_WHITE)
-                    .append("]")
-                    .append(AnsiColor.NONE)
-                    .build();
+    private static final String INFO = new AnsiColoredString()
+            .append(AnsiColor.TEXT_WHITE)
+            .append("[")
+            .append(AnsiColor.TEXT_BLUE_BOLD)
+            .append("INFO")
+            .append(AnsiColor.TEXT_WHITE)
+            .append("]")
+            .append(AnsiColor.NONE)
+            .build();
 
-    private static final String TEST =
-            new AnsiColoredString()
-                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
-                    .append("TEST")
-                    .append(AnsiColor.NONE)
-                    .build();
+    private static final String TEST = new AnsiColoredString()
+            .append(AnsiColor.TEXT_WHITE_BRIGHT)
+            .append("TEST")
+            .append(AnsiColor.NONE)
+            .build();
 
-    private static final String PASS =
-            new AnsiColoredString()
-                    .append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT)
-                    .append("PASS")
-                    .append(AnsiColor.NONE)
-                    .build();
+    private static final String PASS = new AnsiColoredString()
+            .append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT)
+            .append("PASS")
+            .append(AnsiColor.NONE)
+            .build();
 
-    private static final String FAIL =
-            new AnsiColoredString()
-                    .append(AnsiColor.TEXT_RED_BOLD_BRIGHT)
-                    .append("FAIL")
-                    .append(AnsiColor.NONE)
-                    .build();
+    private static final String FAIL = new AnsiColoredString()
+            .append(AnsiColor.TEXT_RED_BOLD_BRIGHT)
+            .append("FAIL")
+            .append(AnsiColor.NONE)
+            .build();
 
-    private static final String SKIP =
-            new AnsiColoredString()
-                    .append(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
-                    .append("SKIP")
-                    .append(AnsiColor.NONE)
-                    .build();
+    private static final String SKIP = new AnsiColoredString()
+            .append(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
+            .append("SKIP")
+            .append(AnsiColor.NONE)
+            .build();
 
     private final String consoleLogTimingUnits;
     private final Map<TestDescriptor, Stopwatch> stopWatchMap;
@@ -89,13 +83,10 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     public StatusEngineExecutionListener() {
         Configuration configuration = ConcreteConfiguration.getInstance();
 
-        consoleLogTimingUnits =
-                Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_TIMING_UNITS))
-                        .orElse("milliseconds");
+        consoleLogTimingUnits = Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_TIMING_UNITS))
+                .orElse("milliseconds");
 
-        LOGGER.trace(
-                "configuration property [%s] = [%s]",
-                Constants.MAVEN_PLUGIN_TIMING_UNITS, consoleLogTimingUnits);
+        LOGGER.trace("configuration property [%s] = [%s]", Constants.MAVEN_PLUGIN_TIMING_UNITS, consoleLogTimingUnits);
 
         stopWatchMap = new ConcurrentHashMap<>();
     }
@@ -111,26 +102,28 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 String testClassDisplayName =
                         findClassTestDescriptor(testDescriptor).getDisplayName();
 
-                ArgumentTestDescriptor argumentTestDescriptor =
-                        findArgumentTestDescriptor(testDescriptor);
+                // TODO ? check maven configuration, if truncate.class.name=true and class name != display name,
+                // truncate
+                // testClassDisplayName = truncateClassName(testClassDisplayName);
+
+                ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
-                    testArgumentDisplayName = argumentTestDescriptor.getTestArgument().getName();
+                    testArgumentDisplayName =
+                            argumentTestDescriptor.getTestArgument().getName();
                 }
 
-                TestMethodTestDescriptor testMethodTestDescriptor =
-                        findTestMethodTestDescriptor(testDescriptor);
+                TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
                 if (testMethodTestDescriptor != null) {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
 
-                AnsiColoredString ansiColorAnsiColoredString =
-                        new AnsiColoredString()
-                                .append(INFO)
-                                .append(" ")
-                                .append(Thread.currentThread().getName())
-                                .append(" | ")
-                                .append(TEST)
-                                .append(AnsiColor.NONE);
+                AnsiColoredString ansiColorAnsiColoredString = new AnsiColoredString()
+                        .append(INFO)
+                        .append(" ")
+                        .append(Thread.currentThread().getName())
+                        .append(" | ")
+                        .append(TEST)
+                        .append(AnsiColor.NONE);
 
                 if (testArgumentDisplayName != null) {
                     ansiColorAnsiColoredString.append(" | ").append(testArgumentDisplayName);
@@ -146,7 +139,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
                 System.out.println(ansiColorAnsiColoredString);
             } catch (Throwable t) {
-                AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
+                StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }
         }
     }
@@ -162,25 +155,27 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 String testClassDisplayName =
                         findClassTestDescriptor(testDescriptor).getDisplayName();
 
-                ArgumentTestDescriptor argumentTestDescriptor =
-                        findArgumentTestDescriptor(testDescriptor);
+                // TODO ? check maven configuration, if truncate.class.name=true and class name != display name,
+                // truncate
+                // testClassDisplayName = truncateClassName(testClassDisplayName);
+
+                ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
-                    testArgumentDisplayName = argumentTestDescriptor.getTestArgument().getName();
+                    testArgumentDisplayName =
+                            argumentTestDescriptor.getTestArgument().getName();
                 }
 
-                TestMethodTestDescriptor testMethodTestDescriptor =
-                        findTestMethodTestDescriptor(testDescriptor);
+                TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
                 if (testMethodTestDescriptor != null) {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
 
-                AnsiColoredString ansiColoredString =
-                        new AnsiColoredString()
-                                .append(INFO)
-                                .append(" ")
-                                .append(Thread.currentThread().getName())
-                                .append(" | ")
-                                .append(AnsiColor.TEXT_WHITE_BRIGHT);
+                AnsiColoredString ansiColoredString = new AnsiColoredString()
+                        .append(INFO)
+                        .append(" ")
+                        .append(Thread.currentThread().getName())
+                        .append(" | ")
+                        .append(AnsiColor.TEXT_WHITE_BRIGHT);
 
                 ansiColoredString.append(SKIP).append(AnsiColor.NONE);
 
@@ -196,22 +191,19 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
                 ansiColoredString
                         .append(" ")
-                        .append(
-                                HumanReadableTimeSupport.toTimingUnit(
-                                        elapsedTime.toNanos(), consoleLogTimingUnits));
+                        .append(HumanReadableTimeSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits));
 
                 ansiColoredString.append(AnsiColor.NONE);
 
                 System.out.println(ansiColoredString);
             } catch (Throwable t) {
-                AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
+                StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }
         }
     }
 
     @Override
-    public void executionFinished(
-            TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
+    public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
         if (shouldProcessDescriptor(testDescriptor)) {
             Duration elapsedTime = stopWatchMap.remove(testDescriptor).stop().elapsedTime();
 
@@ -221,48 +213,46 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 String testClassDisplayName =
                         findClassTestDescriptor(testDescriptor).getDisplayName();
 
-                ArgumentTestDescriptor argumentTestDescriptor =
-                        findArgumentTestDescriptor(testDescriptor);
+                // TODO ? check maven configuration, if truncate.class.name=true and class name != display name,
+                // truncate
+                // testClassDisplayName = truncateClassName(testClassDisplayName);
+
+                ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
-                    testArgumentDisplayName = argumentTestDescriptor.getTestArgument().getName();
+                    testArgumentDisplayName =
+                            argumentTestDescriptor.getTestArgument().getName();
                 }
 
-                TestMethodTestDescriptor testMethodTestDescriptor =
-                        findTestMethodTestDescriptor(testDescriptor);
+                TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
                 if (testMethodTestDescriptor != null) {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
 
-                AnsiColoredString ansiColoredString =
-                        new AnsiColoredString()
-                                .append(INFO)
-                                .append(" ")
-                                .append(Thread.currentThread().getName())
-                                .append(" | ")
-                                .append(AnsiColor.TEXT_WHITE_BRIGHT);
+                AnsiColoredString ansiColoredString = new AnsiColoredString()
+                        .append(INFO)
+                        .append(" ")
+                        .append(Thread.currentThread().getName())
+                        .append(" | ")
+                        .append(AnsiColor.TEXT_WHITE_BRIGHT);
 
                 TestExecutionResult.Status status = testExecutionResult.getStatus();
 
                 switch (status) {
-                    case SUCCESSFUL:
-                        {
-                            ansiColoredString.append(PASS);
-                            break;
-                        }
-                    case FAILED:
-                        {
-                            ansiColoredString.append(FAIL);
-                            break;
-                        }
-                    case ABORTED:
-                        {
-                            ansiColoredString.append(SKIP);
-                            break;
-                        }
-                    default:
-                        {
-                            ansiColoredString.append(AnsiColor.TEXT_CYAN_BOLD.wrap("????"));
-                        }
+                    case SUCCESSFUL: {
+                        ansiColoredString.append(PASS);
+                        break;
+                    }
+                    case FAILED: {
+                        ansiColoredString.append(FAIL);
+                        break;
+                    }
+                    case ABORTED: {
+                        ansiColoredString.append(SKIP);
+                        break;
+                    }
+                    default: {
+                        ansiColoredString.append(AnsiColor.TEXT_CYAN_BOLD.wrap("????"));
+                    }
                 }
 
                 ansiColoredString.append(AnsiColor.NONE);
@@ -279,17 +269,46 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
                 ansiColoredString
                         .append(" ")
-                        .append(
-                                HumanReadableTimeSupport.toTimingUnit(
-                                        elapsedTime.toNanos(), consoleLogTimingUnits))
+                        .append(HumanReadableTimeSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits))
                         .append(AnsiColor.NONE);
 
                 System.out.println(ansiColoredString);
             } catch (Throwable t) {
-                AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
+                StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }
         }
     }
+
+    /**
+     * Method to truncate a class name
+     *
+     * @param className className
+     * @return a truncated class name of there are more than 3 tokens, else return the unmodified class name
+     */
+    /*
+    private static String truncateClassName(String className) {
+        String[] tokens = className.split("\\.");
+        int length = tokens.length;
+
+        if (length <= 3) {
+            return className;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < length - 3; i++) {
+            stringBuilder.append(tokens[i].toCharArray()[0]).append("..");
+        }
+
+        return stringBuilder
+                .append(tokens[length - 3])
+                .append(".")
+                .append(tokens[length - 2])
+                .append(".")
+                .append(tokens[length - 1])
+                .toString();
+    }
+    */
 
     /**
      * Method to find the ClassTestDescriptor
@@ -307,8 +326,10 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
         }
 
         if (testDescriptor instanceof TestMethodTestDescriptor) {
-            return (ClassTestDescriptor)
-                    testDescriptor.getParent().flatMap(TestDescriptor::getParent).orElse(null);
+            return (ClassTestDescriptor) testDescriptor
+                    .getParent()
+                    .flatMap(TestDescriptor::getParent)
+                    .orElse(null);
         }
 
         return null;
@@ -320,8 +341,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
      * @param testDescriptor testDescriptor
      * @return the ArgumentTestDescriptor or null if not found
      */
-    private static ArgumentTestDescriptor findArgumentTestDescriptor(
-            TestDescriptor testDescriptor) {
+    private static ArgumentTestDescriptor findArgumentTestDescriptor(TestDescriptor testDescriptor) {
         if (testDescriptor instanceof ArgumentTestDescriptor) {
             return (ArgumentTestDescriptor) testDescriptor;
         }
@@ -339,11 +359,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
      * @param testDescriptor testDescriptor
      * @return the TestMethodTestDescriptor or null if not found
      */
-    private static TestMethodTestDescriptor findTestMethodTestDescriptor(
-            TestDescriptor testDescriptor) {
-        return testDescriptor instanceof TestMethodTestDescriptor
-                ? (TestMethodTestDescriptor) testDescriptor
-                : null;
+    private static TestMethodTestDescriptor findTestMethodTestDescriptor(TestDescriptor testDescriptor) {
+        return testDescriptor instanceof TestMethodTestDescriptor ? (TestMethodTestDescriptor) testDescriptor : null;
     }
 
     /**

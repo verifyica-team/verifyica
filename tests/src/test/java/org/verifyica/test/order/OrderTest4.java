@@ -30,48 +30,55 @@ public class OrderTest4 {
     public void step0(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step0(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test(order = 2)
     public void step2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step2(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test(order = 3)
     public void step4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step4(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test(order = 4)
     public void step1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step1(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test(order = 5)
     public void step3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step3(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test(order = 6)
     public void step5(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step5(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test(order = 0)
     public void random(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "random(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
     }
 }

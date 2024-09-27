@@ -43,38 +43,30 @@ public class MethodSelectorResolver {
      * @param engineDiscoveryRequest engineDiscoveryRequest
      * @param classMethodMap classMethodMap
      */
-    public void resolve(
-            EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, List<Method>> classMethodMap) {
+    public void resolve(EngineDiscoveryRequest engineDiscoveryRequest, Map<Class<?>, List<Method>> classMethodMap) {
         LOGGER.trace("resolve()");
 
-        Stopwatch stopWatch = new Stopwatch();
+        Stopwatch stopwatch = new Stopwatch();
 
         AtomicInteger methodSelectorCount = new AtomicInteger();
 
-        engineDiscoveryRequest
-                .getSelectorsByType(MethodSelector.class)
-                .forEach(
-                        methodSelector -> {
-                            methodSelectorCount.incrementAndGet();
+        engineDiscoveryRequest.getSelectorsByType(MethodSelector.class).forEach(methodSelector -> {
+            methodSelectorCount.incrementAndGet();
 
-                            Class<?> testClass = methodSelector.getJavaClass();
-                            Method testMethod = methodSelector.getJavaMethod();
+            Class<?> testClass = methodSelector.getJavaClass();
+            Method testMethod = methodSelector.getJavaMethod();
 
-                            LOGGER.trace(
-                                    "testClass [%s] testMethod [%s]",
-                                    testClass.getName(), testMethod.getName());
+            LOGGER.trace("testClass [%s] testMethod [%s]", testClass.getName(), testMethod.getName());
 
-                            if (ResolverPredicates.TEST_CLASS.test(testClass)
-                                    && ResolverPredicates.TEST_METHOD.test(testMethod)) {
-                                classMethodMap
-                                        .computeIfAbsent(testClass, method -> new ArrayList<>())
-                                        .add(testMethod);
-                            }
-                        });
+            if (ResolverPredicates.TEST_CLASS.test(testClass) && ResolverPredicates.TEST_METHOD.test(testMethod)) {
+                classMethodMap
+                        .computeIfAbsent(testClass, method -> new ArrayList<>())
+                        .add(testMethod);
+            }
+        });
 
         LOGGER.trace(
                 "resolve() methodSelectors [%d] elapsedTime [%d] ms",
-                methodSelectorCount.get(), stopWatch.elapsedTime().toMillis());
+                methodSelectorCount.get(), stopwatch.elapsedTime().toMillis());
     }
 }

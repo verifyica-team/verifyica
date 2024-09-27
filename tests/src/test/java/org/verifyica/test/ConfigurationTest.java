@@ -38,8 +38,6 @@ public class ConfigurationTest {
         Configuration configuration =
                 argumentContext.getClassContext().getEngineContext().getConfiguration();
 
-        configuration
-                .keySet()
-                .forEach(key -> System.out.printf("  [%s] = [%s]%n", key, configuration.get(key)));
+        configuration.keySet().forEach(key -> System.out.printf("  [%s] = [%s]%n", key, configuration.get(key)));
     }
 }

@@ -71,9 +71,7 @@ public class AnsiColoredStringTest {
         String displayString = UUID.randomUUID().toString();
 
         AnsiColoredString ansiColoredString =
-                new AnsiColoredString(AnsiColor.TEXT_RED)
-                        .append(displayString)
-                        .append(AnsiColor.TEXT_RED);
+                new AnsiColoredString(AnsiColor.TEXT_RED).append(displayString).append(AnsiColor.TEXT_RED);
 
         String string = ansiColoredString.build();
         int expectedLength = AnsiColor.TEXT_RED.toString().length() + displayString.length();
@@ -106,11 +104,10 @@ public class AnsiColoredStringTest {
     public void testBuildAndToString() {
         String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColorString1 =
-                new AnsiColoredString()
-                        .append(AnsiColor.TEXT_RED)
-                        .append(displayString)
-                        .append(AnsiColor.NONE);
+        AnsiColoredString ansiColorString1 = new AnsiColoredString()
+                .append(AnsiColor.TEXT_RED)
+                .append(displayString)
+                .append(AnsiColor.NONE);
 
         String string1 = ansiColorString1.build();
 
@@ -121,9 +118,7 @@ public class AnsiColoredStringTest {
         assertThat(string1).isEqualTo(AnsiColor.TEXT_RED + displayString + AnsiColor.NONE);
 
         AnsiColoredString ansiColorString2 =
-                new AnsiColoredString(AnsiColor.TEXT_RED)
-                        .append(displayString)
-                        .append(AnsiColor.NONE);
+                new AnsiColoredString(AnsiColor.TEXT_RED).append(displayString).append(AnsiColor.NONE);
 
         String string2 = ansiColorString2.toString();
 
@@ -138,11 +133,10 @@ public class AnsiColoredStringTest {
     public void testBuilderConstructorWithColor() {
         String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColorString1 =
-                new AnsiColoredString()
-                        .append(AnsiColor.TEXT_RED)
-                        .append(displayString)
-                        .append(AnsiColor.NONE);
+        AnsiColoredString ansiColorString1 = new AnsiColoredString()
+                .append(AnsiColor.TEXT_RED)
+                .append(displayString)
+                .append(AnsiColor.NONE);
 
         String string1 = ansiColorString1.build();
 
@@ -153,9 +147,7 @@ public class AnsiColoredStringTest {
         assertThat(string1).isEqualTo(AnsiColor.TEXT_RED + displayString + AnsiColor.NONE);
 
         AnsiColoredString ansiColorString2 =
-                new AnsiColoredString(AnsiColor.TEXT_RED)
-                        .append(displayString)
-                        .append(AnsiColor.NONE);
+                new AnsiColoredString(AnsiColor.TEXT_RED).append(displayString).append(AnsiColor.NONE);
 
         String string2 = ansiColorString2.build();
 
@@ -170,11 +162,10 @@ public class AnsiColoredStringTest {
     public void testDuplicateLastColor() {
         String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColorString1 =
-                new AnsiColoredString()
-                        .append(AnsiColor.TEXT_RED)
-                        .append(displayString)
-                        .append(AnsiColor.NONE);
+        AnsiColoredString ansiColorString1 = new AnsiColoredString()
+                .append(AnsiColor.TEXT_RED)
+                .append(displayString)
+                .append(AnsiColor.NONE);
 
         String string1 = ansiColorString1.build();
 
@@ -184,12 +175,11 @@ public class AnsiColoredStringTest {
 
         assertThat(string1).isEqualTo(AnsiColor.TEXT_RED + displayString + AnsiColor.NONE);
 
-        AnsiColoredString ansiColorString2 =
-                new AnsiColoredString()
-                        .append(AnsiColor.TEXT_RED)
-                        .append(displayString)
-                        .append(AnsiColor.NONE)
-                        .append(AnsiColor.NONE);
+        AnsiColoredString ansiColorString2 = new AnsiColoredString()
+                .append(AnsiColor.TEXT_RED)
+                .append(displayString)
+                .append(AnsiColor.NONE)
+                .append(AnsiColor.NONE);
 
         String string2 = ansiColorString2.build();
 

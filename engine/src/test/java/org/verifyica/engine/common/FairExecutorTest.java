@@ -38,16 +38,11 @@ public class FairExecutorTest {
         try {
             for (int i = 0; i < 10; i++) {
                 String threadName = "submitThread-" + i;
-                Thread thread =
-                        new Thread(
-                                () -> {
-                                    for (int j = 0; j < 5; j++) {
-                                        FUTURES.add(
-                                                EXECUTOR_SERVICE.submit(
-                                                        new ThreadNameRunnable(
-                                                                threadName, new NamedRunnable())));
-                                    }
-                                });
+                Thread thread = new Thread(() -> {
+                    for (int j = 0; j < 5; j++) {
+                        FUTURES.add(EXECUTOR_SERVICE.submit(new ThreadNameRunnable(threadName, new NamedRunnable())));
+                    }
+                });
                 thread.setName("thread-" + ATOMIC_INTEGER.incrementAndGet());
                 thread.setDaemon(true);
                 threads[i] = thread;

@@ -57,8 +57,7 @@ public class ContextTest {
                 .isSameAs(classContext.getEngineContext().getConfiguration());
 
         assertThat(classContext.getConfiguration().getPropertiesFilename())
-                .isEqualTo(
-                        classContext.getEngineContext().getConfiguration().getPropertiesFilename());
+                .isEqualTo(classContext.getEngineContext().getConfiguration().getPropertiesFilename());
 
         assertThat(classContext.getTestInstance()).isNotNull();
 
@@ -87,8 +86,7 @@ public class ContextTest {
         assertThat(argumentContext.getClassContext().getStore().get("FOO", String.class))
                 .isEqualTo("BAR");
 
-        assertThat(argumentContext.getClassContext().getEngineContext())
-                .isSameAs(ContextTest.engineContext);
+        assertThat(argumentContext.getClassContext().getEngineContext()).isSameAs(ContextTest.engineContext);
 
         assertThat(argumentContext.getClassContext()).isSameAs(ContextTest.classContext);
 
@@ -103,8 +101,7 @@ public class ContextTest {
     public void test2(ArgumentContext argumentContext) {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument().getName());
 
-        assertThat(argumentContext.getClassContext().getEngineContext())
-                .isSameAs(ContextTest.engineContext);
+        assertThat(argumentContext.getClassContext().getEngineContext()).isSameAs(ContextTest.engineContext);
 
         assertThat(argumentContext.getClassContext()).isSameAs(ContextTest.classContext);
 
@@ -119,8 +116,7 @@ public class ContextTest {
     @Verifyica.Test
     @Verifyica.Order(order = 3)
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getClassContext().getEngineContext())
-                .isSameAs(ContextTest.engineContext);
+        assertThat(argumentContext.getClassContext().getEngineContext()).isSameAs(ContextTest.engineContext);
 
         assertThat(argumentContext.getClassContext()).isSameAs(ContextTest.classContext);
 
@@ -137,8 +133,7 @@ public class ContextTest {
 
     @Verifyica.Test
     public void test4(ArgumentContext argumentContext) {
-        assertThat(argumentContext.getClassContext().getEngineContext())
-                .isSameAs(ContextTest.engineContext);
+        assertThat(argumentContext.getClassContext().getEngineContext()).isSameAs(ContextTest.engineContext);
 
         assertThat(argumentContext.getClassContext()).isSameAs(ContextTest.classContext);
 
@@ -153,16 +148,18 @@ public class ContextTest {
                 .isEqualTo(argumentContext.getClassContext().getStore().getReadWriteLock());
 
         assertThat(argumentContext.getClassContext().getEngineContext().getLock())
-                .isEqualTo(
-                        argumentContext.getClassContext().getEngineContext().getStore().getLock());
+                .isEqualTo(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .getLock());
 
         assertThat(argumentContext.getClassContext().getEngineContext().getReadWriteLock())
-                .isEqualTo(
-                        argumentContext
-                                .getClassContext()
-                                .getEngineContext()
-                                .getStore()
-                                .getReadWriteLock());
+                .isEqualTo(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .getReadWriteLock());
     }
 
     @Verifyica.Conclude
@@ -177,8 +174,7 @@ public class ContextTest {
                 .isSameAs(classContext.getEngineContext().getConfiguration());
 
         assertThat(classContext.getConfiguration().getPropertiesFilename())
-                .isEqualTo(
-                        classContext.getEngineContext().getConfiguration().getPropertiesFilename());
+                .isEqualTo(classContext.getEngineContext().getConfiguration().getPropertiesFilename());
 
         assertThat(classContext.getTestInstance()).isNotNull();
     }

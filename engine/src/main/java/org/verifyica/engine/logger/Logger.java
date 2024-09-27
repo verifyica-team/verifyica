@@ -52,9 +52,7 @@ public class Logger {
         Configuration configuration = ConcreteConfiguration.getInstance();
 
         String loggerLevel =
-                configuration
-                        .getOptional(Constants.ENGINE_LOGGER_LEVEL)
-                        .orElse(Level.INFO.toString());
+                configuration.getOptional(Constants.ENGINE_LOGGER_LEVEL).orElse(Level.INFO.toString());
 
         String regex = configuration.getOptional(Constants.ENGINE_LOGGER_REGEX).orElse(".*");
 
@@ -277,15 +275,14 @@ public class Logger {
      * @param objects objects
      */
     private void log(PrintStream printStream, Level level, String format, Object... objects) {
-        printStream.println(
-                LocalDateTime.now().format(DATE_TIME_FORMATTER)
-                        + " | "
-                        + Thread.currentThread().getName()
-                        + " | "
-                        + level.toString()
-                        + " | "
-                        + name
-                        + " | "
-                        + format(format, objects));
+        printStream.println(LocalDateTime.now().format(DATE_TIME_FORMATTER)
+                + " | "
+                + Thread.currentThread().getName()
+                + " | "
+                + level.toString()
+                + " | "
+                + name
+                + " | "
+                + format(format, objects));
     }
 }

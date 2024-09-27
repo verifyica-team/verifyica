@@ -38,8 +38,7 @@ public class NonStaticPrepareConcludeMethodTest {
         assertThat(classContext.getConfiguration())
                 .isSameAs(classContext.getEngineContext().getConfiguration());
         assertThat(classContext.getConfiguration().getPropertiesFilename())
-                .isEqualTo(
-                        classContext.getEngineContext().getConfiguration().getPropertiesFilename());
+                .isEqualTo(classContext.getEngineContext().getConfiguration().getPropertiesFilename());
         assertThat(classContext.getTestInstance()).isNotNull();
     }
 
@@ -47,7 +46,8 @@ public class NonStaticPrepareConcludeMethodTest {
     public void test(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getStore()).isNotNull();
@@ -64,8 +64,7 @@ public class NonStaticPrepareConcludeMethodTest {
         assertThat(classContext.getConfiguration())
                 .isSameAs(classContext.getEngineContext().getConfiguration());
         assertThat(classContext.getConfiguration().getPropertiesFilename())
-                .isEqualTo(
-                        classContext.getEngineContext().getConfiguration().getPropertiesFilename());
+                .isEqualTo(classContext.getEngineContext().getConfiguration().getPropertiesFilename());
         assertThat(classContext.getTestInstance()).isNotNull();
     }
 }

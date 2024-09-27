@@ -46,8 +46,9 @@ import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Store;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
-import org.verifyica.engine.common.AnsiColoredStackTrace;
+import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.FairExecutorService;
+import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Stopwatch;
 import org.verifyica.engine.common.Streams;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
@@ -62,6 +63,7 @@ import org.verifyica.engine.exception.EngineException;
 import org.verifyica.engine.interceptor.ClassInterceptorManager;
 import org.verifyica.engine.interceptor.EngineInterceptorManager;
 import org.verifyica.engine.invocation.InvocationContext;
+import org.verifyica.engine.invocation.InvocationController;
 import org.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.verifyica.engine.listener.TracingEngineExecutionListener;
 import org.verifyica.engine.logger.Logger;
@@ -158,37 +160,35 @@ public class VerifyicaTestEngine implements TestEngine {
 
         EngineContext engineContext = new ConcreteEngineContext(configuration, staticGetVersion());
 
-        EngineInterceptorContext engineInterceptorContext =
-                new ConcreteEngineInterceptorContext(engineContext);
+        EngineInterceptorContext engineInterceptorContext = new ConcreteEngineInterceptorContext(engineContext);
 
-        ClassInterceptorManager classInterceptorManager =
-                new ClassInterceptorManager(engineInterceptorContext);
+        ClassInterceptorManager classInterceptorManager = new ClassInterceptorManager(engineInterceptorContext);
 
         ExecutorService classExecutorService =
                 ExecutorSupport.newExecutorService(getEngineClassParallelism(configuration));
 
-        ExecutorService argumentExecutorService =
-                new FairExecutorService(getEngineArgumentParallelism(configuration));
+        ExecutorService argumentExecutorService = new FairExecutorService(getEngineArgumentParallelism(configuration));
 
-        invocationContext =
-                new InvocationContext()
-                        .set(Configuration.class, configuration)
-                        .set(EngineContext.class, engineContext)
-                        .set(EngineInterceptorContext.class, engineInterceptorContext)
-                        .set(EngineInterceptorManager.class, engineInterceptorManager)
-                        .set(ClassInterceptorManager.class, classInterceptorManager)
-                        .set(InvocationContext.CLASS_EXECUTOR_SERVICE, classExecutorService)
-                        .set(InvocationContext.ARGUMENT_EXECUTOR_SERVICE, argumentExecutorService);
+        invocationContext = new InvocationContext()
+                .set(Configuration.class, configuration)
+                .set(EngineContext.class, engineContext)
+                .set(EngineInterceptorContext.class, engineInterceptorContext)
+                .set(EngineInterceptorManager.class, engineInterceptorManager)
+                .set(ClassInterceptorManager.class, classInterceptorManager)
+                .set(
+                        InvocationController.class,
+                        new InvocationController(engineInterceptorManager, classInterceptorManager))
+                .set(InvocationContext.CLASS_EXECUTOR_SERVICE, classExecutorService)
+                .set(InvocationContext.ARGUMENT_EXECUTOR_SERVICE, argumentExecutorService);
     }
 
     @Override
-    public TestDescriptor discover(
-            EngineDiscoveryRequest engineDiscoveryRequest, UniqueId uniqueId) {
+    public TestDescriptor discover(EngineDiscoveryRequest engineDiscoveryRequest, UniqueId uniqueId) {
         if (!UNIQUE_ID.equals(uniqueId.toString()) || isRunningViaMavenSurefirePlugin()) {
             return new EngineDescriptor(uniqueId, "Verifyica disabled under Maven Surefire");
         }
 
-        Stopwatch stopWatch = new Stopwatch();
+        Stopwatch stopwatch = new Stopwatch();
 
         LOGGER.trace("discover()");
 
@@ -205,8 +205,9 @@ public class VerifyicaTestEngine implements TestEngine {
             throw new EngineException(t);
         }
 
-        LOGGER.trace("discovered [%d] test classes", engineDescriptor.getChildren().size());
-        LOGGER.trace("discover() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
+        LOGGER.trace(
+                "discovered [%d] test classes", engineDescriptor.getChildren().size());
+        LOGGER.trace("discover() elapsedTime [%d] ms", stopwatch.elapsedTime().toMillis());
 
         return engineDescriptor;
     }
@@ -221,29 +222,23 @@ public class VerifyicaTestEngine implements TestEngine {
             throw new IllegalStateException("Not initialized");
         }
 
-        Stopwatch stopWatch = new Stopwatch();
+        Stopwatch stopwatch = new Stopwatch();
 
         LOGGER.trace("execute()");
 
-        invocationContext.set(
-                EngineExecutionListener.class, configureEngineExecutionListeners(executionRequest));
+        invocationContext.set(EngineExecutionListener.class, configureEngineExecutionListeners(executionRequest));
 
-        ExecutorService classExecutorService =
-                invocationContext.get(InvocationContext.CLASS_EXECUTOR_SERVICE);
+        ExecutorService classExecutorService = invocationContext.get(InvocationContext.CLASS_EXECUTOR_SERVICE);
 
-        ExecutorService argumentExecutorService =
-                invocationContext.get(InvocationContext.ARGUMENT_EXECUTOR_SERVICE);
+        ExecutorService argumentExecutorService = invocationContext.get(InvocationContext.ARGUMENT_EXECUTOR_SERVICE);
 
         EngineContext engineContext = invocationContext.get(EngineContext.class);
 
-        EngineInterceptorContext engineInterceptorContext =
-                invocationContext.get(EngineInterceptorContext.class);
+        EngineInterceptorContext engineInterceptorContext = invocationContext.get(EngineInterceptorContext.class);
 
-        EngineInterceptorManager engineInterceptorManager =
-                invocationContext.get(EngineInterceptorManager.class);
+        EngineInterceptorManager engineInterceptorManager = invocationContext.get(EngineInterceptorManager.class);
 
-        EngineExecutionListener engineExecutionListener =
-                invocationContext.get(EngineExecutionListener.class);
+        EngineExecutionListener engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
 
         List<Throwable> throwables = new ArrayList<>();
 
@@ -272,10 +267,8 @@ public class VerifyicaTestEngine implements TestEngine {
                         executionRequest.getRootTestDescriptor().getChildren()) {
                     for (TestDescriptor childTestDescriptor : testDescriptor.getChildren()) {
                         argumentTestDescriptors.add((ArgumentTestDescriptor) childTestDescriptor);
-                        for (TestDescriptor grandChildTestDescriptor :
-                                childTestDescriptor.getChildren()) {
-                            testMethodTestDescriptors.add(
-                                    (TestMethodTestDescriptor) grandChildTestDescriptor);
+                        for (TestDescriptor grandChildTestDescriptor : childTestDescriptor.getChildren()) {
+                            testMethodTestDescriptors.add((TestMethodTestDescriptor) grandChildTestDescriptor);
                         }
                     }
                 }
@@ -286,23 +279,18 @@ public class VerifyicaTestEngine implements TestEngine {
 
                 List<Future<?>> futures = new ArrayList<>(classTestDescriptors.size());
 
-                classTestDescriptors.forEach(
-                        classTestDescriptor -> {
-                            String threadName = HashSupport.alphanumeric(6);
-                            threadName += "/" + threadName;
+                classTestDescriptors.forEach(classTestDescriptor -> {
+                    String threadName = HashSupport.alphanumeric(6);
+                    threadName += "/" + threadName;
 
-                            futures.add(
-                                    classExecutorService.submit(
-                                            new ThreadNameRunnable(
-                                                    threadName,
-                                                    () ->
-                                                            classTestDescriptor.test(
-                                                                    invocationContext.copy()))));
-                        });
+                    futures.add(classExecutorService.submit(new ThreadNameRunnable(threadName, () -> classTestDescriptor
+                            .getTestInvocation(invocationContext.copy())
+                            .invoke())));
+                });
 
                 ExecutorSupport.waitForAllFutures(futures, classExecutorService);
             } catch (Throwable t) {
-                AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
+                StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                 throwables.add(t);
             } finally {
                 ExecutorSupport.shutdownAndAwaitTermination(argumentExecutorService);
@@ -318,7 +306,7 @@ public class VerifyicaTestEngine implements TestEngine {
                             LOGGER.trace("storeAutoClose(" + key + ").success");
                         } catch (Throwable t) {
                             LOGGER.trace("storeAutoClose(" + key + ").failure");
-                            AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
+                            StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                             throwables.add(t);
                         }
                     }
@@ -328,22 +316,21 @@ public class VerifyicaTestEngine implements TestEngine {
                 try {
                     engineInterceptorManager.postExecute(engineInterceptorContext);
                 } catch (Throwable t) {
-                    AnsiColoredStackTrace.printRedBoldStackTrace(System.err, t);
+                    StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                     throwables.add(t);
                 }
             }
         } finally {
             engineInterceptorManager.onDestroy(engineInterceptorContext);
 
-            TestExecutionResult testExecutionResult =
-                    throwables.isEmpty()
-                            ? TestExecutionResult.successful()
-                            : TestExecutionResult.failed(throwables.get(0));
+            TestExecutionResult testExecutionResult = throwables.isEmpty()
+                    ? TestExecutionResult.successful()
+                    : TestExecutionResult.failed(throwables.get(0));
 
-            engineExecutionListener.executionFinished(
-                    executionRequest.getRootTestDescriptor(), testExecutionResult);
+            engineExecutionListener.executionFinished(executionRequest.getRootTestDescriptor(), testExecutionResult);
 
-            LOGGER.trace("execute() elapsedTime [%d] ms", stopWatch.elapsedTime().toMillis());
+            LOGGER.trace(
+                    "execute() elapsedTime [%d] ms", stopwatch.elapsedTime().toMillis());
         }
     }
 
@@ -355,8 +342,7 @@ public class VerifyicaTestEngine implements TestEngine {
     private static String version() {
         String value = UNKNOWN_VERSION;
 
-        try (InputStream inputStream =
-                VerifyicaTestEngine.class.getResourceAsStream(ENGINE_PROPERTIES_RESOURCE)) {
+        try (InputStream inputStream = VerifyicaTestEngine.class.getResourceAsStream(ENGINE_PROPERTIES_RESOURCE)) {
             if (inputStream != null) {
                 Properties properties = new Properties();
                 properties.load(inputStream);
@@ -374,8 +360,7 @@ public class VerifyicaTestEngine implements TestEngine {
      *
      * @return an EngineExecutionListener
      */
-    private static EngineExecutionListener configureEngineExecutionListeners(
-            ExecutionRequest executionRequest) {
+    private static EngineExecutionListener configureEngineExecutionListeners(ExecutionRequest executionRequest) {
         LOGGER.trace("configureEngineExecutionListeners()");
 
         if (isRunningViaVerifyicaMavenPlugin()) {
@@ -383,8 +368,7 @@ public class VerifyicaTestEngine implements TestEngine {
         }
 
         return new ChainedEngineExecutionListener(
-                new TracingEngineExecutionListener(),
-                executionRequest.getEngineExecutionListener());
+                new TracingEngineExecutionListener(), executionRequest.getEngineExecutionListener());
     }
 
     /**
@@ -393,8 +377,7 @@ public class VerifyicaTestEngine implements TestEngine {
      * @return true if running via the Verifyica Maven plugin, else false
      */
     private static boolean isRunningViaVerifyicaMavenPlugin() {
-        boolean isRunningViaVerifyicaMavenPlugin =
-                "true".equals(System.getProperty(Constants.MAVEN_PLUGIN));
+        boolean isRunningViaVerifyicaMavenPlugin = "true".equals(System.getProperty(Constants.MAVEN_PLUGIN));
 
         LOGGER.trace("isRunningViaVerifyicaMavenPlugin [%b]", isRunningViaVerifyicaMavenPlugin);
 
@@ -411,13 +394,10 @@ public class VerifyicaTestEngine implements TestEngine {
             return true;
         }
 
-        boolean isRunningViaMavenSurefirePlugin =
-                Arrays.stream(Thread.currentThread().getStackTrace())
-                        .anyMatch(
-                                stackTraceElement ->
-                                        stackTraceElement
-                                                .getClassName()
-                                                .startsWith("org.apache.maven.surefire"));
+        boolean isRunningViaMavenSurefirePlugin = Arrays.stream(
+                        Thread.currentThread().getStackTrace())
+                .anyMatch(
+                        stackTraceElement -> stackTraceElement.getClassName().startsWith("org.apache.maven.surefire"));
 
         LOGGER.trace("isRunningViaMavenSurefirePlugin [%b]", isRunningViaMavenSurefirePlugin);
 
@@ -442,12 +422,8 @@ public class VerifyicaTestEngine implements TestEngine {
     private static void traceTestDescriptor(TestDescriptor testDescriptor, int level) {
         LOGGER.trace(String.join(" ", Collections.nCopies(level, " ")) + testDescriptor);
 
-        testDescriptor
-                .getChildren()
-                .forEach(
-                        (Consumer<TestDescriptor>)
-                                childTestDescriptor ->
-                                        traceTestDescriptor(childTestDescriptor, level + 2));
+        testDescriptor.getChildren().forEach((Consumer<TestDescriptor>)
+                childTestDescriptor -> traceTestDescriptor(childTestDescriptor, level + 2));
     }
 
     /**
@@ -458,31 +434,23 @@ public class VerifyicaTestEngine implements TestEngine {
     private static int getEngineClassParallelism(Configuration configuration) {
         LOGGER.trace("getEngineClassParallelism()");
 
-        int engineClassParallelism =
-                configuration
-                        .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
-                        .map(
-                                value -> {
-                                    int intValue;
-                                    try {
-                                        intValue = Integer.parseInt(value);
-                                        if (intValue < 1) {
-                                            throw new EngineConfigurationException(
-                                                    format(
-                                                            "Invalid %s value [%d]",
-                                                            Constants.ENGINE_CLASS_PARALLELISM,
-                                                            intValue));
-                                        }
-                                        return intValue;
-                                    } catch (NumberFormatException e) {
-                                        throw new EngineConfigurationException(
-                                                format(
-                                                        "Invalid %s value [%s]",
-                                                        Constants.ENGINE_CLASS_PARALLELISM, value),
-                                                e);
-                                    }
-                                })
-                        .orElse(Runtime.getRuntime().availableProcessors());
+        int engineClassParallelism = configuration
+                .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
+                .map(value -> {
+                    int intValue;
+                    try {
+                        intValue = Integer.parseInt(value);
+                        if (intValue < 1) {
+                            throw new EngineConfigurationException(
+                                    format("Invalid %s value [%d]", Constants.ENGINE_CLASS_PARALLELISM, intValue));
+                        }
+                        return intValue;
+                    } catch (NumberFormatException e) {
+                        throw new EngineConfigurationException(
+                                format("Invalid %s value [%s]", Constants.ENGINE_CLASS_PARALLELISM, value), e);
+                    }
+                })
+                .orElse(Runtime.getRuntime().availableProcessors());
 
         LOGGER.trace("engineClassParallelism [%d]", engineClassParallelism);
 
@@ -499,32 +467,23 @@ public class VerifyicaTestEngine implements TestEngine {
 
         int engineClassParallelism = getEngineClassParallelism(configuration);
 
-        int engineArgumentParallelism =
-                configuration
-                        .getOptional(Constants.ENGINE_ARGUMENT_PARALLELISM)
-                        .map(
-                                value -> {
-                                    int intValue;
-                                    try {
-                                        intValue = Integer.parseInt(value);
-                                        if (intValue < 1) {
-                                            throw new EngineConfigurationException(
-                                                    format(
-                                                            "Invalid %s value [%d]",
-                                                            Constants.ENGINE_ARGUMENT_PARALLELISM,
-                                                            intValue));
-                                        }
-                                        return intValue;
-                                    } catch (NumberFormatException e) {
-                                        throw new EngineConfigurationException(
-                                                format(
-                                                        "Invalid %s value [%s]",
-                                                        Constants.ENGINE_ARGUMENT_PARALLELISM,
-                                                        value),
-                                                e);
-                                    }
-                                })
-                        .orElse(engineClassParallelism);
+        int engineArgumentParallelism = configuration
+                .getOptional(Constants.ENGINE_ARGUMENT_PARALLELISM)
+                .map(value -> {
+                    int intValue;
+                    try {
+                        intValue = Integer.parseInt(value);
+                        if (intValue < 1) {
+                            throw new EngineConfigurationException(
+                                    format("Invalid %s value [%d]", Constants.ENGINE_ARGUMENT_PARALLELISM, intValue));
+                        }
+                        return intValue;
+                    } catch (NumberFormatException e) {
+                        throw new EngineConfigurationException(
+                                format("Invalid %s value [%s]", Constants.ENGINE_ARGUMENT_PARALLELISM, value), e);
+                    }
+                })
+                .orElse(engineClassParallelism);
 
         if (engineArgumentParallelism < engineClassParallelism) {
             LOGGER.warn(

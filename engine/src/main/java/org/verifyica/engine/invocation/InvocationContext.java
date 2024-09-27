@@ -29,8 +29,7 @@ public class InvocationContext {
     public static final Constant CLASS_EXECUTOR_SERVICE = new Constant("CLASS_EXECUTOR_SERVICE");
 
     /** Invocation constant from the test argument ExecutorService */
-    public static final Constant ARGUMENT_EXECUTOR_SERVICE =
-            new Constant("ARGUMENT_EXECUTOR_SERVICE");
+    public static final Constant ARGUMENT_EXECUTOR_SERVICE = new Constant("ARGUMENT_EXECUTOR_SERVICE");
 
     private final Map<String, Object> map;
 

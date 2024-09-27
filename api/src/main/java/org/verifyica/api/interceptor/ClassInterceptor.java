@@ -28,8 +28,7 @@ public interface ClassInterceptor {
      * @param testClass testClass
      * @throws Throwable Throwable
      */
-    default void preInstantiate(
-            EngineInterceptorContext engineInterceptorContext, Class<?> testClass)
+    default void preInstantiate(EngineInterceptorContext engineInterceptorContext, Class<?> testClass)
             throws Throwable {
         // INTENTIONALLY BLANK
     }
@@ -69,8 +68,7 @@ public interface ClassInterceptor {
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postPrepare(ClassInterceptorContext classInterceptorContext, Throwable throwable)
-            throws Throwable {
+    default void postPrepare(ClassInterceptorContext classInterceptorContext, Throwable throwable) throws Throwable {
         rethrow(throwable);
     }
 
@@ -80,8 +78,7 @@ public interface ClassInterceptor {
      * @param argumentInterceptorContext argumentInterceptorContext
      * @throws Throwable Throwable
      */
-    default void preBeforeAll(ArgumentInterceptorContext argumentInterceptorContext)
-            throws Throwable {
+    default void preBeforeAll(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
@@ -92,8 +89,7 @@ public interface ClassInterceptor {
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postBeforeAll(
-            ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
+    default void postBeforeAll(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
         rethrow(throwable);
     }
@@ -104,8 +100,7 @@ public interface ClassInterceptor {
      * @param argumentInterceptorContext argumentInterceptorContext
      * @throws Throwable Throwable
      */
-    default void preBeforeEach(ArgumentInterceptorContext argumentInterceptorContext)
-            throws Throwable {
+    default void preBeforeEach(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
@@ -116,8 +111,7 @@ public interface ClassInterceptor {
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postBeforeEach(
-            ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
+    default void postBeforeEach(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
         rethrow(throwable);
     }
@@ -129,8 +123,7 @@ public interface ClassInterceptor {
      * @param testMethod testMethod
      * @throws Throwable Throwable
      */
-    default void preTest(ArgumentInterceptorContext argumentInterceptorContext, Method testMethod)
-            throws Throwable {
+    default void preTest(ArgumentInterceptorContext argumentInterceptorContext, Method testMethod) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
@@ -142,10 +135,7 @@ public interface ClassInterceptor {
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postTest(
-            ArgumentInterceptorContext argumentInterceptorContext,
-            Method testMethod,
-            Throwable throwable)
+    default void postTest(ArgumentInterceptorContext argumentInterceptorContext, Method testMethod, Throwable throwable)
             throws Throwable {
         rethrow(throwable);
     }
@@ -156,8 +146,7 @@ public interface ClassInterceptor {
      * @param argumentInterceptorContext argumentInterceptorContext
      * @throws Throwable Throwable
      */
-    default void preAfterEach(ArgumentInterceptorContext argumentInterceptorContext)
-            throws Throwable {
+    default void preAfterEach(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
@@ -168,8 +157,7 @@ public interface ClassInterceptor {
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postAfterEach(
-            ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
+    default void postAfterEach(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
         rethrow(throwable);
     }
@@ -180,8 +168,7 @@ public interface ClassInterceptor {
      * @param argumentInterceptorContext argumentInterceptorContext
      * @throws Throwable Throwable
      */
-    default void preAfterAll(ArgumentInterceptorContext argumentInterceptorContext)
-            throws Throwable {
+    default void preAfterAll(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
@@ -192,8 +179,7 @@ public interface ClassInterceptor {
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postAfterAll(
-            ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
+    default void postAfterAll(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
             throws Throwable {
         rethrow(throwable);
     }
@@ -215,8 +201,7 @@ public interface ClassInterceptor {
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postConclude(ClassInterceptorContext classInterceptorContext, Throwable throwable)
-            throws Throwable {
+    default void postConclude(ClassInterceptorContext classInterceptorContext, Throwable throwable) throws Throwable {
         rethrow(throwable);
     }
 

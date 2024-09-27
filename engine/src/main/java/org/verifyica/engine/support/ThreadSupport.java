@@ -45,8 +45,6 @@ public class ThreadSupport {
     public static Thread newThread(Runnable runnable) {
         Precondition.notNull(runnable, "runnable is null");
 
-        return ThreadTool.hasVirtualThreads()
-                ? ThreadTool.unstartedVirtualThread(runnable)
-                : new Thread(runnable);
+        return ThreadTool.hasVirtualThreads() ? ThreadTool.unstartedVirtualThread(runnable) : new Thread(runnable);
     }
 }

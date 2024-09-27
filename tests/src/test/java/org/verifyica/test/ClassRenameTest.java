@@ -35,16 +35,14 @@ public class ClassRenameTest {
             return classDefinition -> classDefinition.getTestClass() == ClassRenameTest.class;
         }
 
-        public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
+        public void onTestDiscovery(EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
                 throws Throwable {
             assertThat(classDefinition.getTestClass()).isEqualTo(ClassRenameTest.class);
 
             String fullDisplayName = classDefinition.getDisplayName();
             String displayName = classDefinition.getTestClass().getSimpleName();
             String newDisplayName = displayName + "Renamed";
-            System.out.printf(
-                    "Renaming test class from [%s] to [%s]%n", fullDisplayName, newDisplayName);
+            System.out.printf("Renaming test class from [%s] to [%s]%n", fullDisplayName, newDisplayName);
             classDefinition.setDisplayName(newDisplayName);
         }
     }
@@ -63,6 +61,7 @@ public class ClassRenameTest {
 
         System.out.printf(
                 "test(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(), argumentContext.getTestArgument().getPayload());
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
     }
 }

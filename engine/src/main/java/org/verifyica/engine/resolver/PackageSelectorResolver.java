@@ -45,44 +45,30 @@ public class PackageSelectorResolver {
      * @param engineDiscoveryRequest engineDiscoveryRequest
      * @param classMethodMap classMethodMap
      */
-    public void resolve(
-            EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, List<Method>> classMethodMap) {
+    public void resolve(EngineDiscoveryRequest engineDiscoveryRequest, Map<Class<?>, List<Method>> classMethodMap) {
         LOGGER.trace("resolve()");
 
-        Stopwatch stopWatch = new Stopwatch();
+        Stopwatch stopwatch = new Stopwatch();
 
         AtomicInteger packageSelectorsCount = new AtomicInteger();
 
-        engineDiscoveryRequest
-                .getSelectorsByType(PackageSelector.class)
-                .forEach(
-                        packageSelector -> {
-                            packageSelectorsCount.incrementAndGet();
+        engineDiscoveryRequest.getSelectorsByType(PackageSelector.class).forEach(packageSelector -> {
+            packageSelectorsCount.incrementAndGet();
 
-                            String packageName = packageSelector.getPackageName();
+            String packageName = packageSelector.getPackageName();
 
-                            LOGGER.trace("packageName [%s]", packageName);
+            LOGGER.trace("packageName [%s]", packageName);
 
-                            List<Class<?>> testClasses =
-                                    ClassSupport.findAllClasses(
-                                            packageName, ResolverPredicates.TEST_CLASS);
+            List<Class<?>> testClasses = ClassSupport.findAllClasses(packageName, ResolverPredicates.TEST_CLASS);
 
-                            testClasses.forEach(
-                                    testClass ->
-                                            classMethodMap
-                                                    .computeIfAbsent(
-                                                            testClass, method -> new ArrayList<>())
-                                                    .addAll(
-                                                            ClassSupport.findMethods(
-                                                                    testClass,
-                                                                    ResolverPredicates.TEST_METHOD,
-                                                                    HierarchyTraversalMode
-                                                                            .BOTTOM_UP)));
-                        });
+            testClasses.forEach(testClass -> classMethodMap
+                    .computeIfAbsent(testClass, method -> new ArrayList<>())
+                    .addAll(ClassSupport.findMethods(
+                            testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP)));
+        });
 
         LOGGER.trace(
                 "resolve() packageSelectors [%d] elapsedTime [%d] ms",
-                packageSelectorsCount.get(), stopWatch.elapsedTime().toMillis());
+                packageSelectorsCount.get(), stopwatch.elapsedTime().toMillis());
     }
 }

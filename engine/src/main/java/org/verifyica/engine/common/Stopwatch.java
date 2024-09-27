@@ -97,12 +97,11 @@ public class Stopwatch {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Stopwatch stopWatch = (Stopwatch) o;
+        Stopwatch stopwatch = (Stopwatch) o;
 
         getReadWriteLock().readLock().lock();
         try {
-            return startNanoTime == stopWatch.startNanoTime
-                    && Objects.equals(stopNanoTime, stopWatch.stopNanoTime);
+            return startNanoTime == stopwatch.startNanoTime && Objects.equals(stopNanoTime, stopwatch.stopNanoTime);
         } finally {
             getReadWriteLock().readLock().unlock();
         }

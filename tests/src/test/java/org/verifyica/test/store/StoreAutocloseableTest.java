@@ -57,10 +57,7 @@ public class StoreAutocloseableTest {
                 .getStore()
                 .put("autoCloseable", new CustomAutoCloseable("engine"));
 
-        argumentContext
-                .getClassContext()
-                .getStore()
-                .put("autoCloseable", new CustomAutoCloseable("class"));
+        argumentContext.getClassContext().getStore().put("autoCloseable", new CustomAutoCloseable("class"));
 
         argumentContext.getStore().put("autoCloseable", new CustomAutoCloseable("argument"));
 

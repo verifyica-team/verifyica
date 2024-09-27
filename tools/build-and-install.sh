@@ -45,7 +45,7 @@ cd "${PROJECT_ROOT_DIRECTORY}"
 check_exit_code "Failed to change to project root directory"
 
 # Get the current version
-CURRENT_VERSION=$(./mvnw -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+CURRENT_VERSION=$(./mvnw -q -Dexec.executable=echo -Dexec.args="${project.version}" --non-recursive exec:exec)
 BUILD_VERSION="${1}"
 
 # Update the versions

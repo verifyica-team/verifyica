@@ -91,11 +91,8 @@ public class ClassSupport {
         Set<Class<?>> set = new LinkedHashSet<>();
 
         getClasspathURIs()
-                .forEach(
-                        uri ->
-                                set.addAll(
-                                        ReflectionSupport.findAllClassesInClasspathRoot(
-                                                uri, predicate, classNameFilter -> true)));
+                .forEach(uri -> set.addAll(
+                        ReflectionSupport.findAllClassesInClasspathRoot(uri, predicate, classNameFilter -> true)));
 
         List<Class<?>> list = new ArrayList<>(set);
         list.sort(Comparator.comparing(Class::getName));
@@ -125,8 +122,7 @@ public class ClassSupport {
         Precondition.notNull(predicate, "predicate is null");
 
         return new ArrayList<>(
-                ReflectionSupport.findAllClassesInClasspathRoot(
-                        uri, predicate, classNameFilter -> true));
+                ReflectionSupport.findAllClassesInClasspathRoot(uri, predicate, classNameFilter -> true));
     }
 
     /**
@@ -155,16 +151,13 @@ public class ClassSupport {
      * @return a List of Fields
      */
     public static List<Field> findFields(
-            Class<?> clazz,
-            Predicate<Field> predicate,
-            HierarchyTraversalMode hierarchyTraversalMode) {
+            Class<?> clazz, Predicate<Field> predicate, HierarchyTraversalMode hierarchyTraversalMode) {
         Precondition.notNull(clazz, "clazz is null");
         Precondition.notNull(predicate, "predicate is null");
         Precondition.notNull(hierarchyTraversalMode, "hierarchyTraversalMode is null");
 
         return new ArrayList<>(
-                ReflectionSupport.findFields(
-                        clazz, predicate, HierarchyTraversalMode.decode(hierarchyTraversalMode)));
+                ReflectionSupport.findFields(clazz, predicate, HierarchyTraversalMode.decode(hierarchyTraversalMode)));
     }
 
     /**
@@ -176,16 +169,13 @@ public class ClassSupport {
      * @return a List of Methods
      */
     public static List<Method> findMethods(
-            Class<?> clazz,
-            Predicate<Method> predicate,
-            HierarchyTraversalMode hierarchyTraversalMode) {
+            Class<?> clazz, Predicate<Method> predicate, HierarchyTraversalMode hierarchyTraversalMode) {
         Precondition.notNull(clazz, "clazz is null");
         Precondition.notNull(predicate, "predicate is null");
         Precondition.notNull(hierarchyTraversalMode, "hierarchyTraversalMode is null");
 
         return new ArrayList<>(
-                ReflectionSupport.findMethods(
-                        clazz, predicate, HierarchyTraversalMode.decode(hierarchyTraversalMode)));
+                ReflectionSupport.findMethods(clazz, predicate, HierarchyTraversalMode.decode(hierarchyTraversalMode)));
     }
 
     /**
@@ -224,8 +214,8 @@ public class ClassSupport {
      * @param uris uris
      * @throws IOException IOException
      */
-    private static void scanDirectory(
-            Path directoryPath, Predicate<String> predicate, List<URI> uris) throws IOException {
+    private static void scanDirectory(Path directoryPath, Predicate<String> predicate, List<URI> uris)
+            throws IOException {
         Files.walkFileTree(directoryPath, new PathSimpleFileVisitor(predicate, uris));
     }
 

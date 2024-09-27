@@ -39,16 +39,14 @@ public class NewPlatformThreadExecutorService extends AbstractExecutorService {
             throw new IllegalStateException("Executor service is shut down");
         }
 
-        Thread thread =
-                new Thread(
-                        () -> {
-                            try {
-                                runningThreads.add(Thread.currentThread());
-                                runnable.run();
-                            } finally {
-                                runningThreads.remove(Thread.currentThread());
-                            }
-                        });
+        Thread thread = new Thread(() -> {
+            try {
+                runningThreads.add(Thread.currentThread());
+                runnable.run();
+            } finally {
+                runningThreads.remove(Thread.currentThread());
+            }
+        });
         thread.setDaemon(true);
         thread.start();
     }

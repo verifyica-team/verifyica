@@ -25,8 +25,7 @@ public class UncheckedClassNotFoundException extends RuntimeException {
      * @param message message
      * @param classNotFoundException classNotFoundException
      */
-    public UncheckedClassNotFoundException(
-            String message, ClassNotFoundException classNotFoundException) {
+    public UncheckedClassNotFoundException(String message, ClassNotFoundException classNotFoundException) {
         super(message, classNotFoundException);
     }
 
@@ -41,8 +40,7 @@ public class UncheckedClassNotFoundException extends RuntimeException {
      * @param classNotFoundException classNotFoundException
      */
     public static void throwUnchecked(ClassNotFoundException classNotFoundException) {
-        new UncheckedClassNotFoundException(
-                        classNotFoundException.getMessage(), classNotFoundException)
+        new UncheckedClassNotFoundException(classNotFoundException.getMessage(), classNotFoundException)
                 .throwUnchecked();
     }
 }

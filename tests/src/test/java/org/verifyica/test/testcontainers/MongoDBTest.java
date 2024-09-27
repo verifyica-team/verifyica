@@ -74,14 +74,10 @@ public class MongoDBTest {
         MongoDBTestEnvironment mongoDBTestEnvironment =
                 argumentContext.getTestArgument(MongoDBTestEnvironment.class).getPayload();
 
-        MongoClientSettings settings =
-                MongoClientSettings.builder()
-                        .applyConnectionString(
-                                new ConnectionString(
-                                        mongoDBTestEnvironment
-                                                .getMongoDBContainer()
-                                                .getConnectionString()))
-                        .build();
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(new ConnectionString(
+                        mongoDBTestEnvironment.getMongoDBContainer().getConnectionString()))
+                .build();
 
         try (MongoClient mongoClient = MongoClients.create(settings)) {
             MongoDatabase database = mongoClient.getDatabase("test-db");
@@ -104,14 +100,10 @@ public class MongoDBTest {
         MongoDBTestEnvironment mongoDBTestEnvironment =
                 argumentContext.getTestArgument(MongoDBTestEnvironment.class).getPayload();
 
-        MongoClientSettings settings =
-                MongoClientSettings.builder()
-                        .applyConnectionString(
-                                new ConnectionString(
-                                        mongoDBTestEnvironment
-                                                .getMongoDBContainer()
-                                                .getConnectionString()))
-                        .build();
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(new ConnectionString(
+                        mongoDBTestEnvironment.getMongoDBContainer().getConnectionString()))
+                .build();
 
         try (MongoClient mongoClient = MongoClients.create(settings)) {
             MongoDatabase database = mongoClient.getDatabase("test-db");
@@ -128,12 +120,12 @@ public class MongoDBTest {
     public void destroyTestEnvironment(ArgumentContext argumentContext) {
         info("destroy test environment ...");
 
-        argumentContext.getTestArgument(MongoDBTestEnvironment.class).getPayload().destroy();
-
         argumentContext
-                .getStore()
-                .removeOptional("network", Network.class)
-                .ifPresent(Network::close);
+                .getTestArgument(MongoDBTestEnvironment.class)
+                .getPayload()
+                .destroy();
+
+        argumentContext.getStore().removeOptional("network", Network.class).ifPresent(Network::close);
     }
 
     /** Class to implement a TestContext */

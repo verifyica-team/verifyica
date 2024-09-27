@@ -70,12 +70,11 @@ public class StoreMergeTest {
 
         assertThat(argumentContext.getStore().size()).isEqualTo(map.size());
 
-        map.forEach(
-                (key, value) -> {
-                    Store store = argumentContext.getStore();
-                    assertThat(store.containsKey(key)).isTrue();
-                    assertThat(store.get(key) == value).isTrue();
-                });
+        map.forEach((key, value) -> {
+            Store store = argumentContext.getStore();
+            assertThat(store.containsKey(key)).isTrue();
+            assertThat(store.get(key) == value).isTrue();
+        });
 
         System.out.println("argument context store after merge " + argumentContext.getStore());
     }
@@ -98,12 +97,11 @@ public class StoreMergeTest {
 
         assertThat(argumentContext.getStore().size()).isEqualTo(properties.size());
 
-        properties.forEach(
-                (key, value) -> {
-                    Store store = argumentContext.getStore();
-                    assertThat(store.containsKey(key)).isTrue();
-                    assertThat(store.get(key) == value).isTrue();
-                });
+        properties.forEach((key, value) -> {
+            Store store = argumentContext.getStore();
+            assertThat(store.containsKey(key)).isTrue();
+            assertThat(store.get(key) == value).isTrue();
+        });
 
         System.out.println("argument context store after merge " + argumentContext.getStore());
     }

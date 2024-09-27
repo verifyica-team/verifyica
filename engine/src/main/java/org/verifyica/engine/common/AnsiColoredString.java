@@ -206,8 +206,7 @@ public class AnsiColoredString {
      * @return this
      */
     public AnsiColoredString append(AnsiColor ansiColor) {
-        if (ansiColor == null
-                || (ansiColor.equals(AnsiColor.NONE) && stringBuilder.length() == 0)) {
+        if (ansiColor == null || (ansiColor.equals(AnsiColor.NONE) && stringBuilder.length() == 0)) {
             return this;
         }
 

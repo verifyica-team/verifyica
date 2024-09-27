@@ -25,8 +25,7 @@ import org.verifyica.api.Verifyica;
 
 public class StoreTest3 {
 
-    private static final Key CLASS_CONTEXT_STORE_KEY =
-            Key.of(StoreTest3.class.getName(), "class.context.key");
+    private static final Key CLASS_CONTEXT_STORE_KEY = Key.of(StoreTest3.class.getName(), "class.context.key");
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {

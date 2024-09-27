@@ -32,23 +32,22 @@ public class SemaphoreRunnableTest {
         AtomicReference<String> failed = new AtomicReference<>();
         AtomicInteger counter = new AtomicInteger();
 
-        Runnable runnable =
-                () -> {
-                    try {
-                        int value = counter.incrementAndGet();
-                        if (value != 1) {
-                            failed.set("expected [1] but was [" + value + "]");
-                        }
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        // INTENTIONALLY BLANK
-                    } finally {
-                        int value = counter.decrementAndGet();
-                        if (value != 0) {
-                            failed.set("expected [0] but was [" + value + "]");
-                        }
-                    }
-                };
+        Runnable runnable = () -> {
+            try {
+                int value = counter.incrementAndGet();
+                if (value != 1) {
+                    failed.set("expected [1] but was [" + value + "]");
+                }
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                // INTENTIONALLY BLANK
+            } finally {
+                int value = counter.decrementAndGet();
+                if (value != 0) {
+                    failed.set("expected [0] but was [" + value + "]");
+                }
+            }
+        };
 
         Semaphore semaphore = new Semaphore(1, true);
         int threadCount = 5;

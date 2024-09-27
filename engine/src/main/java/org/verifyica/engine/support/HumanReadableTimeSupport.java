@@ -64,12 +64,9 @@ public final class HumanReadableTimeSupport {
         long millisecondsDuration = (long) ((double) nanosecondsPositive / 1e+6d);
         long hours = TimeUnit.MILLISECONDS.toHours(millisecondsDuration);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(millisecondsDuration) - (hours * 60);
-        long seconds =
-                TimeUnit.MILLISECONDS.toSeconds(millisecondsDuration)
-                        - ((hours * 60 * 60) + (minutes * 60));
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millisecondsDuration) - ((hours * 60 * 60) + (minutes * 60));
         long milliseconds =
-                millisecondsDuration
-                        - ((hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000));
+                millisecondsDuration - ((hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000));
 
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -149,8 +146,7 @@ public final class HumanReadableTimeSupport {
      * @return the return value
      */
     public static String now() {
-        SimpleDateFormat simpleDateFormat =
-                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ENGLISH);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ENGLISH);
 
         return simpleDateFormat.format(new Date());
     }
@@ -163,47 +159,40 @@ public final class HumanReadableTimeSupport {
      * @return a String representing the converted nanoseconds value
      */
     public static String toTimingUnit(long nanoseconds, String timingUnit) {
-        String workingUnit =
-                timingUnit == null || timingUnit.trim().equalsIgnoreCase("")
-                        ? "milliseconds"
-                        : timingUnit.trim().toLowerCase(Locale.ENGLISH);
+        String workingUnit = timingUnit == null || timingUnit.trim().equalsIgnoreCase("")
+                ? "milliseconds"
+                : timingUnit.trim().toLowerCase(Locale.ENGLISH);
 
         switch (workingUnit) {
-            case "nanoseconds":
-                {
+            case "nanoseconds": {
+                return nanoseconds + " ns";
+            }
+            case "microseconds": {
+                return (nanoseconds / 1e+3) + " μs";
+            }
+            case "seconds": {
+                return (nanoseconds / 1e+9) + " s";
+            }
+            case "minutes": {
+                return (nanoseconds / 1e+12) + " m";
+            }
+            case "adaptive": {
+                if (nanoseconds >= 1e+12) {
+                    return (nanoseconds / 1e+12) + " m";
+                } else if (nanoseconds >= 1e+9) {
+                    return (nanoseconds / 1e+9) + " s";
+                } else if (nanoseconds >= 1e+6) {
+                    return (nanoseconds / 1e+6) + " ms";
+                } else if (nanoseconds >= 1e+3) {
+                    return (nanoseconds / 1e+3) + " μs";
+                } else {
                     return nanoseconds + " ns";
                 }
-            case "microseconds":
-                {
-                    return (nanoseconds / 1e+3) + " μs";
-                }
-            case "seconds":
-                {
-                    return (nanoseconds / 1e+9) + " s";
-                }
-            case "minutes":
-                {
-                    return (nanoseconds / 1e+12) + " m";
-                }
-            case "adaptive":
-                {
-                    if (nanoseconds >= 1e+12) {
-                        return (nanoseconds / 1e+12) + " m";
-                    } else if (nanoseconds >= 1e+9) {
-                        return (nanoseconds / 1e+9) + " s";
-                    } else if (nanoseconds >= 1e+6) {
-                        return (nanoseconds / 1e+6) + " ms";
-                    } else if (nanoseconds >= 1e+3) {
-                        return (nanoseconds / 1e+3) + " μs";
-                    } else {
-                        return nanoseconds + " ns";
-                    }
-                }
+            }
             case "milliseconds":
-            default:
-                {
-                    return (nanoseconds / 1e+6) + " ms";
-                }
+            default: {
+                return (nanoseconds / 1e+6) + " ms";
+            }
         }
     }
 }

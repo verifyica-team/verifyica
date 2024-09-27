@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package org.verifyica.test.interceptor.engine;
-
-import static org.assertj.core.api.Assertions.assertThat;
+package org.verifyica.test.interceptor;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
-import java.util.function.Predicate;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
 import org.verifyica.api.interceptor.ClassDefinition;
@@ -29,30 +26,18 @@ import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.api.interceptor.MethodDefinition;
 
-public class EngineInterceptorTest2 implements EngineInterceptor {
+public class EngineInterceptorTest5 implements EngineInterceptor {
 
     @Verifyica.Autowired
     public static class ReverseTestMethodOrder implements EngineInterceptor {
 
         @Override
-        public Predicate<ClassDefinition> onTestDiscoveryPredicate() {
-            return classDefinition ->
-                    classDefinition.getTestClass() == EngineInterceptorTest2.class;
-        }
-
-        @Override
         public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext,
-                ClassDefinition classDefinition) {
-            assertThat(classDefinition.getTestClass()).isEqualTo(EngineInterceptorTest2.class);
-
-            System.out.println("reversing test method order");
-
-            Set<MethodDefinition> methodDefinitions = classDefinition.getTestMethodDefinitions();
-            ArrayList<MethodDefinition> list = new ArrayList<>(methodDefinitions);
-            Collections.reverse(list);
-            methodDefinitions.clear();
-            methodDefinitions.addAll(list);
+                EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
+            if (classDefinition.getTestClass() == EngineInterceptorTest5.class) {
+                System.out.println("reversing test method order");
+                shuffle(classDefinition.getTestMethodDefinitions());
+            }
         }
     }
 
@@ -79,5 +64,12 @@ public class EngineInterceptorTest2 implements EngineInterceptor {
     @Verifyica.Test(order = 4)
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument().getPayload());
+    }
+
+    private static void shuffle(Set<MethodDefinition> methodDefinitions) {
+        ArrayList<MethodDefinition> list = new ArrayList<>(methodDefinitions);
+        Collections.shuffle(list);
+        methodDefinitions.clear();
+        methodDefinitions.addAll(list);
     }
 }

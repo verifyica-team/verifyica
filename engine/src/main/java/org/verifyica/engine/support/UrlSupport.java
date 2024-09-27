@@ -58,7 +58,6 @@ public class UrlSupport {
     public static BufferedReader createBufferedReader(URL url) throws IOException {
         Precondition.notNull(url, "url is null");
 
-        return new BufferedReader(
-                new InputStreamReader(createInputStream(url), StandardCharsets.UTF_8));
+        return new BufferedReader(new InputStreamReader(createInputStream(url), StandardCharsets.UTF_8));
     }
 }

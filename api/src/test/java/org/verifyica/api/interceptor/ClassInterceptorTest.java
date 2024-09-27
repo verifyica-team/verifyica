@@ -27,12 +27,10 @@ public class ClassInterceptorTest {
         RuntimeException runtimeException = new RuntimeException();
         ClassInterceptor classInterceptor = new MockClassInterceptor();
 
-        assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(() -> classInterceptor.rethrow(runtimeException));
+        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> classInterceptor.rethrow(runtimeException));
 
         assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(
-                        () -> classInterceptor.postInstantiate(null, null, null, runtimeException));
+                .isThrownBy(() -> classInterceptor.postInstantiate(null, null, null, runtimeException));
 
         assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() -> classInterceptor.postPrepare(null, runtimeException));

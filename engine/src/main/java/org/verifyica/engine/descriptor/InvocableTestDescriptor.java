@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.invocation;
+package org.verifyica.engine.descriptor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
+import org.verifyica.engine.invocation.Invocation;
+import org.verifyica.engine.invocation.InvocationContext;
+import org.verifyica.engine.invocation.InvocationResult;
 
 /** Class to implement InvocableTestDescriptor */
 public abstract class InvocableTestDescriptor extends AbstractTestDescriptor {
@@ -35,32 +42,51 @@ public abstract class InvocableTestDescriptor extends AbstractTestDescriptor {
     }
 
     /**
+     * Method to get invokable child test descriptor
+     *
+     * @return a List of invokable child test descriptors
+     */
+    protected List<InvocableTestDescriptor> getInvocableChildren() {
+        List<InvocableTestDescriptor> invocableTestDescriptors = new ArrayList<>();
+
+        getChildren().forEach((Consumer<TestDescriptor>) testDescriptor -> {
+            if (testDescriptor instanceof InvocableTestDescriptor) {
+                invocableTestDescriptors.add((InvocableTestDescriptor) testDescriptor);
+            }
+        });
+
+        return invocableTestDescriptors;
+    }
+
+    /**
      * Method to test execution
      *
      * @param invocationContext invocationContext
+     * @return an Invocation
      */
-    public abstract void test(InvocationContext invocationContext);
+    public abstract Invocation getTestInvocation(InvocationContext invocationContext);
 
     /**
      * Method to skip execution
      *
      * @param invocationContext invocationContext
+     * @return an Invocation
      */
-    public abstract void skip(InvocationContext invocationContext);
+    public abstract Invocation getSkipInvocation(InvocationContext invocationContext);
 
     /**
      * Method to set the invocation result
      *
      * @param invocationResult invocationResult
      */
-    protected void setInvocationResult(InvocationResult invocationResult) {
+    public void setInvocationResult(InvocationResult invocationResult) {
         this.invocationResult = invocationResult;
     }
 
     /**
      * Method to get the invocation result
      *
-     * @return an InvocationResult
+     * @return the InvocationResult
      */
     public InvocationResult getInvocationResult() {
         return invocationResult;

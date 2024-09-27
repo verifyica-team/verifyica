@@ -38,8 +38,7 @@ public class ConcreteArgumentContext implements ArgumentContext {
      * @param classContext classContext
      * @param argumentTestDescriptor argumentTestDescriptor
      */
-    public ConcreteArgumentContext(
-            ClassContext classContext, ArgumentTestDescriptor argumentTestDescriptor) {
+    public ConcreteArgumentContext(ClassContext classContext, ArgumentTestDescriptor argumentTestDescriptor) {
         this.classContext = classContext;
         this.argumentTestDescriptor = argumentTestDescriptor;
         this.store = new ConcreteStore();

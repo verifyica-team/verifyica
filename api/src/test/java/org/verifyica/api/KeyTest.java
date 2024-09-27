@@ -100,8 +100,7 @@ public class KeyTest {
         assertThat(key2.segments().get(1)).isEqualTo("bar");
         assertThat(key2.segments().get(2)).isEqualTo("value");
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> key.append((String) null));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> key.append((String) null));
 
         Key classContextKey = Key.of(KeyTest.class.getName(), "class.context.key");
 
@@ -119,30 +118,22 @@ public class KeyTest {
 
     @Test
     public void test4() {
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> Key.of((String) null));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Key.of((String) null));
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> Key.of("foo", null));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Key.of("foo", null));
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> Key.of(null, "bar"));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Key.of(null, "bar"));
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> Key.of(null, null));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Key.of(null, null));
 
         Key key = Key.of("a");
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> key.append((String) null));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> key.append((String) null));
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> key.append(null, null));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> key.append(null, null));
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> key.append(new ArrayList<>()));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> key.append(new ArrayList<>()));
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> key.append((Key) null));
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> key.append((Key) null));
     }
 }
