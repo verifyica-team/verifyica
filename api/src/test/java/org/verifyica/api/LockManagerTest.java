@@ -139,7 +139,8 @@ public class LockManagerTest {
                 LockManager.lock(uuid.toString());
                 try {
                     System.out.printf(
-                            "thread [%s] locked%n", Thread.currentThread().getName());
+                            "[%s] locked by thread   [%-9s]%n",
+                            uuid, Thread.currentThread().getName());
 
                     assertThat(atomicInteger.incrementAndGet()).isEqualTo(1);
 
@@ -152,7 +153,8 @@ public class LockManagerTest {
                     assertThat(atomicInteger.decrementAndGet()).isEqualTo(0);
 
                     System.out.printf(
-                            "thread [%s] unlocked%n", Thread.currentThread().getName());
+                            "[%s] unlocked by thread [%-9s]%n",
+                            uuid, Thread.currentThread().getName());
                     LockManager.unlock(uuid.toString());
                 }
             });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.test.interceptor.engine;
+package org.verifyica.test.interceptor;
 
 import java.util.ArrayList;
 import java.util.Collections;

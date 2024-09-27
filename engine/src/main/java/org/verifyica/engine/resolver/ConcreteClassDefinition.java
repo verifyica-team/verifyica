@@ -23,13 +23,9 @@ import java.util.Set;
 import org.verifyica.api.Argument;
 import org.verifyica.api.interceptor.ClassDefinition;
 import org.verifyica.api.interceptor.MethodDefinition;
-import org.verifyica.engine.logger.Logger;
-import org.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement ConcreteClassDefinition */
 public class ConcreteClassDefinition implements ClassDefinition {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConcreteClassDefinition.class);
 
     private final Class<?> testClass;
     private final Set<MethodDefinition> testMethodDefinitions;
@@ -93,23 +89,14 @@ public class ConcreteClassDefinition implements ClassDefinition {
     }
 
     @Override
-    public void setArgumentParallelism(int argumentParallelism) {
-        if (argumentParallelism < 1) {
-            LOGGER.warn(
-                    "Test class [%s] test argument parallelism [%d] less than [1], defaulting to" + " [1]",
-                    testClass.getName(), argumentParallelism);
-        }
-
-        this.argumentParallelism = Math.max(argumentParallelism, 1);
-    }
-
-    @Override
     public String toString() {
         return "ConcreteClassDefinition{"
                 + "testClass="
                 + testClass
                 + ", displayName="
                 + displayName
+                + ", argumentParallelism="
+                + argumentParallelism
                 + ", testMethodDefinitions="
                 + testMethodDefinitions
                 + ", testArguments="

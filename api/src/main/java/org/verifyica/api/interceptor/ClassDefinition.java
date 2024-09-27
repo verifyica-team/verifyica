@@ -59,13 +59,6 @@ public interface ClassDefinition {
     List<Argument<?>> getArguments();
 
     /**
-     * Set the test argument parallelism
-     *
-     * @param argumentParallelism argumentParallelism
-     */
-    void setArgumentParallelism(int argumentParallelism);
-
-    /**
      * Get the test argument parallelism
      *
      * @return the test argument parallelism

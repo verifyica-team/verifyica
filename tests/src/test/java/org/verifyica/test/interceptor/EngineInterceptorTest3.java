@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.test.interceptor.engine;
+package org.verifyica.test.interceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,7 +30,7 @@ import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.test.support.RandomSupport;
 
-public class EngineInterceptorTest5 {
+public class EngineInterceptorTest3 {
 
     @Verifyica.Autowired
     public static class LocalEngineInterceptor implements EngineInterceptor {
@@ -38,7 +38,7 @@ public class EngineInterceptorTest5 {
         @Override
         public void onTestDiscovery(
                 EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
-            if (classDefinition.getTestClass() == EngineInterceptorTest5.class) {
+            if (classDefinition.getTestClass() == EngineInterceptorTest3.class) {
                 List<Argument<?>> arguments = classDefinition.getArguments();
                 assertThat(arguments).hasSize(10);
                 arguments.subList(0, arguments.size() - 1).clear();

@@ -14,36 +14,15 @@
  * limitations under the License.
  */
 
-package org.verifyica.test.interceptor.engine;
+package org.verifyica.test.interceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
-import java.util.List;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.ClassDefinition;
-import org.verifyica.api.interceptor.EngineInterceptor;
-import org.verifyica.api.interceptor.EngineInterceptorContext;
 
-@Verifyica.Autowired
-public class EngineInterceptorTest6 implements EngineInterceptor {
-
-    @Override
-    public void onTestDiscovery(
-            EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions) {
-        System.out.printf("%s onTestDiscovery()%n", getClass().getName());
-
-        classDefinitions.stream()
-                .filter(classDefinition -> classDefinition.getTestClass() == EngineInterceptorTest6.class)
-                .forEach(classDefinition -> {
-                    // Filter test method "test2"
-                    classDefinition
-                            .getTestMethodDefinitions()
-                            .removeIf(methodDefinition ->
-                                    methodDefinition.getMethod().getName().equals("test2"));
-                });
-    }
+public class EngineInterceptorTest1 {
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
@@ -83,7 +62,27 @@ public class EngineInterceptorTest6 implements EngineInterceptor {
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument().getPayload());
 
-        fail("Should not execute... filtered by interceptor");
+        assertThat(argumentContext).isNotNull();
+        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getClassContext().getEngineContext()
+                        == argumentContext.getClassContext().getEngineContext())
+                .isTrue();
+
+        // Validate that the interceptor added a global String to the EngineContext Store
+        assertThat(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .get(ExampleAutowiredEngineInterceptor1.KEY))
+                .isNotNull();
+
+        assertThat(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getStore()
+                        .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+                .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
     @Verifyica.Test
@@ -118,26 +117,6 @@ public class EngineInterceptorTest6 implements EngineInterceptor {
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test4(%s)%n", argumentContext.getTestArgument().getPayload());
 
-        assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
-        assertThat(argumentContext.getClassContext().getEngineContext()
-                        == argumentContext.getClassContext().getEngineContext())
-                .isTrue();
-
-        // Validate that the interceptor added a global String to the EngineContext Store
-        assertThat(argumentContext
-                        .getClassContext()
-                        .getEngineContext()
-                        .getStore()
-                        .get(ExampleAutowiredEngineInterceptor1.KEY))
-                .isNotNull();
-
-        assertThat(argumentContext
-                        .getClassContext()
-                        .getEngineContext()
-                        .getStore()
-                        .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
-                .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
+        fail("Should not execute... filtered by engine interceptor");
     }
 }

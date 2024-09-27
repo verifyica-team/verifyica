@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
-import org.verifyica.test.interceptor.engine.ExampleAutowiredEngineInterceptor1;
 
 public class ExampleInheritanceCassInterceptorTest implements ExampleInheritanceClassInterceptor {
 

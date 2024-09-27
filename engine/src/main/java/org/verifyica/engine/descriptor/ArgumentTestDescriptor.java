@@ -273,7 +273,6 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                                     .invoke();
                             invocationResults.add(invocationResult);
                         }
-
                         state = State.AFTER_ALL;
                         break;
                     }
@@ -306,6 +305,7 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                                 invocationResults.add(InvocationResult.success());
                             } catch (Throwable t) {
                                 invocationResults.add(InvocationResult.exception(t));
+                                StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                             }
                         }
                         state = State.CLEAR;
@@ -320,8 +320,8 @@ public class ArgumentTestDescriptor extends InvocableTestDescriptor {
                                     ((AutoCloseable) value).close();
                                     invocationResults.add(InvocationResult.success());
                                 } catch (Throwable t) {
-                                    StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                                     invocationResults.add(InvocationResult.exception(t));
+                                    StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                                 }
                             }
                         }

@@ -106,9 +106,9 @@ public class EngineDiscoveryRequestResolver {
     public EngineDiscoveryRequestResolver(InvocationContext invocationContext) {
         Precondition.notNull(invocationContext, "invocationContext is null");
 
-        this.engineInterceptorManager = invocationContext.get(EngineInterceptorManager.class);
-        this.classInterceptorManager = invocationContext.get(ClassInterceptorManager.class);
-        this.engineInterceptorContext = invocationContext.get(EngineInterceptorContext.class);
+        engineInterceptorManager = invocationContext.get(EngineInterceptorManager.class);
+        classInterceptorManager = invocationContext.get(ClassInterceptorManager.class);
+        engineInterceptorContext = invocationContext.get(EngineInterceptorContext.class);
     }
 
     /**

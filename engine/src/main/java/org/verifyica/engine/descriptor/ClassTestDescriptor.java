@@ -260,7 +260,7 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
                         break;
                     }
                     case TEST: {
-                        invocationResult = test();
+                        invocationResult = invokeChildren();
                         invocationResults.add(invocationResult);
                         state = State.CONCLUDE;
                         break;
@@ -321,8 +321,8 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
                                     ((AutoCloseable) value).close();
                                     invocationResults.add(InvocationResult.success());
                                 } catch (Throwable t) {
-                                    StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                                     invocationResults.add(InvocationResult.exception(t));
+                                    StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                                 }
                             }
                         }
@@ -347,7 +347,12 @@ public class ClassTestDescriptor extends InvocableTestDescriptor {
             return InvocationResult.success();
         }
 
-        private InvocationResult test() {
+        /**
+         * Method to invoke child test descriptors
+         *
+         * @return an InvocationResult
+         */
+        private InvocationResult invokeChildren() {
             int testArgumentParallelism = classTestDescriptor.getTestArgumentParallelism();
             if (testArgumentParallelism > 1) {
                 List<Future<?>> futures = new ArrayList<>();

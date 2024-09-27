@@ -102,6 +102,10 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 String testClassDisplayName =
                         findClassTestDescriptor(testDescriptor).getDisplayName();
 
+                // TODO ? check maven configuration, if truncate.class.name=true and class name != display name,
+                // truncate
+                // testClassDisplayName = truncateClassName(testClassDisplayName);
+
                 ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
                     testArgumentDisplayName =
@@ -150,6 +154,10 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 String testMethodDisplayName = null;
                 String testClassDisplayName =
                         findClassTestDescriptor(testDescriptor).getDisplayName();
+
+                // TODO ? check maven configuration, if truncate.class.name=true and class name != display name,
+                // truncate
+                // testClassDisplayName = truncateClassName(testClassDisplayName);
 
                 ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
@@ -204,6 +212,10 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 String testMethodDisplayName = null;
                 String testClassDisplayName =
                         findClassTestDescriptor(testDescriptor).getDisplayName();
+
+                // TODO ? check maven configuration, if truncate.class.name=true and class name != display name,
+                // truncate
+                // testClassDisplayName = truncateClassName(testClassDisplayName);
 
                 ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
@@ -266,6 +278,37 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
             }
         }
     }
+
+    /**
+     * Method to truncate a class name
+     *
+     * @param className className
+     * @return a truncated class name of there are more than 3 tokens, else return the unmodified class name
+     */
+    /*
+    private static String truncateClassName(String className) {
+        String[] tokens = className.split("\\.");
+        int length = tokens.length;
+
+        if (length <= 3) {
+            return className;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < length - 3; i++) {
+            stringBuilder.append(tokens[i].toCharArray()[0]).append("..");
+        }
+
+        return stringBuilder
+                .append(tokens[length - 3])
+                .append(".")
+                .append(tokens[length - 2])
+                .append(".")
+                .append(tokens[length - 1])
+                .toString();
+    }
+    */
 
     /**
      * Method to find the ClassTestDescriptor

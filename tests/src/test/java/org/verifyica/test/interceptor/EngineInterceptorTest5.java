@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.test.interceptor.engine;
+package org.verifyica.test.interceptor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +26,7 @@ import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.api.interceptor.MethodDefinition;
 
-public class EngineInterceptorTest7 implements EngineInterceptor {
+public class EngineInterceptorTest5 implements EngineInterceptor {
 
     @Verifyica.Autowired
     public static class ReverseTestMethodOrder implements EngineInterceptor {
@@ -34,7 +34,7 @@ public class EngineInterceptorTest7 implements EngineInterceptor {
         @Override
         public void onTestDiscovery(
                 EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
-            if (classDefinition.getTestClass() == EngineInterceptorTest7.class) {
+            if (classDefinition.getTestClass() == EngineInterceptorTest5.class) {
                 System.out.println("reversing test method order");
                 shuffle(classDefinition.getTestMethodDefinitions());
             }
