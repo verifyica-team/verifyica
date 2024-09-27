@@ -214,6 +214,9 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
                         state = State.END;
                         break;
                     }
+                    default: {
+                        throw new IllegalStateException("Invalid state");
+                    }
                 }
             }
 
