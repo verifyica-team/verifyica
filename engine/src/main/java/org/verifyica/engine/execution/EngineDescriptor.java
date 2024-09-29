@@ -21,7 +21,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement EngineDescriptor */
-public class EngineDescriptor extends ExecutableTestDescriptor {
+public class EngineDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EngineDescriptor.class);
 
@@ -36,7 +36,7 @@ public class EngineDescriptor extends ExecutableTestDescriptor {
     }
 
     @Override
-    public ExecutableTestDescriptor test() {
+    public TestableTestDescriptor test() {
         /*
         if (getChildren().isEmpty()) {
             return;

@@ -24,7 +24,6 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.Verifyica;
 
-// @Verifyica.Disabled
 public class StepTest1 {
 
     private static List<String> actual = new ArrayList<>();

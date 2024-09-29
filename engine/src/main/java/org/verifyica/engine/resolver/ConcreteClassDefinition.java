@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import org.verifyica.api.Argument;
-import org.verifyica.api.interceptor.ClassDefinition;
-import org.verifyica.api.interceptor.MethodDefinition;
+import org.verifyica.engine.api.ClassDefinition;
+import org.verifyica.engine.api.MethodDefinition;
 
 /** Class to implement ConcreteClassDefinition */
 public class ConcreteClassDefinition implements ClassDefinition {

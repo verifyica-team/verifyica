@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.ClassDefinition;
 import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
-import org.verifyica.api.interceptor.MethodDefinition;
+import org.verifyica.engine.api.ClassDefinition;
+import org.verifyica.engine.api.MethodDefinition;
 
 public class TestMethodRenameTest {
 

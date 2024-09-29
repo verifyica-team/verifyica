@@ -22,10 +22,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import org.verifyica.api.interceptor.ClassDefinition;
 import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
-import org.verifyica.api.interceptor.MethodDefinition;
+import org.verifyica.engine.api.ClassDefinition;
+import org.verifyica.engine.api.MethodDefinition;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 

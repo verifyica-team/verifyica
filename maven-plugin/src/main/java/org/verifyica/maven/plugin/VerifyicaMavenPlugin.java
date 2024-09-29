@@ -58,7 +58,7 @@ import org.verifyica.engine.common.Streams;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.ConcreteConfigurationParameters;
 import org.verifyica.engine.configuration.Constants;
-import org.verifyica.engine.execution.ExecutableTestDescriptor;
+import org.verifyica.engine.execution.TestableTestDescriptor;
 import org.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.verifyica.engine.listener.StatusEngineExecutionListener;
 import org.verifyica.engine.listener.SummaryEngineExecutionListener;
@@ -226,17 +226,17 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         try {
             execute(testDescriptor);
 
-            Optional<ExecutableTestDescriptor> optionalExecutableTestDescriptor = testDescriptor.getChildren().stream()
-                    .filter(ExecutableTestDescriptor.EXECUTABLE_TEST_DESCRIPTOR_FILTER)
-                    .map(ExecutableTestDescriptor.EXECUTABLE_TEST_DESCRIPTOR_MAPPER)
+            Optional<TestableTestDescriptor> optionalExecutableTestDescriptor = testDescriptor.getChildren().stream()
+                    .filter(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_FILTER)
+                    .map(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_MAPPER)
                     .filter(executableTestDescriptor ->
-                            executableTestDescriptor.getExecutionResult().isFailure())
+                            executableTestDescriptor.getTestDescriptorStatus().isFailure())
                     .findFirst();
 
             if (optionalExecutableTestDescriptor.isPresent()) {
                 throw new MojoFailureException(optionalExecutableTestDescriptor
                         .get()
-                        .getExecutionResult()
+                        .getTestDescriptorStatus()
                         .getThrowable());
             }
         } catch (Throwable t) {

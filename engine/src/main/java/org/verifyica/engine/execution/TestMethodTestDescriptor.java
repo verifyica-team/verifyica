@@ -35,7 +35,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implemment TestMethodDescriptor */
-public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
+public class TestMethodTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestMethodTestDescriptor.class);
 
@@ -108,20 +108,6 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
     @Override
     public TestMethodTestDescriptor test() {
         try {
-            checkInjected(engineExecutionListener, "engineExecutionListener not injected");
-            checkInjected(engineInterceptorRegistry, "engineInterceptorRegistry not injected");
-            checkInjected(classInterceptorRegistry, "classInterceptorRegistry not injected");
-            checkInjected(argumentContext, "argumentContext not injected");
-            checkInjected(argumentInterceptorContext, "argumentInterceptorContext not injected");
-
-            classInterceptors = classInterceptorRegistry.getClassInterceptors(
-                    argumentContext.getClassContext().getTestClass());
-
-            classInterceptorsReversed = new ArrayList<>(classInterceptors);
-            Collections.reverse(classInterceptorsReversed);
-
-            testInstance = argumentContext.getClassContext().getTestInstance();
-
             engineExecutionListener.executionStarted(this);
 
             State state = State.START;
@@ -130,6 +116,7 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
 
                 switch (state) {
                     case START: {
+                        prepare();
                         state = State.BEFORE_EACH;
                         break;
                     }
@@ -152,23 +139,41 @@ public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
             }
 
             TestExecutionResult testExecutionResult;
-            ExecutionResult executionResult;
+            TestDescriptorStatus testDescriptorStatus;
 
             if (throwables.isEmpty()) {
                 testExecutionResult = TestExecutionResult.successful();
-                executionResult = ExecutionResult.passed();
+                testDescriptorStatus = TestDescriptorStatus.passed();
             } else {
                 testExecutionResult = TestExecutionResult.failed(throwables.get(0));
-                executionResult = ExecutionResult.failed(throwables.get(0));
+                testDescriptorStatus = TestDescriptorStatus.failed(throwables.get(0));
             }
 
-            setExecutionResult(executionResult);
+            setTestDescriptorStatus(testDescriptorStatus);
             engineExecutionListener.executionFinished(this, testExecutionResult);
         } catch (Throwable t) {
             printStackTrace(t);
+            setTestDescriptorStatus(TestDescriptorStatus.failed(t));
+            engineExecutionListener.executionFinished(this, TestExecutionResult.failed(t));
         }
 
         return this;
+    }
+
+    private void prepare() throws Throwable {
+        checkInjected(engineExecutionListener, "engineExecutionListener not injected");
+        checkInjected(engineInterceptorRegistry, "engineInterceptorRegistry not injected");
+        checkInjected(classInterceptorRegistry, "classInterceptorRegistry not injected");
+        checkInjected(argumentContext, "argumentContext not injected");
+        checkInjected(argumentInterceptorContext, "argumentInterceptorContext not injected");
+
+        classInterceptors = classInterceptorRegistry.getClassInterceptors(
+                argumentContext.getClassContext().getTestClass());
+
+        classInterceptorsReversed = new ArrayList<>(classInterceptors);
+        Collections.reverse(classInterceptorsReversed);
+
+        testInstance = argumentContext.getClassContext().getTestInstance();
     }
 
     private State doBeforeEach() {

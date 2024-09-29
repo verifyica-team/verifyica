@@ -31,18 +31,20 @@ import org.verifyica.engine.injection.Inject;
 import org.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.verifyica.engine.interceptor.EngineInterceptorRegistry;
 
-/** Class to implement ExecutableTestDescriptor */
-public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
+/** Class to implement TestableTestDescriptor */
+public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
 
-    public static final Predicate<TestDescriptor> EXECUTABLE_TEST_DESCRIPTOR_FILTER = new Predicate<TestDescriptor>() {
-        @Override
-        public boolean test(TestDescriptor testDescriptor) {
-            return testDescriptor instanceof ExecutableTestDescriptor;
-        }
-    };
+    /**
+     * Predicate to filter TestableTestDescriptors
+     */
+    public static final Predicate<TestDescriptor> TESTABLE_TEST_DESCRIPTOR_FILTER =
+            testDescriptor -> testDescriptor instanceof TestableTestDescriptor;
 
-    public static final Function<TestDescriptor, ExecutableTestDescriptor> EXECUTABLE_TEST_DESCRIPTOR_MAPPER =
-            testDescriptor -> (ExecutableTestDescriptor) testDescriptor;
+    /**
+     * Function to map to TestableTestDescriptor
+     */
+    public static final Function<TestDescriptor, TestableTestDescriptor> TESTABLE_TEST_DESCRIPTOR_MAPPER =
+            testDescriptor -> (TestableTestDescriptor) testDescriptor;
 
     @Inject
     protected Configuration configuration;
@@ -62,7 +64,7 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
     @Inject
     protected EngineInterceptorContext engineInterceptorContext;
 
-    private ExecutionResult executionResult;
+    private TestDescriptorStatus testDescriptorStatus;
 
     /**
      * Constructor
@@ -70,7 +72,7 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
      * @param uniqueId uniqueId
      * @param displayName displayName
      */
-    protected ExecutableTestDescriptor(UniqueId uniqueId, String displayName) {
+    protected TestableTestDescriptor(UniqueId uniqueId, String displayName) {
         super(uniqueId, displayName);
     }
 
@@ -82,7 +84,7 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
     /**
      * Method to test the test descriptor
      */
-    public abstract ExecutableTestDescriptor test();
+    public abstract TestableTestDescriptor test();
 
     /**
      * Method to skip the test descriptor and all children
@@ -90,29 +92,29 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
     public final void skip() {
         engineExecutionListener.executionStarted(this);
 
-        getChildren().stream().map(EXECUTABLE_TEST_DESCRIPTOR_MAPPER).forEach(ExecutableTestDescriptor::skip);
+        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(TestableTestDescriptor::skip);
 
         engineExecutionListener.executionSkipped(this, "Skipped");
 
-        setExecutionResult(ExecutionResult.skipped());
+        setTestDescriptorStatus(TestDescriptorStatus.skipped());
     }
 
     /**
-     * Method to set the execution result
+     * Method to get the test descriptor status
      *
-     * @param executionResult executionResult
+     * @return the test descriptor status
      */
-    protected void setExecutionResult(ExecutionResult executionResult) {
-        this.executionResult = executionResult;
+    public TestDescriptorStatus getTestDescriptorStatus() {
+        return testDescriptorStatus;
     }
 
     /**
-     * Method to get the execution result
+     * Method to set the test descriptor status
      *
-     * @return the execution result
+     * @param testDescriptorStatus testDescriptorStatus
      */
-    public ExecutionResult getExecutionResult() {
-        return executionResult;
+    protected void setTestDescriptorStatus(TestDescriptorStatus testDescriptorStatus) {
+        this.testDescriptorStatus = testDescriptorStatus;
     }
 
     /**

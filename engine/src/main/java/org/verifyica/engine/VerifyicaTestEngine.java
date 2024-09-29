@@ -42,7 +42,6 @@ import org.junit.platform.engine.UniqueId;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Store;
-import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.FairExecutorService;
@@ -56,7 +55,7 @@ import org.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.verifyica.engine.exception.EngineConfigurationException;
 import org.verifyica.engine.exception.EngineException;
 import org.verifyica.engine.execution.EngineDescriptor;
-import org.verifyica.engine.execution.ExecutableTestDescriptor;
+import org.verifyica.engine.execution.TestableTestDescriptor;
 import org.verifyica.engine.injection.FieldInjector;
 import org.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.verifyica.engine.interceptor.EngineInterceptorRegistry;
@@ -222,16 +221,12 @@ public class VerifyicaTestEngine implements TestEngine {
                 engineInterceptorRegistry.initialize(engineInterceptorContext);
                 classInterceptorRegistry.initialize();
 
-                for (EngineInterceptor engineInterceptor : engineInterceptorRegistry.getEngineInterceptors()) {
-                    engineInterceptor.onExecute(engineInterceptorContext);
-                }
-
                 engineExecutionListener.executionStarted(executionRequest.getRootTestDescriptor());
 
-                List<ExecutableTestDescriptor> executableClassTestDescriptors =
+                List<TestableTestDescriptor> executableClassTestDescriptors =
                         executionRequest.getRootTestDescriptor().getChildren().stream()
-                                .filter(ExecutableTestDescriptor.EXECUTABLE_TEST_DESCRIPTOR_FILTER)
-                                .map(ExecutableTestDescriptor.EXECUTABLE_TEST_DESCRIPTOR_MAPPER)
+                                .filter(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_FILTER)
+                                .map(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_MAPPER)
                                 .collect(Collectors.toList());
 
                 List<Future<?>> futures = new ArrayList<>(executableClassTestDescriptors.size());

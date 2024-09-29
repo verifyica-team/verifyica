@@ -18,7 +18,7 @@ package org.verifyica.engine.resolver;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
-import org.verifyica.api.interceptor.MethodDefinition;
+import org.verifyica.engine.api.MethodDefinition;
 
 /** Class to implement ConcreteMethodDefinition */
 public class ConcreteMethodDefinition implements MethodDefinition {

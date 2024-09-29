@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.api.interceptor;
+package org.verifyica.engine.api;
 
 import java.lang.reflect.Method;
 

@@ -18,11 +18,11 @@ package org.verifyica.engine.execution;
 
 import java.util.Objects;
 
-/** Class to implement ExecutionResult */
-public class ExecutionResult {
+/** Class to implement TestDescriptorResult */
+public class TestDescriptorStatus {
 
-    private static final ExecutionResult PASSED = new ExecutionResult(Type.PASSED);
-    private static final ExecutionResult SKIPPED = new ExecutionResult(Type.SKIPPED);
+    private static final TestDescriptorStatus PASSED = new TestDescriptorStatus(Type.PASSED);
+    private static final TestDescriptorStatus SKIPPED = new TestDescriptorStatus(Type.SKIPPED);
 
     /** InvocationResult Type */
     public enum Type {
@@ -42,7 +42,7 @@ public class ExecutionResult {
      *
      * @param type type
      */
-    private ExecutionResult(Type type) {
+    private TestDescriptorStatus(Type type) {
         this(type, null);
     }
 
@@ -52,7 +52,7 @@ public class ExecutionResult {
      * @param type type
      * @param throwable throwable
      */
-    private ExecutionResult(Type type, Throwable throwable) {
+    private TestDescriptorStatus(Type type, Throwable throwable) {
         this.type = type;
         this.throwable = throwable;
     }
@@ -102,6 +102,15 @@ public class ExecutionResult {
         return type == Type.SKIPPED;
     }
 
+    /**
+     * Method to return if the result is skipped with a Throwable
+     *
+     * @return true if the result is skipped with a Throwable, else false
+     */
+    public boolean isSkippedWithThrowable() {
+        return type == Type.SKIPPED && throwable != null;
+    }
+
     @Override
     public String toString() {
         return "InvocationResult{" + "type=" + type + ", throwable=" + throwable + '}';
@@ -111,7 +120,7 @@ public class ExecutionResult {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ExecutionResult that = (ExecutionResult) o;
+        TestDescriptorStatus that = (TestDescriptorStatus) o;
         return type == that.type && Objects.equals(throwable, that.throwable);
     }
 
@@ -125,7 +134,7 @@ public class ExecutionResult {
      *
      * @return an InvocationResult
      */
-    public static ExecutionResult passed() {
+    public static TestDescriptorStatus passed() {
         return PASSED;
     }
 
@@ -134,7 +143,7 @@ public class ExecutionResult {
      *
      * @return an InvocationResult
      */
-    public static ExecutionResult skipped() {
+    public static TestDescriptorStatus skipped() {
         return SKIPPED;
     }
 
@@ -144,8 +153,8 @@ public class ExecutionResult {
      * @param throwable throwable
      * @return an InvocationResult
      */
-    public static ExecutionResult skipped(Throwable throwable) {
-        return new ExecutionResult(Type.SKIPPED, throwable);
+    public static TestDescriptorStatus skipped(Throwable throwable) {
+        return new TestDescriptorStatus(Type.SKIPPED, throwable);
     }
 
     /**
@@ -154,7 +163,7 @@ public class ExecutionResult {
      * @param throwable throwable
      * @return an InvocationResult
      */
-    public static ExecutionResult failed(Throwable throwable) {
-        return new ExecutionResult(Type.FAILED, throwable);
+    public static TestDescriptorStatus failed(Throwable throwable) {
+        return new TestDescriptorStatus(Type.FAILED, throwable);
     }
 }

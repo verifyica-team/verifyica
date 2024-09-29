@@ -42,7 +42,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement ArgumentTestDescriptor */
-public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
+public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArgumentTestDescriptor.class);
 
@@ -111,27 +111,6 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
     @Override
     public ArgumentTestDescriptor test() {
         try {
-            checkInjected(engineExecutionListener, "engineExecutionListener not injected");
-            checkInjected(engineInterceptorRegistry, "engineInterceptorRegistry not injected");
-            checkInjected(classInterceptorRegistry, "classInterceptorRegistry not injected");
-            checkInjected(classContext, "classContext not injected");
-
-            testClass = classContext.getTestClass();
-
-            classInterceptors = classInterceptorRegistry.getClassInterceptors(testClass);
-
-            classInterceptorsReversed = new ArrayList<>(classInterceptors);
-            Collections.reverse(classInterceptorsReversed);
-
-            argumentContext = new ConcreteArgumentContext(classContext, argumentIndex, argument);
-            argumentInterceptorContext = new ConcreteArgumentInterceptorContext(argumentContext);
-
-            FieldInjector.injectFields(this, argumentContext);
-            FieldInjector.injectFields(this, argumentInterceptorContext);
-
-            testClass = argumentContext.getClassContext().getTestClass();
-            testInstance = argumentContext.getClassContext().getTestInstance();
-
             engineExecutionListener.executionStarted(this);
 
             State state = State.START;
@@ -140,6 +119,7 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
                 switch (state) {
                     case START: {
+                        prepare();
                         state = State.BEFORE_ALL;
                         break;
                     }
@@ -179,23 +159,48 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
             }
 
             TestExecutionResult testExecutionResult;
-            ExecutionResult executionResult;
+            TestDescriptorStatus testDescriptorStatus;
 
             if (throwables.isEmpty()) {
                 testExecutionResult = TestExecutionResult.successful();
-                executionResult = ExecutionResult.passed();
+                testDescriptorStatus = TestDescriptorStatus.passed();
             } else {
                 testExecutionResult = TestExecutionResult.failed(throwables.get(0));
-                executionResult = ExecutionResult.failed(throwables.get(0));
+                testDescriptorStatus = TestDescriptorStatus.failed(throwables.get(0));
             }
 
-            setExecutionResult(executionResult);
+            setTestDescriptorStatus(testDescriptorStatus);
             engineExecutionListener.executionFinished(this, testExecutionResult);
         } catch (Throwable t) {
             printStackTrace(t);
+            setTestDescriptorStatus(TestDescriptorStatus.failed(t));
+            engineExecutionListener.executionFinished(this, TestExecutionResult.failed(t));
         }
 
         return this;
+    }
+
+    private void prepare() throws Throwable {
+        checkInjected(engineExecutionListener, "engineExecutionListener not injected");
+        checkInjected(engineInterceptorRegistry, "engineInterceptorRegistry not injected");
+        checkInjected(classInterceptorRegistry, "classInterceptorRegistry not injected");
+        checkInjected(classContext, "classContext not injected");
+
+        testClass = classContext.getTestClass();
+
+        classInterceptors = classInterceptorRegistry.getClassInterceptors(testClass);
+
+        classInterceptorsReversed = new ArrayList<>(classInterceptors);
+        Collections.reverse(classInterceptorsReversed);
+
+        argumentContext = new ConcreteArgumentContext(classContext, argumentIndex, argument);
+        argumentInterceptorContext = new ConcreteArgumentInterceptorContext(argumentContext);
+
+        FieldInjector.injectFields(this, argumentContext);
+        FieldInjector.injectFields(this, argumentInterceptorContext);
+
+        testClass = argumentContext.getClassContext().getTestClass();
+        testInstance = argumentContext.getClassContext().getTestInstance();
     }
 
     private State doBeforeAll() {
@@ -240,8 +245,8 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
     }
 
     private State doTestDependent() {
-        Iterator<ExecutableTestDescriptor> executableTestDescriptorIterator =
-                getChildren().stream().map(EXECUTABLE_TEST_DESCRIPTOR_MAPPER).iterator();
+        Iterator<TestableTestDescriptor> executableTestDescriptorIterator =
+                getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).iterator();
 
         FieldInjector.injectFields(this, argumentContext);
 
@@ -249,28 +254,28 @@ public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
             if (executableTestDescriptorIterator
                     .next()
                     .test()
-                    .getExecutionResult()
+                    .getTestDescriptorStatus()
                     .isFailure()) {
                 break;
             }
         }
 
         while (executableTestDescriptorIterator.hasNext()) {
-            ExecutableTestDescriptor executableTestDescriptor = executableTestDescriptorIterator.next();
-            executableTestDescriptor.skip();
+            TestableTestDescriptor testableTestDescriptor = executableTestDescriptorIterator.next();
+            testableTestDescriptor.skip();
         }
 
         return State.AFTER_ALL;
     }
 
     private State doTestIndependent() {
-        Iterator<ExecutableTestDescriptor> executableTestDescriptorIterator =
-                getChildren().stream().map(EXECUTABLE_TEST_DESCRIPTOR_MAPPER).iterator();
+        Iterator<TestableTestDescriptor> executableTestDescriptorIterator =
+                getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).iterator();
 
         while (executableTestDescriptorIterator.hasNext()) {
-            ExecutableTestDescriptor executableTestDescriptor = executableTestDescriptorIterator.next();
-            FieldInjector.injectFields(executableTestDescriptor, argumentContext);
-            executableTestDescriptor.test();
+            TestableTestDescriptor testableTestDescriptor = executableTestDescriptorIterator.next();
+            FieldInjector.injectFields(testableTestDescriptor, argumentContext);
+            testableTestDescriptor.test();
         }
 
         return State.AFTER_ALL;

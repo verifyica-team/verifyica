@@ -16,16 +16,10 @@
 
 package org.verifyica.test.interceptor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.ClassDefinition;
 import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
-import org.verifyica.api.interceptor.MethodDefinition;
 
 @Verifyica.Autowired
 public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
@@ -41,48 +35,8 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
         engineInterceptorContext.getEngineContext().getStore().put(KEY, VALUE);
     }
 
-    public void onTestDiscovery(
-            EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions) {
-        System.out.printf("%s onTestDiscovery()%n", getClass().getName());
-
-        for (ClassDefinition classDefinition : classDefinitions) {
-            if (classDefinition.getTestClass() == EngineInterceptorTest1.class) {
-
-                // Reverse test methods
-                reverseMethodsDefinitions(classDefinition.getTestMethodDefinitions());
-
-                // Filter test method "test4"
-                classDefinition
-                        .getTestMethodDefinitions()
-                        .removeIf(methodDefinition ->
-                                methodDefinition.getMethod().getName().equals("test4"));
-            }
-        }
-    }
-
-    @Override
-    public void onExecute(EngineInterceptorContext engineInterceptorContext) {
-        System.out.printf("%s onExecute()%n", getClass().getName());
-    }
-
-    public void postExecute(EngineInterceptorContext engineInterceptorContext) {
-        System.out.printf("%s postExecute()%n", getClass().getName());
-    }
-
     @Override
     public void onDestroy(EngineInterceptorContext engineInterceptorContext) {
         System.out.printf("%s onDestroy()%n", getClass().getName());
-    }
-
-    /**
-     * Method to reverse a Set of Methods
-     *
-     * @param methodDefinitions methodDefinitions
-     */
-    private static void reverseMethodsDefinitions(Set<MethodDefinition> methodDefinitions) {
-        List<MethodDefinition> list = new ArrayList<>(methodDefinitions);
-        Collections.reverse(list);
-        methodDefinitions.clear();
-        methodDefinitions.addAll(list);
     }
 }

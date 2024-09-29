@@ -50,7 +50,7 @@ import org.verifyica.engine.support.ExecutorSupport;
 import org.verifyica.engine.support.HashSupport;
 
 /** Class to implement ClassTestDescriptor */
-public class ClassTestDescriptor extends ExecutableTestDescriptor {
+public class ClassTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptor.class);
 
@@ -71,6 +71,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     private final Class<?> testClass;
     private final List<Method> prepareMethods;
     private final List<Method> concludeMethods;
+    private final List<Throwable> throwables;
 
     @Inject
     private ExecutorService argumentExecutorService;
@@ -85,7 +86,6 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     private List<ClassInterceptor> classInterceptorsReversed;
 
     private AtomicReference<Object> testInstanceAtomicReference;
-    private List<Throwable> throwables;
 
     /**
      * Constructor
@@ -158,23 +158,6 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
     @Override
     public ClassTestDescriptor test() {
         try {
-            checkInjected(engineExecutionListener, "engineExecutionListener not injected");
-            checkInjected(argumentExecutorService, "argumentExecutorService not injected");
-            checkInjected(engineContext, "engineContext not injected");
-            checkInjected(engineInterceptorContext, "engineInterceptorContext not injected");
-
-            classContext = new ConcreteClassContext(
-                    engineContext, testClass, getDisplayName(), testArgumentParallelism, testInstanceAtomicReference);
-
-            classInterceptorContext = new ConcreteClassInterceptorContext(classContext);
-
-            classInterceptors = classInterceptorRegistry.getClassInterceptors(testClass);
-
-            classInterceptorsReversed = new ArrayList<>(classInterceptors);
-            Collections.reverse(classInterceptorsReversed);
-
-            FieldInjector.injectFields(getChildren(), classContext);
-
             engineExecutionListener.executionStarted(this);
 
             State state = State.START;
@@ -183,6 +166,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
                 switch (state) {
                     case START: {
+                        prepare();
                         state = State.INSTANTIATE;
                         break;
                     }
@@ -226,23 +210,49 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
             }
 
             TestExecutionResult testExecutionResult;
-            ExecutionResult executionResult;
+            TestDescriptorStatus testDescriptorStatus;
 
             if (throwables.isEmpty()) {
                 testExecutionResult = TestExecutionResult.successful();
-                executionResult = ExecutionResult.passed();
+                testDescriptorStatus = TestDescriptorStatus.passed();
             } else {
                 testExecutionResult = TestExecutionResult.failed(throwables.get(0));
-                executionResult = ExecutionResult.failed(throwables.get(0));
+                testDescriptorStatus = TestDescriptorStatus.failed(throwables.get(0));
             }
 
-            setExecutionResult(executionResult);
+            setTestDescriptorStatus(testDescriptorStatus);
             engineExecutionListener.executionFinished(this, testExecutionResult);
         } catch (Throwable t) {
             printStackTrace(t);
+            setTestDescriptorStatus(TestDescriptorStatus.failed(t));
+            engineExecutionListener.executionFinished(this, TestExecutionResult.failed(t));
         }
 
         return this;
+    }
+
+    /**
+     * Method to prepare the test descriptor for testing
+     *
+     * @throws Throwable Throwable
+     */
+    private void prepare() throws Throwable {
+        checkInjected(engineExecutionListener, "engineExecutionListener not injected");
+        checkInjected(argumentExecutorService, "argumentExecutorService not injected");
+        checkInjected(engineContext, "engineContext not injected");
+        checkInjected(engineInterceptorContext, "engineInterceptorContext not injected");
+
+        classContext = new ConcreteClassContext(
+                engineContext, testClass, getDisplayName(), testArgumentParallelism, testInstanceAtomicReference);
+
+        classInterceptorContext = new ConcreteClassInterceptorContext(classContext);
+
+        classInterceptors = classInterceptorRegistry.getClassInterceptors(testClass);
+
+        classInterceptorsReversed = new ArrayList<>(classInterceptors);
+        Collections.reverse(classInterceptorsReversed);
+
+        FieldInjector.injectFields(getChildren(), classContext);
     }
 
     private State doInstantiate() {
@@ -319,18 +329,18 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
             Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
 
-            List<ExecutableTestDescriptor> executableTestDescriptors = getChildren().stream()
-                    .filter(ExecutableTestDescriptor.EXECUTABLE_TEST_DESCRIPTOR_FILTER)
-                    .map(ExecutableTestDescriptor.EXECUTABLE_TEST_DESCRIPTOR_MAPPER)
+            List<TestableTestDescriptor> testableTestDescriptors = getChildren().stream()
+                    .filter(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_FILTER)
+                    .map(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_MAPPER)
                     .collect(Collectors.toList());
 
-            for (ExecutableTestDescriptor executableTestDescriptor : executableTestDescriptors) {
-                FieldInjector.injectFields(executableTestDescriptor, classContext);
+            for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
+                FieldInjector.injectFields(testableTestDescriptor, classContext);
 
                 String threadName = Thread.currentThread().getName();
                 threadName = threadName.substring(0, threadName.indexOf("/") + 1) + HashSupport.alphanumeric(6);
                 ThreadNameRunnable threadNameRunnable =
-                        new ThreadNameRunnable(threadName, executableTestDescriptor::test);
+                        new ThreadNameRunnable(threadName, testableTestDescriptor::test);
                 SemaphoreRunnable semaphoreRunnable = new SemaphoreRunnable(semaphore, threadNameRunnable);
                 Future<?> future = argumentExecutorService.submit(semaphoreRunnable);
                 futures.add(future);
@@ -338,7 +348,7 @@ public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
             ExecutorSupport.waitForAllFutures(futures, argumentExecutorService);
         } else {
-            getChildren().stream().map(EXECUTABLE_TEST_DESCRIPTOR_MAPPER).forEach(executableTestDescriptor -> {
+            getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(executableTestDescriptor -> {
                 FieldInjector.injectFields(executableTestDescriptor, classContext);
                 executableTestDescriptor.test();
             });
