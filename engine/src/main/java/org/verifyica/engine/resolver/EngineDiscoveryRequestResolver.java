@@ -54,9 +54,9 @@ import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.common.Stopwatch;
 import org.verifyica.engine.exception.EngineException;
 import org.verifyica.engine.exception.TestClassDefinitionException;
-import org.verifyica.engine.execution.ExecutableArgumentTestDescriptor;
-import org.verifyica.engine.execution.ExecutableClassTestDescriptor;
-import org.verifyica.engine.execution.ExecutableMethodTestDescriptor;
+import org.verifyica.engine.execution.ArgumentTestDescriptor;
+import org.verifyica.engine.execution.ClassTestDescriptor;
+import org.verifyica.engine.execution.TestMethodTestDescriptor;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ClassSupport;
@@ -458,7 +458,7 @@ public class EngineDiscoveryRequestResolver {
 
             validateSingleMethodPerClass(Verifyica.Conclude.class, concludeMethods);
 
-            ExecutableClassTestDescriptor classTestDescriptor = new ExecutableClassTestDescriptor(
+            ClassTestDescriptor classTestDescriptor = new ClassTestDescriptor(
                     classTestDescriptorUniqueId,
                     classDefinition.getDisplayName(),
                     testClass,
@@ -483,7 +483,7 @@ public class EngineDiscoveryRequestResolver {
 
                 validateSingleMethodPerClass(Verifyica.AfterAll.class, afterAllMethods);
 
-                ExecutableArgumentTestDescriptor argumentTestDescriptor = new ExecutableArgumentTestDescriptor(
+                ArgumentTestDescriptor argumentTestDescriptor = new ArgumentTestDescriptor(
                         argumentTestDescriptorUniqueId,
                         testArgument.getName(),
                         testArgumentIndex,
@@ -507,7 +507,7 @@ public class EngineDiscoveryRequestResolver {
 
                     validateSingleMethodPerClass(Verifyica.AfterEach.class, beforeEachMethods);
 
-                    ExecutableMethodTestDescriptor testMethodTestDescriptor = new ExecutableMethodTestDescriptor(
+                    TestMethodTestDescriptor testMethodTestDescriptor = new TestMethodTestDescriptor(
                             testMethodDescriptorUniqueId,
                             testMethodDefinition.getDisplayName(),
                             beforeEachMethods,

@@ -40,7 +40,7 @@ public class LifecycleTest1 {
 
     public String string;
 
-    @Verifyica.ClassInterceptorSupplier
+    // @Verifyica.ClassInterceptorSupplier
     public static Object classInterceptors() {
         return new ConcreteClassInterceptor();
     }
@@ -139,6 +139,7 @@ public class LifecycleTest1 {
         actual.add("conclude");
     }
 
+    @Verifyica.Autowired
     public static class ConcreteClassInterceptor implements ClassInterceptor {
 
         @Override

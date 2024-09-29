@@ -24,6 +24,7 @@ import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
+import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.injection.Inject;
@@ -56,6 +57,9 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
 
     @Inject
     protected EngineContext engineContext;
+
+    @Inject
+    protected EngineInterceptorContext engineInterceptorContext;
 
     private ExecutionResult executionResult;
 

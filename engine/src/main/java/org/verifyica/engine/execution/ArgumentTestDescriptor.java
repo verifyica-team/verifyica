@@ -41,9 +41,9 @@ import org.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-public class ExecutableArgumentTestDescriptor extends ExecutableTestDescriptor {
+public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutableArgumentTestDescriptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArgumentTestDescriptor.class);
 
     private enum State {
         START,
@@ -87,7 +87,7 @@ public class ExecutableArgumentTestDescriptor extends ExecutableTestDescriptor {
      * @param beforeAllMethods beforeAllMethods
      * @param afterAllMethods afterAllMethods
      */
-    public ExecutableArgumentTestDescriptor(
+    public ArgumentTestDescriptor(
             UniqueId uniqueId,
             String displayName,
             int argumentIndex,
@@ -108,12 +108,14 @@ public class ExecutableArgumentTestDescriptor extends ExecutableTestDescriptor {
     }
 
     @Override
-    public ExecutableArgumentTestDescriptor test() {
+    public ArgumentTestDescriptor test() {
         try {
             checkInjected(engineExecutionListener, "engineExecutionListener not injected");
             checkInjected(engineInterceptorRegistry, "engineInterceptorRegistry not injected");
             checkInjected(classInterceptorRegistry, "classInterceptorRegistry not injected");
             checkInjected(classContext, "classContext not injected");
+
+            testClass = classContext.getTestClass();
 
             classInterceptors = classInterceptorRegistry.getClassInterceptors(testClass);
 
@@ -199,8 +201,8 @@ public class ExecutableArgumentTestDescriptor extends ExecutableTestDescriptor {
         Throwable throwable = null;
 
         try {
-            for (ClassInterceptor classInterceptor : classInterceptorRegistry.getClassInterceptors(testClass)) {
-                classInterceptor.preBeforeEach(argumentInterceptorContext);
+            for (ClassInterceptor classInterceptor : classInterceptors) {
+                classInterceptor.preBeforeAll(argumentInterceptorContext);
             }
         } catch (Throwable t) {
             throwable = t;
@@ -218,10 +220,10 @@ public class ExecutableArgumentTestDescriptor extends ExecutableTestDescriptor {
 
         try {
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postBeforeEach(argumentInterceptorContext, throwable);
+                classInterceptor.postBeforeAll(argumentInterceptorContext, throwable);
             }
         } catch (Throwable t) {
-            throwable = throwable != null ? t : throwable;
+            throwable = t;
             printStackTrace(throwable);
             throwables.add(throwable);
         }
@@ -277,7 +279,7 @@ public class ExecutableArgumentTestDescriptor extends ExecutableTestDescriptor {
         Throwable throwable = null;
 
         try {
-            for (ClassInterceptor classInterceptor : classInterceptorRegistry.getClassInterceptors(testClass)) {
+            for (ClassInterceptor classInterceptor : classInterceptors) {
                 classInterceptor.preAfterAll(argumentInterceptorContext);
             }
         } catch (Throwable t) {
@@ -290,7 +292,7 @@ public class ExecutableArgumentTestDescriptor extends ExecutableTestDescriptor {
                     method.invoke(testInstance, argumentContext);
                 }
             } catch (Throwable t) {
-              throwable = t.getCause();
+                throwable = t.getCause();
             }
         }
 
@@ -299,7 +301,7 @@ public class ExecutableArgumentTestDescriptor extends ExecutableTestDescriptor {
                 classInterceptor.postAfterAll(argumentInterceptorContext, throwable);
             }
         } catch (Throwable t) {
-            throwable = throwable != null ? t : throwable;
+            throwable = t;
             printStackTrace(throwable);
             throwables.add(throwable);
         }

@@ -30,14 +30,13 @@ import org.junit.platform.engine.support.descriptor.MethodSource;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.interceptor.ArgumentInterceptorContext;
 import org.verifyica.api.interceptor.ClassInterceptor;
-import org.verifyica.engine.context.ConcreteArgumentInterceptorContext;
 import org.verifyica.engine.injection.Inject;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-public class ExecutableMethodTestDescriptor extends ExecutableTestDescriptor {
+public class TestMethodTestDescriptor extends ExecutableTestDescriptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutableMethodTestDescriptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestMethodTestDescriptor.class);
 
     private enum State {
         START,
@@ -61,7 +60,6 @@ public class ExecutableMethodTestDescriptor extends ExecutableTestDescriptor {
     private List<ClassInterceptor> classInterceptors;
     private List<ClassInterceptor> classInterceptorsReversed;
 
-    private Class<?> testClass;
     private Object testInstance;
 
     /**
@@ -73,7 +71,7 @@ public class ExecutableMethodTestDescriptor extends ExecutableTestDescriptor {
      * @param testMethod testMethod
      * @param afterEachMethods afterEachMethods
      */
-    public ExecutableMethodTestDescriptor(
+    public TestMethodTestDescriptor(
             UniqueId uniqueId,
             String displayName,
             List<Method> beforeEachMethods,
@@ -107,7 +105,7 @@ public class ExecutableMethodTestDescriptor extends ExecutableTestDescriptor {
     }
 
     @Override
-    public ExecutableMethodTestDescriptor test() {
+    public TestMethodTestDescriptor test() {
         try {
             checkInjected(engineExecutionListener, "engineExecutionListener not injected");
             checkInjected(engineInterceptorRegistry, "engineInterceptorRegistry not injected");
@@ -115,12 +113,12 @@ public class ExecutableMethodTestDescriptor extends ExecutableTestDescriptor {
             checkInjected(argumentContext, "argumentContext not injected");
             checkInjected(argumentInterceptorContext, "argumentInterceptorContext not injected");
 
-            classInterceptors = classInterceptorRegistry.getClassInterceptors(argumentContext.getClassContext().getTestClass());
+            classInterceptors = classInterceptorRegistry.getClassInterceptors(
+                    argumentContext.getClassContext().getTestClass());
 
             classInterceptorsReversed = new ArrayList<>(classInterceptors);
             Collections.reverse(classInterceptorsReversed);
 
-            testClass = argumentContext.getClassContext().getTestClass();
             testInstance = argumentContext.getClassContext().getTestInstance();
 
             engineExecutionListener.executionStarted(this);
@@ -176,7 +174,7 @@ public class ExecutableMethodTestDescriptor extends ExecutableTestDescriptor {
         Throwable throwable = null;
 
         try {
-            for (ClassInterceptor classInterceptor : classInterceptorRegistry.getClassInterceptors(testClass)) {
+            for (ClassInterceptor classInterceptor : classInterceptors) {
                 classInterceptor.preBeforeEach(argumentInterceptorContext);
             }
         } catch (Throwable t) {
@@ -198,7 +196,7 @@ public class ExecutableMethodTestDescriptor extends ExecutableTestDescriptor {
                 classInterceptor.postBeforeEach(argumentInterceptorContext, throwable);
             }
         } catch (Throwable t) {
-            throwable = throwable != null ? t : throwable;
+            throwable = t;
             printStackTrace(throwable);
             throwables.add(throwable);
         }
@@ -210,7 +208,7 @@ public class ExecutableMethodTestDescriptor extends ExecutableTestDescriptor {
         Throwable throwable = null;
 
         try {
-            for (ClassInterceptor classInterceptor : classInterceptorRegistry.getClassInterceptors(testClass)) {
+            for (ClassInterceptor classInterceptor : classInterceptors) {
                 classInterceptor.preTest(argumentInterceptorContext, testMethod);
             }
         } catch (Throwable t) {
@@ -230,7 +228,7 @@ public class ExecutableMethodTestDescriptor extends ExecutableTestDescriptor {
                 classInterceptor.postTest(argumentInterceptorContext, testMethod, throwable);
             }
         } catch (Throwable t) {
-            throwable = throwable != null ? t : throwable;
+            throwable = t;
             printStackTrace(throwable);
             throwables.add(throwable);
         }
@@ -242,7 +240,7 @@ public class ExecutableMethodTestDescriptor extends ExecutableTestDescriptor {
         Throwable throwable = null;
 
         try {
-            for (ClassInterceptor classInterceptor : classInterceptorRegistry.getClassInterceptors(testClass)) {
+            for (ClassInterceptor classInterceptor : classInterceptors) {
                 classInterceptor.preAfterEach(argumentInterceptorContext);
             }
         } catch (Throwable t) {

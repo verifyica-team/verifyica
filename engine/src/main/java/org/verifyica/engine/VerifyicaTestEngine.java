@@ -39,10 +39,10 @@ import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestEngine;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.UniqueId;
-import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Store;
+import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.FairExecutorService;
 import org.verifyica.engine.common.StackTracePrinter;
@@ -51,9 +51,10 @@ import org.verifyica.engine.common.Streams;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.context.ConcreteEngineContext;
+import org.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.verifyica.engine.exception.EngineConfigurationException;
 import org.verifyica.engine.exception.EngineException;
-import org.verifyica.engine.execution.ExecutableEngineDescriptor;
+import org.verifyica.engine.execution.EngineDescriptor;
 import org.verifyica.engine.execution.ExecutableTestDescriptor;
 import org.verifyica.engine.injection.FieldInjector;
 import org.verifyica.engine.interceptor.ClassInterceptorRegistry;
@@ -144,7 +145,8 @@ public class VerifyicaTestEngine implements TestEngine {
     @Override
     public TestDescriptor discover(EngineDiscoveryRequest engineDiscoveryRequest, UniqueId uniqueId) {
         if (!UNIQUE_ID.equals(uniqueId.toString()) || isRunningViaMavenSurefirePlugin()) {
-            return new EngineDescriptor(uniqueId, "Verifyica disabled under Maven Surefire");
+            return new org.junit.platform.engine.support.descriptor.EngineDescriptor(
+                    uniqueId, "Verifyica disabled under Maven Surefire");
         }
 
         Stopwatch stopwatch = new Stopwatch();
@@ -152,24 +154,23 @@ public class VerifyicaTestEngine implements TestEngine {
         LOGGER.trace("discover()");
 
         try {
-            ExecutableEngineDescriptor executableEngineDescriptor =
-                    new ExecutableEngineDescriptor(uniqueId, DISPLAY_NAME);
+            EngineDescriptor engineDescriptor = new EngineDescriptor(uniqueId, DISPLAY_NAME);
 
-            new EngineDiscoveryRequestResolver().resolveSelectors(engineDiscoveryRequest, executableEngineDescriptor);
+            new EngineDiscoveryRequestResolver().resolveSelectors(engineDiscoveryRequest, engineDescriptor);
 
             engineInterceptorRegistry = new EngineInterceptorRegistry();
-            FieldInjector.injectFields(executableEngineDescriptor, engineInterceptorRegistry);
+            FieldInjector.injectFields(engineDescriptor, engineInterceptorRegistry);
 
             classInterceptorRegistry = new ClassInterceptorRegistry();
-            FieldInjector.injectFields(executableEngineDescriptor, classInterceptorRegistry);
+            FieldInjector.injectFields(engineDescriptor, classInterceptorRegistry);
 
             LOGGER.trace(
                     "discovered [%d] test classes",
-                    executableEngineDescriptor.getChildren().size());
+                    engineDescriptor.getChildren().size());
             LOGGER.trace(
                     "discover() elapsedTime [%d] ms", stopwatch.elapsedTime().toMillis());
 
-            return executableEngineDescriptor;
+            return engineDescriptor;
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable t) {
@@ -191,6 +192,8 @@ public class VerifyicaTestEngine implements TestEngine {
 
         EngineContext engineContext = new ConcreteEngineContext(configuration, staticGetVersion());
 
+        EngineInterceptorContext engineInterceptorContext = new ConcreteEngineInterceptorContext(engineContext);
+
         EngineExecutionListener engineExecutionListener = configureEngineExecutionListeners(executionRequest);
 
         ExecutorService classExecutorService =
@@ -204,6 +207,7 @@ public class VerifyicaTestEngine implements TestEngine {
         FieldInjector.injectFields(engineDescriptor, engineExecutionListener);
         FieldInjector.injectFields(engineDescriptor, argumentExecutorService);
         FieldInjector.injectFields(engineDescriptor, engineContext);
+        FieldInjector.injectFields(engineDescriptor, engineInterceptorContext);
 
         List<Throwable> throwables = new ArrayList<>();
 

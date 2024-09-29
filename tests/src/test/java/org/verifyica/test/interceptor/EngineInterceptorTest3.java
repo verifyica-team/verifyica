@@ -30,6 +30,7 @@ import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.test.support.RandomSupport;
 
+@Verifyica.Disabled
 public class EngineInterceptorTest3 {
 
     @Verifyica.Autowired

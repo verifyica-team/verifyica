@@ -16,24 +16,33 @@
 
 package org.verifyica.engine.interceptor;
 
+import static java.lang.String.format;
+
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import java.util.stream.Stream;
+import org.verifyica.api.Verifyica;
 import org.verifyica.api.interceptor.ClassInterceptor;
+import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.exception.EngineException;
+import org.verifyica.engine.exception.TestClassDefinitionException;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
+import org.verifyica.engine.resolver.ResolverPredicates;
 import org.verifyica.engine.support.ClassSupport;
+import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.ObjectSupport;
 import org.verifyica.engine.support.OrderSupport;
 
@@ -84,13 +93,85 @@ public class ClassInterceptorRegistry {
         }
     }
 
-    public List<ClassInterceptor> getClassInterceptors(Class<?> testClass) {
+    public List<ClassInterceptor> getClassInterceptors(Class<?> testClass) throws Throwable {
         reentrantReadWriteLock.writeLock().lock();
         try {
-            return new ArrayList<>(classInterceptors);
+            List<ClassInterceptor> classInterceptors = new ArrayList<>(this.classInterceptors);
+            classInterceptors.addAll(getDeclaredClassInterceptor(testClass));
+            return classInterceptors;
         } finally {
             reentrantReadWriteLock.writeLock().unlock();
         }
+    }
+
+    private List<ClassInterceptor> getDeclaredClassInterceptor(Class<?> testClass) throws Throwable {
+        List<ClassInterceptor> classInterceptors = new ArrayList<>();
+
+        List<Method> classInterceptorSupplierMethods = ClassSupport.findMethods(
+                testClass, ResolverPredicates.CLASS_INTERCEPTOR_SUPPLIER, HierarchyTraversalMode.BOTTOM_UP);
+
+        validateSingleMethodPerClass(Verifyica.ClassInterceptorSupplier.class, classInterceptorSupplierMethods);
+
+        if (!classInterceptorSupplierMethods.isEmpty()) {
+            Method classInterceptorSupplierMethod = classInterceptorSupplierMethods.get(0);
+            Object object = classInterceptorSupplierMethod.invoke(null);
+
+            if (object == null) {
+                throw new TestClassDefinitionException(format(
+                        "Null Object supplied by test class" + " [%s] @Verifyica.ClassInterceptorSupplier" + " method",
+                        testClass.getName()));
+            } else if (object instanceof ClassInterceptor) {
+                classInterceptors.add((ClassInterceptor) object);
+            } else if (object.getClass().isArray()) {
+                Object[] objects = (Object[]) object;
+                if (objects.length > 0) {
+                    int index = 0;
+                    for (Object o : objects) {
+                        if (o instanceof ClassInterceptor) {
+                            // classInterceptorManager.register(testClass, (ClassInterceptor) o);
+                        } else {
+                            throw new TestClassDefinitionException(format(
+                                    "Invalid type [%s] supplied by test class [%s]"
+                                            + " @Verifyica.ClassInterceptorSupplier method"
+                                            + " at index [%d]",
+                                    o.getClass().getName(), testClass.getName(), index));
+                        }
+                        index++;
+                    }
+                }
+            } else if (object instanceof Stream
+                    || object instanceof Iterable
+                    || object instanceof Iterator
+                    || object instanceof Enumeration) {
+                Iterator<?> iterator;
+                if (object instanceof Enumeration) {
+                    iterator = Collections.list((Enumeration<?>) object).iterator();
+                } else if (object instanceof Iterator) {
+                    iterator = (Iterator<?>) object;
+                } else if (object instanceof Stream) {
+                    Stream<?> stream = (Stream<?>) object;
+                    iterator = stream.iterator();
+                } else {
+                    Iterable<?> iterable = (Iterable<?>) object;
+                    iterator = iterable.iterator();
+                }
+
+                while (iterator.hasNext()) {
+                    Object o = iterator.next();
+                    if (o instanceof ClassInterceptor) {
+                        classInterceptors.add((ClassInterceptor) o);
+                    } else {
+                        throw new TestClassDefinitionException(format(
+                                "Invalid type [%s] supplied by test class"
+                                        + " [%s] @Verifyica.ClassInterceptorSupplier"
+                                        + " method",
+                                o.getClass().getName(), testClass.getName()));
+                    }
+                }
+            }
+        }
+
+        return classInterceptors;
     }
 
     /**
@@ -140,5 +221,31 @@ public class ClassInterceptorRegistry {
 
         classes.clear();
         classes.addAll(filteredClasses);
+    }
+
+    /**
+     * Method to validate only a single method per declared class is annotation with the given
+     * annotation
+     *
+     * @param annotationClass annotationClass
+     * @param methods methods
+     */
+    private static void validateSingleMethodPerClass(Class<?> annotationClass, List<Method> methods) {
+        Precondition.notNull(annotationClass, "annotationClass is null");
+
+        if (methods != null) {
+            Set<Class<?>> classes = new HashSet<>();
+
+            methods.forEach(method -> {
+                if (classes.contains(method.getDeclaringClass())) {
+                    String annotationDisplayName = "@Verifyica." + annotationClass.getSimpleName();
+                    throw new TestClassDefinitionException(format(
+                            "Test class [%s] contains more than one method" + " annotated with [%s]",
+                            method.getDeclaringClass().getName(), annotationDisplayName));
+                }
+
+                classes.add(method.getDeclaringClass());
+            });
+        }
     }
 }

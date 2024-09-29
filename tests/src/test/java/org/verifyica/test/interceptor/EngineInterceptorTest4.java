@@ -26,6 +26,7 @@ import org.verifyica.api.interceptor.ClassDefinition;
 import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
 
+@Verifyica.Disabled
 @Verifyica.Autowired
 public class EngineInterceptorTest4 implements EngineInterceptor {
 

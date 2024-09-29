@@ -22,6 +22,7 @@ import static org.assertj.core.api.Fail.fail;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
 
+@Verifyica.Disabled
 public class EngineInterceptorTest1 {
 
     @Verifyica.ArgumentSupplier

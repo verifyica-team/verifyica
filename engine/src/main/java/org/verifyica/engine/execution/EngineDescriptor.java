@@ -20,11 +20,11 @@ import org.junit.platform.engine.UniqueId;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-public class ExecutableEngineDescriptor extends ExecutableTestDescriptor {
+public class EngineDescriptor extends ExecutableTestDescriptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutableEngineDescriptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EngineDescriptor.class);
 
-    public ExecutableEngineDescriptor(UniqueId uniqueId, String displayName) {
+    public EngineDescriptor(UniqueId uniqueId, String displayName) {
         super(uniqueId, displayName);
     }
 
