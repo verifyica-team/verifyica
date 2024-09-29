@@ -49,16 +49,10 @@ Unit testing is traditionally used where test methods in a test class are isolat
 Verifyica uses a dependent test method paradigm ...
 
 - for a test class
-  - order the test methods
-  - execute the test methods sequentially
-  - if a test method fails, remaining test methods are skipped
-
-**Notes**
-
-- Verifyica provides the `@Verifyica.IndependentTests` test class annotation to allow independent test method execution.
-  - order the test methods
-  - execute the test methods sequentially
-  - all test methods are executed
+  - order the test methods (by `@Verfyica.Order` or `@Verifyica.Step`)
+  - for a test argument 
+    - execute the test methods sequentially
+    - if a test method fails, remaining test methods are skipped
 
 # Features
 
@@ -74,8 +68,9 @@ Verifyica uses a dependent test method paradigm ...
   - test methods are always tested sequentially for a test argument 
 - Virtual thread support (Java 21+)
 - Properties file driven configuration
-- Test class / test method filtering
-- Test class tag filtering
+- Test class filtering
+  - class name
+  - class tags
 - Test class interceptors (extensions)
 - Engine interceptors (extensions)
   - set up / tear down global / external resources

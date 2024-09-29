@@ -239,12 +239,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             throwables.add(throwable);
         }
 
-        State testState;
-        if (testClass.isAnnotationPresent(Verifyica.IndependentTests.class)) {
-            testState = State.TEST_INDEPENDENT;
-        } else {
-            testState = State.TEST_DEPENDENT;
-        }
+        State testState = State.TEST_DEPENDENT;
 
         return throwable == null ? testState : State.AFTER_ALL;
     }

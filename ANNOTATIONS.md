@@ -304,15 +304,6 @@ Used to define _scenario_ test method execution order. The `id` -> `nextId` defi
 
 - Test methods with `@Verifyica.Disabled` are removed after the DAG is generated
 
-### @Verifyica.IndependentTests
-
-Used to indicate that test methods in a test class are independent of each other.
-
-- for a test class
-  - order the test methods
-  - execute the test methods sequentially
-  - all test methods are executed
-
 ---
 
 ### @Verifyica.Testable

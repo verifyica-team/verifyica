@@ -87,6 +87,27 @@ public @interface Verifyica {
         int order();
     }
 
+    /** Step annotation */
+    @org.junit.platform.commons.annotation.Testable
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Step {
+
+        /**
+         * id value
+         *
+         * @return the id value
+         */
+        String id();
+
+        /**
+         * nextId value
+         *
+         * @return the nextId value
+         */
+        String nextId();
+    }
+
     /** Disabled annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
@@ -147,31 +168,4 @@ public @interface Verifyica {
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Testable {}
-
-    /** IndependentTests annotation */
-    @org.junit.platform.commons.annotation.Testable
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface IndependentTests {}
-
-    /** Step annotation */
-    @org.junit.platform.commons.annotation.Testable
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface Step {
-
-        /**
-         * id value
-         *
-         * @return the id value
-         */
-        String id();
-
-        /**
-         * nextId value
-         *
-         * @return the nextId value
-         */
-        String nextId();
-    }
 }
