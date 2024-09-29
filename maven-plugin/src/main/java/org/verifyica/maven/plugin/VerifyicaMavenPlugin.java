@@ -58,7 +58,7 @@ import org.verifyica.engine.common.Streams;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.ConcreteConfigurationParameters;
 import org.verifyica.engine.configuration.Constants;
-import org.verifyica.engine.descriptor.InvocableTestDescriptor;
+import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.verifyica.engine.listener.StatusEngineExecutionListener;
 import org.verifyica.engine.listener.SummaryEngineExecutionListener;
@@ -169,6 +169,10 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
      * @throws MojoFailureException MojoFailureException
      */
     public void execute() throws MojoFailureException {
+        if (properties.containsKey("skipTests") || System.getProperty("skipTests") != null) {
+            return;
+        }
+
         initialize();
 
         Stopwatch stopwatch = new Stopwatch();
@@ -222,11 +226,18 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         try {
             execute(testDescriptor);
 
-            for (TestDescriptor ancestorTestDescriptor : testDescriptor.getAncestors()) {
-                InvocableTestDescriptor invocableTestDescriptor = (InvocableTestDescriptor) ancestorTestDescriptor;
-                if (invocableTestDescriptor.getInvocationResult().isFailure()) {
-                    throw new MojoFailureException("");
-                }
+            Optional<TestableTestDescriptor> optionalExecutableTestDescriptor = testDescriptor.getChildren().stream()
+                    .filter(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_FILTER)
+                    .map(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_MAPPER)
+                    .filter(executableTestDescriptor ->
+                            executableTestDescriptor.getTestDescriptorStatus().isFailure())
+                    .findFirst();
+
+            if (optionalExecutableTestDescriptor.isPresent()) {
+                throw new MojoFailureException(optionalExecutableTestDescriptor
+                        .get()
+                        .getTestDescriptorStatus()
+                        .getThrowable());
             }
         } catch (Throwable t) {
             throw new MojoFailureException(t);

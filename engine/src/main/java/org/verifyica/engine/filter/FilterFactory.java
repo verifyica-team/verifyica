@@ -80,14 +80,12 @@ public class FilterFactory {
                         switch (decodedType) {
                             case INCLUDE_CLASS: {
                                 String classRegex = (String) filterMap.get("classRegex");
-                                String methodRegex = (String) filterMap.get("methodRegex");
-                                filters.add(IncludeClassFilter.create(classRegex, methodRegex));
+                                filters.add(IncludeClassFilter.create(classRegex));
                                 break;
                             }
                             case EXCLUDE_CLASS: {
                                 String classRegex = (String) filterMap.get("classRegex");
-                                String methodRegex = (String) filterMap.get("methodRegex");
-                                filters.add(ExcludeClassFilter.create(classRegex, methodRegex));
+                                filters.add(ExcludeClassFilter.create(classRegex));
                                 break;
                             }
                             case INCLUDE_TAGGED_CLASS: {

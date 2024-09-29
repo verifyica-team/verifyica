@@ -16,9 +16,6 @@
 
 package org.verifyica.api.interceptor;
 
-import java.util.List;
-import java.util.function.Predicate;
-
 /** Interface to implement EngineInterceptor */
 public interface EngineInterceptor {
 
@@ -33,74 +30,12 @@ public interface EngineInterceptor {
     }
 
     /**
-     * Method to get a Predicate to filter ClassDefinitions onTestDiscovery
-     *
-     * @return a ClassDefinition Predicate
-     */
-    default Predicate<ClassDefinition> onTestDiscoveryPredicate() {
-        return classDefinition -> true;
-    }
-
-    /**
-     * Engine onTestDiscovery callback
-     *
-     * <p>Default implementation checks/tests onTestDiscoveryPredicate and dispatches to
-     * onTestDiscovery(ClassDefinition)
-     *
-     * @param engineInterceptorContext engineInterceptorContext
-     * @param classDefinitions classDefinitions
-     * @throws Throwable Throwable
-     */
-    default void onTestDiscovery(
-            EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions)
-            throws Throwable {
-        Predicate<ClassDefinition> classDefinitionPredicate = onTestDiscoveryPredicate();
-
-        for (ClassDefinition classDefinition : classDefinitions) {
-            if (classDefinitionPredicate == null || classDefinitionPredicate.test(classDefinition)) {
-                onTestDiscovery(engineInterceptorContext, classDefinition);
-            }
-        }
-    }
-
-    /**
-     * Engine onTestDiscovery callback
-     *
-     * @param engineInterceptorContext engineInterceptorContext
-     * @param classDefinition classDefinition
-     * @throws Throwable Throwable
-     */
-    default void onTestDiscovery(EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
-            throws Throwable {
-        // INTENTIONALLY BLANK
-    }
-
-    /**
-     * Engine preExecute callback
-     *
-     * @param engineInterceptorContext engineInterceptorContext
-     * @throws Throwable Throwable
-     */
-    default void preExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
-        // INTENTIONALLY BLANK
-    }
-
-    /**
-     * Engine postExecute callback
-     *
-     * @param engineInterceptorContext engineInterceptorContext
-     * @throws Throwable Throwable
-     */
-    default void postExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
-        // INTENTIONALLY BLANK
-    }
-
-    /**
      * Engine onDestroy callback
      *
      * @param engineInterceptorContext engineInterceptorContext
+     * @throws Throwable Throwable
      */
-    default void onDestroy(EngineInterceptorContext engineInterceptorContext) {
+    default void onDestroy(EngineInterceptorContext engineInterceptorContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 }

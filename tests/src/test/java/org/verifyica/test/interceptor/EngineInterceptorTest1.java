@@ -113,7 +113,7 @@ public class EngineInterceptorTest1 {
                 .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
-    @Verifyica.Test
+    // @Verifyica.Test
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test4(%s)%n", argumentContext.getTestArgument().getPayload());
 

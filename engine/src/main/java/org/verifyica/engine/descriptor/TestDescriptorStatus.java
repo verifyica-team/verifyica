@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.invocation;
+package org.verifyica.engine.descriptor;
 
 import java.util.Objects;
 
-/** Class to implement InvocationResult */
-public class InvocationResult {
+/** Class to implement TestDescriptorResult */
+public class TestDescriptorStatus {
 
-    private static final InvocationResult SUCCESS = new InvocationResult(Type.SUCCESS);
-    private static final InvocationResult SKIPPED = new InvocationResult(Type.SKIPPED);
+    private static final TestDescriptorStatus PASSED = new TestDescriptorStatus(Type.PASSED);
+    private static final TestDescriptorStatus SKIPPED = new TestDescriptorStatus(Type.SKIPPED);
 
     /** InvocationResult Type */
     public enum Type {
-        /** Success */
-        SUCCESS,
-        /** Exception */
-        EXCEPTION,
+        /** Passed */
+        PASSED,
+        /** Failed */
+        FAILED,
         /** Skipped */
         SKIPPED
     }
@@ -42,7 +42,7 @@ public class InvocationResult {
      *
      * @param type type
      */
-    private InvocationResult(Type type) {
+    private TestDescriptorStatus(Type type) {
         this(type, null);
     }
 
@@ -52,7 +52,7 @@ public class InvocationResult {
      * @param type type
      * @param throwable throwable
      */
-    private InvocationResult(Type type, Throwable throwable) {
+    private TestDescriptorStatus(Type type, Throwable throwable) {
         this.type = type;
         this.throwable = throwable;
     }
@@ -81,7 +81,7 @@ public class InvocationResult {
      * @return true if the result is success, else false
      */
     public boolean isSuccess() {
-        return type == Type.SUCCESS;
+        return type == Type.PASSED;
     }
 
     /**
@@ -90,7 +90,7 @@ public class InvocationResult {
      * @return true if the result is failure, else false
      */
     public boolean isFailure() {
-        return type == Type.EXCEPTION;
+        return type == Type.FAILED;
     }
 
     /**
@@ -102,6 +102,15 @@ public class InvocationResult {
         return type == Type.SKIPPED;
     }
 
+    /**
+     * Method to return if the result is skipped with a Throwable
+     *
+     * @return true if the result is skipped with a Throwable, else false
+     */
+    public boolean isSkippedWithThrowable() {
+        return type == Type.SKIPPED && throwable != null;
+    }
+
     @Override
     public String toString() {
         return "InvocationResult{" + "type=" + type + ", throwable=" + throwable + '}';
@@ -111,7 +120,7 @@ public class InvocationResult {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        InvocationResult that = (InvocationResult) o;
+        TestDescriptorStatus that = (TestDescriptorStatus) o;
         return type == that.type && Objects.equals(throwable, that.throwable);
     }
 
@@ -125,8 +134,8 @@ public class InvocationResult {
      *
      * @return an InvocationResult
      */
-    public static InvocationResult success() {
-        return SUCCESS;
+    public static TestDescriptorStatus passed() {
+        return PASSED;
     }
 
     /**
@@ -134,7 +143,7 @@ public class InvocationResult {
      *
      * @return an InvocationResult
      */
-    public static InvocationResult skipped() {
+    public static TestDescriptorStatus skipped() {
         return SKIPPED;
     }
 
@@ -144,8 +153,8 @@ public class InvocationResult {
      * @param throwable throwable
      * @return an InvocationResult
      */
-    public static InvocationResult skipped(Throwable throwable) {
-        return new InvocationResult(Type.SKIPPED, throwable);
+    public static TestDescriptorStatus skipped(Throwable throwable) {
+        return new TestDescriptorStatus(Type.SKIPPED, throwable);
     }
 
     /**
@@ -154,7 +163,7 @@ public class InvocationResult {
      * @param throwable throwable
      * @return an InvocationResult
      */
-    public static InvocationResult exception(Throwable throwable) {
-        return new InvocationResult(Type.EXCEPTION, throwable);
+    public static TestDescriptorStatus failed(Throwable throwable) {
+        return new TestDescriptorStatus(Type.FAILED, throwable);
     }
 }

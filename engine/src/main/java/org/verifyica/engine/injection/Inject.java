@@ -14,31 +14,14 @@
  * limitations under the License.
  */
 
-package org.verifyica.api.interceptor;
+package org.verifyica.engine.injection;
 
-import java.lang.reflect.Method;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/** Interface to implement MethodDefinition */
-public interface MethodDefinition {
-
-    /**
-     * Get the test method
-     *
-     * @return the test method
-     */
-    Method getMethod();
-
-    /**
-     * Set the test method display name
-     *
-     * @param displayName displayName
-     */
-    void setDisplayName(String displayName);
-
-    /**
-     * Get the test method display name
-     *
-     * @return the test method display name
-     */
-    String getDisplayName();
-}
+/** Inject annotation */
+@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Inject {}

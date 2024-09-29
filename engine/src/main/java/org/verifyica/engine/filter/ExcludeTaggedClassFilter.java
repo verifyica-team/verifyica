@@ -16,7 +16,6 @@
 
 package org.verifyica.engine.filter;
 
-import java.lang.reflect.Method;
 import org.verifyica.engine.support.TagSupport;
 
 /** Class to implement ExcludeTaggedClassFilter */
@@ -26,10 +25,9 @@ public class ExcludeTaggedClassFilter extends AbstractFilter {
      * Constructor
      *
      * @param classNameRegex classNameRegex
-     * @param methodNameRegex methodNameRegex
      */
-    private ExcludeTaggedClassFilter(String classNameRegex, String methodNameRegex) {
-        super(classNameRegex, methodNameRegex);
+    private ExcludeTaggedClassFilter(String classNameRegex) {
+        super(classNameRegex);
     }
 
     @Override
@@ -38,7 +36,7 @@ public class ExcludeTaggedClassFilter extends AbstractFilter {
     }
 
     @Override
-    public boolean matches(Class<?> testClass, Method testMethod) {
+    public boolean matches(Class<?> testClass) {
         for (String tag : TagSupport.getTags(testClass)) {
             if (getClassNamePattern().matcher(tag).find()) {
                 return true;
@@ -55,6 +53,6 @@ public class ExcludeTaggedClassFilter extends AbstractFilter {
      * @return an ExcludeFilter
      */
     public static ExcludeTaggedClassFilter create(String classRegex) {
-        return new ExcludeTaggedClassFilter(classRegex, "");
+        return new ExcludeTaggedClassFilter(classRegex);
     }
 }

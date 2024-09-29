@@ -16,33 +16,52 @@
 
 package org.verifyica.engine.descriptor;
 
+import static java.lang.String.format;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.MethodSource;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.engine.common.AnsiColor;
-import org.verifyica.engine.common.Precondition;
-import org.verifyica.engine.common.StackTracePrinter;
-import org.verifyica.engine.invocation.Invocation;
-import org.verifyica.engine.invocation.InvocationContext;
-import org.verifyica.engine.invocation.InvocationController;
-import org.verifyica.engine.invocation.InvocationResult;
-import org.verifyica.engine.invocation.SkipInvocation;
+import org.verifyica.api.interceptor.ArgumentInterceptorContext;
+import org.verifyica.api.interceptor.ClassInterceptor;
+import org.verifyica.engine.injection.Inject;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement TestMethodTestDescriptor */
-public class TestMethodTestDescriptor extends InvocableTestDescriptor {
+/** Class to implemment TestMethodDescriptor */
+public class TestMethodTestDescriptor extends TestableTestDescriptor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestMethodTestDescriptor.class);
+
+    private enum State {
+        START,
+        BEFORE_EACH,
+        TEST,
+        AFTER_EACH,
+        END
+    }
 
     private final List<Method> beforeEachMethods;
     private final Method testMethod;
     private final List<Method> afterEachMethods;
+    private final List<Throwable> throwables;
+
+    @Inject
+    private ArgumentContext argumentContext;
+
+    @Inject
+    private ArgumentInterceptorContext argumentInterceptorContext;
+
+    private List<ClassInterceptor> classInterceptors;
+    private List<ClassInterceptor> classInterceptorsReversed;
+
+    private Object testInstance;
 
     /**
      * Constructor
@@ -61,13 +80,10 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
             List<Method> afterEachMethods) {
         super(uniqueId, displayName);
 
-        Precondition.notNull(beforeEachMethods, "beforeEachMethods is null");
-        Precondition.notNull(testMethod, "testMethod is null");
-        Precondition.notNull(afterEachMethods, "afterEachMethods is null");
-
         this.beforeEachMethods = beforeEachMethods;
         this.testMethod = testMethod;
         this.afterEachMethods = afterEachMethods;
+        this.throwables = new ArrayList<>();
     }
 
     @Override
@@ -81,15 +97,6 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
     }
 
     /**
-     * Method to get List of beforeEach Methods
-     *
-     * @return a List of beforeEach Methods
-     */
-    public List<Method> getBeforeEachMethods() {
-        return beforeEachMethods;
-    }
-
-    /**
      * Method to get the test Method
      *
      * @return the test Method
@@ -98,140 +105,174 @@ public class TestMethodTestDescriptor extends InvocableTestDescriptor {
         return testMethod;
     }
 
-    /**
-     * Method to get a List of afterEach Methods
-     *
-     * @return a List of afterEach Methods
-     */
-    public List<Method> getAfterEachMethods() {
-        return afterEachMethods;
-    }
-
     @Override
-    public Invocation getTestInvocation(InvocationContext invocationContext) {
-        return new TestInvocation(this, invocationContext);
-    }
-
-    @Override
-    public Invocation getSkipInvocation(InvocationContext invocationContext) {
-        return new SkipInvocation(this, invocationContext);
-    }
-
-    @Override
-    public String toString() {
-        return "TestMethodTestDescriptor{"
-                + "uniqueId="
-                + getUniqueId()
-                + ", displayName="
-                + getDisplayName()
-                + ", beforeEachMethods="
-                + beforeEachMethods
-                + ", testMethod="
-                + testMethod
-                + ", afterEachMethods="
-                + afterEachMethods
-                + '}';
-    }
-
-    /** Class to implement TestInvocation */
-    private static class TestInvocation implements Invocation {
-
-        private static final Logger LOGGER = LoggerFactory.getLogger(TestInvocation.class);
-
-        private enum State {
-            START,
-            BEFORE_EACH,
-            TEST,
-            AFTER_EACH,
-            END
-        }
-
-        private final TestMethodTestDescriptor testMethodTestDescriptor;
-        private final EngineExecutionListener engineExecutionListener;
-        private final ArgumentContext argumentContext;
-        private final InvocationController invocationController;
-
-        /**
-         * Constructor
-         *
-         * @param testMethodTestDescriptor testMethodTestDescriptor
-         * @param invocationContext invocationContext
-         */
-        private TestInvocation(TestMethodTestDescriptor testMethodTestDescriptor, InvocationContext invocationContext) {
-            this.testMethodTestDescriptor = testMethodTestDescriptor;
-            this.engineExecutionListener = invocationContext.get(EngineExecutionListener.class);
-            this.invocationController = invocationContext.get(InvocationController.class);
-            this.argumentContext = invocationContext.get(ArgumentContext.class);
-        }
-
-        @Override
-        public InvocationResult invoke() {
-            engineExecutionListener.executionStarted(testMethodTestDescriptor);
-
-            List<InvocationResult> invocationResults = new ArrayList<>();
-            InvocationResult invocationResult;
+    public TestMethodTestDescriptor test() {
+        try {
+            engineExecutionListener.executionStarted(this);
 
             State state = State.START;
             while (state != State.END) {
-                LOGGER.trace("testDescriptor [%s] state [%s]", testMethodTestDescriptor, state);
+                LOGGER.trace("testDescriptor [%s] state [%s]", this, state);
+
                 switch (state) {
                     case START: {
+                        prepare();
                         state = State.BEFORE_EACH;
                         break;
                     }
                     case BEFORE_EACH: {
-                        invocationResult = invocationController.invokeBeforeEachMethods(
-                                testMethodTestDescriptor.getBeforeEachMethods(), argumentContext);
-                        invocationResults.add(invocationResult);
-                        if (invocationResult.isFailure()) {
-                            StackTracePrinter.printStackTrace(
-                                    invocationResult.getThrowable(), AnsiColor.TEXT_RED_BOLD, System.err);
-                            state = State.AFTER_EACH;
-                        } else {
-                            state = State.TEST;
-                        }
+                        state = doBeforeEach();
                         break;
                     }
                     case TEST: {
-                        invocationResult = invocationController.invokeTestMethod(
-                                testMethodTestDescriptor.getTestMethod(), argumentContext);
-                        invocationResults.add(invocationResult);
-                        if (invocationResult.isFailure()) {
-                            StackTracePrinter.printStackTrace(
-                                    invocationResult.getThrowable(), AnsiColor.TEXT_RED_BOLD, System.err);
-                        }
-                        state = State.AFTER_EACH;
+                        state = doTest();
                         break;
                     }
                     case AFTER_EACH: {
-                        invocationResult = invocationController.invokeAfterEachMethods(
-                                testMethodTestDescriptor.getAfterEachMethods(), argumentContext);
-                        invocationResults.add(invocationResult);
-                        if (invocationResult.isFailure()) {
-                            StackTracePrinter.printStackTrace(
-                                    invocationResult.getThrowable(), AnsiColor.TEXT_RED_BOLD, System.err);
-                        }
-                        state = State.END;
+                        state = doAfterEach();
                         break;
                     }
                     default: {
-                        throw new IllegalStateException("Invalid state");
+                        throw new IllegalStateException(format("Invalid State [%s]", state));
                     }
                 }
             }
 
-            for (InvocationResult invocationResult2 : invocationResults) {
-                if (invocationResult2.isFailure()) {
-                    testMethodTestDescriptor.setInvocationResult(invocationResult2);
-                    engineExecutionListener.executionFinished(
-                            testMethodTestDescriptor, TestExecutionResult.failed(invocationResult2.getThrowable()));
-                    return invocationResult2;
-                }
+            TestExecutionResult testExecutionResult;
+            TestDescriptorStatus testDescriptorStatus;
+
+            if (throwables.isEmpty()) {
+                testExecutionResult = TestExecutionResult.successful();
+                testDescriptorStatus = TestDescriptorStatus.passed();
+            } else {
+                testExecutionResult = TestExecutionResult.failed(throwables.get(0));
+                testDescriptorStatus = TestDescriptorStatus.failed(throwables.get(0));
             }
 
-            testMethodTestDescriptor.setInvocationResult(InvocationResult.success());
-            engineExecutionListener.executionFinished(testMethodTestDescriptor, TestExecutionResult.successful());
-            return InvocationResult.success();
+            setTestDescriptorStatus(testDescriptorStatus);
+            engineExecutionListener.executionFinished(this, testExecutionResult);
+        } catch (Throwable t) {
+            printStackTrace(t);
+            setTestDescriptorStatus(TestDescriptorStatus.failed(t));
+            engineExecutionListener.executionFinished(this, TestExecutionResult.failed(t));
         }
+
+        return this;
+    }
+
+    private void prepare() throws Throwable {
+        checkInjected(engineExecutionListener, "engineExecutionListener not injected");
+        checkInjected(engineInterceptorRegistry, "engineInterceptorRegistry not injected");
+        checkInjected(classInterceptorRegistry, "classInterceptorRegistry not injected");
+        checkInjected(argumentContext, "argumentContext not injected");
+        checkInjected(argumentInterceptorContext, "argumentInterceptorContext not injected");
+
+        classInterceptors = classInterceptorRegistry.getClassInterceptors(
+                argumentContext.getClassContext().getTestClass());
+
+        classInterceptorsReversed = new ArrayList<>(classInterceptors);
+        Collections.reverse(classInterceptorsReversed);
+
+        testInstance = argumentContext.getClassContext().getTestInstance();
+    }
+
+    private State doBeforeEach() {
+        Throwable throwable = null;
+
+        try {
+            for (ClassInterceptor classInterceptor : classInterceptors) {
+                classInterceptor.preBeforeEach(argumentInterceptorContext);
+            }
+        } catch (Throwable t) {
+            throwable = t;
+        }
+
+        if (throwable == null) {
+            try {
+                for (Method method : beforeEachMethods) {
+                    method.invoke(testInstance, argumentContext);
+                }
+            } catch (Throwable t) {
+                throwable = t.getCause();
+            }
+        }
+
+        try {
+            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                classInterceptor.postBeforeEach(argumentInterceptorContext, throwable);
+            }
+        } catch (Throwable t) {
+            throwable = t;
+            printStackTrace(throwable);
+            throwables.add(throwable);
+        }
+
+        return throwable == null ? State.TEST : State.AFTER_EACH;
+    }
+
+    private State doTest() {
+        Throwable throwable = null;
+
+        try {
+            for (ClassInterceptor classInterceptor : classInterceptors) {
+                classInterceptor.preTest(argumentInterceptorContext, testMethod);
+            }
+        } catch (Throwable t) {
+            throwable = t;
+        }
+
+        if (throwable == null) {
+            try {
+                testMethod.invoke(testInstance, argumentContext);
+            } catch (Throwable t) {
+                throwable = t.getCause();
+            }
+        }
+
+        try {
+            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                classInterceptor.postTest(argumentInterceptorContext, testMethod, throwable);
+            }
+        } catch (Throwable t) {
+            throwable = t;
+            printStackTrace(throwable);
+            throwables.add(throwable);
+        }
+
+        return State.AFTER_EACH;
+    }
+
+    private State doAfterEach() {
+        Throwable throwable = null;
+
+        try {
+            for (ClassInterceptor classInterceptor : classInterceptors) {
+                classInterceptor.preAfterEach(argumentInterceptorContext);
+            }
+        } catch (Throwable t) {
+            throwable = t;
+        }
+
+        if (throwable == null) {
+            try {
+                for (Method method : afterEachMethods) {
+                    method.invoke(testInstance, argumentContext);
+                }
+            } catch (Throwable t) {
+                throwable = t.getCause();
+            }
+        }
+
+        try {
+            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                classInterceptor.postAfterEach(argumentInterceptorContext, throwable);
+            }
+        } catch (Throwable t) {
+            throwable = throwable != null ? t : throwable;
+            printStackTrace(throwable);
+            throwables.add(throwable);
+        }
+
+        return State.END;
     }
 }

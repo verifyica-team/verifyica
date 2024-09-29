@@ -6,7 +6,7 @@ Verifyica uses a concept of an interceptor to hook into the test engine and test
 
 ### EngineInterceptor
 
-An [EngineInterceptor](api/src/main/java/org/verifyica/api/interceptor/engine/EngineInterceptor.java) has callback methods for global events within the test engine.
+An [EngineInterceptor](api/src/main/java/org/verifyica/api/interceptor/engine/EngineInterceptor.java) has interceptorCallback methods for global events within the test engine.
 
 - optional
 - global
@@ -16,7 +16,7 @@ An [EngineInterceptor](api/src/main/java/org/verifyica/api/interceptor/engine/En
 
 ### ClassInterceptor
 
-A [ClassInterceptor](api/src/main/java/org/verifyica/api/interceptor/ClassInterceptor.java) has pre/post test lifcycle callback methods.
+A [ClassInterceptor](api/src/main/java/org/verifyica/api/interceptor/ClassInterceptor.java) has pre/post test lifcycle interceptorCallback methods.
 
 - optional
 - may be global

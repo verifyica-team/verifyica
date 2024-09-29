@@ -53,7 +53,6 @@ public class ResolverPredicates {
                 && Modifier.isPublic(modifiers)
                 && !Modifier.isStatic(modifiers)
                 && method.getReturnType().equals(Void.TYPE)
-                && !method.isAnnotationPresent(Verifyica.Disabled.class)
                 && method.isAnnotationPresent(Verifyica.Test.class);
     };
 

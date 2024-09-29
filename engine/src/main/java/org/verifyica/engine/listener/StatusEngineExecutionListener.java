@@ -109,7 +109,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
                     testArgumentDisplayName =
-                            argumentTestDescriptor.getTestArgument().getName();
+                            argumentTestDescriptor.getArgument().getName();
                 }
 
                 TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
@@ -162,7 +162,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
                     testArgumentDisplayName =
-                            argumentTestDescriptor.getTestArgument().getName();
+                            argumentTestDescriptor.getArgument().getName();
                 }
 
                 TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
@@ -220,7 +220,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
                     testArgumentDisplayName =
-                            argumentTestDescriptor.getTestArgument().getName();
+                            argumentTestDescriptor.getArgument().getName();
                 }
 
                 TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);

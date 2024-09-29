@@ -14,15 +14,31 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.invocation;
+package org.verifyica.engine.api;
 
-/** Interface to implement Invocation */
-public interface Invocation {
+import java.lang.reflect.Method;
+
+/** Interface to implement MethodDefinition */
+public interface MethodDefinition {
 
     /**
-     * Method to invoke an invocation
+     * Get the test method
      *
-     * @return an InvocationResult
+     * @return the test method
      */
-    InvocationResult invoke();
+    Method getMethod();
+
+    /**
+     * Set the test method display name
+     *
+     * @param displayName displayName
+     */
+    void setDisplayName(String displayName);
+
+    /**
+     * Get the test method display name
+     *
+     * @return the test method display name
+     */
+    String getDisplayName();
 }

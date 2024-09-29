@@ -109,7 +109,7 @@ public class StepTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Step(id = "step5")
+    @Verifyica.Step(id = "step5", nextId = "")
     public void test5(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test5(name[%s], payload[%s])%n",

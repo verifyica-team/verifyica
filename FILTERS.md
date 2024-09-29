@@ -17,22 +17,18 @@ There are four filter types:
 ### `IncludeClass`
 
 - includes a test class
-- includes specific test methods
 
 ### `ExcludeClass`
 
 - excludes a test class
-- excludes all test methods
 
 ### `IncludeTaggedClass`
 
 - includes a tagged test class
-- includes specific test methods
 
 ### `ExcludeTaggedClass`
 
 - excludes a tagged test class
-- excludes all test methods
 
 ## Filters YAML
 
@@ -47,23 +43,20 @@ Example File:
 # including / excluding them from the working set #
 ###################################################
 
-# Remove all test classes and test methods
+# Remove all test classes
 - type: ExcludeClass
   enabled: false
   classRegex: ".*"
-  methodRegex: ".*"
 
-# Include a specific package of tests classes and all test methods
+# Include a specific package of tests classes
 - type: IncludeClass
   enabled: false
   classRegex: "org.verifyica.test.argument"
-  methodRegex: ".*"
 
-# Include a specific test class and all test methods
+# Include a specific test class
 - type: IncludeClass
   enabled: false
   classRegex: "TagTest"
-  methodRegex: ".*"
 
 # Include all tagged classes
 - type: IncludeTaggedClass

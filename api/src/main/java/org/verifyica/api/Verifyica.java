@@ -57,15 +57,7 @@ public @interface Verifyica {
     @org.junit.platform.commons.annotation.Testable
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface Test {
-
-        /**
-         * Order value
-         *
-         * @return the order value
-         */
-        int order() default Integer.MAX_VALUE;
-    }
+    @interface Test {}
 
     /** AfterEach annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
@@ -93,6 +85,27 @@ public @interface Verifyica {
          * @return the order value
          */
         int order();
+    }
+
+    /** Step annotation */
+    @org.junit.platform.commons.annotation.Testable
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Step {
+
+        /**
+         * id value
+         *
+         * @return the id value
+         */
+        String id();
+
+        /**
+         * nextId value
+         *
+         * @return the nextId value
+         */
+        String nextId();
     }
 
     /** Disabled annotation */
@@ -155,31 +168,4 @@ public @interface Verifyica {
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Testable {}
-
-    /** IndependentTests annotation */
-    @org.junit.platform.commons.annotation.Testable
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface IndependentTests {}
-
-    /** Step annotation */
-    @org.junit.platform.commons.annotation.Testable
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface Step {
-
-        /**
-         * id value
-         *
-         * @return the id value
-         */
-        String id();
-
-        /**
-         * nextId value
-         *
-         * @return the nextId value
-         */
-        String nextId() default "";
-    }
 }

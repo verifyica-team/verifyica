@@ -16,18 +16,18 @@
 
 package org.verifyica.engine.context;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Store;
-import org.verifyica.engine.descriptor.ClassTestDescriptor;
 
 /** Class to implement ConcreteClassContext */
 public class ConcreteClassContext implements ClassContext {
 
     private final EngineContext engineContext;
-    private final ClassTestDescriptor classTestDescriptor;
+    private final Class<?> testClass;
+    private final String testClassDisplayName;
+    private final int testArgumentParallelism;
     private final AtomicReference<Object> testClassInstanceReference;
     private final Store store;
 
@@ -35,15 +35,21 @@ public class ConcreteClassContext implements ClassContext {
      * Constructor
      *
      * @param engineContext engineContext
-     * @param classTestDescriptor classTestDescriptor
+     * @param testClass testClass
+     * @param testClassDisplayName testClassDisplayName
+     * @param testArgumentParallelism testArgumentParallelism
      * @param testClassInstanceReference testClassInstanceReference
      */
     public ConcreteClassContext(
             EngineContext engineContext,
-            ClassTestDescriptor classTestDescriptor,
+            Class<?> testClass,
+            String testClassDisplayName,
+            int testArgumentParallelism,
             AtomicReference<Object> testClassInstanceReference) {
         this.engineContext = engineContext;
-        this.classTestDescriptor = classTestDescriptor;
+        this.testClass = testClass;
+        this.testClassDisplayName = testClassDisplayName;
+        this.testArgumentParallelism = testArgumentParallelism;
         this.testClassInstanceReference = testClassInstanceReference;
         this.store = new ConcreteStore();
     }
@@ -60,12 +66,12 @@ public class ConcreteClassContext implements ClassContext {
 
     @Override
     public Class<?> getTestClass() {
-        return classTestDescriptor.getTestClass();
+        return testClass;
     }
 
     @Override
     public String getTestClassDisplayName() {
-        return classTestDescriptor.getDisplayName();
+        return testClassDisplayName;
     }
 
     @Override
@@ -88,33 +94,17 @@ public class ConcreteClassContext implements ClassContext {
 
     @Override
     public int getTestArgumentParallelism() {
-        return classTestDescriptor.getTestArgumentParallelism();
+        return testArgumentParallelism;
     }
 
     @Override
     public String toString() {
-        return "ConcreteClassContext{"
-                + "engineContext="
-                + engineContext
-                + ", classTestDescriptor="
-                + classTestDescriptor
-                + ", store="
-                + store
-                + '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConcreteClassContext that = (ConcreteClassContext) o;
-        return Objects.equals(engineContext, that.engineContext)
-                && Objects.equals(classTestDescriptor, that.classTestDescriptor)
-                && Objects.equals(store, that.store);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(engineContext, classTestDescriptor, store);
+        return "ConcreteClassContext{" + "engineContext="
+                + engineContext + ", testClass="
+                + testClass + ", testClassDisplayName='"
+                + testClassDisplayName + '\'' + ", testArgumentParallelism="
+                + testArgumentParallelism + ", testClassInstanceReference="
+                + testClassInstanceReference + ", store="
+                + store + '}';
     }
 }

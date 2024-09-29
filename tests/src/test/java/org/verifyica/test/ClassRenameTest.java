@@ -21,16 +21,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.function.Predicate;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.ClassDefinition;
 import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
+import org.verifyica.engine.api.ClassDefinition;
 
 public class ClassRenameTest {
 
     @Verifyica.Autowired
     public static class DisplayNameEngineInterceptor implements EngineInterceptor {
 
-        @Override
         public Predicate<ClassDefinition> onTestDiscoveryPredicate() {
             return classDefinition -> classDefinition.getTestClass() == ClassRenameTest.class;
         }

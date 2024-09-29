@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.ClassDefinition;
-import org.verifyica.api.interceptor.MethodDefinition;
+import org.verifyica.engine.api.ClassDefinition;
+import org.verifyica.engine.api.MethodDefinition;
 import org.verifyica.engine.exception.TestClassDefinitionException;
 
 /** Class to implement StepMethodOrderer */
@@ -93,20 +93,16 @@ public class StepMethodOrderer {
 
                 idToMethodDefinition.put(id, methodDefinition);
 
-                String nextId = stepAnnotation.nextId();
-                if (nextId != null) {
-                    nextId = nextId.trim();
-
-                    if (nextId.isEmpty()) {
-                        emptyNextStepCount++;
-                    }
+                String nextId = stepAnnotation.nextId().trim();
+                if (nextId.isEmpty()) {
+                    emptyNextStepCount++;
                 }
 
                 if (emptyNextStepCount > 1) {
                     throw new TestClassDefinitionException(format(
                             "Incorrect usage of @Verifyica.Step annotation in test class"
                                     + " [%s]. Multiple @Verifyica.Step annotations found"
-                                    + " with a missing or blank \"nextId\"",
+                                    + " with a blank \"nextId\"",
                             classDefinition.getTestClass().getName()));
                 }
 

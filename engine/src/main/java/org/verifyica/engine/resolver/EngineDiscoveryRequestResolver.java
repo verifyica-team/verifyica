@@ -29,9 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.EngineDiscoveryRequest;
+import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.ClasspathResourceSelector;
@@ -44,13 +47,10 @@ import org.junit.platform.engine.discovery.ModuleSelector;
 import org.junit.platform.engine.discovery.PackageSelector;
 import org.junit.platform.engine.discovery.UniqueIdSelector;
 import org.junit.platform.engine.discovery.UriSelector;
-import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 import org.verifyica.api.Argument;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.ClassDefinition;
-import org.verifyica.api.interceptor.ClassInterceptor;
-import org.verifyica.api.interceptor.EngineInterceptorContext;
-import org.verifyica.api.interceptor.MethodDefinition;
+import org.verifyica.engine.api.ClassDefinition;
+import org.verifyica.engine.api.MethodDefinition;
 import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.common.Stopwatch;
 import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
@@ -58,9 +58,7 @@ import org.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.verifyica.engine.exception.EngineException;
 import org.verifyica.engine.exception.TestClassDefinitionException;
-import org.verifyica.engine.interceptor.ClassInterceptorManager;
-import org.verifyica.engine.interceptor.EngineInterceptorManager;
-import org.verifyica.engine.invocation.InvocationContext;
+import org.verifyica.engine.filter.ClassDefinitionFilter;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ClassSupport;
@@ -79,10 +77,6 @@ public class EngineDiscoveryRequestResolver {
                     clazz -> OrderSupport.getOrder((Class<?>) clazz))
             .thenComparing(clazz -> DisplayNameSupport.getDisplayName((Class<?>) clazz));
 
-    private final EngineInterceptorManager engineInterceptorManager;
-    private final ClassInterceptorManager classInterceptorManager;
-    private final EngineInterceptorContext engineInterceptorContext;
-
     static {
         DISCOVERY_SELECTORS_CLASSES = new ArrayList<>();
         DISCOVERY_SELECTORS_CLASSES.add(FileSelector.class);
@@ -100,24 +94,18 @@ public class EngineDiscoveryRequestResolver {
 
     /**
      * Constructor
-     *
-     * @param invocationContext invocationContext
      */
-    public EngineDiscoveryRequestResolver(InvocationContext invocationContext) {
-        Precondition.notNull(invocationContext, "invocationContext is null");
-
-        engineInterceptorManager = invocationContext.get(EngineInterceptorManager.class);
-        classInterceptorManager = invocationContext.get(ClassInterceptorManager.class);
-        engineInterceptorContext = invocationContext.get(EngineInterceptorContext.class);
+    public EngineDiscoveryRequestResolver() {
+        // INTENTIONALLY BLANK
     }
 
     /**
      * Method to resolve the engine discovery request, building an engine descriptor
      *
      * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param engineDescriptor engineDescriptor
+     * @param testDescriptor testDescriptor
      */
-    public void resolveSelectors(EngineDiscoveryRequest engineDiscoveryRequest, EngineDescriptor engineDescriptor) {
+    public void resolveSelectors(EngineDiscoveryRequest engineDiscoveryRequest, TestDescriptor testDescriptor) {
         LOGGER.trace("resolveSelectors()");
 
         Stopwatch stopwatch = new Stopwatch();
@@ -165,9 +153,16 @@ public class EngineDiscoveryRequestResolver {
 
                 List<MethodDefinition> testMethodDefinitions = new ArrayList<>();
 
-                testMethods.forEach(method -> {
-                    String methodDisplayName = DisplayNameSupport.getDisplayName(method);
-                    testMethodDefinitions.add(new ConcreteMethodDefinition(method, methodDisplayName));
+                testMethods.forEach(testMethod -> {
+                    if (testMethod.isAnnotationPresent(Verifyica.Step.class)
+                            && testMethod.isAnnotationPresent(Verifyica.Order.class)) {
+                        throw new TestClassDefinitionException(format(
+                                "Test class [%s] test method [%s] is annotated with both \"@Verify.Step\" and \"@Verifyica.Order\"",
+                                testClass.getName(), testMethod.getName()));
+                    }
+
+                    String methodDisplayName = DisplayNameSupport.getDisplayName(testMethod);
+                    testMethodDefinitions.add(new ConcreteMethodDefinition(testMethod, methodDisplayName));
                 });
 
                 classDefinitions.add(new ConcreteClassDefinition(
@@ -179,12 +174,10 @@ public class EngineDiscoveryRequestResolver {
             });
 
             pruneClassDefinitions(classDefinitions);
-            onTestDiscovery(classDefinitions);
-            pruneClassDefinitions(classDefinitions);
+            ClassDefinitionFilter.filter(classDefinitions);
             orderStepMethods(classDefinitions);
-            loadClassInterceptors(classDefinitions);
-            buildEngineDescriptor(classDefinitions, engineDescriptor);
-            onInitialize(classDefinitions);
+            buildEngineDescriptor(classDefinitions, testDescriptor);
+            prunedDisabledTestMethods(testDescriptor);
         } catch (EngineException e) {
             throw e;
         } catch (Throwable t) {
@@ -325,28 +318,6 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
-     * Method to invoke engine interceptors
-     *
-     * @param classDefinitions classDefinitions
-     * @throws Throwable Throwable
-     */
-    private void onTestDiscovery(List<ClassDefinition> classDefinitions) throws Throwable {
-        LOGGER.trace("onTestDiscovery()");
-
-        if (!classDefinitions.isEmpty()) {
-            engineInterceptorManager.onTestDiscovery(engineInterceptorContext, classDefinitions);
-        }
-    }
-
-    private void onInitialize(List<ClassDefinition> classDefinitions) throws Throwable {
-        LOGGER.trace("onInitialize()");
-
-        if (!classDefinitions.isEmpty()) {
-            engineInterceptorManager.onInitialize(engineInterceptorContext);
-        }
-    }
-
-    /**
      * Method to prune ClassDefinitions for test classes without arguments or test methods
      *
      * @param classDefinitions classDefinitions
@@ -359,6 +330,25 @@ public class EngineDiscoveryRequestResolver {
                         || classDefinition.getTestMethodDefinitions().isEmpty());
     }
 
+    /**
+     * Method to prune TestMethodTestDescriptors that are disabled
+     *
+     * @param testDescriptor testDescriptor
+     */
+    private static void prunedDisabledTestMethods(TestDescriptor testDescriptor) {
+        List<TestDescriptor> prunedTestDescriptors = testDescriptor.getDescendants().stream()
+                .filter((Predicate<TestDescriptor>)
+                        testDescriptor1 -> testDescriptor1 instanceof TestMethodTestDescriptor
+                                && ((TestMethodTestDescriptor) testDescriptor1)
+                                        .getTestMethod()
+                                        .isAnnotationPresent(Verifyica.Disabled.class))
+                .collect(Collectors.toList());
+
+        for (TestDescriptor prunedTestDescriptor : prunedTestDescriptors) {
+            prunedTestDescriptor.removeFromHierarchy();
+        }
+    }
+
     private static void orderStepMethods(List<ClassDefinition> classDefinitions) {
         LOGGER.trace("orderStepMethods()");
 
@@ -367,93 +357,12 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
-     * Method to load test class ClassInterceptors
-     *
-     * @param classDefinitions classDefinitions
-     * @throws Throwable Throwable
-     */
-    private void loadClassInterceptors(List<ClassDefinition> classDefinitions) throws Throwable {
-        LOGGER.trace("loadClassInterceptors()");
-
-        for (ClassDefinition classDefinition : classDefinitions) {
-            Class<?> testClass = classDefinition.getTestClass();
-
-            List<Method> classInterceptorSupplierMethods = ClassSupport.findMethods(
-                    testClass, ResolverPredicates.CLASS_INTERCEPTOR_SUPPLIER, HierarchyTraversalMode.BOTTOM_UP);
-
-            validateSingleMethodPerClass(Verifyica.ClassInterceptorSupplier.class, classInterceptorSupplierMethods);
-
-            if (!classInterceptorSupplierMethods.isEmpty()) {
-                Method classInterceptorSupplierMethod = classInterceptorSupplierMethods.get(0);
-                Object object = classInterceptorSupplierMethod.invoke(null);
-
-                if (object == null) {
-                    throw new TestClassDefinitionException(format(
-                            "Null Object supplied by test class"
-                                    + " [%s] @Verifyica.ClassInterceptorSupplier"
-                                    + " method",
-                            testClass.getName()));
-                } else if (object instanceof ClassInterceptor) {
-                    classInterceptorManager.register(testClass, (ClassInterceptor) object);
-                } else if (object.getClass().isArray()) {
-                    Object[] objects = (Object[]) object;
-                    if (objects.length > 0) {
-                        int index = 0;
-                        for (Object o : objects) {
-                            if (o instanceof ClassInterceptor) {
-                                classInterceptorManager.register(testClass, (ClassInterceptor) o);
-                            } else {
-                                throw new TestClassDefinitionException(format(
-                                        "Invalid type [%s] supplied by test class [%s]"
-                                                + " @Verifyica.ClassInterceptorSupplier method"
-                                                + " at index [%d]",
-                                        o.getClass().getName(), testClass.getName(), index));
-                            }
-                            index++;
-                        }
-                    }
-                } else if (object instanceof Stream
-                        || object instanceof Iterable
-                        || object instanceof Iterator
-                        || object instanceof Enumeration) {
-                    Iterator<?> iterator;
-                    if (object instanceof Enumeration) {
-                        iterator = Collections.list((Enumeration<?>) object).iterator();
-                    } else if (object instanceof Iterator) {
-                        iterator = (Iterator<?>) object;
-                    } else if (object instanceof Stream) {
-                        Stream<?> stream = (Stream<?>) object;
-                        iterator = stream.iterator();
-                    } else {
-                        Iterable<?> iterable = (Iterable<?>) object;
-                        iterator = iterable.iterator();
-                    }
-
-                    while (iterator.hasNext()) {
-                        Object o = iterator.next();
-                        if (o instanceof ClassInterceptor) {
-                            classInterceptorManager.register(testClass, (ClassInterceptor) o);
-                        } else {
-                            throw new TestClassDefinitionException(format(
-                                    "Invalid type [%s] supplied by test class"
-                                            + " [%s] @Verifyica.ClassInterceptorSupplier"
-                                            + " method",
-                                    o.getClass().getName(), testClass.getName()));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Method to build the EngineDescriptor
      *
      * @param classDefinitions classDefinitions
-     * @param engineDescriptor engineDescriptor
+     * @param testDescriptor testDescriptor
      */
-    private static void buildEngineDescriptor(
-            List<ClassDefinition> classDefinitions, EngineDescriptor engineDescriptor) {
+    private static void buildEngineDescriptor(List<ClassDefinition> classDefinitions, TestDescriptor testDescriptor) {
         LOGGER.trace("buildEngineDescriptor()");
 
         Stopwatch stopwatch = new Stopwatch();
@@ -461,8 +370,7 @@ public class EngineDiscoveryRequestResolver {
         for (ClassDefinition classDefinition : classDefinitions) {
             Class<?> testClass = classDefinition.getTestClass();
 
-            UniqueId classTestDescriptorUniqueId =
-                    engineDescriptor.getUniqueId().append("class", testClass.getName());
+            UniqueId classTestDescriptorUniqueId = testDescriptor.getUniqueId().append("class", testClass.getName());
 
             List<Method> prepareMethods = ClassSupport.findMethods(
                     testClass, ResolverPredicates.PREPARE_METHOD, HierarchyTraversalMode.TOP_DOWN);
@@ -482,7 +390,7 @@ public class EngineDiscoveryRequestResolver {
                     prepareMethods,
                     concludeMethods);
 
-            engineDescriptor.addChild(classTestDescriptor);
+            testDescriptor.addChild(classTestDescriptor);
 
             int testArgumentIndex = 0;
             for (Argument<?> testArgument : classDefinition.getArguments()) {
@@ -502,7 +410,6 @@ public class EngineDiscoveryRequestResolver {
                 ArgumentTestDescriptor argumentTestDescriptor = new ArgumentTestDescriptor(
                         argumentTestDescriptorUniqueId,
                         testArgument.getName(),
-                        testClass,
                         testArgumentIndex,
                         testArgument,
                         beforeAllMethods,
@@ -511,8 +418,10 @@ public class EngineDiscoveryRequestResolver {
                 classTestDescriptor.addChild(argumentTestDescriptor);
 
                 for (MethodDefinition testMethodDefinition : classDefinition.getTestMethodDefinitions()) {
-                    UniqueId testMethodDescriptorUniqueId = argumentTestDescriptorUniqueId.append(
-                            "method", testMethodDefinition.getMethod().getName());
+                    Method testMethod = testMethodDefinition.getMethod();
+
+                    UniqueId testMethodDescriptorUniqueId =
+                            argumentTestDescriptorUniqueId.append("method", testMethod.getName());
 
                     List<Method> beforeEachMethods = ClassSupport.findMethods(
                             testClass, ResolverPredicates.BEFORE_EACH_METHOD, HierarchyTraversalMode.TOP_DOWN);

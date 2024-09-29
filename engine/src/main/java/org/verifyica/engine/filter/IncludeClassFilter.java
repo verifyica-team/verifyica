@@ -16,8 +16,6 @@
 
 package org.verifyica.engine.filter;
 
-import java.lang.reflect.Method;
-
 /** Class to implement IncludeClassFilter */
 public class IncludeClassFilter extends AbstractFilter {
 
@@ -25,10 +23,9 @@ public class IncludeClassFilter extends AbstractFilter {
      * Constructor
      *
      * @param classNameRegex classNameRegex
-     * @param methodNameRegex methodNameRegex
      */
-    private IncludeClassFilter(String classNameRegex, String methodNameRegex) {
-        super(classNameRegex, methodNameRegex);
+    private IncludeClassFilter(String classNameRegex) {
+        super(classNameRegex);
     }
 
     @Override
@@ -37,19 +34,17 @@ public class IncludeClassFilter extends AbstractFilter {
     }
 
     @Override
-    public boolean matches(Class<?> testClass, Method testMethod) {
-        return getClassNamePattern().matcher(testClass.getName()).find()
-                && getMethodNamePattern().matcher(testMethod.getName()).find();
+    public boolean matches(Class<?> testClass) {
+        return getClassNamePattern().matcher(testClass.getName()).find();
     }
 
     /**
      * Method to create an IncludeFilter
      *
      * @param classRegex classRegex
-     * @param methodRegex methodRegex
      * @return an IncludeFilter
      */
-    public static IncludeClassFilter create(String classRegex, String methodRegex) {
-        return new IncludeClassFilter(classRegex, methodRegex);
+    public static IncludeClassFilter create(String classRegex) {
+        return new IncludeClassFilter(classRegex);
     }
 }
