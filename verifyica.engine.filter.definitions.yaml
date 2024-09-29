@@ -8,21 +8,18 @@
 
 # Remove all test classes and test methods
 - type: ExcludeClass
-  enabled: false
+  enabled: true
   classRegex: ".*"
-  methodRegex: ".*"
 
-# Include a specific package of tests classes and all test methods
+# Include a specific package of tests classes
 - type: IncludeClass
   enabled: false
   classRegex: "org.verifyica.test.argument"
-  methodRegex: ".*"
 
-# Include a specific test class and all test methods
+# Include a specific test class
 - type: IncludeClass
   enabled: false
   classRegex: "TagTest"
-  methodRegex: ".*"
 
 # Include all tagged classes
 - type: IncludeTaggedClass
@@ -52,14 +49,11 @@
 - type: IncludeClass
   enabled: false
   classRegex: "EngineInterceptorTest2"
-  methodRegex: ".*"
 
 - type: IncludeClass
-  enabled: false
-  classRegex: StepTest2
-  methodRegex: ".*"
+  enabled: true
+  classRegex: StepTest1
 
 - type: ExcludeClass
   enable: true
   classRegex:  "Lifecycle|Interceptor"
-  methodRegex: ".*"

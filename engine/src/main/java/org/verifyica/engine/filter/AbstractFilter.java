@@ -22,17 +22,14 @@ import java.util.regex.Pattern;
 public abstract class AbstractFilter implements Filter {
 
     private final Pattern classNamePattern;
-    private final Pattern methodNamePattern;
 
     /**
      * Constructor
      *
      * @param classNameRegex classNameRegex
-     * @param methodNameRegex methodNameRegex
      */
-    protected AbstractFilter(String classNameRegex, String methodNameRegex) {
+    protected AbstractFilter(String classNameRegex) {
         this.classNamePattern = Pattern.compile(classNameRegex);
-        this.methodNamePattern = Pattern.compile(methodNameRegex);
     }
 
     /**
@@ -42,14 +39,5 @@ public abstract class AbstractFilter implements Filter {
      */
     protected Pattern getClassNamePattern() {
         return classNamePattern;
-    }
-
-    /**
-     * Method to get the test method Pattern
-     *
-     * @return the test method Pattern
-     */
-    protected Pattern getMethodNamePattern() {
-        return methodNamePattern;
     }
 }

@@ -16,8 +16,6 @@
 
 package org.verifyica.engine.filter;
 
-import java.lang.reflect.Method;
-
 /** Interface to implement Filter */
 public interface Filter {
 
@@ -43,11 +41,10 @@ public interface Filter {
     Type getType();
 
     /**
-     * Method to return if a Filter matches a Class and Method
+     * Method to return if a Filter matches a Class
      *
      * @param testClass testClass
-     * @param testMethod testMethod
-     * @return true if the test class and test method match, else false
+     * @return true if the test class matches, else false
      */
-    boolean matches(Class<?> testClass, Method testMethod);
+    boolean matches(Class<?> testClass);
 }

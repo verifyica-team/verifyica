@@ -57,6 +57,7 @@ import org.verifyica.engine.exception.TestClassDefinitionException;
 import org.verifyica.engine.execution.ArgumentTestDescriptor;
 import org.verifyica.engine.execution.ClassTestDescriptor;
 import org.verifyica.engine.execution.TestMethodTestDescriptor;
+import org.verifyica.engine.filter.ClassDefinitionFilter;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ClassSupport;
@@ -172,7 +173,7 @@ public class EngineDiscoveryRequestResolver {
             });
 
             pruneClassDefinitions(classDefinitions);
-            pruneClassDefinitions(classDefinitions);
+            ClassDefinitionFilter.filter(classDefinitions);
             orderStepMethods(classDefinitions);
             buildEngineDescriptor(classDefinitions, testDescriptor);
         } catch (EngineException e) {

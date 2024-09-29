@@ -16,8 +16,6 @@
 
 package org.verifyica.engine.filter;
 
-import java.lang.reflect.Method;
-
 /** Class to implement ExcludeClassFilter */
 public class ExcludeClassFilter extends AbstractFilter {
 
@@ -25,10 +23,9 @@ public class ExcludeClassFilter extends AbstractFilter {
      * Constructor
      *
      * @param classNameRegex classNameRegex
-     * @param methodNameRegex methodNameRegex
      */
-    private ExcludeClassFilter(String classNameRegex, String methodNameRegex) {
-        super(classNameRegex, methodNameRegex);
+    private ExcludeClassFilter(String classNameRegex) {
+        super(classNameRegex);
     }
 
     @Override
@@ -37,19 +34,17 @@ public class ExcludeClassFilter extends AbstractFilter {
     }
 
     @Override
-    public boolean matches(Class<?> testClass, Method testMethod) {
-        return getClassNamePattern().matcher(testClass.getName()).find()
-                && getMethodNamePattern().matcher(testMethod.getName()).find();
+    public boolean matches(Class<?> testClass) {
+        return getClassNamePattern().matcher(testClass.getName()).find();
     }
 
     /**
      * Method to create an ExcludeFilter
      *
      * @param classRegex classRegex
-     * @param methodRegex methodRegex
      * @return an ExcludeFilter
      */
-    public static ExcludeClassFilter create(String classRegex, String methodRegex) {
-        return new ExcludeClassFilter(classRegex, methodRegex);
+    public static ExcludeClassFilter create(String classRegex) {
+        return new ExcludeClassFilter(classRegex);
     }
 }

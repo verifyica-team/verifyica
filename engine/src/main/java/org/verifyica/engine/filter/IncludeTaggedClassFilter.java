@@ -16,7 +16,6 @@
 
 package org.verifyica.engine.filter;
 
-import java.lang.reflect.Method;
 import org.verifyica.engine.support.TagSupport;
 
 /** Class to implement IncludeTaggedClassFilter */
@@ -26,10 +25,9 @@ public class IncludeTaggedClassFilter extends AbstractFilter {
      * Constructor
      *
      * @param classNameRegex classNameRegex
-     * @param methodNameRegex methodNameRegex
      */
-    private IncludeTaggedClassFilter(String classNameRegex, String methodNameRegex) {
-        super(classNameRegex, methodNameRegex);
+    private IncludeTaggedClassFilter(String classNameRegex) {
+        super(classNameRegex);
     }
 
     @Override
@@ -38,7 +36,7 @@ public class IncludeTaggedClassFilter extends AbstractFilter {
     }
 
     @Override
-    public boolean matches(Class<?> testClass, Method testMethod) {
+    public boolean matches(Class<?> testClass) {
         for (String tag : TagSupport.getTags(testClass)) {
             if (getClassNamePattern().matcher(tag).find()) {
                 return true;
@@ -55,6 +53,6 @@ public class IncludeTaggedClassFilter extends AbstractFilter {
      * @return an IncludeFilter
      */
     public static IncludeTaggedClassFilter create(String classRegex) {
-        return new IncludeTaggedClassFilter(classRegex, "");
+        return new IncludeTaggedClassFilter(classRegex);
     }
 }
