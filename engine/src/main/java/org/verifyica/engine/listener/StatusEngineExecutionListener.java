@@ -30,9 +30,9 @@ import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Stopwatch;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
-import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
-import org.verifyica.engine.descriptor.ClassTestDescriptor;
-import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
+import org.verifyica.engine.execution.ExecutableArgumentTestDescriptor;
+import org.verifyica.engine.execution.ExecutableClassTestDescriptor;
+import org.verifyica.engine.execution.ExecutableMethodTestDescriptor;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.HumanReadableTimeSupport;
@@ -106,13 +106,13 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 // truncate
                 // testClassDisplayName = truncateClassName(testClassDisplayName);
 
-                ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
+                ExecutableArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
                     testArgumentDisplayName =
-                            argumentTestDescriptor.getTestArgument().getName();
+                            argumentTestDescriptor.getArgument().getName();
                 }
 
-                TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
+                ExecutableMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
                 if (testMethodTestDescriptor != null) {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
@@ -159,13 +159,13 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 // truncate
                 // testClassDisplayName = truncateClassName(testClassDisplayName);
 
-                ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
+                ExecutableArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
                     testArgumentDisplayName =
-                            argumentTestDescriptor.getTestArgument().getName();
+                            argumentTestDescriptor.getArgument().getName();
                 }
 
-                TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
+                ExecutableMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
                 if (testMethodTestDescriptor != null) {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
@@ -217,13 +217,13 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 // truncate
                 // testClassDisplayName = truncateClassName(testClassDisplayName);
 
-                ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
+                ExecutableArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
                 if (argumentTestDescriptor != null) {
                     testArgumentDisplayName =
-                            argumentTestDescriptor.getTestArgument().getName();
+                            argumentTestDescriptor.getArgument().getName();
                 }
 
-                TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
+                ExecutableMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
                 if (testMethodTestDescriptor != null) {
                     testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
                 }
@@ -316,17 +316,17 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
      * @param testDescriptor testDescriptor
      * @return the ClassTestDescriptor or null if not found
      */
-    private static ClassTestDescriptor findClassTestDescriptor(TestDescriptor testDescriptor) {
-        if (testDescriptor instanceof ClassTestDescriptor) {
-            return (ClassTestDescriptor) testDescriptor;
+    private static ExecutableClassTestDescriptor findClassTestDescriptor(TestDescriptor testDescriptor) {
+        if (testDescriptor instanceof ExecutableClassTestDescriptor) {
+            return (ExecutableClassTestDescriptor) testDescriptor;
         }
 
-        if (testDescriptor instanceof ArgumentTestDescriptor) {
-            return (ClassTestDescriptor) testDescriptor.getParent().orElse(null);
+        if (testDescriptor instanceof ExecutableArgumentTestDescriptor) {
+            return (ExecutableClassTestDescriptor) testDescriptor.getParent().orElse(null);
         }
 
-        if (testDescriptor instanceof TestMethodTestDescriptor) {
-            return (ClassTestDescriptor) testDescriptor
+        if (testDescriptor instanceof ExecutableMethodTestDescriptor) {
+            return (ExecutableClassTestDescriptor) testDescriptor
                     .getParent()
                     .flatMap(TestDescriptor::getParent)
                     .orElse(null);
@@ -341,13 +341,13 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
      * @param testDescriptor testDescriptor
      * @return the ArgumentTestDescriptor or null if not found
      */
-    private static ArgumentTestDescriptor findArgumentTestDescriptor(TestDescriptor testDescriptor) {
-        if (testDescriptor instanceof ArgumentTestDescriptor) {
-            return (ArgumentTestDescriptor) testDescriptor;
+    private static ExecutableArgumentTestDescriptor findArgumentTestDescriptor(TestDescriptor testDescriptor) {
+        if (testDescriptor instanceof ExecutableArgumentTestDescriptor) {
+            return (ExecutableArgumentTestDescriptor) testDescriptor;
         }
 
-        if (testDescriptor instanceof TestMethodTestDescriptor) {
-            return (ArgumentTestDescriptor) testDescriptor.getParent().orElse(null);
+        if (testDescriptor instanceof ExecutableMethodTestDescriptor) {
+            return (ExecutableArgumentTestDescriptor) testDescriptor.getParent().orElse(null);
         }
 
         return null;
@@ -359,8 +359,10 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
      * @param testDescriptor testDescriptor
      * @return the TestMethodTestDescriptor or null if not found
      */
-    private static TestMethodTestDescriptor findTestMethodTestDescriptor(TestDescriptor testDescriptor) {
-        return testDescriptor instanceof TestMethodTestDescriptor ? (TestMethodTestDescriptor) testDescriptor : null;
+    private static ExecutableMethodTestDescriptor findTestMethodTestDescriptor(TestDescriptor testDescriptor) {
+        return testDescriptor instanceof ExecutableMethodTestDescriptor
+                ? (ExecutableMethodTestDescriptor) testDescriptor
+                : null;
     }
 
     /**
@@ -370,8 +372,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
      * @return true if we should process the TestDescriptor, else false
      */
     private static boolean shouldProcessDescriptor(TestDescriptor testDescriptor) {
-        return testDescriptor instanceof ClassTestDescriptor
-                || testDescriptor instanceof ArgumentTestDescriptor
-                || testDescriptor instanceof TestMethodTestDescriptor;
+        return testDescriptor instanceof ExecutableClassTestDescriptor
+                || testDescriptor instanceof ExecutableArgumentTestDescriptor
+                || testDescriptor instanceof ExecutableMethodTestDescriptor;
     }
 }

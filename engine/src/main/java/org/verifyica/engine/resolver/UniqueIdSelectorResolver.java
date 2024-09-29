@@ -27,8 +27,8 @@ import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.discovery.UniqueIdSelector;
 import org.verifyica.engine.common.Stopwatch;
-import org.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.verifyica.engine.exception.UncheckedClassNotFoundException;
+import org.verifyica.engine.execution.ExecutableClassTestDescriptor;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ClassSupport;
@@ -94,7 +94,7 @@ public class UniqueIdSelectorResolver {
                 segments.forEach(segment -> {
                     String segmentType = segment.getType();
 
-                    if (segmentType.equals(ClassTestDescriptor.class.getName())) {
+                    if (segmentType.equals(ExecutableClassTestDescriptor.class.getName())) {
                         String javaClassName = segment.getValue();
 
                         Class<?> testClass = null;

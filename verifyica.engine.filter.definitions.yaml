@@ -58,3 +58,8 @@
   enabled: false
   classRegex: StepTest2
   methodRegex: ".*"
+
+- type: ExcludeClass
+  enable: true
+  classRegex:  "Lifecycle|Interceptor"
+  methodRegex: ".*"

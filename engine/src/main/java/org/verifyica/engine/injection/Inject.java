@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.invocation;
+package org.verifyica.engine.injection;
 
-/** Interface to implement Invocation */
-public interface Invocation {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    /**
-     * Method to invoke an invocation
-     *
-     * @return an InvocationResult
-     */
-    InvocationResult invoke();
-}
+/** Autowired annotation */
+@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Inject {}

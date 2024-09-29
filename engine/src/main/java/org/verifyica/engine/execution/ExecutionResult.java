@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.invocation;
+package org.verifyica.engine.execution;
 
 import java.util.Objects;
 
-/** Class to implement InvocationResult */
-public class InvocationResult {
+/** Class to implement ExecutionResult */
+public class ExecutionResult {
 
-    private static final InvocationResult SUCCESS = new InvocationResult(Type.SUCCESS);
-    private static final InvocationResult SKIPPED = new InvocationResult(Type.SKIPPED);
+    private static final ExecutionResult PASSED = new ExecutionResult(Type.PASSED);
+    private static final ExecutionResult SKIPPED = new ExecutionResult(Type.SKIPPED);
 
     /** InvocationResult Type */
     public enum Type {
-        /** Success */
-        SUCCESS,
-        /** Exception */
-        EXCEPTION,
+        /** Passed */
+        PASSED,
+        /** Failed */
+        FAILED,
         /** Skipped */
         SKIPPED
     }
@@ -42,7 +42,7 @@ public class InvocationResult {
      *
      * @param type type
      */
-    private InvocationResult(Type type) {
+    private ExecutionResult(Type type) {
         this(type, null);
     }
 
@@ -52,7 +52,7 @@ public class InvocationResult {
      * @param type type
      * @param throwable throwable
      */
-    private InvocationResult(Type type, Throwable throwable) {
+    private ExecutionResult(Type type, Throwable throwable) {
         this.type = type;
         this.throwable = throwable;
     }
@@ -81,7 +81,7 @@ public class InvocationResult {
      * @return true if the result is success, else false
      */
     public boolean isSuccess() {
-        return type == Type.SUCCESS;
+        return type == Type.PASSED;
     }
 
     /**
@@ -90,7 +90,7 @@ public class InvocationResult {
      * @return true if the result is failure, else false
      */
     public boolean isFailure() {
-        return type == Type.EXCEPTION;
+        return type == Type.FAILED;
     }
 
     /**
@@ -111,7 +111,7 @@ public class InvocationResult {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        InvocationResult that = (InvocationResult) o;
+        ExecutionResult that = (ExecutionResult) o;
         return type == that.type && Objects.equals(throwable, that.throwable);
     }
 
@@ -125,8 +125,8 @@ public class InvocationResult {
      *
      * @return an InvocationResult
      */
-    public static InvocationResult success() {
-        return SUCCESS;
+    public static ExecutionResult passed() {
+        return PASSED;
     }
 
     /**
@@ -134,7 +134,7 @@ public class InvocationResult {
      *
      * @return an InvocationResult
      */
-    public static InvocationResult skipped() {
+    public static ExecutionResult skipped() {
         return SKIPPED;
     }
 
@@ -144,8 +144,8 @@ public class InvocationResult {
      * @param throwable throwable
      * @return an InvocationResult
      */
-    public static InvocationResult skipped(Throwable throwable) {
-        return new InvocationResult(Type.SKIPPED, throwable);
+    public static ExecutionResult skipped(Throwable throwable) {
+        return new ExecutionResult(Type.SKIPPED, throwable);
     }
 
     /**
@@ -154,7 +154,7 @@ public class InvocationResult {
      * @param throwable throwable
      * @return an InvocationResult
      */
-    public static InvocationResult exception(Throwable throwable) {
-        return new InvocationResult(Type.EXCEPTION, throwable);
+    public static ExecutionResult failed(Throwable throwable) {
+        return new ExecutionResult(Type.FAILED, throwable);
     }
 }

@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.invocation;
+package org.verifyica.engine.execution;
+
+import static java.lang.String.format;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement InvocationContext */
 @SuppressWarnings("unchecked")
-public class InvocationContext {
+public class ExecutionContext {
 
     /** Invocation constant for the test class ExecutorService */
     public static final Constant CLASS_EXECUTOR_SERVICE = new Constant("CLASS_EXECUTOR_SERVICE");
@@ -34,7 +35,7 @@ public class InvocationContext {
     private final Map<String, Object> map;
 
     /** Constructor */
-    public InvocationContext() {
+    public ExecutionContext() {
         map = new HashMap<>();
     }
 
@@ -43,7 +44,7 @@ public class InvocationContext {
      *
      * @param map map
      */
-    private InvocationContext(Map<String, Object> map) {
+    private ExecutionContext(Map<String, Object> map) {
         this.map = map;
     }
 
@@ -54,9 +55,13 @@ public class InvocationContext {
      * @param value value
      * @return this
      */
-    public InvocationContext set(Class<?> clazz, Object value) {
+    public ExecutionContext bind(Class<?> clazz, Object value) {
         Precondition.notNull(clazz, "clazz is null");
         Precondition.notNull(value, "value is null");
+
+        if (map.containsKey(clazz.getName())) {
+            throw new IllegalStateException(format("Object already bound to key [%s]", clazz.getName()));
+        }
 
         map.put(clazz.getName(), value);
 
@@ -70,9 +75,13 @@ public class InvocationContext {
      * @param value value
      * @return this
      */
-    public InvocationContext set(Constant key, Object value) {
+    public ExecutionContext bind(Constant key, Object value) {
         Precondition.notNull(key, "key is null");
         Precondition.notNull(value, "value is null");
+
+        if (map.containsKey(key.value())) {
+            throw new IllegalStateException(format("Object already bound to key [%s]", key));
+        }
 
         map.put(key.value(), value);
 
@@ -125,8 +134,8 @@ public class InvocationContext {
      *
      * @return an EngineExecutionContext
      */
-    public InvocationContext copy() {
-        return new InvocationContext(new HashMap<>(this.map));
+    public ExecutionContext copy() {
+        return new ExecutionContext(new HashMap<>(this.map));
     }
 
     /** Class to implement Constant */

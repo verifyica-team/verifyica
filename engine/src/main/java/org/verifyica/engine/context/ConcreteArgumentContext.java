@@ -16,31 +16,30 @@
 
 package org.verifyica.engine.context;
 
-import java.util.Objects;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.Store;
 import org.verifyica.engine.common.Precondition;
-import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
 
 /** Class to implement ConcreteArgumentContext */
 @SuppressWarnings("unchecked")
 public class ConcreteArgumentContext implements ArgumentContext {
 
     private final ClassContext classContext;
-    private final ArgumentTestDescriptor argumentTestDescriptor;
+    private final int argumentIndex;
+    private final Argument<?> argument;
     private final Store store;
 
     /**
      * Constructor
      *
      * @param classContext classContext
-     * @param argumentTestDescriptor argumentTestDescriptor
      */
-    public ConcreteArgumentContext(ClassContext classContext, ArgumentTestDescriptor argumentTestDescriptor) {
+    public ConcreteArgumentContext(ClassContext classContext, int argumentIndex, Argument<?> argument) {
         this.classContext = classContext;
-        this.argumentTestDescriptor = argumentTestDescriptor;
+        this.argumentIndex = argumentIndex;
+        this.argument = argument;
         this.store = new ConcreteStore();
     }
 
@@ -51,50 +50,23 @@ public class ConcreteArgumentContext implements ArgumentContext {
 
     @Override
     public int getTestArgumentIndex() {
-        return argumentTestDescriptor.getTestArgumentIndex();
+        return argumentIndex;
     }
 
     @Override
     public Argument<?> getTestArgument() {
-        return getTestArgument(Object.class);
+        return argument;
     }
 
     @Override
     public <V> Argument<V> getTestArgument(Class<V> type) {
         Precondition.notNull(type, "type is null");
 
-        return (Argument<V>) argumentTestDescriptor.getTestArgument();
+        return (Argument<V>) argument;
     }
 
     @Override
     public Store getStore() {
         return store;
-    }
-
-    @Override
-    public String toString() {
-        return "ConcreteArgumentContext{"
-                + "classContext="
-                + classContext
-                + ", argumentTestDescriptor="
-                + argumentTestDescriptor
-                + ", store="
-                + store
-                + '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConcreteArgumentContext that = (ConcreteArgumentContext) o;
-        return Objects.equals(classContext, that.classContext)
-                && Objects.equals(argumentTestDescriptor, that.argumentTestDescriptor)
-                && Objects.equals(store, that.store);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(classContext, argumentTestDescriptor, store);
     }
 }

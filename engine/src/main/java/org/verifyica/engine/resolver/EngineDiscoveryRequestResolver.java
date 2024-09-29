@@ -32,6 +32,7 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.EngineDiscoveryRequest;
+import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.ClasspathResourceSelector;
@@ -44,23 +45,18 @@ import org.junit.platform.engine.discovery.ModuleSelector;
 import org.junit.platform.engine.discovery.PackageSelector;
 import org.junit.platform.engine.discovery.UniqueIdSelector;
 import org.junit.platform.engine.discovery.UriSelector;
-import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 import org.verifyica.api.Argument;
 import org.verifyica.api.Verifyica;
 import org.verifyica.api.interceptor.ClassDefinition;
 import org.verifyica.api.interceptor.ClassInterceptor;
-import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.api.interceptor.MethodDefinition;
 import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.common.Stopwatch;
-import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
-import org.verifyica.engine.descriptor.ClassTestDescriptor;
-import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.verifyica.engine.exception.EngineException;
 import org.verifyica.engine.exception.TestClassDefinitionException;
-import org.verifyica.engine.interceptor.ClassInterceptorManager;
-import org.verifyica.engine.interceptor.EngineInterceptorManager;
-import org.verifyica.engine.invocation.InvocationContext;
+import org.verifyica.engine.execution.ExecutableArgumentTestDescriptor;
+import org.verifyica.engine.execution.ExecutableClassTestDescriptor;
+import org.verifyica.engine.execution.ExecutableMethodTestDescriptor;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ClassSupport;
@@ -79,10 +75,6 @@ public class EngineDiscoveryRequestResolver {
                     clazz -> OrderSupport.getOrder((Class<?>) clazz))
             .thenComparing(clazz -> DisplayNameSupport.getDisplayName((Class<?>) clazz));
 
-    private final EngineInterceptorManager engineInterceptorManager;
-    private final ClassInterceptorManager classInterceptorManager;
-    private final EngineInterceptorContext engineInterceptorContext;
-
     static {
         DISCOVERY_SELECTORS_CLASSES = new ArrayList<>();
         DISCOVERY_SELECTORS_CLASSES.add(FileSelector.class);
@@ -100,24 +92,18 @@ public class EngineDiscoveryRequestResolver {
 
     /**
      * Constructor
-     *
-     * @param invocationContext invocationContext
      */
-    public EngineDiscoveryRequestResolver(InvocationContext invocationContext) {
-        Precondition.notNull(invocationContext, "invocationContext is null");
-
-        engineInterceptorManager = invocationContext.get(EngineInterceptorManager.class);
-        classInterceptorManager = invocationContext.get(ClassInterceptorManager.class);
-        engineInterceptorContext = invocationContext.get(EngineInterceptorContext.class);
+    public EngineDiscoveryRequestResolver() {
+        // INTENTIONALLY BLANK
     }
 
     /**
      * Method to resolve the engine discovery request, building an engine descriptor
      *
      * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param engineDescriptor engineDescriptor
+     * @param testDescriptor testDescriptor
      */
-    public void resolveSelectors(EngineDiscoveryRequest engineDiscoveryRequest, EngineDescriptor engineDescriptor) {
+    public void resolveSelectors(EngineDiscoveryRequest engineDiscoveryRequest, TestDescriptor testDescriptor) {
         LOGGER.trace("resolveSelectors()");
 
         Stopwatch stopwatch = new Stopwatch();
@@ -183,7 +169,7 @@ public class EngineDiscoveryRequestResolver {
             pruneClassDefinitions(classDefinitions);
             orderStepMethods(classDefinitions);
             loadClassInterceptors(classDefinitions);
-            buildEngineDescriptor(classDefinitions, engineDescriptor);
+            buildEngineDescriptor(classDefinitions, testDescriptor);
             onInitialize(classDefinitions);
         } catch (EngineException e) {
             throw e;
@@ -334,7 +320,7 @@ public class EngineDiscoveryRequestResolver {
         LOGGER.trace("onTestDiscovery()");
 
         if (!classDefinitions.isEmpty()) {
-            engineInterceptorManager.onTestDiscovery(engineInterceptorContext, classDefinitions);
+            // engineInterceptorManager.onTestDiscovery(engineInterceptorContext, classDefinitions);
         }
     }
 
@@ -342,7 +328,7 @@ public class EngineDiscoveryRequestResolver {
         LOGGER.trace("onInitialize()");
 
         if (!classDefinitions.isEmpty()) {
-            engineInterceptorManager.onInitialize(engineInterceptorContext);
+            // engineInterceptorManager.onInitialize(engineInterceptorContext);
         }
     }
 
@@ -394,14 +380,14 @@ public class EngineDiscoveryRequestResolver {
                                     + " method",
                             testClass.getName()));
                 } else if (object instanceof ClassInterceptor) {
-                    classInterceptorManager.register(testClass, (ClassInterceptor) object);
+                    // classInterceptorManager.register(testClass, (ClassInterceptor) object);
                 } else if (object.getClass().isArray()) {
                     Object[] objects = (Object[]) object;
                     if (objects.length > 0) {
                         int index = 0;
                         for (Object o : objects) {
                             if (o instanceof ClassInterceptor) {
-                                classInterceptorManager.register(testClass, (ClassInterceptor) o);
+                                // classInterceptorManager.register(testClass, (ClassInterceptor) o);
                             } else {
                                 throw new TestClassDefinitionException(format(
                                         "Invalid type [%s] supplied by test class [%s]"
@@ -432,7 +418,7 @@ public class EngineDiscoveryRequestResolver {
                     while (iterator.hasNext()) {
                         Object o = iterator.next();
                         if (o instanceof ClassInterceptor) {
-                            classInterceptorManager.register(testClass, (ClassInterceptor) o);
+                            // classInterceptorManager.register(testClass, (ClassInterceptor) o);
                         } else {
                             throw new TestClassDefinitionException(format(
                                     "Invalid type [%s] supplied by test class"
@@ -450,10 +436,9 @@ public class EngineDiscoveryRequestResolver {
      * Method to build the EngineDescriptor
      *
      * @param classDefinitions classDefinitions
-     * @param engineDescriptor engineDescriptor
+     * @param testDescriptor testDescriptor
      */
-    private static void buildEngineDescriptor(
-            List<ClassDefinition> classDefinitions, EngineDescriptor engineDescriptor) {
+    private static void buildEngineDescriptor(List<ClassDefinition> classDefinitions, TestDescriptor testDescriptor) {
         LOGGER.trace("buildEngineDescriptor()");
 
         Stopwatch stopwatch = new Stopwatch();
@@ -461,8 +446,7 @@ public class EngineDiscoveryRequestResolver {
         for (ClassDefinition classDefinition : classDefinitions) {
             Class<?> testClass = classDefinition.getTestClass();
 
-            UniqueId classTestDescriptorUniqueId =
-                    engineDescriptor.getUniqueId().append("class", testClass.getName());
+            UniqueId classTestDescriptorUniqueId = testDescriptor.getUniqueId().append("class", testClass.getName());
 
             List<Method> prepareMethods = ClassSupport.findMethods(
                     testClass, ResolverPredicates.PREPARE_METHOD, HierarchyTraversalMode.TOP_DOWN);
@@ -474,7 +458,7 @@ public class EngineDiscoveryRequestResolver {
 
             validateSingleMethodPerClass(Verifyica.Conclude.class, concludeMethods);
 
-            ClassTestDescriptor classTestDescriptor = new ClassTestDescriptor(
+            ExecutableClassTestDescriptor classTestDescriptor = new ExecutableClassTestDescriptor(
                     classTestDescriptorUniqueId,
                     classDefinition.getDisplayName(),
                     testClass,
@@ -482,7 +466,7 @@ public class EngineDiscoveryRequestResolver {
                     prepareMethods,
                     concludeMethods);
 
-            engineDescriptor.addChild(classTestDescriptor);
+            testDescriptor.addChild(classTestDescriptor);
 
             int testArgumentIndex = 0;
             for (Argument<?> testArgument : classDefinition.getArguments()) {
@@ -499,10 +483,9 @@ public class EngineDiscoveryRequestResolver {
 
                 validateSingleMethodPerClass(Verifyica.AfterAll.class, afterAllMethods);
 
-                ArgumentTestDescriptor argumentTestDescriptor = new ArgumentTestDescriptor(
+                ExecutableArgumentTestDescriptor argumentTestDescriptor = new ExecutableArgumentTestDescriptor(
                         argumentTestDescriptorUniqueId,
                         testArgument.getName(),
-                        testClass,
                         testArgumentIndex,
                         testArgument,
                         beforeAllMethods,
@@ -524,7 +507,7 @@ public class EngineDiscoveryRequestResolver {
 
                     validateSingleMethodPerClass(Verifyica.AfterEach.class, beforeEachMethods);
 
-                    TestMethodTestDescriptor testMethodTestDescriptor = new TestMethodTestDescriptor(
+                    ExecutableMethodTestDescriptor testMethodTestDescriptor = new ExecutableMethodTestDescriptor(
                             testMethodDescriptorUniqueId,
                             testMethodDefinition.getDisplayName(),
                             beforeEachMethods,
