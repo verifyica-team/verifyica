@@ -37,7 +37,7 @@ public class OrderTest3 {
         return collection;
     }
 
-    @Verifyica.Test(order = 3)
+    @Verifyica.Test
     @Verifyica.Order(order = 1)
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
@@ -47,7 +47,7 @@ public class OrderTest3 {
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
-    @Verifyica.Test(order = 2)
+    @Verifyica.Test
     @Verifyica.Order(order = 2)
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
@@ -57,7 +57,7 @@ public class OrderTest3 {
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
-    @Verifyica.Test(order = 1)
+    @Verifyica.Test
     @Verifyica.Order(order = 3)
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());

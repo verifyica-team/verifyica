@@ -57,15 +57,7 @@ public @interface Verifyica {
     @org.junit.platform.commons.annotation.Testable
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface Test {
-
-        /**
-         * Order value
-         *
-         * @return the order value
-         */
-        int order() default Integer.MAX_VALUE;
-    }
+    @interface Test {}
 
     /** AfterEach annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
@@ -180,7 +172,7 @@ public @interface Verifyica {
          *
          * @return the nextId value
          */
-        String nextId() default "";
+        String nextId();
     }
 
     /** IndependentTests annotation */

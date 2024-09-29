@@ -16,17 +16,12 @@
 
 package org.verifyica.test.step;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
-import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.ClassContext;
 import org.verifyica.api.Verifyica;
 
 @Verifyica.Disabled
 public class StepTest4 {
 
+    /*
     private static List<String> actual = new ArrayList<>();
 
     @Verifyica.ArgumentSupplier
@@ -133,4 +128,5 @@ public class StepTest4 {
 
         return pad;
     }
+    */
 }

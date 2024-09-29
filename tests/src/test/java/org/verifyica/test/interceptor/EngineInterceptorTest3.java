@@ -36,7 +36,6 @@ public class EngineInterceptorTest3 {
     @Verifyica.Autowired
     public static class LocalEngineInterceptor implements EngineInterceptor {
 
-        @Override
         public void onTestDiscovery(
                 EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest3.class) {

@@ -30,7 +30,6 @@ public class ClassRenameTest {
     @Verifyica.Autowired
     public static class DisplayNameEngineInterceptor implements EngineInterceptor {
 
-        @Override
         public Predicate<ClassDefinition> onTestDiscoveryPredicate() {
             return classDefinition -> classDefinition.getTestClass() == ClassRenameTest.class;
         }

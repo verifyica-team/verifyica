@@ -30,7 +30,6 @@ import org.verifyica.api.interceptor.EngineInterceptorContext;
 @Verifyica.Autowired
 public class EngineInterceptorTest4 implements EngineInterceptor {
 
-    @Override
     public void onTestDiscovery(
             EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions) {
         System.out.printf("%s onTestDiscovery()%n", getClass().getName());

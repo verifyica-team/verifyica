@@ -83,19 +83,11 @@ public class OrderSupport {
         Precondition.notNull(method, "method is null");
 
         Verifyica.Order orderAnnotation = method.getAnnotation(Verifyica.Order.class);
-        Verifyica.Test testAnnotation = method.getAnnotation(Verifyica.Test.class);
 
-        Integer orderAnnotationOrder = (orderAnnotation != null) ? orderAnnotation.order() : null;
-        Integer testAnnotationOrder = (testAnnotation != null) ? testAnnotation.order() : null;
-
-        if (orderAnnotationOrder == null && testAnnotationOrder == null) {
+        if (orderAnnotation == null) {
             return Integer.MAX_VALUE;
+        } else {
+            return orderAnnotation.order();
         }
-
-        return (orderAnnotationOrder == null)
-                ? testAnnotationOrder
-                : (testAnnotationOrder == null)
-                        ? orderAnnotationOrder
-                        : Math.min(orderAnnotationOrder, testAnnotationOrder);
     }
 }

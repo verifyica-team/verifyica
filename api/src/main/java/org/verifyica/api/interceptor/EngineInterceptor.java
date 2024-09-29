@@ -16,9 +16,6 @@
 
 package org.verifyica.api.interceptor;
 
-import java.util.List;
-import java.util.function.Predicate;
-
 /** Interface to implement EngineInterceptor */
 public interface EngineInterceptor {
 
@@ -37,9 +34,11 @@ public interface EngineInterceptor {
      *
      * @return a ClassDefinition Predicate
      */
+    /*
     default Predicate<ClassDefinition> onTestDiscoveryPredicate() {
         return classDefinition -> true;
     }
+    */
 
     /**
      * Engine onTestDiscovery callback
@@ -51,6 +50,7 @@ public interface EngineInterceptor {
      * @param classDefinitions classDefinitions
      * @throws Throwable Throwable
      */
+    /*
     default void onTestDiscovery(
             EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions)
             throws Throwable {
@@ -62,6 +62,7 @@ public interface EngineInterceptor {
             }
         }
     }
+    */
 
     /**
      * Engine onTestDiscovery callback
@@ -70,10 +71,12 @@ public interface EngineInterceptor {
      * @param classDefinition classDefinition
      * @throws Throwable Throwable
      */
+    /*
     default void onTestDiscovery(EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
             throws Throwable {
         // INTENTIONALLY BLANK
     }
+    */
 
     /**
      * Engine preExecute callback
@@ -81,7 +84,7 @@ public interface EngineInterceptor {
      * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable
      */
-    default void preExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
+    default void onExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
@@ -91,9 +94,11 @@ public interface EngineInterceptor {
      * @param engineInterceptorContext engineInterceptorContext
      * @throws Throwable Throwable
      */
+    /*
     default void postExecute(EngineInterceptorContext engineInterceptorContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
+    */
 
     /**
      * Engine onDestroy callback

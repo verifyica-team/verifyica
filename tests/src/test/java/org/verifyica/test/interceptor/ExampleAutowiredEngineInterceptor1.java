@@ -41,7 +41,6 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
         engineInterceptorContext.getEngineContext().getStore().put(KEY, VALUE);
     }
 
-    @Override
     public void onTestDiscovery(
             EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions) {
         System.out.printf("%s onTestDiscovery()%n", getClass().getName());
@@ -62,11 +61,10 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
     }
 
     @Override
-    public void preExecute(EngineInterceptorContext engineInterceptorContext) {
-        System.out.printf("%s preExecute()%n", getClass().getName());
+    public void onExecute(EngineInterceptorContext engineInterceptorContext) {
+        System.out.printf("%s onExecute()%n", getClass().getName());
     }
 
-    @Override
     public void postExecute(EngineInterceptorContext engineInterceptorContext) {
         System.out.printf("%s postExecute()%n", getClass().getName());
     }

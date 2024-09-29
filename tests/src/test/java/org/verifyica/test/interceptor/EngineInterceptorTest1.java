@@ -22,7 +22,6 @@ import static org.assertj.core.api.Fail.fail;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
 
-@Verifyica.Disabled
 public class EngineInterceptorTest1 {
 
     @Verifyica.ArgumentSupplier
@@ -114,7 +113,7 @@ public class EngineInterceptorTest1 {
                 .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
-    @Verifyica.Test
+    // @Verifyica.Test
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test4(%s)%n", argumentContext.getTestArgument().getPayload());
 

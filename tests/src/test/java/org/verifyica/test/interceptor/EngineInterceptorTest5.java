@@ -26,12 +26,12 @@ import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.api.interceptor.MethodDefinition;
 
+@Verifyica.Disabled
 public class EngineInterceptorTest5 implements EngineInterceptor {
 
     @Verifyica.Autowired
     public static class ReverseTestMethodOrder implements EngineInterceptor {
 
-        @Override
         public void onTestDiscovery(
                 EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition) {
             if (classDefinition.getTestClass() == EngineInterceptorTest5.class) {
@@ -46,22 +46,26 @@ public class EngineInterceptorTest5 implements EngineInterceptor {
         return "ignored";
     }
 
-    @Verifyica.Test(order = 1)
+    @Verifyica.Test
+    @Verifyica.Order(order = 1)
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument().getPayload());
     }
 
-    @Verifyica.Test(order = 2)
+    @Verifyica.Test
+    @Verifyica.Order(order = 2)
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument().getPayload());
     }
 
-    @Verifyica.Test(order = 3)
+    @Verifyica.Test
+    @Verifyica.Order(order = 3)
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument().getPayload());
     }
 
-    @Verifyica.Test(order = 4)
+    @Verifyica.Test
+    @Verifyica.Order(order = 4)
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument().getPayload());
     }

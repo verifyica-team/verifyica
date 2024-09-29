@@ -42,6 +42,7 @@ import org.junit.platform.engine.UniqueId;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Store;
+import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.FairExecutorService;
@@ -212,14 +213,15 @@ public class VerifyicaTestEngine implements TestEngine {
         List<Throwable> throwables = new ArrayList<>();
 
         try {
-            classInterceptorRegistry.initialize();
 
             if (LOGGER.isTraceEnabled()) {
                 traceEngineDescriptor(executionRequest.getRootTestDescriptor());
             }
 
             try {
-                // engineInterceptorManager.preExecute(engineInterceptorContext);
+                engineInterceptorRegistry.initialize(engineInterceptorContext);
+                engineInterceptorRegistry.onExecute(engineInterceptorContext);
+                classInterceptorRegistry.initialize();
 
                 engineExecutionListener.executionStarted(executionRequest.getRootTestDescriptor());
 
@@ -228,26 +230,6 @@ public class VerifyicaTestEngine implements TestEngine {
                                 .filter(ExecutableTestDescriptor.EXECUTABLE_TEST_DESCRIPTOR_FILTER)
                                 .map(ExecutableTestDescriptor.EXECUTABLE_TEST_DESCRIPTOR_MAPPER)
                                 .collect(Collectors.toList());
-
-                /*
-                List<ExecutableArgumentTestDescriptor> executableArgumentTestDescriptors = new ArrayList<>();
-                List<ExecutableTestMethodTestDescriptor> executableTestMethodTestDescriptors = new ArrayList<>();
-
-                for (TestDescriptor testDescriptor :
-                        executionRequest.getRootTestDescriptor().getChildren()) {
-                    for (TestDescriptor childTestDescriptor : testDescriptor.getChildren()) {
-                        executableArgumentTestDescriptors.add((ExecutableArgumentTestDescriptor) childTestDescriptor);
-                        for (TestDescriptor grandChildTestDescriptor : childTestDescriptor.getChildren()) {
-                            executableTestMethodTestDescriptors.add(
-                                    (ExecutableTestMethodTestDescriptor) grandChildTestDescriptor);
-                        }
-                    }
-                }
-
-                LOGGER.trace("classTestDescriptors [%d]", executableClassTestDescriptors.size());
-                LOGGER.trace("argumentTestDescriptors [%d]", executableArgumentTestDescriptors.size());
-                LOGGER.trace("testMethodTestDescriptors [%d]", executableTestMethodTestDescriptors.size());
-                */
 
                 List<Future<?>> futures = new ArrayList<>(executableClassTestDescriptors.size());
 
@@ -285,20 +267,16 @@ public class VerifyicaTestEngine implements TestEngine {
                     }
                 }
                 store.clear();
-
-                /*
+            }
+        } finally {
+            for (EngineInterceptor engineInterceptor : engineInterceptorRegistry.getEngineInterceptors()) {
                 try {
-                    engineInterceptorManager.postExecute(engineInterceptorContext);
+                    engineInterceptor.onDestroy(engineInterceptorContext);
                 } catch (Throwable t) {
                     StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                     throwables.add(t);
                 }
-                */
             }
-        } finally {
-            /*
-            engineInterceptorManager.onDestroy(engineInterceptorContext);
-            */
 
             TestExecutionResult testExecutionResult = throwables.isEmpty()
                     ? TestExecutionResult.successful()

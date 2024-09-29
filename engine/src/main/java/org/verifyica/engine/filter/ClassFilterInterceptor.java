@@ -40,7 +40,6 @@ public class ClassFilterInterceptor implements EngineInterceptor {
         // INTENTIONALLY BLANK
     }
 
-    @Override
     public void onTestDiscovery(
             EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions) {
         LOGGER.trace("onTestDiscovery()");

@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
 
-@Verifyica.Disabled
 public class ExampleInheritanceCassInterceptorTest implements ExampleInheritanceClassInterceptor {
 
     @Verifyica.ArgumentSupplier

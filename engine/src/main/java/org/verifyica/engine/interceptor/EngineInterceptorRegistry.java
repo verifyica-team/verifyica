@@ -17,12 +17,143 @@
 package org.verifyica.engine.interceptor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.verifyica.api.interceptor.EngineInterceptor;
+import org.verifyica.api.interceptor.EngineInterceptorContext;
+import org.verifyica.engine.configuration.ConcreteConfiguration;
+import org.verifyica.engine.configuration.Constants;
+import org.verifyica.engine.exception.EngineException;
+import org.verifyica.engine.logger.Logger;
+import org.verifyica.engine.logger.LoggerFactory;
+import org.verifyica.engine.support.ClassSupport;
+import org.verifyica.engine.support.ObjectSupport;
+import org.verifyica.engine.support.OrderSupport;
 
 public class EngineInterceptorRegistry {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
+
+    private final ReentrantReadWriteLock reentrantReadWriteLock;
+    private final List<EngineInterceptor> engineInterceptors;
+
+    public EngineInterceptorRegistry() {
+        reentrantReadWriteLock = new ReentrantReadWriteLock(true);
+        engineInterceptors = new ArrayList<>();
+    }
+
+    public void initialize(EngineInterceptorContext engineInterceptorContext) {
+        reentrantReadWriteLock.writeLock().lock();
+
+        try {
+            List<Class<?>> autowiredEngineInterceptors = new ArrayList<>(
+                    ClassSupport.findAllClasses(InterceptorPredicates.AUTOWIRED_ENGINE_INTERCEPTOR_CLASS));
+
+            filter(autowiredEngineInterceptors);
+
+            OrderSupport.orderClasses(autowiredEngineInterceptors);
+
+            LOGGER.trace("autowired engine interceptor count [%d]", autowiredEngineInterceptors.size());
+
+            for (Class<?> engineInterceptorClass : autowiredEngineInterceptors) {
+                try {
+                    LOGGER.trace("loading autowired engine interceptor [%s]", engineInterceptorClass.getName());
+
+                    Object object = ObjectSupport.createObject(engineInterceptorClass);
+
+                    engineInterceptors.add((EngineInterceptor) object);
+
+                    LOGGER.trace("autowired class interceptor [%s] loaded", engineInterceptorClass.getName());
+                } catch (EngineException e) {
+                    throw e;
+                } catch (Throwable t) {
+                    throw new EngineException(t);
+                }
+            }
+
+            try {
+                for (EngineInterceptor engineInterceptor : engineInterceptors) {
+                    engineInterceptor.onInitialize(engineInterceptorContext);
+                }
+            } catch (Throwable t) {
+                throw new EngineException(t);
+            }
+        } finally {
+            reentrantReadWriteLock.writeLock().unlock();
+        }
+    }
+
+    public void onExecute(EngineInterceptorContext engineInterceptorContext) {
+        try {
+            for (EngineInterceptor engineInterceptor : getEngineInterceptors()) {
+                engineInterceptor.onExecute(engineInterceptorContext);
+            }
+        } catch (Throwable t) {
+            throw new EngineException(t);
+        }
+    }
+
     public List<EngineInterceptor> getEngineInterceptors() {
-        return new ArrayList<>();
+        reentrantReadWriteLock.readLock().lock();
+
+        try {
+            return new ArrayList<>(engineInterceptors);
+        } finally {
+            reentrantReadWriteLock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Method to filter ClassInterceptors
+     *
+     * @param classes classes
+     */
+    private static void filter(List<Class<?>> classes) {
+        Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
+
+        ConcreteConfiguration.getInstance()
+                .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX)
+                .ifPresent(regex -> {
+                    LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX, regex);
+
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher("");
+
+                    Iterator<Class<?>> iterator = filteredClasses.iterator();
+                    while (iterator.hasNext()) {
+                        Class<?> clazz = iterator.next();
+                        matcher.reset(clazz.getName());
+                        if (matcher.find()) {
+                            LOGGER.trace("removing class interceptor [%s]", clazz.getName());
+
+                            iterator.remove();
+                        }
+                    }
+                });
+
+        ConcreteConfiguration.getInstance()
+                .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX)
+                .ifPresent(regex -> {
+                    LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX, regex);
+
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher("");
+
+                    for (Class<?> clazz : classes) {
+                        matcher.reset(clazz.getName());
+                        if (matcher.find()) {
+                            LOGGER.trace("adding class interceptor [%s]", clazz.getName());
+                            filteredClasses.add(clazz);
+                        }
+                    }
+                });
+
+        classes.clear();
+        classes.addAll(filteredClasses);
     }
 }

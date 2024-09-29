@@ -85,21 +85,24 @@ public class LifecycleTest2 {
         actual.add("beforeEach");
     }
 
-    @Verifyica.Test(order = 1)
+    @Verifyica.Test
+    @Verifyica.Order(order = 1)
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test1()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("test1");
     }
 
-    @Verifyica.Test(order = 2)
+    @Verifyica.Test
+    @Verifyica.Order(order = 2)
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test2()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("test2");
     }
 
-    @Verifyica.Test(order = 3)
+    @Verifyica.Test
+    @Verifyica.Order(order = 3)
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test3()%n", argumentContext.getTestArgument().getPayload());
 

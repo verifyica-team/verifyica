@@ -94,13 +94,13 @@ public class ClassInterceptorRegistry {
     }
 
     public List<ClassInterceptor> getClassInterceptors(Class<?> testClass) throws Throwable {
-        reentrantReadWriteLock.writeLock().lock();
+        reentrantReadWriteLock.readLock().lock();
         try {
             List<ClassInterceptor> classInterceptors = new ArrayList<>(this.classInterceptors);
             classInterceptors.addAll(getDeclaredClassInterceptor(testClass));
             return classInterceptors;
         } finally {
-            reentrantReadWriteLock.writeLock().unlock();
+            reentrantReadWriteLock.readLock().unlock();
         }
     }
 
