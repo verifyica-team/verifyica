@@ -8,7 +8,7 @@
 
 # Remove all test classes and test methods
 - type: ExcludeClass
-  enabled: true
+  enabled: false
   classRegex: ".*"
 
 # Include a specific package of tests classes
@@ -51,9 +51,9 @@
   classRegex: "EngineInterceptorTest2"
 
 - type: IncludeClass
-  enabled: true
+  enabled: false
   classRegex: StepTest1
 
 - type: ExcludeClass
-  enable: true
+  enable: false
   classRegex:  "Lifecycle|Interceptor"
