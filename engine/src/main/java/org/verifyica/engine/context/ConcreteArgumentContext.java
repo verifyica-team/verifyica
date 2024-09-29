@@ -35,6 +35,8 @@ public class ConcreteArgumentContext implements ArgumentContext {
      * Constructor
      *
      * @param classContext classContext
+     * @param argumentIndex argumentIndex
+     * @param argument argument
      */
     public ConcreteArgumentContext(ClassContext classContext, int argumentIndex, Argument<?> argument) {
         this.classContext = classContext;

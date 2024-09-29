@@ -59,6 +59,8 @@ public class ClassInterceptorRegistry {
 
     /**
      * Constructor
+     *
+     * @param configuration configuration
      */
     public ClassInterceptorRegistry(Configuration configuration) {
         this.configuration = configuration;

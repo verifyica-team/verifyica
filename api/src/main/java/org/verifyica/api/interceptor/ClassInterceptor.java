@@ -226,6 +226,8 @@ public interface ClassInterceptor {
 
     /**
      * ClassInterceptor onDestroy callback
+     *
+     * @throws Throwable Throwable
      */
     default void onDestroy() throws Throwable {
         // INTENTIONALLY BLANK

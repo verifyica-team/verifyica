@@ -33,8 +33,9 @@ public interface EngineInterceptor {
      * Engine onDestroy callback
      *
      * @param engineInterceptorContext engineInterceptorContext
+     * @throws Throwable Throwable
      */
-    default void onDestroy(EngineInterceptorContext engineInterceptorContext) {
+    default void onDestroy(EngineInterceptorContext engineInterceptorContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 }

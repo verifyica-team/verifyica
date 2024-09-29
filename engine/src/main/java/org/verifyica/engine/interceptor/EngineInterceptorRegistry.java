@@ -48,6 +48,8 @@ public class EngineInterceptorRegistry {
 
     /**
      * Constructor
+     *
+     * @param configuration configuration
      */
     public EngineInterceptorRegistry(Configuration configuration) {
         this.configuration = configuration;

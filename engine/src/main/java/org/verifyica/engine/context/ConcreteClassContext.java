@@ -36,6 +36,8 @@ public class ConcreteClassContext implements ClassContext {
      *
      * @param engineContext engineContext
      * @param testClass testClass
+     * @param testClassDisplayName testClassDisplayName
+     * @param testArgumentParallelism testArgumentParallelism
      * @param testClassInstanceReference testClassInstanceReference
      */
     public ConcreteClassContext(

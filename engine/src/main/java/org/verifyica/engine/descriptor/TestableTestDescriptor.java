@@ -46,21 +46,39 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     public static final Function<TestDescriptor, TestableTestDescriptor> TESTABLE_TEST_DESCRIPTOR_MAPPER =
             testDescriptor -> (TestableTestDescriptor) testDescriptor;
 
+    /**
+     * Configuration
+     */
     @Inject
     protected Configuration configuration;
 
+    /**
+     * EngineExecutionListener
+     */
     @Inject
     protected EngineExecutionListener engineExecutionListener;
 
+    /**
+     * ClassInterceptorRegistry
+     */
     @Inject
     protected ClassInterceptorRegistry classInterceptorRegistry;
 
+    /**
+     * EngineInterceptorRegistry
+     */
     @Inject
     protected EngineInterceptorRegistry engineInterceptorRegistry;
 
+    /**
+     * EngineContext
+     */
     @Inject
     protected EngineContext engineContext;
 
+    /**
+     * EngineInterceptorContext
+     */
     @Inject
     protected EngineInterceptorContext engineInterceptorContext;
 
