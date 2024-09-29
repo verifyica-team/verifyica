@@ -145,8 +145,7 @@ public class VerifyicaTestEngine implements TestEngine {
     @Override
     public TestDescriptor discover(EngineDiscoveryRequest engineDiscoveryRequest, UniqueId uniqueId) {
         if (!UNIQUE_ID.equals(uniqueId.toString()) || isRunningViaMavenSurefirePlugin()) {
-            return new org.junit.platform.engine.support.descriptor.EngineDescriptor(
-                    uniqueId, "Verifyica disabled under Maven Surefire");
+            return new EngineDescriptor(uniqueId, "Verifyica disabled under Maven Surefire");
         }
 
         Stopwatch stopwatch = new Stopwatch();
