@@ -220,8 +220,11 @@ public class VerifyicaTestEngine implements TestEngine {
 
             try {
                 engineInterceptorRegistry.initialize(engineInterceptorContext);
-                engineInterceptorRegistry.onExecute(engineInterceptorContext);
                 classInterceptorRegistry.initialize();
+
+                for (EngineInterceptor engineInterceptor : engineInterceptorRegistry.getEngineInterceptors()) {
+                    engineInterceptor.onExecute(engineInterceptorContext);
+                }
 
                 engineExecutionListener.executionStarted(executionRequest.getRootTestDescriptor());
 
@@ -269,14 +272,8 @@ public class VerifyicaTestEngine implements TestEngine {
                 store.clear();
             }
         } finally {
-            for (EngineInterceptor engineInterceptor : engineInterceptorRegistry.getEngineInterceptors()) {
-                try {
-                    engineInterceptor.onDestroy(engineInterceptorContext);
-                } catch (Throwable t) {
-                    StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
-                    throwables.add(t);
-                }
-            }
+            classInterceptorRegistry.destroy();
+            engineInterceptorRegistry.destroy(engineInterceptorContext);
 
             TestExecutionResult testExecutionResult = throwables.isEmpty()
                     ? TestExecutionResult.successful()

@@ -33,7 +33,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.verifyica.api.Verifyica;
 import org.verifyica.api.interceptor.ClassInterceptor;
+import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.Precondition;
+import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.exception.EngineException;
@@ -77,9 +79,10 @@ public class ClassInterceptorRegistry {
                 try {
                     LOGGER.trace("loading autowired class interceptor [%s]", classInterceptorClass.getName());
 
-                    Object object = ObjectSupport.createObject(classInterceptorClass);
+                    ClassInterceptor classInterceptor = ObjectSupport.createObject(classInterceptorClass);
+                    classInterceptor.onInitialize();
 
-                    classInterceptors.add((ClassInterceptor) object);
+                    classInterceptors.add(classInterceptor);
 
                     LOGGER.trace("autowired class interceptor [%s] loaded", classInterceptorClass.getName());
                 } catch (EngineException e) {
@@ -172,6 +175,16 @@ public class ClassInterceptorRegistry {
         }
 
         return classInterceptors;
+    }
+
+    public void destroy() {
+        for (ClassInterceptor classInterceptor : classInterceptors) {
+            try {
+                classInterceptor.onDestroy();
+            } catch (Throwable t) {
+                StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
+            }
+        }
     }
 
     /**

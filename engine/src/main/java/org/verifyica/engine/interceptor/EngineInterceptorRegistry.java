@@ -26,6 +26,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
+import org.verifyica.engine.common.AnsiColor;
+import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.exception.EngineException;
@@ -35,6 +37,7 @@ import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.ObjectSupport;
 import org.verifyica.engine.support.OrderSupport;
 
+/** Class to implement EngineInterceptorRegistry */
 public class EngineInterceptorRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
@@ -42,11 +45,17 @@ public class EngineInterceptorRegistry {
     private final ReentrantReadWriteLock reentrantReadWriteLock;
     private final List<EngineInterceptor> engineInterceptors;
 
+    /**
+     * Constructor
+     */
     public EngineInterceptorRegistry() {
         reentrantReadWriteLock = new ReentrantReadWriteLock(true);
         engineInterceptors = new ArrayList<>();
     }
 
+    /**
+     * Method to initialize engine interceptors
+     */
     public void initialize(EngineInterceptorContext engineInterceptorContext) {
         reentrantReadWriteLock.writeLock().lock();
 
@@ -88,16 +97,11 @@ public class EngineInterceptorRegistry {
         }
     }
 
-    public void onExecute(EngineInterceptorContext engineInterceptorContext) {
-        try {
-            for (EngineInterceptor engineInterceptor : getEngineInterceptors()) {
-                engineInterceptor.onExecute(engineInterceptorContext);
-            }
-        } catch (Throwable t) {
-            throw new EngineException(t);
-        }
-    }
-
+    /**
+     * Method to get the list of engine interceptors
+     *
+     * @return a list of engine interceptors
+     */
     public List<EngineInterceptor> getEngineInterceptors() {
         reentrantReadWriteLock.readLock().lock();
 
@@ -105,6 +109,16 @@ public class EngineInterceptorRegistry {
             return new ArrayList<>(engineInterceptors);
         } finally {
             reentrantReadWriteLock.readLock().unlock();
+        }
+    }
+
+    public void destroy(EngineInterceptorContext engineInterceptorContext) {
+        for (EngineInterceptor engineInterceptor : engineInterceptors) {
+            try {
+                engineInterceptor.onDestroy(engineInterceptorContext);
+            } catch (Throwable t) {
+                StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
+            }
         }
     }
 

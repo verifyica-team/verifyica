@@ -20,10 +20,17 @@ import org.junit.platform.engine.UniqueId;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
+/** Class to implement EngineDescriptor */
 public class EngineDescriptor extends ExecutableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EngineDescriptor.class);
 
+    /**
+     * Constructor
+     *
+     * @param uniqueId uniqueId
+     * @param displayName displayName
+     */
     public EngineDescriptor(UniqueId uniqueId, String displayName) {
         super(uniqueId, displayName);
     }

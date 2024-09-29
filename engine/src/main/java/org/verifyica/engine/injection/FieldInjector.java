@@ -38,20 +38,6 @@ public class FieldInjector {
     }
 
     /**
-     * Method to inject an object in a list of target object's fields
-     *
-     * @param targets targets
-     * @param value value
-     */
-    /*
-    public static void injectFields(List<Object> targets, Object value) {
-        for (Object target : targets) {
-            injectFields(target, value);
-        }
-    }
-    */
-
-    /**
      * Method to inject an object into an object's fields
      *
      * @param target target

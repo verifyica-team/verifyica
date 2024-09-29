@@ -22,7 +22,16 @@ import java.lang.reflect.Method;
 public interface ClassInterceptor {
 
     /**
-     * Class preInstantiate callback
+     * ClassInterceptor onInitialize callback
+     *
+     * @throws Throwable throwable
+     */
+    default void onInitialize() throws Throwable {
+        // INTENTIONALLY BLANK
+    }
+
+    /**
+     * ClassInterceptor preInstantiate callback
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @param testClass testClass
@@ -34,7 +43,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class postInstantiate callback
+     * ClassInterceptor postInstantiate callback
      *
      * @param engineInterceptorContext engineInterceptorContext
      * @param testClass testClass
@@ -52,7 +61,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class prePrepare callback
+     * ClassInterceptor prePrepare callback
      *
      * @param classInterceptorContext classInterceptorContext
      * @throws Throwable Throwable
@@ -62,7 +71,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class postPrepare callback
+     * ClassInterceptor postPrepare callback
      *
      * @param classInterceptorContext classInterceptorContext
      * @param throwable throwable
@@ -73,7 +82,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class preBeforeAll callback
+     * ClassInterceptor preBeforeAll callback
      *
      * @param argumentInterceptorContext argumentInterceptorContext
      * @throws Throwable Throwable
@@ -83,7 +92,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class postBeforeAll callback
+     * ClassInterceptor postBeforeAll callback
      *
      * @param argumentInterceptorContext argumentInterceptorContext
      * @param throwable throwable
@@ -95,7 +104,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class preBeforeEach callback
+     * ClassInterceptor preBeforeEach callback
      *
      * @param argumentInterceptorContext argumentInterceptorContext
      * @throws Throwable Throwable
@@ -105,7 +114,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class postBeforeEach callback
+     * ClassInterceptor postBeforeEach callback
      *
      * @param argumentInterceptorContext argumentInterceptorContext
      * @param throwable throwable
@@ -117,7 +126,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class preTest callback
+     * ClassInterceptor preTest callback
      *
      * @param argumentInterceptorContext argumentInterceptorContext
      * @param testMethod testMethod
@@ -128,7 +137,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class postTest callback
+     * ClassInterceptor postTest callback
      *
      * @param argumentInterceptorContext argumentInterceptorContext
      * @param testMethod testMethod
@@ -141,7 +150,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class preAfterEach callback
+     * ClassInterceptor preAfterEach callback
      *
      * @param argumentInterceptorContext argumentInterceptorContext
      * @throws Throwable Throwable
@@ -151,7 +160,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class postAfterEach callback
+     * ClassInterceptor postAfterEach callback
      *
      * @param argumentInterceptorContext argumentInterceptorContext
      * @param throwable throwable
@@ -163,7 +172,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class preAfterAll callback
+     * ClassInterceptor preAfterAll callback
      *
      * @param argumentInterceptorContext argumentInterceptorContext
      * @throws Throwable Throwable
@@ -173,7 +182,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class postAfterAll callback
+     * ClassInterceptor postAfterAll callback
      *
      * @param argumentInterceptorContext argumentInterceptorContext
      * @param throwable throwable
@@ -185,7 +194,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class preConclude callback
+     * ClassInterceptor preConclude callback
      *
      * @param classInterceptorContext classInterceptorContext
      * @throws Throwable Throwable
@@ -195,7 +204,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class postConclude callback
+     * ClassInterceptor postConclude callback
      *
      * @param classInterceptorContext classInterceptorContext
      * @param throwable throwable
@@ -206,12 +215,19 @@ public interface ClassInterceptor {
     }
 
     /**
-     * Class onDestroy callback
+     * ClassInterceptor onDestroy callback
      *
      * @param classInterceptorContext classInterceptorContext
      * @throws Throwable Throwable
      */
     default void onDestroy(ClassInterceptorContext classInterceptorContext) throws Throwable {
+        // INTENTIONALLY BLANK
+    }
+
+    /**
+     * ClassInterceptor onDestroy callback
+     */
+    default void onDestroy() throws Throwable {
         // INTENTIONALLY BLANK
     }
 
