@@ -24,7 +24,8 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.Verifyica;
 
-public class StepTest2 {
+@Verifyica.Disabled
+public class StepTest5 {
 
     private static List<String> actual = new ArrayList<>();
 
@@ -44,16 +45,6 @@ public class StepTest2 {
     }
 
     @Verifyica.Test
-    public void testA(ArgumentContext argumentContext) {
-        System.out.printf(
-                "testA(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
-
-        actual.add("testA");
-    }
-
-    @Verifyica.Test
     @Verifyica.Step(id = "step0", nextId = "step2")
     public void test0(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
@@ -64,7 +55,6 @@ public class StepTest2 {
         actual.add("test0");
     }
 
-    @Verifyica.Disabled
     @Verifyica.Test
     @Verifyica.Step(id = "step2", nextId = "step4")
     public void test2(ArgumentContext argumentContext) throws Throwable {
@@ -95,7 +85,7 @@ public class StepTest2 {
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
-        actual.add("test1");
+        throw new AssertionError("Forced");
     }
 
     @Verifyica.Test
@@ -125,12 +115,8 @@ public class StepTest2 {
         List<String> expected = new ArrayList<>();
 
         expected.add("test0");
+        expected.add("test2");
         expected.add("test4");
-        expected.add("test1");
-        expected.add("test3");
-        expected.add("test5");
-        expected.add("test");
-        expected.add("testA");
 
         assertThat(actual.size()).isEqualTo(expected.size());
 

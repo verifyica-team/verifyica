@@ -33,6 +33,11 @@ public class ClassDefinitionFilter {
         // INTENTIONALLY BLANK
     }
 
+    /**
+     * Method to filter class definitions
+     *
+     * @param classDefinitions classDefinitions
+     */
     public static void filter(List<ClassDefinition> classDefinitions) {
         LOGGER.trace("filter()");
 

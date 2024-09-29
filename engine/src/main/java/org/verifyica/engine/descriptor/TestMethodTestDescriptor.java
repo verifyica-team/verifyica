@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.execution;
+package org.verifyica.engine.descriptor;
 
 import static java.lang.String.format;
 

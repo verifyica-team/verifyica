@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.execution;
+package org.verifyica.engine.descriptor;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -83,6 +83,8 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
 
     /**
      * Method to test the test descriptor
+     *
+     * @return this
      */
     public abstract TestableTestDescriptor test();
 

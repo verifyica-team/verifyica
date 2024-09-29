@@ -24,11 +24,11 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.verifyica.api.Configuration;
 import org.verifyica.api.interceptor.EngineInterceptor;
 import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.StackTracePrinter;
-import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.exception.EngineException;
 import org.verifyica.engine.logger.Logger;
@@ -42,19 +42,23 @@ public class EngineInterceptorRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
 
+    private final Configuration configuration;
     private final ReentrantReadWriteLock reentrantReadWriteLock;
     private final List<EngineInterceptor> engineInterceptors;
 
     /**
      * Constructor
      */
-    public EngineInterceptorRegistry() {
-        reentrantReadWriteLock = new ReentrantReadWriteLock(true);
-        engineInterceptors = new ArrayList<>();
+    public EngineInterceptorRegistry(Configuration configuration) {
+        this.configuration = configuration;
+        this.reentrantReadWriteLock = new ReentrantReadWriteLock(true);
+        this.engineInterceptors = new ArrayList<>();
     }
 
     /**
      * Method to initialize engine interceptors
+     *
+     * @param engineInterceptorContext engineInterceptorContext
      */
     public void initialize(EngineInterceptorContext engineInterceptorContext) {
         reentrantReadWriteLock.writeLock().lock();
@@ -112,6 +116,11 @@ public class EngineInterceptorRegistry {
         }
     }
 
+    /**
+     * Method to destroy engine interceptors
+     *
+     * @param engineInterceptorContext engineInterceptorContext
+     */
     public void destroy(EngineInterceptorContext engineInterceptorContext) {
         for (EngineInterceptor engineInterceptor : engineInterceptors) {
             try {
@@ -127,10 +136,10 @@ public class EngineInterceptorRegistry {
      *
      * @param classes classes
      */
-    private static void filter(List<Class<?>> classes) {
+    private void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        ConcreteConfiguration.getInstance()
+        configuration
                 .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX)
                 .ifPresent(regex -> {
                     LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX, regex);
@@ -150,7 +159,7 @@ public class EngineInterceptorRegistry {
                     }
                 });
 
-        ConcreteConfiguration.getInstance()
+        configuration
                 .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX)
                 .ifPresent(regex -> {
                     LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX, regex);

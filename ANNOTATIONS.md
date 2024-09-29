@@ -299,8 +299,10 @@ Used to define _scenario_ test method execution order. The `id` -> `nextId` defi
 
 - Only one test method can have an empty `nextId`
 
-- A method with `@Verifyica.Step` and `@Verifyica.Order` will generate an error
+- A test method with `@Verifyica.Step` and `@Verifyica.Order` will generate an error
   - use one or thr other 
+
+- Test methods with `@Verifyica.Disabled` are removed after the DAG is generated
 
 ### @Verifyica.IndependentTests
 

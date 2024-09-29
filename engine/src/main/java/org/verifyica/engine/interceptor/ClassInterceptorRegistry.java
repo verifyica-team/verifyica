@@ -31,12 +31,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.verifyica.api.Configuration;
 import org.verifyica.api.Verifyica;
 import org.verifyica.api.interceptor.ClassInterceptor;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.common.StackTracePrinter;
-import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.exception.EngineException;
 import org.verifyica.engine.exception.TestClassDefinitionException;
@@ -48,18 +48,27 @@ import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.ObjectSupport;
 import org.verifyica.engine.support.OrderSupport;
 
+/** Class to implement ClassInterceptorRegistry */
 public class ClassInterceptorRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
 
+    private final Configuration configuration;
     private final ReentrantReadWriteLock reentrantReadWriteLock;
     private final List<ClassInterceptor> classInterceptors;
 
-    public ClassInterceptorRegistry() {
-        reentrantReadWriteLock = new ReentrantReadWriteLock(true);
-        classInterceptors = new ArrayList<>();
+    /**
+     * Constructor
+     */
+    public ClassInterceptorRegistry(Configuration configuration) {
+        this.configuration = configuration;
+        this.reentrantReadWriteLock = new ReentrantReadWriteLock(true);
+        this.classInterceptors = new ArrayList<>();
     }
 
+    /**
+     * Method to initialize the registry
+     */
     public void initialize() {
         reentrantReadWriteLock.writeLock().lock();
         try {
@@ -96,6 +105,13 @@ public class ClassInterceptorRegistry {
         }
     }
 
+    /**
+     * Method to get class interceptors for a test class
+     *
+     * @param testClass testClass
+     * @return a List of ClassInterceptors
+     * @throws Throwable Throwable
+     */
     public List<ClassInterceptor> getClassInterceptors(Class<?> testClass) throws Throwable {
         reentrantReadWriteLock.readLock().lock();
         try {
@@ -177,6 +193,9 @@ public class ClassInterceptorRegistry {
         return classInterceptors;
     }
 
+    /**
+     * Method to destroy class interceptors
+     */
     public void destroy() {
         for (ClassInterceptor classInterceptor : classInterceptors) {
             try {
@@ -192,10 +211,10 @@ public class ClassInterceptorRegistry {
      *
      * @param classes classes
      */
-    private static void filter(List<Class<?>> classes) {
+    private void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        ConcreteConfiguration.getInstance()
+        configuration
                 .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX)
                 .ifPresent(regex -> {
                     LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX, regex);
@@ -215,7 +234,7 @@ public class ClassInterceptorRegistry {
                     }
                 });
 
-        ConcreteConfiguration.getInstance()
+        configuration
                 .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX)
                 .ifPresent(regex -> {
                     LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX, regex);

@@ -46,7 +46,7 @@ public class FieldInjector {
     public static void injectFields(Object target, Object value) {
         try {
             Class<?> clazz = target.getClass();
-            if (clazz.getName().startsWith("java")) {
+            if (clazz.getName().startsWith("java") || clazz.getName().startsWith("sun")) {
                 return;
             }
             List<Field> fields = getAllFields(clazz);

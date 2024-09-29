@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.execution;
+package org.verifyica.engine.descriptor;
 
 import org.junit.platform.engine.UniqueId;
 import org.verifyica.engine.logger.Logger;

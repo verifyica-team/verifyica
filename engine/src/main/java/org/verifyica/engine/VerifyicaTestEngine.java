@@ -52,10 +52,10 @@ import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.context.ConcreteEngineContext;
 import org.verifyica.engine.context.ConcreteEngineInterceptorContext;
+import org.verifyica.engine.descriptor.EngineDescriptor;
+import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.exception.EngineConfigurationException;
 import org.verifyica.engine.exception.EngineException;
-import org.verifyica.engine.execution.EngineDescriptor;
-import org.verifyica.engine.execution.TestableTestDescriptor;
 import org.verifyica.engine.injection.FieldInjector;
 import org.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.verifyica.engine.interceptor.EngineInterceptorRegistry;
@@ -154,14 +154,16 @@ public class VerifyicaTestEngine implements TestEngine {
         LOGGER.trace("discover()");
 
         try {
+            Configuration configuration = ConcreteConfiguration.getInstance();
+
             EngineDescriptor engineDescriptor = new EngineDescriptor(uniqueId, DISPLAY_NAME);
 
             new EngineDiscoveryRequestResolver().resolveSelectors(engineDiscoveryRequest, engineDescriptor);
 
-            engineInterceptorRegistry = new EngineInterceptorRegistry();
+            engineInterceptorRegistry = new EngineInterceptorRegistry(configuration);
             FieldInjector.injectFields(engineDescriptor, engineInterceptorRegistry);
 
-            classInterceptorRegistry = new ClassInterceptorRegistry();
+            classInterceptorRegistry = new ClassInterceptorRegistry(configuration);
             FieldInjector.injectFields(engineDescriptor, classInterceptorRegistry);
 
             LOGGER.trace(

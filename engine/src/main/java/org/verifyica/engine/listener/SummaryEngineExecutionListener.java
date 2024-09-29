@@ -31,9 +31,9 @@ import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.AnsiColoredString;
 import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Stopwatch;
-import org.verifyica.engine.execution.ArgumentTestDescriptor;
-import org.verifyica.engine.execution.ClassTestDescriptor;
-import org.verifyica.engine.execution.TestMethodTestDescriptor;
+import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
+import org.verifyica.engine.descriptor.ClassTestDescriptor;
+import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.verifyica.engine.support.HumanReadableTimeSupport;
 
 /** Class to implement a SummaryEngineExecutionListener */

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.execution;
+package org.verifyica.engine.descriptor;
 
 import static java.lang.String.format;
 
@@ -104,6 +104,11 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         this.throwables = new ArrayList<>();
     }
 
+    /**
+     * Method to get argument
+     *
+     * @return the argument
+     */
     public Argument<?> getArgument() {
         return argument;
     }
