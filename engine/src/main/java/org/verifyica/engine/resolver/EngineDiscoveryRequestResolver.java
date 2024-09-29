@@ -151,9 +151,16 @@ public class EngineDiscoveryRequestResolver {
 
                 List<MethodDefinition> testMethodDefinitions = new ArrayList<>();
 
-                testMethods.forEach(method -> {
-                    String methodDisplayName = DisplayNameSupport.getDisplayName(method);
-                    testMethodDefinitions.add(new ConcreteMethodDefinition(method, methodDisplayName));
+                testMethods.forEach(testMethod -> {
+                    if (testMethod.isAnnotationPresent(Verifyica.Step.class)
+                            && testMethod.isAnnotationPresent(Verifyica.Order.class)) {
+                        throw new TestClassDefinitionException(format(
+                                "Test class [%s] test method [%s] is annotated with both \"@Verify.Step\" and \"@Verifyica.Order\"",
+                                testClass.getName(), testMethod.getName()));
+                    }
+
+                    String methodDisplayName = DisplayNameSupport.getDisplayName(testMethod);
+                    testMethodDefinitions.add(new ConcreteMethodDefinition(testMethod, methodDisplayName));
                 });
 
                 classDefinitions.add(new ConcreteClassDefinition(
@@ -165,12 +172,9 @@ public class EngineDiscoveryRequestResolver {
             });
 
             pruneClassDefinitions(classDefinitions);
-            onTestDiscovery(classDefinitions);
             pruneClassDefinitions(classDefinitions);
             orderStepMethods(classDefinitions);
-            loadClassInterceptors(classDefinitions);
             buildEngineDescriptor(classDefinitions, testDescriptor);
-            onInitialize(classDefinitions);
         } catch (EngineException e) {
             throw e;
         } catch (Throwable t) {

@@ -78,11 +78,7 @@ Verifyica uses a dependent test method paradigm ...
 - Test class tag filtering
 - Test class interceptors (extensions)
 - Engine interceptors (extensions)
-  - order test methods
-  - filter test methods
-  - set test class display names
-  - set test method display names
-  - set up / tear down resources
+  - set up / tear down global / external resources
 - Cleanup of `AutoClosable` test classes / test arguments
 - Cleanup of `AutoClosable` objects in a [Store](api/src/main/java/org/verifyica/api/Store.java)
 - Object / resource sharing via contexts

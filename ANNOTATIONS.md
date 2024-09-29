@@ -209,16 +209,6 @@ All methods annotated with `@Verifyica.Test`:
 
 - `@Verifyica.Test` methods are not hierarchical
 
-
-- An optional order value can be used for ordering
-  - `@Verifyica.Test(order = X)`
-
-
-- If both `@Verifyica.Test(order = x)` and `@Verifyica.Order(order = x)` are defined, the lowest order value is used
-
-
-- order is lowest value to highest value
-
 ---
 
 ### @Verifyica.Order
@@ -243,6 +233,9 @@ Used by Verifyica to order test classes / test methods.
 
 - If `verifyica.engine.class.parallelism` is greater than `1`, orders test class **execution submission order**.
   - Test class execution will still be in parallel.
+
+- A method with `@Verifyica.Order` and `@Verifyica.Step` will generate an error
+  - use one or thr other
 
 ---
 
@@ -291,7 +284,7 @@ Used to register a test class specific [ClassInterceptor](api/src/main/java/org/
 
 ### @Verifyica.Step
 
-Used to define _scenario_ test method execution order
+Used to define _scenario_ test method execution order. The `id` -> `nextId` defines a DAG (Directed Acyclic Graph).
 
 - optional
 - `id` is required
@@ -301,10 +294,13 @@ Used to define _scenario_ test method execution order
 
 **Notes**
 
-- The `id` -> `nextId` defines a DAG (Directed Acyclic Graph)
-
 - A test class can only have `id` -> `nextId` mappings that define a single DAG
-  - multiple DAGs are not supported 
+  - multiple DAGs are not supported
+
+- Only one test method can have an empty `nextId`
+
+- A method with `@Verifyica.Step` and `@Verifyica.Order` will generate an error
+  - use one or thr other 
 
 ### @Verifyica.IndependentTests
 
