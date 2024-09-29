@@ -31,6 +31,7 @@ import org.verifyica.engine.injection.Inject;
 import org.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.verifyica.engine.interceptor.EngineInterceptorRegistry;
 
+/** Class to implement ExecutableTestDescriptor */
 public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
 
     public static final Predicate<TestDescriptor> EXECUTABLE_TEST_DESCRIPTOR_FILTER = new Predicate<TestDescriptor>() {
@@ -96,18 +97,39 @@ public abstract class ExecutableTestDescriptor extends AbstractTestDescriptor {
         setExecutionResult(ExecutionResult.skipped());
     }
 
+    /**
+     * Method to set the execution result
+     *
+     * @param executionResult executionResult
+     */
     protected void setExecutionResult(ExecutionResult executionResult) {
         this.executionResult = executionResult;
     }
 
+    /**
+     * Method to get the execution result
+     *
+     * @return the execution result
+     */
     public ExecutionResult getExecutionResult() {
         return executionResult;
     }
 
+    /**
+     * Method to print a stack trace in AnsiColor.TEXT_RED_BOLD
+     *
+     * @param throwable throwable
+     */
     protected static void printStackTrace(Throwable throwable) {
         StackTracePrinter.printStackTrace(throwable, AnsiColor.TEXT_RED_BOLD, System.err);
     }
 
+    /**
+     * Method to check an Object has been injected
+     *
+     * @param object object
+     * @param message message
+     */
     protected static void checkInjected(Object object, String message) {
         if (object == null) {
             throw new IllegalStateException(message);

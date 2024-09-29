@@ -49,7 +49,7 @@ import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ExecutorSupport;
 import org.verifyica.engine.support.HashSupport;
 
-/** Class to implement ExecutableClassTestDescriptor */
+/** Class to implement ClassTestDescriptor */
 public class ClassTestDescriptor extends ExecutableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptor.class);

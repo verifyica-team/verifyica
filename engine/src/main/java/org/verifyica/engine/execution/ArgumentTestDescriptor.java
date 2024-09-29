@@ -41,6 +41,7 @@ import org.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
+/** Class to implement ArgumentTestDescriptor */
 public class ArgumentTestDescriptor extends ExecutableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArgumentTestDescriptor.class);
