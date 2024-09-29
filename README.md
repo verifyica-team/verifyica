@@ -54,6 +54,10 @@ Verifyica uses a dependent test method paradigm ...
     - execute the test methods sequentially
     - if a test method fails, remaining test methods are skipped
 
+**Notes**
+
+- default test method ordering is by test method name (or display name if defined)
+
 # Features
 
 - Purpose built for integration testing using [testcontainers-java](https://java.testcontainers.org/)
