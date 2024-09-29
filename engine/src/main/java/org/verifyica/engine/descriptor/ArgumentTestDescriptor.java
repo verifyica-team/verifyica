@@ -30,7 +30,6 @@ import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.Store;
-import org.verifyica.api.Verifyica;
 import org.verifyica.api.interceptor.ArgumentInterceptorContext;
 import org.verifyica.api.interceptor.ClassInterceptor;
 import org.verifyica.engine.context.ConcreteArgumentContext;
