@@ -209,6 +209,10 @@ All methods annotated with `@Verifyica.Test`:
 
 - `@Verifyica.Test` methods are not hierarchical
 
+- Default ordering is by test method name (or `@verifyica.DisplayName` if used)
+
+- If no `@Verfiyica.Order` annotation is present on a test method, the default is `0`
+
 ---
 
 ### @Verifyica.Order

@@ -19,6 +19,7 @@ package org.verifyica.engine.support;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.verifyica.api.Verifyica;
@@ -28,8 +29,12 @@ public class OrderSupportTest {
     @Test
     public void testDefaultOrder() {
         List<Class<?>> classes = new ArrayList<>();
-        classes.add(TestClass2.class);
         classes.add(TestClass1.class);
+        classes.add(TestClass2.class);
+
+        for (int i = 0; i < 4; i++) {
+            Collections.shuffle(classes);
+        }
 
         OrderSupport.orderClasses(classes);
 
@@ -42,35 +47,43 @@ public class OrderSupportTest {
     @Test
     public void testOrder() {
         List<Class<?>> classes = new ArrayList<>();
-        classes.add(TestClass2.class);
         classes.add(TestClass1.class);
+        classes.add(TestClass2.class);
         classes.add(TestClass3.class);
+
+        for (int i = 0; i < 4; i++) {
+            Collections.shuffle(classes);
+        }
 
         OrderSupport.orderClasses(classes);
 
         assertThat(classes).isNotNull();
         assertThat(classes).hasSize(3);
-        assertThat(classes.get(0)).isEqualTo(TestClass3.class);
-        assertThat(classes.get(1)).isEqualTo(TestClass1.class);
-        assertThat(classes.get(2)).isEqualTo(TestClass2.class);
+        assertThat(classes.get(0)).isEqualTo(TestClass1.class);
+        assertThat(classes.get(1)).isEqualTo(TestClass2.class);
+        assertThat(classes.get(2)).isEqualTo(TestClass3.class);
     }
 
     @Test
     public void testDuplicateOrder() {
         List<Class<?>> classes = new ArrayList<>();
-        classes.add(TestClass2.class);
-        classes.add(TestClass4.class);
         classes.add(TestClass1.class);
+        classes.add(TestClass2.class);
         classes.add(TestClass3.class);
+        classes.add(TestClass4.class);
+
+        for (int i = 0; i < 4; i++) {
+            Collections.shuffle(classes);
+        }
 
         OrderSupport.orderClasses(classes);
 
         assertThat(classes).isNotNull();
         assertThat(classes).hasSize(4);
-        assertThat(classes.get(0)).isEqualTo(TestClass3.class);
-        assertThat(classes.get(1)).isEqualTo(TestClass4.class);
-        assertThat(classes.get(2)).isEqualTo(TestClass1.class);
-        assertThat(classes.get(3)).isEqualTo(TestClass2.class);
+        assertThat(classes.get(0)).isEqualTo(TestClass4.class);
+        assertThat(classes.get(1)).isEqualTo(TestClass1.class);
+        assertThat(classes.get(2)).isEqualTo(TestClass2.class);
+        assertThat(classes.get(3)).isEqualTo(TestClass3.class);
     }
 
     private static class TestClass1 {
@@ -81,12 +94,12 @@ public class OrderSupportTest {
         // INTENTIONALLY BLANK
     }
 
-    @Verifyica.Order(order = 0)
+    @Verifyica.Order(order = Integer.MAX_VALUE)
     private static class TestClass3 {
         // INTENTIONALLY BLANK
     }
 
-    @Verifyica.Order(order = 0)
+    @Verifyica.Order(order = Integer.MIN_VALUE)
     private static class TestClass4 {
         // INTENTIONALLY BLANK
     }

@@ -51,7 +51,7 @@ public class OrderSupport {
     public static int getOrder(Class<?> clazz) {
         Precondition.notNull(clazz, "clazz is null");
 
-        int order = Integer.MAX_VALUE;
+        int order = 0;
 
         Verifyica.Order annotation = clazz.getAnnotation(Verifyica.Order.class);
         if (annotation != null) {
