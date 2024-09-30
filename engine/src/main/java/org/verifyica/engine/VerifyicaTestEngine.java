@@ -56,6 +56,7 @@ import org.verifyica.engine.context.ConcreteEngineInterceptorContext;
 import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.exception.EngineConfigurationException;
 import org.verifyica.engine.exception.EngineException;
+import org.verifyica.engine.exception.TestClassDefinitionException;
 import org.verifyica.engine.injection.FieldInjector;
 import org.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.verifyica.engine.interceptor.EngineInterceptorRegistry;
@@ -172,6 +173,12 @@ public class VerifyicaTestEngine implements TestEngine {
                     "discover() elapsedTime [%d] ms", stopwatch.elapsedTime().toMillis());
 
             return engineDescriptor;
+        } catch (TestClassDefinitionException e) {
+            if (!isRunningViaVerifyicaMavenPlugin()) {
+                System.err.println(e.getMessage());
+                System.exit(1);
+            }
+            throw e;
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable t) {

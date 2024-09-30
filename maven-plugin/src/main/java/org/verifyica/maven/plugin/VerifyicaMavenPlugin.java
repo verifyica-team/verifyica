@@ -60,6 +60,7 @@ import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.ConcreteConfigurationParameters;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.descriptor.TestableTestDescriptor;
+import org.verifyica.engine.exception.TestClassDefinitionException;
 import org.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.verifyica.engine.listener.StatusEngineExecutionListener;
 import org.verifyica.engine.listener.SummaryEngineExecutionListener;
@@ -187,7 +188,11 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         try {
             testDescriptor = discovery();
         } catch (Throwable t) {
-            t.printStackTrace(System.err);
+            if (t instanceof TestClassDefinitionException) {
+                System.err.println(ERROR + AnsiColor.TEXT_RED_BOLD.wrap(t.getMessage()));
+            } else {
+                t.printStackTrace(System.err);
+            }
 
             System.out.println(ERROR + SEPARATOR);
             System.out.println(ERROR + SUMMARY_BANNER);
@@ -221,7 +226,11 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
             System.out.println(ERROR + SEPARATOR);
 
-            throw new MojoExecutionException("");
+            if (t instanceof TestClassDefinitionException) {
+                throw new MojoFailureException("");
+            } else {
+                throw new MojoExecutionException("");
+            }
         }
 
         try {
