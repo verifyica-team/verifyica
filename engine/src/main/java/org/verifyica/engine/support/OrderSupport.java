@@ -85,7 +85,7 @@ public class OrderSupport {
         Verifyica.Order orderAnnotation = method.getAnnotation(Verifyica.Order.class);
 
         if (orderAnnotation == null) {
-            return Integer.MAX_VALUE;
+            return 0;
         } else {
             return orderAnnotation.order();
         }
