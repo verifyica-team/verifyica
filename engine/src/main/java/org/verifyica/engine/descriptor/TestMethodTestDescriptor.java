@@ -28,13 +28,14 @@ import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.MethodSource;
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.Assumption;
 import org.verifyica.api.interceptor.ArgumentInterceptorContext;
 import org.verifyica.api.interceptor.ClassInterceptor;
 import org.verifyica.engine.injection.Inject;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implemment TestMethodDescriptor */
+/** Class to implement TestMethodDescriptor */
 public class TestMethodTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestMethodTestDescriptor.class);
@@ -145,12 +146,24 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
                 testExecutionResult = TestExecutionResult.successful();
                 testDescriptorStatus = TestDescriptorStatus.passed();
             } else {
-                testExecutionResult = TestExecutionResult.failed(throwables.get(0));
-                testDescriptorStatus = TestDescriptorStatus.failed(throwables.get(0));
+                Throwable throwable = throwables.get(0);
+
+                if (throwable instanceof Assumption) {
+                    testExecutionResult = TestExecutionResult.aborted(null);
+                    testDescriptorStatus = TestDescriptorStatus.skipped();
+                } else {
+                    testExecutionResult = TestExecutionResult.failed(throwables.get(0));
+                    testDescriptorStatus = TestDescriptorStatus.failed(throwables.get(0));
+                }
             }
 
             setTestDescriptorStatus(testDescriptorStatus);
-            engineExecutionListener.executionFinished(this, testExecutionResult);
+
+            if (testDescriptorStatus.isSkipped()) {
+                engineExecutionListener.executionSkipped(this, "Skipped");
+            } else {
+                engineExecutionListener.executionFinished(this, testExecutionResult);
+            }
         } catch (Throwable t) {
             printStackTrace(t);
             setTestDescriptorStatus(TestDescriptorStatus.failed(t));
@@ -197,13 +210,24 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             }
         }
 
-        try {
-            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postBeforeEach(argumentInterceptorContext, throwable);
+        if (!classInterceptorsReversed.isEmpty()) {
+            try {
+                Throwable t = throwable instanceof Assumption ? null : throwable;
+                for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                    classInterceptor.postBeforeEach(argumentInterceptorContext, t);
+                }
+                if (throwable != null) {
+                    throwables.add(throwable);
+                }
+            } catch (Throwable t) {
+                throwable = t;
+                printStackTrace(throwable);
+                throwables.add(throwable);
             }
-        } catch (Throwable t) {
-            throwable = t;
-            printStackTrace(throwable);
+        } else if (throwable != null) {
+            if (!(throwable instanceof Assumption)) {
+                printStackTrace(throwable);
+            }
             throwables.add(throwable);
         }
 
@@ -229,13 +253,24 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             }
         }
 
-        try {
-            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postTest(argumentInterceptorContext, testMethod, throwable);
+        if (!classInterceptorsReversed.isEmpty()) {
+            try {
+                Throwable t = throwable instanceof Assumption ? null : throwable;
+                for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                    classInterceptor.postTest(argumentInterceptorContext, testMethod, t);
+                }
+                if (throwable != null) {
+                    throwables.add(throwable);
+                }
+            } catch (Throwable t) {
+                throwable = t;
+                printStackTrace(throwable);
+                throwables.add(throwable);
             }
-        } catch (Throwable t) {
-            throwable = t;
-            printStackTrace(throwable);
+        } else if (throwable != null) {
+            if (!(throwable instanceof Assumption)) {
+                printStackTrace(throwable);
+            }
             throwables.add(throwable);
         }
 
@@ -263,12 +298,17 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             }
         }
 
-        try {
-            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postAfterEach(argumentInterceptorContext, throwable);
+        if (!classInterceptorsReversed.isEmpty()) {
+            try {
+                for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                    classInterceptor.postAfterEach(argumentInterceptorContext, throwable);
+                }
+            } catch (Throwable t) {
+                throwable = throwable != null ? t : throwable;
+                printStackTrace(throwable);
+                throwables.add(throwable);
             }
-        } catch (Throwable t) {
-            throwable = throwable != null ? t : throwable;
+        } else if (throwable != null) {
             printStackTrace(throwable);
             throwables.add(throwable);
         }

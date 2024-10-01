@@ -154,12 +154,14 @@ public class EngineDiscoveryRequestResolver {
                 List<MethodDefinition> testMethodDefinitions = new ArrayList<>();
 
                 testMethods.forEach(testMethod -> {
+                    /*
                     if (testMethod.isAnnotationPresent(Verifyica.Step.class)
                             && testMethod.isAnnotationPresent(Verifyica.Order.class)) {
                         throw new TestClassDefinitionException(format(
                                 "Test class [%s] test method [%s] is annotated with both \"@Verify.Step\" and \"@Verifyica.Order\"",
                                 testClass.getName(), testMethod.getName()));
                     }
+                    */
 
                     String methodDisplayName = DisplayNameSupport.getDisplayName(testMethod);
                     testMethodDefinitions.add(new ConcreteMethodDefinition(testMethod, methodDisplayName));
@@ -175,7 +177,7 @@ public class EngineDiscoveryRequestResolver {
 
             pruneClassDefinitions(classDefinitions);
             ClassDefinitionFilter.filter(classDefinitions);
-            orderStepMethods(classDefinitions);
+            // orderStepMethods(classDefinitions);
             buildEngineDescriptor(classDefinitions, testDescriptor);
             prunedDisabledTestMethods(testDescriptor);
         } catch (EngineException e) {
@@ -349,12 +351,14 @@ public class EngineDiscoveryRequestResolver {
         }
     }
 
+    /*
     private static void orderStepMethods(List<ClassDefinition> classDefinitions) {
         LOGGER.trace("orderStepMethods()");
 
         StepMethodOrderer stepMethodOrderer = new StepMethodOrderer();
         classDefinitions.forEach(stepMethodOrderer::orderMethods);
     }
+    */
 
     /**
      * Method to build the EngineDescriptor
@@ -420,6 +424,22 @@ public class EngineDiscoveryRequestResolver {
                 for (MethodDefinition testMethodDefinition : classDefinition.getTestMethodDefinitions()) {
                     Method testMethod = testMethodDefinition.getMethod();
 
+                    /*
+                    Matcher matcher = null;
+
+                    Verifyica.Condition conditionAnnotation = testMethod.getAnnotation(Verifyica.Condition.class);
+                    if (conditionAnnotation != null) {
+                        try {
+                            matcher =
+                                    Pattern.compile(conditionAnnotation.regex()).matcher("");
+                        } catch (PatternSyntaxException e) {
+                            throw new TestClassDefinitionException(format(
+                                    "Test class [%s] test method [%s] @Verifyica.Condition contains an invalid regex [%s]",
+                                    testClass.getName(), testMethod.getName(), conditionAnnotation.regex()));
+                        }
+                    }
+                    */
+
                     UniqueId testMethodDescriptorUniqueId =
                             argumentTestDescriptorUniqueId.append("method", testMethod.getName());
 
@@ -437,6 +457,7 @@ public class EngineDiscoveryRequestResolver {
                             testMethodDescriptorUniqueId,
                             testMethodDefinition.getDisplayName(),
                             beforeEachMethods,
+                            // matcher,
                             testMethodDefinition.getMethod(),
                             afterEachMethods);
 

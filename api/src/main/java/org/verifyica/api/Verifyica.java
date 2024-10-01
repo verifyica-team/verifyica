@@ -88,6 +88,7 @@ public @interface Verifyica {
     }
 
     /** Step annotation */
+    /*
     @org.junit.platform.commons.annotation.Testable
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
@@ -98,15 +99,18 @@ public @interface Verifyica {
          *
          * @return the id value
          */
-        String id();
+    /*
+    String id();
 
-        /**
-         * nextId value
-         *
-         * @return the nextId value
-         */
+    /**
+     * nextId value
+     *
+     * @return the nextId value
+     */
+    /*
         String nextId();
     }
+    */
 
     /** Disabled annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
