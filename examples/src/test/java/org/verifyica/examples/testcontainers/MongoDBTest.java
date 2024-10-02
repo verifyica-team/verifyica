@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.test.testcontainers;
+package org.verifyica.examples.testcontainers;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;

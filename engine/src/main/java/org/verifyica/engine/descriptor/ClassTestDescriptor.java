@@ -285,7 +285,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         if (throwable == null) {
             try {
                 for (Method method : prepareMethods) {
-                    invoke(method, testInstanceAtomicReference.get(), invocationArguments);
+                    invoke(method, testInstanceAtomicReference.get(), invocationArguments, true);
                 }
             } catch (InvocationTargetException e) {
                 throwable = e.getCause();
@@ -366,7 +366,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         if (throwable == null) {
             try {
                 for (Method method : concludeMethods) {
-                    invoke(method, testInstanceAtomicReference.get(), invocationArguments);
+                    invoke(method, testInstanceAtomicReference.get(), invocationArguments, true);
                 }
             } catch (InvocationTargetException e) {
                 throwable = e.getCause();

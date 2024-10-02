@@ -87,6 +87,7 @@
         <module>engine</module>
         <module>maven-plugin</module>
         <module>tests</module>
+        <module>examples</module>
     </modules>
 
 </project>

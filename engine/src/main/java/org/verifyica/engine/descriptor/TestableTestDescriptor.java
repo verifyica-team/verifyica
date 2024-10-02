@@ -141,6 +141,23 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
      */
     protected static void invoke(Method method, Object instance, List<Object> arguments)
             throws InvocationTargetException, IllegalAccessException {
+        invoke(method, instance, arguments, false);
+    }
+
+    /**
+     * Method to invoke a Method.
+     *
+     * <p>Loops through each argument. If an argument type matches, invokes the method with the argument and returns.
+     *
+     * @param method method
+     * @param instance instant
+     * @param arguments arguments
+     * @param noParameters noParameters
+     * @throws InvocationTargetException InvocationTargetException
+     * @throws IllegalAccessException IllegalAccessException
+     */
+    protected static void invoke(Method method, Object instance, List<Object> arguments, boolean noParameters)
+            throws InvocationTargetException, IllegalAccessException {
         if (method.getParameterCount() == 1) {
             Class<?> parameterType = method.getParameterTypes()[0];
             for (Object argument : arguments) {
@@ -149,6 +166,11 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
                     return;
                 }
             }
+        }
+
+        if (method.getParameterCount() == 0 && noParameters) {
+            method.invoke(instance);
+            return;
         }
 
         throw new TestClassDefinitionException(format(
