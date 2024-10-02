@@ -36,6 +36,27 @@ import org.verifyica.engine.inject.Named;
 /** Class to implement TestableTestDescriptor */
 public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
 
+    /** Named annotation field constant */
+    public static final String ENGINE_EXECUTION_LISTENER = "engineExecutionListener";
+
+    /** Named annotation field constant */
+    public static final String CLASS_INTERCEPTORS = "classInterceptors";
+
+    /** Named annotation field constant */
+    public static final String CLASS_INTERCEPTORS_REVERSED = "classInterceptorsReversed";
+
+    /** Named annotation field constant */
+    public static final String ARGUMENT_EXECUTOR_SERVICE = "argumentExecutorService";
+
+    /** Named annotation field constant */
+    public static final String ENGINE_CONTEXT = "engineContext";
+
+    /** Named annotation field constant */
+    public static final String CLASS_CONTEXT = "classContext";
+
+    /** Named annotation field constant */
+    public static final String ARGUMENT_CONTEXT = "argumentContext";
+
     /**
      * Predicate to filter TestableTestDescriptors
      */

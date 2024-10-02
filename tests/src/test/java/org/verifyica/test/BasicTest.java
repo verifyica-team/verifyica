@@ -44,7 +44,7 @@ public class BasicTest {
         System.out.printf("test argument parallelism [%d]%n", classContext.getTestArgumentParallelism());
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
 
         classContext
                 .getEngineContext()
@@ -61,7 +61,7 @@ public class BasicTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -73,7 +73,7 @@ public class BasicTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -85,7 +85,7 @@ public class BasicTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -97,7 +97,7 @@ public class BasicTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -109,7 +109,7 @@ public class BasicTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -121,7 +121,7 @@ public class BasicTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -133,7 +133,7 @@ public class BasicTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -142,6 +142,6 @@ public class BasicTest {
         System.out.println("conclude()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 }

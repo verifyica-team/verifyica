@@ -27,14 +27,14 @@ public interface Configuration {
      * Get the Path to the Properties configuration file
      *
      * @return an Optional containing Path to the Properties configuration file, or Optional.empty()
-     *     if not properties configuration file was found
+     *     if no properties configuration file was found
      */
     Optional<Path> getPropertiesFilename();
 
     /**
-     * Get the configuration Properties
+     * Get the Configuration Properties
      *
-     * @return configuration Properties
+     * @return Configuration Properties
      */
     Properties getProperties();
 }

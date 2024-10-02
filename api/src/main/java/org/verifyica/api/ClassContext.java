@@ -20,17 +20,6 @@ package org.verifyica.api;
 public interface ClassContext extends Context {
 
     /**
-     * Get the Engine Configuration
-     *
-     * <p>Equivalent to getEngineContext().getConfiguration()
-     *
-     * @return the Engine Configuration
-     */
-    default Configuration getConfiguration() {
-        return getEngineContext().getConfiguration();
-    }
-
-    /**
      * Get the EngineContext
      *
      * @return the EngineContext

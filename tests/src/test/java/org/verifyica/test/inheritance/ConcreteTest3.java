@@ -43,7 +43,7 @@ public class ConcreteTest3 extends AbstractTest2 {
         System.out.printf("    ConcreteTest3 test2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 }

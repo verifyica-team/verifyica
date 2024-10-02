@@ -16,40 +16,22 @@
 
 package org.verifyica.api;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
+import java.util.Map;
 
 /** Interface to implement Context */
 public interface Context {
 
     /**
-     * Get the Store
+     * Get the Configuration
      *
-     * @return the Store
+     * @return the Configuration
      */
-    Store getStore();
+    Configuration getConfiguration();
 
     /**
-     * Get the Context Lock
+     * Get the Map
      *
-     * <p>Equivalent to getStore().getLock()
-     *
-     * <p>Equivalent to getStore().getReadWriteLock().writeLock()
-     *
-     * @return the Context Lock
+     * @return the Map
      */
-    default Lock getLock() {
-        return getStore().getLock();
-    }
-
-    /**
-     * Get the Context ReadWriteLock.
-     *
-     * <p>Equivalent to getStore().getReadWriteLock()
-     *
-     * @return the Context ReadWriteLock
-     */
-    default ReadWriteLock getReadWriteLock() {
-        return getStore().getReadWriteLock();
-    }
+    Map<String, Object> getMap();
 }

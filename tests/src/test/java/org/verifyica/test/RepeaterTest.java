@@ -35,7 +35,7 @@ public class RepeaterTest {
         System.out.println("beforeEach()");
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
         assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo("test");
     }
@@ -46,7 +46,7 @@ public class RepeaterTest {
                 .before(() -> beforeEach(argumentContext))
                 .execute(() -> {
                     assertThat(argumentContext).isNotNull();
-                    assertThat(argumentContext.getStore()).isNotNull();
+                    assertThat(argumentContext.getMap()).isNotNull();
                     assertThat(argumentContext.getTestArgument()).isNotNull();
                     assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo("test");
 
@@ -66,7 +66,7 @@ public class RepeaterTest {
                 .before(() -> beforeEach(argumentContext))
                 .execute(() -> {
                     assertThat(argumentContext).isNotNull();
-                    assertThat(argumentContext.getStore()).isNotNull();
+                    assertThat(argumentContext.getMap()).isNotNull();
                     assertThat(argumentContext.getTestArgument()).isNotNull();
                     assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo("test");
 
@@ -91,7 +91,7 @@ public class RepeaterTest {
         System.out.println("afterEach()");
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
         assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo("test");
     }

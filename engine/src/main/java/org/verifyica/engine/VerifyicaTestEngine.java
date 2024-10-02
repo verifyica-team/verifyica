@@ -26,8 +26,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
@@ -43,7 +45,6 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
-import org.verifyica.api.Store;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.FairExecutorService;
 import org.verifyica.engine.common.StackTracePrinter;
@@ -228,11 +229,21 @@ public class VerifyicaTestEngine implements TestEngine {
                     List<ClassInterceptor> classInterceptorsReversed = new ArrayList<>(classInterceptors);
                     Collections.reverse(classInterceptorsReversed);
 
-                    Injector.inject("engineExecutionListener", engineExecutionListener, testableTestDescriptor);
-                    Injector.inject("engineContext", engineContext, testableTestDescriptor);
-                    Injector.inject("argumentExecutorService", argumentExecutorService, testableTestDescriptor);
-                    Injector.inject("classInterceptors", classInterceptors, testableTestDescriptor);
-                    Injector.inject("classInterceptorsReversed", classInterceptorsReversed, testableTestDescriptor);
+                    Injector.inject(
+                            TestableTestDescriptor.ENGINE_EXECUTION_LISTENER,
+                            engineExecutionListener,
+                            testableTestDescriptor);
+                    Injector.inject(TestableTestDescriptor.ENGINE_CONTEXT, engineContext, testableTestDescriptor);
+                    Injector.inject(
+                            TestableTestDescriptor.ARGUMENT_EXECUTOR_SERVICE,
+                            argumentExecutorService,
+                            testableTestDescriptor);
+                    Injector.inject(
+                            TestableTestDescriptor.CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
+                    Injector.inject(
+                            TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED,
+                            classInterceptorsReversed,
+                            testableTestDescriptor);
 
                     String hash = HashSupport.alphanumeric(6);
                     String threadName = hash + "/" + hash;
@@ -250,22 +261,21 @@ public class VerifyicaTestEngine implements TestEngine {
                 ExecutorSupport.shutdownAndAwaitTermination(argumentExecutorService);
                 ExecutorSupport.shutdownAndAwaitTermination(classExecutorService);
 
-                Store store = engineContext.getStore();
-                for (Object key : store.keySet()) {
-                    Object value = store.remove(key);
-                    if (value instanceof AutoCloseable) {
+                Map<String, Object> map = engineContext.getMap();
+
+                Set<Map.Entry<String, Object>> entrySet = map.entrySet();
+                for (Map.Entry<String, Object> entry : entrySet) {
+                    if (entry.getValue() instanceof AutoCloseable) {
                         try {
-                            LOGGER.trace("storeAutoClose(" + key + ")");
-                            ((AutoCloseable) value).close();
-                            LOGGER.trace("storeAutoClose(" + key + ").success");
+                            ((AutoCloseable) entry.getValue()).close();
                         } catch (Throwable t) {
-                            LOGGER.trace("storeAutoClose(" + key + ").failure");
                             StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                             throwables.add(t);
                         }
                     }
                 }
-                store.clear();
+
+                map.clear();
             }
         } finally {
             classInterceptorRegistry.destroy(engineContext);

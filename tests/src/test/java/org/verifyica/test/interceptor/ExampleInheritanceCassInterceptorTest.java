@@ -34,7 +34,7 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
         assertThat(argumentContext.getClassContext().getEngineContext()
                         == argumentContext.getClassContext().getEngineContext())
@@ -44,15 +44,15 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
         assertThat(argumentContext
                         .getClassContext()
                         .getEngineContext()
-                        .getStore()
+                        .getMap()
                         .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
         assertThat(argumentContext
                         .getClassContext()
                         .getEngineContext()
-                        .getStore()
-                        .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+                        .getMap()
+                        .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
@@ -62,7 +62,7 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
         assertThat(argumentContext.getClassContext().getEngineContext()
                         == argumentContext.getClassContext().getEngineContext())
@@ -72,15 +72,15 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
         assertThat(argumentContext
                         .getClassContext()
                         .getEngineContext()
-                        .getStore()
+                        .getMap()
                         .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
         assertThat(argumentContext
                         .getClassContext()
                         .getEngineContext()
-                        .getStore()
-                        .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+                        .getMap()
+                        .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 
@@ -90,7 +90,7 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
         assertThat(argumentContext.getClassContext().getEngineContext()
                         == argumentContext.getClassContext().getEngineContext())
@@ -100,15 +100,15 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
         assertThat(argumentContext
                         .getClassContext()
                         .getEngineContext()
-                        .getStore()
+                        .getMap()
                         .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isNotNull();
 
         assertThat(argumentContext
                         .getClassContext()
                         .getEngineContext()
-                        .getStore()
-                        .get(ExampleAutowiredEngineInterceptor1.KEY, String.class))
+                        .getMap()
+                        .get(ExampleAutowiredEngineInterceptor1.KEY))
                 .isEqualTo(ExampleAutowiredEngineInterceptor1.VALUE);
     }
 }

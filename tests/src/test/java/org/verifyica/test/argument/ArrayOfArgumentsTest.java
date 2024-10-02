@@ -38,7 +38,7 @@ public class ArrayOfArgumentsTest {
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
         assertThat(argumentContext.getTestArgument(String.class).getPayload()).startsWith("test");
 

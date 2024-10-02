@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.test.store;
+package org.verifyica.test.map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,7 +44,7 @@ public class StoreAutocloseableTest {
         System.out.println("prepare()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 
     @Verifyica.BeforeAll
@@ -54,15 +54,15 @@ public class StoreAutocloseableTest {
         argumentContext
                 .getClassContext()
                 .getEngineContext()
-                .getStore()
+                .getMap()
                 .put("autoCloseable", new CustomAutoCloseable("engine"));
 
-        argumentContext.getClassContext().getStore().put("autoCloseable", new CustomAutoCloseable("class"));
+        argumentContext.getClassContext().getMap().put("autoCloseable", new CustomAutoCloseable("class"));
 
-        argumentContext.getStore().put("autoCloseable", new CustomAutoCloseable("argument"));
+        argumentContext.getMap().put("autoCloseable", new CustomAutoCloseable("argument"));
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -71,7 +71,7 @@ public class StoreAutocloseableTest {
         System.out.printf("beforeEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -80,7 +80,7 @@ public class StoreAutocloseableTest {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         Thread.sleep(RandomSupport.randomLong(0, 1000));
@@ -91,7 +91,7 @@ public class StoreAutocloseableTest {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         Thread.sleep(RandomSupport.randomLong(0, 1000));
@@ -102,7 +102,7 @@ public class StoreAutocloseableTest {
         System.out.printf("afterEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -111,7 +111,7 @@ public class StoreAutocloseableTest {
         System.out.printf("afterAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -120,7 +120,7 @@ public class StoreAutocloseableTest {
         System.out.println("conclude()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 
     private static class CustomAutoCloseable implements AutoCloseable {

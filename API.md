@@ -29,7 +29,7 @@ Any `ArgumentSupplier` method that returns a non-`Argument` Object will be wrapp
 
 Interface with common methods for all [Context](api/src/main/java/org/verifyica/api/Context.java) implementations.
 
-It's common purpose to get a reference to the associated [Store](src/main/java/org/verifyica/api/Store.java).
+It's common purpose to get a reference to an scoped `Map<String, Object>`
 
 ## EngineContext
 
@@ -62,43 +62,6 @@ The [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
 
 ---
 
-## Store
-
-A [Store](api/src/main/java/org/verifyica/api/Store.java) is used to ...
-
-- store Objects/data that is to be shared
-  - between test methods
-  - between test classes
-  - globally
-
-A Store is thread safe, but allow locking the Store lock for chained atomic operations.
-
-```java
-    private static final Key CLASS_CONTEXT_STORE_KEY = Key.of("class.context.key");
-
-    // ... code omitted ...
-
-    @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("test(%s)%n", argumentContext.getTestArgument().getPayload());
-    
-        Store store = argumentContext.getClassContext().getStore();
-        store.getLock().lock();
-        try {
-          store.put(CLASS_CONTEXT_STORE_KEY.append("foo"), "FOO");
-          store.put(CLASS_CONTEXT_STORE_KEY.append("bar"), "BAR");
-        } finally {
-          store.getLock().unlock();
-        }
-    }
-```
-
-**Notes**
-
-- Objects implementing `AutoClosable` in a Store will automatically get closed when the `Store` goes out of scope.
-
----
-
 ## Configuration
 
 [Configuration](api/src/main/java/org/verifyica/api/Configuration.java) has `Properties` to get configuration.
@@ -108,26 +71,6 @@ A Store is thread safe, but allow locking the Store lock for chained atomic oper
 ## LockManager
 
 [LockManager](api/src/main/java/org/verifyica/api/LockManager.java) provides way to implement locking semantics.
-
-**Notes**
-
-- a lock key should be immutable
-
----
-
-## Key
-
-[Key](api/src/main/java/org/verifyica/api/Key.java) is a helper to easily build a key used for a [Store](api/src/main/java/org/verifyica/api/Store.java).
-
-**Notes**
-
-- **Objects used to build a key must be immutable**
-
-
-- a `Key` is immutable, but methods exists to derive new a `Key`
-  - `append()`
-  - `remove()`
-  - `duplicate()`
 
 ---
 

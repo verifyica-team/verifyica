@@ -43,7 +43,7 @@ public class ConcreteTest1 extends AbstractTest1 {
         System.out.println("    ConcreteTest1 prepare2()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 
     @Verifyica.BeforeAll
@@ -51,7 +51,7 @@ public class ConcreteTest1 extends AbstractTest1 {
         System.out.printf("    ConcreteTest1 beforeAll2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -60,7 +60,7 @@ public class ConcreteTest1 extends AbstractTest1 {
         System.out.printf("    ConcreteTest1 beforeEach2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -69,7 +69,7 @@ public class ConcreteTest1 extends AbstractTest1 {
         System.out.printf("    ConcreteTest1 test2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -78,7 +78,7 @@ public class ConcreteTest1 extends AbstractTest1 {
         System.out.printf("    ConcreteTest1 afterEach2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -87,7 +87,7 @@ public class ConcreteTest1 extends AbstractTest1 {
         System.out.printf("    ConcreteTest1 afterAll2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -96,6 +96,6 @@ public class ConcreteTest1 extends AbstractTest1 {
         System.out.println("    ConcreteTest1 conclude2()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 }

@@ -67,31 +67,6 @@ public class LockManager {
      * Method to try to lock a key
      *
      * @param key key
-     * @return true if the lock was free or locked the current Thread, else false
-     */
-    public static boolean tryLock(Key key) {
-        notNull(key, "key is null");
-        return tryLock(key.toString());
-    }
-
-    /**
-     * Method to try to lock a key
-     *
-     * @param key key
-     * @param timeout timeout
-     * @param timeUnit timeUnit
-     * @return true if the lock was free or locked the current Thread, else false
-     * @throws InterruptedException InterruptedException
-     */
-    public static boolean tryLock(Key key, long timeout, TimeUnit timeUnit) throws InterruptedException {
-        notNull(key, "key is null");
-        return tryLock(key.toString(), timeout, timeUnit);
-    }
-
-    /**
-     * Method to try to lock a key
-     *
-     * @param key key
      * @param timeout timeout
      * @param timeUnit timeUnit
      * @return true if the lock was free or locked the current Thread, else false
@@ -116,16 +91,6 @@ public class LockManager {
         }
 
         return lockReference.getLock().tryLock(timeout, timeUnit);
-    }
-
-    /**
-     * Method to lock a key
-     *
-     * @param key key
-     */
-    public static void lock(Key key) {
-        notNull(key, "key is null");
-        lock(key.toString());
     }
 
     /**
@@ -158,16 +123,6 @@ public class LockManager {
      *
      * @param key key
      */
-    public static void unlock(Key key) {
-        notNull(key, "key is null");
-        unlock(key.toString());
-    }
-
-    /**
-     * Method to unlock a key
-     *
-     * @param key key
-     */
     public static void unlock(String key) {
         notBlank(key, "key is null", "key is blank");
 
@@ -192,17 +147,6 @@ public class LockManager {
         } finally {
             LOCK.unlock();
         }
-    }
-
-    /**
-     * Method to return if a key is locked
-     *
-     * @param key key
-     * @return true if the key is locked, else false
-     */
-    public static boolean isLocked(Key key) {
-        notNull(key, "key is null");
-        return isLocked(key.toString());
     }
 
     /**

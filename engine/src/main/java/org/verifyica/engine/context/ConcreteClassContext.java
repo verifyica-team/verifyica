@@ -19,17 +19,15 @@ package org.verifyica.engine.context;
 import java.util.concurrent.atomic.AtomicReference;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.EngineContext;
-import org.verifyica.api.Store;
 
 /** Class to implement ConcreteClassContext */
-public class ConcreteClassContext implements ClassContext {
+public class ConcreteClassContext extends AbstractContext implements ClassContext {
 
     private final EngineContext engineContext;
     private final Class<?> testClass;
     private final String testClassDisplayName;
     private final int testArgumentParallelism;
     private final AtomicReference<Object> testClassInstanceReference;
-    private final Store store;
 
     /**
      * Constructor
@@ -46,22 +44,18 @@ public class ConcreteClassContext implements ClassContext {
             String testClassDisplayName,
             int testArgumentParallelism,
             AtomicReference<Object> testClassInstanceReference) {
+        super(engineContext.getConfiguration());
+
         this.engineContext = engineContext;
         this.testClass = testClass;
         this.testClassDisplayName = testClassDisplayName;
         this.testArgumentParallelism = testArgumentParallelism;
         this.testClassInstanceReference = testClassInstanceReference;
-        this.store = new ConcreteStore();
     }
 
     @Override
     public EngineContext getEngineContext() {
         return engineContext;
-    }
-
-    @Override
-    public Store getStore() {
-        return store;
     }
 
     @Override
@@ -104,7 +98,7 @@ public class ConcreteClassContext implements ClassContext {
                 + testClass + ", testClassDisplayName='"
                 + testClassDisplayName + '\'' + ", testArgumentParallelism="
                 + testArgumentParallelism + ", testClassInstanceReference="
-                + testClassInstanceReference + ", store="
-                + store + '}';
+                + testClassInstanceReference + ", map="
+                + getMap() + '}';
     }
 }

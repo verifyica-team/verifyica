@@ -19,17 +19,15 @@ package org.verifyica.engine.context;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
-import org.verifyica.api.Store;
 import org.verifyica.engine.common.Precondition;
 
 /** Class to implement ConcreteArgumentContext */
 @SuppressWarnings("unchecked")
-public class ConcreteArgumentContext implements ArgumentContext {
+public class ConcreteArgumentContext extends AbstractContext implements ArgumentContext {
 
     private final ClassContext classContext;
     private final int argumentIndex;
     private final Argument<?> argument;
-    private final Store store;
 
     /**
      * Constructor
@@ -39,10 +37,11 @@ public class ConcreteArgumentContext implements ArgumentContext {
      * @param argument argument
      */
     public ConcreteArgumentContext(ClassContext classContext, int argumentIndex, Argument<?> argument) {
+        super(classContext.getConfiguration());
+
         this.classContext = classContext;
         this.argumentIndex = argumentIndex;
         this.argument = argument;
-        this.store = new ConcreteStore();
     }
 
     @Override
@@ -65,10 +64,5 @@ public class ConcreteArgumentContext implements ArgumentContext {
         Precondition.notNull(type, "type is null");
 
         return (Argument<V>) argument;
-    }
-
-    @Override
-    public Store getStore() {
-        return store;
     }
 }

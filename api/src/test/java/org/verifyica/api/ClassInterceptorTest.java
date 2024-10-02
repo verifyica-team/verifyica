@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.verifyica.api.interceptor;
+package org.verifyica.api;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.junit.jupiter.api.Test;
-import org.verifyica.api.ClassInterceptor;
 
 public class ClassInterceptorTest {
 

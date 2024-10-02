@@ -46,7 +46,7 @@ public class ClassThreadLocalTest1 {
         System.out.printf("test argument parallelism [%d]%n", classContext.getTestArgumentParallelism());
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
 
         classContext
                 .getEngineContext()
@@ -70,7 +70,7 @@ public class ClassThreadLocalTest1 {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -82,7 +82,7 @@ public class ClassThreadLocalTest1 {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -94,7 +94,7 @@ public class ClassThreadLocalTest1 {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -106,7 +106,7 @@ public class ClassThreadLocalTest1 {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -118,7 +118,7 @@ public class ClassThreadLocalTest1 {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -130,7 +130,7 @@ public class ClassThreadLocalTest1 {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -142,7 +142,7 @@ public class ClassThreadLocalTest1 {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -151,6 +151,6 @@ public class ClassThreadLocalTest1 {
         System.out.println("conclude()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 }

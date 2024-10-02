@@ -43,7 +43,7 @@ public class TagTest1 {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -52,7 +52,7 @@ public class TagTest1 {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -61,7 +61,7 @@ public class TagTest1 {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 }

@@ -32,7 +32,7 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
         System.out.printf("%s onInitialize()%n", getClass().getName());
 
         // Add a global string to the EngineContext Store for EngineInterceptorTest
-        engineContext.getStore().put(KEY, VALUE);
+        engineContext.getMap().put(KEY, VALUE);
     }
 
     @Override

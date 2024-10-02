@@ -16,7 +16,7 @@
 
 package org.verifyica.test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.verifyica.test.support.AssertionSupport.assertArgumentContext;
 
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
@@ -31,10 +31,7 @@ public class DisplayNameTest {
 
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
-        assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo("test");
+        assertArgumentContext(argumentContext);
 
         System.out.printf(
                 "test(name[%s], payload[%s])%n",

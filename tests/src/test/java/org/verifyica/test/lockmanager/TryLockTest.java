@@ -17,6 +17,7 @@
 package org.verifyica.test.lockmanager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.verifyica.test.support.AssertionSupport.assertArgumentContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,11 +44,9 @@ public class TryLockTest {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
+        assertArgumentContext(argumentContext);
 
-        assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
     }
 
     @Verifyica.Test
@@ -58,7 +57,7 @@ public class TryLockTest {
                 System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
                 assertThat(argumentContext).isNotNull();
-                assertThat(argumentContext.getStore()).isNotNull();
+                assertThat(argumentContext.getMap()).isNotNull();
                 assertThat(argumentContext.getTestArgument()).isNotNull();
 
                 Thread.sleep(1000);
@@ -80,7 +79,7 @@ public class TryLockTest {
                 System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
 
                 assertThat(argumentContext).isNotNull();
-                assertThat(argumentContext.getStore()).isNotNull();
+                assertThat(argumentContext.getMap()).isNotNull();
                 assertThat(argumentContext.getTestArgument()).isNotNull();
 
                 Thread.sleep(1000);
@@ -96,10 +95,8 @@ public class TryLockTest {
 
     @Verifyica.Test
     public void test4(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
+        assertArgumentContext(argumentContext);
 
-        assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
     }
 }

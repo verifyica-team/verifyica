@@ -58,13 +58,13 @@ public class AssumptionTest2 {
                 argumentContext.getTestArgument().getPayload());
 
         storeState(argumentContext, "test1");
-        argumentContext.getStore().put("test1", "X");
+        argumentContext.getMap().put("test1", "X");
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 1);
-        Assumption.assumeTrue(argumentContext.getStore().containsKey("test1"));
+        Assumption.assumeTrue(argumentContext.getMap().containsKey("test1"));
 
         System.out.printf(
                 "test2(name[%s], payload[%s])%n",
@@ -77,7 +77,7 @@ public class AssumptionTest2 {
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 1);
-        Assumption.assumeTrue(argumentContext.getStore().containsKey("test2"));
+        Assumption.assumeTrue(argumentContext.getMap().containsKey("test2"));
 
         System.out.printf(
                 "test3(name[%s], payload[%s])%n",
@@ -115,7 +115,7 @@ public class AssumptionTest2 {
 
     private static void storeState(ArgumentContext argumentContext, String state) {
         List<String> list = (List<String>)
-                argumentContext.getClassContext().getStore().computeIfAbsent("state", object -> new ArrayList<>());
+                argumentContext.getClassContext().getMap().computeIfAbsent("state", object -> new ArrayList<>());
         list.add(state);
     }
 }

@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestExecutionResult;
@@ -32,7 +33,6 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Assumption;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
-import org.verifyica.api.Store;
 import org.verifyica.engine.context.ConcreteArgumentContext;
 import org.verifyica.engine.inject.Inject;
 import org.verifyica.engine.inject.Injector;
@@ -65,19 +65,19 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
     private final List<Throwable> throwables;
 
     @Inject
-    @Named("engineExecutionListener")
+    @Named(ENGINE_EXECUTION_LISTENER)
     private EngineExecutionListener engineExecutionListener;
 
     @Inject
-    @Named("classInterceptors")
+    @Named(CLASS_INTERCEPTORS)
     private List<ClassInterceptor> classInterceptors;
 
     @Inject
-    @Named("classInterceptorsReversed")
+    @Named(CLASS_INTERCEPTORS_REVERSED)
     private List<ClassInterceptor> classInterceptorsReversed;
 
     @Inject
-    @Named("classContext")
+    @Named(CLASS_CONTEXT)
     private ClassContext classContext;
 
     private ArgumentContext argumentContext;
@@ -264,10 +264,10 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         while (testableTestDescriptorIterator.hasNext()) {
             TestableTestDescriptor testableTestDescriptor = testableTestDescriptorIterator.next();
 
-            Injector.inject("engineExecutionListener", engineExecutionListener, testableTestDescriptor);
-            Injector.inject("classInterceptors", classInterceptors, testableTestDescriptor);
-            Injector.inject("classInterceptorsReversed", classInterceptorsReversed, testableTestDescriptor);
-            Injector.inject("argumentContext", argumentContext, testableTestDescriptor);
+            Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testableTestDescriptor);
+            Injector.inject(ARGUMENT_CONTEXT, argumentContext, testableTestDescriptor);
 
             if (testableTestDescriptor.test().getTestDescriptorStatus().isFailure()) {
                 break;
@@ -289,10 +289,10 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         while (testableTestDescriptorIterator.hasNext()) {
             TestableTestDescriptor testableTestDescriptor = testableTestDescriptorIterator.next();
 
-            Injector.inject("engineExecutionListener", engineExecutionListener, testableTestDescriptor);
-            Injector.inject("classInterceptors", classInterceptors, testableTestDescriptor);
-            Injector.inject("classInterceptorsReversed", classInterceptorsReversed, testableTestDescriptor);
-            Injector.inject("argumentContext", argumentContext, testableTestDescriptor);
+            Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testableTestDescriptor);
+            Injector.inject(ARGUMENT_CONTEXT, argumentContext, testableTestDescriptor);
 
             testableTestDescriptor.test();
         }
@@ -355,20 +355,21 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     private State doCleanup() {
-        Store store = argumentContext.getStore();
+        Map<String, Object> map = argumentContext.getMap();
 
-        Set<Object> keySet = store.keySet();
-        for (Object key : keySet) {
-            Object value = store.remove(key);
-            if (value instanceof AutoCloseable) {
+        Set<Map.Entry<String, Object>> entrySet = map.entrySet();
+        for (Map.Entry<String, Object> entry : entrySet) {
+            if (entry.getValue() instanceof AutoCloseable) {
                 try {
-                    ((AutoCloseable) value).close();
+                    ((AutoCloseable) entry.getValue()).close();
                 } catch (Throwable t) {
                     printStackTrace(t);
                     throwables.add(t);
                 }
             }
         }
+
+        map.clear();
 
         return State.END;
     }

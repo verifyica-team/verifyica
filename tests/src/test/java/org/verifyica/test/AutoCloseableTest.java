@@ -43,7 +43,7 @@ public class AutoCloseableTest implements AutoCloseable {
         System.out.println("prepare()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 
     @Verifyica.BeforeAll
@@ -51,7 +51,7 @@ public class AutoCloseableTest implements AutoCloseable {
         System.out.printf("beforeAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -60,7 +60,7 @@ public class AutoCloseableTest implements AutoCloseable {
         System.out.printf("beforeEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -69,7 +69,7 @@ public class AutoCloseableTest implements AutoCloseable {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -78,7 +78,7 @@ public class AutoCloseableTest implements AutoCloseable {
         System.out.printf("afterEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -87,7 +87,7 @@ public class AutoCloseableTest implements AutoCloseable {
         System.out.printf("afterAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -96,7 +96,7 @@ public class AutoCloseableTest implements AutoCloseable {
         System.out.println("conclude()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 
     @Override

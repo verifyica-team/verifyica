@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -40,7 +41,6 @@ import org.junit.platform.engine.support.descriptor.ClassSource;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
-import org.verifyica.api.Store;
 import org.verifyica.engine.common.DirectExecutorService;
 import org.verifyica.engine.common.SemaphoreRunnable;
 import org.verifyica.engine.context.ConcreteClassContext;
@@ -80,23 +80,23 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
     private final List<Throwable> throwables;
 
     @Inject
-    @Named("engineExecutionListener")
+    @Named(ENGINE_EXECUTION_LISTENER)
     private EngineExecutionListener engineExecutionListener;
 
     @Inject
-    @Named("classInterceptors")
+    @Named(CLASS_INTERCEPTORS)
     private List<ClassInterceptor> classInterceptors;
 
     @Inject
-    @Named("classInterceptorsReversed")
+    @Named(CLASS_INTERCEPTORS_REVERSED)
     private List<ClassInterceptor> classInterceptorsReversed;
 
     @Inject
-    @Named("argumentExecutorService")
+    @Named(ARGUMENT_EXECUTOR_SERVICE)
     private ExecutorService argumentExecutorService;
 
     @Inject
-    @Named("engineContext")
+    @Named(ENGINE_CONTEXT)
     private EngineContext engineContext;
 
     private ClassContext classContext;
@@ -247,7 +247,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             try {
                 Object object = getTestClass().getConstructor().newInstance();
 
-                Injector.inject("onfiguration", classContext.getConfiguration(), object);
+                // Injector.inject("configuration", classContext.getConfiguration(), object);
 
                 testInstanceAtomicReference.set(object);
                 invocationArguments.add(object);
@@ -334,10 +334,10 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
 
         for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
-            Injector.inject("engineExecutionListener", engineExecutionListener, testableTestDescriptor);
-            Injector.inject("classInterceptors", classInterceptors, testableTestDescriptor);
-            Injector.inject("classInterceptorsReversed", classInterceptorsReversed, testableTestDescriptor);
-            Injector.inject("classContext", classContext, testableTestDescriptor);
+            Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testableTestDescriptor);
+            Injector.inject(CLASS_CONTEXT, classContext, testableTestDescriptor);
 
             String threadName = Thread.currentThread().getName();
             threadName = threadName.substring(0, threadName.indexOf("/") + 1) + HashSupport.alphanumeric(6);
@@ -425,20 +425,21 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
     }
 
     private State doCleanup() {
-        Store store = classContext.getStore();
+        Map<String, Object> map = classContext.getMap();
 
-        Set<Object> keySet = store.keySet();
-        for (Object key : keySet) {
-            Object value = store.remove(key);
-            if (value instanceof AutoCloseable) {
+        Set<Map.Entry<String, Object>> entrySet = map.entrySet();
+        for (Map.Entry<String, Object> entry : entrySet) {
+            if (entry.getValue() instanceof AutoCloseable) {
                 try {
-                    ((AutoCloseable) value).close();
+                    ((AutoCloseable) entry.getValue()).close();
                 } catch (Throwable t) {
                     printStackTrace(t);
                     throwables.add(t);
                 }
             }
         }
+
+        map.clear();
 
         return State.END;
     }

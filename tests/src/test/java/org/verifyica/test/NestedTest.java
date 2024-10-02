@@ -16,7 +16,8 @@
 
 package org.verifyica.test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.verifyica.test.support.AssertionSupport.assertArgumentContext;
+import static org.verifyica.test.support.AssertionSupport.assertClassContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,103 +44,87 @@ public class NestedTest {
 
         @Verifyica.Prepare
         public static void prepare(ClassContext classContext) {
+            assertClassContext(classContext);
+
             System.out.println("prepare()");
             System.out.printf("test argument parallelism [%d]%n", classContext.getTestArgumentParallelism());
-
-            assertThat(classContext).isNotNull();
-            assertThat(classContext.getStore()).isNotNull();
         }
 
         @Verifyica.BeforeAll
         public void beforeAll(ArgumentContext argumentContext) {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "beforeAll(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.BeforeEach
         public void beforeEach(ArgumentContext argumentContext) {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "beforeEach(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.Test
         public void test1(ArgumentContext argumentContext) throws Throwable {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "test1(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.Test
         public void test2(ArgumentContext argumentContext) throws Throwable {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "test2(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.Test
         public void test3(ArgumentContext argumentContext) throws Throwable {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "test3(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.AfterEach
         public void afterEach(ArgumentContext argumentContext) {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "afterEach(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.AfterAll
         public void afterAll(ArgumentContext argumentContext) {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "afterAll(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.Conclude
         public static void conclude(ClassContext classContext) {
-            System.out.println("conclude()");
+            assertClassContext(classContext);
 
-            assertThat(classContext).isNotNull();
-            assertThat(classContext.getStore()).isNotNull();
+            System.out.println("conclude()");
         }
     }
 
@@ -158,103 +143,87 @@ public class NestedTest {
 
         @Verifyica.Prepare
         public void prepare(ClassContext classContext) {
+            assertClassContext(classContext);
+
             System.out.println("prepare()");
             System.out.printf("test argument parallelism [%d]%n", classContext.getTestArgumentParallelism());
-
-            assertThat(classContext).isNotNull();
-            assertThat(classContext.getStore()).isNotNull();
         }
 
         @Verifyica.BeforeAll
         public void beforeAll(ArgumentContext argumentContext) {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "beforeAll(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.BeforeEach
         public void beforeEach(ArgumentContext argumentContext) {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "beforeEach(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.Test
         public void test1(ArgumentContext argumentContext) throws Throwable {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "test1(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.Test
         public void test2(ArgumentContext argumentContext) throws Throwable {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "test2(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.Test
         public void test3(ArgumentContext argumentContext) throws Throwable {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "test3(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.AfterEach
         public void afterEach(ArgumentContext argumentContext) {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "afterEach(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.AfterAll
         public void afterAll(ArgumentContext argumentContext) {
+            assertArgumentContext(argumentContext);
+
             System.out.printf(
                     "afterAll(index=[%d], name=[%s])%n",
                     argumentContext.getTestArgumentIndex(),
                     argumentContext.getTestArgument().getName());
-
-            assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
         }
 
         @Verifyica.Conclude
         public void conclude(ClassContext classContext) {
-            System.out.println("conclude()");
+            assertClassContext(classContext);
 
-            assertThat(classContext).isNotNull();
-            assertThat(classContext.getStore()).isNotNull();
+            System.out.println("conclude()");
         }
     }
 
@@ -276,14 +245,12 @@ public class NestedTest {
 
             @Verifyica.Test
             public void test(ArgumentContext argumentContext) {
+                assertArgumentContext(argumentContext);
+
                 System.out.printf(
                         "test(index=[%d], name=[%s])%n",
                         argumentContext.getTestArgumentIndex(),
                         argumentContext.getTestArgument().getName());
-
-                assertThat(argumentContext).isNotNull();
-                assertThat(argumentContext.getStore()).isNotNull();
-                assertThat(argumentContext.getTestArgument()).isNotNull();
             }
         }
     }

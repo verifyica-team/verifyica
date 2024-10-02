@@ -46,7 +46,7 @@ public class ObjectLockTest {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -59,7 +59,7 @@ public class ObjectLockTest {
             System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
             assertThat(argumentContext).isNotNull();
-            assertThat(argumentContext.getStore()).isNotNull();
+            assertThat(argumentContext.getMap()).isNotNull();
             assertThat(argumentContext.getTestArgument()).isNotNull();
 
             Thread.sleep(1000);
@@ -75,7 +75,7 @@ public class ObjectLockTest {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 }

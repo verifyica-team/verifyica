@@ -47,7 +47,7 @@ public class CustomArgumentWithSemaphoreTest {
         System.out.println("prepare()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 
     @Verifyica.BeforeAll
@@ -57,7 +57,7 @@ public class CustomArgumentWithSemaphoreTest {
         System.out.printf("beforeAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -66,7 +66,7 @@ public class CustomArgumentWithSemaphoreTest {
         System.out.printf("beforeEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -75,7 +75,7 @@ public class CustomArgumentWithSemaphoreTest {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         Thread.sleep(RandomSupport.randomLong(0, 1000));
@@ -86,7 +86,7 @@ public class CustomArgumentWithSemaphoreTest {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         Thread.sleep(RandomSupport.randomLong(0, 1000));
@@ -97,7 +97,7 @@ public class CustomArgumentWithSemaphoreTest {
         System.out.printf("afterEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -106,7 +106,7 @@ public class CustomArgumentWithSemaphoreTest {
         System.out.printf("afterAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         argumentContext.getTestArgument(CustomArgument.class).getPayload().release();
@@ -117,7 +117,7 @@ public class CustomArgumentWithSemaphoreTest {
         System.out.println("conclude()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 
     public static class CustomArgument implements Argument<CustomArgument> {

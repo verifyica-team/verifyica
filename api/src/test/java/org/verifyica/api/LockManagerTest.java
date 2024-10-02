@@ -56,32 +56,6 @@ public class LockManagerTest {
     }
 
     @Test
-    public void testLockUnlockSequence2() {
-        Key key = Key.of("key");
-
-        for (int i = 0; i < 10; i++) {
-            LockManager.assertSize(0);
-
-            assertThat(LockManager.isLocked(key)).isFalse();
-
-            LockManager.lock(key);
-
-            LockManager.assertSize(1);
-
-            assertThat(LockManager.isLocked(key)).isTrue();
-
-            LockManager.unlock(key);
-
-            assertThat(LockManager.isLocked(key)).isFalse();
-
-            LockManager.assertSize(0);
-        }
-
-        LockManager.assertSize(0);
-        LockManager.assertSize(0);
-    }
-
-    @Test
     public void testUnlockWithoutLock() {
         assertThatExceptionOfType(IllegalMonitorStateException.class).isThrownBy(() -> LockManager.unlock("key"));
 

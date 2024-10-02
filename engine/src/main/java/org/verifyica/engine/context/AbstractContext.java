@@ -16,33 +16,38 @@
 
 package org.verifyica.engine.context;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.verifyica.api.Configuration;
-import org.verifyica.api.EngineContext;
+import org.verifyica.api.Context;
 
-/** Class to implement ConcreteEngineContext */
-public class ConcreteEngineContext extends AbstractContext implements EngineContext {
+/** Class to implement AbstractContext */
+public abstract class AbstractContext implements Context {
 
-    private final String version;
+    private final Configuration configuration;
+    private final Map<String, Object> map;
 
-    /**
-     * Constructor
+    /** Constructor
      *
      * @param configuration configuration
-     * @param version version
      */
-    public ConcreteEngineContext(Configuration configuration, String version) {
-        super(configuration);
+    protected AbstractContext(Configuration configuration) {
+        this.configuration = configuration;
+        this.map = new ConcurrentHashMap<>();
+    }
 
-        this.version = version;
+    /**
+     * Get the Configuration
+     *
+     * @return the Configuration
+     */
+    @Override
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     @Override
-    public String getVersion() {
-        return version;
-    }
-
-    @Override
-    public String toString() {
-        return "ConcreteEngineContext{" + "configuration=" + getConfiguration() + ", map=" + getMap() + '}';
+    public Map<String, Object> getMap() {
+        return map;
     }
 }

@@ -56,19 +56,19 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     private final List<Throwable> throwables;
 
     @Inject
-    @Named("engineExecutionListener")
+    @Named(ENGINE_EXECUTION_LISTENER)
     private EngineExecutionListener engineExecutionListener;
 
     @Inject
-    @Named("classInterceptors")
+    @Named(CLASS_INTERCEPTORS)
     private List<ClassInterceptor> classInterceptors;
 
     @Inject
-    @Named("classInterceptorsReversed")
+    @Named(CLASS_INTERCEPTORS_REVERSED)
     private List<ClassInterceptor> classInterceptorsReversed;
 
     @Inject
-    @Named("argumentContext")
+    @Named(ARGUMENT_CONTEXT)
     private ArgumentContext argumentContext;
 
     /**

@@ -45,7 +45,7 @@ public class ParallelArgumentTest {
         System.out.printf("test argument parallelism [%d]%n", classContext.getTestArgumentParallelism());
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 
     @Verifyica.BeforeAll
@@ -56,7 +56,7 @@ public class ParallelArgumentTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -68,7 +68,7 @@ public class ParallelArgumentTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -80,7 +80,7 @@ public class ParallelArgumentTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         Thread.sleep(RandomSupport.randomLong(0, 1000));
@@ -94,7 +94,7 @@ public class ParallelArgumentTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         Thread.sleep(RandomSupport.randomLong(0, 1000));
@@ -108,7 +108,7 @@ public class ParallelArgumentTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -120,7 +120,7 @@ public class ParallelArgumentTest {
                 argumentContext.getTestArgument().getName());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -129,6 +129,6 @@ public class ParallelArgumentTest {
         System.out.println("conclude()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 }

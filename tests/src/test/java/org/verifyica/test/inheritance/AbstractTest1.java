@@ -29,7 +29,7 @@ public abstract class AbstractTest1 {
         System.out.println("AbstractTest1 prepare()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
 
         System.out.printf("class(%s)%n", classContext.getTestClass().getName());
         System.out.printf("instance(%s)%n", classContext.getTestInstance());
@@ -40,7 +40,7 @@ public abstract class AbstractTest1 {
         System.out.printf("AbstractTest1 beforeAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         System.out.printf(
@@ -55,7 +55,7 @@ public abstract class AbstractTest1 {
         System.out.printf("AbstractTest1 beforeEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -64,7 +64,7 @@ public abstract class AbstractTest1 {
         System.out.printf("AbstractTest1 test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -73,7 +73,7 @@ public abstract class AbstractTest1 {
         System.out.printf("AbstractTest1 afterEach(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -82,7 +82,7 @@ public abstract class AbstractTest1 {
         System.out.printf("AbstractTest1 afterAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
+        assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
     }
 
@@ -91,6 +91,6 @@ public abstract class AbstractTest1 {
         System.out.println("AbstractTest1 conclude()");
 
         assertThat(classContext).isNotNull();
-        assertThat(classContext.getStore()).isNotNull();
+        assertThat(classContext.getMap()).isNotNull();
     }
 }
