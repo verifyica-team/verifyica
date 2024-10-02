@@ -65,6 +65,12 @@ public class Injector {
         }
     }
 
+    /**
+     * Method to get all fields for a class
+     *
+     * @param clazz clazz
+     * @return a List of fields for a class
+     */
     private static List<Field> getFields(Class<?> clazz) {
         return FIELD_CACHE.computeIfAbsent(clazz, c -> Arrays.asList(c.getDeclaredFields()));
     }

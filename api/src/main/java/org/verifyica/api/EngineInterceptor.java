@@ -20,22 +20,22 @@ package org.verifyica.api;
 public interface EngineInterceptor {
 
     /**
-     * Engine onInitialize callback
+     * Engine initialize
      *
      * @param engineContext engineContext
      * @throws Throwable Throwable
      */
-    default void onInitialize(EngineContext engineContext) throws Throwable {
+    default void initialize(EngineContext engineContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
     /**
-     * Engine onDestroy callback
+     * Engine destroy
      *
      * @param engineContext engineContext
      * @throws Throwable Throwable
      */
-    default void onDestroy(EngineContext engineContext) throws Throwable {
+    default void destroy(EngineContext engineContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 }

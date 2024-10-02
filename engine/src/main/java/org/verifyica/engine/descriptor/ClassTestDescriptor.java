@@ -22,6 +22,7 @@ import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,6 +30,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestExecutionResult;
@@ -142,10 +144,21 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         return testClass;
     }
 
+    @Override
     public ClassTestDescriptor test() {
         try {
             classContext = new ConcreteClassContext(
                     engineContext, testClass, getDisplayName(), testArgumentParallelism, testInstanceAtomicReference);
+
+            classInterceptors = classInterceptors.stream()
+                    .filter(classInterceptor -> {
+                        Predicate<ClassContext> predicate = classInterceptor.predicate();
+                        return predicate == null || predicate.test(classContext);
+                    })
+                    .collect(Collectors.toList());
+
+            classInterceptorsReversed = new ArrayList<>(classInterceptors);
+            Collections.reverse(classInterceptorsReversed);
 
             engineExecutionListener.executionStarted(this);
 

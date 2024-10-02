@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -33,6 +34,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Configuration;
+import org.verifyica.api.EngineContext;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.Precondition;
@@ -70,8 +72,10 @@ public class ClassInterceptorRegistry {
 
     /**
      * Method to initialize the registry
+     *
+     * @param engineContext engineContext
      */
-    public void initialize() {
+    public void initialize(EngineContext engineContext) {
         reentrantReadWriteLock.writeLock().lock();
         try {
             LOGGER.trace("initialize()");
@@ -91,7 +95,7 @@ public class ClassInterceptorRegistry {
                     LOGGER.trace("loading autowired class interceptor [%s]", classInterceptorClass.getName());
 
                     ClassInterceptor classInterceptor = ObjectSupport.createObject(classInterceptorClass);
-                    classInterceptor.onInitialize();
+                    classInterceptor.initialize(engineContext);
 
                     classInterceptors.add(classInterceptor);
 
@@ -197,11 +201,13 @@ public class ClassInterceptorRegistry {
 
     /**
      * Method to destroy class interceptors
+     *
+     * @param engineContext engineContext
      */
-    public void destroy() {
+    public void destroy(EngineContext engineContext) {
         for (ClassInterceptor classInterceptor : classInterceptors) {
             try {
-                classInterceptor.onDestroy();
+                classInterceptor.destroy(engineContext);
             } catch (Throwable t) {
                 StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }
@@ -216,8 +222,9 @@ public class ClassInterceptorRegistry {
     private void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        configuration
-                .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX)
+        Optional.ofNullable(configuration
+                        .getProperties()
+                        .getProperty(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX))
                 .ifPresent(regex -> {
                     LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX, regex);
 
@@ -236,8 +243,9 @@ public class ClassInterceptorRegistry {
                     }
                 });
 
-        configuration
-                .getOptional(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX)
+        Optional.ofNullable(configuration
+                        .getProperties()
+                        .getProperty(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX))
                 .ifPresent(regex -> {
                     LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX, regex);
 

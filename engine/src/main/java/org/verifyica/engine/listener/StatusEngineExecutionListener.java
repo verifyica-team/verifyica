@@ -18,7 +18,6 @@ package org.verifyica.engine.listener;
 
 import java.time.Duration;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
@@ -77,24 +76,24 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
             .build();
 
     private final String consoleLogTimingUnits;
-    private final Map<TestDescriptor, Stopwatch> stopWatchMap;
+    private final Map<TestDescriptor, Stopwatch> stopwatches;
 
     /** Constructor */
     public StatusEngineExecutionListener() {
         Configuration configuration = ConcreteConfiguration.getInstance();
 
-        consoleLogTimingUnits = Optional.ofNullable(configuration.get(Constants.MAVEN_PLUGIN_TIMING_UNITS))
-                .orElse("milliseconds");
+        consoleLogTimingUnits =
+                configuration.getProperties().getProperty(Constants.MAVEN_PLUGIN_TIMING_UNITS, "milliseconds");
 
         LOGGER.trace("configuration property [%s] = [%s]", Constants.MAVEN_PLUGIN_TIMING_UNITS, consoleLogTimingUnits);
 
-        stopWatchMap = new ConcurrentHashMap<>();
+        stopwatches = new ConcurrentHashMap<>();
     }
 
     @Override
     public void executionStarted(TestDescriptor testDescriptor) {
         if (shouldProcessDescriptor(testDescriptor)) {
-            stopWatchMap.put(testDescriptor, new Stopwatch());
+            stopwatches.put(testDescriptor, new Stopwatch());
 
             try {
                 String testArgumentDisplayName = null;
@@ -147,7 +146,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     @Override
     public void executionSkipped(TestDescriptor testDescriptor, String reason) {
         if (shouldProcessDescriptor(testDescriptor)) {
-            Duration elapsedTime = stopWatchMap.remove(testDescriptor).stop().elapsedTime();
+            Duration elapsedTime = stopwatches.remove(testDescriptor).stop().elapsedTime();
 
             try {
                 String testArgumentDisplayName = null;
@@ -205,7 +204,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     @Override
     public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
         if (shouldProcessDescriptor(testDescriptor)) {
-            Duration elapsedTime = stopWatchMap.remove(testDescriptor).stop().elapsedTime();
+            Duration elapsedTime = stopwatches.remove(testDescriptor).stop().elapsedTime();
 
             try {
                 String testArgumentDisplayName = null;

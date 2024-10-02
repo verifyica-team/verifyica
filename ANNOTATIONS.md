@@ -120,7 +120,6 @@ All methods annotated with `@Verifyica.Prepare` or `@Verifyica.Conclude`:
 - must return `void`
 - must be public
 - may be static
-- must define a single parameter [ClassContext](api/src/main/java/org/verifyica/api/ClassContext.java)
 - may throw `Throwable`
 
 **Notes**
@@ -149,7 +148,6 @@ All methods annotated with `@Verifyica.BeforeAll` or `@Verifyica.AfterAll`:
 - must return `void`
 - must be public
 - must not be static
-- must defined a single parameter [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
 
 **Notes**
@@ -178,7 +176,6 @@ All methods annotated with `@Verifyica.BeforeEach` or `@Verifyica.AfterEach`:
 - must return `void`
 - must be public
 - must not be static
-- must defined a single parameter [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
 
 **Notes**
@@ -202,7 +199,6 @@ All methods annotated with `@Verifyica.Test`:
 - must return `void`
 - must be public
 - must not be static
-- must defined a single parameter [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java)
 - may throw `Throwable`
 
 **Notes**
@@ -211,7 +207,7 @@ All methods annotated with `@Verifyica.Test`:
 
 - Default ordering is by test method name (or `@verifyica.DisplayName` if used)
 
-- If no `@Verfiyica.Order` annotation is present on a test method, the default is `0`
+- test methods without an `@Verfiyica.Order` annotation are ordered before test methods with `@Verfiyica.Order`
 
 ---
 
@@ -234,12 +230,8 @@ Used by Verifyica to order test classes / test methods.
 
 - `@Verifyica.Test` test method ordering is irrespective of which class (superclass / subclass) the method is defined.
 
-
 - If `verifyica.engine.class.parallelism` is greater than `1`, orders test class **execution submission order**.
   - Test class execution will still be in parallel.
-
-- A method with `@Verifyica.Order` and `@Verifyica.Step` will generate an error
-  - use one or thr other
 
 ---
 
@@ -283,30 +275,6 @@ Used to register a test class specific [ClassInterceptor](api/src/main/java/org/
 - must be static
 - must not define any parameters
 - may throw `Throwable`
-
----
-
-### @Verifyica.Step
-
-Used to define _scenario_ test method execution order. The `id` -> `nextId` defines a DAG (Directed Acyclic Graph).
-
-- optional
-- `id` is required
-  - must not effectively be blank
-- `nextId` defines the next _step_ in the _scenario_
-  - an empty `nextId` signals the end of the scenario 
-
-**Notes**
-
-- A test class can only have `id` -> `nextId` mappings that define a single DAG
-  - multiple DAGs are not supported
-
-- Only one test method can have an empty `nextId`
-
-- A test method with `@Verifyica.Step` and `@Verifyica.Order` will generate an error
-  - use one or thr other 
-
-- Test methods with `@Verifyica.Disabled` are removed after the DAG is generated
 
 ---
 

@@ -70,24 +70,23 @@ public class OrderSupport {
         Precondition.notNull(methods, "methods is null");
 
         methods.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
-        methods.sort(Comparator.comparingInt(OrderSupport::getOrder));
-    }
 
-    /**
-     * Method to get the order annotation value
-     *
-     * @param method method
-     * @return the order annotation value
-     */
-    public static int getOrder(Method method) {
-        Precondition.notNull(method, "method is null");
+        methods.sort((m1, m2) -> {
+            Verifyica.Order o1 = m1.getAnnotation(Verifyica.Order.class);
+            Verifyica.Order o2 = m2.getAnnotation(Verifyica.Order.class);
 
-        Verifyica.Order orderAnnotation = method.getAnnotation(Verifyica.Order.class);
+            int orderValue1 = (o1 != null) ? o1.value() : 0;
+            int orderValue2 = (o2 != null) ? o2.value() : 0;
 
-        if (orderAnnotation == null) {
-            return 0;
-        } else {
-            return orderAnnotation.value();
-        }
+            if (orderValue1 == 0 && orderValue2 == 0) {
+                return 0;
+            } else if (orderValue1 == 0) {
+                return -1;
+            } else if (orderValue2 == 0) {
+                return 1;
+            } else {
+                return Integer.compare(orderValue1, orderValue2);
+            }
+        });
     }
 }

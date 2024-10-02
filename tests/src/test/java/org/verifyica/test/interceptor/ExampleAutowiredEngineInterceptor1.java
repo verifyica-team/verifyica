@@ -28,7 +28,7 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
     public static final String VALUE = UUID.randomUUID().toString();
 
     @Override
-    public void onInitialize(EngineContext engineContext) {
+    public void initialize(EngineContext engineContext) {
         System.out.printf("%s onInitialize()%n", getClass().getName());
 
         // Add a global string to the EngineContext Store for EngineInterceptorTest
@@ -36,7 +36,7 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
     }
 
     @Override
-    public void onDestroy(EngineContext engineContext) {
+    public void destroy(EngineContext engineContext) {
         System.out.printf("%s onDestroy()%n", getClass().getName());
     }
 }

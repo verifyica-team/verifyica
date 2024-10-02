@@ -62,8 +62,8 @@ public class ExecutorSupport {
 
         LOGGER.trace("newExecutorService() parallelism [%d]", parallelism);
 
-        boolean usePlatformThreads =
-                PLATFORM.equals(ConcreteConfiguration.getInstance().get(Constants.ENGINE_THREADS));
+        boolean usePlatformThreads = PLATFORM.equals(
+                ConcreteConfiguration.getInstance().getProperties().getProperty(Constants.ENGINE_THREADS));
 
         ExecutorService executorService;
 
@@ -73,7 +73,9 @@ public class ExecutorSupport {
             executorService = new SemaphoreExecutor(
                     ExecutorTool.newVirtualThreadPerTaskExecutor(), new Semaphore(parallelism, true));
         } else {
-            if (EPHEMERAL.equals(ConcreteConfiguration.getInstance().get(Constants.ENGINE_THREADS_PLATFORM))) {
+            if (EPHEMERAL.equals(ConcreteConfiguration.getInstance()
+                    .getProperties()
+                    .getProperty(Constants.ENGINE_THREADS_PLATFORM))) {
                 LOGGER.trace("using ephemeral platform threads");
 
                 executorService =

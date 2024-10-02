@@ -17,12 +17,8 @@
 package org.verifyica.api;
 
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.function.Function;
+import java.util.Properties;
 
 /** Interface to implement Configuration */
 public interface Configuration {
@@ -36,154 +32,9 @@ public interface Configuration {
     Optional<Path> getPropertiesFilename();
 
     /**
-     * Put a key-value pair
+     * Get the configuration Properties
      *
-     * @param key key
-     * @param value value
-     * @return an Optional containing the previous value, or an empty Optional if a value didn't
-     *     exist
+     * @return configuration Properties
      */
-    Optional<String> put(String key, String value);
-
-    /**
-     * Get the value or use the function to create a value
-     *
-     * @param key key
-     * @param transformer transformer
-     * @return an Optional containing the existing value, or an Optional of the value returned by
-     *     the transformer
-     */
-    Optional<String> computeIfAbsent(String key, Function<String, String> transformer);
-
-    /**
-     * Get a value
-     *
-     * @param key key
-     * @return the value or null if value doesn't exist
-     */
-    String get(String key);
-
-    /**
-     * Get a value
-     *
-     * @param key key
-     * @return an Optional containing the value, or an empty Optional
-     */
-    Optional<String> getOptional(String key);
-
-    /**
-     * Return if a key exists
-     *
-     * @param key key
-     * @return true if the key exists, else false
-     */
-    boolean containsKey(String key);
-
-    /**
-     * Remove a key-value pair
-     *
-     * @param key key
-     * @return the value or null if a value didn't exist
-     */
-    String remove(String key);
-
-    /**
-     * Remove a key-value pair
-     *
-     * @param key key
-     * @return an Optional containing the value, or an empty Optional
-     */
-    Optional<String> removeOptional(String key);
-
-    /**
-     * Clear all configuration
-     *
-     * @return this
-     */
-    Configuration clear();
-
-    /**
-     * Returns the size
-     *
-     * @return the size
-     */
-    int size();
-
-    /**
-     * Return whether empty
-     *
-     * @return true if empty, else false
-     */
-    boolean isEmpty();
-
-    /**
-     * Return a COPY of the keySet
-     *
-     * @return a COPY of the keySet
-     */
-    Set<String> keySet();
-
-    /**
-     * Return a COPY of the entrySet
-     *
-     * @return a COPY of the entrySet
-     */
-    Set<Map.Entry<String, String>> entrySet();
-
-    /**
-     * Replace the contents
-     *
-     * @param map map
-     * @return this
-     */
-    Configuration replace(Map<String, String> map);
-
-    /**
-     * Replace the contents
-     *
-     * @param Configuration Configuration
-     * @return this
-     */
-    Configuration replace(Configuration Configuration);
-
-    /**
-     * Merge a Map
-     *
-     * @param map map
-     * @return this
-     */
-    Configuration merge(Map<String, String> map);
-
-    /**
-     * Merge a Configuration
-     *
-     * @param Configuration Configuration
-     * @return this
-     */
-    Configuration merge(Configuration Configuration);
-
-    /**
-     * Duplicate the Configuration
-     *
-     * @return a duplicate Configuration
-     */
-    Configuration duplicate();
-
-    /**
-     * Get the Lock
-     *
-     * <p>Equivalent to getReadWriteLock().writeLock()
-     *
-     * @return the Lock
-     */
-    default Lock getLock() {
-        return getReadWriteLock().writeLock();
-    }
-
-    /**
-     * Get the ReadWriteLock
-     *
-     * @return the ReadWriteLock
-     */
-    ReadWriteLock getReadWriteLock();
+    Properties getProperties();
 }

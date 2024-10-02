@@ -17,28 +17,33 @@
 package org.verifyica.api;
 
 import java.lang.reflect.Method;
+import java.util.function.Predicate;
 
 /** Interface to implement ClassInterceptor */
 public interface ClassInterceptor {
 
     /**
-     * ClassInterceptor onInitialize callback
+     * Predicate to accept any ClassContext
+     */
+    Predicate<ClassContext> ACCEPT_ALL = classContext -> true;
+
+    /**
+     * ClassInterceptor initialize
      *
+     * @param engineContext engineContext
      * @throws Throwable throwable
      */
-    default void onInitialize() throws Throwable {
+    default void initialize(EngineContext engineContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
-    /** TODO implement
-     * /**
-     * ClassInterceptor accept callback to filter by ClassContext
+    /**
+     * ClassInterceptor predicate
      *
-     * @param classContext classContext
-     * @return true if the ClassInterceptor should process the ClassContext, else false
+     * @return a Predicate
      */
-    default boolean accept(ClassContext classContext) {
-        return true;
+    default Predicate<ClassContext> predicate() {
+        return ACCEPT_ALL;
     }
 
     /**
@@ -227,11 +232,12 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor onDestroy callback
+     * ClassInterceptor destroy
      *
+     * @param engineContext engineContext
      * @throws Throwable Throwable
      */
-    default void onDestroy() throws Throwable {
+    default void destroy(EngineContext engineContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 

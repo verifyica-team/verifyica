@@ -44,14 +44,19 @@ public class ConcreteConfigurationParameters implements ConfigurationParameters 
     public Optional<String> get(String key) {
         Precondition.notBlank(key, "key is null", "key is blank");
 
-        return configuration.getOptional(key.trim());
+        return Optional.ofNullable(configuration.getProperties().getProperty(key.trim()));
     }
 
     @Override
     public Optional<Boolean> getBoolean(String key) {
         Precondition.notBlank(key, "key is null", "key is blank");
 
-        return Optional.ofNullable(configuration.get(key.trim())).map("true"::equals);
+        String value = configuration.getProperties().getProperty(key.trim());
+        if ("true".equals(value)) {
+            return Optional.of(Boolean.TRUE);
+        } else {
+            return Optional.of(Boolean.FALSE);
+        }
     }
 
     @Override
@@ -59,17 +64,17 @@ public class ConcreteConfigurationParameters implements ConfigurationParameters 
         Precondition.notBlank(key, "key is null", "key is blank");
         Precondition.notNull(transformer, "transformer is null");
 
-        String value = configuration.get(key.trim());
+        String value = configuration.getProperties().getProperty(key.trim());
         return value != null ? Optional.ofNullable(transformer.apply(value)) : Optional.empty();
     }
 
     @Override
     public int size() {
-        return configuration.size();
+        return configuration.getProperties().size();
     }
 
     @Override
     public Set<String> keySet() {
-        return configuration.keySet();
+        return configuration.getProperties().stringPropertyNames();
     }
 }

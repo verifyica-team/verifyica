@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
@@ -29,7 +30,6 @@ import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Verifyica;
 
-@Verifyica.Disabled
 public class LifecycleTest2 {
 
     private static final int ARGUMENT_COUNT = 3;
@@ -139,6 +139,11 @@ public class LifecycleTest2 {
     }
 
     public static class ConcreteClassInterceptor implements ClassInterceptor {
+
+        @Override
+        public Predicate<ClassContext> predicate() {
+            return classContext -> classContext.getTestClass() == LifecycleTest2.class;
+        }
 
         @Override
         public void preInstantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {

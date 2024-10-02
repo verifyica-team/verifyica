@@ -17,7 +17,6 @@
 package org.verifyica.test;
 
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.Configuration;
 import org.verifyica.api.Verifyica;
 
 public class ConfigurationTest {
@@ -35,9 +34,9 @@ public class ConfigurationTest {
                 "engine.version [%s]%n",
                 argumentContext.getClassContext().getEngineContext().getVersion());
 
-        Configuration configuration =
-                argumentContext.getClassContext().getEngineContext().getConfiguration();
-
-        configuration.keySet().forEach(key -> System.out.printf("  [%s] = [%s]%n", key, configuration.get(key)));
+        argumentContext
+                .getConfiguration()
+                .getProperties()
+                .forEach((key, value) -> System.out.printf("configuration property [%s] = [%s]%n", key, value));
     }
 }

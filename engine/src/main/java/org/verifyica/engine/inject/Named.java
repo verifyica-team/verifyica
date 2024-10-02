@@ -24,5 +24,10 @@ import java.lang.annotation.Retention;
 @Retention(RUNTIME)
 public @interface Named {
 
+    /**
+     * Method to get the name value
+     *
+     * @return the name value
+     */
     String value() default "";
 }

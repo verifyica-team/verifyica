@@ -118,6 +118,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         return argument;
     }
 
+    @Override
     public ArgumentTestDescriptor test() {
         try {
             argumentContext = new ConcreteArgumentContext(classContext, argumentIndex, argument);
@@ -146,6 +147,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                         break;
                     }
                     case TEST_INDEPENDENT: {
+                        // Currently not used
                         state = doTestIndependent();
                         break;
                     }
@@ -286,7 +288,12 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
         while (testableTestDescriptorIterator.hasNext()) {
             TestableTestDescriptor testableTestDescriptor = testableTestDescriptorIterator.next();
+
+            Injector.inject("engineExecutionListener", engineExecutionListener, testableTestDescriptor);
+            Injector.inject("classInterceptors", classInterceptors, testableTestDescriptor);
+            Injector.inject("classInterceptorsReversed", classInterceptorsReversed, testableTestDescriptor);
             Injector.inject("argumentContext", argumentContext, testableTestDescriptor);
+
             testableTestDescriptor.test();
         }
 

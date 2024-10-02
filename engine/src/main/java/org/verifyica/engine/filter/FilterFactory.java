@@ -64,8 +64,8 @@ public class FilterFactory {
             List<Filter> filters = new ArrayList<>();
 
             filtersFilename = ConcreteConfiguration.getInstance()
-                    .getOptional(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME)
-                    .orElse(null);
+                    .getProperties()
+                    .getProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, null);
 
             if (filtersFilename != null && !filtersFilename.trim().isEmpty()) {
                 List<Object> objects = new Yaml().load(loadContents(new File(filtersFilename)));

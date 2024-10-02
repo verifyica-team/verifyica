@@ -52,9 +52,8 @@ public class Logger {
         Configuration configuration = ConcreteConfiguration.getInstance();
 
         String loggerLevel =
-                configuration.getOptional(Constants.ENGINE_LOGGER_LEVEL).orElse(Level.INFO.toString());
-
-        String regex = configuration.getOptional(Constants.ENGINE_LOGGER_REGEX).orElse(".*");
+                configuration.getProperties().getProperty(Constants.ENGINE_LOGGER_LEVEL, Level.INFO.toString());
+        String regex = configuration.getProperties().getProperty(Constants.ENGINE_LOGGER_REGEX, ".*");
 
         try {
             Pattern pattern = Pattern.compile(regex);

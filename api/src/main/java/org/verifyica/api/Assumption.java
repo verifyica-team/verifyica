@@ -41,7 +41,7 @@ public class Assumption extends RuntimeException {
      * Validate an assumption is true
      *
      * @param booleanSupplier booleanSupplier
-     * @return null;
+     * @return null
      * @param <V> ignored
      * @throws Assumption Assumption
      */
@@ -57,7 +57,8 @@ public class Assumption extends RuntimeException {
      * Validate an assumption is true
      *
      * @param condition condition
-     * @return null;
+     * @return null
+     * @param <V> ignored
      * @throws Assumption Assumption
      */
     public static <V> V assumeTrue(boolean condition) throws Assumption {
@@ -88,6 +89,7 @@ public class Assumption extends RuntimeException {
      *
      * @param condition condition
      * @return null;
+     * @param <V> ignored
      * @throws Assumption Assumption
      */
     public static <V> V assumeFalse(boolean condition) throws Assumption {

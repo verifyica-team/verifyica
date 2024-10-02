@@ -196,21 +196,21 @@ public class VerifyicaTestEngine implements TestEngine {
 
         LOGGER.trace("execute()");
 
-        engineExecutionListener = configureEngineExecutionListeners(executionRequest);
-        classExecutorService = ExecutorSupport.newExecutorService(getEngineClassParallelism(configuration));
-        argumentExecutorService = new FairExecutorService(getEngineArgumentParallelism(configuration));
-        engineInterceptorRegistry = new EngineInterceptorRegistry(configuration);
-        classInterceptorRegistry = new ClassInterceptorRegistry(configuration);
-        engineContext = new ConcreteEngineContext(configuration, staticGetVersion());
-
         try {
             if (LOGGER.isTraceEnabled()) {
                 traceEngineDescriptor(executionRequest.getRootTestDescriptor());
             }
 
+            engineExecutionListener = configureEngineExecutionListeners(executionRequest);
+            classExecutorService = ExecutorSupport.newExecutorService(getEngineClassParallelism(configuration));
+            argumentExecutorService = new FairExecutorService(getEngineArgumentParallelism(configuration));
+            engineInterceptorRegistry = new EngineInterceptorRegistry(configuration);
+            classInterceptorRegistry = new ClassInterceptorRegistry(configuration);
+            engineContext = new ConcreteEngineContext(configuration, staticGetVersion());
+
             try {
                 engineInterceptorRegistry.initialize(engineContext);
-                classInterceptorRegistry.initialize();
+                classInterceptorRegistry.initialize(engineContext);
 
                 engineExecutionListener.executionStarted(executionRequest.getRootTestDescriptor());
 
@@ -268,7 +268,7 @@ public class VerifyicaTestEngine implements TestEngine {
                 store.clear();
             }
         } finally {
-            classInterceptorRegistry.destroy();
+            classInterceptorRegistry.destroy(engineContext);
             engineInterceptorRegistry.destroy(engineContext);
 
             TestExecutionResult testExecutionResult = throwables.isEmpty()
@@ -382,8 +382,8 @@ public class VerifyicaTestEngine implements TestEngine {
     private static int getEngineClassParallelism(Configuration configuration) {
         LOGGER.trace("getEngineClassParallelism()");
 
-        int engineClassParallelism = configuration
-                .getOptional(Constants.ENGINE_CLASS_PARALLELISM)
+        int engineClassParallelism = Optional.ofNullable(
+                        configuration.getProperties().getProperty(Constants.ENGINE_CLASS_PARALLELISM))
                 .map(value -> {
                     int intValue;
                     try {
@@ -415,8 +415,8 @@ public class VerifyicaTestEngine implements TestEngine {
 
         int engineClassParallelism = getEngineClassParallelism(configuration);
 
-        int engineArgumentParallelism = configuration
-                .getOptional(Constants.ENGINE_ARGUMENT_PARALLELISM)
+        int engineArgumentParallelism = Optional.ofNullable(
+                        configuration.getProperties().getProperty(Constants.ENGINE_ARGUMENT_PARALLELISM))
                 .map(value -> {
                     int intValue;
                     try {

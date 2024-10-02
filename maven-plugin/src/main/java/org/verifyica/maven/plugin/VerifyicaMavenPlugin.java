@@ -262,17 +262,17 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     private TestDescriptor discovery() throws Throwable {
         Configuration configuration = ConcreteConfiguration.getInstance();
 
-        configuration.put(Constants.MAVEN_PLUGIN, Constants.TRUE);
+        configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN, Constants.TRUE);
         logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN, Constants.TRUE);
 
-        configuration.put(Constants.MAVEN_PLUGIN_VERSION, VERSION);
+        configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN_VERSION, VERSION);
         logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_VERSION, VERSION);
 
         if (mavenSession.getRequest().isInteractiveMode()) {
-            configuration.put(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
+            configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
             logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
         } else {
-            configuration.put(Constants.MAVEN_PLUGIN_MODE, BATCH);
+            configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN_MODE, BATCH);
             logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, BATCH);
         }
 

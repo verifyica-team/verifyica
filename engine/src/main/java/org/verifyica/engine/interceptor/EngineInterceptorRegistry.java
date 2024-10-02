@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -93,7 +94,7 @@ public class EngineInterceptorRegistry {
 
             try {
                 for (EngineInterceptor engineInterceptor : engineInterceptors) {
-                    engineInterceptor.onInitialize(engineContext);
+                    engineInterceptor.initialize(engineContext);
                 }
             } catch (Throwable t) {
                 throw new EngineException(t);
@@ -126,7 +127,7 @@ public class EngineInterceptorRegistry {
     public void destroy(EngineContext engineContext) {
         for (EngineInterceptor engineInterceptor : engineInterceptors) {
             try {
-                engineInterceptor.onDestroy(engineContext);
+                engineInterceptor.destroy(engineContext);
             } catch (Throwable t) {
                 StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }
@@ -141,8 +142,9 @@ public class EngineInterceptorRegistry {
     private void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        configuration
-                .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX)
+        Optional.ofNullable(configuration
+                        .getProperties()
+                        .getProperty(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX))
                 .ifPresent(regex -> {
                     LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX, regex);
 
@@ -161,8 +163,9 @@ public class EngineInterceptorRegistry {
                     }
                 });
 
-        configuration
-                .getOptional(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX)
+        Optional.ofNullable(configuration
+                        .getProperties()
+                        .getProperty(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX))
                 .ifPresent(regex -> {
                     LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX, regex);
 

@@ -33,7 +33,7 @@ public @interface Verifyica {
         /**
          * Method to get parallelism
          *
-         * @return parallelism
+         * @return the parallelism value
          */
         int parallelism() default 1;
     }
@@ -87,31 +87,6 @@ public @interface Verifyica {
         int value();
     }
 
-    /** Step annotation */
-    /*
-    @org.junit.platform.commons.annotation.Testable
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface Step {
-
-        /**
-         * id value
-         *
-         * @return the id value
-         */
-    /*
-    String id();
-
-    /**
-     * nextId value
-     *
-     * @return the nextId value
-     */
-    /*
-        String nextId();
-    }
-    */
-
     /** Disabled annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
@@ -139,7 +114,7 @@ public @interface Verifyica {
         /**
          * Tag values
          *
-         * @return the tags
+         * @return the tags array
          */
         Tag[] value();
     }

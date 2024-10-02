@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
@@ -29,8 +30,7 @@ import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Verifyica;
 
-@Verifyica.Disabled
-public class LifecycleTest1 {
+public class LifecycleTest1 implements AutoCloseable {
 
     private static final int ARGUMENT_COUNT = 3;
 
@@ -138,8 +138,73 @@ public class LifecycleTest1 {
         actual.add("conclude");
     }
 
+    @Override
+    public void close() {
+        List<String> expected = new ArrayList<>();
+
+        expected.add("preInstantiate");
+        expected.add("postInstantiate");
+
+        String state = "prepare";
+        expected.add("pre" + capitalize(state));
+        expected.add(state);
+        expected.add("post" + capitalize(state));
+
+        for (int i = 0; i < ARGUMENT_COUNT; i++) {
+            state = "beforeAll";
+            expected.add("pre" + capitalize(state));
+            expected.add(state);
+            expected.add("post" + capitalize(state));
+
+            for (int j = 1; j < 4; j++) {
+                state = "beforeEach";
+                expected.add("pre" + capitalize(state));
+                expected.add(state);
+                expected.add("post" + capitalize(state));
+
+                state = "test";
+                expected.add("pre" + capitalize(state));
+                expected.add(state + j);
+                expected.add("post" + capitalize(state));
+
+                state = "afterEach";
+                expected.add("pre" + capitalize(state));
+                expected.add(state);
+                expected.add("post" + capitalize(state));
+            }
+
+            state = "afterAll";
+            expected.add("pre" + capitalize(state));
+            expected.add(state);
+            expected.add("post" + capitalize(state));
+
+            expected.add("argumentClose");
+        }
+
+        state = "conclude";
+        expected.add("pre" + capitalize(state));
+        expected.add(state);
+        expected.add("post" + capitalize(state));
+        expected.add("onDestroy");
+
+        assertThat(actual.size()).isEqualTo(expected.size());
+
+        int pad = pad(expected);
+
+        for (int i = 0; i < expected.size(); i++) {
+            System.out.printf("expected [%-" + pad + "s] actual [%-" + pad + "s]%n", expected.get(i), actual.get(i));
+
+            assertThat(actual.get(i)).isEqualTo(expected.get(i));
+        }
+    }
+
     @Verifyica.Autowired
     public static class ConcreteClassInterceptor implements ClassInterceptor {
+
+        @Override
+        public Predicate<ClassContext> predicate() {
+            return classContext -> classContext.getTestClass() == LifecycleTest1.class;
+        }
 
         @Override
         public void preInstantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
@@ -265,73 +330,11 @@ public class LifecycleTest1 {
             actual.add("postConclude");
         }
 
-        // @Override
-        public void XonDestroy(ClassContext classContext) throws Throwable {
+        @Override
+        public void onDestroy(ClassContext classContext) throws Throwable {
             System.out.printf("%s onDestroy()%n", getClass().getName());
 
-            assertThat(classContext).isNotNull();
-            assertThat(classContext.getTestInstance()).isNotNull();
-
-            LifecycleTest1 lifecycleTest1 = classContext.getTestInstance(LifecycleTest1.class);
-
-            assertThat(lifecycleTest1).isNotNull();
-
-            List<String> expected = new ArrayList<>();
-
-            expected.add("preInstantiate");
-            expected.add("postInstantiate");
-
-            String state = "prepare";
-            expected.add("pre" + capitalize(state));
-            expected.add(state);
-            expected.add("post" + capitalize(state));
-
-            for (int i = 0; i < ARGUMENT_COUNT; i++) {
-                state = "beforeAll";
-                expected.add("pre" + capitalize(state));
-                expected.add(state);
-                expected.add("post" + capitalize(state));
-
-                for (int j = 1; j < 4; j++) {
-                    state = "beforeEach";
-                    expected.add("pre" + capitalize(state));
-                    expected.add(state);
-                    expected.add("post" + capitalize(state));
-
-                    state = "test";
-                    expected.add("pre" + capitalize(state));
-                    expected.add(state + j);
-                    expected.add("post" + capitalize(state));
-
-                    state = "afterEach";
-                    expected.add("pre" + capitalize(state));
-                    expected.add(state);
-                    expected.add("post" + capitalize(state));
-                }
-
-                state = "afterAll";
-                expected.add("pre" + capitalize(state));
-                expected.add(state);
-                expected.add("post" + capitalize(state));
-
-                expected.add("argumentClose");
-            }
-
-            state = "conclude";
-            expected.add("pre" + capitalize(state));
-            expected.add(state);
-            expected.add("post" + capitalize(state));
-
-            assertThat(actual.size()).isEqualTo(expected.size());
-
-            int pad = pad(expected);
-
-            for (int i = 0; i < expected.size(); i++) {
-                System.out.printf(
-                        "expected [%-" + pad + "s] actual [%-" + pad + "s]%n", expected.get(i), actual.get(i));
-
-                assertThat(actual.get(i)).isEqualTo(expected.get(i));
-            }
+            actual.add("onDestroy");
         }
     }
 

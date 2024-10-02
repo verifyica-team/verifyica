@@ -26,18 +26,10 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Function;
 import org.verifyica.api.Configuration;
-import org.verifyica.engine.common.Precondition;
+import org.verifyica.engine.common.OrderedProperties;
 import org.verifyica.engine.exception.EngineConfigurationException;
 
 /** Class to implement ConcreteConfiguration */
@@ -56,25 +48,12 @@ public class ConcreteConfiguration implements Configuration {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
 
     private Path propertiesFilename;
-    private final Map<String, String> map;
-    private final ReadWriteLock readWriteLock;
+    private final Properties properties;
 
     /** Constructor */
     private ConcreteConfiguration() {
-        map = new TreeMap<>();
-        readWriteLock = new ReentrantReadWriteLock(true);
-
-        initialize();
-    }
-
-    /**
-     * Constructor
-     *
-     * @param map map
-     */
-    private ConcreteConfiguration(TreeMap<String, String> map) {
-        this.map = map;
-        readWriteLock = new ReentrantReadWriteLock(true);
+        properties = new OrderedProperties();
+        load();
     }
 
     @Override
@@ -82,238 +61,14 @@ public class ConcreteConfiguration implements Configuration {
         return propertiesFilename != null ? Optional.of(propertiesFilename) : Optional.empty();
     }
 
+    /**
+     * Get the configuration Properties
+     *
+     * @return configuration Properties
+     */
     @Override
-    public Optional<String> put(String key, String value) {
-        Precondition.notBlank(key, "key is null", "key is blank");
-
-        getReadWriteLock().writeLock().lock();
-        try {
-            return Optional.ofNullable(map.put(key.trim(), value));
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public String get(String key) {
-        Precondition.notBlank(key, "key is null", "key is blank");
-
-        getReadWriteLock().readLock().lock();
-        try {
-            return map.get(key.trim());
-        } finally {
-            getReadWriteLock().readLock().unlock();
-        }
-    }
-
-    @Override
-    public Optional<String> getOptional(String key) {
-        Precondition.notBlank(key, "key is null", "key is blank");
-
-        getReadWriteLock().readLock().lock();
-        try {
-            return Optional.ofNullable(map.get(key.trim()));
-        } finally {
-            getReadWriteLock().readLock().unlock();
-        }
-    }
-
-    @Override
-    public Optional<String> computeIfAbsent(String key, Function<String, String> transformer) {
-        Precondition.notBlank(key, "key is null", "key is blank");
-        Precondition.notNull(transformer, "transformer is null");
-
-        getReadWriteLock().writeLock().lock();
-        try {
-            return Optional.ofNullable(map.computeIfAbsent(key.trim(), transformer));
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public boolean containsKey(String key) {
-        Precondition.notBlank(key, "key is null", "key is blank");
-
-        getReadWriteLock().readLock().lock();
-        try {
-            return map.containsKey(key.trim());
-        } finally {
-            getReadWriteLock().readLock().unlock();
-        }
-    }
-
-    @Override
-    public String remove(String key) {
-        Precondition.notBlank(key, "key is null", "key is blank");
-
-        getReadWriteLock().writeLock().lock();
-        try {
-            return map.remove(key.trim());
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public Optional<String> removeOptional(String key) {
-        Precondition.notBlank(key, "key is null", "key is blank");
-
-        getReadWriteLock().writeLock().lock();
-        try {
-            return Optional.ofNullable(map.remove(key.trim()));
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public int size() {
-        getReadWriteLock().readLock().lock();
-        try {
-            return map.size();
-        } finally {
-            getReadWriteLock().readLock().unlock();
-        }
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return size() == 0;
-    }
-
-    @Override
-    public Configuration clear() {
-        getReadWriteLock().writeLock().lock();
-        try {
-            map.clear();
-            return this;
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public Set<String> keySet() {
-        getReadWriteLock().readLock().lock();
-        try {
-            return new TreeSet<>(map.keySet());
-        } finally {
-            getReadWriteLock().readLock().unlock();
-        }
-    }
-
-    @Override
-    public Set<Map.Entry<String, String>> entrySet() {
-        getReadWriteLock().readLock().lock();
-        try {
-            return new TreeSet<>(map.entrySet());
-        } finally {
-            getReadWriteLock().readLock().unlock();
-        }
-    }
-
-    @Override
-    public Configuration merge(Map<String, String> map) {
-        Precondition.notNull(map, "map is null");
-
-        getReadWriteLock().writeLock().lock();
-        try {
-            map.entrySet().stream()
-                    .filter(entry -> entry.getKey() != null
-                            && !entry.getKey().trim().isEmpty()
-                            && entry.getValue() != null
-                            && !entry.getValue().trim().isEmpty())
-                    .forEach(entry ->
-                            map.put(entry.getKey().trim(), entry.getValue().trim()));
-            return this;
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public Configuration merge(Configuration configuration) {
-        Precondition.notNull(configuration, "configuration is null");
-
-        getReadWriteLock().writeLock().lock();
-        try {
-            configuration.getReadWriteLock().readLock().lock();
-            try {
-                configuration
-                        .keySet()
-                        .forEach(key -> configuration.getOptional(key).ifPresent(value -> map.put(key, value)));
-                return this;
-            } finally {
-                configuration.getReadWriteLock().readLock().unlock();
-            }
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public Configuration replace(Map<String, String> map) {
-        Precondition.notNull(map, "map is null");
-
-        getReadWriteLock().writeLock().lock();
-        try {
-            clear();
-            return merge(map);
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public Configuration replace(Configuration configuration) {
-        Precondition.notNull(configuration, "configuration is null");
-
-        getReadWriteLock().writeLock().lock();
-        try {
-            configuration.getReadWriteLock().readLock().lock();
-            try {
-                clear();
-                return merge(configuration);
-            } finally {
-                configuration.getReadWriteLock().readLock().unlock();
-            }
-        } finally {
-            getReadWriteLock().writeLock().unlock();
-        }
-    }
-
-    @Override
-    public Configuration duplicate() {
-        getReadWriteLock().readLock().lock();
-        try {
-            return new ConcreteConfiguration(new TreeMap<>(map));
-        } finally {
-            getReadWriteLock().readLock().unlock();
-        }
-    }
-
-    @Override
-    public ReadWriteLock getReadWriteLock() {
-        return readWriteLock;
-    }
-
-    @Override
-    public String toString() {
-        return "DefaultConfiguration{" + "map=" + map + '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConcreteConfiguration that = (ConcreteConfiguration) o;
-        return Objects.equals(map, that.map);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(map);
+    public Properties getProperties() {
+        return properties;
     }
 
     /**
@@ -332,10 +87,12 @@ public class ConcreteConfiguration implements Configuration {
         private static final ConcreteConfiguration SINGLETON = new ConcreteConfiguration();
     }
 
-    /** Method to initialize configuration */
-    private void initialize() {
+    /**
+     * Method to load configuration Properties
+     */
+    private void load() {
         if (IS_TRACE_ENABLED) {
-            trace("initialize()");
+            trace("load()");
         }
 
         try {
@@ -356,8 +113,6 @@ public class ConcreteConfiguration implements Configuration {
 
                 propertiesFilename = optional.get().toPath().toAbsolutePath();
 
-                Properties properties = new Properties();
-
                 try (Reader reader = Files.newBufferedReader(optional.get().toPath(), StandardCharsets.UTF_8)) {
                     properties.load(reader);
                 }
@@ -365,8 +120,6 @@ public class ConcreteConfiguration implements Configuration {
                 if (IS_TRACE_ENABLED) {
                     trace("loaded [" + optional.get().getAbsolutePath() + "]");
                 }
-
-                properties.forEach((key, value) -> map.put((String) key, (String) value));
             } else {
                 if (IS_TRACE_ENABLED) {
                     trace("no configuration properties file found");
@@ -378,7 +131,7 @@ public class ConcreteConfiguration implements Configuration {
 
         if (IS_TRACE_ENABLED) {
             trace("configuration properties ...");
-            map.keySet().forEach((key) -> trace("configuration property [" + key + "] = [" + map.get(key) + "]"));
+            properties.forEach((key, value) -> trace("configuration property [" + key + "] = [" + value + "]"));
         }
     }
 

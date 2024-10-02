@@ -101,7 +101,7 @@ A Store is thread safe, but allow locking the Store lock for chained atomic oper
 
 ## Configuration
 
-[Configuration](api/src/main/java/org/verifyica/api/Configuration.java) has method/is used for configuration.
+[Configuration](api/src/main/java/org/verifyica/api/Configuration.java) has `Properties` to get configuration.
 
 ---
 
