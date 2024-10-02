@@ -25,6 +25,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
 import org.bson.Document;
@@ -32,12 +33,12 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
-import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
 
 public class MongoDBTest {
 
-    public static final String NETWORK = "network";
+    private final ThreadLocal<Network> networkThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<String> nameThreadLocal = new ThreadLocal<>();
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<MongoDBTestEnvironment> arguments() {
@@ -49,30 +50,23 @@ public class MongoDBTest {
     }
 
     @Verifyica.BeforeAll
-    public void initializeTestEnvironment(ArgumentContext argumentContext) {
+    public void initializeTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) {
         info("initialize test environment ...");
 
         Network network = Network.newNetwork();
         network.getId();
 
-        argumentContext.getStore().put(NETWORK, network);
-        argumentContext
-                .getTestArgument(MongoDBTestEnvironment.class)
-                .getPayload()
-                .initialize(network);
+        mongoDBTestEnvironment.initialize(network);
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testInsert(ArgumentContext argumentContext) {
+    public void testInsert(MongoDBTestEnvironment mongoDBTestEnvironment) {
         info("testing testInsert() ...");
 
         String name = randomString(16);
-        argumentContext.getStore().put("name", name);
+        nameThreadLocal.set(name);
         info("name [%s]", name);
-
-        MongoDBTestEnvironment mongoDBTestEnvironment =
-                argumentContext.getTestArgument(MongoDBTestEnvironment.class).getPayload();
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(
@@ -91,19 +85,15 @@ public class MongoDBTest {
 
     @Verifyica.Test
     @Verifyica.Order(2)
-    public void testQuery(ArgumentContext argumentContext) {
+    public void testQuery(MongoDBTestEnvironment mongoDBTestEnvironment) {
         info("testing testQuery() ...");
-
-        String name = argumentContext.getStore().get("name", String.class);
-        info("name [%s]", name);
-
-        MongoDBTestEnvironment mongoDBTestEnvironment =
-                argumentContext.getTestArgument(MongoDBTestEnvironment.class).getPayload();
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(
                         mongoDBTestEnvironment.getMongoDBContainer().getConnectionString()))
                 .build();
+
+        String name = nameThreadLocal.get();
 
         try (MongoClient mongoClient = MongoClients.create(settings)) {
             MongoDatabase database = mongoClient.getDatabase("test-db");
@@ -117,18 +107,19 @@ public class MongoDBTest {
     }
 
     @Verifyica.AfterAll
-    public void destroyTestEnvironment(ArgumentContext argumentContext) {
+    public void destroyTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) {
         info("destroy test environment ...");
 
-        argumentContext
-                .getTestArgument(MongoDBTestEnvironment.class)
-                .getPayload()
-                .destroy();
-
-        argumentContext.getStore().removeOptional("network", Network.class).ifPresent(Network::close);
+        try {
+            mongoDBTestEnvironment.destroy();
+            Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close);
+        } finally {
+            nameThreadLocal.remove();
+            networkThreadLocal.remove();
+        }
     }
 
-    /** Class to implement a TestContext */
+    /** Class to implement a MongoDBTestEnvironment */
     public static class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> {
 
         private final String dockerImageName;

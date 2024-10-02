@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -39,7 +40,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
-import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
 
 public class KafkaTest {
@@ -47,6 +47,9 @@ public class KafkaTest {
     private static final String TOPIC = "test";
     private static final String GROUP_ID = "test-group-id";
     private static final String EARLIEST = "earliest";
+
+    private final ThreadLocal<Network> networkThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<String> messageThreadLocal = new ThreadLocal<>();
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<KafkaTestEnvironment> arguments() {
@@ -58,29 +61,26 @@ public class KafkaTest {
     }
 
     @Verifyica.BeforeAll
-    public void initializeTestEnvironment(ArgumentContext argumentContext) {
+    public void initializeTestEnvironment(KafkaTestEnvironment kafkaTestEnvironment) {
         info("initialize test environment ...");
 
         Network network = Network.newNetwork();
         network.getId();
 
-        argumentContext.getStore().put("network", network);
-
-        argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload().initialize(network);
+        networkThreadLocal.set(network);
+        kafkaTestEnvironment.initialize(network);
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testProduce(ArgumentContext argumentContext) throws ExecutionException, InterruptedException {
+    public void testProduce(KafkaTestEnvironment kafkaTestEnvironment) throws ExecutionException, InterruptedException {
         info("testing testProduce() ...");
-
-        KafkaTestEnvironment kafkaTestEnvironment =
-                argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload();
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
         String message = randomString(16);
-        argumentContext.getStore().put("message", message);
+        messageThreadLocal.set(message);
+
         info("producing message [%s] to [%s] ...", message, bootstrapServers);
 
         Properties properties = new Properties();
@@ -98,15 +98,12 @@ public class KafkaTest {
 
     @Verifyica.Test
     @Verifyica.Order(2)
-    public void testConsume1(ArgumentContext argumentContext) {
+    public void testConsume1(KafkaTestEnvironment kafkaTestEnvironment) {
         info("testConsume1() ...");
-
-        KafkaTestEnvironment kafkaTestEnvironment =
-                argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload();
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
-        String message = argumentContext.getStore().get("message", String.class);
+        String message = messageThreadLocal.get();
 
         info("consuming message from [%s] ...", bootstrapServers);
 
@@ -118,6 +115,7 @@ public class KafkaTest {
         properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
 
         KafkaConsumer<String, String> consumer = null;
+        boolean messageMatched = false;
 
         try {
             List<String> topicList = Collections.singletonList(TOPIC);
@@ -129,25 +127,25 @@ public class KafkaTest {
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 info("consumed message [%s] from [%s]", consumerRecord.value(), bootstrapServers);
                 assertThat(consumerRecord.value()).isEqualTo(message);
+                messageMatched = true;
             }
         } finally {
             if (consumer != null) {
                 consumer.close();
             }
         }
+
+        assertThat(messageMatched).isTrue();
     }
 
     @Verifyica.Test
     @Verifyica.Order(3)
-    public void testConsume2(ArgumentContext argumentContext) {
+    public void testConsume2(KafkaTestEnvironment kafkaTestEnvironment) {
         info("testConsume2() ...");
-
-        KafkaTestEnvironment kafkaTestEnvironment =
-                argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload();
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
-        String message = argumentContext.getStore().get("message", String.class);
+        String message = messageThreadLocal.get();
 
         info("consuming message from [%s] ...", bootstrapServers);
 
@@ -159,6 +157,7 @@ public class KafkaTest {
         properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
 
         KafkaConsumer<String, String> consumer = null;
+        boolean messageMatched = false;
 
         try {
             List<String> topicList = Collections.singletonList(TOPIC);
@@ -170,24 +169,31 @@ public class KafkaTest {
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 info("consumed message [%s] from [%s]", consumerRecord.value(), bootstrapServers);
                 assertThat(consumerRecord.value()).isEqualTo(message);
+                messageMatched = true;
             }
         } finally {
             if (consumer != null) {
                 consumer.close();
             }
         }
+
+        assertThat(messageMatched).isFalse();
     }
 
     @Verifyica.AfterAll
-    public void destroyTestEnvironment(ArgumentContext argumentContext) {
+    public void destroyTestEnvironment(KafkaTestEnvironment kafkaTestEnvironment) {
         info("destroy test environment ...");
 
-        argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload().destroy();
-
-        argumentContext.getStore().removeOptional("network", Network.class).ifPresent(Network::close);
+        try {
+            kafkaTestEnvironment.destroy();
+            Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close);
+        } finally {
+            messageThreadLocal.remove();
+            networkThreadLocal.remove();
+        }
     }
 
-    /** Class to implement a TestContext */
+    /** Class to implement a KafkaTestEnvironment */
     public static class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
 
         private final String dockerImageName;
@@ -238,6 +244,11 @@ public class KafkaTest {
             info("test environment [%s] initialized", dockerImageName);
         }
 
+        /**
+         * Method to get the KafkaContainer
+         *
+         * @return the KafkaContainer
+         */
         public KafkaContainer getKafkaContainer() {
             return kafkaContainer;
         }
