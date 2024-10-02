@@ -110,25 +110,34 @@ public class LockManagerTest {
         Thread[] threads = new Thread[threadCount];
         for (int i = 0; i < threadCount; i++) {
             threads[i] = new Thread(() -> {
+                String threadName = Thread.currentThread().getName();
+
                 LockManager.lock(uuid.toString());
                 try {
                     System.out.printf(
-                            "[%s] locked by thread   [%-9s]%n",
-                            uuid, Thread.currentThread().getName());
+                            "thread [%-9s] locked %n", threadName);
+
+                    System.out.printf("thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
 
                     assertThat(atomicInteger.incrementAndGet()).isEqualTo(1);
 
+                    System.out.printf("thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
+
                     try {
-                        Thread.sleep(RandomSupport.randomLong(0, 200));
+                        long sleepTime = RandomSupport.randomLong(0, 200);
+                        System.out.printf("thread [%-9s] sleep [%d]%n", threadName, sleepTime);
+                        Thread.sleep(sleepTime);
                     } catch (InterruptedException e) {
                         // INTENTIONALLY BLANK
                     }
                 } finally {
                     assertThat(atomicInteger.decrementAndGet()).isEqualTo(0);
 
+                    System.out.printf("thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
+
                     System.out.printf(
-                            "[%s] unlocked by thread [%-9s]%n",
-                            uuid, Thread.currentThread().getName());
+                            "thread [%-9s] unlocked%n", threadName);
+
                     LockManager.unlock(uuid.toString());
                 }
             });
