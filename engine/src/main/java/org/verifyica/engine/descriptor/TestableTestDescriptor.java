@@ -16,20 +16,22 @@
 
 package org.verifyica.engine.descriptor;
 
+import static java.lang.String.format;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
-import org.verifyica.api.Configuration;
-import org.verifyica.api.EngineContext;
-import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.StackTracePrinter;
-import org.verifyica.engine.injection.Inject;
-import org.verifyica.engine.interceptor.ClassInterceptorRegistry;
-import org.verifyica.engine.interceptor.EngineInterceptorRegistry;
+import org.verifyica.engine.exception.TestClassDefinitionException;
+import org.verifyica.engine.inject.Inject;
+import org.verifyica.engine.inject.Named;
 
 /** Class to implement TestableTestDescriptor */
 public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
@@ -46,41 +48,9 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     public static final Function<TestDescriptor, TestableTestDescriptor> TESTABLE_TEST_DESCRIPTOR_MAPPER =
             testDescriptor -> (TestableTestDescriptor) testDescriptor;
 
-    /**
-     * Configuration
-     */
     @Inject
-    protected Configuration configuration;
-
-    /**
-     * EngineExecutionListener
-     */
-    @Inject
-    protected EngineExecutionListener engineExecutionListener;
-
-    /**
-     * ClassInterceptorRegistry
-     */
-    @Inject
-    protected ClassInterceptorRegistry classInterceptorRegistry;
-
-    /**
-     * EngineInterceptorRegistry
-     */
-    @Inject
-    protected EngineInterceptorRegistry engineInterceptorRegistry;
-
-    /**
-     * EngineContext
-     */
-    @Inject
-    protected EngineContext engineContext;
-
-    /**
-     * EngineInterceptorContext
-     */
-    @Inject
-    protected EngineInterceptorContext engineInterceptorContext;
+    @Named("EngineExecutionListener")
+    private EngineExecutionListener engineExecutionListener;
 
     private TestDescriptorStatus testDescriptorStatus;
 
@@ -107,7 +77,7 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     public abstract TestableTestDescriptor test();
 
     /**
-     * Method to skip the test descriptor and all children
+     * Method to skip the test descriptor
      */
     public final void skip() {
         engineExecutionListener.executionStarted(this);
@@ -138,23 +108,39 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     }
 
     /**
+     * Method to invoke a Method.
+     *
+     * <p>Loops through each argument. If an argument type matches, invokes the method with the argument and returns.
+     *
+     * @param method method
+     * @param instance instant
+     * @param arguments arguments
+     * @throws InvocationTargetException InvocationTargetException
+     * @throws IllegalAccessException IllegalAccessException
+     */
+    protected static void invoke(Method method, Object instance, List<Object> arguments)
+            throws InvocationTargetException, IllegalAccessException {
+        if (method.getParameterCount() == 1) {
+            Class<?> parameterType = method.getParameterTypes()[0];
+            for (Object argument : arguments) {
+                if (parameterType.isInstance(argument)) {
+                    method.invoke(instance, argument);
+                    return;
+                }
+            }
+        }
+
+        throw new TestClassDefinitionException(format(
+                "Test class [%s] method [%s] invalid argument type",
+                method.getDeclaringClass().getName(), method.getName()));
+    }
+
+    /**
      * Method to print a stack trace in AnsiColor.TEXT_RED_BOLD
      *
      * @param throwable throwable
      */
     protected static void printStackTrace(Throwable throwable) {
         StackTracePrinter.printStackTrace(throwable, AnsiColor.TEXT_RED_BOLD, System.err);
-    }
-
-    /**
-     * Method to check an Object has been injected
-     *
-     * @param object object
-     * @param message message
-     */
-    protected static void checkInjected(Object object, String message) {
-        if (object == null) {
-            throw new IllegalStateException(message);
-        }
     }
 }

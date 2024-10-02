@@ -14,14 +14,28 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.injection;
+package org.verifyica.api;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+/** Interface to implement EngineInterceptor */
+public interface EngineInterceptor {
 
-/** Inject annotation */
-@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Inject {}
+    /**
+     * Engine onInitialize callback
+     *
+     * @param engineContext engineContext
+     * @throws Throwable Throwable
+     */
+    default void onInitialize(EngineContext engineContext) throws Throwable {
+        // INTENTIONALLY BLANK
+    }
+
+    /**
+     * Engine onDestroy callback
+     *
+     * @param engineContext engineContext
+     * @throws Throwable Throwable
+     */
+    default void onDestroy(EngineContext engineContext) throws Throwable {
+        // INTENTIONALLY BLANK
+    }
+}

@@ -39,7 +39,7 @@ public class OrderTest5 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 1)
+    @Verifyica.Order(1)
     public void step1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step1(name[%s], payload[%s])%n",
@@ -52,7 +52,7 @@ public class OrderTest5 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 2)
+    @Verifyica.Order(2)
     public void step2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step2(name[%s], payload[%s])%n",
@@ -65,7 +65,7 @@ public class OrderTest5 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 3)
+    @Verifyica.Order(3)
     public void step3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "step3(name[%s], payload[%s])%n",

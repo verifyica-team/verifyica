@@ -19,9 +19,9 @@ package org.verifyica.engine.descriptor;
 import static java.lang.String.format;
 
 import io.github.thunkware.vt.bridge.ThreadNameRunnable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,20 +30,21 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.ClassSource;
 import org.verifyica.api.ClassContext;
+import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Store;
-import org.verifyica.api.interceptor.ClassInterceptor;
-import org.verifyica.api.interceptor.ClassInterceptorContext;
+import org.verifyica.engine.common.DirectExecutorService;
 import org.verifyica.engine.common.SemaphoreRunnable;
 import org.verifyica.engine.context.ConcreteClassContext;
-import org.verifyica.engine.context.ConcreteClassInterceptorContext;
-import org.verifyica.engine.injection.FieldInjector;
-import org.verifyica.engine.injection.Inject;
+import org.verifyica.engine.inject.Inject;
+import org.verifyica.engine.inject.Injector;
+import org.verifyica.engine.inject.Named;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ExecutorSupport;
@@ -53,6 +54,8 @@ import org.verifyica.engine.support.HashSupport;
 public class ClassTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptor.class);
+
+    private static final ExecutorService DIRECT_EXECUTOR_SERVICE = new DirectExecutorService();
 
     private enum State {
         START,
@@ -71,21 +74,31 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
     private final Class<?> testClass;
     private final List<Method> prepareMethods;
     private final List<Method> concludeMethods;
+    private final List<Object> invocationArguments;
     private final List<Throwable> throwables;
 
     @Inject
+    @Named("engineExecutionListener")
+    private EngineExecutionListener engineExecutionListener;
+
+    @Inject
+    @Named("classInterceptors")
+    private List<ClassInterceptor> classInterceptors;
+
+    @Inject
+    @Named("classInterceptorsReversed")
+    private List<ClassInterceptor> classInterceptorsReversed;
+
+    @Inject
+    @Named("argumentExecutorService")
     private ExecutorService argumentExecutorService;
 
     @Inject
+    @Named("engineContext")
     private EngineContext engineContext;
 
     private ClassContext classContext;
-    private ClassInterceptorContext classInterceptorContext;
-
-    private List<ClassInterceptor> classInterceptors;
-    private List<ClassInterceptor> classInterceptorsReversed;
-
-    private AtomicReference<Object> testInstanceAtomicReference;
+    private final AtomicReference<Object> testInstanceAtomicReference;
 
     /**
      * Constructor
@@ -112,20 +125,12 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         this.concludeMethods = concludeMethods;
         this.testInstanceAtomicReference = new AtomicReference<>();
         this.throwables = new ArrayList<>();
+        this.invocationArguments = new ArrayList<>();
     }
 
     @Override
     public Optional<TestSource> getSource() {
         return Optional.of(ClassSource.from(testClass));
-    }
-
-    /**
-     * Method to get test argument parallelism
-     *
-     * @return test argument parallelism
-     */
-    public int getTestArgumentParallelism() {
-        return testArgumentParallelism;
     }
 
     /**
@@ -137,27 +142,11 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         return testClass;
     }
 
-    @Override
-    public String toString() {
-        return "ExecutableClassTestDescriptor{"
-                + "uniqueId="
-                + getUniqueId()
-                + ", displayName="
-                + getDisplayName()
-                + ", testClass="
-                + testClass
-                + ", parallelism="
-                + testArgumentParallelism
-                + ", prepareMethods="
-                + prepareMethods
-                + ", concludeMethods="
-                + concludeMethods
-                + '}';
-    }
-
-    @Override
     public ClassTestDescriptor test() {
         try {
+            classContext = new ConcreteClassContext(
+                    engineContext, testClass, getDisplayName(), testArgumentParallelism, testInstanceAtomicReference);
+
             engineExecutionListener.executionStarted(this);
 
             State state = State.START;
@@ -166,7 +155,6 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
 
                 switch (state) {
                     case START: {
-                        prepare();
                         state = State.INSTANTIATE;
                         break;
                     }
@@ -231,36 +219,12 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         return this;
     }
 
-    /**
-     * Method to prepare the test descriptor for testing
-     *
-     * @throws Throwable Throwable
-     */
-    private void prepare() throws Throwable {
-        checkInjected(engineExecutionListener, "engineExecutionListener not injected");
-        checkInjected(argumentExecutorService, "argumentExecutorService not injected");
-        checkInjected(engineContext, "engineContext not injected");
-        checkInjected(engineInterceptorContext, "engineInterceptorContext not injected");
-
-        classContext = new ConcreteClassContext(
-                engineContext, testClass, getDisplayName(), testArgumentParallelism, testInstanceAtomicReference);
-
-        classInterceptorContext = new ConcreteClassInterceptorContext(classContext);
-
-        classInterceptors = classInterceptorRegistry.getClassInterceptors(testClass);
-
-        classInterceptorsReversed = new ArrayList<>(classInterceptors);
-        Collections.reverse(classInterceptorsReversed);
-
-        FieldInjector.injectFields(getChildren(), classContext);
-    }
-
     private State doInstantiate() {
         Throwable throwable = null;
 
         try {
             for (ClassInterceptor classInterceptor : classInterceptors) {
-                classInterceptor.preInstantiate(engineInterceptorContext, testClass);
+                classInterceptor.preInstantiate(engineContext, testClass);
             }
         } catch (Throwable t) {
             throwable = t;
@@ -268,7 +232,13 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
 
         if (throwable == null) {
             try {
-                testInstanceAtomicReference.set(getTestClass().getConstructor().newInstance());
+                Object object = getTestClass().getConstructor().newInstance();
+
+                Injector.inject("onfiguration", classContext.getConfiguration(), object);
+
+                testInstanceAtomicReference.set(object);
+                invocationArguments.add(object);
+                invocationArguments.add(classContext);
             } catch (Throwable t) {
                 throwable = t.getCause();
             }
@@ -278,7 +248,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             try {
                 for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                     classInterceptor.postInstantiate(
-                            engineInterceptorContext, testClass, testInstanceAtomicReference.get(), throwable);
+                            engineContext, testClass, testInstanceAtomicReference.get(), throwable);
                 }
             } catch (Throwable t) {
                 throwable = t;
@@ -293,7 +263,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
 
         try {
             for (ClassInterceptor classInterceptor : classInterceptors) {
-                classInterceptor.prePrepare(classInterceptorContext);
+                classInterceptor.prePrepare(classContext);
             }
         } catch (Throwable t) {
             throwable = t;
@@ -302,17 +272,19 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         if (throwable == null) {
             try {
                 for (Method method : prepareMethods) {
-                    method.invoke(testInstanceAtomicReference.get(), classContext);
+                    invoke(method, testInstanceAtomicReference.get(), invocationArguments);
                 }
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
             } catch (Throwable t) {
-                throwable = t.getCause();
+                throwable = t;
             }
         }
 
         if (!classInterceptorsReversed.isEmpty()) {
             try {
                 for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                    classInterceptor.postPrepare(classInterceptorContext, throwable);
+                    classInterceptor.postPrepare(classContext, throwable);
                 }
             } catch (Throwable t) {
                 throwable = t;
@@ -331,35 +303,38 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
      * Method to test child test descriptors
      */
     private State doTest() {
+        ExecutorService executorService;
+
         if (testArgumentParallelism > 1) {
-            List<Future<?>> futures = new ArrayList<>();
-
-            Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
-
-            List<TestableTestDescriptor> testableTestDescriptors = getChildren().stream()
-                    .filter(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_FILTER)
-                    .map(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_MAPPER)
-                    .collect(Collectors.toList());
-
-            for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
-                FieldInjector.injectFields(testableTestDescriptor, classContext);
-
-                String threadName = Thread.currentThread().getName();
-                threadName = threadName.substring(0, threadName.indexOf("/") + 1) + HashSupport.alphanumeric(6);
-                ThreadNameRunnable threadNameRunnable =
-                        new ThreadNameRunnable(threadName, testableTestDescriptor::test);
-                SemaphoreRunnable semaphoreRunnable = new SemaphoreRunnable(semaphore, threadNameRunnable);
-                Future<?> future = argumentExecutorService.submit(semaphoreRunnable);
-                futures.add(future);
-            }
-
-            ExecutorSupport.waitForAllFutures(futures, argumentExecutorService);
+            executorService = argumentExecutorService;
         } else {
-            getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(executableTestDescriptor -> {
-                FieldInjector.injectFields(executableTestDescriptor, classContext);
-                executableTestDescriptor.test();
-            });
+            executorService = DIRECT_EXECUTOR_SERVICE;
         }
+
+        List<TestableTestDescriptor> testableTestDescriptors = getChildren().stream()
+                .filter(TESTABLE_TEST_DESCRIPTOR_FILTER)
+                .map(TESTABLE_TEST_DESCRIPTOR_MAPPER)
+                .collect(Collectors.toList());
+
+        List<Future<?>> futures = new ArrayList<>();
+
+        Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
+
+        for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
+            Injector.inject("engineExecutionListener", engineExecutionListener, testableTestDescriptor);
+            Injector.inject("classInterceptors", classInterceptors, testableTestDescriptor);
+            Injector.inject("classInterceptorsReversed", classInterceptorsReversed, testableTestDescriptor);
+            Injector.inject("classContext", classContext, testableTestDescriptor);
+
+            String threadName = Thread.currentThread().getName();
+            threadName = threadName.substring(0, threadName.indexOf("/") + 1) + HashSupport.alphanumeric(6);
+            ThreadNameRunnable threadNameRunnable = new ThreadNameRunnable(threadName, testableTestDescriptor::test);
+            SemaphoreRunnable semaphoreRunnable = new SemaphoreRunnable(semaphore, threadNameRunnable);
+            Future<?> future = executorService.submit(semaphoreRunnable);
+            futures.add(future);
+        }
+
+        ExecutorSupport.waitForAllFutures(futures, argumentExecutorService);
 
         return State.CONCLUDE;
     }
@@ -369,7 +344,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
 
         try {
             for (ClassInterceptor classInterceptor : classInterceptors) {
-                classInterceptor.preConclude(classInterceptorContext);
+                classInterceptor.preConclude(classContext);
             }
         } catch (Throwable t) {
             throwable = t;
@@ -378,17 +353,19 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         if (throwable == null) {
             try {
                 for (Method method : concludeMethods) {
-                    method.invoke(testInstanceAtomicReference.get(), classContext);
+                    invoke(method, testInstanceAtomicReference.get(), invocationArguments);
                 }
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
             } catch (Throwable t) {
-                throwable = t.getCause();
+                throwable = t;
             }
         }
 
         if (!classInterceptorsReversed.isEmpty()) {
             try {
                 for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                    classInterceptor.postConclude(classInterceptorContext, throwable);
+                    classInterceptor.postConclude(classContext, throwable);
                 }
             } catch (Throwable t) {
                 throwable = t;
@@ -408,7 +385,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
 
         try {
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                // classInterceptor.onDestroy(classInterceptorContext);
+                classInterceptor.onDestroy(classContext);
             }
         } catch (Throwable t) {
             throwable = t;

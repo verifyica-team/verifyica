@@ -55,7 +55,7 @@ public class StepTest4 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 1)
+    @Verifyica.Order(1)
     @Verifyica.Step(id = "step0", nextId = "step2")
     public void test0(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(

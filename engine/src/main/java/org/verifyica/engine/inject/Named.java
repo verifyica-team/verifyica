@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package org.verifyica.api.interceptor;
+package org.verifyica.engine.inject;
 
-import org.verifyica.api.ClassContext;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/** Interface to implement ClassInterceptorContext */
-public interface ClassInterceptorContext {
+import java.lang.annotation.Retention;
 
-    /**
-     * Get the ClassContext
-     *
-     * @return the ClassContext
-     */
-    ClassContext getClassContext();
+/** Named annotation */
+@Retention(RUNTIME)
+public @interface Named {
+
+    String value() default "";
 }

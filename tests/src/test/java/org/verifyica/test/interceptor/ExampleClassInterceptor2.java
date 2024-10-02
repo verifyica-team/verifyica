@@ -17,10 +17,10 @@
 package org.verifyica.test.interceptor;
 
 import java.lang.reflect.Method;
-import org.verifyica.api.interceptor.ArgumentInterceptorContext;
-import org.verifyica.api.interceptor.ClassInterceptor;
-import org.verifyica.api.interceptor.ClassInterceptorContext;
-import org.verifyica.api.interceptor.EngineInterceptorContext;
+import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.ClassContext;
+import org.verifyica.api.ClassInterceptor;
+import org.verifyica.api.EngineContext;
 
 public class ExampleClassInterceptor2 implements ClassInterceptor {
 
@@ -30,229 +30,147 @@ public class ExampleClassInterceptor2 implements ClassInterceptor {
     }
 
     @Override
-    public void preInstantiate(EngineInterceptorContext engineInterceptorContext, Class<?> testClass) throws Throwable {
+    public void preInstantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
         System.out.printf("%s preInstantiate()%n", getClass().getName());
     }
 
     @Override
     public void postInstantiate(
-            EngineInterceptorContext engineInterceptorContext,
-            Class<?> testClass,
-            Object testInstance,
-            Throwable throwable)
+            EngineContext engineContext, Class<?> testClass, Object testInstance, Throwable throwable)
             throws Throwable {
         System.out.printf("%s postInstantiate()%n", getClass().getName());
         rethrow(throwable);
     }
 
     @Override
-    public void prePrepare(ClassInterceptorContext classInterceptorContext) throws Throwable {
+    public void prePrepare(ClassContext classContext) throws Throwable {
         System.out.printf(
                 "%s prePrepare(%s)%n",
-                getClass().getName(),
-                classInterceptorContext.getClassContext().getTestClass().getName());
+                getClass().getName(), classContext.getTestClass().getName());
     }
 
     @Override
-    public void postPrepare(ClassInterceptorContext classInterceptorContext, Throwable throwable) throws Throwable {
+    public void postPrepare(ClassContext classContext, Throwable throwable) throws Throwable {
         System.out.printf(
                 "%s postPrepare(%s)%n",
-                getClass().getName(),
-                classInterceptorContext.getClassContext().getTestClass().getName());
+                getClass().getName(), classContext.getTestClass().getName());
         rethrow(throwable);
     }
 
     @Override
-    public void preBeforeAll(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+    public void preBeforeAll(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "%s preBeforeAll(%s %s)%n",
                 getClass().getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getClassContext()
-                        .getTestClass()
-                        .getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getTestArgument()
-                        .getName());
+                argumentContext.getClassContext().getTestClass().getName(),
+                argumentContext.getTestArgument().getName());
     }
 
     @Override
-    public void postBeforeAll(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-            throws Throwable {
+    public void postBeforeAll(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
         System.out.printf(
                 "%s postBeforeAll(%s %s)%n",
                 getClass().getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getClassContext()
-                        .getTestClass()
-                        .getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getTestArgument()
-                        .getName());
+                argumentContext.getClassContext().getTestClass().getName(),
+                argumentContext.getTestArgument().getName());
         rethrow(throwable);
     }
 
     @Override
-    public void preBeforeEach(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+    public void preBeforeEach(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "%s preBeforeEach(%s %s)%n",
                 getClass().getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getClassContext()
-                        .getTestClass()
-                        .getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getTestArgument()
-                        .getName());
+                argumentContext.getClassContext().getTestClass().getName(),
+                argumentContext.getTestArgument().getName());
     }
 
     @Override
-    public void postBeforeEach(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-            throws Throwable {
+    public void postBeforeEach(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
         System.out.printf(
                 "%s postBeforeEach(%s %s)%n",
                 getClass().getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getClassContext()
-                        .getTestClass()
-                        .getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getTestArgument()
-                        .getName());
+                argumentContext.getClassContext().getTestClass().getName(),
+                argumentContext.getTestArgument().getName());
         rethrow(throwable);
     }
 
     @Override
-    public void preTest(ArgumentInterceptorContext argumentInterceptorContext, Method testMethod) throws Throwable {
+    public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
         System.out.printf(
                 "%s preTest(%s %s %s)%n",
                 getClass().getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getClassContext()
-                        .getTestClass()
-                        .getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getTestArgument()
-                        .getName(),
+                argumentContext.getClassContext().getTestClass().getName(),
+                argumentContext.getTestArgument().getName(),
                 testMethod.getName());
     }
 
     @Override
-    public void postTest(ArgumentInterceptorContext argumentInterceptorContext, Method testMethod, Throwable throwable)
-            throws Throwable {
+    public void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) throws Throwable {
         System.out.printf(
                 "%s postTest(%s %s %s)%n",
                 getClass().getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getClassContext()
-                        .getTestClass()
-                        .getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getTestArgument()
-                        .getName(),
+                argumentContext.getClassContext().getTestClass().getName(),
+                argumentContext.getTestArgument().getName(),
                 testMethod.getName());
         rethrow(throwable);
     }
 
     @Override
-    public void preAfterEach(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+    public void preAfterEach(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "%s preAfterEach(%s %s)%n",
                 getClass().getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getClassContext()
-                        .getTestClass()
-                        .getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getTestArgument()
-                        .getName());
+                argumentContext.getClassContext().getTestClass().getName(),
+                argumentContext.getTestArgument().getName());
     }
 
     @Override
-    public void postAfterEach(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-            throws Throwable {
+    public void postAfterEach(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
         System.out.printf(
                 "%s postAfterEach(%s %s)%n",
                 getClass().getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getClassContext()
-                        .getTestClass()
-                        .getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getTestArgument()
-                        .getName());
+                argumentContext.getClassContext().getTestClass().getName(),
+                argumentContext.getTestArgument().getName());
         rethrow(throwable);
     }
 
     @Override
-    public void preAfterAll(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+    public void preAfterAll(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "%s preAfterAll(%s %s)%n",
                 getClass().getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getClassContext()
-                        .getTestClass()
-                        .getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getTestArgument()
-                        .getName());
+                argumentContext.getClassContext().getTestClass().getName(),
+                argumentContext.getTestArgument().getName());
     }
 
     @Override
-    public void postAfterAll(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-            throws Throwable {
+    public void postAfterAll(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
         System.out.printf(
                 "%s postAfterAll(%s %s)%n",
                 getClass().getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getClassContext()
-                        .getTestClass()
-                        .getName(),
-                argumentInterceptorContext
-                        .getArgumentContext()
-                        .getTestArgument()
-                        .getName());
+                argumentContext.getClassContext().getTestClass().getName(),
+                argumentContext.getTestArgument().getName());
         rethrow(throwable);
     }
 
     @Override
-    public void preConclude(ClassInterceptorContext classInterceptorContext) throws Throwable {
+    public void preConclude(ClassContext classContext) throws Throwable {
         System.out.printf(
                 "%s preConclude(%s)%n",
-                getClass().getName(),
-                classInterceptorContext.getClassContext().getTestClass().getName());
+                getClass().getName(), classContext.getTestClass().getName());
     }
 
     @Override
-    public void postConclude(ClassInterceptorContext classInterceptorContext, Throwable throwable) throws Throwable {
+    public void postConclude(ClassContext classContext, Throwable throwable) throws Throwable {
         System.out.printf(
                 "%s postConclude(%s)%n",
-                getClass().getName(),
-                classInterceptorContext.getClassContext().getTestClass().getName());
+                getClass().getName(), classContext.getTestClass().getName());
         rethrow(throwable);
     }
 
     @Override
-    public void onDestroy(ClassInterceptorContext classInterceptorContext) throws Throwable {
+    public void onDestroy(ClassContext classContext) throws Throwable {
         System.out.printf("%s onDestroy()%n", getClass().getName());
     }
 }

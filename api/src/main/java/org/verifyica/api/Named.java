@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package org.verifyica.api.interceptor;
+package org.verifyica.api;
 
-import org.verifyica.api.EngineContext;
-
-/** Interface to implement EngineInterceptorContext */
-public interface EngineInterceptorContext {
+public interface Named {
 
     /**
-     * Method to get the EngineContext
+     * Method to get the name
      *
-     * @return the EngineContext
+     * @return the name
      */
-    EngineContext getEngineContext();
+    String getName();
 }

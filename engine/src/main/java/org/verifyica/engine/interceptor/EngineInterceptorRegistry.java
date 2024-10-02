@@ -25,8 +25,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.verifyica.api.Configuration;
-import org.verifyica.api.interceptor.EngineInterceptor;
-import org.verifyica.api.interceptor.EngineInterceptorContext;
+import org.verifyica.api.EngineContext;
+import org.verifyica.api.EngineInterceptor;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.configuration.Constants;
@@ -60,9 +60,9 @@ public class EngineInterceptorRegistry {
     /**
      * Method to initialize engine interceptors
      *
-     * @param engineInterceptorContext engineInterceptorContext
+     * @param engineContext engineContext
      */
-    public void initialize(EngineInterceptorContext engineInterceptorContext) {
+    public void initialize(EngineContext engineContext) {
         reentrantReadWriteLock.writeLock().lock();
 
         try {
@@ -93,7 +93,7 @@ public class EngineInterceptorRegistry {
 
             try {
                 for (EngineInterceptor engineInterceptor : engineInterceptors) {
-                    engineInterceptor.onInitialize(engineInterceptorContext);
+                    engineInterceptor.onInitialize(engineContext);
                 }
             } catch (Throwable t) {
                 throw new EngineException(t);
@@ -121,12 +121,12 @@ public class EngineInterceptorRegistry {
     /**
      * Method to destroy engine interceptors
      *
-     * @param engineInterceptorContext engineInterceptorContext
+     * @param engineContext engineContext
      */
-    public void destroy(EngineInterceptorContext engineInterceptorContext) {
+    public void destroy(EngineContext engineContext) {
         for (EngineInterceptor engineInterceptor : engineInterceptors) {
             try {
-                engineInterceptor.onDestroy(engineInterceptorContext);
+                engineInterceptor.onDestroy(engineContext);
             } catch (Throwable t) {
                 StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }

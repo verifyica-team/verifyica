@@ -18,8 +18,8 @@ package org.verifyica.test.interceptor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.ClassInterceptor;
 
 public interface ExampleInheritanceClassInterceptor {
 

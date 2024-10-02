@@ -27,7 +27,7 @@ public class EnumArgumentsTest {
 
     private int index = 0;
 
-    private enum Arguments {
+    public enum EnumArgument {
         ZERO,
         ONE,
         TWO
@@ -35,13 +35,21 @@ public class EnumArgumentsTest {
 
     @Verifyica.ArgumentSupplier
     public static Object arguments() {
-        return Arrays.asList(Arguments.ZERO, Arguments.ONE, Arguments.TWO);
+        return Arrays.asList(EnumArgument.ZERO, EnumArgument.ONE, EnumArgument.TWO);
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    @Verifyica.Order(1)
+    public void testDirectArgument(EnumArgument enumArgument) throws Throwable {
+        System.out.printf("test(name[%s], payload[%s])%n", enumArgument, enumArgument);
+
+        assertThat(enumArgument).isNotNull();
+    }
+
+    @Verifyica.Test
+    @Verifyica.Order(2)
+    public void testArgumentContext(ArgumentContext argumentContext) throws Throwable {
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getStore()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
         System.out.printf(
@@ -51,15 +59,15 @@ public class EnumArgumentsTest {
 
         switch (index) {
             case 0: {
-                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(Arguments.ZERO);
+                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(EnumArgument.ZERO);
                 break;
             }
             case 1: {
-                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(Arguments.ONE);
+                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(EnumArgument.ONE);
                 break;
             }
             case 2: {
-                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(Arguments.TWO);
+                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(EnumArgument.TWO);
                 break;
             }
             default: {

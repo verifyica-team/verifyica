@@ -25,16 +25,12 @@ import java.math.BigInteger;
  * @param <T> the type of the payload
  * @since 5.8
  */
-public interface Argument<T> {
+public interface Argument<T> extends Named {
 
     /** Empty Argument */
     Argument<Object> EMPTY = new Empty();
 
-    /**
-     * Method to get the Argument name
-     *
-     * @return the Argument name
-     */
+    @Override
     String getName();
 
     /**

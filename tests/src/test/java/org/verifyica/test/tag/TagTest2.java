@@ -24,7 +24,7 @@ import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
 
-@Verifyica.Tag(tag = "Tag2")
+@Verifyica.Tag("Tag2")
 public class TagTest2 {
 
     @Verifyica.ArgumentSupplier

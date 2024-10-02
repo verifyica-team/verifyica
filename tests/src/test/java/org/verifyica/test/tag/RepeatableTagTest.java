@@ -24,8 +24,8 @@ import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
 
-@Verifyica.Tag(tag = "Tag1")
-@Verifyica.Tag(tag = "Tag2")
+@Verifyica.Tag("Tag1")
+@Verifyica.Tag("Tag2")
 public class RepeatableTagTest {
 
     @Verifyica.ArgumentSupplier

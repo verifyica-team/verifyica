@@ -63,7 +63,7 @@ public class MongoDBTest {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 1)
+    @Verifyica.Order(1)
     public void testInsert(ArgumentContext argumentContext) {
         info("testing testInsert() ...");
 
@@ -90,7 +90,7 @@ public class MongoDBTest {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 2)
+    @Verifyica.Order(2)
     public void testQuery(ArgumentContext argumentContext) {
         info("testing testQuery() ...");
 

@@ -29,7 +29,7 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 0)
+    @Verifyica.Order(0)
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument().getPayload());
 
@@ -57,7 +57,7 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 1)
+    @Verifyica.Order(1)
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument().getPayload());
 
@@ -85,7 +85,7 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 2)
+    @Verifyica.Order(2)
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument().getPayload());
 

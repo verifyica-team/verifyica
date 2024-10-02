@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.api.interceptor;
+package org.verifyica.api;
 
 import java.lang.reflect.Method;
 
@@ -30,32 +30,39 @@ public interface ClassInterceptor {
         // INTENTIONALLY BLANK
     }
 
+    /** TODO implement
+     * /**
+     * ClassInterceptor accept callback to filter by ClassContext
+     *
+     * @param classContext classContext
+     * @return true if the ClassInterceptor should process the ClassContext, else false
+     */
+    default boolean accept(ClassContext classContext) {
+        return true;
+    }
+
     /**
      * ClassInterceptor preInstantiate callback
      *
-     * @param engineInterceptorContext engineInterceptorContext
+     * @param engineContext engineContext
      * @param testClass testClass
      * @throws Throwable Throwable
      */
-    default void preInstantiate(EngineInterceptorContext engineInterceptorContext, Class<?> testClass)
-            throws Throwable {
+    default void preInstantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
     /**
      * ClassInterceptor postInstantiate callback
      *
-     * @param engineInterceptorContext engineInterceptorContext
+     * @param engineContext engineContext
      * @param testClass testClass
      * @param testInstance testInstance
      * @param throwable throwable
      * @throws Throwable Throwable
      */
     default void postInstantiate(
-            EngineInterceptorContext engineInterceptorContext,
-            Class<?> testClass,
-            Object testInstance,
-            Throwable throwable)
+            EngineContext engineContext, Class<?> testClass, Object testInstance, Throwable throwable)
             throws Throwable {
         rethrow(throwable);
     }
@@ -63,164 +70,159 @@ public interface ClassInterceptor {
     /**
      * ClassInterceptor prePrepare callback
      *
-     * @param classInterceptorContext classInterceptorContext
+     * @param classContext classContext
      * @throws Throwable Throwable
      */
-    default void prePrepare(ClassInterceptorContext classInterceptorContext) throws Throwable {
+    default void prePrepare(ClassContext classContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
     /**
      * ClassInterceptor postPrepare callback
      *
-     * @param classInterceptorContext classInterceptorContext
+     * @param classContext classContext
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postPrepare(ClassInterceptorContext classInterceptorContext, Throwable throwable) throws Throwable {
+    default void postPrepare(ClassContext classContext, Throwable throwable) throws Throwable {
         rethrow(throwable);
     }
 
     /**
      * ClassInterceptor preBeforeAll callback
      *
-     * @param argumentInterceptorContext argumentInterceptorContext
+     * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    default void preBeforeAll(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+    default void preBeforeAll(ArgumentContext argumentContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
     /**
      * ClassInterceptor postBeforeAll callback
      *
-     * @param argumentInterceptorContext argumentInterceptorContext
+     * @param argumentContext argumentContext
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postBeforeAll(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-            throws Throwable {
+    default void postBeforeAll(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
         rethrow(throwable);
     }
 
     /**
      * ClassInterceptor preBeforeEach callback
      *
-     * @param argumentInterceptorContext argumentInterceptorContext
+     * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    default void preBeforeEach(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+    default void preBeforeEach(ArgumentContext argumentContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
     /**
      * ClassInterceptor postBeforeEach callback
      *
-     * @param argumentInterceptorContext argumentInterceptorContext
+     * @param argumentContext argumentContext
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postBeforeEach(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-            throws Throwable {
+    default void postBeforeEach(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
         rethrow(throwable);
     }
 
     /**
      * ClassInterceptor preTest callback
      *
-     * @param argumentInterceptorContext argumentInterceptorContext
+     * @param argumentContext argumentContext
      * @param testMethod testMethod
      * @throws Throwable Throwable
      */
-    default void preTest(ArgumentInterceptorContext argumentInterceptorContext, Method testMethod) throws Throwable {
+    default void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
     /**
      * ClassInterceptor postTest callback
      *
-     * @param argumentInterceptorContext argumentInterceptorContext
+     * @param argumentContext argumentContext
      * @param testMethod testMethod
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postTest(ArgumentInterceptorContext argumentInterceptorContext, Method testMethod, Throwable throwable)
-            throws Throwable {
+    default void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) throws Throwable {
         rethrow(throwable);
     }
 
     /**
      * ClassInterceptor preAfterEach callback
      *
-     * @param argumentInterceptorContext argumentInterceptorContext
+     * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    default void preAfterEach(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+    default void preAfterEach(ArgumentContext argumentContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
     /**
      * ClassInterceptor postAfterEach callback
      *
-     * @param argumentInterceptorContext argumentInterceptorContext
+     * @param argumentContext argumentContext
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postAfterEach(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-            throws Throwable {
+    default void postAfterEach(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
         rethrow(throwable);
     }
 
     /**
      * ClassInterceptor preAfterAll callback
      *
-     * @param argumentInterceptorContext argumentInterceptorContext
+     * @param argumentContext argumentContext
      * @throws Throwable Throwable
      */
-    default void preAfterAll(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+    default void preAfterAll(ArgumentContext argumentContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
     /**
      * ClassInterceptor postAfterAll callback
      *
-     * @param argumentInterceptorContext argumentInterceptorContext
+     * @param argumentContext argumentContext
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postAfterAll(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-            throws Throwable {
+    default void postAfterAll(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
         rethrow(throwable);
     }
 
     /**
      * ClassInterceptor preConclude callback
      *
-     * @param classInterceptorContext classInterceptorContext
+     * @param classContext classContext
      * @throws Throwable Throwable
      */
-    default void preConclude(ClassInterceptorContext classInterceptorContext) throws Throwable {
+    default void preConclude(ClassContext classContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 
     /**
      * ClassInterceptor postConclude callback
      *
-     * @param classInterceptorContext classInterceptorContext
+     * @param classContext classContext
      * @param throwable throwable
      * @throws Throwable Throwable
      */
-    default void postConclude(ClassInterceptorContext classInterceptorContext, Throwable throwable) throws Throwable {
+    default void postConclude(ClassContext classContext, Throwable throwable) throws Throwable {
         rethrow(throwable);
     }
 
     /**
      * ClassInterceptor onDestroy callback
      *
-     * @param classInterceptorContext classInterceptorContext
+     * @param classContext classContext
      * @throws Throwable Throwable
      */
-    default void onDestroy(ClassInterceptorContext classInterceptorContext) throws Throwable {
+    default void onDestroy(ClassContext classContext) throws Throwable {
         // INTENTIONALLY BLANK
     }
 

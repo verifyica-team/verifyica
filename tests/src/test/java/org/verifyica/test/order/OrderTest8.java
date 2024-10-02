@@ -56,7 +56,7 @@ public class OrderTest8 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = Integer.MIN_VALUE)
+    @Verifyica.Order(Integer.MIN_VALUE)
     public void test0(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
 

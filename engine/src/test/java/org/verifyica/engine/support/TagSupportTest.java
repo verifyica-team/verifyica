@@ -69,18 +69,18 @@ public class TagSupportTest {
         // INTENTIONALLY BLANK
     }
 
-    @Verifyica.Tag(tag = "tag1")
-    @Verifyica.Tag(tag = "tag2")
+    @Verifyica.Tag("tag1")
+    @Verifyica.Tag("tag2")
     private static class TestClass2 {
         // INTENTIONALLY BLANK
     }
 
-    @Verifyica.Tag(tag = "\r\n\ttag1\r\n\t ")
+    @Verifyica.Tag("\r\n\ttag1\r\n\t ")
     private static class TestClass3 {
         // INTENTIONALLY BLANK
     }
 
-    @Verifyica.Tag(tag = "")
+    @Verifyica.Tag("")
     private static class TestClass4 {
         // INTENTIONALLY BLANK
     }

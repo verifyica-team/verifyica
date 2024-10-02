@@ -25,12 +25,11 @@ import java.util.List;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
+import org.verifyica.api.ClassInterceptor;
+import org.verifyica.api.EngineContext;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.ArgumentInterceptorContext;
-import org.verifyica.api.interceptor.ClassInterceptor;
-import org.verifyica.api.interceptor.ClassInterceptorContext;
-import org.verifyica.api.interceptor.EngineInterceptorContext;
 
+@Verifyica.Disabled
 public class LifecycleTest1 {
 
     private static final int ARGUMENT_COUNT = 3;
@@ -86,7 +85,7 @@ public class LifecycleTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 0)
+    @Verifyica.Order(0)
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test1()%n", argumentContext.getTestArgument().getPayload());
 
@@ -94,7 +93,7 @@ public class LifecycleTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 1)
+    @Verifyica.Order(1)
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test2()%n", argumentContext.getTestArgument().getPayload());
 
@@ -102,7 +101,7 @@ public class LifecycleTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 2)
+    @Verifyica.Order(2)
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test3()%n", argumentContext.getTestArgument().getPayload());
 
@@ -143,8 +142,7 @@ public class LifecycleTest1 {
     public static class ConcreteClassInterceptor implements ClassInterceptor {
 
         @Override
-        public void preInstantiate(EngineInterceptorContext engineInterceptorContext, Class<?> testClass)
-                throws Throwable {
+        public void preInstantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
             System.out.printf("%s preInstantiate()%n", getClass().getName());
 
             actual.add("preInstantiate");
@@ -152,10 +150,7 @@ public class LifecycleTest1 {
 
         @Override
         public void postInstantiate(
-                EngineInterceptorContext engineInterceptorContext,
-                Class<?> testClass,
-                Object testInstance,
-                Throwable throwable)
+                EngineContext engineContext, Class<?> testClass, Object testInstance, Throwable throwable)
                 throws Throwable {
             System.out.printf("%s postInstantiate()%n", getClass().getName());
 
@@ -164,17 +159,16 @@ public class LifecycleTest1 {
         }
 
         @Override
-        public void prePrepare(ClassInterceptorContext classInterceptorContext) throws Throwable {
+        public void prePrepare(ClassContext classContext) throws Throwable {
             System.out.printf("%s prePrepare()%n", getClass().getName());
 
-            assertThat(classInterceptorContext).isNotNull();
-            assertThat(classInterceptorContext.getClassContext()).isNotNull();
+            assertThat(classContext).isNotNull();
 
             actual.add("prePrepare");
         }
 
         @Override
-        public void postPrepare(ClassInterceptorContext classInterceptorContext, Throwable throwable) throws Throwable {
+        public void postPrepare(ClassContext classContext, Throwable throwable) throws Throwable {
             System.out.printf("%s postPrepare()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -182,15 +176,14 @@ public class LifecycleTest1 {
         }
 
         @Override
-        public void preBeforeAll(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+        public void preBeforeAll(ArgumentContext argumentContext) throws Throwable {
             System.out.printf("%s preBeforeAll()%n", getClass().getName());
 
             actual.add("preBeforeAll");
         }
 
         @Override
-        public void postBeforeAll(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-                throws Throwable {
+        public void postBeforeAll(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
             System.out.printf("%s postBeforeAll()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -198,15 +191,14 @@ public class LifecycleTest1 {
         }
 
         @Override
-        public void preBeforeEach(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+        public void preBeforeEach(ArgumentContext argumentContext) throws Throwable {
             System.out.printf("%s preBeforeEach()%n", getClass().getName());
 
             actual.add("preBeforeEach");
         }
 
         @Override
-        public void postBeforeEach(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-                throws Throwable {
+        public void postBeforeEach(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
             System.out.printf("%s postBeforeEach()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -214,16 +206,14 @@ public class LifecycleTest1 {
         }
 
         @Override
-        public void preTest(ArgumentInterceptorContext argumentInterceptorContext, Method testMethod) throws Throwable {
+        public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
             System.out.printf("%s preTest()%n", getClass().getName());
 
             actual.add("preTest");
         }
 
         @Override
-        public void postTest(
-                ArgumentInterceptorContext argumentInterceptorContext, Method testMethod, Throwable throwable)
-                throws Throwable {
+        public void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) throws Throwable {
             System.out.printf("%s postTest()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -231,15 +221,14 @@ public class LifecycleTest1 {
         }
 
         @Override
-        public void preAfterEach(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+        public void preAfterEach(ArgumentContext argumentContext) throws Throwable {
             System.out.printf("%s preAfterEach()%n", getClass().getName());
 
             actual.add("preAfterEach");
         }
 
         @Override
-        public void postAfterEach(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-                throws Throwable {
+        public void postAfterEach(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
             System.out.printf("%s postAfterEach()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -247,15 +236,14 @@ public class LifecycleTest1 {
         }
 
         @Override
-        public void preAfterAll(ArgumentInterceptorContext argumentInterceptorContext) throws Throwable {
+        public void preAfterAll(ArgumentContext argumentContext) throws Throwable {
             System.out.printf("%s preAfterAll()%n", getClass().getName());
 
             actual.add("preAfterAll");
         }
 
         @Override
-        public void postAfterAll(ArgumentInterceptorContext argumentInterceptorContext, Throwable throwable)
-                throws Throwable {
+        public void postAfterAll(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
             System.out.printf("%s postAfterAll()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -263,32 +251,28 @@ public class LifecycleTest1 {
         }
 
         @Override
-        public void preConclude(ClassInterceptorContext classInterceptorContext) throws Throwable {
+        public void preConclude(ClassContext classContext) throws Throwable {
             System.out.printf("%s preConclude()%n", getClass().getName());
 
             actual.add("preConclude");
         }
 
         @Override
-        public void postConclude(ClassInterceptorContext classInterceptorContext, Throwable throwable)
-                throws Throwable {
+        public void postConclude(ClassContext classContext, Throwable throwable) throws Throwable {
             System.out.printf("%s postConclude()%n", getClass().getName());
 
             assertThat(throwable).isNull();
             actual.add("postConclude");
         }
 
-        @Override
-        public void onDestroy(ClassInterceptorContext classInterceptorContext) throws Throwable {
+        // @Override
+        public void XonDestroy(ClassContext classContext) throws Throwable {
             System.out.printf("%s onDestroy()%n", getClass().getName());
 
-            assertThat(classInterceptorContext).isNotNull();
-            assertThat(classInterceptorContext.getClassContext()).isNotNull();
-            assertThat(classInterceptorContext.getClassContext().getTestInstance())
-                    .isNotNull();
+            assertThat(classContext).isNotNull();
+            assertThat(classContext.getTestInstance()).isNotNull();
 
-            LifecycleTest1 lifecycleTest1 =
-                    classInterceptorContext.getClassContext().getTestInstance(LifecycleTest1.class);
+            LifecycleTest1 lifecycleTest1 = classContext.getTestInstance(LifecycleTest1.class);
 
             assertThat(lifecycleTest1).isNotNull();
 

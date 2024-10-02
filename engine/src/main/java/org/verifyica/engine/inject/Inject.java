@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package org.verifyica.api.interceptor;
+package org.verifyica.engine.inject;
 
-import org.verifyica.api.ArgumentContext;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/** Interface to implement ArgumentInterceptorContext */
-public interface ArgumentInterceptorContext {
+import java.lang.annotation.Retention;
 
-    /**
-     * Get the ArgumentContext
-     *
-     * @return the ArgumentContext
-     */
-    ArgumentContext getArgumentContext();
-}
+/** Inject annotation */
+@Retention(RUNTIME)
+public @interface Inject {}

@@ -34,7 +34,7 @@ public class StoreTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 0)
+    @Verifyica.Order(0)
     public void putIntoStores(ArgumentContext argumentContext) {
         System.out.printf(
                 "putIntoStores(%s)%n", argumentContext.getTestArgument().getPayload());
@@ -45,7 +45,7 @@ public class StoreTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 1)
+    @Verifyica.Order(1)
     public void getOutOfStores(ArgumentContext argumentContext) {
         System.out.printf(
                 "getOutOfStores(%s)%n", argumentContext.getTestArgument().getPayload());

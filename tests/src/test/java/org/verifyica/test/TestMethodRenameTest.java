@@ -21,9 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.function.Consumer;
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.EngineContext;
+import org.verifyica.api.EngineInterceptor;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.EngineInterceptor;
-import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.engine.api.ClassDefinition;
 import org.verifyica.engine.api.MethodDefinition;
 
@@ -32,8 +32,7 @@ public class TestMethodRenameTest {
     @Verifyica.Autowired
     public static class DisplayNameEngineInterceptor implements EngineInterceptor {
 
-        public void onTestDiscovery(
-                EngineInterceptorContext engineInterceptorContext, List<ClassDefinition> classDefinitions)
+        public void onTestDiscovery(EngineContext engineContext, List<ClassDefinition> classDefinitions)
                 throws Throwable {
             classDefinitions.stream()
                     .filter(classDefinition -> classDefinition.getTestClass() == TestMethodRenameTest.class)

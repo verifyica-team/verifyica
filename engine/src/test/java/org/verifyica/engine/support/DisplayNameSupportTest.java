@@ -37,7 +37,7 @@ public class DisplayNameSupportTest {
         // INTENTIONALLY BLANK
     }
 
-    @Verifyica.DisplayName(name = "CustomDisplayName")
+    @Verifyica.DisplayName("CustomDisplayName")
     private static class TestClass2 {
         // INTENTIONALLY BLANK
     }

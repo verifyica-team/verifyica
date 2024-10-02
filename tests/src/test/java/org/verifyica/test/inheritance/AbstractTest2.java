@@ -24,7 +24,7 @@ import org.verifyica.api.Verifyica;
 public abstract class AbstractTest2 {
 
     @Verifyica.Test
-    @Verifyica.Order(order = 1)
+    @Verifyica.Order(1)
     public final void test1(ArgumentContext argumentContext) {
         System.out.printf("AbstractTest2 test1(%s)%n", argumentContext.getTestArgument());
 

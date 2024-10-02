@@ -84,7 +84,7 @@ public @interface Verifyica {
          *
          * @return the order value
          */
-        int order();
+        int value();
     }
 
     /** Step annotation */
@@ -128,7 +128,7 @@ public @interface Verifyica {
          *
          * @return the tag value
          */
-        String tag();
+        String value();
     }
 
     /** Tags annotation */
@@ -154,7 +154,7 @@ public @interface Verifyica {
          *
          * @return the display name value
          */
-        String name();
+        String value();
     }
 
     /** ClassInterceptorSupplier annotation */

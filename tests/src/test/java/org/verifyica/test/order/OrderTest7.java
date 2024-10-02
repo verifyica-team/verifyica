@@ -38,7 +38,7 @@ public class OrderTest7 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 0)
+    @Verifyica.Order(0)
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
@@ -48,7 +48,7 @@ public class OrderTest7 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = Integer.MAX_VALUE)
+    @Verifyica.Order(Integer.MAX_VALUE)
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
@@ -58,7 +58,7 @@ public class OrderTest7 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = Integer.MIN_VALUE)
+    @Verifyica.Order(Integer.MIN_VALUE)
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
 

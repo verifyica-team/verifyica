@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
 
-@Verifyica.DisplayName(name = "AnnotationDisplayNameTest")
+@Verifyica.DisplayName("DisplayNameTest(Changed)")
 public class DisplayNameTest {
 
     @Verifyica.ArgumentSupplier

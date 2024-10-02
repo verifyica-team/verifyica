@@ -94,12 +94,12 @@ public class OrderSupportTest {
         // INTENTIONALLY BLANK
     }
 
-    @Verifyica.Order(order = Integer.MAX_VALUE)
+    @Verifyica.Order(Integer.MAX_VALUE)
     private static class TestClass3 {
         // INTENTIONALLY BLANK
     }
 
-    @Verifyica.Order(order = Integer.MIN_VALUE)
+    @Verifyica.Order(Integer.MIN_VALUE)
     private static class TestClass4 {
         // INTENTIONALLY BLANK
     }

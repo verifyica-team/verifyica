@@ -20,9 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.function.Predicate;
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.EngineContext;
+import org.verifyica.api.EngineInterceptor;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.EngineInterceptor;
-import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.engine.api.ClassDefinition;
 
 public class ClassRenameTest {
@@ -34,8 +34,7 @@ public class ClassRenameTest {
             return classDefinition -> classDefinition.getTestClass() == ClassRenameTest.class;
         }
 
-        public void onTestDiscovery(EngineInterceptorContext engineInterceptorContext, ClassDefinition classDefinition)
-                throws Throwable {
+        public void onTestDiscovery(EngineContext engineContext, ClassDefinition classDefinition) throws Throwable {
             assertThat(classDefinition.getTestClass()).isEqualTo(ClassRenameTest.class);
 
             String fullDisplayName = classDefinition.getDisplayName();

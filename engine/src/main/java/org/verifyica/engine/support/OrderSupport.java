@@ -55,7 +55,7 @@ public class OrderSupport {
 
         Verifyica.Order annotation = clazz.getAnnotation(Verifyica.Order.class);
         if (annotation != null) {
-            order = annotation.order();
+            order = annotation.value();
         }
 
         return order;
@@ -87,7 +87,7 @@ public class OrderSupport {
         if (orderAnnotation == null) {
             return 0;
         } else {
-            return orderAnnotation.order();
+            return orderAnnotation.value();
         }
     }
 }

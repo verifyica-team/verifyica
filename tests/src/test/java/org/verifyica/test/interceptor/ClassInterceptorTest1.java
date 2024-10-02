@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
+import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.ClassInterceptor;
 
 public class ClassInterceptorTest1 {
 
@@ -58,19 +58,19 @@ public class ClassInterceptorTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 0)
+    @Verifyica.Order(0)
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test1()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 1)
+    @Verifyica.Order(1)
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test2()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 2)
+    @Verifyica.Order(2)
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test3()%n", argumentContext.getTestArgument().getPayload());
     }

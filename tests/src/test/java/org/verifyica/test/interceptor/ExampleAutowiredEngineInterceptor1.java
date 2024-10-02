@@ -17,9 +17,9 @@
 package org.verifyica.test.interceptor;
 
 import java.util.UUID;
+import org.verifyica.api.EngineContext;
+import org.verifyica.api.EngineInterceptor;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.EngineInterceptor;
-import org.verifyica.api.interceptor.EngineInterceptorContext;
 
 @Verifyica.Autowired
 public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
@@ -28,15 +28,15 @@ public class ExampleAutowiredEngineInterceptor1 implements EngineInterceptor {
     public static final String VALUE = UUID.randomUUID().toString();
 
     @Override
-    public void onInitialize(EngineInterceptorContext engineInterceptorContext) {
+    public void onInitialize(EngineContext engineContext) {
         System.out.printf("%s onInitialize()%n", getClass().getName());
 
         // Add a global string to the EngineContext Store for EngineInterceptorTest
-        engineInterceptorContext.getEngineContext().getStore().put(KEY, VALUE);
+        engineContext.getStore().put(KEY, VALUE);
     }
 
     @Override
-    public void onDestroy(EngineInterceptorContext engineInterceptorContext) {
+    public void onDestroy(EngineContext engineContext) {
         System.out.printf("%s onDestroy()%n", getClass().getName());
     }
 }

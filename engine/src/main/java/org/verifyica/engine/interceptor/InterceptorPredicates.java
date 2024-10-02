@@ -18,9 +18,9 @@ package org.verifyica.engine.interceptor;
 
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
+import org.verifyica.api.ClassInterceptor;
+import org.verifyica.api.EngineInterceptor;
 import org.verifyica.api.Verifyica;
-import org.verifyica.api.interceptor.ClassInterceptor;
-import org.verifyica.api.interceptor.EngineInterceptor;
 
 /** Class to implement InterceptorPredicates */
 @SuppressWarnings("deprecation")

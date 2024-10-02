@@ -43,7 +43,7 @@ public class TagSupport {
 
         Verifyica.Tag annotation = clazz.getAnnotation(Verifyica.Tag.class);
         if (annotation != null) {
-            String tag = annotation.tag();
+            String tag = annotation.value();
             if (tag != null && !tag.trim().isEmpty()) {
                 tags.add(tag.trim());
             }
@@ -54,7 +54,7 @@ public class TagSupport {
             Verifyica.Tag[] tagAnnotations = tagsAnnotation.value();
             if (tagAnnotations != null) {
                 for (Verifyica.Tag tagAnnotation : tagAnnotations) {
-                    String tag = tagAnnotation.tag();
+                    String tag = tagAnnotation.value();
                     if (tag != null && !tag.trim().isEmpty()) {
                         tags.add(tag.trim());
                     }
@@ -78,7 +78,7 @@ public class TagSupport {
 
         Verifyica.Tag annotation = method.getAnnotation(Verifyica.Tag.class);
         if (annotation != null) {
-            String tag = annotation.tag();
+            String tag = annotation.value();
             if (tag != null && !tag.trim().isEmpty()) {
                 tags.add(tag.trim());
             }
@@ -89,7 +89,7 @@ public class TagSupport {
             Verifyica.Tag[] tagAnnotations = tagsAnnotation.value();
             if (tagAnnotations != null) {
                 for (Verifyica.Tag tagAnnotation : tagAnnotations) {
-                    String tag = tagAnnotation.tag();
+                    String tag = tagAnnotation.value();
                     if (tag != null && !tag.trim().isEmpty()) {
                         tags.add(tag.trim());
                     }

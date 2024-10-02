@@ -40,10 +40,10 @@ import org.junit.platform.engine.TestEngine;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.EngineDescriptor;
+import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Store;
-import org.verifyica.api.interceptor.EngineInterceptorContext;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.FairExecutorService;
 import org.verifyica.engine.common.StackTracePrinter;
@@ -52,12 +52,12 @@ import org.verifyica.engine.common.Streams;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.context.ConcreteEngineContext;
-import org.verifyica.engine.context.ConcreteEngineInterceptorContext;
+import org.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.exception.EngineConfigurationException;
 import org.verifyica.engine.exception.EngineException;
 import org.verifyica.engine.exception.TestClassDefinitionException;
-import org.verifyica.engine.injection.FieldInjector;
+import org.verifyica.engine.inject.Injector;
 import org.verifyica.engine.interceptor.ClassInterceptorRegistry;
 import org.verifyica.engine.interceptor.EngineInterceptorRegistry;
 import org.verifyica.engine.listener.ChainedEngineExecutionListener;
@@ -101,8 +101,14 @@ public class VerifyicaTestEngine implements TestEngine {
     /** Constant */
     private static final String ENGINE_PROPERTIES_VERSION_KEY = "version";
 
-    private ClassInterceptorRegistry classInterceptorRegistry;
+    private final List<Throwable> throwables;
 
+    private Configuration configuration;
+    private EngineExecutionListener engineExecutionListener;
+    private ExecutorService classExecutorService;
+    private ExecutorService argumentExecutorService;
+    private EngineContext engineContext;
+    private ClassInterceptorRegistry classInterceptorRegistry;
     private EngineInterceptorRegistry engineInterceptorRegistry;
 
     @Override
@@ -131,7 +137,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
     /** Constructor */
     public VerifyicaTestEngine() {
-        // INTENTIONALLY BLANK
+        throwables = new ArrayList<>();
     }
 
     /**
@@ -154,17 +160,11 @@ public class VerifyicaTestEngine implements TestEngine {
         LOGGER.trace("discover()");
 
         try {
-            Configuration configuration = ConcreteConfiguration.getInstance();
+            configuration = ConcreteConfiguration.getInstance();
 
             EngineDescriptor engineDescriptor = new EngineDescriptor(uniqueId, DISPLAY_NAME);
 
             new EngineDiscoveryRequestResolver().resolveSelectors(engineDiscoveryRequest, engineDescriptor);
-
-            engineInterceptorRegistry = new EngineInterceptorRegistry(configuration);
-            FieldInjector.injectFields(engineDescriptor, engineInterceptorRegistry);
-
-            classInterceptorRegistry = new ClassInterceptorRegistry(configuration);
-            FieldInjector.injectFields(engineDescriptor, classInterceptorRegistry);
 
             LOGGER.trace(
                     "discovered [%d] test classes",
@@ -196,58 +196,51 @@ public class VerifyicaTestEngine implements TestEngine {
 
         LOGGER.trace("execute()");
 
-        Configuration configuration = ConcreteConfiguration.getInstance();
-
-        EngineContext engineContext = new ConcreteEngineContext(configuration, staticGetVersion());
-
-        EngineInterceptorContext engineInterceptorContext = new ConcreteEngineInterceptorContext(engineContext);
-
-        EngineExecutionListener engineExecutionListener = configureEngineExecutionListeners(executionRequest);
-
-        ExecutorService classExecutorService =
-                ExecutorSupport.newExecutorService(getEngineClassParallelism(configuration));
-
-        ExecutorService argumentExecutorService = new FairExecutorService(getEngineArgumentParallelism(configuration));
-
-        TestDescriptor engineDescriptor = executionRequest.getRootTestDescriptor();
-
-        FieldInjector.injectFields(engineDescriptor, configuration);
-        FieldInjector.injectFields(engineDescriptor, engineExecutionListener);
-        FieldInjector.injectFields(engineDescriptor, argumentExecutorService);
-        FieldInjector.injectFields(engineDescriptor, engineContext);
-        FieldInjector.injectFields(engineDescriptor, engineInterceptorContext);
-
-        List<Throwable> throwables = new ArrayList<>();
+        engineExecutionListener = configureEngineExecutionListeners(executionRequest);
+        classExecutorService = ExecutorSupport.newExecutorService(getEngineClassParallelism(configuration));
+        argumentExecutorService = new FairExecutorService(getEngineArgumentParallelism(configuration));
+        engineInterceptorRegistry = new EngineInterceptorRegistry(configuration);
+        classInterceptorRegistry = new ClassInterceptorRegistry(configuration);
+        engineContext = new ConcreteEngineContext(configuration, staticGetVersion());
 
         try {
-
             if (LOGGER.isTraceEnabled()) {
                 traceEngineDescriptor(executionRequest.getRootTestDescriptor());
             }
 
             try {
-                engineInterceptorRegistry.initialize(engineInterceptorContext);
+                engineInterceptorRegistry.initialize(engineContext);
                 classInterceptorRegistry.initialize();
 
                 engineExecutionListener.executionStarted(executionRequest.getRootTestDescriptor());
 
-                List<TestableTestDescriptor> executableClassTestDescriptors =
+                List<TestableTestDescriptor> testableTestDescriptors =
                         executionRequest.getRootTestDescriptor().getChildren().stream()
                                 .filter(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_FILTER)
                                 .map(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_MAPPER)
                                 .collect(Collectors.toList());
 
-                List<Future<?>> futures = new ArrayList<>(executableClassTestDescriptors.size());
+                List<Future<?>> futures = new ArrayList<>();
 
-                executableClassTestDescriptors.forEach(classTestDescriptor -> {
-                    FieldInjector.injectFields(classTestDescriptor, argumentExecutorService);
+                for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
+                    Class<?> testClass = ((ClassTestDescriptor) testableTestDescriptor).getTestClass();
+                    List<ClassInterceptor> classInterceptors = classInterceptorRegistry.getClassInterceptors(testClass);
+                    List<ClassInterceptor> classInterceptorsReversed = new ArrayList<>(classInterceptors);
+                    Collections.reverse(classInterceptorsReversed);
+
+                    Injector.inject("engineExecutionListener", engineExecutionListener, testableTestDescriptor);
+                    Injector.inject("engineContext", engineContext, testableTestDescriptor);
+                    Injector.inject("argumentExecutorService", argumentExecutorService, testableTestDescriptor);
+                    Injector.inject("classInterceptors", classInterceptors, testableTestDescriptor);
+                    Injector.inject("classInterceptorsReversed", classInterceptorsReversed, testableTestDescriptor);
+
                     String hash = HashSupport.alphanumeric(6);
                     String threadName = hash + "/" + hash;
                     ThreadNameRunnable threadNameRunnable =
-                            new ThreadNameRunnable(threadName, classTestDescriptor::test);
+                            new ThreadNameRunnable(threadName, testableTestDescriptor::test);
                     Future<?> future = classExecutorService.submit(threadNameRunnable);
                     futures.add(future);
-                });
+                }
 
                 ExecutorSupport.waitForAllFutures(futures, classExecutorService);
             } catch (Throwable t) {
@@ -276,7 +269,7 @@ public class VerifyicaTestEngine implements TestEngine {
             }
         } finally {
             classInterceptorRegistry.destroy();
-            engineInterceptorRegistry.destroy(engineInterceptorContext);
+            engineInterceptorRegistry.destroy(engineContext);
 
             TestExecutionResult testExecutionResult = throwables.isEmpty()
                     ? TestExecutionResult.successful()

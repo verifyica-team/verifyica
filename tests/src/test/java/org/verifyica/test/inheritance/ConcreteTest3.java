@@ -38,7 +38,7 @@ public class ConcreteTest3 extends AbstractTest2 {
     }
 
     @Verifyica.Test
-    @Verifyica.Order(order = 0)
+    @Verifyica.Order(0)
     public void test2(ArgumentContext argumentContext) {
         System.out.printf("    ConcreteTest3 test2(%s)%n", argumentContext.getTestArgument());
 

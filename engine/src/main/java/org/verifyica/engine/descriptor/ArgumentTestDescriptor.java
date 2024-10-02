@@ -18,26 +18,25 @@ package org.verifyica.engine.descriptor;
 
 import static java.lang.String.format;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.UniqueId;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Assumption;
 import org.verifyica.api.ClassContext;
+import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Store;
-import org.verifyica.api.interceptor.ArgumentInterceptorContext;
-import org.verifyica.api.interceptor.ClassInterceptor;
 import org.verifyica.engine.context.ConcreteArgumentContext;
-import org.verifyica.engine.context.ConcreteArgumentInterceptorContext;
-import org.verifyica.engine.injection.FieldInjector;
-import org.verifyica.engine.injection.Inject;
-import org.verifyica.engine.interceptor.ClassInterceptorRegistry;
+import org.verifyica.engine.inject.Inject;
+import org.verifyica.engine.inject.Injector;
+import org.verifyica.engine.inject.Named;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
@@ -62,20 +61,26 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
     private final Argument<?> argument;
     private final List<Method> beforeAllMethods;
     private final List<Method> afterAllMethods;
+    private final List<Object> invocationArguments;
     private final List<Throwable> throwables;
 
     @Inject
-    private ClassContext classContext;
+    @Named("engineExecutionListener")
+    private EngineExecutionListener engineExecutionListener;
 
     @Inject
-    private ClassInterceptorRegistry classInterceptorRegistry;
-
+    @Named("classInterceptors")
     private List<ClassInterceptor> classInterceptors;
+
+    @Inject
+    @Named("classInterceptorsReversed")
     private List<ClassInterceptor> classInterceptorsReversed;
-    private Object testInstance;
+
+    @Inject
+    @Named("classContext")
+    private ClassContext classContext;
 
     private ArgumentContext argumentContext;
-    private ArgumentInterceptorContext argumentInterceptorContext;
 
     /**
      * Constructor
@@ -100,6 +105,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         this.argument = argument;
         this.beforeAllMethods = beforeAllMethods;
         this.afterAllMethods = afterAllMethods;
+        this.invocationArguments = new ArrayList<>();
         this.throwables = new ArrayList<>();
     }
 
@@ -112,9 +118,14 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         return argument;
     }
 
-    @Override
     public ArgumentTestDescriptor test() {
         try {
+            argumentContext = new ConcreteArgumentContext(classContext, argumentIndex, argument);
+
+            invocationArguments.add(argumentContext.getTestArgument().getPayload());
+            invocationArguments.add(argumentContext.getTestArgument());
+            invocationArguments.add(argumentContext);
+
             engineExecutionListener.executionStarted(this);
 
             State state = State.START;
@@ -123,7 +134,6 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
                 switch (state) {
                     case START: {
-                        prepare();
                         state = State.BEFORE_ALL;
                         break;
                     }
@@ -196,35 +206,12 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         return this;
     }
 
-    private void prepare() throws Throwable {
-        checkInjected(engineExecutionListener, "engineExecutionListener not injected");
-        checkInjected(engineInterceptorRegistry, "engineInterceptorRegistry not injected");
-        checkInjected(classInterceptorRegistry, "classInterceptorRegistry not injected");
-        checkInjected(classContext, "classContext not injected");
-
-        Class<?> testClass = classContext.getTestClass();
-
-        classInterceptors = classInterceptorRegistry.getClassInterceptors(testClass);
-
-        classInterceptorsReversed = new ArrayList<>(classInterceptors);
-        Collections.reverse(classInterceptorsReversed);
-
-        argumentContext = new ConcreteArgumentContext(classContext, argumentIndex, argument);
-        argumentInterceptorContext = new ConcreteArgumentInterceptorContext(argumentContext);
-
-        FieldInjector.injectFields(this, argumentContext);
-        FieldInjector.injectFields(this, argumentInterceptorContext);
-
-        testClass = argumentContext.getClassContext().getTestClass();
-        testInstance = argumentContext.getClassContext().getTestInstance();
-    }
-
     private State doBeforeAll() {
         Throwable throwable = null;
 
         try {
             for (ClassInterceptor classInterceptor : classInterceptors) {
-                classInterceptor.preBeforeAll(argumentInterceptorContext);
+                classInterceptor.preBeforeAll(argumentContext);
             }
         } catch (Throwable t) {
             throwable = t;
@@ -233,10 +220,12 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         if (throwable == null) {
             try {
                 for (Method method : beforeAllMethods) {
-                    method.invoke(testInstance, argumentContext);
+                    invoke(method, classContext.getTestInstance(), invocationArguments);
                 }
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
             } catch (Throwable t) {
-                throwable = t.getCause();
+                throwable = t;
             }
         }
 
@@ -244,7 +233,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             try {
                 Throwable t = throwable instanceof Assumption ? null : throwable;
                 for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                    classInterceptor.postBeforeAll(argumentInterceptorContext, t);
+                    classInterceptor.postBeforeAll(argumentContext, t);
                 }
                 if (throwable != null) {
                     throwables.add(throwable);
@@ -270,14 +259,15 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         Iterator<TestableTestDescriptor> testableTestDescriptorIterator =
                 getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).iterator();
 
-        FieldInjector.injectFields(this, argumentContext);
-
         while (testableTestDescriptorIterator.hasNext()) {
-            if (testableTestDescriptorIterator
-                    .next()
-                    .test()
-                    .getTestDescriptorStatus()
-                    .isFailure()) {
+            TestableTestDescriptor testableTestDescriptor = testableTestDescriptorIterator.next();
+
+            Injector.inject("engineExecutionListener", engineExecutionListener, testableTestDescriptor);
+            Injector.inject("classInterceptors", classInterceptors, testableTestDescriptor);
+            Injector.inject("classInterceptorsReversed", classInterceptorsReversed, testableTestDescriptor);
+            Injector.inject("argumentContext", argumentContext, testableTestDescriptor);
+
+            if (testableTestDescriptor.test().getTestDescriptorStatus().isFailure()) {
                 break;
             }
         }
@@ -296,7 +286,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
         while (testableTestDescriptorIterator.hasNext()) {
             TestableTestDescriptor testableTestDescriptor = testableTestDescriptorIterator.next();
-            FieldInjector.injectFields(testableTestDescriptor, argumentContext);
+            Injector.inject("argumentContext", argumentContext, testableTestDescriptor);
             testableTestDescriptor.test();
         }
 
@@ -308,7 +298,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
         try {
             for (ClassInterceptor classInterceptor : classInterceptors) {
-                classInterceptor.preAfterAll(argumentInterceptorContext);
+                classInterceptor.preAfterAll(argumentContext);
             }
         } catch (Throwable t) {
             throwable = t;
@@ -317,17 +307,19 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         if (throwable == null) {
             try {
                 for (Method method : afterAllMethods) {
-                    method.invoke(testInstance, argumentContext);
+                    invoke(method, classContext.getTestInstance(), invocationArguments);
                 }
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
             } catch (Throwable t) {
-                throwable = t.getCause();
+                throwable = t;
             }
         }
 
         if (!classInterceptorsReversed.isEmpty()) {
             try {
                 for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                    classInterceptor.postAfterAll(argumentInterceptorContext, throwable);
+                    classInterceptor.postAfterAll(argumentContext, throwable);
                 }
             } catch (Throwable t) {
                 throwable = t;
