@@ -30,7 +30,7 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.UniqueId;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.Assumption;
+import org.verifyica.api.Assumptions;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.engine.context.ConcreteArgumentContext;
@@ -183,7 +183,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             } else {
                 Throwable throwable = throwables.get(0);
 
-                if (throwable instanceof Assumption) {
+                if (throwable instanceof Assumptions.Failed) {
                     testExecutionResult = TestExecutionResult.aborted(null);
                     testDescriptorStatus = TestDescriptorStatus.skipped();
                 } else {
@@ -233,7 +233,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
         if (!classInterceptorsReversed.isEmpty()) {
             try {
-                Throwable t = throwable instanceof Assumption ? null : throwable;
+                Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
                 for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                     classInterceptor.postBeforeAll(argumentContext, t);
                 }
@@ -246,7 +246,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                 throwables.add(throwable);
             }
         } else if (throwable != null) {
-            if (!(throwable instanceof Assumption)) {
+            if (!(throwable instanceof Assumptions.Failed)) {
                 printStackTrace(throwable);
             }
             throwables.add(throwable);

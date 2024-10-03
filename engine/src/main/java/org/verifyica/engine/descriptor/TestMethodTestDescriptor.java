@@ -29,7 +29,7 @@ import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.MethodSource;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.Assumption;
+import org.verifyica.api.Assumptions;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.engine.inject.Inject;
 import org.verifyica.engine.inject.Named;
@@ -159,7 +159,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             } else {
                 Throwable throwable = throwables.get(0);
 
-                if (throwable instanceof Assumption) {
+                if (throwable instanceof Assumptions.Failed) {
                     testExecutionResult = TestExecutionResult.aborted(null);
                     testDescriptorStatus = TestDescriptorStatus.skipped();
                 } else {
@@ -209,7 +209,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
 
         if (!classInterceptorsReversed.isEmpty()) {
             try {
-                Throwable t = throwable instanceof Assumption ? null : throwable;
+                Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
                 for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                     classInterceptor.postBeforeEach(argumentContext, t);
                 }
@@ -222,7 +222,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
                 throwables.add(throwable);
             }
         } else if (throwable != null) {
-            if (!(throwable instanceof Assumption)) {
+            if (!(throwable instanceof Assumptions.Failed)) {
                 printStackTrace(throwable);
             }
             throwables.add(throwable);
@@ -254,7 +254,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
 
         if (!classInterceptorsReversed.isEmpty()) {
             try {
-                Throwable t = throwable instanceof Assumption ? null : throwable;
+                Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
                 for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                     classInterceptor.postTest(argumentContext, testMethod, t);
                 }
@@ -267,7 +267,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
                 throwables.add(throwable);
             }
         } else if (throwable != null) {
-            if (!(throwable instanceof Assumption)) {
+            if (!(throwable instanceof Assumptions.Failed)) {
                 printStackTrace(throwable);
             }
             throwables.add(throwable);

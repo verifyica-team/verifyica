@@ -18,23 +18,14 @@ package org.verifyica.api;
 
 import java.util.function.BooleanSupplier;
 
-/** Class to implement Assumption */
-public class Assumption extends RuntimeException {
+/** Class to implement Assumptions */
+public class Assumptions {
 
     /**
      * Constructor
      */
-    private Assumption() {
-        super();
-    }
-
-    /**
-     * Constructor
-     *
-     * @param message message
-     */
-    private Assumption(String message) {
-        super(message);
+    private Assumptions() {
+        // INTENTIONALLY BLANK
     }
 
     /**
@@ -43,11 +34,11 @@ public class Assumption extends RuntimeException {
      * @param booleanSupplier booleanSupplier
      * @return null
      * @param <V> ignored
-     * @throws Assumption Assumption
+     * @throws Failed Failed
      */
-    public static <V> V assumeTrue(BooleanSupplier booleanSupplier) throws Assumption {
+    public static <V> V assumeTrue(BooleanSupplier booleanSupplier) {
         if (booleanSupplier == null || !booleanSupplier.getAsBoolean()) {
-            throw new Assumption();
+            throw new Failed();
         }
 
         return null;
@@ -59,11 +50,11 @@ public class Assumption extends RuntimeException {
      * @param condition condition
      * @return null
      * @param <V> ignored
-     * @throws Assumption Assumption
+     * @throws Failed Failed
      */
-    public static <V> V assumeTrue(boolean condition) throws Assumption {
+    public static <V> V assumeTrue(boolean condition) {
         if (!condition) {
-            throw new Assumption();
+            throw new Failed();
         }
         return null;
     }
@@ -74,11 +65,11 @@ public class Assumption extends RuntimeException {
      * @param booleanSupplier booleanSupplier
      * @return null;
      * @param <V> ignored
-     * @throws Assumption Assumption
+     * @throws Failed Failed
      */
-    public static <V> V assumeFalse(BooleanSupplier booleanSupplier) throws Assumption {
+    public static <V> V assumeFalse(BooleanSupplier booleanSupplier) {
         if (booleanSupplier != null && booleanSupplier.getAsBoolean()) {
-            throw new Assumption();
+            throw new Failed();
         }
 
         return null;
@@ -90,12 +81,23 @@ public class Assumption extends RuntimeException {
      * @param condition condition
      * @return null;
      * @param <V> ignored
-     * @throws Assumption Assumption
+     * @throws Failed Failed
      */
-    public static <V> V assumeFalse(boolean condition) throws Assumption {
+    public static <V> V assumeFalse(boolean condition) {
         if (condition) {
-            throw new Assumption();
+            throw new Failed();
         }
         return null;
+    }
+
+    /**
+     * Class to implement AssumptionFailed
+     */
+    public static class Failed extends RuntimeException {
+
+        /** Constructor */
+        private Failed() {
+            super();
+        }
     }
 }
