@@ -138,7 +138,7 @@ public @interface Verifyica {
     @interface ClassInterceptorSupplier {}
 
     /** Autowired annotation */
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Autowired {}
 

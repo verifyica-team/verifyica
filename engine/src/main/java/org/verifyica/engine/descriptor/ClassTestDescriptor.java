@@ -41,6 +41,7 @@ import org.junit.platform.engine.support.descriptor.ClassSource;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
+import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.DirectExecutorService;
 import org.verifyica.engine.common.SemaphoreRunnable;
 import org.verifyica.engine.context.ConcreteClassContext;
@@ -254,8 +255,8 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         if (throwable == null) {
             try {
                 Object object = getTestClass().getConstructor().newInstance();
-
-                // Injector.inject("configuration", classContext.getConfiguration(), object);
+                Injector.inject(Verifyica.Autowired.class, engineContext, object);
+                Injector.inject(Verifyica.Autowired.class, classContext.getConfiguration(), object);
 
                 testInstanceAtomicReference.set(object);
                 invocationArguments.add(object);
