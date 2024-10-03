@@ -99,7 +99,7 @@ public class KafkaTest {
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testConsume1(KafkaTestEnvironment kafkaTestEnvironment) {
-        info("testConsume1() ...");
+        info("testing testConsume1() ...");
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
@@ -141,7 +141,7 @@ public class KafkaTest {
     @Verifyica.Test
     @Verifyica.Order(3)
     public void testConsume2(KafkaTestEnvironment kafkaTestEnvironment) {
-        info("testConsume2() ...");
+        info("testing testConsume2() ...");
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
