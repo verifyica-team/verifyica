@@ -24,10 +24,13 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,6 +61,7 @@ public class ClassInterceptorRegistry {
     private final Configuration configuration;
     private final ReentrantReadWriteLock reentrantReadWriteLock;
     private final List<ClassInterceptor> classInterceptors;
+    private final Map<Class<?>, List<ClassInterceptor>> testClassClassInterceptors;
 
     /**
      * Constructor
@@ -68,6 +72,7 @@ public class ClassInterceptorRegistry {
         this.configuration = configuration;
         this.reentrantReadWriteLock = new ReentrantReadWriteLock(true);
         this.classInterceptors = new ArrayList<>();
+        this.testClassClassInterceptors = new ConcurrentHashMap<>();
     }
 
     /**
@@ -129,8 +134,15 @@ public class ClassInterceptorRegistry {
         }
     }
 
-    private List<ClassInterceptor> getDeclaredClassInterceptor(Class<?> testClass) throws Throwable {
-        List<ClassInterceptor> classInterceptors = new ArrayList<>();
+    private synchronized List<ClassInterceptor> getDeclaredClassInterceptor(Class<?> testClass) throws Throwable {
+        List<ClassInterceptor> classInterceptors = testClassClassInterceptors.get(testClass);
+
+        if (classInterceptors != null) {
+            return classInterceptors;
+        }
+
+        classInterceptors = new ArrayList<>();
+        testClassClassInterceptors.put(testClass, classInterceptors);
 
         List<Method> classInterceptorSupplierMethods = ClassSupport.findMethods(
                 testClass, ResolverPredicates.CLASS_INTERCEPTOR_SUPPLIER, HierarchyTraversalMode.BOTTOM_UP);
@@ -153,7 +165,7 @@ public class ClassInterceptorRegistry {
                     int index = 0;
                     for (Object o : objects) {
                         if (o instanceof ClassInterceptor) {
-                            // classInterceptorManager.register(testClass, (ClassInterceptor) o);
+                            classInterceptors.add(((ClassInterceptor) o));
                         } else {
                             throw new TestClassDefinitionException(format(
                                     "Invalid type [%s] supplied by test class [%s]"
