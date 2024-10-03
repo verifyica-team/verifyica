@@ -31,15 +31,16 @@ public class ConcreteClassDefinition implements ClassDefinition {
     private final Set<MethodDefinition> testMethodDefinitions;
     private final List<Argument<?>> arguments;
     private final Set<String> tags;
+    private final int argumentParallelism;
 
     private String displayName;
-    private int argumentParallelism;
 
     /**
      * Constructor
      *
      * @param testClass testClass
      * @param displayName displayName
+     * @param tags tags
      * @param testMethodDefinitions testMethodDefinitions
      * @param arguments arguments
      * @param argumentParallelism testArgumentParallelism
