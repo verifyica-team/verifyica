@@ -16,6 +16,7 @@
 
 package org.verifyica.engine.context;
 
+import java.util.Objects;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
@@ -64,5 +65,28 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
         Precondition.notNull(type, "type is null");
 
         return (Argument<V>) argument;
+    }
+
+    @Override
+    public String toString() {
+        return "ConcreteArgumentContext{" + "classContext="
+                + classContext + ", argumentIndex="
+                + argumentIndex + ", argument="
+                + argument + '}';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        ConcreteArgumentContext that = (ConcreteArgumentContext) object;
+        return argumentIndex == that.argumentIndex
+                && Objects.equals(classContext, that.classContext)
+                && Objects.equals(argument, that.argument);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(classContext, argumentIndex, argument);
     }
 }

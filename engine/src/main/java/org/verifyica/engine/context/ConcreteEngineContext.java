@@ -16,6 +16,7 @@
 
 package org.verifyica.engine.context;
 
+import java.util.Objects;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 
@@ -43,6 +44,20 @@ public class ConcreteEngineContext extends AbstractContext implements EngineCont
 
     @Override
     public String toString() {
-        return "ConcreteEngineContext{" + "configuration=" + getConfiguration() + ", map=" + getMap() + '}';
+        return "ConcreteEngineContext{" + "version='" + version + '\'' + '}';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        if (!super.equals(object)) return false;
+        ConcreteEngineContext that = (ConcreteEngineContext) object;
+        return Objects.equals(version, that.version);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), version);
     }
 }

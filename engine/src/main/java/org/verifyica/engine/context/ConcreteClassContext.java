@@ -16,6 +16,7 @@
 
 package org.verifyica.engine.context;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.EngineContext;
@@ -98,7 +99,30 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
                 + testClass + ", testClassDisplayName='"
                 + testClassDisplayName + '\'' + ", testArgumentParallelism="
                 + testArgumentParallelism + ", testClassInstanceReference="
-                + testClassInstanceReference + ", map="
-                + getMap() + '}';
+                + testClassInstanceReference + '}';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        if (!super.equals(object)) return false;
+        ConcreteClassContext that = (ConcreteClassContext) object;
+        return testArgumentParallelism == that.testArgumentParallelism
+                && Objects.equals(engineContext, that.engineContext)
+                && Objects.equals(testClass, that.testClass)
+                && Objects.equals(testClassDisplayName, that.testClassDisplayName)
+                && Objects.equals(testClassInstanceReference, that.testClassInstanceReference);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                super.hashCode(),
+                engineContext,
+                testClass,
+                testClassDisplayName,
+                testArgumentParallelism,
+                testClassInstanceReference);
     }
 }

@@ -17,6 +17,7 @@
 package org.verifyica.engine.context;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.Context;
@@ -49,5 +50,23 @@ public abstract class AbstractContext implements Context {
     @Override
     public Map<String, Object> getMap() {
         return map;
+    }
+
+    @Override
+    public String toString() {
+        return "AbstractContext{" + "configuration=" + configuration + ", map=" + map + '}';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        AbstractContext that = (AbstractContext) object;
+        return Objects.equals(configuration, that.configuration) && Objects.equals(map, that.map);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(configuration, map);
     }
 }
