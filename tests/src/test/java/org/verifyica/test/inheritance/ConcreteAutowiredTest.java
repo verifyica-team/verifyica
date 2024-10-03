@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package org.verifyica.test;
+package org.verifyica.test.inheritance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.verifyica.test.support.AssertionSupport.assertArgumentContext;
-import static org.verifyica.test.support.TestSupport.logArgumentContext;
 
-import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Verifyica;
 
-public class AutowiredTest {
+public class ConcreteAutowiredTest extends AbstractAutowiredTest {
 
     @Verifyica.Autowired
     private EngineContext engineContext;
@@ -39,34 +36,9 @@ public class AutowiredTest {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
-        logArgumentContext("test()", argumentContext);
-
-        assertArgumentContext(argumentContext);
+    public void test2(String argument) {
         assertThat(engineContext).isNotNull();
         assertThat(configuration).isNotNull();
-    }
-
-    public static class NestedAutowiredTest {
-
-        @Verifyica.Autowired
-        private EngineContext engineContext;
-
-        @Verifyica.Autowired
-        private Configuration configuration;
-
-        @Verifyica.ArgumentSupplier
-        public static Object arguments() {
-            return "test";
-        }
-
-        @Verifyica.Test
-        public void test(ArgumentContext argumentContext) throws Throwable {
-            logArgumentContext("test()", argumentContext);
-
-            assertArgumentContext(argumentContext);
-            assertThat(engineContext).isNotNull();
-            assertThat(configuration).isNotNull();
-        }
+        assertThat(argument).isNotNull();
     }
 }

@@ -276,6 +276,12 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
         while (testableTestDescriptorIterator.hasNext()) {
             TestableTestDescriptor testableTestDescriptor = testableTestDescriptorIterator.next();
+
+            Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testableTestDescriptor);
+            Injector.inject(ARGUMENT_CONTEXT, argumentContext, testableTestDescriptor);
+
             testableTestDescriptor.skip();
         }
 
