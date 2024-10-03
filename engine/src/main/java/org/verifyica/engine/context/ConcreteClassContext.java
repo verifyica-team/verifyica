@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import org.verifyica.api.ClassContext;
+import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 
 /** Class to implement ConcreteClassContext */
@@ -38,6 +39,7 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
      * @param engineContext engineContext
      * @param testClass testClass
      * @param testClassDisplayName testClassDisplayName
+     * @param testClassTags testClassTags
      * @param testArgumentParallelism testArgumentParallelism
      * @param testClassInstanceReference testClassInstanceReference
      */
@@ -48,8 +50,6 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
             Set<String> testClassTags,
             int testArgumentParallelism,
             AtomicReference<Object> testClassInstanceReference) {
-        super(engineContext.getConfiguration());
-
         this.engineContext = engineContext;
         this.testClass = testClass;
         this.testClassDisplayName = testClassDisplayName;
@@ -61,6 +61,11 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
     @Override
     public EngineContext getEngineContext() {
         return engineContext;
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return engineContext.getConfiguration();
     }
 
     @Override

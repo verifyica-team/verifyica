@@ -20,6 +20,7 @@ import java.util.Objects;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
+import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.Precondition;
 
 /** Class to implement ConcreteArgumentContext */
@@ -38,8 +39,6 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
      * @param argument argument
      */
     public ConcreteArgumentContext(ClassContext classContext, int argumentIndex, Argument<?> argument) {
-        super(classContext.getConfiguration());
-
         this.classContext = classContext;
         this.argumentIndex = argumentIndex;
         this.argument = argument;
@@ -48,6 +47,11 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
     @Override
     public ClassContext getClassContext() {
         return classContext;
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return classContext.getConfiguration();
     }
 
     @Override
