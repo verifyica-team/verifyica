@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.verifyica</groupId>
     <artifactId>verifyica-engine</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
     <name>Verifyica Engine</name>
     <description>Verifyica Engine</description>
@@ -344,7 +344,7 @@
         <dependency>
             <groupId>org.verifyica</groupId>
             <artifactId>verifyica-api</artifactId>
-            <version>0.1.0</version>
+            <version>0.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
