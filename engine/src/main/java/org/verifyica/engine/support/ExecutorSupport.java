@@ -137,9 +137,9 @@ public class ExecutorSupport {
         executorService.shutdown();
 
         try {
-            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+            if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
                 executorService.shutdownNow();
-                if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
                     LOGGER.error("ExecutorService did not terminate");
                 }
             }
