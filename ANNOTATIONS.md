@@ -270,7 +270,7 @@ Indicates the Verifyica that a test class / test method is disabled/do not test.
 Used to register a test class specific [ClassInterceptor](api/src/main/java/org/verifyica/api/interceptor/ClassInterceptor.java)
 
 - optional
-- may return a `Stream`, `Iterable`, `Collection`, arrays, or single `ClassInterceptor` instance
+- may return a `Stream`, `Iterable`, `Collection`, array of `ClassInterceptor`, or a single `ClassInterceptor` instance
 - must be public
 - must be static
 - must not define any parameters
