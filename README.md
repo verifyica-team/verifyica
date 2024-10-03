@@ -127,10 +127,10 @@ for (TestClass testClass : TestClasses) {
 
 Example tests using [testcontainers-java](https://java.testcontainers.org/)
 
-- [KafkaTest.java](tests/src/test/java/org/verifyica/test/testcontainers/KafkaTest.java)
-- [MongoDBTest.java](tests/src/test/java/org/verifyica/test/testcontainers/MongoDBTest.java)
+- [KafkaTest.java](examples/src/test/java/org/verifyica/examples/testcontainers/KafkaTest.java)
+- [MongoDBTest.java](examples/src/test/java/org/verifyica/examples/testcontainers/MongoDBTest.java)
 
-Various other examples:
+Various other examples used for testing:
 
 - [Tests](tests/src/test/java/org/verifyica/test/)
 
