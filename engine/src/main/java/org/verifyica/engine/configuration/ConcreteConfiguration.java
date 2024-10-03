@@ -47,13 +47,12 @@ public class ConcreteConfiguration implements Configuration {
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
 
-    private Path propertiesFilename;
     private final Properties properties;
+    private Path propertiesFilename;
 
     /** Constructor */
     private ConcreteConfiguration() {
-        properties = new OrderedProperties();
-        load();
+        properties = load();
     }
 
     @Override
@@ -90,10 +89,12 @@ public class ConcreteConfiguration implements Configuration {
     /**
      * Method to load configuration Properties
      */
-    private void load() {
+    private Properties load() {
         if (IS_TRACE_ENABLED) {
             trace("load()");
         }
+
+        Properties properties = new OrderedProperties();
 
         try {
             // Get the properties file from a system property
@@ -133,6 +134,8 @@ public class ConcreteConfiguration implements Configuration {
             trace("configuration properties ...");
             properties.forEach((key, value) -> trace("configuration property [" + key + "] = [" + value + "]"));
         }
+
+        return properties;
     }
 
     /**
