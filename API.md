@@ -36,7 +36,7 @@ It's common purpose to get a reference to an scoped `Map<String, Object>`
 An [EngineContext](api/src/main/java/org/verifyica/api/EngineContext.java) is used to ...
 
 - get the Engine [Configuration](api/src/main/java/org/verifyica/api/Configuration.java)
-- get the Engine [Store](src/main/java/org/verifyica/api/Store.java)
+- get the associated context `Map<String, Object>`
 
 ## ClassContext
 
@@ -47,7 +47,7 @@ The [ClassContext](api/src/main/java/org/verifyica/api/ClassContext.java) is use
   - test class name
   - test class instance
   - test class argument parallelism
-- get the associated test class [Store](src/main/java/org/verifyica/api/Store.java)
+- get the associated context `Map<String, Object>`
 
 ## ArgumentContext
 
@@ -58,7 +58,7 @@ The [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
   - test argument name
   - test argument value
   - test argument index
-- get the associated test argument [Store](src/main/java/org/verifyica/api/Store.java)
+- get the associated context `Map<String, Object>`
 
 ---
 
