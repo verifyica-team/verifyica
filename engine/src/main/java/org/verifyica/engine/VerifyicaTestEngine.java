@@ -106,8 +106,6 @@ public class VerifyicaTestEngine implements TestEngine {
 
     private Configuration configuration;
     private EngineExecutionListener engineExecutionListener;
-    private ExecutorService classExecutorService;
-    private ExecutorService argumentExecutorService;
     private EngineContext engineContext;
     private ClassInterceptorRegistry classInterceptorRegistry;
     private EngineInterceptorRegistry engineInterceptorRegistry;
@@ -202,9 +200,13 @@ public class VerifyicaTestEngine implements TestEngine {
                 traceEngineDescriptor(executionRequest.getRootTestDescriptor());
             }
 
+            ExecutorService classExecutorService =
+                    ExecutorSupport.newExecutorService(getEngineClassParallelism(configuration));
+
+            ExecutorService argumentExecutorService =
+                    new FairExecutorService(getEngineArgumentParallelism(configuration));
+
             engineExecutionListener = configureEngineExecutionListeners(executionRequest);
-            classExecutorService = ExecutorSupport.newExecutorService(getEngineClassParallelism(configuration));
-            argumentExecutorService = new FairExecutorService(getEngineArgumentParallelism(configuration));
             engineInterceptorRegistry = new EngineInterceptorRegistry(configuration);
             classInterceptorRegistry = new ClassInterceptorRegistry(configuration);
             engineContext = new ConcreteEngineContext(configuration, staticGetVersion());
