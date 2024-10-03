@@ -70,7 +70,7 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
             testDescriptor -> (TestableTestDescriptor) testDescriptor;
 
     @Inject
-    @Named("EngineExecutionListener")
+    @Named(ENGINE_EXECUTION_LISTENER)
     private EngineExecutionListener engineExecutionListener;
 
     private TestDescriptorStatus testDescriptorStatus;

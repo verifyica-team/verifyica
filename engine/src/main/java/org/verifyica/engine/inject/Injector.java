@@ -39,7 +39,7 @@ public class Injector {
     }
 
     /**
-     * Method to inject a value into named fields
+     * Method to inject a value into annotated named fields
      *
      * @param name name
      * @param value value
@@ -48,14 +48,50 @@ public class Injector {
     public static void inject(String name, Object value, Object target) {
         try {
             Class<?> clazz = target.getClass();
-            if (clazz.getName().startsWith("java") || clazz.getName().startsWith("sun")) {
-                return;
+            while (clazz != null
+                    && !clazz.getName().startsWith("java")
+                    && !clazz.getName().startsWith("sun")) {
+                for (Field field : getFields(clazz)) {
+                    Inject inject = field.getAnnotation(Inject.class);
+                    if (inject != null) {
+                        Named named = field.getAnnotation(Named.class);
+                        if (named != null && named.value().equals(name)) {
+                            boolean wasAccessible = field.isAccessible();
+                            try {
+                                field.setAccessible(true);
+                                field.set(target, value);
+                            } finally {
+                                field.setAccessible(wasAccessible);
+                            }
+                        }
+                    }
+                }
+                clazz = clazz.getSuperclass();
             }
-            for (Field field : getFields(clazz)) {
-                Inject inject = field.getAnnotation(Inject.class);
-                if (inject != null) {
-                    Named named = field.getAnnotation(Named.class);
-                    if (named != null && named.value().equals(name)) {
+        } catch (IllegalAccessException e) {
+            throw new EngineException(format("Exception injecting object into named [%s] field", name), e);
+        }
+    }
+
+    /**
+     * Method to inject a value into annotated fields
+     *
+     * @param annotationClass annotationClass
+     * @param value value
+     * @param target target
+     */
+    public static void inject(Class<? extends Annotation> annotationClass, Object value, Object target) {
+        String fieldName = null;
+
+        try {
+            Class<?> clazz = target.getClass();
+            while (clazz != null
+                    && !clazz.getName().startsWith("java")
+                    && !clazz.getName().startsWith("sun")) {
+                for (Field field : getFields(clazz)) {
+                    fieldName = field.getName();
+                    if (field.isAnnotationPresent(annotationClass)
+                            && field.getType().isAssignableFrom(value.getClass())) {
                         boolean wasAccessible = field.isAccessible();
                         try {
                             field.setAccessible(true);
@@ -65,38 +101,7 @@ public class Injector {
                         }
                     }
                 }
-            }
-        } catch (IllegalAccessException e) {
-            throw new EngineException(format("Exception injecting object into named [%s] field", name), e);
-        }
-    }
-
-    /**
-     * Method to inject a value into named fields
-     *
-     * @param value value
-     * @param target target
-     */
-    public static void inject(Class<? extends Annotation> annotationClass, Object value, Object target) {
-        String fieldName = null;
-
-        try {
-            Class<?> clazz = target.getClass();
-            if (clazz.getName().startsWith("java") || clazz.getName().startsWith("sun")) {
-                return;
-            }
-            for (Field field : getFields(clazz)) {
-                fieldName = field.getName();
-                if (field.isAnnotationPresent(annotationClass)
-                        && field.getType().isAssignableFrom(value.getClass())) {
-                    boolean wasAccessible = field.isAccessible();
-                    try {
-                        field.setAccessible(true);
-                        field.set(target, value);
-                    } finally {
-                        field.setAccessible(wasAccessible); // Restore original accessibility
-                    }
-                }
+                clazz = clazz.getSuperclass();
             }
         } catch (IllegalAccessException e) {
             throw new EngineException(format("Exception injecting object into field [%s]", fieldName), e);

@@ -109,6 +109,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
      *
      * @param uniqueId uniqueId
      * @param displayName displayName
+     * @param tags tags
      * @param testClass testClass
      * @param testArgumentParallelism testArgumentParallelism
      * @param prepareMethods prepareMethods
