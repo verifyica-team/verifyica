@@ -30,6 +30,7 @@ public class ConcreteClassDefinition implements ClassDefinition {
     private final Class<?> testClass;
     private final Set<MethodDefinition> testMethodDefinitions;
     private final List<Argument<?>> arguments;
+    private final Set<String> tags;
 
     private String displayName;
     private int argumentParallelism;
@@ -46,11 +47,13 @@ public class ConcreteClassDefinition implements ClassDefinition {
     public ConcreteClassDefinition(
             Class<?> testClass,
             String displayName,
+            Set<String> tags,
             List<MethodDefinition> testMethodDefinitions,
             List<Argument<?>> arguments,
             int argumentParallelism) {
         this.testClass = testClass;
         this.displayName = displayName;
+        this.tags = tags;
         this.testMethodDefinitions = new LinkedHashSet<>(testMethodDefinitions);
         this.arguments = arguments;
         this.argumentParallelism = argumentParallelism;
@@ -71,6 +74,11 @@ public class ConcreteClassDefinition implements ClassDefinition {
     @Override
     public String getDisplayName() {
         return displayName;
+    }
+
+    @Override
+    public Set<String> getTags() {
+        return tags;
     }
 
     @Override

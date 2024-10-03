@@ -31,6 +31,13 @@ public interface ClassDefinition {
     Class<?> getTestClass();
 
     /**
+     * Set the test class display name
+     *
+     * @param displayName displayName
+     */
+    void setDisplayName(String displayName);
+
+    /**
      * Get the test class display name
      *
      * @return the test class display name
@@ -38,11 +45,11 @@ public interface ClassDefinition {
     String getDisplayName();
 
     /**
-     * Set the test class display name
+     * Get the Set of test class tags
      *
-     * @param displayName displayName
+     * @return a Set of test class tags
      */
-    void setDisplayName(String displayName);
+    Set<String> getTags();
 
     /**
      * Get the set test method definition set

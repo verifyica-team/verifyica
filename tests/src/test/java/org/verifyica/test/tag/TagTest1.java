@@ -17,6 +17,7 @@
 package org.verifyica.test.tag;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.verifyica.test.support.AssertionSupport.assertArgumentContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,28 +41,24 @@ public class TagTest1 {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
+        assertArgumentContext(argumentContext);
+        assertThat(argumentContext.getClassContext().getTestClassTags()).isNotEmpty();
+        assertThat(argumentContext.getClassContext().getTestClassTags()).contains("Tag1");
 
-        assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+        assertArgumentContext(argumentContext);
 
-        assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
     }
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
+        assertArgumentContext(argumentContext);
 
-        assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
     }
 }

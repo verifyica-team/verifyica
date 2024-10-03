@@ -16,6 +16,8 @@
 
 package org.verifyica.api;
 
+import java.util.Set;
+
 /** Interface to implement ClassContext */
 public interface ClassContext extends Context {
 
@@ -41,6 +43,20 @@ public interface ClassContext extends Context {
     String getTestClassDisplayName();
 
     /**
+     * Get the test class tags
+     *
+     * @return a Set of test class tags; may be empty
+     */
+    Set<String> getTestClassTags();
+
+    /**
+     * Get the test argument parallelism
+     *
+     * @return the test argument parallelism
+     */
+    int getTestArgumentParallelism();
+
+    /**
      * Get the test class instance
      *
      * @return the test class instance
@@ -55,11 +71,4 @@ public interface ClassContext extends Context {
      * @param <V> the type
      */
     <V> V getTestInstance(Class<V> type);
-
-    /**
-     * Get the test argument parallelism
-     *
-     * @return the test argument parallelism
-     */
-    int getTestArgumentParallelism();
 }

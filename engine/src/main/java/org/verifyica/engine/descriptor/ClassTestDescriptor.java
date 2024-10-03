@@ -72,6 +72,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         END
     }
 
+    private final Set<String> tags;
     private final int testArgumentParallelism;
     private final Class<?> testClass;
     private final List<Method> prepareMethods;
@@ -115,12 +116,14 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
     public ClassTestDescriptor(
             UniqueId uniqueId,
             String displayName,
+            Set<String> tags,
             Class<?> testClass,
             int testArgumentParallelism,
             List<Method> prepareMethods,
             List<Method> concludeMethods) {
         super(uniqueId, displayName);
 
+        this.tags = tags;
         this.testArgumentParallelism = testArgumentParallelism;
         this.testClass = testClass;
         this.prepareMethods = prepareMethods;
@@ -148,7 +151,12 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
     public ClassTestDescriptor test() {
         try {
             classContext = new ConcreteClassContext(
-                    engineContext, testClass, getDisplayName(), testArgumentParallelism, testInstanceAtomicReference);
+                    engineContext,
+                    testClass,
+                    getDisplayName(),
+                    tags,
+                    testArgumentParallelism,
+                    testInstanceAtomicReference);
 
             classInterceptors = classInterceptors.stream()
                     .filter(classInterceptor -> {

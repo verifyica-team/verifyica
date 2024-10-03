@@ -17,6 +17,7 @@
 package org.verifyica.engine.context;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.EngineContext;
@@ -27,6 +28,7 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
     private final EngineContext engineContext;
     private final Class<?> testClass;
     private final String testClassDisplayName;
+    private final Set<String> testClassTags;
     private final int testArgumentParallelism;
     private final AtomicReference<Object> testClassInstanceReference;
 
@@ -43,6 +45,7 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
             EngineContext engineContext,
             Class<?> testClass,
             String testClassDisplayName,
+            Set<String> testClassTags,
             int testArgumentParallelism,
             AtomicReference<Object> testClassInstanceReference) {
         super(engineContext.getConfiguration());
@@ -50,6 +53,7 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
         this.engineContext = engineContext;
         this.testClass = testClass;
         this.testClassDisplayName = testClassDisplayName;
+        this.testClassTags = testClassTags;
         this.testArgumentParallelism = testArgumentParallelism;
         this.testClassInstanceReference = testClassInstanceReference;
     }
@@ -70,6 +74,16 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
     }
 
     @Override
+    public Set<String> getTestClassTags() {
+        return testClassTags;
+    }
+
+    @Override
+    public int getTestArgumentParallelism() {
+        return testArgumentParallelism;
+    }
+
+    @Override
     public Object getTestInstance() {
         Object testInstance = testClassInstanceReference.get();
         if (testInstance == null) {
@@ -85,11 +99,6 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
             throw new IllegalStateException("The class instance has not yet been instantiated");
         }
         return returnType.cast(testInstance);
-    }
-
-    @Override
-    public int getTestArgumentParallelism() {
-        return testArgumentParallelism;
     }
 
     @Override
@@ -112,7 +121,7 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
                 && Objects.equals(engineContext, that.engineContext)
                 && Objects.equals(testClass, that.testClass)
                 && Objects.equals(testClassDisplayName, that.testClassDisplayName)
-                && Objects.equals(testClassInstanceReference, that.testClassInstanceReference);
+                && Objects.equals(testClassInstanceReference.get(), that.testClassInstanceReference.get());
     }
 
     @Override

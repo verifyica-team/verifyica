@@ -65,6 +65,7 @@ import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.DisplayNameSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.OrderSupport;
+import org.verifyica.engine.support.TagSupport;
 
 /** Class to implement EngineDiscoveryRequestResolver */
 public class EngineDiscoveryRequestResolver {
@@ -151,6 +152,8 @@ public class EngineDiscoveryRequestResolver {
 
                 String testClassDisplayName = DisplayNameSupport.getDisplayName(testClass);
 
+                Set<String> testClassTags = TagSupport.getTags(testClass);
+
                 List<MethodDefinition> testMethodDefinitions = new ArrayList<>();
 
                 testMethods.forEach(testMethod -> {
@@ -170,6 +173,7 @@ public class EngineDiscoveryRequestResolver {
                 classDefinitions.add(new ConcreteClassDefinition(
                         testClass,
                         testClassDisplayName,
+                        testClassTags,
                         testMethodDefinitions,
                         testArguments,
                         testArgumentParallelism));
@@ -389,6 +393,7 @@ public class EngineDiscoveryRequestResolver {
             ClassTestDescriptor classTestDescriptor = new ClassTestDescriptor(
                     classTestDescriptorUniqueId,
                     classDefinition.getDisplayName(),
+                    classDefinition.getTags(),
                     testClass,
                     classDefinition.getArgumentParallelism(),
                     prepareMethods,
