@@ -49,14 +49,14 @@ Unit testing is traditionally used where test methods in a test class are isolat
 Verifyica uses a dependent test method paradigm ...
 
 - for a test class
-  - order the test methods (by `@Verfyica.Order` or `@Verifyica.Step`)
+  - order the test methods
   - for a test argument 
     - execute the test methods sequentially
     - if a test method fails, remaining test methods are skipped
 
 **Notes**
 
-- default test method ordering is by test method name (or display name if defined)
+- default test method ordering is by test method name (or display name if defined), then by `@Verifyica.Order` annotations.
 
 # Features
 
@@ -64,9 +64,7 @@ Verifyica uses a dependent test method paradigm ...
   - i.e. for each test argument, execute a set of test methods
 - Scenario based testing
   - if a test method fails, remaining test methods will be marked as skipped
-  - default test method execution based on `@Verifyica.Order` or `@Verifyica.Test(order = X)` annotation
-  - ability to use an `EngineInterceptor` to order test methods by custom ordering algorithm
-- Annotation driven
+  - default test method execution based on `@Verifyica.Order` annotation
 - Multithreaded test class / test argument testing
   - configurable constraints
   - test argument can be tested multithreaded
@@ -80,7 +78,7 @@ Verifyica uses a dependent test method paradigm ...
 - Engine interceptors (extensions)
   - set up / tear down global / external resources
 - Cleanup of `AutoClosable` test classes / test arguments
-- Cleanup of `AutoClosable` objects in a [Store](api/src/main/java/org/verifyica/api/Store.java)
+- Cleanup of `AutoClosable` objects in `Context` maps
 - Object / resource sharing via contexts
   - [EngineContext](api/src/main/java/org/verifyica/api/EngineContext.java)
   - [ClassContext](api/src/main/java/org/verifyica/api/ClassContext.java)
