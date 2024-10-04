@@ -40,17 +40,18 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
+import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Cleanup;
 import org.verifyica.api.Verifyica;
 
-public class KafkaTest {
+public class KafkaTest2 {
+
+    private static final String NETWORK = "network";
+    private static final String MESSAGE = "message";
 
     private static final String TOPIC = "test";
     private static final String GROUP_ID = "test-group-id";
     private static final String EARLIEST = "earliest";
-
-    private final ThreadLocal<Network> networkThreadLocal = new ThreadLocal<>();
-    private final ThreadLocal<String> messageThreadLocal = new ThreadLocal<>();
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<KafkaTestEnvironment> arguments() {
@@ -62,25 +63,26 @@ public class KafkaTest {
     }
 
     @Verifyica.BeforeAll
-    public void initializeTestEnvironment(KafkaTestEnvironment kafkaTestEnvironment) {
+    public void initializeTestEnvironment(ArgumentContext argumentContext) {
         info("initialize test environment ...");
 
         Network network = Network.newNetwork();
         network.getId();
 
-        networkThreadLocal.set(network);
-        kafkaTestEnvironment.initialize(network);
+        argumentContext.getMap().put(NETWORK, network);
+        argumentContext.getTestArgument().getPayload(KafkaTestEnvironment.class).initialize(network);
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testProduce(KafkaTestEnvironment kafkaTestEnvironment) throws ExecutionException, InterruptedException {
+    public void testProduce(ArgumentContext argumentContext) throws ExecutionException, InterruptedException {
         info("testing testProduce() ...");
 
-        String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
+        String bootstrapServers =
+                kafkaTestEnvironment(argumentContext).getKafkaContainer().getBootstrapServers();
 
         String message = randomString(16);
-        messageThreadLocal.set(message);
+        argumentContext.getMap().put(MESSAGE, message);
 
         info("producing message [%s] to [%s] ...", message, bootstrapServers);
 
@@ -99,12 +101,13 @@ public class KafkaTest {
 
     @Verifyica.Test
     @Verifyica.Order(2)
-    public void testConsume1(KafkaTestEnvironment kafkaTestEnvironment) {
+    public void testConsume1(ArgumentContext argumentContext) {
         info("testing testConsume1() ...");
 
-        String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
+        String bootstrapServers =
+                kafkaTestEnvironment(argumentContext).getKafkaContainer().getBootstrapServers();
 
-        String message = messageThreadLocal.get();
+        String message = message(argumentContext);
 
         info("consuming message from [%s] ...", bootstrapServers);
 
@@ -141,12 +144,13 @@ public class KafkaTest {
 
     @Verifyica.Test
     @Verifyica.Order(3)
-    public void testConsume2(KafkaTestEnvironment kafkaTestEnvironment) {
+    public void testConsume2(ArgumentContext argumentContext) {
         info("testing testConsume2() ...");
 
-        String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
+        String bootstrapServers =
+                kafkaTestEnvironment(argumentContext).getKafkaContainer().getBootstrapServers();
 
-        String message = messageThreadLocal.get();
+        String message = message(argumentContext);
 
         info("consuming message from [%s] ...", bootstrapServers);
 
@@ -182,16 +186,46 @@ public class KafkaTest {
     }
 
     @Verifyica.AfterAll
-    public void destroyTestEnvironment(KafkaTestEnvironment kafkaTestEnvironment) throws Throwable {
+    public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
         info("destroy test environment ...");
 
         new Cleanup()
                 .perform(
-                        () -> Optional.ofNullable(kafkaTestEnvironment).ifPresent(KafkaTestEnvironment::destroy),
-                        () -> Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close),
-                        messageThreadLocal::remove,
-                        networkThreadLocal::remove)
+                        () -> Optional.ofNullable(kafkaTestEnvironment(argumentContext))
+                                .ifPresent(KafkaTestEnvironment::destroy),
+                        () -> Optional.ofNullable(network(argumentContext)).ifPresent(Network::close),
+                        () -> argumentContext.getMap().clear())
                 .assertEmpty();
+    }
+
+    /**
+     * Helper method to get the Network from the ArgumentContext
+     *
+     * @param argumentContext argumentContext
+     * @return the Network
+     */
+    private static Network network(ArgumentContext argumentContext) {
+        return (Network) argumentContext.getMap().get(NETWORK);
+    }
+
+    /**
+     * Helper method to get the KafkaTestEnvironment from the ArgumentContext
+     *
+     * @param argumentContext argumentContext
+     * @return the KafkaTestEnvironment
+     */
+    private static KafkaTestEnvironment kafkaTestEnvironment(ArgumentContext argumentContext) {
+        return argumentContext.getTestArgument(KafkaTestEnvironment.class).getPayload();
+    }
+
+    /**
+     * Helper method to get the message from the ArgumentContext
+     *
+     * @param argumentContext argumentContext
+     * @return the message
+     */
+    private static String message(ArgumentContext argumentContext) {
+        return (String) argumentContext.getMap().get(MESSAGE);
     }
 
     /** Class to implement a KafkaTestEnvironment */
