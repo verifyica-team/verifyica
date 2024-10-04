@@ -267,15 +267,13 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             }
         }
 
-        if (!classInterceptorsReversed.isEmpty()) {
-            try {
-                for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                    classInterceptor.postInstantiate(
-                            engineContext, testClass, testInstanceAtomicReference.get(), throwable);
-                }
-            } catch (Throwable t) {
-                throwable = t;
+        try {
+            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                classInterceptor.postInstantiate(
+                        engineContext, testClass, testInstanceAtomicReference.get(), throwable);
             }
+        } catch (Throwable t) {
+            throwable = t;
         }
 
         return throwable == null ? State.PREPARE : State.CLEAN_UP;
@@ -304,17 +302,12 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             }
         }
 
-        if (!classInterceptorsReversed.isEmpty()) {
-            try {
-                for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                    classInterceptor.postPrepare(classContext, throwable);
-                }
-            } catch (Throwable t) {
-                throwable = t;
-                printStackTrace(throwable);
-                throwables.add(throwable);
+        try {
+            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                classInterceptor.postPrepare(classContext, throwable);
             }
-        } else if (throwable != null) {
+        } catch (Throwable t) {
+            throwable = t;
             printStackTrace(throwable);
             throwables.add(throwable);
         }
@@ -385,17 +378,12 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             }
         }
 
-        if (!classInterceptorsReversed.isEmpty()) {
-            try {
-                for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                    classInterceptor.postConclude(classContext, throwable);
-                }
-            } catch (Throwable t) {
-                throwable = t;
-                printStackTrace(throwable);
-                throwables.add(throwable);
+        try {
+            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                classInterceptor.postConclude(classContext, throwable);
             }
-        } else if (throwable != null) {
+        } catch (Throwable t) {
+            throwable = t;
             printStackTrace(throwable);
             throwables.add(throwable);
         }
