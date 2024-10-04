@@ -157,7 +157,6 @@ public class EngineInterceptorRegistry {
                         matcher.reset(clazz.getName());
                         if (matcher.find()) {
                             LOGGER.trace("removing class interceptor [%s]", clazz.getName());
-
                             iterator.remove();
                         }
                     }

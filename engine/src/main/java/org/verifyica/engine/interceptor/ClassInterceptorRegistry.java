@@ -70,7 +70,10 @@ public class ClassInterceptorRegistry {
     public ClassInterceptorRegistry(Configuration configuration) {
         this.configuration = configuration;
         this.reentrantReadWriteLock = new ReentrantReadWriteLock(true);
+
         this.classInterceptors = new ArrayList<>();
+        this.classInterceptors.add(new DefaultClassInterceptor());
+
         this.testClassClassInterceptors = new ConcurrentHashMap<>();
     }
 
@@ -248,7 +251,6 @@ public class ClassInterceptorRegistry {
                         matcher.reset(clazz.getName());
                         if (matcher.find()) {
                             LOGGER.trace("removing class interceptor [%s]", clazz.getName());
-
                             iterator.remove();
                         }
                     }

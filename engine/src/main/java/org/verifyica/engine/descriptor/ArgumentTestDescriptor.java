@@ -242,9 +242,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             throwables.add(throwable);
         }
 
-        State testState = State.TEST_DEPENDENT;
-
-        return throwable == null ? testState : State.AFTER_ALL;
+        return throwable == null ? State.TEST_DEPENDENT : State.AFTER_ALL;
     }
 
     private State doTestDependent() {
@@ -320,8 +318,9 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         }
 
         try {
+            Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postAfterAll(argumentContext, throwable);
+                classInterceptor.postAfterAll(argumentContext, t);
             }
         } catch (Throwable t) {
             throwable = t;

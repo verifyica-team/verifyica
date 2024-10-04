@@ -207,24 +207,14 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             }
         }
 
-        if (!classInterceptorsReversed.isEmpty()) {
-            try {
-                Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
-                for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                    classInterceptor.postBeforeEach(argumentContext, t);
-                }
-                if (throwable != null) {
-                    throwables.add(throwable);
-                }
-            } catch (Throwable t) {
-                throwable = t;
-                printStackTrace(throwable);
-                throwables.add(throwable);
+        try {
+            Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
+            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                classInterceptor.postBeforeEach(argumentContext, t);
             }
-        } else if (throwable != null) {
-            if (!(throwable instanceof Assumptions.Failed)) {
-                printStackTrace(throwable);
-            }
+        } catch (Throwable t) {
+            throwable = t;
+            printStackTrace(throwable);
             throwables.add(throwable);
         }
 
@@ -289,16 +279,12 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             }
         }
 
-        if (!classInterceptorsReversed.isEmpty()) {
-            try {
-                for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                    classInterceptor.postAfterEach(argumentContext, throwable);
-                }
-            } catch (Throwable t) {
-                printStackTrace(throwable);
-                throwables.add(throwable);
+        try {
+            Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
+            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                classInterceptor.postAfterEach(argumentContext, t);
             }
-        } else if (throwable != null) {
+        } catch (Throwable t) {
             printStackTrace(throwable);
             throwables.add(throwable);
         }
