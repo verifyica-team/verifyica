@@ -47,39 +47,4 @@ try {
 
 ---
 
-## Context / Store Locking
-
-All Contexts (and it's associated Store) have a `Lock` that can be used for locking on the Context or Context Store object.
-
-### Examples
-
-Example 1:
-
-```java
-classContext.getLock().lock();
-try {
-    // ... code omitted ...
-} finally {
-        classContext.getLock().unlock();
-}
-```
-
-Example 2:
-
-```java
-classContext.getStore().getLock().lock();
-try {
-    // ... code omitted ...
-} finally {
-        classContext.getStore().getLock().unlock();
-}
-```
-
-**Notes**
-
-- A Context's `getLock()` method is just convenience method to get the associated Store's `Lock`
-  - i.e. `classContext.getLock().lock()` and `classContext.getStore().getLock().lock()` reference the same `Lock`
-
----
-
 Copyright (C) 2024 The Verifyica project authors
