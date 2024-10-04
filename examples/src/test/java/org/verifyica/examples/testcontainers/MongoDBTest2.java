@@ -33,13 +33,14 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
+import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Cleanup;
 import org.verifyica.api.Verifyica;
 
-public class MongoDBTest {
+public class MongoDBTest2 {
 
-    private final ThreadLocal<Network> networkThreadLocal = new ThreadLocal<>();
-    private final ThreadLocal<String> nameThreadLocal = new ThreadLocal<>();
+    private static final String NETWORK = "network";
+    private static final String NAME = "name";
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<MongoDBTestEnvironment> arguments() {
@@ -51,22 +52,26 @@ public class MongoDBTest {
     }
 
     @Verifyica.BeforeAll
-    public void initializeTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) {
+    public void initializeTestEnvironment(ArgumentContext argumentContext) {
         info("initialize test environment ...");
 
         Network network = Network.newNetwork();
         network.getId();
 
-        mongoDBTestEnvironment.initialize(network);
+        argumentContext.getMap().put(NETWORK, network);
+        mongoDBTestEnvironment(argumentContext).initialize(network);
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testInsert(MongoDBTestEnvironment mongoDBTestEnvironment) {
+    public void testInsert(ArgumentContext argumentContext) {
         info("testing testInsert() ...");
 
+        MongoDBTestEnvironment mongoDBTestEnvironment = mongoDBTestEnvironment(argumentContext);
+
         String name = randomString(16);
-        nameThreadLocal.set(name);
+        argumentContext.getMap().put(NAME, name);
+
         info("name [%s]", name);
 
         MongoClientSettings settings = MongoClientSettings.builder()
@@ -86,15 +91,17 @@ public class MongoDBTest {
 
     @Verifyica.Test
     @Verifyica.Order(2)
-    public void testQuery(MongoDBTestEnvironment mongoDBTestEnvironment) {
+    public void testQuery(ArgumentContext argumentContext) {
         info("testing testQuery() ...");
+
+        MongoDBTestEnvironment mongoDBTestEnvironment = mongoDBTestEnvironment(argumentContext);
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(
                         mongoDBTestEnvironment.getMongoDBContainer().getConnectionString()))
                 .build();
 
-        String name = nameThreadLocal.get();
+        String name = name(argumentContext);
 
         try (MongoClient mongoClient = MongoClients.create(settings)) {
             MongoDatabase database = mongoClient.getDatabase("test-db");
@@ -108,16 +115,46 @@ public class MongoDBTest {
     }
 
     @Verifyica.AfterAll
-    public void destroyTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) throws Throwable {
+    public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
         info("destroy test environment ...");
 
         new Cleanup()
                 .perform(
-                        () -> Optional.ofNullable(mongoDBTestEnvironment).ifPresent(MongoDBTestEnvironment::destroy),
-                        () -> Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close),
-                        nameThreadLocal::remove,
-                        networkThreadLocal::remove)
+                        () -> Optional.ofNullable(mongoDBTestEnvironment(argumentContext))
+                                .ifPresent(MongoDBTestEnvironment::destroy),
+                        () -> Optional.ofNullable(network(argumentContext)).ifPresent(Network::close),
+                        () -> argumentContext.getMap().clear())
                 .assertEmpty();
+    }
+
+    /**
+     * Helper method to get the Network from the ArgumentContext
+     *
+     * @param argumentContext argumentContext
+     * @return the Network
+     */
+    private static Network network(ArgumentContext argumentContext) {
+        return (Network) argumentContext.getMap().get(NETWORK);
+    }
+
+    /**
+     * Helper method to get the MongoDBTestEnvironment from the ArgumentContext
+     *
+     * @param argumentContext argumentContext
+     * @return the MongoDBTestEnvironment
+     */
+    private static MongoDBTestEnvironment mongoDBTestEnvironment(ArgumentContext argumentContext) {
+        return argumentContext.getTestArgument().getPayload(MongoDBTestEnvironment.class);
+    }
+
+    /**
+     * Helper method to get the name from the ArgumentContext
+     *
+     * @param argumentContext argumentContext
+     * @return the name
+     */
+    private static String name(ArgumentContext argumentContext) {
+        return (String) argumentContext.getMap().get(NAME);
     }
 
     /** Class to implement a MongoDBTestEnvironment */

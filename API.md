@@ -74,4 +74,12 @@ The [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
 
 ---
 
+## Cleanup
+
+[Cleanup](api/src/main/java/org/verifyica/api/Cleanup.java) provides a way to run a `Cleanup.Action` or close a `Closeable`
+
+- Use to clean up resources
+
+---
+
 Copyright (C) 2024 The Verifyica project authors
