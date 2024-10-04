@@ -1,10 +1,9 @@
-###################################################
-# All test classes / test methods are included by #
-# default in the working set                      #
-#                                                 #
-# Filters are executed against the discovery set, #
-# including / excluding them from the working set #
-###################################################
+#############################################################
+# All test classes are included by default in the working set                      #
+#
+# Filters are executed against the discovery set, including
+# excluding them from the working set
+#############################################################
 
 # Remove all test classes and test methods
 - type: ExcludeClass
