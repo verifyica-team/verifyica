@@ -252,24 +252,14 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             }
         }
 
-        if (!classInterceptorsReversed.isEmpty()) {
-            try {
-                Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
-                for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                    classInterceptor.postTest(argumentContext, testMethod, t);
-                }
-                if (throwable != null) {
-                    throwables.add(throwable);
-                }
-            } catch (Throwable t) {
-                throwable = t;
-                printStackTrace(throwable);
-                throwables.add(throwable);
+        try {
+            Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
+            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+                classInterceptor.postTest(argumentContext, testMethod, t);
             }
-        } else if (throwable != null) {
-            if (!(throwable instanceof Assumptions.Failed)) {
-                printStackTrace(throwable);
-            }
+        } catch (Throwable t) {
+            throwable = t;
+            printStackTrace(throwable);
             throwables.add(throwable);
         }
 
