@@ -135,6 +135,7 @@ public class Cleanup {
      * Throws the first Throwable if not empty
      *
      * @throws Throwable Throwable
+     * @return this
      */
     public Cleanup assertEmpty() throws Throwable {
         if (isNotEmpty()) {
