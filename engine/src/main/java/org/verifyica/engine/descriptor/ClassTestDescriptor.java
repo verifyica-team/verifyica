@@ -38,6 +38,7 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.ClassSource;
+import org.verifyica.api.Assumptions;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
@@ -256,10 +257,12 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         if (throwable == null) {
             try {
                 Object object = getTestClass().getConstructor().newInstance();
+
                 Injector.inject(Verifyica.Autowired.class, engineContext, object);
                 Injector.inject(Verifyica.Autowired.class, classContext.getConfiguration(), object);
 
                 testInstanceAtomicReference.set(object);
+
                 invocationArguments.add(object);
                 invocationArguments.add(classContext);
             } catch (Throwable t) {
@@ -303,8 +306,9 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         }
 
         try {
+            Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postPrepare(classContext, throwable);
+                classInterceptor.postPrepare(classContext, t);
             }
         } catch (Throwable t) {
             throwable = t;
@@ -379,8 +383,9 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         }
 
         try {
+            Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postConclude(classContext, throwable);
+                classInterceptor.postConclude(classContext, t);
             }
         } catch (Throwable t) {
             throwable = t;
@@ -392,16 +397,13 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
     }
 
     private State doDestroy() {
-        Throwable throwable = null;
-
         try {
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                 classInterceptor.onDestroy(classContext);
             }
         } catch (Throwable t) {
-            throwable = t;
-            printStackTrace(throwable);
-            throwables.add(throwable);
+            printStackTrace(t);
+            throwables.add(t);
         }
 
         return State.CLOSE;
