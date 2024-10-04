@@ -71,7 +71,7 @@ Verifyica uses a dependent test method paradigm ...
   - default test method execution based on `@Verifyica.Order` annotation
 - Multithreaded test class / test argument testing
   - configurable constraints
-  - test argument can be tested multithreaded
+  - test arguments can be tested multithreaded
   - test methods are always tested sequentially for a test argument 
 - Virtual thread support (Java 21+)
 - Properties file driven configuration
