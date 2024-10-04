@@ -88,7 +88,7 @@ Verifyica uses a dependent test method paradigm ...
   - [ClassContext](api/src/main/java/org/verifyica/api/ClassContext.java)
   - [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
 - LockManager
-  - provides way to implement locking semantics
+  - locking semantics
 - [IntelliJ](https://www.jetbrains.com/idea/) support
 - [Maven](https://maven.apache.org/) support
   - via the Verifyica Maven Plugin
