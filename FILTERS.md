@@ -1,10 +1,10 @@
 # Filters
 
-Verifyica allows for various test class / test method filtering scenarios using a YAML file.
+Verifyica allows for test class filtering. By design, test method filtering is not supported.
 
 ## Configuration
 
-To use test class / test method filtering you need to configure the filter YAML file property.
+To use test class filtering you need to configure the filter YAML file property.
 
 ```properties
 verifyica.engine.filter.definitions.filename=filters.yaml
@@ -35,13 +35,12 @@ There are four filter types:
 Example File:
 
 ```yaml
-###################################################
-# All test classes / test methods are included by #
-# default in the working set                      #
-#                                                 #
-# Filters are executed against the discovery set, #
-# including / excluding them from the working set #
-###################################################
+#############################################################
+# All test classes are included by default in the working set                      #
+#
+# Filters are executed against the discovery set, including
+# excluding them from the working set
+#############################################################
 
 # Remove all test classes
 - type: ExcludeClass
