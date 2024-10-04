@@ -32,13 +32,13 @@ public class CustomClassInterceptor implements ClassInterceptor {
     public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
         System.out.printf(
                 "%s::preTest() test class [%s] test method [%s]%n",
-                CLASS_NAME, argumentContext.getClassContext().getTestClass().getName(), testMethod.getName());
+                CLASS_NAME, argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
     }
 
     public void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) throws Throwable {
         System.out.printf(
                 "%s::postTest() test class [%s] test method [%s]%n",
-                CLASS_NAME, argumentContext.getClassContext().getTestClass().getName(), testMethod.getName());
+                CLASS_NAME, argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
 
         rethrow(throwable);
     }
