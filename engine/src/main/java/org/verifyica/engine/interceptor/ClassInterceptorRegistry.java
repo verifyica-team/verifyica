@@ -49,6 +49,7 @@ import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.resolver.ResolverPredicates;
 import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
+import org.verifyica.engine.support.ListSupport;
 import org.verifyica.engine.support.ObjectSupport;
 import org.verifyica.engine.support.OrderSupport;
 
@@ -228,9 +229,7 @@ public class ClassInterceptorRegistry {
      */
     public void destroy(EngineContext engineContext) {
         for (Map.Entry<Class<?>, List<ClassInterceptor>> entry : mappedClassInterceptors.entrySet()) {
-            List<ClassInterceptor> classInterceptorsReversed = new ArrayList<>(entry.getValue());
-            Collections.reverse(classInterceptorsReversed);
-            ;
+            List<ClassInterceptor> classInterceptorsReversed = ListSupport.reversedCopy(entry.getValue());
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                 try {
                     classInterceptor.destroy(engineContext);
@@ -240,8 +239,7 @@ public class ClassInterceptorRegistry {
             }
         }
 
-        List<ClassInterceptor> classInterceptorsReversed = new ArrayList<>(classInterceptors);
-        Collections.reverse(classInterceptorsReversed);
+        List<ClassInterceptor> classInterceptorsReversed = ListSupport.reversedCopy(classInterceptors);
         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
             try {
                 classInterceptor.destroy(engineContext);

@@ -21,7 +21,7 @@ import java.util.Collection;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Verifyica;
 
-public class SequentialArgumentTest {
+public class ClassInterceptorTest {
 
     @Verifyica.ClassInterceptorSupplier
     public static Collection<ClassInterceptor> classInterceptors() {

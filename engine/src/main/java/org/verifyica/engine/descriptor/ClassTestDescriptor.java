@@ -22,7 +22,6 @@ import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -168,8 +167,12 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
                     })
                     .collect(Collectors.toList());
 
-            classInterceptorsReversed = new ArrayList<>(classInterceptors);
-            Collections.reverse(classInterceptorsReversed);
+            classInterceptorsReversed = classInterceptorsReversed.stream()
+                    .filter(classInterceptor -> {
+                        Predicate<ClassContext> predicate = classInterceptor.predicate();
+                        return predicate == null || predicate.test(classContext);
+                    })
+                    .collect(Collectors.toList());
 
             engineExecutionListener.executionStarted(this);
 
