@@ -18,6 +18,7 @@ package org.verifyica.api;
 
 import static java.lang.String.format;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -178,15 +179,15 @@ public class Runner {
     }
 
     /**
-     * Creates a Task to close an AutoCloseable object if not null
+     * Creates a Task to close a Closeable object if not null
      *
-     * @param autoCloseable autoCloseable
+     * @param closeable closeable
      * @return a Task
      */
-    public static Task closeTask(AutoCloseable autoCloseable) {
+    public static Task closeTask(Closeable closeable) {
         return () -> {
-            if (autoCloseable != null) {
-                autoCloseable.close();
+            if (closeable != null) {
+                closeable.close();
             }
         };
     }
