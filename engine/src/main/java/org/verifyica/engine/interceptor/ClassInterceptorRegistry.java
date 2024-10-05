@@ -122,6 +122,7 @@ public class ClassInterceptorRegistry {
     /**
      * Method to get class interceptors for a test class
      *
+     * @param engineContext engineContext
      * @param testClass testClass
      * @return a List of ClassInterceptors
      * @throws Throwable Throwable
