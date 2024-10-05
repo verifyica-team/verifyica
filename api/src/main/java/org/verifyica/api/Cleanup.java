@@ -16,19 +16,21 @@
 
 package org.verifyica.api;
 
+import static java.lang.String.format;
+
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /** Class to implement Cleanup */
+@Deprecated
 public class Cleanup {
 
-    private final List<Throwable> throwables;
+    private final Runner runner;
 
     /** Constructor */
     public Cleanup() {
-        throwables = new ArrayList<>();
+        runner = new Runner();
     }
 
     /**
@@ -38,11 +40,11 @@ public class Cleanup {
      * @return this
      */
     public Cleanup perform(Action action) {
-        try {
-            action.perform();
-        } catch (Throwable t) {
-            throwables.add(t);
+        if (action == null) {
+            throw new IllegalArgumentException("action is null");
         }
+
+        runner.perform(action::perform);
 
         return this;
     }
@@ -54,8 +56,21 @@ public class Cleanup {
      * @return this
      */
     public Cleanup perform(Action... actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions is null");
+        }
+
+        if (actions.length == 0) {
+            throw new IllegalArgumentException("actions is empty");
+        }
+
+        int i = 0;
         for (Action action : actions) {
+            if (action == null) {
+                throw new IllegalArgumentException(format("action[%d] is null", i));
+            }
             perform(action);
+            i++;
         }
 
         return this;
@@ -68,13 +83,7 @@ public class Cleanup {
      * @return this
      */
     public Cleanup close(Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (Throwable t) {
-                throwables.add(t);
-            }
-        }
+        runner.perform(Runner.closeTask(closeable));
 
         return this;
     }
@@ -86,10 +95,16 @@ public class Cleanup {
      * @return this
      */
     public Cleanup close(Closeable... closeables) {
-        if (closeables != null) {
-            for (Closeable closeable : closeables) {
-                close(closeable);
-            }
+        if (closeables == null) {
+            throw new IllegalArgumentException("closeables is null");
+        }
+
+        if (closeables.length == 0) {
+            throw new IllegalArgumentException("closeables is empty");
+        }
+
+        for (Closeable closeable : closeables) {
+            close(closeable);
         }
 
         return this;
@@ -101,7 +116,7 @@ public class Cleanup {
      * @return true if no Throwables have been collected, else false
      */
     public boolean isEmpty() {
-        return throwables.isEmpty();
+        return runner.isEmpty();
     }
 
     /**
@@ -119,7 +134,7 @@ public class Cleanup {
      * @return a List of Throwables
      */
     public List<Throwable> getThrowables() {
-        return throwables;
+        return runner.throwables();
     }
 
     /**
@@ -128,7 +143,7 @@ public class Cleanup {
      * @return if a Throwable was thrown, an Optional that contains the first Throwable, else Optional.empty()
      */
     public Optional<Throwable> getFirst() {
-        return throwables.isEmpty() ? Optional.empty() : Optional.of(throwables.get(0));
+        return runner.firstThrowable();
     }
 
     /**
@@ -138,10 +153,7 @@ public class Cleanup {
      * @return this
      */
     public Cleanup assertEmpty() throws Throwable {
-        if (isNotEmpty()) {
-            throw throwables.get(0);
-        }
-
+        runner.assertSuccessful();
         return this;
     }
 
@@ -151,7 +163,7 @@ public class Cleanup {
      * @return this
      */
     public Cleanup clear() {
-        throwables.clear();
+        runner.clear();
         return this;
     }
 
