@@ -26,6 +26,57 @@ public interface ClassContext extends Context {
      *
      * @return the EngineContext
      */
+    EngineContext engineContext();
+
+    /**
+     * Get the test class
+     *
+     * @return the test class
+     */
+    Class<?> testClass();
+
+    /**
+     * Get the test class display name
+     *
+     * @return the test class display name
+     */
+    String testClassDisplayName();
+
+    /**
+     * Get the test class tags
+     *
+     * @return a Set of test class tags; may be empty
+     */
+    Set<String> testClassTags();
+
+    /**
+     * Get the test argument parallelism
+     *
+     * @return the test argument parallelism
+     */
+    int testArgumentParallelism();
+
+    /**
+     * Get the test class instance
+     *
+     * @return the test class instance
+     */
+    Object testInstance();
+
+    /**
+     * Get the test class instance
+     *
+     * @param type type
+     * @return the test class instance
+     * @param <V> the type
+     */
+    <V> V testInstance(Class<V> type);
+
+    /**
+     * Get the EngineContext
+     *
+     * @return the EngineContext
+     */
     EngineContext getEngineContext();
 
     /**

@@ -26,6 +26,62 @@ public interface ArgumentContext extends Context {
      *
      * @return the Engine Configuration
      */
+    EngineContext engineContext();
+
+    /**
+     * Get the ClassContext
+     *
+     * @return the ClassContext
+     */
+    ClassContext classContext();
+
+    /**
+     * Get the Argument index
+     *
+     * @return the Argument index
+     */
+    int testArgumentIndex();
+
+    /**
+     * Get the Argument
+     *
+     * @return the Argument
+     */
+    Argument<?> testArgument();
+
+    /**
+     * Get the Argument
+     *
+     * @param type type
+     * @return the Argument
+     * @param <V> type
+     */
+    <V> Argument<V> testArgument(Class<V> type);
+
+    /**
+     * Get the Argument payload
+     *
+     * @return the Argument payload
+     * @param <V> type
+     */
+    <V> V testArgumentPayload();
+
+    /**
+     * Get the Argument
+     *
+     * @param type type
+     * @return the Argument
+     * @param <V> type
+     */
+    <V> V testArgumentPayload(Class<V> type);
+
+    /**
+     * Get the EngineContext
+     *
+     * <p>Equivalent to getClassContext().getEngineContext()
+     *
+     * @return the Engine Configuration
+     */
     default EngineContext getEngineContext() {
         return getClassContext().getEngineContext();
     }
@@ -59,4 +115,21 @@ public interface ArgumentContext extends Context {
      * @param <V> type
      */
     <V> Argument<V> getTestArgument(Class<V> type);
+
+    /**
+     * Get the Argument payload
+     *
+     * @return the Argument payload
+     * @param <V> type
+     */
+    <V> V getTestArgumentPayload();
+
+    /**
+     * Get the Argument payload
+     *
+     * @param type type
+     * @return the Argument payload
+     * @param <V> type
+     */
+    <V> V getTestArgumentPayload(Class<V> type);
 }

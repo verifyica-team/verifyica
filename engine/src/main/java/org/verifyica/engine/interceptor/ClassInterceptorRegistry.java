@@ -60,7 +60,7 @@ public class ClassInterceptorRegistry {
     private final Configuration configuration;
     private final ReentrantReadWriteLock reentrantReadWriteLock;
     private final List<ClassInterceptor> classInterceptors;
-    private final Map<Class<?>, List<ClassInterceptor>> testClassClassInterceptors;
+    private final Map<Class<?>, List<ClassInterceptor>> mappedClassInterceptors;
 
     /**
      * Constructor
@@ -74,7 +74,7 @@ public class ClassInterceptorRegistry {
         this.classInterceptors = new ArrayList<>();
         this.classInterceptors.add(new DefaultClassInterceptor());
 
-        this.testClassClassInterceptors = new ConcurrentHashMap<>();
+        this.mappedClassInterceptors = new ConcurrentHashMap<>();
     }
 
     /**
@@ -125,26 +125,28 @@ public class ClassInterceptorRegistry {
      * @return a List of ClassInterceptors
      * @throws Throwable Throwable
      */
-    public List<ClassInterceptor> getClassInterceptors(Class<?> testClass) throws Throwable {
+    public List<ClassInterceptor> getClassInterceptors(EngineContext engineContext, Class<?> testClass)
+            throws Throwable {
         reentrantReadWriteLock.readLock().lock();
         try {
             List<ClassInterceptor> classInterceptors = new ArrayList<>(this.classInterceptors);
-            classInterceptors.addAll(getDeclaredClassInterceptor(testClass));
+            classInterceptors.addAll(getDeclaredClassInterceptor(engineContext, testClass));
             return classInterceptors;
         } finally {
             reentrantReadWriteLock.readLock().unlock();
         }
     }
 
-    private synchronized List<ClassInterceptor> getDeclaredClassInterceptor(Class<?> testClass) throws Throwable {
-        List<ClassInterceptor> classInterceptors = testClassClassInterceptors.get(testClass);
+    private synchronized List<ClassInterceptor> getDeclaredClassInterceptor(
+            EngineContext engineContext, Class<?> testClass) throws Throwable {
+        List<ClassInterceptor> classInterceptors = mappedClassInterceptors.get(testClass);
 
         if (classInterceptors != null) {
             return classInterceptors;
         }
 
         classInterceptors = new ArrayList<>();
-        testClassClassInterceptors.put(testClass, classInterceptors);
+        mappedClassInterceptors.put(testClass, classInterceptors);
 
         List<Method> classInterceptorSupplierMethods = ClassSupport.findMethods(
                 testClass, ResolverPredicates.CLASS_INTERCEPTOR_SUPPLIER, HierarchyTraversalMode.BOTTOM_UP);
@@ -160,14 +162,18 @@ public class ClassInterceptorRegistry {
                         "Null Object supplied by test class" + " [%s] @Verifyica.ClassInterceptorSupplier" + " method",
                         testClass.getName()));
             } else if (object instanceof ClassInterceptor) {
-                classInterceptors.add((ClassInterceptor) object);
+                ClassInterceptor classInterceptor = (ClassInterceptor) object;
+                classInterceptor.initialize(engineContext);
+                classInterceptors.add(classInterceptor);
             } else if (object.getClass().isArray()) {
                 Object[] objects = (Object[]) object;
                 if (objects.length > 0) {
                     int index = 0;
                     for (Object o : objects) {
                         if (o instanceof ClassInterceptor) {
-                            classInterceptors.add(((ClassInterceptor) o));
+                            ClassInterceptor classInterceptor = (ClassInterceptor) o;
+                            classInterceptor.initialize(engineContext);
+                            classInterceptors.add(classInterceptor);
                         } else {
                             throw new TestClassDefinitionException(format(
                                     "Invalid type [%s] supplied by test class [%s]"
@@ -198,7 +204,9 @@ public class ClassInterceptorRegistry {
                 while (iterator.hasNext()) {
                     Object o = iterator.next();
                     if (o instanceof ClassInterceptor) {
-                        classInterceptors.add((ClassInterceptor) o);
+                        ClassInterceptor classInterceptor = (ClassInterceptor) o;
+                        classInterceptor.initialize(engineContext);
+                        classInterceptors.add(classInterceptor);
                     } else {
                         throw new TestClassDefinitionException(format(
                                 "Invalid type [%s] supplied by test class"
@@ -219,6 +227,16 @@ public class ClassInterceptorRegistry {
      * @param engineContext engineContext
      */
     public void destroy(EngineContext engineContext) {
+        for (Map.Entry<Class<?>, List<ClassInterceptor>> entry : mappedClassInterceptors.entrySet()) {
+            for (ClassInterceptor classInterceptor : entry.getValue()) {
+                try {
+                    classInterceptor.destroy(engineContext);
+                } catch (Throwable t) {
+                    StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
+                }
+            }
+        }
+
         for (ClassInterceptor classInterceptor : classInterceptors) {
             try {
                 classInterceptor.destroy(engineContext);

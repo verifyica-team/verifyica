@@ -21,6 +21,7 @@ import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.Configuration;
+import org.verifyica.api.EngineContext;
 import org.verifyica.engine.common.Precondition;
 
 /** Class to implement ConcreteArgumentContext */
@@ -42,6 +43,50 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
         this.classContext = classContext;
         this.argumentIndex = argumentIndex;
         this.argument = argument;
+    }
+
+    @Override
+    public EngineContext engineContext() {
+        return classContext.engineContext();
+    }
+
+    @Override
+    public ClassContext classContext() {
+        return classContext;
+    }
+
+    @Override
+    public int testArgumentIndex() {
+        return argumentIndex;
+    }
+
+    @Override
+    public Argument<?> testArgument() {
+        return argument;
+    }
+
+    @Override
+    public <V> Argument<V> testArgument(Class<V> type) {
+        Precondition.notNull(type, "type is null");
+
+        return (Argument<V>) argument;
+    }
+
+    @Override
+    public <V> V testArgumentPayload() {
+        return argument != null ? (V) argument.getPayload() : null;
+    }
+
+    @Override
+    public <V> V testArgumentPayload(Class<V> type) {
+        Precondition.notNull(type, "type is null");
+
+        return argument != null ? argument.getPayload(type) : null;
+    }
+
+    @Override
+    public Configuration configuration() {
+        return classContext.configuration();
     }
 
     @Override
@@ -69,6 +114,18 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
         Precondition.notNull(type, "type is null");
 
         return (Argument<V>) argument;
+    }
+
+    @Override
+    public <V> V getTestArgumentPayload() {
+        return argument != null ? (V) argument.getPayload() : null;
+    }
+
+    @Override
+    public <V> V getTestArgumentPayload(Class<V> type) {
+        Precondition.notNull(type, "type is null");
+
+        return argument != null ? argument.getPayload(type) : null;
     }
 
     @Override

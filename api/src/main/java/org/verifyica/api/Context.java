@@ -26,6 +26,20 @@ public interface Context {
      *
      * @return the Configuration
      */
+    Configuration configuration();
+
+    /**
+     * Get the Map
+     *
+     * @return the Map
+     */
+    Map<String, Object> map();
+
+    /**
+     * Get the Configuration
+     *
+     * @return the Configuration
+     */
     Configuration getConfiguration();
 
     /**

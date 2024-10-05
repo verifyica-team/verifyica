@@ -44,7 +44,7 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Cleanup;
 import org.verifyica.api.Verifyica;
 
-public class KafkaTest2 {
+public class KafkaTest3 {
 
     private static final String NETWORK = "network";
     private static final String MESSAGE = "message";
@@ -69,8 +69,8 @@ public class KafkaTest2 {
         Network network = Network.newNetwork();
         network.getId();
 
-        argumentContext.getMap().put(NETWORK, network);
-        argumentContext.getTestArgumentPayload(KafkaTestEnvironment.class).initialize(network);
+        argumentContext.map().put(NETWORK, network);
+        argumentContext.testArgumentPayload(KafkaTestEnvironment.class).initialize(network);
     }
 
     @Verifyica.Test
@@ -79,12 +79,12 @@ public class KafkaTest2 {
         info("testing testProduce() ...");
 
         String bootstrapServers = argumentContext
-                .getTestArgumentPayload(KafkaTestEnvironment.class)
+                .testArgumentPayload(KafkaTestEnvironment.class)
                 .getKafkaContainer()
                 .getBootstrapServers();
 
         String message = randomString(16);
-        argumentContext.getMap().put(MESSAGE, message);
+        argumentContext.map().put(MESSAGE, message);
 
         info("producing message [%s] to [%s] ...", message, bootstrapServers);
 
@@ -107,7 +107,7 @@ public class KafkaTest2 {
         info("testing testConsume1() ...");
 
         String bootstrapServers = argumentContext
-                .getTestArgumentPayload(KafkaTestEnvironment.class)
+                .testArgumentPayload(KafkaTestEnvironment.class)
                 .getKafkaContainer()
                 .getBootstrapServers();
 
@@ -197,10 +197,10 @@ public class KafkaTest2 {
 
         new Cleanup()
                 .perform(
-                        () -> Optional.ofNullable(argumentContext.getTestArgumentPayload(KafkaTestEnvironment.class))
+                        () -> Optional.ofNullable(argumentContext.testArgumentPayload(KafkaTestEnvironment.class))
                                 .ifPresent(KafkaTestEnvironment::destroy),
                         () -> Optional.ofNullable(network(argumentContext)).ifPresent(Network::close),
-                        () -> argumentContext.getMap().clear())
+                        () -> argumentContext.map().clear())
                 .assertEmpty();
     }
 
@@ -211,7 +211,7 @@ public class KafkaTest2 {
      * @return the Network
      */
     private static Network network(ArgumentContext argumentContext) {
-        return (Network) argumentContext.getMap().get(NETWORK);
+        return (Network) argumentContext.map().get(NETWORK);
     }
 
     /**
@@ -221,7 +221,7 @@ public class KafkaTest2 {
      * @return the message
      */
     private static String message(ArgumentContext argumentContext) {
-        return (String) argumentContext.getMap().get(MESSAGE);
+        return (String) argumentContext.map().get(MESSAGE);
     }
 
     /** Class to implement a KafkaTestEnvironment */

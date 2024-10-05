@@ -37,7 +37,7 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Cleanup;
 import org.verifyica.api.Verifyica;
 
-public class MongoDBTest2 {
+public class MongoDBTest3 {
 
     private static final String NETWORK = "network";
     private static final String NAME = "name";
@@ -58,8 +58,8 @@ public class MongoDBTest2 {
         Network network = Network.newNetwork();
         network.getId();
 
-        argumentContext.getMap().put(NETWORK, network);
-        argumentContext.getTestArgumentPayload(MongoDBTestEnvironment.class).initialize(network);
+        argumentContext.map().put(NETWORK, network);
+        argumentContext.testArgumentPayload(MongoDBTestEnvironment.class).initialize(network);
     }
 
     @Verifyica.Test
@@ -68,10 +68,10 @@ public class MongoDBTest2 {
         info("testing testInsert() ...");
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
-                argumentContext.getTestArgumentPayload(MongoDBTestEnvironment.class);
+                argumentContext.testArgumentPayload(MongoDBTestEnvironment.class);
 
         String name = randomString(16);
-        argumentContext.getMap().put(NAME, name);
+        argumentContext.map().put(NAME, name);
 
         info("name [%s]", name);
 
@@ -96,7 +96,7 @@ public class MongoDBTest2 {
         info("testing testQuery() ...");
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
-                argumentContext.getTestArgumentPayload(MongoDBTestEnvironment.class);
+                argumentContext.testArgumentPayload(MongoDBTestEnvironment.class);
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(
@@ -122,10 +122,10 @@ public class MongoDBTest2 {
 
         new Cleanup()
                 .perform(
-                        () -> Optional.ofNullable(argumentContext.getTestArgumentPayload(MongoDBTestEnvironment.class))
+                        () -> Optional.ofNullable(argumentContext.testArgumentPayload(MongoDBTestEnvironment.class))
                                 .ifPresent(MongoDBTestEnvironment::destroy),
                         () -> Optional.ofNullable(network(argumentContext)).ifPresent(Network::close),
-                        () -> argumentContext.getMap().clear())
+                        () -> argumentContext.map().clear())
                 .assertEmpty();
     }
 
@@ -136,7 +136,7 @@ public class MongoDBTest2 {
      * @return the Network
      */
     private static Network network(ArgumentContext argumentContext) {
-        return (Network) argumentContext.getMap().get(NETWORK);
+        return (Network) argumentContext.map().get(NETWORK);
     }
 
     /**
@@ -146,7 +146,7 @@ public class MongoDBTest2 {
      * @return the name
      */
     private static String name(ArgumentContext argumentContext) {
-        return (String) argumentContext.getMap().get(NAME);
+        return (String) argumentContext.map().get(NAME);
     }
 
     /** Class to implement a MongoDBTestEnvironment */

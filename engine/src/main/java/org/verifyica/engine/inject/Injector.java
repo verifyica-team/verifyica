@@ -56,12 +56,14 @@ public class Injector {
                     if (inject != null) {
                         Named named = field.getAnnotation(Named.class);
                         if (named != null && named.value().equals(name)) {
-                            boolean wasAccessible = field.isAccessible();
-                            try {
-                                field.setAccessible(true);
-                                field.set(target, value);
-                            } finally {
-                                field.setAccessible(wasAccessible);
+                            synchronized (field) {
+                                boolean wasAccessible = field.isAccessible();
+                                try {
+                                    field.setAccessible(true);
+                                    field.set(target, value);
+                                } finally {
+                                    field.setAccessible(wasAccessible);
+                                }
                             }
                         }
                     }
@@ -92,12 +94,14 @@ public class Injector {
                     fieldName = field.getName();
                     if (field.isAnnotationPresent(annotationClass)
                             && field.getType().isAssignableFrom(value.getClass())) {
-                        boolean wasAccessible = field.isAccessible();
-                        try {
-                            field.setAccessible(true);
-                            field.set(target, value);
-                        } finally {
-                            field.setAccessible(wasAccessible);
+                        synchronized (field) {
+                            boolean wasAccessible = field.isAccessible();
+                            try {
+                                field.setAccessible(true);
+                                field.set(target, value);
+                            } finally {
+                                field.setAccessible(wasAccessible);
+                            }
                         }
                     }
                 }

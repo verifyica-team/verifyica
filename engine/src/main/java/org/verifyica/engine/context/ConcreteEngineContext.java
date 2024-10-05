@@ -39,6 +39,16 @@ public class ConcreteEngineContext extends AbstractContext implements EngineCont
     }
 
     @Override
+    public String version() {
+        return version;
+    }
+
+    @Override
+    public Configuration configuration() {
+        return configuration;
+    }
+
+    @Override
     public String getVersion() {
         return version;
     }

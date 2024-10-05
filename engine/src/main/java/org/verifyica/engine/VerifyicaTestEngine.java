@@ -227,7 +227,8 @@ public class VerifyicaTestEngine implements TestEngine {
 
                 for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
                     Class<?> testClass = ((ClassTestDescriptor) testableTestDescriptor).getTestClass();
-                    List<ClassInterceptor> classInterceptors = classInterceptorRegistry.getClassInterceptors(testClass);
+                    List<ClassInterceptor> classInterceptors =
+                            classInterceptorRegistry.getClassInterceptors(engineContext, testClass);
                     List<ClassInterceptor> classInterceptorsReversed = new ArrayList<>(classInterceptors);
                     Collections.reverse(classInterceptorsReversed);
 

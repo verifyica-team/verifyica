@@ -33,6 +33,14 @@ public abstract class AbstractContext implements Context {
         this.map = new ConcurrentHashMap<>();
     }
 
+    @Override
+    public abstract Configuration configuration();
+
+    @Override
+    public Map<String, Object> map() {
+        return map;
+    }
+
     /**
      * Get the Configuration
      *
