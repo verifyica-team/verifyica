@@ -34,7 +34,7 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.Cleanup;
+import org.verifyica.api.Runner;
 import org.verifyica.api.Verifyica;
 
 public class MongoDBTest2 {
@@ -120,13 +120,13 @@ public class MongoDBTest2 {
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
         info("destroy test environment ...");
 
-        new Cleanup()
+        new Runner()
                 .perform(
                         () -> Optional.ofNullable(argumentContext.getTestArgumentPayload(MongoDBTestEnvironment.class))
                                 .ifPresent(MongoDBTestEnvironment::destroy),
                         () -> Optional.ofNullable(network(argumentContext)).ifPresent(Network::close),
                         () -> argumentContext.getMap().clear())
-                .assertEmpty();
+                .assertSuccessful();
     }
 
     /**

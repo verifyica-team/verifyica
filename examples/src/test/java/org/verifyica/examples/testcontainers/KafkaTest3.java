@@ -41,7 +41,7 @@ import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.Cleanup;
+import org.verifyica.api.Runner;
 import org.verifyica.api.Verifyica;
 
 public class KafkaTest3 {
@@ -195,13 +195,13 @@ public class KafkaTest3 {
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
         info("destroy test environment ...");
 
-        new Cleanup()
+        new Runner()
                 .perform(
                         () -> Optional.ofNullable(argumentContext.testArgumentPayload(KafkaTestEnvironment.class))
                                 .ifPresent(KafkaTestEnvironment::destroy),
                         () -> Optional.ofNullable(network(argumentContext)).ifPresent(Network::close),
                         () -> argumentContext.map().clear())
-                .assertEmpty();
+                .assertSuccessful();
     }
 
     /**

@@ -33,7 +33,7 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
-import org.verifyica.api.Cleanup;
+import org.verifyica.api.Runner;
 import org.verifyica.api.Verifyica;
 
 public class MongoDBTest {
@@ -111,13 +111,13 @@ public class MongoDBTest {
     public void destroyTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) throws Throwable {
         info("destroy test environment ...");
 
-        new Cleanup()
+        new Runner()
                 .perform(
                         () -> Optional.ofNullable(mongoDBTestEnvironment).ifPresent(MongoDBTestEnvironment::destroy),
                         () -> Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close),
                         nameThreadLocal::remove,
                         networkThreadLocal::remove)
-                .assertEmpty();
+                .assertSuccessful();
     }
 
     /** Class to implement a MongoDBTestEnvironment */
