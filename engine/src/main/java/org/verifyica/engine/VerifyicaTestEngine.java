@@ -68,6 +68,7 @@ import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.resolver.EngineDiscoveryRequestResolver;
 import org.verifyica.engine.support.ExecutorSupport;
 import org.verifyica.engine.support.HashSupport;
+import org.verifyica.engine.support.ListSupport;
 
 /** Class to implement VerifyicaEngine */
 @SuppressWarnings("PMD.EmptyCatchBlock")
@@ -229,8 +230,7 @@ public class VerifyicaTestEngine implements TestEngine {
                     Class<?> testClass = ((ClassTestDescriptor) testableTestDescriptor).getTestClass();
                     List<ClassInterceptor> classInterceptors =
                             classInterceptorRegistry.getClassInterceptors(engineContext, testClass);
-                    List<ClassInterceptor> classInterceptorsReversed = new ArrayList<>(classInterceptors);
-                    Collections.reverse(classInterceptorsReversed);
+                    List<ClassInterceptor> classInterceptorsReversed = ListSupport.reversedCopy(classInterceptors);
 
                     Injector.inject(
                             TestableTestDescriptor.ENGINE_EXECUTION_LISTENER,
