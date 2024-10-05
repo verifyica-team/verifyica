@@ -27,16 +27,19 @@ public class AutowiredClassInterceptor2 implements ClassInterceptor {
 
     private static final String CLASS_NAME = AutowiredClassInterceptor2.class.getSimpleName();
 
+    @Override
     public void initialize(EngineContext engineContext) throws Throwable {
         System.out.printf("%s::initialize()%n", CLASS_NAME);
     }
 
+    @Override
     public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
         System.out.printf(
                 "%s::preTest() test class [%s] test method [%s]%n",
                 CLASS_NAME, argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
     }
 
+    @Override
     public void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) throws Throwable {
         System.out.printf(
                 "%s::postTest() test class [%s] test method [%s]%n",
@@ -45,6 +48,7 @@ public class AutowiredClassInterceptor2 implements ClassInterceptor {
         rethrow(throwable);
     }
 
+    @Override
     public void destroy(EngineContext engineContext) throws Throwable {
         System.out.printf("%s::destroy()%n", AutowiredClassInterceptor2.class.getName());
     }
