@@ -228,7 +228,10 @@ public class ClassInterceptorRegistry {
      */
     public void destroy(EngineContext engineContext) {
         for (Map.Entry<Class<?>, List<ClassInterceptor>> entry : mappedClassInterceptors.entrySet()) {
-            for (ClassInterceptor classInterceptor : entry.getValue()) {
+            List<ClassInterceptor> classInterceptorsReversed = new ArrayList<>(entry.getValue());
+            Collections.reverse(classInterceptorsReversed);
+            ;
+            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                 try {
                     classInterceptor.destroy(engineContext);
                 } catch (Throwable t) {
@@ -237,7 +240,9 @@ public class ClassInterceptorRegistry {
             }
         }
 
-        for (ClassInterceptor classInterceptor : classInterceptors) {
+        List<ClassInterceptor> classInterceptorsReversed = new ArrayList<>(classInterceptors);
+        Collections.reverse(classInterceptorsReversed);
+        for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
             try {
                 classInterceptor.destroy(engineContext);
             } catch (Throwable t) {

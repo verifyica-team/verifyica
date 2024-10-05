@@ -24,8 +24,11 @@ import org.verifyica.api.Verifyica;
 public class SequentialArgumentTest {
 
     @Verifyica.ClassInterceptorSupplier
-    public static ClassInterceptor classInterceptors() {
-        return new CustomClassInterceptor();
+    public static Collection<ClassInterceptor> classInterceptors() {
+        Collection<ClassInterceptor> collections = new ArrayList<>();
+        collections.add(new CustomClassInterceptor());
+        collections.add(new CustomClassInterceptor2());
+        return collections;
     }
 
     @Verifyica.ArgumentSupplier
