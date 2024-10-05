@@ -28,9 +28,15 @@ All test classes must define a single method annotated with `@Verifyica.Argument
 **Notes**
 
 - may return mixed types
+  - i.e. `Argument<?>` 
 
 
 - `Argument.EMPTY` may be used in scenarios where the argument is irrelevant
+
+
+- returning a `null` object will result in the test being completely ignore
+  - will not run
+  - will not be reported
 
 #### Parallelism
 
