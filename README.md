@@ -129,7 +129,7 @@ for (TestClass testClass : TestClasses) {
 
 Examples:
 
-- [Examples](examples/src/test/java/org/verifyica/example/)
+- [Examples](examples/src/test/java/org/verifyica/examples/)
 
 Example tests using [testcontainers-java](https://java.testcontainers.org/)
 
