@@ -155,7 +155,7 @@ public class Runner {
     }
 
     /**
-     * Checks if Throwable isEmpty. If not empty, rethrow the first Throwable
+     * Asserts no Throwables have been collected. If any Throwables have been collected, throw the first Throwable
      *
      * @throws Throwable Throwable
      * @return this
