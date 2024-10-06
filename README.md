@@ -2,13 +2,13 @@
 
 ---
 
-[![Build](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml/badge.svg)](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0264117ec3e74d678551a03e67b4a6d2)](https://app.codacy.com/gh/verifyica-team/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) ![JDK Compatibility](https://img.shields.io/badge/JDK%20compatibility-8+-blue.svg) ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
+[![Build](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml/badge.svg)](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0264117ec3e74d678551a03e67b4a6d2)](https://app.codacy.com/gh/verifyica-team/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) <img src="https://img.shields.io/badge/JDK%20compatibility-8+-blue.svg" alt="java 8+"> <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="Apache 2.0">
 
-|              |                                                                |
-|--------------|----------------------------------------------------------------|
-| API          | ![0.2.0](https://img.shields.io/badge/version-0.2.0-green.svg) |
-| Engine       | ![0.2.0](https://img.shields.io/badge/version-0.2.0-green.svg) |
-| Maven Plugin | ![0.2.0](https://img.shields.io/badge/version-0.2.0-green.svg) |
+|              |                                                                              |
+|--------------|------------------------------------------------------------------------------|
+| API          | <img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"> |
+| Engine       | <img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"> |
+| Maven Plugin | <img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"> |
 
 ![Verifyica](assets/verifyica.png)
 
