@@ -125,7 +125,11 @@ for (TestClass testClass : TestClasses) {
 }
 ```
 
-# Test Containers Examples
+# Examples
+
+Examples:
+
+- [Examples](examples/src/test/java/org/verifyica/example/)
 
 Example tests using [testcontainers-java](https://java.testcontainers.org/)
 
