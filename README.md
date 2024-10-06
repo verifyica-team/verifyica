@@ -135,6 +135,7 @@ Example tests using [testcontainers-java](https://java.testcontainers.org/)
 
 - [KafkaTest.java](examples/src/test/java/org/verifyica/examples/testcontainers/KafkaTest.java)
 - [MongoDBTest.java](examples/src/test/java/org/verifyica/examples/testcontainers/MongoDBTest.java)
+- [NginxTest.java](examples/src/test/java/org/verifyica/examples/testcontainers/NginxTest.java)
 
 Various other examples used for testing:
 
