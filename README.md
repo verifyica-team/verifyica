@@ -2,13 +2,13 @@
 
 ---
 
-[![Build](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml/badge.svg)](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0264117ec3e74d678551a03e67b4a6d2)](https://app.codacy.com/gh/verifyica-team/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) <img src="https://img.shields.io/badge/JDK%20compatibility-8+-blue.svg" alt="java 8+"> <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="Apache 2.0">
+[![Build](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml/badge.svg)](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0264117ec3e74d678551a03e67b4a6d2)](https://app.codacy.com/gh/verifyica-team/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) <img href="" src="https://img.shields.io/badge/JDK%20compatibility-8+-blue.svg" alt="java 8+"> <img href="" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="Apache 2.0">
 
-|              |                                                                              |
-|--------------|------------------------------------------------------------------------------|
-| API          | <img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"> |
-| Engine       | <img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"> |
-| Maven Plugin | <img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"> |
+|              |                                                                                             |
+|--------------|---------------------------------------------------------------------------------------------|
+| API          | <a href=""><img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"></a> |
+| Engine       | <a href=""><img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"></a> |
+| Maven Plugin | <a href=""><img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"></a> |
 
 ![Verifyica](assets/verifyica.png)
 
