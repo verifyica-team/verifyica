@@ -239,6 +239,8 @@ Used by Verifyica to order test classes / test methods.
 - If `verifyica.engine.class.parallelism` is greater than `1`, orders test class **execution submission order**.
   - Test class execution will still be in parallel.
 
+- Method that are ordered using `@Verifyica.Orderr` are executed before methods that are not annotated. 
+
 ---
 
 ### @Verifyica.DisplayName

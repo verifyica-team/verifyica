@@ -75,8 +75,16 @@ public class OrderSupport {
             Verifyica.Order o1 = m1.getAnnotation(Verifyica.Order.class);
             Verifyica.Order o2 = m2.getAnnotation(Verifyica.Order.class);
 
-            int orderValue1 = (o1 != null) ? o1.value() : 0;
-            int orderValue2 = (o2 != null) ? o2.value() : 0;
+            if (o1 == null && o2 == null) {
+                return 0;
+            } else if (o1 == null) {
+                return 1;
+            } else if (o2 == null) {
+                return -1;
+            }
+
+            int orderValue1 = o1.value();
+            int orderValue2 = o2.value();
 
             if (orderValue1 == 0 && orderValue2 == 0) {
                 return 0;
