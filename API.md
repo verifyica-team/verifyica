@@ -74,11 +74,17 @@ The [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
 
 ---
 
-## Cleanup
+## Runner
 
-[Cleanup](api/src/main/java/org/verifyica/api/Cleanup.java) provides a way to run a `Cleanup.Action` or close a `Closeable`
+[Runner](api/src/main/java/org/verifyica/api/Runner.java) provides a way to run a task, capturing any exceptions that may occur.
 
 - Use to clean up resources
+
+## Assumptions
+
+[Assumptions](api/src/main/java/org/verifyica/api/Assumptions.java) provides a way to prevent execution of associated methods and downstream tests.
+
+- Only valid in `@Verifyica.Prepare`, `@Verifyica.BeforeAll`, `@Verifyica.BeforeEach`, and `@Verifyica.Test` annotated methods
 
 ---
 
