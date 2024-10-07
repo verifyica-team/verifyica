@@ -27,7 +27,7 @@ import org.verifyica.api.Assumptions;
 import org.verifyica.api.Verifyica;
 
 @SuppressWarnings("unchecked")
-public class SkipTestsSpecificTestMethodTest {
+public class SkipSpecificTestMethodsTest {
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Object arguments() {
