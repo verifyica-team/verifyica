@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.platform.engine.EngineExecutionListener;
+import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.UniqueId;
 import org.verifyica.api.Argument;
@@ -127,6 +128,13 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             invocationArguments.add(argumentContext.getTestArgument());
             invocationArguments.add(argumentContext);
 
+            for (TestDescriptor testDescriptor : getChildren()) {
+                Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testDescriptor);
+                Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testDescriptor);
+                Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testDescriptor);
+                Injector.inject(ARGUMENT_CONTEXT, argumentContext, testDescriptor);
+            }
+
             engineExecutionListener.executionStarted(this);
 
             State state = State.START;
@@ -208,6 +216,17 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         return this;
     }
 
+    @Override
+    public void skip() {
+        engineExecutionListener.executionStarted(this);
+
+        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(TestableTestDescriptor::skip);
+
+        engineExecutionListener.executionSkipped(this, "Skipped");
+
+        setTestDescriptorStatus(TestDescriptorStatus.skipped());
+    }
+
     private State doBeforeAll() {
         Throwable throwable = null;
 
@@ -251,12 +270,6 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
         while (testableTestDescriptorIterator.hasNext()) {
             TestableTestDescriptor testableTestDescriptor = testableTestDescriptorIterator.next();
-
-            Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
-            Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
-            Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testableTestDescriptor);
-            Injector.inject(ARGUMENT_CONTEXT, argumentContext, testableTestDescriptor);
-
             if (testableTestDescriptor.test().getTestDescriptorStatus().isFailure()) {
                 break;
             }
@@ -264,12 +277,6 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
         while (testableTestDescriptorIterator.hasNext()) {
             TestableTestDescriptor testableTestDescriptor = testableTestDescriptorIterator.next();
-
-            Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
-            Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
-            Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testableTestDescriptor);
-            Injector.inject(ARGUMENT_CONTEXT, argumentContext, testableTestDescriptor);
-
             testableTestDescriptor.skip();
         }
 
@@ -282,12 +289,6 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
         while (testableTestDescriptorIterator.hasNext()) {
             TestableTestDescriptor testableTestDescriptor = testableTestDescriptorIterator.next();
-
-            Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
-            Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
-            Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testableTestDescriptor);
-            Injector.inject(ARGUMENT_CONTEXT, argumentContext, testableTestDescriptor);
-
             testableTestDescriptor.test();
         }
 

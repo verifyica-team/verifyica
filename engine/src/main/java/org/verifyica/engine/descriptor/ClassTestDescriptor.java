@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.junit.platform.engine.EngineExecutionListener;
+import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
@@ -176,6 +177,13 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
 
             engineExecutionListener.executionStarted(this);
 
+            for (TestDescriptor testDescriptor : getChildren()) {
+                Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testDescriptor);
+                Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testDescriptor);
+                Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testDescriptor);
+                Injector.inject(CLASS_CONTEXT, classContext, testDescriptor);
+            }
+
             State state = State.START;
             while (state != State.END) {
                 LOGGER.trace("testDescriptor [%s] state [%s]", this, state);
@@ -244,6 +252,17 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         }
 
         return this;
+    }
+
+    @Override
+    public void skip() {
+        engineExecutionListener.executionStarted(this);
+
+        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(TestableTestDescriptor::skip);
+
+        engineExecutionListener.executionSkipped(this, "Skipped");
+
+        setTestDescriptorStatus(TestDescriptorStatus.skipped());
     }
 
     private State doInstantiate() {
@@ -344,11 +363,6 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
 
         for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
-            Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
-            Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
-            Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testableTestDescriptor);
-            Injector.inject(CLASS_CONTEXT, classContext, testableTestDescriptor);
-
             String threadName = Thread.currentThread().getName();
             threadName = threadName.substring(0, threadName.indexOf("/") + 1) + HashSupport.alphanumeric(6);
             ThreadNameRunnable threadNameRunnable = new ThreadNameRunnable(threadName, testableTestDescriptor::test);

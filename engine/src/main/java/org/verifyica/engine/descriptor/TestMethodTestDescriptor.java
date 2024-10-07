@@ -184,6 +184,14 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
         return this;
     }
 
+    @Override
+    public void skip() {
+        engineExecutionListener.executionStarted(this);
+        engineExecutionListener.executionSkipped(this, "Skipped");
+
+        setTestDescriptorStatus(TestDescriptorStatus.skipped());
+    }
+
     private State doBeforeEach() {
         Throwable throwable = null;
 

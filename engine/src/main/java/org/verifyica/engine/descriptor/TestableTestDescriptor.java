@@ -100,15 +100,7 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     /**
      * Method to skip the test descriptor
      */
-    public final void skip() {
-        engineExecutionListener.executionStarted(this);
-
-        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(TestableTestDescriptor::skip);
-
-        engineExecutionListener.executionSkipped(this, "Skipped");
-
-        setTestDescriptorStatus(TestDescriptorStatus.skipped());
-    }
+    public abstract void skip();
 
     /**
      * Method to get the test descriptor status
