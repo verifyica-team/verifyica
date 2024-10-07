@@ -85,6 +85,13 @@ public class LifecycleTest1 implements AutoCloseable {
     }
 
     @Verifyica.Test
+    public void test0(ArgumentContext argumentContext) throws Throwable {
+        System.out.printf("  %s test0()%n", argumentContext.getTestArgument().getPayload());
+
+        actual.add("test0");
+    }
+
+    @Verifyica.Test
     @Verifyica.Order(0)
     public void test1(ArgumentContext argumentContext) throws Throwable {
         System.out.printf("  %s test1()%n", argumentContext.getTestArgument().getPayload());
@@ -172,6 +179,16 @@ public class LifecycleTest1 implements AutoCloseable {
                 expected.add(state);
                 expected.add("post" + capitalize(state));
             }
+
+            expected.add("preBeforeEach");
+            expected.add("beforeEach");
+            expected.add("postBeforeEach");
+            expected.add("preTest");
+            expected.add("test0");
+            expected.add("postTest");
+            expected.add("preAfterEach");
+            expected.add("afterEach");
+            expected.add("postAfterEach");
 
             state = "afterAll";
             expected.add("pre" + capitalize(state));

@@ -213,7 +213,7 @@ All methods annotated with `@Verifyica.Test`:
 
 - Default ordering is by test method name (or `@verifyica.DisplayName` if used)
 
-- test methods without an `@Verfiyica.Order` annotation are ordered before test methods with `@Verfiyica.Order`
+- Test methods with an `@Verifyica.Order` annotation are ordered before test methods without an `@Verifyica.Order` annotation
 
 ---
 
@@ -238,6 +238,8 @@ Used by Verifyica to order test classes / test methods.
 
 - If `verifyica.engine.class.parallelism` is greater than `1`, orders test class **execution submission order**.
   - Test class execution will still be in parallel.
+
+- Test methods with an `@Verifyica.Order` annotation are ordered before test methods without an `@Verifyica.Order` annotation 
 
 ---
 

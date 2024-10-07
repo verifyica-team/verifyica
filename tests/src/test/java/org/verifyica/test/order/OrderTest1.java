@@ -73,8 +73,8 @@ public class OrderTest1 implements AutoCloseable {
         List<String> expected = new ArrayList<>();
         expected.add("test2");
         expected.add("test3");
-        expected.add("test4");
         expected.add("test1");
+        expected.add("test4");
 
         assertThat(actual.size()).isEqualTo(expected.size());
 
