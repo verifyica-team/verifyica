@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.test.condition;
+package org.verifyica.test.assumption;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,7 +27,7 @@ import org.verifyica.api.Assumptions;
 import org.verifyica.api.Verifyica;
 
 @SuppressWarnings("unchecked")
-public class AssumptionsTest1 {
+public class SkipOddArgumentsTest {
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Object arguments() {
@@ -40,17 +40,18 @@ public class AssumptionsTest1 {
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) throws Throwable {
-        Assumptions.assumeTrue(() -> argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 0);
+        // Skip event arguments
+        Assumptions.assumeTrue(() -> argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 1);
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 1);
     }
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 1);
 
         System.out.printf(
                 "test1(name[%s], payload[%s])%n",
@@ -63,7 +64,7 @@ public class AssumptionsTest1 {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 1);
         Assumptions.assumeTrue(argumentContext.getMap().containsKey("test1"));
 
         System.out.printf(
@@ -76,7 +77,7 @@ public class AssumptionsTest1 {
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 1);
         Assumptions.assumeTrue(argumentContext.getMap().containsKey("test2"));
 
         System.out.printf(
@@ -89,7 +90,7 @@ public class AssumptionsTest1 {
 
     @Verifyica.Test
     public void test4(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 1);
         Assumptions.assumeFalse(() -> argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 0);
 
         System.out.printf(
@@ -102,7 +103,7 @@ public class AssumptionsTest1 {
 
     @Verifyica.Test
     public void test5(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 1);
         Assumptions.assumeFalse(() -> argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 0);
 
         System.out.printf(

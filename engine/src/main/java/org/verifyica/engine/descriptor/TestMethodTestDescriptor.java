@@ -71,6 +71,8 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     @Named(ARGUMENT_CONTEXT)
     private ArgumentContext argumentContext;
 
+    private boolean isSkipped;
+
     /**
      * Constructor
      *
@@ -153,26 +155,19 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             TestExecutionResult testExecutionResult;
             TestDescriptorStatus testDescriptorStatus;
 
-            if (throwables.isEmpty()) {
-                testExecutionResult = TestExecutionResult.successful();
-                testDescriptorStatus = TestDescriptorStatus.passed();
+            if (isSkipped) {
+                setTestDescriptorStatus(TestDescriptorStatus.skipped());
+                engineExecutionListener.executionSkipped(this, "Skipped");
             } else {
-                Throwable throwable = throwables.get(0);
-
-                if (throwable instanceof Assumptions.Failed) {
-                    testExecutionResult = TestExecutionResult.aborted(null);
-                    testDescriptorStatus = TestDescriptorStatus.skipped();
+                if (throwables.isEmpty()) {
+                    testExecutionResult = TestExecutionResult.successful();
+                    testDescriptorStatus = TestDescriptorStatus.passed();
                 } else {
                     testExecutionResult = TestExecutionResult.failed(throwables.get(0));
                     testDescriptorStatus = TestDescriptorStatus.failed(throwables.get(0));
                 }
-            }
 
-            setTestDescriptorStatus(testDescriptorStatus);
-
-            if (testDescriptorStatus.isSkipped()) {
-                engineExecutionListener.executionSkipped(this, "Skipped");
-            } else {
+                setTestDescriptorStatus(testDescriptorStatus);
                 engineExecutionListener.executionFinished(this, testExecutionResult);
             }
         } catch (Throwable t) {
@@ -199,26 +194,32 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             for (ClassInterceptor classInterceptor : classInterceptors) {
                 classInterceptor.preBeforeEach(argumentContext);
             }
+        } catch (Assumptions.Failed e) {
+            isSkipped = true;
         } catch (Throwable t) {
             throwable = t;
         }
 
-        if (throwable == null) {
+        if (!isSkipped && throwable == null) {
             try {
                 for (Method method : beforeEachMethods) {
                     invoke(method, argumentContext.getClassContext().getTestInstance(), invocationArguments);
                 }
             } catch (InvocationTargetException e) {
-                throwable = e.getCause();
+                Throwable cause = e.getCause();
+                if (cause instanceof Assumptions.Failed) {
+                    isSkipped = true;
+                } else {
+                    throwable = cause;
+                }
             } catch (Throwable t) {
                 throwable = t;
             }
         }
 
         try {
-            Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postBeforeEach(argumentContext, t);
+                classInterceptor.postBeforeEach(argumentContext, throwable);
             }
         } catch (Throwable t) {
             throwable = t;
@@ -226,7 +227,13 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             throwables.add(throwable);
         }
 
-        return throwable == null ? State.TEST : State.AFTER_EACH;
+        if (isSkipped) {
+            return State.AFTER_EACH;
+        } else if (throwable == null) {
+            return State.TEST;
+        } else {
+            return State.AFTER_EACH;
+        }
     }
 
     private State doTest() {
@@ -244,7 +251,12 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             try {
                 invoke(testMethod, argumentContext.getClassContext().getTestInstance(), invocationArguments);
             } catch (InvocationTargetException e) {
-                throwable = e.getCause();
+                Throwable cause = e.getCause();
+                if (cause instanceof Assumptions.Failed) {
+                    isSkipped = true;
+                } else {
+                    throwable = cause;
+                }
             } catch (Throwable t) {
                 throwable = t;
             }
