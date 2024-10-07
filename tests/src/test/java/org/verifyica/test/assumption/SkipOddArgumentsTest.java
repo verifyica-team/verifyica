@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.test.condition;
+package org.verifyica.test.assumption;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,7 +27,7 @@ import org.verifyica.api.Assumptions;
 import org.verifyica.api.Verifyica;
 
 @SuppressWarnings("unchecked")
-public class AssumptionsTest2 {
+public class SkipOddArgumentsTest {
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Object arguments() {
@@ -40,6 +40,7 @@ public class AssumptionsTest2 {
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) throws Throwable {
+        // Skip event arguments
         Assumptions.assumeTrue(() -> argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 1);
     }
 

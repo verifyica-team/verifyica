@@ -82,6 +82,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
     private ClassContext classContext;
 
     private ArgumentContext argumentContext;
+    private boolean isSkipped;
 
     /**
      * Constructor
@@ -160,8 +161,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                         break;
                     }
                     case SKIP: {
-                        skip();
-                        state = State.AFTER_ALL;
+                        state = doSkipChildren();
                         break;
                     }
                     case AFTER_ALL: {
@@ -185,26 +185,19 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             TestExecutionResult testExecutionResult;
             TestDescriptorStatus testDescriptorStatus;
 
-            if (throwables.isEmpty()) {
-                testExecutionResult = TestExecutionResult.successful();
-                testDescriptorStatus = TestDescriptorStatus.passed();
+            if (isSkipped) {
+                setTestDescriptorStatus(TestDescriptorStatus.skipped());
+                engineExecutionListener.executionSkipped(this, "Skipped");
             } else {
-                Throwable throwable = throwables.get(0);
-
-                if (throwable instanceof Assumptions.Failed) {
-                    testExecutionResult = TestExecutionResult.aborted(null);
-                    testDescriptorStatus = TestDescriptorStatus.skipped();
+                if (throwables.isEmpty()) {
+                    testExecutionResult = TestExecutionResult.successful();
+                    testDescriptorStatus = TestDescriptorStatus.passed();
                 } else {
                     testExecutionResult = TestExecutionResult.failed(throwables.get(0));
                     testDescriptorStatus = TestDescriptorStatus.failed(throwables.get(0));
                 }
-            }
 
-            setTestDescriptorStatus(testDescriptorStatus);
-
-            if (testDescriptorStatus.isSkipped()) {
-                engineExecutionListener.executionSkipped(this, "Skipped");
-            } else {
+                setTestDescriptorStatus(testDescriptorStatus);
                 engineExecutionListener.executionFinished(this, testExecutionResult);
             }
         } catch (Throwable t) {
@@ -234,34 +227,48 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             for (ClassInterceptor classInterceptor : classInterceptors) {
                 classInterceptor.preBeforeAll(argumentContext);
             }
+        } catch (Assumptions.Failed e) {
+            isSkipped = true;
         } catch (Throwable t) {
             throwable = t;
         }
 
-        if (throwable == null) {
+        if (!isSkipped && throwable == null) {
             try {
                 for (Method method : beforeAllMethods) {
                     invoke(method, classContext.getTestInstance(), invocationArguments);
                 }
             } catch (InvocationTargetException e) {
-                throwable = e.getCause();
+                Throwable cause = e.getCause();
+                if (cause instanceof Assumptions.Failed) {
+                    isSkipped = true;
+                } else {
+                    throwable = cause;
+                }
             } catch (Throwable t) {
                 throwable = t;
             }
         }
 
         try {
-            Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postBeforeAll(argumentContext, t);
+                classInterceptor.postBeforeAll(argumentContext, throwable);
             }
+        } catch (Assumptions.Failed e) {
+            isSkipped = true;
         } catch (Throwable t) {
             throwable = t;
             printStackTrace(throwable);
             throwables.add(throwable);
         }
 
-        return throwable == null ? State.TEST_DEPENDENT : State.AFTER_ALL;
+        if (isSkipped) {
+            return State.SKIP;
+        } else if (throwable == null) {
+            return State.TEST_DEPENDENT;
+        } else {
+            return State.AFTER_ALL;
+        }
     }
 
     private State doTestDependent() {
@@ -295,6 +302,12 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         return State.AFTER_ALL;
     }
 
+    private State doSkipChildren() {
+        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(TestableTestDescriptor::skip);
+
+        return State.AFTER_ALL;
+    }
+
     private State doAfterAll() {
         Throwable throwable = null;
 
@@ -319,9 +332,8 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         }
 
         try {
-            Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postAfterAll(argumentContext, t);
+                classInterceptor.postAfterAll(argumentContext, throwable);
             }
         } catch (Throwable t) {
             throwable = t;

@@ -104,6 +104,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
 
     private ClassContext classContext;
     private final AtomicReference<Object> testInstanceAtomicReference;
+    private boolean isSkipped;
 
     /**
      * Constructor
@@ -206,8 +207,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
                         break;
                     }
                     case SKIP: {
-                        skip();
-                        state = State.CONCLUDE;
+                        state = doSkipChildren();
                         break;
                     }
                     case CONCLUDE: {
@@ -235,16 +235,21 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             TestExecutionResult testExecutionResult;
             TestDescriptorStatus testDescriptorStatus;
 
-            if (throwables.isEmpty()) {
-                testExecutionResult = TestExecutionResult.successful();
-                testDescriptorStatus = TestDescriptorStatus.passed();
+            if (isSkipped) {
+                setTestDescriptorStatus(TestDescriptorStatus.skipped());
+                engineExecutionListener.executionSkipped(this, "Skipped");
             } else {
-                testExecutionResult = TestExecutionResult.failed(throwables.get(0));
-                testDescriptorStatus = TestDescriptorStatus.failed(throwables.get(0));
-            }
+                if (throwables.isEmpty()) {
+                    testExecutionResult = TestExecutionResult.successful();
+                    testDescriptorStatus = TestDescriptorStatus.passed();
+                } else {
+                    testExecutionResult = TestExecutionResult.failed(throwables.get(0));
+                    testDescriptorStatus = TestDescriptorStatus.failed(throwables.get(0));
+                }
 
-            setTestDescriptorStatus(testDescriptorStatus);
-            engineExecutionListener.executionFinished(this, testExecutionResult);
+                setTestDescriptorStatus(testDescriptorStatus);
+                engineExecutionListener.executionFinished(this, testExecutionResult);
+            }
         } catch (Throwable t) {
             printStackTrace(t);
             setTestDescriptorStatus(TestDescriptorStatus.failed(t));
@@ -311,26 +316,32 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             for (ClassInterceptor classInterceptor : classInterceptors) {
                 classInterceptor.prePrepare(classContext);
             }
+        } catch (Assumptions.Failed e) {
+            isSkipped = true;
         } catch (Throwable t) {
             throwable = t;
         }
 
-        if (throwable == null) {
+        if (!isSkipped && throwable == null) {
             try {
                 for (Method method : prepareMethods) {
                     invoke(method, testInstanceAtomicReference.get(), invocationArguments, true);
                 }
             } catch (InvocationTargetException e) {
-                throwable = e.getCause();
+                Throwable cause = e.getCause();
+                if (cause instanceof Assumptions.Failed) {
+                    isSkipped = true;
+                } else {
+                    throwable = cause;
+                }
             } catch (Throwable t) {
                 throwable = t;
             }
         }
 
         try {
-            Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postPrepare(classContext, t);
+                classInterceptor.postPrepare(classContext, throwable);
             }
         } catch (Throwable t) {
             throwable = t;
@@ -338,7 +349,13 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             throwables.add(throwable);
         }
 
-        return throwable == null ? State.TEST : State.CONCLUDE;
+        if (isSkipped) {
+            return State.SKIP;
+        } else if (throwable == null) {
+            return State.TEST;
+        } else {
+            return State.CONCLUDE;
+        }
     }
 
     /**
@@ -372,6 +389,12 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         }
 
         ExecutorSupport.waitForAllFutures(futures, argumentExecutorService);
+
+        return State.CONCLUDE;
+    }
+
+    private State doSkipChildren() {
+        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(TestableTestDescriptor::skip);
 
         return State.CONCLUDE;
     }
