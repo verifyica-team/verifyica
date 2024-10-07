@@ -6,9 +6,9 @@
 
 |              |                                                                                              |
 |--------------|----------------------------------------------------------------------------------------------|
-| API          | <a href="#"><img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"></a> |
-| Engine       | <a href="#"><img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"></a> |
-| Maven Plugin | <a href="#"><img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="0.2.0"></a> |
+| API          | <a href="#"><img src="https://img.shields.io/badge/version-0.2.1-green.svg" alt="0.2.1"></a> |
+| Engine       | <a href="#"><img src="https://img.shields.io/badge/version-0.2.1-green.svg" alt="0.2.1"></a> |
+| Maven Plugin | <a href="#"><img src="https://img.shields.io/badge/version-0.2.1-green.svg" alt="0.2.1"></a> |
 
 ![Verifyica](assets/verifyica.png)
 
