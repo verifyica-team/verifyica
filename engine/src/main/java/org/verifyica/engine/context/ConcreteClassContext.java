@@ -59,54 +59,6 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
     }
 
     @Override
-    public Configuration configuration() {
-        return engineContext.configuration();
-    }
-
-    @Override
-    public EngineContext engineContext() {
-        return engineContext;
-    }
-
-    @Override
-    public Class<?> testClass() {
-        return testClass;
-    }
-
-    @Override
-    public String testClassDisplayName() {
-        return testClassDisplayName;
-    }
-
-    @Override
-    public Set<String> testClassTags() {
-        return testClassTags;
-    }
-
-    @Override
-    public int testArgumentParallelism() {
-        return testArgumentParallelism;
-    }
-
-    @Override
-    public Object testInstance() {
-        Object testInstance = testClassInstanceReference.get();
-        if (testInstance == null) {
-            throw new IllegalStateException("The class instance has not yet been instantiated");
-        }
-        return testInstance;
-    }
-
-    @Override
-    public <V> V testInstance(Class<V> type) {
-        Object testInstance = testClassInstanceReference.get();
-        if (testInstance == null) {
-            throw new IllegalStateException("The class instance has not yet been instantiated");
-        }
-        return type.cast(testInstance);
-    }
-
-    @Override
     public Configuration getConfiguration() {
         return engineContext.getConfiguration();
     }

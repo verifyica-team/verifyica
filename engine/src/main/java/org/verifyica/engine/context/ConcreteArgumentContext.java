@@ -23,7 +23,6 @@ import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.Configuration;
-import org.verifyica.api.EngineContext;
 import org.verifyica.engine.common.Precondition;
 
 /** Class to implement ConcreteArgumentContext */
@@ -48,58 +47,6 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
     }
 
     @Override
-    public EngineContext engineContext() {
-        return classContext.engineContext();
-    }
-
-    @Override
-    public ClassContext classContext() {
-        return classContext;
-    }
-
-    @Override
-    public int testArgumentIndex() {
-        return argumentIndex;
-    }
-
-    @Override
-    public Argument<?> testArgument() {
-        return argument;
-    }
-
-    @Override
-    public <V> Argument<V> testArgument(Class<V> type) {
-        Precondition.notNull(type, "type is null");
-
-        if (argument.getPayload() == null) {
-            return (Argument<V>) argument;
-        } else if (type.isAssignableFrom(argument.getPayload().getClass())) {
-            return (Argument<V>) argument;
-        } else {
-            throw new ClassCastException(format(
-                    "Cannot cast Argument<%s> to Argument<%s>",
-                    argument.getPayload().getClass().getName(), type.getName()));
-        }
-    }
-
-    @Override
-    public <V> V testArgumentPayload() {
-        return argument != null ? (V) argument.getPayload() : null;
-    }
-
-    @Override
-    public <V> V testArgumentPayload(Class<V> type) {
-        Precondition.notNull(type, "type is null");
-
-        return argument != null ? argument.getPayload(type) : null;
-    }
-
-    @Override
-    public Configuration configuration() {
-        return classContext.configuration();
-    }
-
-    @Override
     public ClassContext getClassContext() {
         return classContext;
     }
@@ -121,17 +68,29 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
 
     @Override
     public <V> Argument<V> getTestArgument(Class<V> type) {
-        return testArgument(type);
+        Precondition.notNull(type, "type is null");
+
+        if (argument.getPayload() == null) {
+            return (Argument<V>) argument;
+        } else if (type.isAssignableFrom(argument.getPayload().getClass())) {
+            return (Argument<V>) argument;
+        } else {
+            throw new ClassCastException(format(
+                    "Cannot cast Argument<%s> to Argument<%s>",
+                    argument.getPayload().getClass().getName(), type.getName()));
+        }
     }
 
     @Override
     public <V> V getTestArgumentPayload() {
-        return testArgumentPayload();
+        return argument != null ? (V) argument.getPayload() : null;
     }
 
     @Override
     public <V> V getTestArgumentPayload(Class<V> type) {
-        return testArgumentPayload(type);
+        Precondition.notNull(type, "type is null");
+
+        return argument != null ? argument.getPayload(type) : null;
     }
 
     @Override

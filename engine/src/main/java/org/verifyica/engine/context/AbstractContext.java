@@ -33,14 +33,6 @@ public abstract class AbstractContext implements Context {
     }
 
     @Override
-    public abstract Configuration configuration();
-
-    @Override
-    public EnhancedMap<String, Object> map() {
-        return map;
-    }
-
-    @Override
     public abstract Configuration getConfiguration();
 
     @Override

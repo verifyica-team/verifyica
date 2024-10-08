@@ -26,42 +26,54 @@ public interface ClassContext extends Context {
      *
      * @return the EngineContext
      */
-    EngineContext engineContext();
+    default EngineContext engineContext() {
+        return getEngineContext();
+    }
 
     /**
      * Get the test class
      *
      * @return the test class
      */
-    Class<?> testClass();
+    default Class<?> testClass() {
+        return getTestClass();
+    }
 
     /**
      * Get the test class display name
      *
      * @return the test class display name
      */
-    String testClassDisplayName();
+    default String testClassDisplayName() {
+        return getTestClassDisplayName();
+    }
 
     /**
      * Get the test class tags
      *
      * @return a Set of test class tags; may be empty
      */
-    Set<String> testClassTags();
+    default Set<String> testClassTags() {
+        return getTestClassTags();
+    }
 
     /**
      * Get the test argument parallelism
      *
      * @return the test argument parallelism
      */
-    int testArgumentParallelism();
+    default int testArgumentParallelism() {
+        return getTestArgumentParallelism();
+    }
 
     /**
      * Get the test class instance
      *
      * @return the test class instance
      */
-    Object testInstance();
+    default Object testInstance() {
+        return getTestInstance();
+    }
 
     /**
      * Get the test class instance
@@ -70,7 +82,9 @@ public interface ClassContext extends Context {
      * @return the test class instance
      * @param <V> the type
      */
-    <V> V testInstance(Class<V> type);
+    default <V> V testInstance(Class<V> type) {
+        return getTestInstance(type);
+    }
 
     /**
      * Get the EngineContext
