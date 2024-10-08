@@ -20,7 +20,7 @@ package org.verifyica.api;
 public interface EngineInterceptor {
 
     /**
-     * Engine initialize
+     * Engine initialize callback
      *
      * @param engineContext engineContext
      * @throws Throwable Throwable
@@ -30,7 +30,7 @@ public interface EngineInterceptor {
     }
 
     /**
-     * Engine destroy
+     * Engine destroy callback
      *
      * @param engineContext engineContext
      * @throws Throwable Throwable
