@@ -16,8 +16,6 @@
 
 package org.verifyica.api;
 
-import java.util.Map;
-
 /** Interface to implement Context */
 public interface Context {
 

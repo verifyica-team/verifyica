@@ -124,7 +124,8 @@ public class MongoDBTest3 {
                 .perform(
                         () -> Optional.ofNullable(argumentContext.testArgumentPayload(MongoDBTestEnvironment.class))
                                 .ifPresent(MongoDBTestEnvironment::destroy),
-                        () -> Optional.ofNullable(argumentContext.map().removeAs(NETWORK, Network.class)).ifPresent(Network::close),
+                        () -> Optional.ofNullable(argumentContext.map().removeAs(NETWORK, Network.class))
+                                .ifPresent(Network::close),
                         () -> argumentContext.map().clear())
                 .assertSuccessful();
     }

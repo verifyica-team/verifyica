@@ -199,7 +199,8 @@ public class KafkaTest2 {
                 .perform(
                         () -> Optional.ofNullable(argumentContext.getTestArgumentPayload(KafkaTestEnvironment.class))
                                 .ifPresent(KafkaTestEnvironment::destroy),
-                        () -> Optional.ofNullable(argumentContext.getMap().removeAs(NETWORK, Network.class)).ifPresent(Network::close),
+                        () -> Optional.ofNullable(argumentContext.getMap().removeAs(NETWORK, Network.class))
+                                .ifPresent(Network::close),
                         () -> argumentContext.getMap().clear())
                 .assertSuccessful();
     }
