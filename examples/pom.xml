@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.verifyica</groupId>
-    <artifactId>verfiyica-example</artifactId>
+    <artifactId>verfiyica-examples</artifactId>
     <version>development</version>
     <packaging>jar</packaging>
     <name>Verifyica Examples</name>
