@@ -33,7 +33,7 @@ public interface Context {
      *
      * @return the Map
      */
-    Map<String, Object> map();
+    EnhancedMap<String, Object> map();
 
     /**
      * Get the Configuration
@@ -47,5 +47,5 @@ public interface Context {
      *
      * @return the Map
      */
-    Map<String, Object> getMap();
+    EnhancedMap<String, Object> getMap();
 }

@@ -16,28 +16,27 @@
 
 package org.verifyica.engine.context;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.Context;
+import org.verifyica.api.EnhancedMap;
 
 /** Class to implement AbstractContext */
 public abstract class AbstractContext implements Context {
 
-    private final Map<String, Object> map;
+    private final EnhancedMap<String, Object> map;
 
     /**
      * Constructor
      */
     protected AbstractContext() {
-        this.map = new ConcurrentHashMap<>();
+        this.map = new EnhancedMap<>();
     }
 
     @Override
     public abstract Configuration configuration();
 
     @Override
-    public Map<String, Object> map() {
+    public EnhancedMap<String, Object> map() {
         return map;
     }
 
@@ -45,7 +44,7 @@ public abstract class AbstractContext implements Context {
     public abstract Configuration getConfiguration();
 
     @Override
-    public Map<String, Object> getMap() {
+    public EnhancedMap<String, Object> getMap() {
         return map;
     }
 }
