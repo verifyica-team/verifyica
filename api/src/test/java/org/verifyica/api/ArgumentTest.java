@@ -21,8 +21,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-
-import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 public class ArgumentTest {
