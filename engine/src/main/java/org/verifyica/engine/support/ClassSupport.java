@@ -35,6 +35,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
@@ -47,7 +48,7 @@ import org.verifyica.engine.exception.UncheckedURISyntaxException;
 /** Class to implement ClassPathSupport */
 public class ClassSupport {
 
-    private static final ReentrantLock LOCK = new ReentrantLock(true);
+    private static final Lock LOCK = new ReentrantLock(true);
     private static List<URI> URIS;
 
     /** Constructor */
