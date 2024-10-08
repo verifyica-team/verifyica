@@ -230,7 +230,7 @@ public class ClassInterceptorRegistry {
      */
     public void destroy(EngineContext engineContext) {
         for (Map.Entry<Class<?>, List<ClassInterceptor>> entry : mappedClassInterceptors.entrySet()) {
-            List<ClassInterceptor> classInterceptorsReversed = ListSupport.reversedCopy(entry.getValue());
+            List<ClassInterceptor> classInterceptorsReversed = ListSupport.copyAndReverse(entry.getValue());
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                 try {
                     classInterceptor.destroy(engineContext);
@@ -240,7 +240,7 @@ public class ClassInterceptorRegistry {
             }
         }
 
-        List<ClassInterceptor> classInterceptorsReversed = ListSupport.reversedCopy(classInterceptors);
+        List<ClassInterceptor> classInterceptorsReversed = ListSupport.copyAndReverse(classInterceptors);
         for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
             try {
                 classInterceptor.destroy(engineContext);

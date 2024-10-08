@@ -35,7 +35,7 @@ public class ListSupport {
      * @return a reversed copy of the List
      * @param <V> the type
      */
-    public static <V> List<V> reversedCopy(List<V> list) {
+    public static <V> List<V> copyAndReverse(List<V> list) {
         List<V> reversedList = new ArrayList<>(list);
         Collections.reverse(reversedList);
         return reversedList;
