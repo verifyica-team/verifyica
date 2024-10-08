@@ -17,7 +17,10 @@
 package org.verifyica.examples.interceptor;
 
 import java.lang.reflect.Method;
+import java.util.function.Predicate;
+
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Verifyica;
@@ -30,6 +33,12 @@ public class AutowiredClassInterceptor2 implements ClassInterceptor {
     @Override
     public void initialize(EngineContext engineContext) throws Throwable {
         System.out.printf("%s::initialize()%n", CLASS_NAME);
+    }
+
+    @Override
+    public Predicate<ClassContext> predicate() {
+        // Only intercept methods for ClassInterceptorTest
+        return classContext -> classContext.getTestClass() == ClassInterceptorTest.class;
     }
 
     @Override
