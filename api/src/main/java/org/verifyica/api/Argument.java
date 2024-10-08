@@ -22,8 +22,7 @@ import java.math.BigInteger;
 /**
  * {@code Argument} is a container that associates a name with a given payload.
  *
- * @param <T> the type of the payload
- * @since 5.8
+ * @param <T> the payload type
  */
 public interface Argument<T> extends Named {
 
