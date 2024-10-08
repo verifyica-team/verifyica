@@ -52,7 +52,7 @@ public interface Argument<T> extends Named {
     }
 
     /**
-     * Method to return if the Argument has a payload
+     * Method to return if the Argument has a non-null payload
      *
      * @return true if the Argument payload is not null, else false
      */
