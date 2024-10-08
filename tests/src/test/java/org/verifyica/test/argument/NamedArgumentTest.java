@@ -24,6 +24,7 @@ import java.util.Collection;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
+import org.verifyica.api.Named;
 import org.verifyica.api.Verifyica;
 
 public class NamedArgumentTest {
@@ -55,26 +56,20 @@ public class NamedArgumentTest {
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testDirectArgument(Integer integer) {
-        System.out.printf("testDirectArgument(%s)%n", integer);
-    }
-
-    @Verifyica.Test
-    @Verifyica.Order(2)
-    public void testNamedArgument(CustomArgument argument) {
-        System.out.printf("testNamedArgument(name[%s], payload[%s])%n", argument.getName(), argument.getPayload());
+    public void testDirectArgument(CustomArgument argument) {
+        System.out.printf("testDirectArgument(%s)%n", argument);
     }
 
     @Verifyica.Test
     @Verifyica.Order(3)
-    public void testArgument(Argument<Integer> argument) {
+    public void testArgument(Argument<CustomArgument> argument) {
         System.out.printf("testArgument(name[%s], payload[%s])%n", argument.getName(), argument.getPayload());
     }
 
     @Verifyica.Test
     @Verifyica.Order(4)
     public void testArgumentContext(ArgumentContext argumentContext) {
-        Argument<Integer> argument = argumentContext.getTestArgument(Integer.class);
+        Argument<CustomArgument> argument = argumentContext.getTestArgument(CustomArgument.class);
         System.out.printf("testArgumentContext(name[%s], payload[%s])%n", argument.getName(), argument.getPayload());
     }
 
@@ -94,7 +89,7 @@ public class NamedArgumentTest {
         assertThat(classContext).isNotNull();
     }
 
-    private static class CustomArgument implements Argument<Integer> {
+    private static class CustomArgument implements Named {
 
         private final int value;
 
@@ -105,11 +100,6 @@ public class NamedArgumentTest {
         @Override
         public String getName() {
             return "CustomArgument(" + value + ")";
-        }
-
-        @Override
-        public Integer getPayload() {
-            return value;
         }
 
         @Override

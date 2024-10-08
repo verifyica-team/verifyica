@@ -16,6 +16,8 @@
 
 package org.verifyica.engine.context;
 
+import static java.lang.String.format;
+
 import java.util.Objects;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
@@ -69,7 +71,15 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
     public <V> Argument<V> testArgument(Class<V> type) {
         Precondition.notNull(type, "type is null");
 
-        return (Argument<V>) argument;
+        if (argument.getPayload() == null) {
+            return (Argument<V>) argument;
+        } else if (type.isAssignableFrom(argument.getPayload().getClass())) {
+            return (Argument<V>) argument;
+        } else {
+            throw new ClassCastException(format(
+                    "Cannot cast Argument<%s> to Argument<%s>",
+                    argument.getPayload().getClass().getName(), type.getName()));
+        }
     }
 
     @Override
@@ -111,21 +121,17 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
 
     @Override
     public <V> Argument<V> getTestArgument(Class<V> type) {
-        Precondition.notNull(type, "type is null");
-
-        return (Argument<V>) argument;
+        return testArgument(type);
     }
 
     @Override
     public <V> V getTestArgumentPayload() {
-        return argument != null ? (V) argument.getPayload() : null;
+        return testArgumentPayload();
     }
 
     @Override
     public <V> V getTestArgumentPayload(Class<V> type) {
-        Precondition.notNull(type, "type is null");
-
-        return argument != null ? argument.getPayload(type) : null;
+        return testArgumentPayload(type);
     }
 
     @Override
