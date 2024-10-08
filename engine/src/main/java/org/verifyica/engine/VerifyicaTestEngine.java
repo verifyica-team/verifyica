@@ -108,8 +108,8 @@ public class VerifyicaTestEngine implements TestEngine {
     private Configuration configuration;
     private EngineExecutionListener engineExecutionListener;
     private EngineContext engineContext;
-    private ClassInterceptorRegistry classInterceptorRegistry;
     private EngineInterceptorRegistry engineInterceptorRegistry;
+    private ClassInterceptorRegistry classInterceptorRegistry;
 
     @Override
     public String getId() {
