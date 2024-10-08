@@ -124,19 +124,9 @@ public class MongoDBTest2 {
                 .perform(
                         () -> Optional.ofNullable(argumentContext.getTestArgumentPayload(MongoDBTestEnvironment.class))
                                 .ifPresent(MongoDBTestEnvironment::destroy),
-                        () -> Optional.ofNullable(network(argumentContext)).ifPresent(Network::close),
+                        () -> Optional.ofNullable(argumentContext.getMap().removeAs(NETWORK, Network.class)).ifPresent(Network::close),
                         () -> argumentContext.getMap().clear())
                 .assertSuccessful();
-    }
-
-    /**
-     * Helper method to get the Network from the ArgumentContext
-     *
-     * @param argumentContext argumentContext
-     * @return the Network
-     */
-    private static Network network(ArgumentContext argumentContext) {
-        return (Network) argumentContext.getMap().get(NETWORK);
     }
 
     /**

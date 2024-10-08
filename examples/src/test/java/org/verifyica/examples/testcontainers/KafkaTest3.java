@@ -111,7 +111,7 @@ public class KafkaTest3 {
                 .getKafkaContainer()
                 .getBootstrapServers();
 
-        String message = message(argumentContext);
+        String message = argumentContext.map().getAs(MESSAGE);
 
         info("consuming message from [%s] ...", bootstrapServers);
 
@@ -156,7 +156,7 @@ public class KafkaTest3 {
                 .getKafkaContainer()
                 .getBootstrapServers();
 
-        String message = message(argumentContext);
+        String message = argumentContext.map().getAs(MESSAGE);
 
         info("consuming message from [%s] ...", bootstrapServers);
 
@@ -199,29 +199,9 @@ public class KafkaTest3 {
                 .perform(
                         () -> Optional.ofNullable(argumentContext.testArgumentPayload(KafkaTestEnvironment.class))
                                 .ifPresent(KafkaTestEnvironment::destroy),
-                        () -> Optional.ofNullable(network(argumentContext)).ifPresent(Network::close),
+                        () -> Optional.ofNullable(argumentContext.map().removeAs(NETWORK, Network.class)).ifPresent(Network::close),
                         () -> argumentContext.map().clear())
                 .assertSuccessful();
-    }
-
-    /**
-     * Helper method to get the Network from the ArgumentContext
-     *
-     * @param argumentContext argumentContext
-     * @return the Network
-     */
-    private static Network network(ArgumentContext argumentContext) {
-        return (Network) argumentContext.map().get(NETWORK);
-    }
-
-    /**
-     * Helper method to get the message from the ArgumentContext
-     *
-     * @param argumentContext argumentContext
-     * @return the message
-     */
-    private static String message(ArgumentContext argumentContext) {
-        return (String) argumentContext.map().get(MESSAGE);
     }
 
     /** Class to implement a KafkaTestEnvironment */

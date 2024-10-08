@@ -103,7 +103,7 @@ public class MongoDBTest3 {
                         mongoDBTestEnvironment.getMongoDBContainer().getConnectionString()))
                 .build();
 
-        String name = name(argumentContext);
+        String name = argumentContext.map().getAs(NAME);
 
         try (MongoClient mongoClient = MongoClients.create(settings)) {
             MongoDatabase database = mongoClient.getDatabase("test-db");
@@ -124,29 +124,9 @@ public class MongoDBTest3 {
                 .perform(
                         () -> Optional.ofNullable(argumentContext.testArgumentPayload(MongoDBTestEnvironment.class))
                                 .ifPresent(MongoDBTestEnvironment::destroy),
-                        () -> Optional.ofNullable(network(argumentContext)).ifPresent(Network::close),
+                        () -> Optional.ofNullable(argumentContext.map().removeAs(NETWORK, Network.class)).ifPresent(Network::close),
                         () -> argumentContext.map().clear())
                 .assertSuccessful();
-    }
-
-    /**
-     * Helper method to get the Network from the ArgumentContext
-     *
-     * @param argumentContext argumentContext
-     * @return the Network
-     */
-    private static Network network(ArgumentContext argumentContext) {
-        return (Network) argumentContext.map().get(NETWORK);
-    }
-
-    /**
-     * Helper method to get the name from the ArgumentContext
-     *
-     * @param argumentContext argumentContext
-     * @return the name
-     */
-    private static String name(ArgumentContext argumentContext) {
-        return (String) argumentContext.map().get(NAME);
     }
 
     /** Class to implement a MongoDBTestEnvironment */
