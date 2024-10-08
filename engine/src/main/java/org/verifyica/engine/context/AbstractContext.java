@@ -41,11 +41,6 @@ public abstract class AbstractContext implements Context {
         return map;
     }
 
-    /**
-     * Get the Configuration
-     *
-     * @return the Configuration
-     */
     @Override
     public abstract Configuration getConfiguration();
 

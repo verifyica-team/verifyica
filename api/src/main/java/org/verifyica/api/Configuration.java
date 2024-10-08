@@ -29,7 +29,31 @@ public interface Configuration {
      * @return an Optional containing the Path to the Properties configuration file, or Optional.empty()
      *     if no properties configuration file was found
      */
+    Optional<Path> propertiesPath();
+
+    /**
+     * Get the Configuration Properties
+     *
+     * @return Configuration Properties
+     */
+    Properties properties();
+
+    /**
+     * Get the Path to the Properties configuration file
+     *
+     * @return an Optional containing the Path to the Properties configuration file, or Optional.empty()
+     *     if no properties configuration file was found
+     */
+    @Deprecated
     Optional<Path> getPropertiesFilename();
+
+    /**
+     * Get the Path to the Properties configuration file
+     *
+     * @return an Optional containing the Path to the Properties configuration file, or Optional.empty()
+     *     if no properties configuration file was found
+     */
+    Optional<Path> getPropertiesPath();
 
     /**
      * Get the Configuration Properties

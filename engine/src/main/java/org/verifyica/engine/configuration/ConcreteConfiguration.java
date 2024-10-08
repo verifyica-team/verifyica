@@ -48,7 +48,7 @@ public class ConcreteConfiguration implements Configuration {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
 
     private final Properties properties;
-    private Path propertiesFilename;
+    private Path propertiesPath;
 
     /** Constructor */
     private ConcreteConfiguration() {
@@ -56,18 +56,28 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     @Override
-    public Optional<Path> getPropertiesFilename() {
-        return propertiesFilename != null ? Optional.of(propertiesFilename) : Optional.empty();
+    public Optional<Path> propertiesPath() {
+        return propertiesPath != null ? Optional.of(propertiesPath) : Optional.empty();
     }
 
-    /**
-     * Get the configuration Properties
-     *
-     * @return configuration Properties
-     */
+    @Override
+    public Optional<Path> getPropertiesFilename() {
+        return propertiesPath();
+    }
+
+    @Override
+    public Optional<Path> getPropertiesPath() {
+        return propertiesPath();
+    }
+
+    @Override
+    public Properties properties() {
+        return properties;
+    }
+
     @Override
     public Properties getProperties() {
-        return properties;
+        return properties();
     }
 
     /**
@@ -112,7 +122,7 @@ public class ConcreteConfiguration implements Configuration {
                     trace("loading [" + optional.get().getAbsolutePath() + "]");
                 }
 
-                propertiesFilename = optional.get().toPath().toAbsolutePath();
+                propertiesPath = optional.get().toPath().toAbsolutePath();
 
                 try (Reader reader = Files.newBufferedReader(optional.get().toPath(), StandardCharsets.UTF_8)) {
                     properties.load(reader);
