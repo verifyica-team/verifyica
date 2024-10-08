@@ -22,6 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,7 +45,7 @@ public class EngineInterceptorRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
 
     private final Configuration configuration;
-    private final ReentrantReadWriteLock reentrantReadWriteLock;
+    private final ReadWriteLock readWriteLock;
     private final List<EngineInterceptor> engineInterceptors;
 
     /**
@@ -54,7 +55,7 @@ public class EngineInterceptorRegistry {
      */
     public EngineInterceptorRegistry(Configuration configuration) {
         this.configuration = configuration;
-        this.reentrantReadWriteLock = new ReentrantReadWriteLock(true);
+        this.readWriteLock = new ReentrantReadWriteLock(true);
         this.engineInterceptors = new ArrayList<>();
     }
 
@@ -64,7 +65,7 @@ public class EngineInterceptorRegistry {
      * @param engineContext engineContext
      */
     public void initialize(EngineContext engineContext) {
-        reentrantReadWriteLock.writeLock().lock();
+        readWriteLock.writeLock().lock();
 
         try {
             List<Class<?>> autowiredEngineInterceptors = new ArrayList<>(
@@ -100,7 +101,7 @@ public class EngineInterceptorRegistry {
                 throw new EngineException(t);
             }
         } finally {
-            reentrantReadWriteLock.writeLock().unlock();
+            readWriteLock.writeLock().unlock();
         }
     }
 
@@ -110,12 +111,12 @@ public class EngineInterceptorRegistry {
      * @return a list of engine interceptors
      */
     public List<EngineInterceptor> getEngineInterceptors() {
-        reentrantReadWriteLock.readLock().lock();
+        readWriteLock.readLock().lock();
 
         try {
             return new ArrayList<>(engineInterceptors);
         } finally {
-            reentrantReadWriteLock.readLock().unlock();
+            readWriteLock.readLock().unlock();
         }
     }
 
