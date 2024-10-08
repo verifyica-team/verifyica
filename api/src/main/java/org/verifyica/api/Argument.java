@@ -30,6 +30,11 @@ public interface Argument<T> extends Named {
     Argument<Object> EMPTY = new Empty();
 
     @Override
+    default String name() {
+        return getName();
+    }
+
+    @Override
     String getName();
 
     /**
@@ -37,7 +42,27 @@ public interface Argument<T> extends Named {
      *
      * @return the Argument payload
      */
+    default T payload() {
+        return getPayload();
+    }
+
+    /**
+     * Method to get the Argument payload
+     *
+     * @return the Argument payload
+     */
     T getPayload();
+
+    /**
+     * Method to get the Argument payload
+     *
+     * @param type type
+     * @return the Argument payload
+     * @param <V> the return type
+     */
+    default <V> V payload(Class<V> type) {
+        return getPayload(type);
+    }
 
     /**
      * Method to get the Argument payload
