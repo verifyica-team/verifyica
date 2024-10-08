@@ -24,14 +24,18 @@ public interface Context {
      *
      * @return the Configuration
      */
-    Configuration configuration();
+    default Configuration configuration() {
+        return getConfiguration();
+    }
 
     /**
      * Get the Map
      *
      * @return the Map
      */
-    EnhancedMap<String, Object> map();
+    default EnhancedMap<String, Object> map() {
+        return getMap();
+    }
 
     /**
      * Get the Configuration

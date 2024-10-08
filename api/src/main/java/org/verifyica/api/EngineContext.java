@@ -24,14 +24,18 @@ public interface EngineContext extends Context {
      *
      * @return the Engine version
      */
-    String version();
+    default String version() {
+        return getVersion();
+    }
 
     /**
      * Get the Engine Configuration
      *
      * @return the Engine Configuration
      */
-    Configuration configuration();
+    default Configuration configuration() {
+        return getConfiguration();
+    }
 
     /**
      * Get the Engine version

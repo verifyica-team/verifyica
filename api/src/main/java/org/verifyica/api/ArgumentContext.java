@@ -26,28 +26,36 @@ public interface ArgumentContext extends Context {
      *
      * @return the Engine Configuration
      */
-    EngineContext engineContext();
+    default EngineContext engineContext() {
+        return getEngineContext();
+    }
 
     /**
      * Get the ClassContext
      *
      * @return the ClassContext
      */
-    ClassContext classContext();
+    default ClassContext classContext() {
+        return getClassContext();
+    }
 
     /**
      * Get the Argument index
      *
      * @return the Argument index
      */
-    int testArgumentIndex();
+    default int testArgumentIndex() {
+        return getTestArgumentIndex();
+    }
 
     /**
      * Get the Argument
      *
      * @return the Argument
      */
-    Argument<?> testArgument();
+    default Argument<?> testArgument() {
+        return getTestArgument();
+    }
 
     /**
      * Get the Argument
@@ -56,7 +64,9 @@ public interface ArgumentContext extends Context {
      * @return the Argument
      * @param <V> type
      */
-    <V> Argument<V> testArgument(Class<V> type);
+    default <V> Argument<V> testArgument(Class<V> type) {
+        return getTestArgument(type);
+    }
 
     /**
      * Get the Argument payload
@@ -64,7 +74,9 @@ public interface ArgumentContext extends Context {
      * @return the Argument payload
      * @param <V> type
      */
-    <V> V testArgumentPayload();
+    default <V> V testArgumentPayload() {
+        return getTestArgumentPayload();
+    }
 
     /**
      * Get the Argument
@@ -73,7 +85,9 @@ public interface ArgumentContext extends Context {
      * @return the Argument
      * @param <V> type
      */
-    <V> V testArgumentPayload(Class<V> type);
+    default <V> V testArgumentPayload(Class<V> type) {
+        return getTestArgumentPayload(type);
+    }
 
     /**
      * Get the EngineContext
