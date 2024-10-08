@@ -41,7 +41,7 @@ public class LockManager {
      * Method to try to lock a key
      *
      * @param key key
-     * @return true if the lock was free or locked the current Thread, else false
+     * @return true if the lock was free or locked by the current Thread, else false
      */
     public static boolean tryLock(String key) {
         notBlank(key, "key is null", "key is blank");
@@ -69,7 +69,7 @@ public class LockManager {
      * @param key key
      * @param timeout timeout
      * @param timeUnit timeUnit
-     * @return true if the lock was free or locked the current Thread, else false
+     * @return true if the lock was free or locked by the current Thread, else false
      * @throws InterruptedException InterruptedException
      */
     public static boolean tryLock(String key, long timeout, TimeUnit timeUnit) throws InterruptedException {
