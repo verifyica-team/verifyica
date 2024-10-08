@@ -18,7 +18,6 @@ package org.verifyica.examples.interceptor;
 
 import java.lang.reflect.Method;
 import java.util.function.Predicate;
-
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
