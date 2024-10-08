@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/** Class to implement StopWatch */
+/** Class to implement Stopwatch */
 @SuppressWarnings("UnusedReturnValue")
 public class Stopwatch {
 
@@ -32,7 +32,7 @@ public class Stopwatch {
     /**
      * Constructor
      *
-     * <p>The StopWatch starts automatically
+     * <p>The Stopwatch starts automatically
      */
     public Stopwatch() {
         readWriteLock = new ReentrantReadWriteLock(true);
@@ -40,43 +40,43 @@ public class Stopwatch {
     }
 
     /**
-     * Method to reset the StopWatch
+     * Method to reset the Stopwatch
      *
-     * @return the StopWatch
+     * @return the Stopwatch
      */
     public Stopwatch reset() {
-        getReadWriteLock().writeLock().lock();
+        readWriteLock.writeLock().lock();
         try {
             startNanoTime = System.nanoTime();
             stopNanoTime = null;
             return this;
         } finally {
-            getReadWriteLock().writeLock().unlock();
+            readWriteLock.writeLock().unlock();
         }
     }
 
     /**
-     * Method to stop the StopWatch
+     * Method to stop the Stopwatch
      *
-     * @return the StopWatch
+     * @return the Stopwatch
      */
     public Stopwatch stop() {
-        getReadWriteLock().writeLock().lock();
+        readWriteLock.writeLock().lock();
         try {
             stopNanoTime = System.nanoTime();
             return this;
         } finally {
-            getReadWriteLock().writeLock().unlock();
+            readWriteLock.writeLock().unlock();
         }
     }
 
     /**
-     * Method to get the StopWatch elapsed time in nanoseconds
+     * Method to get the Stopwatch elapsed time in nanoseconds
      *
-     * @return the StopWatch elapsed time in nanoseconds
+     * @return the Stopwatch elapsed time in nanoseconds
      */
     public Duration elapsedTime() {
-        getReadWriteLock().readLock().lock();
+        readWriteLock.readLock().lock();
         try {
             if (stopNanoTime == null) {
                 return Duration.ofNanos(System.nanoTime() - startNanoTime);
@@ -84,7 +84,7 @@ public class Stopwatch {
                 return Duration.ofNanos(stopNanoTime - startNanoTime);
             }
         } finally {
-            getReadWriteLock().readLock().unlock();
+            readWriteLock.readLock().unlock();
         }
     }
 
@@ -99,30 +99,21 @@ public class Stopwatch {
         if (o == null || getClass() != o.getClass()) return false;
         Stopwatch stopwatch = (Stopwatch) o;
 
-        getReadWriteLock().readLock().lock();
+        readWriteLock.readLock().lock();
         try {
             return startNanoTime == stopwatch.startNanoTime && Objects.equals(stopNanoTime, stopwatch.stopNanoTime);
         } finally {
-            getReadWriteLock().readLock().unlock();
+            readWriteLock.readLock().unlock();
         }
     }
 
     @Override
     public int hashCode() {
-        getReadWriteLock().readLock().lock();
+        readWriteLock.readLock().lock();
         try {
             return Objects.hash(startNanoTime, stopNanoTime);
         } finally {
-            getReadWriteLock().readLock().unlock();
+            readWriteLock.readLock().unlock();
         }
-    }
-
-    /**
-     * Method to get the ReadWriteLock
-     *
-     * @return the ReadWriteLock
-     */
-    private ReadWriteLock getReadWriteLock() {
-        return readWriteLock;
     }
 }
