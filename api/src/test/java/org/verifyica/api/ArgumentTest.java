@@ -21,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 public class ArgumentTest {
@@ -351,5 +353,50 @@ public class ArgumentTest {
         assertThat(argument.getPayload(String.class)).isEqualTo(nameAndValue);
 
         assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(Integer.class));
+    }
+
+    @Test
+    public void testCasting() {
+        Argument<?> argument = Argument.of("testObject1", new TestObject1());
+
+        assertThat(argument).isNotNull();
+        assertThat(argument.getPayload()).isNotNull();
+        assertThat(argument.getPayload().getClass()).isEqualTo(TestObject1.class);
+        assertThat(argument.getPayload(TestObject1.class)).isNotNull();
+        assertThat(argument.getPayload(TestObject1.class).getClass()).isEqualTo(TestObject1.class);
+
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
+    }
+
+    @Test
+    public void testInheritanceCasting() {
+        Object object = new TestObject2();
+        Argument<?> argument = Argument.of("testObject1", object);
+
+        assertThat(argument).isNotNull();
+        assertThat(argument.getPayload()).isNotNull();
+        assertThat(argument.getPayload()).isSameAs(object);
+        assertThat(argument.getPayload().getClass()).isEqualTo(TestObject2.class);
+        assertThat(argument.getPayload(TestObject2.class)).isNotNull();
+        assertThat(argument.getPayload()).isSameAs(object);
+        assertThat(argument.getPayload(TestObject1.class)).isNotNull();
+        assertThat(argument.getPayload()).isSameAs(object);
+        assertThat(argument.getPayload(TestObject1.class).getClass()).isEqualTo(TestObject2.class);
+
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> argument.getPayload(String.class));
+    }
+
+    public static class TestObject1 {
+
+        public TestObject1() {
+            // INTENTIONALLY BLANK
+        }
+    }
+
+    public static class TestObject2 extends TestObject1 {
+
+        public TestObject2() {
+            super();
+        }
     }
 }
