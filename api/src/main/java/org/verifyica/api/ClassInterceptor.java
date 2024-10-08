@@ -38,7 +38,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor predicate
+     * ClassInterceptor Predicate
      *
      * @return a Predicate
      */
