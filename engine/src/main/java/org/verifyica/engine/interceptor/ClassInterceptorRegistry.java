@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,7 +60,7 @@ public class ClassInterceptorRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
 
     private final Configuration configuration;
-    private final ReentrantReadWriteLock reentrantReadWriteLock;
+    private final ReadWriteLock readWriteLock;
     private final List<ClassInterceptor> classInterceptors;
     private final Map<Class<?>, List<ClassInterceptor>> mappedClassInterceptors;
 
@@ -70,7 +71,7 @@ public class ClassInterceptorRegistry {
      */
     public ClassInterceptorRegistry(Configuration configuration) {
         this.configuration = configuration;
-        this.reentrantReadWriteLock = new ReentrantReadWriteLock(true);
+        this.readWriteLock = new ReentrantReadWriteLock(true);
 
         this.classInterceptors = new ArrayList<>();
         this.classInterceptors.add(new DefaultClassInterceptor());
@@ -84,7 +85,7 @@ public class ClassInterceptorRegistry {
      * @param engineContext engineContext
      */
     public void initialize(EngineContext engineContext) {
-        reentrantReadWriteLock.writeLock().lock();
+        readWriteLock.writeLock().lock();
         try {
             LOGGER.trace("initialize()");
             LOGGER.trace("loading autowired class interceptors");
@@ -115,7 +116,7 @@ public class ClassInterceptorRegistry {
                 }
             }
         } finally {
-            reentrantReadWriteLock.writeLock().unlock();
+            readWriteLock.writeLock().unlock();
         }
     }
 
@@ -129,13 +130,13 @@ public class ClassInterceptorRegistry {
      */
     public List<ClassInterceptor> getClassInterceptors(EngineContext engineContext, Class<?> testClass)
             throws Throwable {
-        reentrantReadWriteLock.readLock().lock();
+        readWriteLock.readLock().lock();
         try {
             List<ClassInterceptor> classInterceptors = new ArrayList<>(this.classInterceptors);
             classInterceptors.addAll(getDeclaredClassInterceptor(engineContext, testClass));
             return classInterceptors;
         } finally {
-            reentrantReadWriteLock.readLock().unlock();
+            readWriteLock.readLock().unlock();
         }
     }
 
