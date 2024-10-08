@@ -43,7 +43,7 @@ public class OrderSupport {
     }
 
     /**
-     * Method to get the order annotation value
+     * Method to get the Order annotation value
      *
      * @param clazz clazz
      * @return the order annotation value
