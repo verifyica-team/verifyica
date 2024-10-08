@@ -69,14 +69,17 @@ public class Runner {
             throw new IllegalArgumentException("tasks is empty");
         }
 
+        // Validate the array doesn't have any null Tasks
         for (int i = 0; i < tasks.length; i++) {
             Task task = tasks[i];
             if (task == null) {
                 throw new IllegalArgumentException(format("tasks[%d] is null", i));
             }
+        }
 
+        for (int i = 0; i < tasks.length; i++) {
             try {
-                task.perform();
+                tasks[i].perform();
             } catch (Throwable t) {
                 throwables.add(t);
             }
@@ -100,19 +103,21 @@ public class Runner {
             throw new IllegalArgumentException("tasks is empty");
         }
 
+        // Validate the Collection doesn't have any null Tasks
         int i = 0;
         for (Task task : tasks) {
             if (task == null) {
-                throw new IllegalArgumentException(format("tasks(%d) is null", i));
+                throw new IllegalArgumentException(format("tasks[%d] is null", i));
             }
+            i++;
+        }
 
+        for (Task task : tasks) {
             try {
                 task.perform();
             } catch (Throwable t) {
                 throwables.add(t);
             }
-
-            i++;
         }
 
         return this;
