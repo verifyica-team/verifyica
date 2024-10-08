@@ -19,6 +19,12 @@ package org.verifyica.api;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Class to implement EnhancedMap
+ *
+ * @param <K> key type
+ * @param <V> value type
+ */
 @SuppressWarnings("unchecked")
 public class EnhancedMap<K, V> extends ConcurrentHashMap<K, V> {
 
@@ -81,6 +87,7 @@ public class EnhancedMap<K, V> extends ConcurrentHashMap<K, V> {
      * Returns the value to which the specified key is mapped cast to the requested type, or null if this map contains no mapping for the key.
      *
      * @param key key
+     * @param type type
      * @return the value to which the specified key is mapped cast to the requested type, or null if this map contains no mapping for the key
      * @param <T> the requested type
      */
@@ -107,6 +114,7 @@ public class EnhancedMap<K, V> extends ConcurrentHashMap<K, V> {
      * Removes the mapping for a key from this map if it is present, casting to the requested type.
      *
      * @param key key
+     * @param type type
      * @return the previous value associated with key cast to the requested type, or null if there was no mapping for key
      * @param <T> the assigned type
      */
