@@ -33,7 +33,7 @@ public interface Context {
      *
      * @return the Map
      */
-    default EnhancedMap<String, Object> map() {
+    default ExtendedMap<String, Object> map() {
         return getMap();
     }
 
@@ -49,5 +49,5 @@ public interface Context {
      *
      * @return the Map
      */
-    EnhancedMap<String, Object> getMap();
+    ExtendedMap<String, Object> getMap();
 }

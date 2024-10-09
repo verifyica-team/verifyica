@@ -18,25 +18,25 @@ package org.verifyica.engine.context;
 
 import org.verifyica.api.Configuration;
 import org.verifyica.api.Context;
-import org.verifyica.api.EnhancedMap;
+import org.verifyica.api.ExtendedMap;
 
 /** Class to implement AbstractContext */
 public abstract class AbstractContext implements Context {
 
-    private final EnhancedMap<String, Object> map;
+    private final ExtendedMap<String, Object> map;
 
     /**
      * Constructor
      */
     protected AbstractContext() {
-        this.map = new EnhancedMap<>();
+        this.map = new ExtendedMap<>();
     }
 
     @Override
     public abstract Configuration getConfiguration();
 
     @Override
-    public EnhancedMap<String, Object> getMap() {
+    public ExtendedMap<String, Object> getMap() {
         return map;
     }
 }

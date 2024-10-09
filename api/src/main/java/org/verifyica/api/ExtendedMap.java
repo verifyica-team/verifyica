@@ -26,10 +26,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <V> value type
  */
 @SuppressWarnings("unchecked")
-public class EnhancedMap<K, V> extends ConcurrentHashMap<K, V> {
+public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
 
     /** Constructor */
-    public EnhancedMap() {
+    public ExtendedMap() {
         super();
     }
 
@@ -38,7 +38,7 @@ public class EnhancedMap<K, V> extends ConcurrentHashMap<K, V> {
      *
      * @param initialCapacity initialCapacity
      */
-    public EnhancedMap(int initialCapacity) {
+    public ExtendedMap(int initialCapacity) {
         super(initialCapacity);
     }
 
@@ -47,7 +47,7 @@ public class EnhancedMap<K, V> extends ConcurrentHashMap<K, V> {
      *
      * @param m m
      */
-    public EnhancedMap(Map<? extends K, ? extends V> m) {
+    public ExtendedMap(Map<? extends K, ? extends V> m) {
         super(m);
     }
 
@@ -57,7 +57,7 @@ public class EnhancedMap<K, V> extends ConcurrentHashMap<K, V> {
      * @param initialCapacity initialCapacity
      * @param loadFactor loadFactor
      */
-    public EnhancedMap(int initialCapacity, float loadFactor) {
+    public ExtendedMap(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
     }
 
@@ -68,7 +68,7 @@ public class EnhancedMap<K, V> extends ConcurrentHashMap<K, V> {
      * @param loadFactor loadFactor
      * @param concurrencyLevel concurrencyLevel
      */
-    public EnhancedMap(int initialCapacity, float loadFactor, int concurrencyLevel) {
+    public ExtendedMap(int initialCapacity, float loadFactor, int concurrencyLevel) {
         super(initialCapacity, loadFactor, concurrencyLevel);
     }
 
