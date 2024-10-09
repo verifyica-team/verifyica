@@ -103,6 +103,7 @@ public class RunnerTest {
     private static class ExceptionTestTask implements Runner.Task {
 
         @Override
+        @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
         public void perform() {
             throw new RuntimeException("FORCED");
         }
