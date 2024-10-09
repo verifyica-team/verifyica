@@ -86,6 +86,8 @@ The [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
 
 - Only valid in `@Verifyica.Prepare`, `@Verifyica.BeforeAll`, `@Verifyica.BeforeEach`, and `@Verifyica.Test` annotated methods
 
+- Used to skip execution of methods
+
 ---
 
 Copyright (C) 2024 The Verifyica project authors
