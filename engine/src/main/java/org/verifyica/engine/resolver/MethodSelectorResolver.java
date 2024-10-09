@@ -26,6 +26,9 @@ import org.junit.platform.engine.discovery.MethodSelector;
 import org.verifyica.engine.common.Stopwatch;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
+import org.verifyica.engine.support.ClassSupport;
+import org.verifyica.engine.support.HierarchyTraversalMode;
+import org.verifyica.engine.support.OrderSupport;
 
 /** Class to implement MethodSelectorResolver */
 public class MethodSelectorResolver {
@@ -59,9 +62,18 @@ public class MethodSelectorResolver {
             LOGGER.trace("testClass [%s] testMethod [%s]", testClass.getName(), testMethod.getName());
 
             if (ResolverPredicates.TEST_CLASS.test(testClass) && ResolverPredicates.TEST_METHOD.test(testMethod)) {
-                classMethodMap
-                        .computeIfAbsent(testClass, method -> new ArrayList<>())
-                        .add(testMethod);
+                List<Method> testMethods = OrderSupport.orderMethods(ClassSupport.findMethods(
+                        testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
+
+                for (Method method : testMethods) {
+                    classMethodMap
+                            .computeIfAbsent(testClass, list -> new ArrayList<>())
+                            .add(method);
+
+                    if (method.equals(testMethod)) {
+                        break;
+                    }
+                }
             }
         });
 

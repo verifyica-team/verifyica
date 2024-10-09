@@ -64,9 +64,12 @@ public class OrderSupport {
     /**
      * Method to order a List of Methods by display name then Order annotation
      *
+     * <p>orders the List in place
+     *
      * @param methods methods
+     * @return an ordered List of Methods
      */
-    public static void orderMethods(List<Method> methods) {
+    public static List<Method> orderMethods(List<Method> methods) {
         Precondition.notNull(methods, "methods is null");
 
         methods.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
@@ -96,5 +99,7 @@ public class OrderSupport {
                 return Integer.compare(orderValue1, orderValue2);
             }
         });
+
+        return methods;
     }
 }

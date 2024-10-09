@@ -148,7 +148,15 @@ public class EngineDiscoveryRequestResolver {
 
                 int testArgumentParallelism = getTestArgumentParallelism(testClass);
 
-                OrderSupport.orderMethods(testMethods);
+                // Sanity check
+                List<Method> orderedMethod = OrderSupport.orderMethods(new ArrayList<>(testMethods));
+                for (int i = 0; i < testMethods.size(); i++) {
+                    if (!orderedMethod.get(i).equals(testMethods.get(i))) {
+                        System.err.printf(
+                                "BUG test methods should be ordered at this stage. Please report the issue.%n");
+                        System.exit(-1);
+                    }
+                }
 
                 String testClassDisplayName = DisplayNameSupport.getDisplayName(testClass);
 

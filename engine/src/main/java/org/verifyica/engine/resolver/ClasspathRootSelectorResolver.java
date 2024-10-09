@@ -33,6 +33,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
+import org.verifyica.engine.support.OrderSupport;
 
 /** Class to implement ClasspathRootSelectorResolver */
 public class ClasspathRootSelectorResolver {
@@ -80,9 +81,9 @@ public class ClasspathRootSelectorResolver {
                 if (classNamePredicate.test(testClass.getName())
                         && packageNamePredicate.test(testClass.getPackage().getName())) {
                     classMethodMap
-                            .computeIfAbsent(testClass, method -> new ArrayList<>())
-                            .addAll(ClassSupport.findMethods(
-                                    testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
+                            .computeIfAbsent(testClass, list -> new ArrayList<>())
+                            .addAll(OrderSupport.orderMethods(ClassSupport.findMethods(
+                                    testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP)));
                 }
             });
         });

@@ -33,6 +33,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
+import org.verifyica.engine.support.OrderSupport;
 
 /** Class to implement UniqueIdSelectorResolver */
 public class UniqueIdSelectorResolver {
@@ -83,9 +84,9 @@ public class UniqueIdSelectorResolver {
                 }
 
                 classMethodMap
-                        .computeIfAbsent(testClass, method -> new ArrayList<>())
-                        .addAll(ClassSupport.findMethods(
-                                testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
+                        .computeIfAbsent(testClass, list -> new ArrayList<>())
+                        .addAll(OrderSupport.orderMethods(ClassSupport.findMethods(
+                                testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP)));
 
                 argumentIndexMap
                         .computeIfAbsent(testClass, clazz -> new LinkedHashSet<>())
@@ -108,7 +109,7 @@ public class UniqueIdSelectorResolver {
                         }
 
                         classMethodMap
-                                .computeIfAbsent(testClass, method -> new ArrayList<>())
+                                .computeIfAbsent(testClass, list -> new ArrayList<>())
                                 .addAll(ClassSupport.findMethods(
                                         testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
                     }
