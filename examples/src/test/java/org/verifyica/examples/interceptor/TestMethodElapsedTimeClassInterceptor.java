@@ -21,9 +21,11 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
 
-public class CustomClassInterceptor implements ClassInterceptor {
+public class TestMethodElapsedTimeClassInterceptor implements ClassInterceptor {
 
-    private static final String CLASS_NAME = CustomClassInterceptor.class.getSimpleName();
+    private static final String CLASS_NAME = TestMethodElapsedTimeClassInterceptor.class.getSimpleName();
+
+    private static final String TIMESTAMP = "timestamp";
 
     @Override
     public void initialize(EngineContext engineContext) throws Throwable {
@@ -32,6 +34,8 @@ public class CustomClassInterceptor implements ClassInterceptor {
 
     @Override
     public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
+        argumentContext.map().put(TIMESTAMP, System.nanoTime());
+
         System.out.printf(
                 "%s::preTest() test class [%s] test method [%s]%n",
                 CLASS_NAME, argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
@@ -43,11 +47,19 @@ public class CustomClassInterceptor implements ClassInterceptor {
                 "%s::postTest() test class [%s] test method [%s]%n",
                 CLASS_NAME, argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
 
+        long elapsedTime = System.nanoTime() - argumentContext.map().removeAs(TIMESTAMP, Long.class);
+        System.out.printf(
+                "test class [%s] test method [%s] test argument [%s] elapsed time [%d] ns%n",
+                argumentContext.classContext().testClass().getName(),
+                testMethod.getName(),
+                argumentContext.testArgument().name(),
+                elapsedTime);
+
         rethrow(throwable);
     }
 
     @Override
     public void destroy(EngineContext engineContext) throws Throwable {
-        System.out.printf("%s::destroy()%n", CustomClassInterceptor.class.getName());
+        System.out.printf("%s::destroy()%n", TestMethodElapsedTimeClassInterceptor.class.getName());
     }
 }
