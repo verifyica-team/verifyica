@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.NginxContainer;
@@ -159,20 +158,6 @@ public class NginxTest {
 
             info("test environment [%s] destroyed", dockerImageName);
         }
-    }
-
-    /**
-     * Method to create a random string
-     *
-     * @param length length
-     * @return a random String
-     */
-    private static String randomString(int length) {
-        return new Random()
-                .ints(97, 123 + 1)
-                .limit(length)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
     }
 
     /**
