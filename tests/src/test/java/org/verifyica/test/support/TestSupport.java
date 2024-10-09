@@ -32,9 +32,6 @@ public class TestSupport {
      * @param classContext classContext
      */
     public static void logArgumentContext(String testMethodName, ClassContext classContext) {
-        String argumentName = null;
-        String argumentValue = null;
-
         System.out.printf(
                 "%s:: ClassContext testClass [%s]%n",
                 testMethodName, classContext.getTestClass().getName());
