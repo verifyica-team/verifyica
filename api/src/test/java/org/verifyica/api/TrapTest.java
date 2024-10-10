@@ -16,22 +16,16 @@
 
 package org.verifyica.api;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
+import org.junit.jupiter.api.Test;
 
 public class TrapTest {
 
     @Test
     public void testIllegalArgument() {
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> new Trap(null).assertEmpty());
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Trap(null).assertEmpty());
     }
 
     @Test
@@ -41,7 +35,9 @@ public class TrapTest {
 
     @Test
     public void testTrappedThrowable() throws Throwable {
-        Trap trap = new Trap(() -> { throw new RuntimeException("FORCED"); });
+        Trap trap = new Trap(() -> {
+            throw new RuntimeException("FORCED");
+        });
 
         assertThat(trap).isNotNull();
         assertThat(trap.throwable()).isNotNull();
