@@ -31,12 +31,16 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.NginxContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
+import org.verifyica.api.ExtendedMap;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 
-public class NginxTest {
+public class NginxTest2 {
 
-    private final ThreadLocal<Network> networkThreadLocal = new ThreadLocal<>();
+    private final String NETWORK = "network";
+
+    private final ThreadLocal<ExtendedMap<String, Object>> extendedMapThreadLocal =
+            ThreadLocal.withInitial(ExtendedMap::new);
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<NginxTestEnvironment> arguments() {
@@ -54,7 +58,7 @@ public class NginxTest {
         Network network = Network.newNetwork();
         network.getId();
 
-        networkThreadLocal.set(network);
+        extendedMapThreadLocal.get().put(NETWORK, network);
         nginxTestEnvironment.initialize(network);
     }
 
@@ -76,8 +80,11 @@ public class NginxTest {
         List<Trap> traps = new ArrayList<>();
 
         traps.add(new Trap(() -> Optional.ofNullable(nginxTestEnvironment).ifPresent(NginxTestEnvironment::destroy)));
-        traps.add(new Trap(() -> Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
-        traps.add(new Trap(networkThreadLocal::remove));
+        traps.add(
+                new Trap(() -> Optional.ofNullable(extendedMapThreadLocal.get().getAs(NETWORK, Network.class))
+                        .ifPresent(Network::close)));
+        traps.add(new Trap(() -> extendedMapThreadLocal.get().clear()));
+        traps.add(new Trap(extendedMapThreadLocal::remove));
 
         Trap.assertEmpty(traps);
     }

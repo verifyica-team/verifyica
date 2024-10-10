@@ -24,7 +24,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-/** Class to implement Runner */
+/**
+ * Class to implement Runner
+ *
+ * <p>Deprecated - @see Trap
+ */
 @Deprecated
 public class Runner {
 

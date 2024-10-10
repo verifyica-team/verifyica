@@ -35,13 +35,17 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
+import org.verifyica.api.ExtendedMap;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 
-public class MongoDBTest {
+public class MongoDBTest4 {
 
-    private final ThreadLocal<Network> networkThreadLocal = new ThreadLocal<>();
-    private final ThreadLocal<String> nameThreadLocal = new ThreadLocal<>();
+    private static final String NETWORK = "network";
+    private static final String NAME = "name";
+
+    private final ThreadLocal<ExtendedMap<String, Object>> extendedMapThreadLocal =
+            ThreadLocal.withInitial(ExtendedMap::new);
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<MongoDBTestEnvironment> arguments() {
@@ -59,7 +63,7 @@ public class MongoDBTest {
         Network network = Network.newNetwork();
         network.getId();
 
-        networkThreadLocal.set(network);
+        extendedMapThreadLocal.get().put(NETWORK, network);
         mongoDBTestEnvironment.initialize(network);
     }
 
@@ -69,7 +73,8 @@ public class MongoDBTest {
         info("testing testInsert() ...");
 
         String name = randomString(16);
-        nameThreadLocal.set(name);
+        extendedMapThreadLocal.get().put(NAME, name);
+
         info("name [%s]", name);
 
         MongoClientSettings settings = MongoClientSettings.builder()
@@ -97,7 +102,7 @@ public class MongoDBTest {
                         mongoDBTestEnvironment.getMongoDBContainer().getConnectionString()))
                 .build();
 
-        String name = nameThreadLocal.get();
+        String name = extendedMapThreadLocal.get().getAs(NAME, String.class);
 
         try (MongoClient mongoClient = MongoClients.create(settings)) {
             MongoDatabase database = mongoClient.getDatabase("test-db");
@@ -118,9 +123,11 @@ public class MongoDBTest {
 
         traps.add(
                 new Trap(() -> Optional.ofNullable(mongoDBTestEnvironment).ifPresent(MongoDBTestEnvironment::destroy)));
-        traps.add(new Trap(() -> Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
-        traps.add(new Trap(nameThreadLocal::remove));
-        traps.add(new Trap(networkThreadLocal::remove));
+        traps.add(
+                new Trap(() -> Optional.ofNullable(extendedMapThreadLocal.get().getAs(NETWORK, Network.class))
+                        .ifPresent(Network::close)));
+        traps.add(new Trap(() -> extendedMapThreadLocal.get().clear()));
+        traps.add(new Trap(extendedMapThreadLocal::remove));
 
         Trap.assertEmpty(traps);
     }

@@ -18,7 +18,12 @@ package org.verifyica.api;
 
 import java.util.function.BooleanSupplier;
 
-/** Class to implement Assumptions */
+/**
+ * Class to implement Assumptions
+ *
+ * <p>Deprecated - @see SkipExecution
+ */
+@Deprecated
 public class Assumptions {
 
     /**

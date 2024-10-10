@@ -34,6 +34,7 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Assumptions;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
+import org.verifyica.api.SkipExecution;
 import org.verifyica.engine.context.ConcreteArgumentContext;
 import org.verifyica.engine.inject.Inject;
 import org.verifyica.engine.inject.Injector;
@@ -246,6 +247,8 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                 Throwable cause = e.getCause();
                 if (cause instanceof Assumptions.Failed) {
                     markSkipped = true;
+                } else if (cause instanceof SkipExecution) {
+                    markSkipped = true;
                 } else {
                     throwable = cause;
                 }
@@ -334,7 +337,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                 }
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (!(cause instanceof Assumptions.Failed)) {
+                if (!(cause instanceof Assumptions.Failed) && !(cause instanceof SkipExecution)) {
                     throwable = cause;
                 }
             } catch (Throwable t) {
@@ -347,7 +350,6 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                 classInterceptor.postAfterAll(argumentContext, throwable);
             }
         } catch (Throwable t) {
-            throwable = t;
             printStackTrace(t);
             throwables.add(t);
         }
