@@ -104,7 +104,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
 
     private ClassContext classContext;
     private final AtomicReference<Object> testInstanceAtomicReference;
-    private boolean isSkipped;
+    private boolean markedSkipped;
 
     /**
      * Constructor
@@ -235,7 +235,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             TestExecutionResult testExecutionResult;
             TestDescriptorStatus testDescriptorStatus;
 
-            if (isSkipped) {
+            if (markedSkipped) {
                 setTestDescriptorStatus(TestDescriptorStatus.skipped());
                 engineExecutionListener.executionSkipped(this, "Skipped");
             } else {
@@ -316,13 +316,11 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             for (ClassInterceptor classInterceptor : classInterceptors) {
                 classInterceptor.prePrepare(classContext);
             }
-        } catch (Assumptions.Failed e) {
-            isSkipped = true;
         } catch (Throwable t) {
             throwable = t;
         }
 
-        if (!isSkipped && throwable == null) {
+        if (throwable == null) {
             try {
                 for (Method method : prepareMethods) {
                     invoke(method, testInstanceAtomicReference.get(), invocationArguments, true);
@@ -330,7 +328,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
                 if (cause instanceof Assumptions.Failed) {
-                    isSkipped = true;
+                    markedSkipped = true;
                 } else {
                     throwable = cause;
                 }
@@ -349,7 +347,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             throwables.add(throwable);
         }
 
-        if (isSkipped) {
+        if (markedSkipped) {
             return State.SKIP;
         } else if (throwable == null) {
             return State.TEST;
@@ -394,7 +392,13 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
     }
 
     private State doSkipChildren() {
-        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(TestableTestDescriptor::skip);
+        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(testableTestDescriptor -> {
+            Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testableTestDescriptor);
+            Injector.inject(CLASS_CONTEXT, classContext, testableTestDescriptor);
+            testableTestDescriptor.skip();
+        });
 
         return State.CONCLUDE;
     }
@@ -416,16 +420,18 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
                     invoke(method, testInstanceAtomicReference.get(), invocationArguments, true);
                 }
             } catch (InvocationTargetException e) {
-                throwable = e.getCause();
+                Throwable cause = e.getCause();
+                if (!(cause instanceof Assumptions.Failed)) {
+                    throwable = cause;
+                }
             } catch (Throwable t) {
                 throwable = t;
             }
         }
 
         try {
-            Throwable t = throwable instanceof Assumptions.Failed ? null : throwable;
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
-                classInterceptor.postConclude(classContext, t);
+                classInterceptor.postConclude(classContext, throwable);
             }
         } catch (Throwable t) {
             throwable = t;

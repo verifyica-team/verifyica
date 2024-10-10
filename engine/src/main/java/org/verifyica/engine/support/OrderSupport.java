@@ -17,8 +17,10 @@
 package org.verifyica.engine.support;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Precondition;
 
@@ -64,9 +66,12 @@ public class OrderSupport {
     /**
      * Method to order a List of Methods by display name then Order annotation
      *
+     * <p>orders the List in place
+     *
      * @param methods methods
+     * @return an ordered List of Methods
      */
-    public static void orderMethods(List<Method> methods) {
+    public static List<Method> orderMethods(List<Method> methods) {
         Precondition.notNull(methods, "methods is null");
 
         methods.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
@@ -96,5 +101,24 @@ public class OrderSupport {
                 return Integer.compare(orderValue1, orderValue2);
             }
         });
+
+        return methods;
+    }
+
+    /**
+     * Method to order a Set of Methods by display name then Order annotation
+     *
+     * <p>orders the Set in place
+     *
+     * @param methods methods
+     * @return an ordered Set of Methods
+     */
+    public static Set<Method> orderMethods(Set<Method> methods) {
+        List<Method> list = orderMethods(new ArrayList<>(methods));
+
+        methods.clear();
+        methods.addAll(list);
+
+        return methods;
     }
 }

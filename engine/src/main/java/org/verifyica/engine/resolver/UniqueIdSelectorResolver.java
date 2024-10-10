@@ -17,7 +17,6 @@
 package org.verifyica.engine.resolver;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +32,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
+import org.verifyica.engine.support.OrderSupport;
 
 /** Class to implement UniqueIdSelectorResolver */
 public class UniqueIdSelectorResolver {
@@ -48,12 +48,12 @@ public class UniqueIdSelectorResolver {
      * Method to resolve UniqueIdSelectors
      *
      * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param classMethodMap classMethodMap
+     * @param classMethodSet classMethodSet
      * @param argumentIndexMap argumentIndexMap
      */
     public void resolve(
             EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, List<Method>> classMethodMap,
+            Map<Class<?>, Set<Method>> classMethodSet,
             Map<Class<?>, Set<Integer>> argumentIndexMap) {
         LOGGER.trace("resolve()");
 
@@ -82,10 +82,10 @@ public class UniqueIdSelectorResolver {
                     UncheckedClassNotFoundException.throwUnchecked(e);
                 }
 
-                classMethodMap
-                        .computeIfAbsent(testClass, method -> new ArrayList<>())
-                        .addAll(ClassSupport.findMethods(
-                                testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
+                classMethodSet
+                        .computeIfAbsent(testClass, set -> new LinkedHashSet<>())
+                        .addAll(OrderSupport.orderMethods(ClassSupport.findMethods(
+                                testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP)));
 
                 argumentIndexMap
                         .computeIfAbsent(testClass, clazz -> new LinkedHashSet<>())
@@ -107,8 +107,8 @@ public class UniqueIdSelectorResolver {
                             UncheckedClassNotFoundException.throwUnchecked(e);
                         }
 
-                        classMethodMap
-                                .computeIfAbsent(testClass, method -> new ArrayList<>())
+                        classMethodSet
+                                .computeIfAbsent(testClass, set -> new LinkedHashSet<>())
                                 .addAll(ClassSupport.findMethods(
                                         testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
                     }

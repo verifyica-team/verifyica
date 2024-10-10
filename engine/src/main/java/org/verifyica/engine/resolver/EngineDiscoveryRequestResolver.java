@@ -111,7 +111,7 @@ public class EngineDiscoveryRequestResolver {
 
         Stopwatch stopwatch = new Stopwatch();
 
-        Map<Class<?>, List<Method>> testClassMethodMap = new TreeMap<>(CLASS_COMPARATOR);
+        Map<Class<?>, Set<Method>> testClassMethodSet = new TreeMap<>(CLASS_COMPARATOR);
         Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new TreeMap<>(CLASS_COMPARATOR);
         Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new TreeMap<>(CLASS_COMPARATOR);
 
@@ -130,25 +130,34 @@ public class EngineDiscoveryRequestResolver {
                                 : "null"));
             }
 
-            new ClasspathRootSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
-            new PackageSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
-            new ClassSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
-            new MethodSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodMap);
+            new ClasspathRootSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodSet);
+            new PackageSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodSet);
+            new ClassSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodSet);
+            new MethodSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodSet);
             new UniqueIdSelectorResolver()
-                    .resolve(engineDiscoveryRequest, testClassMethodMap, testClassArgumentIndexMap);
+                    .resolve(engineDiscoveryRequest, testClassMethodSet, testClassArgumentIndexMap);
 
-            resolveTestArguments(testClassMethodMap, testClassArgumentMap, testClassArgumentIndexMap);
+            resolveTestArguments(testClassMethodSet, testClassArgumentMap, testClassArgumentIndexMap);
 
             List<ClassDefinition> classDefinitions = new ArrayList<>();
 
-            testClassMethodMap.keySet().forEach(testClass -> {
+            testClassMethodSet.keySet().forEach(testClass -> {
                 List<Argument<?>> testArguments = testClassArgumentMap.get(testClass);
 
-                List<Method> testMethods = testClassMethodMap.get(testClass);
+                Set<Method> testMethods = OrderSupport.orderMethods(testClassMethodSet.get(testClass));
 
                 int testArgumentParallelism = getTestArgumentParallelism(testClass);
 
-                OrderSupport.orderMethods(testMethods);
+                // Sanity check
+                List<Method> orderedTestMethods = new ArrayList<>(testMethods);
+                List<Method> expectedOrderedTestMethods = OrderSupport.orderMethods(new ArrayList<>(testMethods));
+                for (int i = 0; i < testMethods.size(); i++) {
+                    if (!orderedTestMethods.get(i).equals(expectedOrderedTestMethods.get(i))) {
+                        System.err.printf(
+                                "BUG test methods should be ordered at this stage. Please report the issue along with test code to reproduce the issue.%n");
+                        System.exit(-1);
+                    }
+                }
 
                 String testClassDisplayName = DisplayNameSupport.getDisplayName(testClass);
 
@@ -199,12 +208,12 @@ public class EngineDiscoveryRequestResolver {
     /**
      * Method to resolve test class test arguments
      *
-     * @param testClassMethodMap testClassMethodMap
+     * @param testClassMethodSet testClassMethodSet
      * @param testClassArgumentMap testClassArgumentMap
      * @throws Throwable Throwable
      */
     private static void resolveTestArguments(
-            Map<Class<?>, List<Method>> testClassMethodMap,
+            Map<Class<?>, Set<Method>> testClassMethodSet,
             Map<Class<?>, List<Argument<?>>> testClassArgumentMap,
             Map<Class<?>, Set<Integer>> argumentIndexMap)
             throws Throwable {
@@ -212,7 +221,7 @@ public class EngineDiscoveryRequestResolver {
 
         Stopwatch stopwatch = new Stopwatch();
 
-        for (Class<?> testClass : testClassMethodMap.keySet()) {
+        for (Class<?> testClass : testClassMethodSet.keySet()) {
             List<Argument<?>> testArguments = getTestArguments(testClass);
             Set<Integer> testArgumentIndices = argumentIndexMap.get(testClass);
             if (testArgumentIndices != null) {

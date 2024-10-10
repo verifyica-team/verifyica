@@ -82,7 +82,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
     private ClassContext classContext;
 
     private ArgumentContext argumentContext;
-    private boolean isSkipped;
+    private boolean markSkipped;
 
     /**
      * Constructor
@@ -185,7 +185,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             TestExecutionResult testExecutionResult;
             TestDescriptorStatus testDescriptorStatus;
 
-            if (isSkipped) {
+            if (markSkipped) {
                 setTestDescriptorStatus(TestDescriptorStatus.skipped());
                 engineExecutionListener.executionSkipped(this, "Skipped");
             } else {
@@ -213,7 +213,13 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
     public void skip() {
         engineExecutionListener.executionStarted(this);
 
-        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(TestableTestDescriptor::skip);
+        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(testableTestDescriptor -> {
+            Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testableTestDescriptor);
+            Injector.inject(CLASS_CONTEXT, classContext, testableTestDescriptor);
+            testableTestDescriptor.skip();
+        });
 
         engineExecutionListener.executionSkipped(this, "Skipped");
 
@@ -227,13 +233,11 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             for (ClassInterceptor classInterceptor : classInterceptors) {
                 classInterceptor.preBeforeAll(argumentContext);
             }
-        } catch (Assumptions.Failed e) {
-            isSkipped = true;
         } catch (Throwable t) {
             throwable = t;
         }
 
-        if (!isSkipped && throwable == null) {
+        if (throwable == null) {
             try {
                 for (Method method : beforeAllMethods) {
                     invoke(method, classContext.getTestInstance(), invocationArguments);
@@ -241,7 +245,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
                 if (cause instanceof Assumptions.Failed) {
-                    isSkipped = true;
+                    markSkipped = true;
                 } else {
                     throwable = cause;
                 }
@@ -254,15 +258,13 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
                 classInterceptor.postBeforeAll(argumentContext, throwable);
             }
-        } catch (Assumptions.Failed e) {
-            isSkipped = true;
         } catch (Throwable t) {
             throwable = t;
             printStackTrace(throwable);
             throwables.add(throwable);
         }
 
-        if (isSkipped) {
+        if (markSkipped) {
             return State.SKIP;
         } else if (throwable == null) {
             return State.TEST_DEPENDENT;
@@ -303,7 +305,13 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     private State doSkipChildren() {
-        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(TestableTestDescriptor::skip);
+        getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(testableTestDescriptor -> {
+            Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
+            Injector.inject(CLASS_INTERCEPTORS_REVERSED, classInterceptorsReversed, testableTestDescriptor);
+            Injector.inject(CLASS_CONTEXT, classContext, testableTestDescriptor);
+            testableTestDescriptor.skip();
+        });
 
         return State.AFTER_ALL;
     }
@@ -325,7 +333,10 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                     invoke(method, classContext.getTestInstance(), invocationArguments);
                 }
             } catch (InvocationTargetException e) {
-                throwable = e.getCause();
+                Throwable cause = e.getCause();
+                if (!(cause instanceof Assumptions.Failed)) {
+                    throwable = cause;
+                }
             } catch (Throwable t) {
                 throwable = t;
             }

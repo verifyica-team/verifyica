@@ -23,12 +23,20 @@ import org.junit.jupiter.api.Test;
 public class JUnit5Test {
 
     @Test
-    public void test() {
-        System.out.println("Testing " + getClass().getName());
+    public void test1() {
+        System.out.println("test1()");
+        assertThat(true).isTrue();
+    }
 
-        int value = 0;
-        value++;
+    @Test
+    public void test2() {
+        System.out.println("test1()");
+        assertThat(true).isTrue();
+    }
 
-        assertThat(value).isEqualTo(1);
+    @Test
+    public void test3() {
+        System.out.println("test1()");
+        assertThat(true).isTrue();
     }
 }

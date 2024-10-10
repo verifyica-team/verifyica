@@ -41,17 +41,19 @@ public class SkipEvenArgumentsTest {
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) throws Throwable {
         // Skip odd arguments
-        Assumptions.assumeTrue(() -> argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 0);
+        Assumptions.assumeTrue(() -> argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 1);
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+                .isOdd();
     }
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+                .isOdd();
 
         System.out.printf(
                 "test1(name[%s], payload[%s])%n",
@@ -64,8 +66,8 @@ public class SkipEvenArgumentsTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
-        Assumptions.assumeTrue(argumentContext.getMap().containsKey("test1"));
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+                .isOdd();
 
         System.out.printf(
                 "test2(name[%s], payload[%s])%n",
@@ -77,8 +79,8 @@ public class SkipEvenArgumentsTest {
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
-        Assumptions.assumeTrue(argumentContext.getMap().containsKey("test2"));
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+                .isOdd();
 
         System.out.printf(
                 "test3(name[%s], payload[%s])%n",
@@ -90,8 +92,8 @@ public class SkipEvenArgumentsTest {
 
     @Verifyica.Test
     public void test4(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
-        Assumptions.assumeFalse(() -> argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+                .isOdd();
 
         System.out.printf(
                 "test4(name[%s], payload[%s])%n",
@@ -103,8 +105,8 @@ public class SkipEvenArgumentsTest {
 
     @Verifyica.Test
     public void test5(ArgumentContext argumentContext) throws Throwable {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
-        Assumptions.assumeFalse(() -> argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+                .isOdd();
 
         System.out.printf(
                 "test5(name[%s], payload[%s])%n",

@@ -62,6 +62,11 @@ Verifyica uses a dependent test method paradigm ...
 
 - default test method ordering is by test method name (or display name if defined), then by `@Verifyica.Order` annotations.
 
+- if a specific test method is selected, run all test methods that are ordered before the selected test method
+ 
+- IntelliJ has test method selection issues if multiple test methods are selected
+  - In these scenarios, all test methods will be executed
+
 # Features
 
 - Purpose built for integration testing using [testcontainers-java](https://java.testcontainers.org/)
