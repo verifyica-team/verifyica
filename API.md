@@ -80,14 +80,6 @@ The [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
 
 - Use to clean up resources
 
-## Assumptions
-
-[Assumptions](api/src/main/java/org/verifyica/api/Assumptions.java) provides a way to prevent execution of associated methods and downstream tests.
-
-- Only valid in `@Verifyica.Prepare`, `@Verifyica.BeforeAll`, `@Verifyica.BeforeEach`, and `@Verifyica.Test` annotated methods
-
-- Used to skip execution of methods
-
 ---
 
 Copyright (C) 2024 The Verifyica project authors
