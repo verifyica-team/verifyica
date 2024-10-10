@@ -245,9 +245,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                 }
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (cause instanceof Assumptions.Failed) {
-                    markSkipped = true;
-                } else if (cause instanceof SkipExecution) {
+                if (cause instanceof Assumptions.Failed || cause instanceof SkipExecution) {
                     markSkipped = true;
                 } else {
                     throwable = cause;
@@ -337,7 +335,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                 }
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (!(cause instanceof Assumptions.Failed) && !(cause instanceof SkipExecution)) {
+                if (!(cause instanceof Assumptions.Failed || cause instanceof SkipExecution)) {
                     throwable = cause;
                 }
             } catch (Throwable t) {
