@@ -74,9 +74,9 @@ The [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
 
 ---
 
-## Runner
+## Trap
 
-[Runner](api/src/main/java/org/verifyica/api/Runner.java) provides a way to run a task, capturing any exceptions that may occur.
+[Trap](api/src/main/java/org/verifyica/api/Trap.java) provides a way to run a task, capturing any exceptions that may occur.
 
 - Use to clean up resources
 

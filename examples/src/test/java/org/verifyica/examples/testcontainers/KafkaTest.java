@@ -20,6 +20,7 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +41,7 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
-import org.verifyica.api.Runner;
+import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 
 public class KafkaTest {
@@ -185,13 +186,14 @@ public class KafkaTest {
     public void destroyTestEnvironment(KafkaTestEnvironment kafkaTestEnvironment) throws Throwable {
         info("destroy test environment ...");
 
-        new Runner()
-                .perform(
-                        () -> Optional.ofNullable(kafkaTestEnvironment).ifPresent(KafkaTestEnvironment::destroy),
-                        () -> Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close),
-                        messageThreadLocal::remove,
-                        networkThreadLocal::remove)
-                .assertSuccessful();
+        List<Trap> traps = new ArrayList<>();
+
+        traps.add(new Trap(() -> Optional.ofNullable(kafkaTestEnvironment).ifPresent(KafkaTestEnvironment::destroy)));
+        traps.add(new Trap(() -> Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
+        traps.add(new Trap(messageThreadLocal::remove));
+        traps.add(new Trap(networkThreadLocal::remove));
+
+        Trap.assertEmpty(traps);
     }
 
     /** Class to implement a KafkaTestEnvironment */

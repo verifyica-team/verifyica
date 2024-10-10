@@ -20,6 +20,7 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +42,7 @@ import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.Runner;
+import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 
 public class KafkaTest2 {
@@ -195,14 +196,15 @@ public class KafkaTest2 {
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
         info("destroy test environment ...");
 
-        new Runner()
-                .perform(
-                        () -> Optional.ofNullable(argumentContext.getTestArgumentPayload(KafkaTestEnvironment.class))
-                                .ifPresent(KafkaTestEnvironment::destroy),
-                        () -> Optional.ofNullable(argumentContext.getMap().removeAs(NETWORK, Network.class))
-                                .ifPresent(Network::close),
-                        () -> argumentContext.getMap().clear())
-                .assertSuccessful();
+        List<Trap> traps = new ArrayList<>();
+
+        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.getTestArgumentPayload(KafkaTestEnvironment.class))
+                .ifPresent(KafkaTestEnvironment::destroy)));
+        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.getMap().removeAs(NETWORK, Network.class))
+                .ifPresent(Network::close)));
+        traps.add(new Trap(() -> argumentContext.getMap().clear()));
+
+        Trap.assertEmpty(traps);
     }
 
     /** Class to implement a KafkaTestEnvironment */

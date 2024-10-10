@@ -25,6 +25,8 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -34,7 +36,7 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.Runner;
+import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 
 public class MongoDBTest3 {
@@ -120,14 +122,15 @@ public class MongoDBTest3 {
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
         info("destroy test environment ...");
 
-        new Runner()
-                .perform(
-                        () -> Optional.ofNullable(argumentContext.testArgumentPayload(MongoDBTestEnvironment.class))
-                                .ifPresent(MongoDBTestEnvironment::destroy),
-                        () -> Optional.ofNullable(argumentContext.map().removeAs(NETWORK, Network.class))
-                                .ifPresent(Network::close),
-                        () -> argumentContext.map().clear())
-                .assertSuccessful();
+        List<Trap> traps = new ArrayList<>();
+
+        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.testArgumentPayload(MongoDBTestEnvironment.class))
+                .ifPresent(MongoDBTestEnvironment::destroy)));
+        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.map().removeAs(NETWORK, Network.class))
+                .ifPresent(Network::close)));
+        traps.add(new Trap(() -> argumentContext.map().clear()));
+
+        Trap.assertEmpty(traps);
     }
 
     /** Class to implement a MongoDBTestEnvironment */

@@ -23,13 +23,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.NginxContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
-import org.verifyica.api.Runner;
+import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 
 public class NginxTest {
@@ -70,12 +72,13 @@ public class NginxTest {
     public void destroyTestEnvironment(NginxTestEnvironment nginxTestEnvironment) throws Throwable {
         info("destroy test environment ...");
 
-        new Runner()
-                .perform(
-                        () -> Optional.ofNullable(nginxTestEnvironment).ifPresent(NginxTestEnvironment::destroy),
-                        () -> Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close),
-                        networkThreadLocal::remove)
-                .assertSuccessful();
+        List<Trap> traps = new ArrayList<>();
+
+        traps.add(new Trap(() -> Optional.ofNullable(nginxTestEnvironment).ifPresent(NginxTestEnvironment::destroy)));
+        traps.add(new Trap(() -> Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
+        traps.add(new Trap(networkThreadLocal::remove));
+
+        Trap.assertEmpty(traps);
     }
 
     public static String doGet(String urlString) throws Throwable {
