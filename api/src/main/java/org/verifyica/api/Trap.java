@@ -16,6 +16,8 @@
 
 package org.verifyica.api;
 
+import static java.lang.String.format;
+
 import java.util.Collection;
 import java.util.Optional;
 
@@ -73,6 +75,30 @@ public class Trap {
         }
 
         trap.assertEmpty();
+    }
+
+    /**
+     * Assert that no Throwables were trapped
+     *
+     * @param traps traps
+     * @throws Throwable the first trapped Throwable
+     */
+    public static void assertEmpty(Trap... traps) throws Throwable {
+        if (traps == null) {
+            throw new IllegalArgumentException("traps is null");
+        }
+
+        int i = 0;
+        for (Trap trap : traps) {
+            if (trap == null) {
+                throw new IllegalArgumentException(format("traps[%d] is null", i));
+            }
+            i++;
+        }
+
+        for (Trap trap : traps) {
+            trap.assertEmpty();
+        }
     }
 
     /**
