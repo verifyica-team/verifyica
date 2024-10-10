@@ -53,6 +53,15 @@ public class Trap {
     }
 
     /**
+     * Checks if a Throwable was trapped
+     *
+     * @return true if no Throwable was trapped, else false
+     */
+    public boolean isEmpty() {
+        return throwable == null;
+    }
+
+    /**
      * Assert that no Throwable was trapped
      *
      * @throws Throwable The trapped Throwable

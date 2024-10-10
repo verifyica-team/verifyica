@@ -30,7 +30,10 @@ public class TrapTest {
 
     @Test
     public void testTrap() throws Throwable {
-        new Trap(() -> System.out.println("successful Trap.Runnable")).assertEmpty();
+        Trap trap = new Trap(() -> System.out.println("successful Trap.Runnable"));
+
+        assertThat(trap.isEmpty()).isTrue();
+        trap.assertEmpty();
     }
 
     @Test
@@ -40,6 +43,7 @@ public class TrapTest {
         });
 
         assertThat(trap).isNotNull();
+        assertThat(trap.isEmpty()).isFalse();
         assertThat(trap.throwable()).isNotNull();
         assertThat(trap.throwable()).isPresent();
 
