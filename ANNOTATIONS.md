@@ -230,7 +230,7 @@ Annotating a test method as `@Verifyica.Independent` allows execution of the tes
 
 - Use cautiously since it could break scenario requirements
   - test method 2 depends on test method 1, but test method 1 isn't executed
-- IntelliJ has test method selection if multiple test methods are selected 
+- IntelliJ has test method selection issues if multiple test methods are selected 
   - In these scenarios, all test methods will be executed 
 
 ### @Verifyica.Order
