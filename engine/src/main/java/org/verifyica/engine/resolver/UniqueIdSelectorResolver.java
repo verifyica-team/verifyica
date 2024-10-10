@@ -17,7 +17,6 @@
 package org.verifyica.engine.resolver;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,12 +48,12 @@ public class UniqueIdSelectorResolver {
      * Method to resolve UniqueIdSelectors
      *
      * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param classMethodMap classMethodMap
+     * @param classMethodSet classMethodSet
      * @param argumentIndexMap argumentIndexMap
      */
     public void resolve(
             EngineDiscoveryRequest engineDiscoveryRequest,
-            Map<Class<?>, List<Method>> classMethodMap,
+            Map<Class<?>, Set<Method>> classMethodSet,
             Map<Class<?>, Set<Integer>> argumentIndexMap) {
         LOGGER.trace("resolve()");
 
@@ -83,8 +82,8 @@ public class UniqueIdSelectorResolver {
                     UncheckedClassNotFoundException.throwUnchecked(e);
                 }
 
-                classMethodMap
-                        .computeIfAbsent(testClass, list -> new ArrayList<>())
+                classMethodSet
+                        .computeIfAbsent(testClass, set -> new LinkedHashSet<>())
                         .addAll(OrderSupport.orderMethods(ClassSupport.findMethods(
                                 testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP)));
 
@@ -108,8 +107,8 @@ public class UniqueIdSelectorResolver {
                             UncheckedClassNotFoundException.throwUnchecked(e);
                         }
 
-                        classMethodMap
-                                .computeIfAbsent(testClass, list -> new ArrayList<>())
+                        classMethodSet
+                                .computeIfAbsent(testClass, set -> new LinkedHashSet<>())
                                 .addAll(ClassSupport.findMethods(
                                         testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
                     }

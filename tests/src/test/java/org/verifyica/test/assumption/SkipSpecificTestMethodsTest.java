@@ -41,7 +41,8 @@ public class SkipSpecificTestMethodsTest {
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
         Assumptions.assumeTrue(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+                .isOdd();
 
         System.out.printf(
                 "test1(name[%s], payload[%s])%n",
@@ -68,7 +69,8 @@ public class SkipSpecificTestMethodsTest {
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws Throwable {
         Assumptions.assumeTrue(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2 != 0);
+        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+                .isOdd();
 
         System.out.printf(
                 "test3(name[%s], payload[%s])%n",

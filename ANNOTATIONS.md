@@ -217,6 +217,22 @@ All methods annotated with `@Verifyica.Test`:
 
 ---
 
+### @Verifyica.Independent
+
+By default, test method execution is scenario-based.
+
+- test methods are ordered
+- direction selection of a test method executes all test methods that are ordered before the selected test method
+
+Annotating a test method as `@Verifyica.Independent` allows execution of the test method in IntelliJ **without** executing previous test methods in the sequence.
+
+**Notes**
+
+- Use cautiously since it could break scenario requirements
+  - test method 2 depends on test method 1, but test method 1 isn't executed
+- IntelliJ has test method selection if multiple test methods are selected 
+  - In these scenarios, all test methods will be executed 
+
 ### @Verifyica.Order
 
 Used by Verifyica to order test classes / test methods.

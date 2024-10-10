@@ -17,12 +17,14 @@
 package org.verifyica.engine.resolver;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.discovery.MethodSelector;
+import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Stopwatch;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
@@ -44,9 +46,9 @@ public class MethodSelectorResolver {
      * Method to resolve MethodSelectors
      *
      * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param classMethodMap classMethodMap
+     * @param classMethodSet classMethodSet
      */
-    public void resolve(EngineDiscoveryRequest engineDiscoveryRequest, Map<Class<?>, List<Method>> classMethodMap) {
+    public void resolve(EngineDiscoveryRequest engineDiscoveryRequest, Map<Class<?>, Set<Method>> classMethodSet) {
         LOGGER.trace("resolve()");
 
         Stopwatch stopwatch = new Stopwatch();
@@ -62,16 +64,22 @@ public class MethodSelectorResolver {
             LOGGER.trace("testClass [%s] testMethod [%s]", testClass.getName(), testMethod.getName());
 
             if (ResolverPredicates.TEST_CLASS.test(testClass) && ResolverPredicates.TEST_METHOD.test(testMethod)) {
-                List<Method> testMethods = OrderSupport.orderMethods(ClassSupport.findMethods(
-                        testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
+                if (testMethod.isAnnotationPresent(Verifyica.Independent.class)) {
+                    classMethodSet
+                            .computeIfAbsent(testClass, set -> new LinkedHashSet<>())
+                            .add(testMethod);
+                } else {
+                    List<Method> testMethods = OrderSupport.orderMethods(ClassSupport.findMethods(
+                            testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
 
-                for (Method method : testMethods) {
-                    classMethodMap
-                            .computeIfAbsent(testClass, list -> new ArrayList<>())
-                            .add(method);
+                    for (Method method : testMethods) {
+                        classMethodSet
+                                .computeIfAbsent(testClass, set -> new LinkedHashSet<>())
+                                .add(method);
 
-                    if (method.equals(testMethod)) {
-                        break;
+                        if (method.equals(testMethod)) {
+                            break;
+                        }
                     }
                 }
             }

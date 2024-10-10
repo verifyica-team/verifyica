@@ -17,9 +17,10 @@
 package org.verifyica.engine.resolver;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.discovery.PackageSelector;
@@ -44,9 +45,9 @@ public class PackageSelectorResolver {
      * Method to resolve PackageSelectors
      *
      * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param classMethodMap classMethodMap
+     * @param classMethodSet classMethodSet
      */
-    public void resolve(EngineDiscoveryRequest engineDiscoveryRequest, Map<Class<?>, List<Method>> classMethodMap) {
+    public void resolve(EngineDiscoveryRequest engineDiscoveryRequest, Map<Class<?>, Set<Method>> classMethodSet) {
         LOGGER.trace("resolve()");
 
         Stopwatch stopwatch = new Stopwatch();
@@ -62,8 +63,8 @@ public class PackageSelectorResolver {
 
             List<Class<?>> testClasses = ClassSupport.findAllClasses(packageName, ResolverPredicates.TEST_CLASS);
 
-            testClasses.forEach(testClass -> classMethodMap
-                    .computeIfAbsent(testClass, list -> new ArrayList<>())
+            testClasses.forEach(testClass -> classMethodSet
+                    .computeIfAbsent(testClass, set -> new LinkedHashSet<>())
                     .addAll(OrderSupport.orderMethods(ClassSupport.findMethods(
                             testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP))));
         });
