@@ -130,7 +130,7 @@ public class Trap {
     public interface Runnable {
 
         /**
-         * Method to execute the Runnable
+         * Method to run the Runnable
          *
          * @throws Throwable Throwable
          */
