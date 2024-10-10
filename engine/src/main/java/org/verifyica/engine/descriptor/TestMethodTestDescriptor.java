@@ -221,8 +221,8 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             }
         } catch (Throwable t) {
             throwable = t;
-            printStackTrace(throwable);
-            throwables.add(throwable);
+            printStackTrace(t);
+            throwables.add(t);
         }
 
         if (markSkipped) {
@@ -265,9 +265,8 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
                 classInterceptor.postTest(argumentContext, testMethod, throwable);
             }
         } catch (Throwable t) {
-            throwable = t;
-            printStackTrace(throwable);
-            throwables.add(throwable);
+            printStackTrace(t);
+            throwables.add(t);
         }
 
         return State.AFTER_EACH;
@@ -304,8 +303,8 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
                 classInterceptor.postAfterEach(argumentContext, throwable);
             }
         } catch (Throwable t) {
-            printStackTrace(throwable);
-            throwables.add(throwable);
+            printStackTrace(t);
+            throwables.add(t);
         }
 
         return State.END;

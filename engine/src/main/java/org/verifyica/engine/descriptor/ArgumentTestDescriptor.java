@@ -260,8 +260,8 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             }
         } catch (Throwable t) {
             throwable = t;
-            printStackTrace(throwable);
-            throwables.add(throwable);
+            printStackTrace(t);
+            throwables.add(t);
         }
 
         if (markSkipped) {
@@ -348,8 +348,8 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             }
         } catch (Throwable t) {
             throwable = t;
-            printStackTrace(throwable);
-            throwables.add(throwable);
+            printStackTrace(t);
+            throwables.add(t);
         }
 
         return State.CLOSE;

@@ -343,8 +343,8 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             }
         } catch (Throwable t) {
             throwable = t;
-            printStackTrace(throwable);
-            throwables.add(throwable);
+            printStackTrace(t);
+            throwables.add(t);
         }
 
         if (markedSkipped) {
@@ -435,8 +435,8 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             }
         } catch (Throwable t) {
             throwable = t;
-            printStackTrace(throwable);
-            throwables.add(throwable);
+            printStackTrace(t);
+            throwables.add(t);
         }
 
         return State.DESTROY;
