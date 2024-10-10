@@ -32,6 +32,7 @@ import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.verifyica.engine.descriptor.ClassTestDescriptor;
 import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
+import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.HumanReadableTimeSupport;
@@ -92,7 +93,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     @Override
     public void executionStarted(TestDescriptor testDescriptor) {
-        if (shouldProcessDescriptor(testDescriptor)) {
+        if (testDescriptor instanceof TestableTestDescriptor) {
             stopwatches.put(testDescriptor, new Stopwatch());
 
             try {
@@ -145,7 +146,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     @Override
     public void executionSkipped(TestDescriptor testDescriptor, String reason) {
-        if (shouldProcessDescriptor(testDescriptor)) {
+        if (testDescriptor instanceof TestableTestDescriptor) {
             Duration elapsedTime = stopwatches.remove(testDescriptor).stop().elapsedTime();
 
             try {
@@ -203,7 +204,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     @Override
     public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
-        if (shouldProcessDescriptor(testDescriptor)) {
+        if (testDescriptor instanceof TestableTestDescriptor) {
             Duration elapsedTime = stopwatches.remove(testDescriptor).stop().elapsedTime();
 
             try {
@@ -360,17 +361,5 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
      */
     private static TestMethodTestDescriptor findTestMethodTestDescriptor(TestDescriptor testDescriptor) {
         return testDescriptor instanceof TestMethodTestDescriptor ? (TestMethodTestDescriptor) testDescriptor : null;
-    }
-
-    /**
-     * Method to return whether we should process the TestDescriptor
-     *
-     * @param testDescriptor testDescriptor
-     * @return true if we should process the TestDescriptor, else false
-     */
-    private static boolean shouldProcessDescriptor(TestDescriptor testDescriptor) {
-        return testDescriptor instanceof ClassTestDescriptor
-                || testDescriptor instanceof ArgumentTestDescriptor
-                || testDescriptor instanceof TestMethodTestDescriptor;
     }
 }
