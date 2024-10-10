@@ -56,7 +56,7 @@ public class TracingEngineExecutionListener implements EngineExecutionListener {
     }
 
     @Override
-    public void reportingEntryPublished(TestDescriptor testDescriptor, ReportEntry entry) {
-        LOGGER.trace("reportingEntryPublished() testDescriptor [%s] entry [%s]", testDescriptor, entry);
+    public void reportingEntryPublished(TestDescriptor testDescriptor, ReportEntry reportEntry) {
+        LOGGER.trace("reportingEntryPublished() testDescriptor [%s] reportEntry [%s]", testDescriptor, reportEntry);
     }
 }
