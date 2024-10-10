@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 /** Class to implement Runner */
+@Deprecated
 public class Runner {
 
     private final List<Throwable> throwables;
