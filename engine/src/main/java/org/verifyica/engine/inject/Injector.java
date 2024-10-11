@@ -69,11 +69,11 @@ public class Injector {
     /**
      * Method to inject a value into annotated fields
      *
-     * @param annotationClass annotationClass
+     * @param annotation annotation
      * @param value value
      * @param target target
      */
-    public static void inject(Class<? extends Annotation> annotationClass, Object value, Object target) {
+    public static void inject(Class<? extends Annotation> annotation, Object value, Object target) {
         Class<?> clazz = target.getClass();
 
         while (clazz != null
@@ -81,7 +81,7 @@ public class Injector {
                 && !clazz.getName().startsWith("sun")) {
             for (Field field : getFields(clazz)) {
                 if (!Modifier.isStatic(field.getModifiers())
-                        && field.isAnnotationPresent(annotationClass)
+                        && field.isAnnotationPresent(annotation)
                         && field.getType().isAssignableFrom(value.getClass())) {
                     injectField(field, target, value);
                 }
@@ -94,11 +94,11 @@ public class Injector {
     /**
      * Method to inject a value into annotated fields
      *
-     * @param annotationClass annotationClass
+     * @param annotation annotation
      * @param value value
      * @param target target
      */
-    public static void inject(Class<? extends Annotation> annotationClass, Object value, Class<?> target) {
+    public static void inject(Class<? extends Annotation> annotation, Object value, Class<?> target) {
         Class<?> clazz = target;
 
         while (clazz != null
@@ -106,7 +106,7 @@ public class Injector {
                 && !clazz.getName().startsWith("sun")) {
             for (Field field : getFields(clazz)) {
                 if (Modifier.isStatic(field.getModifiers())
-                        && field.isAnnotationPresent(annotationClass)
+                        && field.isAnnotationPresent(annotation)
                         && field.getType().isAssignableFrom(value.getClass())) {
                     injectField(field, null, value);
                 }
@@ -116,6 +116,13 @@ public class Injector {
         }
     }
 
+    /**
+     * Method to inject a field
+     *
+     * @param field field
+     * @param target target (null for static field)
+     * @param value value
+     */
     private static void injectField(Field field, Object target, Object value) {
         synchronized (field) {
             boolean wasAccessible = field.isAccessible();
