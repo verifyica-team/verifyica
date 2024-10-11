@@ -166,6 +166,7 @@ Configure the Maven Surefire plugin to include standard JUnit tests (or exclude 
     <artifactId>maven-surefire-plugin</artifactId>
     <version>3.5.1</version>
     <configuration>
+        <!-- Only include JUnit tests -->
         <includes>
             <include>%regex[.*org.junit.*]</include>
         </includes>

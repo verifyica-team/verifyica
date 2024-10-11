@@ -16,10 +16,9 @@
 
 package org.verifyica.engine.inject;
 
-import static java.lang.String.format;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -46,32 +45,24 @@ public class Injector {
      * @param target target
      */
     public static void inject(String name, Object value, Object target) {
-        try {
-            Class<?> clazz = target.getClass();
-            while (clazz != null
-                    && !clazz.getName().startsWith("java")
-                    && !clazz.getName().startsWith("sun")) {
-                for (Field field : getFields(clazz)) {
-                    Inject inject = field.getAnnotation(Inject.class);
-                    if (inject != null) {
-                        Named named = field.getAnnotation(Named.class);
-                        if (named != null && named.value().equals(name)) {
-                            synchronized (field) {
-                                boolean wasAccessible = field.isAccessible();
-                                try {
-                                    field.setAccessible(true);
-                                    field.set(target, value);
-                                } finally {
-                                    field.setAccessible(wasAccessible);
-                                }
-                            }
-                        }
-                    }
+        Class<?> clazz = target.getClass();
+
+        while (clazz != null
+                && !clazz.getName().startsWith("java")
+                && !clazz.getName().startsWith("sun")) {
+            for (Field field : getFields(clazz)) {
+                Inject inject = field.getAnnotation(Inject.class);
+                Named named = field.getAnnotation(Named.class);
+                if (inject != null
+                        && named != null
+                        && named.value().equals(name)
+                        && !Modifier.isStatic(field.getModifiers())
+                        && field.getType().isAssignableFrom(value.getClass())) {
+                    injectField(field, target, value);
                 }
-                clazz = clazz.getSuperclass();
             }
-        } catch (IllegalAccessException e) {
-            throw new EngineException(format("Exception injecting object into named [%s] field", name), e);
+
+            clazz = clazz.getSuperclass();
         }
     }
 
@@ -83,32 +74,57 @@ public class Injector {
      * @param target target
      */
     public static void inject(Class<? extends Annotation> annotationClass, Object value, Object target) {
-        String fieldName = null;
+        Class<?> clazz = target.getClass();
 
-        try {
-            Class<?> clazz = target.getClass();
-            while (clazz != null
-                    && !clazz.getName().startsWith("java")
-                    && !clazz.getName().startsWith("sun")) {
-                for (Field field : getFields(clazz)) {
-                    fieldName = field.getName();
-                    if (field.isAnnotationPresent(annotationClass)
-                            && field.getType().isAssignableFrom(value.getClass())) {
-                        synchronized (field) {
-                            boolean wasAccessible = field.isAccessible();
-                            try {
-                                field.setAccessible(true);
-                                field.set(target, value);
-                            } finally {
-                                field.setAccessible(wasAccessible);
-                            }
-                        }
-                    }
+        while (clazz != null
+                && !clazz.getName().startsWith("java")
+                && !clazz.getName().startsWith("sun")) {
+            for (Field field : getFields(clazz)) {
+                if (!Modifier.isStatic(field.getModifiers())
+                        && field.isAnnotationPresent(annotationClass)
+                        && field.getType().isAssignableFrom(value.getClass())) {
+                    injectField(field, target, value);
                 }
-                clazz = clazz.getSuperclass();
             }
+
+            clazz = clazz.getSuperclass();
+        }
+    }
+
+    /**
+     * Method to inject a value into annotated fields
+     *
+     * @param annotationClass annotationClass
+     * @param value value
+     * @param target target
+     */
+    public static void inject(Class<? extends Annotation> annotationClass, Object value, Class<?> target) {
+        Class<?> clazz = target;
+
+        while (clazz != null
+                && !clazz.getName().startsWith("java")
+                && !clazz.getName().startsWith("sun")) {
+            for (Field field : getFields(clazz)) {
+                if (Modifier.isStatic(field.getModifiers())
+                        && field.isAnnotationPresent(annotationClass)
+                        && field.getType().isAssignableFrom(value.getClass())) {
+                    injectField(field, null, value);
+                }
+            }
+
+            clazz = clazz.getSuperclass();
+        }
+    }
+
+    private static void injectField(Field field, Object target, Object value) {
+        boolean wasAccessible = field.isAccessible();
+        try {
+            field.setAccessible(true);
+            field.set(target, value);
         } catch (IllegalAccessException e) {
-            throw new EngineException(format("Exception injecting object into field [%s]", fieldName), e);
+            throw new EngineException(String.format("Exception injecting object into field [%s]", field.getName()), e);
+        } finally {
+            field.setAccessible(wasAccessible);
         }
     }
 

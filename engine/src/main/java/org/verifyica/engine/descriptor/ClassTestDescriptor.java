@@ -286,8 +286,10 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             try {
                 Object object = getTestClass().getConstructor().newInstance();
 
-                Injector.inject(Verifyica.Autowired.class, engineContext, object);
                 Injector.inject(Verifyica.Autowired.class, classContext.getConfiguration(), object);
+                Injector.inject(Verifyica.Autowired.class, engineContext, object);
+                Injector.inject(Verifyica.Autowired.class, classContext.getConfiguration(), getTestClass());
+                Injector.inject(Verifyica.Autowired.class, engineContext, getTestClass());
 
                 testInstanceAtomicReference.set(object);
 
