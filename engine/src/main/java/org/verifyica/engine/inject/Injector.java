@@ -125,7 +125,7 @@ public class Injector {
      */
     private static void injectField(Field field, Object target, Object value) {
         synchronized (field) {
-            boolean wasAccessible = field.isAccessible();
+            boolean originalAccessibility = field.isAccessible();
             try {
                 field.setAccessible(true);
                 field.set(target, value);
@@ -133,7 +133,7 @@ public class Injector {
                 throw new EngineException(
                         String.format("Exception injecting object into field [%s]", field.getName()), e);
             } finally {
-                field.setAccessible(wasAccessible);
+                field.setAccessible(originalAccessibility);
             }
         }
     }
