@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2024 The Verifyica project authors
+# Copyright (C) 2024-present Verifyica project authors and contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

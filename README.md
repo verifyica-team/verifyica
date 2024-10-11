@@ -269,4 +269,4 @@ and <a href="https://www.yourkit.com/youmonitor/">YourKit YouMonitor</a>.
 
 ---
 
-Copyright (C) 2024 The Verifyica project authors
+Copyright (C) 2024-present Verifyica project authors and contributors

@@ -82,4 +82,4 @@ The [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
 
 ---
 
-Copyright (C) 2024 The Verifyica project authors
+Copyright (C) 2024-present Verifyica project authors and contributors
