@@ -31,10 +31,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
 import org.bson.Document;
-import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.utility.DockerImageName;
-import org.verifyica.api.Argument;
 import org.verifyica.api.ExtendedMap;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
@@ -130,73 +127,6 @@ public class MongoDBTest4 {
         traps.add(new Trap(extendedMapThreadLocal::remove));
 
         Trap.assertEmpty(traps);
-    }
-
-    /** Class to implement a MongoDBTestEnvironment */
-    public static class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> {
-
-        private final String dockerImageName;
-        private MongoDBContainer mongoDBContainer;
-
-        /**
-         * Constructor
-         *
-         * @param dockerImageName the name
-         */
-        public MongoDBTestEnvironment(String dockerImageName) {
-            this.dockerImageName = dockerImageName;
-        }
-
-        /**
-         * Method to get the name
-         *
-         * @return the name
-         */
-        @Override
-        public String getName() {
-            return dockerImageName;
-        }
-
-        /**
-         * Method to get the payload (ourself)
-         *
-         * @return the payload
-         */
-        @Override
-        public MongoDBTestEnvironment getPayload() {
-            return this;
-        }
-
-        /**
-         * Method to initialize the MongoDBTestEnvironment using a specific network
-         *
-         * @param network the network
-         */
-        public void initialize(Network network) {
-            info("initializing test environment [%s] ...", dockerImageName);
-
-            mongoDBContainer = new MongoDBContainer(DockerImageName.parse(dockerImageName));
-            mongoDBContainer.withNetwork(network);
-            mongoDBContainer.start();
-
-            info("test environment [%s] initialized", dockerImageName);
-        }
-
-        public MongoDBContainer getMongoDBContainer() {
-            return mongoDBContainer;
-        }
-
-        /** Method to destroy the MongoDBTestEnvironment */
-        public void destroy() {
-            info("destroying test environment [%s] ...", dockerImageName);
-
-            if (mongoDBContainer != null) {
-                mongoDBContainer.stop();
-                mongoDBContainer = null;
-            }
-
-            info("test environment [%s] destroyed", dockerImageName);
-        }
     }
 
     /**

@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.NginxContainer;
-import org.testcontainers.utility.DockerImageName;
-import org.verifyica.api.Argument;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 
@@ -95,73 +92,6 @@ public class NginxTest {
         }
 
         return result.toString();
-    }
-
-    /** Class to implement a NginxTestEnvironment */
-    public static class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
-
-        private final String dockerImageName;
-        private NginxContainer<?> nginxContainer;
-
-        /**
-         * Constructor
-         *
-         * @param dockerImageName the name
-         */
-        public NginxTestEnvironment(String dockerImageName) {
-            this.dockerImageName = dockerImageName;
-        }
-
-        /**
-         * Method to get the name
-         *
-         * @return the name
-         */
-        @Override
-        public String getName() {
-            return dockerImageName;
-        }
-
-        /**
-         * Method to get the payload (ourself)
-         *
-         * @return the payload
-         */
-        @Override
-        public NginxTestEnvironment getPayload() {
-            return this;
-        }
-
-        /**
-         * Method to initialize the MongoDBTestEnvironment using a specific network
-         *
-         * @param network the network
-         */
-        public void initialize(Network network) {
-            info("initializing test environment [%s] ...", dockerImageName);
-
-            nginxContainer = new NginxContainer<>(DockerImageName.parse(dockerImageName));
-            nginxContainer.withNetwork(network);
-            nginxContainer.start();
-
-            info("test environment [%s] initialized", dockerImageName);
-        }
-
-        public NginxContainer getNginxContainer() {
-            return nginxContainer;
-        }
-
-        /** Method to destroy the MongoDBTestEnvironment */
-        public void destroy() {
-            info("destroying test environment [%s] ...", dockerImageName);
-
-            if (nginxContainer != null) {
-                nginxContainer.stop();
-                nginxContainer = null;
-            }
-
-            info("test environment [%s] destroyed", dockerImageName);
-        }
     }
 
     /**

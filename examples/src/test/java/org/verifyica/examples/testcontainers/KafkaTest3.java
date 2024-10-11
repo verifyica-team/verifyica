@@ -38,9 +38,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.kafka.KafkaContainer;
-import org.testcontainers.utility.DockerImageName;
-import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
@@ -205,79 +202,6 @@ public class KafkaTest3 {
         traps.add(new Trap(() -> argumentContext.map().clear()));
 
         Trap.assertEmpty(traps);
-    }
-
-    /** Class to implement a KafkaTestEnvironment */
-    public static class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
-
-        private final String dockerImageName;
-        private KafkaContainer kafkaContainer;
-
-        /**
-         * Constructor
-         *
-         * @param dockerImageName the name
-         */
-        public KafkaTestEnvironment(String dockerImageName) {
-            this.dockerImageName = dockerImageName;
-        }
-
-        /**
-         * Method to get the name
-         *
-         * @return the name
-         */
-        @Override
-        public String getName() {
-            return dockerImageName;
-        }
-
-        /**
-         * Method to get the payload (ourself)
-         *
-         * @return the payload
-         */
-        @Override
-        public KafkaTestEnvironment getPayload() {
-            return this;
-        }
-
-        /**
-         * Method to initialize the KafkaTestEnvironment using a specific network
-         *
-         * @param network the network
-         */
-        public void initialize(Network network) {
-            info("initialize test environment [%s] ...", dockerImageName);
-
-            kafkaContainer = new KafkaContainer(
-                    DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"));
-            kafkaContainer.withNetwork(network);
-            kafkaContainer.start();
-
-            info("test environment [%s] initialized", dockerImageName);
-        }
-
-        /**
-         * Method to get the KafkaContainer
-         *
-         * @return the KafkaContainer
-         */
-        public KafkaContainer getKafkaContainer() {
-            return kafkaContainer;
-        }
-
-        /** Method to destroy the KafkaTestEnvironment */
-        public void destroy() {
-            info("destroying test environment [%s] ...", dockerImageName);
-
-            if (kafkaContainer != null) {
-                kafkaContainer.stop();
-                kafkaContainer = null;
-            }
-
-            info("test environment [%s] destroyed", dockerImageName);
-        }
     }
 
     /**
