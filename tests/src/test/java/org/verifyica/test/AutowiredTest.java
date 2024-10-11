@@ -28,6 +28,12 @@ import org.verifyica.api.Verifyica;
 public class AutowiredTest {
 
     @Verifyica.Autowired
+    private static Configuration CONFIGURATION;
+
+    @Verifyica.Autowired
+    private static EngineContext ENGINE_CONTEXT;
+
+    @Verifyica.Autowired
     private EngineContext engineContext;
 
     @Verifyica.Autowired
@@ -43,8 +49,14 @@ public class AutowiredTest {
         logArgumentContext("test()", argumentContext);
 
         assertArgumentContext(argumentContext);
-        assertThat(engineContext).isNotNull();
+
+        assertThat(CONFIGURATION).isNotNull();
         assertThat(configuration).isNotNull();
+        assertThat(CONFIGURATION).isSameAs(configuration);
+
+        assertThat(engineContext).isNotNull();
+        assertThat(ENGINE_CONTEXT).isNotNull();
+        assertThat(engineContext).isSameAs(ENGINE_CONTEXT);
     }
 
     public static class NestedAutowiredTest {
