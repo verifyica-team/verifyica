@@ -16,8 +16,9 @@
 
 package org.verifyica.examples.testcontainers;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.verifyica.examples.support.TestSupport.info;
+import static org.verifyica.examples.support.TestSupport.randomString;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -40,7 +41,6 @@ import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
-import org.verifyica.examples.support.RandomSupport;
 
 public class KafkaTest3 {
 
@@ -81,7 +81,7 @@ public class KafkaTest3 {
                 .getKafkaContainer()
                 .getBootstrapServers();
 
-        String message = RandomSupport.randomString(16);
+        String message = randomString(16);
         argumentContext.map().put(MESSAGE, message);
 
         info("producing message [%s] to [%s] ...", message, bootstrapServers);
@@ -202,24 +202,5 @@ public class KafkaTest3 {
         traps.add(new Trap(() -> argumentContext.map().clear()));
 
         Trap.assertEmpty(traps);
-    }
-
-    /**
-     * Method to print an info print
-     *
-     * @param object object
-     */
-    private static void info(Object object) {
-        System.out.println(object);
-    }
-
-    /**
-     * Method to print an info print
-     *
-     * @param format format
-     * @param objects objects
-     */
-    private static void info(String format, Object... objects) {
-        info(format(format, objects));
     }
 }

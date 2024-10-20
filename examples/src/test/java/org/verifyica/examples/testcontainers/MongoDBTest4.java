@@ -16,8 +16,9 @@
 
 package org.verifyica.examples.testcontainers;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.verifyica.examples.support.TestSupport.info;
+import static org.verifyica.examples.support.TestSupport.randomString;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -34,7 +35,6 @@ import org.testcontainers.containers.Network;
 import org.verifyica.api.ExtendedMap;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
-import org.verifyica.examples.support.RandomSupport;
 
 public class MongoDBTest4 {
 
@@ -69,7 +69,7 @@ public class MongoDBTest4 {
     public void testInsert(MongoDBTestEnvironment mongoDBTestEnvironment) {
         info("testing testInsert() ...");
 
-        String name = RandomSupport.randomString(16);
+        String name = randomString(16);
         extendedMapThreadLocal.get().put(NAME, name);
 
         info("name [%s]", name);
@@ -127,24 +127,5 @@ public class MongoDBTest4 {
         traps.add(new Trap(extendedMapThreadLocal::remove));
 
         Trap.assertEmpty(traps);
-    }
-
-    /**
-     * Method to print an info print
-     *
-     * @param object object
-     */
-    private static void info(Object object) {
-        System.out.println(object);
-    }
-
-    /**
-     * Method to print an info print
-     *
-     * @param format format
-     * @param objects objects
-     */
-    private static void info(String format, Object... objects) {
-        info(format(format, objects));
     }
 }

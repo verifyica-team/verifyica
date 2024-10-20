@@ -16,7 +16,7 @@
 
 package org.verifyica.examples.testcontainers;
 
-import static java.lang.String.format;
+import static org.verifyica.examples.support.TestSupport.info;
 
 import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.KafkaContainer;
@@ -97,24 +97,5 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
         }
 
         info("test environment [%s] destroyed", dockerImageName);
-    }
-
-    /**
-     * Method to print an info print
-     *
-     * @param object object
-     */
-    private static void info(Object object) {
-        System.out.println(object);
-    }
-
-    /**
-     * Method to print an info print
-     *
-     * @param format format
-     * @param objects objects
-     */
-    private static void info(String format, Object... objects) {
-        info(format(format, objects));
     }
 }
