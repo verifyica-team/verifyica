@@ -62,6 +62,12 @@ public class AutowiredTest {
     public static class NestedAutowiredTest {
 
         @Verifyica.Autowired
+        private static Configuration CONFIGURATION;
+
+        @Verifyica.Autowired
+        private static EngineContext ENGINE_CONTEXT;
+
+        @Verifyica.Autowired
         private EngineContext engineContext;
 
         @Verifyica.Autowired
