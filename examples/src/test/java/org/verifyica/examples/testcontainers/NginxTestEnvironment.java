@@ -75,7 +75,7 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
         info("test environment [%s] initialized", dockerImageName);
     }
 
-    public NginxContainer getNginxContainer() {
+    public NginxContainer<?> getNginxContainer() {
         return nginxContainer;
     }
 
