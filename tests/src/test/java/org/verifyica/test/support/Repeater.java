@@ -189,7 +189,7 @@ public class Repeater {
         void throttle();
     }
 
-    /** Class to implement a fix throttle */
+    /** Class to implement a fixed throttle */
     public static class FixedThrottle implements Throttle {
 
         private final long milliseconds;
