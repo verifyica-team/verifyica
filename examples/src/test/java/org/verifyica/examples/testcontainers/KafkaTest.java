@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -40,6 +39,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.RandomSupport;
 
 public class KafkaTest {
 
@@ -77,7 +77,7 @@ public class KafkaTest {
 
         String bootstrapServers = kafkaTestEnvironment.getKafkaContainer().getBootstrapServers();
 
-        String message = randomString(16);
+        String message = RandomSupport.randomString(16);
         messageThreadLocal.set(message);
 
         info("producing message [%s] to [%s] ...", message, bootstrapServers);
@@ -194,20 +194,6 @@ public class KafkaTest {
     }
 
     /**
-     * Method to create a random string
-     *
-     * @param length length
-     * @return a random String
-     */
-    private static String randomString(int length) {
-        return new Random()
-                .ints(97, 123 + 1)
-                .limit(length)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
-
-    /**
      * Method to print an info print
      *
      * @param object object
@@ -217,7 +203,7 @@ public class KafkaTest {
     }
 
     /**
-     * Metod to print an info print
+     * Method to print an info print
      *
      * @param format format
      * @param objects objects

@@ -28,12 +28,12 @@ import com.mongodb.client.MongoDatabase;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Stream;
 import org.bson.Document;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.RandomSupport;
 
 public class MongoDBTest {
 
@@ -65,7 +65,7 @@ public class MongoDBTest {
     public void testInsert(MongoDBTestEnvironment mongoDBTestEnvironment) {
         info("testing testInsert() ...");
 
-        String name = randomString(16);
+        String name = RandomSupport.randomString(16);
         nameThreadLocal.set(name);
         info("name [%s]", name);
 
@@ -123,20 +123,6 @@ public class MongoDBTest {
     }
 
     /**
-     * Method to create a random string
-     *
-     * @param length length
-     * @return a random String
-     */
-    private static String randomString(int length) {
-        return new Random()
-                .ints(97, 123 + 1)
-                .limit(length)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
-
-    /**
      * Method to print an info print
      *
      * @param object object
@@ -146,7 +132,7 @@ public class MongoDBTest {
     }
 
     /**
-     * Metod to print an info print
+     * Method to print an info print
      *
      * @param format format
      * @param objects objects

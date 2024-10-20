@@ -103,7 +103,7 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     }
 
     /**
-     * Metod to print an info print
+     * Method to print an info print
      *
      * @param format format
      * @param objects objects

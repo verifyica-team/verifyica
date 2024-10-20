@@ -26,6 +26,7 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.SkipExecution;
 import org.verifyica.api.Verifyica;
 
+@SuppressWarnings("unchecked")
 public class SkipEvenArgumentsTest {
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
