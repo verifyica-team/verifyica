@@ -58,7 +58,7 @@ public class SkipExecution extends RuntimeException {
      */
     public static void ifTrue(boolean condition, String message) {
         if (condition) {
-            if (message == null) {
+            if (message == null || message.trim().isEmpty()) {
                 throw new SkipExecution();
             } else {
                 throw new SkipExecution(message);
@@ -69,11 +69,15 @@ public class SkipExecution extends RuntimeException {
     /**
      * Throws a SkipException if true
      *
-     * @param booleanSupplier booleanSupplier
+     * @param supplier supplier
      * @throws SkipExecution SkipExecution
      */
-    public static void ifTrue(BooleanSupplier booleanSupplier) throws SkipExecution {
-        if (booleanSupplier == null || !booleanSupplier.getAsBoolean()) {
+    public static void ifTrue(BooleanSupplier supplier) throws SkipExecution {
+        if (supplier == null) {
+            throw new IllegalArgumentException("supplier is null");
+        }
+
+        if (supplier.getAsBoolean()) {
             throw new SkipExecution();
         }
     }
@@ -81,13 +85,17 @@ public class SkipExecution extends RuntimeException {
     /**
      * Throws a SkipException if true
      *
-     * @param booleanSupplier booleanSupplier
+     * @param supplier supplier
      * @param message message
      * @throws SkipExecution SkipExecution
      */
-    public static void ifTrue(BooleanSupplier booleanSupplier, String message) throws SkipExecution {
-        if (booleanSupplier == null || !booleanSupplier.getAsBoolean()) {
-            if (message == null) {
+    public static void ifTrue(BooleanSupplier supplier, String message) throws SkipExecution {
+        if (supplier == null) {
+            throw new IllegalArgumentException("supplier is null");
+        }
+
+        if (supplier.getAsBoolean()) {
+            if (message == null || message.trim().isEmpty()) {
                 throw new SkipExecution();
             } else {
                 throw new SkipExecution(message);
@@ -116,7 +124,7 @@ public class SkipExecution extends RuntimeException {
      */
     public static void ifFalse(boolean condition, String message) throws SkipExecution {
         if (!condition) {
-            if (message == null) {
+            if (message == null || message.trim().isEmpty()) {
                 throw new SkipExecution();
             } else {
                 throw new SkipExecution(message);
@@ -127,11 +135,15 @@ public class SkipExecution extends RuntimeException {
     /**
      * Throws a SkipException if false
      *
-     * @param booleanSupplier booleanSupplier
+     * @param supplier supplier
      * @throws SkipExecution SkipExecution
      */
-    public static void ifFalse(BooleanSupplier booleanSupplier) throws SkipExecution {
-        if (booleanSupplier == null || booleanSupplier.getAsBoolean()) {
+    public static void ifFalse(BooleanSupplier supplier) throws SkipExecution {
+        if (supplier == null) {
+            throw new IllegalArgumentException("supplier is null");
+        }
+
+        if (!supplier.getAsBoolean()) {
             throw new SkipExecution();
         }
     }
@@ -139,13 +151,17 @@ public class SkipExecution extends RuntimeException {
     /**
      * Throws a SkipException if false
      *
-     * @param booleanSupplier booleanSupplier
+     * @param supplier supplier
      * @param message message
      * @throws SkipExecution SkipExecution
      */
-    public static void ifFalse(BooleanSupplier booleanSupplier, String message) throws SkipExecution {
-        if (booleanSupplier == null || booleanSupplier.getAsBoolean()) {
-            if (message == null) {
+    public static void ifFalse(BooleanSupplier supplier, String message) throws SkipExecution {
+        if (supplier == null) {
+            throw new IllegalArgumentException("supplier is null");
+        }
+
+        if (!supplier.getAsBoolean()) {
+            if (message == null || message.trim().isEmpty()) {
                 throw new SkipExecution();
             } else {
                 throw new SkipExecution(message);
