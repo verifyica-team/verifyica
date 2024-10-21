@@ -27,6 +27,8 @@ import java.util.UUID;
 /** Class to implement TemporaryDirectory */
 public class TemporaryDirectory implements AutoCloseable {
 
+    private static final String DEFAULT_PREFIX = "temp-";
+
     private final Path temporaryDirectory;
 
     /**
@@ -35,7 +37,7 @@ public class TemporaryDirectory implements AutoCloseable {
      * @throws IOException IOException if the temporary directory can't be created
      */
     public TemporaryDirectory() throws IOException {
-        this("temp-");
+        this(DEFAULT_PREFIX);
     }
 
     /**
@@ -53,7 +55,7 @@ public class TemporaryDirectory implements AutoCloseable {
             throw new IllegalArgumentException("prefix is blank");
         }
 
-        this.temporaryDirectory = Files.createTempDirectory(prefix.trim() + UUID.randomUUID());
+        temporaryDirectory = Files.createTempDirectory(prefix.trim() + UUID.randomUUID());
     }
 
     /**
