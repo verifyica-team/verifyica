@@ -31,7 +31,7 @@ public class MapTest1 {
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
-        return "ignored";
+        return "test";
     }
 
     @Verifyica.Test
