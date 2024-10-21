@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class to implement EnhancedMap
+ * Class to implement ExtendedMap
  *
  * @param <K> key type
  * @param <V> value type
