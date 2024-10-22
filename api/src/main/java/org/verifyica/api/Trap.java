@@ -121,6 +121,14 @@ public class Trap {
             throw new IllegalArgumentException("traps is null");
         }
 
+        int i = 0;
+        for (Trap trap : traps) {
+            if (trap == null) {
+                throw new IllegalArgumentException(format("traps[%d] is null", i));
+            }
+            i++;
+        }
+
         for (Trap trap : traps) {
             trap.assertEmpty();
         }
