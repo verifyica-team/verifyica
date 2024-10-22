@@ -82,4 +82,20 @@ The [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
 
 ---
 
+## Execution
+
+[Execution](api/src/main/java/org/verifyica/api/Execution.java) provides static methods to throw a `Execution.ExecutionSkippedException` to skip test execution and report the associated method as skipped.
+
+It can only be used in methods annotated with...
+
+- `@Verifyica.Prepare`
+- `@Verifyica.BeforeAll`
+- `@Verifyica.BeforeEach`
+- `@Verifyica.Test`
+- `@Verifyica.AfterEach`
+- `@Verifyica.AfterAll`
+- `@Verifyica.Conclude`
+
+---
+
 Copyright (C) 2024-present Verifyica project authors and contributors
