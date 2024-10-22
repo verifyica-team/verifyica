@@ -46,14 +46,15 @@ public class LockManager {
     public static boolean tryLock(String key) {
         notBlank(key, "key is null", "key is blank");
 
+        String trimmedKey = key.trim();
         LockReference lockReference;
 
         LOCK.lock();
         try {
-            lockReference = LOCK_REFERENCES.get(key);
+            lockReference = LOCK_REFERENCES.get(trimmedKey);
             if (lockReference == null) {
                 lockReference = new LockReference();
-                LOCK_REFERENCES.put(key, lockReference);
+                LOCK_REFERENCES.put(trimmedKey, lockReference);
             }
             lockReference.addThread();
         } finally {
@@ -76,14 +77,15 @@ public class LockManager {
         notBlank(key, "key is null", "key is blank");
         notNull(timeUnit, "timeUnit is null");
 
+        String trimmedKey = key.trim();
         LockReference lockReference;
 
         LOCK.lock();
         try {
-            lockReference = LOCK_REFERENCES.get(key);
+            lockReference = LOCK_REFERENCES.get(trimmedKey);
             if (lockReference == null) {
                 lockReference = new LockReference();
-                LOCK_REFERENCES.put(key, lockReference);
+                LOCK_REFERENCES.put(trimmedKey, lockReference);
             }
             lockReference.addThread();
         } finally {
@@ -101,14 +103,15 @@ public class LockManager {
     public static void lock(String key) {
         notBlank(key, "key is null", "key is blank");
 
+        String trimmedKey = key.trim();
         LockReference lockReference;
 
         LOCK.lock();
         try {
-            lockReference = LOCK_REFERENCES.get(key);
+            lockReference = LOCK_REFERENCES.get(trimmedKey);
             if (lockReference == null) {
                 lockReference = new LockReference();
-                LOCK_REFERENCES.put(key, lockReference);
+                LOCK_REFERENCES.put(trimmedKey, lockReference);
             }
             lockReference.addThread();
         } finally {
@@ -126,23 +129,25 @@ public class LockManager {
     public static void unlock(String key) {
         notBlank(key, "key is null", "key is blank");
 
+        String trimmedKey = key.trim();
+
         LOCK.lock();
         try {
-            LockReference lockReference = LOCK_REFERENCES.get(key);
+            LockReference lockReference = LOCK_REFERENCES.get(trimmedKey);
             if (lockReference == null || lockReference.getThreadCount() == 0) {
-                throw new IllegalMonitorStateException(format("Key [%s] is not locked", key));
+                throw new IllegalMonitorStateException(format("Key [%s] is not locked", trimmedKey));
             }
 
             if (!lockReference.getLock().isHeldByCurrentThread()) {
                 throw new IllegalMonitorStateException(
-                        format("Current thread does not own the Lock for key [%s]", key));
+                        format("Current thread does not own the Lock for key [%s]", trimmedKey));
             }
 
             lockReference.getLock().unlock();
             lockReference.removeThread();
 
             if (lockReference.getThreadCount() == 0) {
-                LOCK_REFERENCES.remove(key);
+                LOCK_REFERENCES.remove(trimmedKey);
             }
         } finally {
             LOCK.unlock();
@@ -158,9 +163,11 @@ public class LockManager {
     public static boolean isLocked(String key) {
         notBlank(key, "key is null", "key is blank");
 
+        String trimmedKey = key.trim();
+
         LOCK.lock();
         try {
-            return LOCK_REFERENCES.get(key) != null;
+            return LOCK_REFERENCES.get(trimmedKey) != null;
         } finally {
             LOCK.unlock();
         }

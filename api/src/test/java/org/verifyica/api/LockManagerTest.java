@@ -35,17 +35,13 @@ public class LockManagerTest {
 
         for (int i = 0; i < 10; i++) {
             LockManager.assertSize(0);
-
             assertThat(LockManager.isLocked(key)).isFalse();
 
             LockManager.lock(key);
-
             LockManager.assertSize(1);
-
             assertThat(LockManager.isLocked(key)).isTrue();
 
             LockManager.unlock(key);
-
             assertThat(LockManager.isLocked(key)).isFalse();
 
             LockManager.assertSize(0);
@@ -68,15 +64,12 @@ public class LockManagerTest {
         String key = "key";
 
         LockManager.lock(key);
-
         LockManager.assertSize(1);
 
         LockManager.lock(key);
-
         LockManager.assertSize(1);
 
         LockManager.lock(key);
-
         LockManager.assertSize(1);
 
         assertThat(LockManager.tryLock(key)).isTrue();
@@ -84,17 +77,13 @@ public class LockManagerTest {
         assertThat(LockManager.tryLock(key)).isTrue();
 
         LockManager.assertSize(1);
-
         assertThat(LockManager.isLocked(key)).isTrue();
-
         LockManager.assertSize(1);
 
         LockManager.unlock(key);
-
         LockManager.assertSize(0);
 
         assertThatExceptionOfType(IllegalMonitorStateException.class).isThrownBy(() -> LockManager.unlock(key));
-
         assertThat(LockManager.isLocked(key)).isFalse();
 
         LockManager.assertSize(0);
@@ -192,5 +181,22 @@ public class LockManagerTest {
         lockThread.join();
 
         LockManager.assertSize(0);
+    }
+
+    @Test
+    public void testKeys() {
+        String key = "key";
+
+        try {
+            LockManager.lock(key);
+            LockManager.lock(" " + key);
+            LockManager.lock(key + " ");
+            LockManager.lock(" " + key + " ");
+
+            LockManager.assertSize(1);
+        } finally {
+            LockManager.unlock(key);
+            LockManager.assertSize(0);
+        }
     }
 }
