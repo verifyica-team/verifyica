@@ -37,3 +37,4 @@ test.sh
 test.log
 
 junit-platform-console-standalone.sh
+build.sh
