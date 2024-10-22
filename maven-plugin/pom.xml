@@ -265,7 +265,7 @@
         <dependency>
             <groupId>org.verifyica</groupId>
             <artifactId>verifyica-api</artifactId>
-            <version>development</version>
+            <version>0.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.verifyica</groupId>
