@@ -42,6 +42,7 @@ import org.verifyica.api.Assumptions;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
+import org.verifyica.api.Execution;
 import org.verifyica.api.SkipExecution;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.DirectExecutorService;
@@ -56,6 +57,7 @@ import org.verifyica.engine.support.ExecutorSupport;
 import org.verifyica.engine.support.HashSupport;
 
 /** Class to implement ClassTestDescriptor */
+@SuppressWarnings("deprecation")
 public class ClassTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptor.class);
@@ -331,7 +333,9 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
                 }
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (cause instanceof Assumptions.Failed || cause instanceof SkipExecution) {
+                if (cause instanceof Assumptions.Failed
+                        || cause instanceof SkipExecution
+                        || cause instanceof Execution.ExecutionSkippedException) {
                     markedSkipped = true;
                 } else {
                     throwable = cause;
@@ -425,7 +429,9 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
                 }
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (!(cause instanceof Assumptions.Failed || cause instanceof SkipExecution)) {
+                if (!(cause instanceof Assumptions.Failed
+                        || cause instanceof SkipExecution
+                        || cause instanceof Execution.ExecutionSkippedException)) {
                     throwable = cause;
                 }
             } catch (Throwable t) {

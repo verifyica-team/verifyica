@@ -19,6 +19,7 @@ package org.verifyica.api;
 import java.util.function.BooleanSupplier;
 
 /** Class to implement SkipExecution */
+@Deprecated
 public class SkipExecution extends RuntimeException {
 
     /**
