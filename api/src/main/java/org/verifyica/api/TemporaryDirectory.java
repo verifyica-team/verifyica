@@ -27,7 +27,7 @@ import java.util.UUID;
 /** Class to implement TemporaryDirectory */
 public class TemporaryDirectory implements AutoCloseable {
 
-    private static final String DEFAULT_PREFIX = "temp-";
+    private static final String DEFAULT_PREFIX = "verifyica-temp-";
 
     private final Path temporaryDirectory;
 
