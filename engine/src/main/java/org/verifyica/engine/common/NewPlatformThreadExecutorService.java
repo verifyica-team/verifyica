@@ -87,7 +87,12 @@ public class NewPlatformThreadExecutorService extends AbstractExecutorService {
             if (remainingTime <= 0) {
                 return false;
             }
-            Thread.sleep(Math.min(TimeUnit.NANOSECONDS.toMillis(remainingTime), 100));
+
+            if (remainingTime > TimeUnit.SECONDS.toNanos(1)) {
+                Thread.sleep(1000);
+            } else {
+                Thread.sleep(TimeUnit.NANOSECONDS.toMillis(remainingTime));
+            }
         }
         return true;
     }
