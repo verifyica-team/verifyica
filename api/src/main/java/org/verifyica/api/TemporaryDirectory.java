@@ -64,7 +64,7 @@ public class TemporaryDirectory implements AutoCloseable {
      * @return the temporary directory Path
      */
     public Path path() {
-        return temporaryDirectory;
+        return getPath();
     }
 
     /**
@@ -73,7 +73,7 @@ public class TemporaryDirectory implements AutoCloseable {
      * @return the temporary directory Path
      */
     public Path getPath() {
-        return path();
+        return temporaryDirectory;
     }
 
     @Override
