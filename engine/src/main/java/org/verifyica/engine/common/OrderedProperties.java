@@ -16,9 +16,19 @@
 
 package org.verifyica.engine.common;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /** Class to implement OrderedProperties */
 public class OrderedProperties extends Properties {
@@ -65,8 +75,8 @@ public class OrderedProperties extends Properties {
     }
 
     @Override
-    public synchronized void load(InputStream inStream) throws IOException {
-        super.load(inStream);
+    public synchronized void load(InputStream inputStream) throws IOException {
+        super.load(inputStream);
         orderedMap.clear();
         orderedMap.putAll(this);
     }
