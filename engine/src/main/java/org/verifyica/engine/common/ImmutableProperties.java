@@ -91,36 +91,6 @@ public class ImmutableProperties extends Properties {
     }
 
     @Override
-    public synchronized Object get(Object key) {
-        return super.get(key);
-    }
-
-    @Override
-    public synchronized String getProperty(String key) {
-        return super.getProperty(key);
-    }
-
-    @Override
-    public synchronized boolean containsKey(Object key) {
-        return super.containsKey(key);
-    }
-
-    @Override
-    public synchronized boolean containsValue(Object value) {
-        return super.containsValue(value);
-    }
-
-    @Override
-    public synchronized int size() {
-        return super.size();
-    }
-
-    @Override
-    public synchronized boolean isEmpty() {
-        return super.isEmpty();
-    }
-
-    @Override
     public synchronized Set<Map.Entry<Object, Object>> entrySet() {
         return Collections.unmodifiableSet(super.entrySet());
     }
@@ -128,10 +98,5 @@ public class ImmutableProperties extends Properties {
     @Override
     public synchronized Enumeration<Object> elements() {
         return Collections.enumeration(Collections.list(super.elements()));
-    }
-
-    @Override
-    public synchronized Object clone() {
-        return new ImmutableProperties(this);
     }
 }
