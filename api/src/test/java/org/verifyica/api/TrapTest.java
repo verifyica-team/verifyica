@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 public class TrapTest {
 
     @Test
