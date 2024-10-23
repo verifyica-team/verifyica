@@ -55,7 +55,6 @@ import org.verifyica.engine.VerifyicaTestEngine;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.AnsiColoredString;
 import org.verifyica.engine.common.Stopwatch;
-import org.verifyica.engine.common.Streams;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.ConcreteConfigurationParameters;
 import org.verifyica.engine.configuration.Constants;
@@ -147,7 +146,6 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     private VerifyicaTestEngine verifyicaTestEngine;
 
     static {
-        Streams.fix();
         System.setProperty(Constants.MAVEN_PLUGIN, "true");
     }
 

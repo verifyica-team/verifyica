@@ -49,7 +49,6 @@ import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.FairExecutorService;
 import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Stopwatch;
-import org.verifyica.engine.common.Streams;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.context.ConcreteEngineContext;
@@ -129,10 +128,6 @@ public class VerifyicaTestEngine implements TestEngine {
     @Override
     public Optional<String> getVersion() {
         return Optional.of(VERSION);
-    }
-
-    static {
-        Streams.fix();
     }
 
     /** Constructor */
