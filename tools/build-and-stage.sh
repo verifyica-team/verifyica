@@ -69,11 +69,7 @@ fi
 ./mvnw -s ~/.m2/verifyica.settings.xml -P release clean verify
 check_exit_code "Maven build failed"
 
-# Checkout a release branch
-git checkout -b "release-${VERSION}"
-check_exit_code "Git checkout [${VERSION}] failed"
-
-# Update the build versions
+# Update the build version
 ./mvnw versions:set -DnewVersion="${VERSION}" -DprocessAllModules
 check_exit_code "Maven update versions [${VERSION}] failed"
 rm -Rf $(find . -name "*versionsBackup")
@@ -86,14 +82,6 @@ check_exit_code "Git add failed"
 git commit -m "${VERSION}"
 check_exit_code "Git commit failed"
 
-# Build and deploy
-./mvnw -s ~/.m2/verifyica.settings.xml -P release clean deploy
-check_exit_code "Maven deploy [${VERSION}] failed"
-
-# Push the branch
-git push --set-upstream origin release-"${VERSION}"
-check_exit_code "Git push [${VERSION}] failed"
-
 # Tag the version
 git tag "${VERSION}"
 check_exit_code "Git tag [${VERSION}] failed"
@@ -102,9 +90,38 @@ check_exit_code "Git tag [${VERSION}] failed"
 git push origin "${VERSION}"
 check_exit_code "Git tag [${VERSION}] push failed"
 
+# Checkout a release branch
+git checkout -b "release-${VERSION}"
+check_exit_code "Git checkout [${VERSION}] failed"
+
+# Build and deploy
+./mvnw -s ~/.m2/verifyica.settings.xml -P release clean deploy
+check_exit_code "Maven deploy [${VERSION}] failed"
+
+# Push the branch
+git push --set-upstream origin release-"${VERSION}"
+check_exit_code "Git push [${VERSION}] failed"
+
 # Checkout the main branch
 git checkout "${CURRENT_BRANCH}"
 check_exit_code "Git checkout [${CURRENT_BRANCH}] failed"
+
+# Update the build version
+./mvnw versions:set -DnewVersion="${VERSION}-post" -DprocessAllModules
+check_exit_code "Maven update versions [${VERSION}] failed"
+rm -Rf $(find . -name "*versionsBackup")
+
+# Add changed files
+git add -u
+check_exit_code "Git add failed"
+
+# Commit the changed files
+git commit -m "${VERSION}"
+check_exit_code "Git commit failed"
+
+# Push the branch
+git push
+check_exit_code "Git push [${VERSION}] failed"
 
 echo "------------------------------------------------------------------------"
 echo "SUCCESS"
