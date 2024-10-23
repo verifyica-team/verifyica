@@ -33,8 +33,8 @@ public class Streams {
     public static void fix() {
         synchronized (Streams.class) {
             if (!fixed) {
-                System.setErr(new SynchronizedPrintStream(System.err));
-                System.setOut(new SynchronizedPrintStream(System.out));
+                // System.setErr(new SynchronizedPrintStream(System.err));
+                // System.setOut(new SynchronizedPrintStream(System.out));
                 fixed = true;
             }
         }
