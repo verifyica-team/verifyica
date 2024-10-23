@@ -16,8 +16,6 @@
 
 package org.verifyica.examples.testcontainers;
 
-import static org.verifyica.examples.support.TestSupport.info;
-
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.NginxContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -66,13 +64,13 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
      * @param network the network
      */
     public void initialize(Network network) {
-        info("initializing test environment [%s] ...", dockerImageName);
+        // info("initializing test environment [%s] ...", dockerImageName);
 
         nginxContainer = new NginxContainer<>(DockerImageName.parse(dockerImageName));
         nginxContainer.withNetwork(network);
         nginxContainer.start();
 
-        info("test environment [%s] initialized", dockerImageName);
+        // info("test environment [%s] initialized", dockerImageName);
     }
 
     public NginxContainer<?> getNginxContainer() {
@@ -83,13 +81,13 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
      * Method to destroy the MongoDBTestEnvironment
      */
     public void destroy() {
-        info("destroying test environment [%s] ...", dockerImageName);
+        // info("destroying test environment [%s] ...", dockerImageName);
 
         if (nginxContainer != null) {
             nginxContainer.stop();
             nginxContainer = null;
         }
 
-        info("test environment [%s] destroyed", dockerImageName);
+        // info("test environment [%s] destroyed", dockerImageName);
     }
 }

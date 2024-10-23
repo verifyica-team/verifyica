@@ -62,82 +62,57 @@ public class KafkaTest2 {
 
     @Verifyica.BeforeAll
     public void initializeTestEnvironment(ArgumentContext argumentContext) {
-        info("initialize test environment ...");
+        info(
+                "[%s] initialize test environment ...",
+                argumentContext.getTestArgument().getName());
 
         Network network = Network.newNetwork();
         network.getId();
 
         argumentContext.getMap().put(NETWORK, network);
-        argumentContext.getTestArgumentPayload(KafkaTestEnvironment.class).initialize(network);
+        argumentContext.getTestArgument().getPayload(KafkaTestEnvironment.class).initialize(network);
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testProduce(ArgumentContext argumentContext) throws ExecutionException, InterruptedException {
-        info("testing testProduce() ...");
-
-        String bootstrapServers = argumentContext
-                .getTestArgumentPayload(KafkaTestEnvironment.class)
-                .getKafkaContainer()
-                .getBootstrapServers();
+        info("[%s] testing testProduce() ...", argumentContext.getTestArgument().getName());
 
         String message = randomString(16);
         argumentContext.getMap().put(MESSAGE, message);
+        info(
+                "[%s] producing message [%s] ...",
+                argumentContext.getTestArgument().getName(), message);
 
-        info("producing message [%s] to [%s] ...", message, bootstrapServers);
-
-        Properties properties = new Properties();
-        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-
-        try (KafkaProducer<String, String> producer = new KafkaProducer<>(properties)) {
+        try (KafkaProducer<String, String> producer = createKafkaProducer(argumentContext)) {
             ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC, message);
             producer.send(producerRecord).get();
         }
 
-        info("message [%s] produced", message);
+        info("[%s] message [%s] produced", argumentContext.getTestArgument().getName(), message);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testConsume1(ArgumentContext argumentContext) {
-        info("testing testConsume1() ...");
+        info(
+                "[%s] testing testConsume1() ...",
+                argumentContext.getTestArgument().getName());
+        info("[%s] consuming message ...", argumentContext.getTestArgument().getName());
 
-        String bootstrapServers = argumentContext
-                .getTestArgumentPayload(KafkaTestEnvironment.class)
-                .getKafkaContainer()
-                .getBootstrapServers();
-
-        String message = argumentContext.getMap().getAs(MESSAGE);
-
-        info("consuming message from [%s] ...", bootstrapServers);
-
-        Properties properties = new Properties();
-        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
-        properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
-
-        KafkaConsumer<String, String> consumer = null;
+        String expectedMessage = argumentContext.getMap().getAs(MESSAGE);
         boolean messageMatched = false;
 
-        try {
-            List<String> topicList = Collections.singletonList(TOPIC);
-
-            consumer = new KafkaConsumer<>(properties);
-            consumer.subscribe(topicList);
+        try (KafkaConsumer<String, String> consumer = createKafkaConsumer(argumentContext)) {
+            consumer.subscribe(Collections.singletonList(TOPIC));
 
             ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                info("consumed message [%s] from [%s]", consumerRecord.value(), bootstrapServers);
-                assertThat(consumerRecord.value()).isEqualTo(message);
+                info(
+                        "[%s] consumed message [%s]",
+                        argumentContext.getTestArgument().getName(), consumerRecord.value());
+                assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
                 messageMatched = true;
-            }
-        } finally {
-            if (consumer != null) {
-                consumer.close();
             }
         }
 
@@ -147,42 +122,24 @@ public class KafkaTest2 {
     @Verifyica.Test
     @Verifyica.Order(3)
     public void testConsume2(ArgumentContext argumentContext) {
-        info("testing testConsume2() ...");
+        info(
+                "[%s] testing testConsume2() ...",
+                argumentContext.getTestArgument().getName());
+        info("[%s] consuming message ...", argumentContext.getTestArgument().getName());
 
-        String bootstrapServers = argumentContext
-                .getTestArgumentPayload(KafkaTestEnvironment.class)
-                .getKafkaContainer()
-                .getBootstrapServers();
-
-        String message = argumentContext.getMap().getAs(MESSAGE);
-
-        info("consuming message from [%s] ...", bootstrapServers);
-
-        Properties properties = new Properties();
-        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
-        properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
-
-        KafkaConsumer<String, String> consumer = null;
+        String expectedMessage = argumentContext.getMap().getAs(MESSAGE);
         boolean messageMatched = false;
 
-        try {
-            List<String> topicList = Collections.singletonList(TOPIC);
-
-            consumer = new KafkaConsumer<>(properties);
-            consumer.subscribe(topicList);
+        try (KafkaConsumer<String, String> consumer = createKafkaConsumer(argumentContext)) {
+            consumer.subscribe(Collections.singletonList(TOPIC));
 
             ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                info("consumed message [%s] from [%s]", consumerRecord.value(), bootstrapServers);
-                assertThat(consumerRecord.value()).isEqualTo(message);
+                info(
+                        "[%s] consumed message [%s]",
+                        argumentContext.getTestArgument().getName(), consumerRecord.value());
+                assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
                 messageMatched = true;
-            }
-        } finally {
-            if (consumer != null) {
-                consumer.close();
             }
         }
 
@@ -191,16 +148,61 @@ public class KafkaTest2 {
 
     @Verifyica.AfterAll
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
-        info("destroy test environment ...");
+        info(
+                "[%s] destroy test environment ...",
+                argumentContext.getTestArgument().getName());
 
         List<Trap> traps = new ArrayList<>();
 
-        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.getTestArgumentPayload(KafkaTestEnvironment.class))
-                .ifPresent(KafkaTestEnvironment::destroy)));
-        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.getMap().removeAs(NETWORK, Network.class))
+        traps.add(new Trap(argumentContext.getTestArgument().getPayload(KafkaTestEnvironment.class)::destroy));
+        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.getMap().getAs(NETWORK, Network.class))
                 .ifPresent(Network::close)));
         traps.add(new Trap(() -> argumentContext.getMap().clear()));
 
         Trap.assertEmpty(traps);
+    }
+
+    /**
+     * Method to create a KafkaProducer
+     *
+     * @param argumentContext argumentContext
+     * @return a KafkaProducer
+     */
+    private static KafkaProducer<String, String> createKafkaProducer(ArgumentContext argumentContext) {
+        Properties properties = new Properties();
+
+        properties.setProperty(
+                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                argumentContext
+                        .getTestArgument()
+                        .getPayload(KafkaTestEnvironment.class)
+                        .bootstrapServers());
+        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+
+        return new KafkaProducer<>(properties);
+    }
+
+    /**
+     * Method to create a KafkaConsumer
+     *
+     * @param argumentContext argumentContext
+     * @return a KafkaConsumer
+     */
+    private static KafkaConsumer<String, String> createKafkaConsumer(ArgumentContext argumentContext) {
+        Properties properties = new Properties();
+
+        properties.setProperty(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                argumentContext
+                        .getTestArgument()
+                        .getPayload(KafkaTestEnvironment.class)
+                        .bootstrapServers());
+        properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
+        properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
+
+        return new KafkaConsumer<>(properties);
     }
 }

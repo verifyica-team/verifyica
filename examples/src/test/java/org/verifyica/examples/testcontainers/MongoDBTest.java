@@ -51,7 +51,7 @@ public class MongoDBTest {
 
     @Verifyica.BeforeAll
     public void initializeTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) {
-        info("initialize test environment ...");
+        info("[%s] initialize test environment ...", mongoDBTestEnvironment.getName());
 
         Network network = Network.newNetwork();
         network.getId();
@@ -63,11 +63,11 @@ public class MongoDBTest {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testInsert(MongoDBTestEnvironment mongoDBTestEnvironment) {
-        info("testing testInsert() ...");
+        info("[%s] testing testInsert() ...", mongoDBTestEnvironment.getName());
 
         String name = randomString(16);
         nameThreadLocal.set(name);
-        info("name [%s]", name);
+        info("[%s] name [%s]", mongoDBTestEnvironment.getName(), name);
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(
@@ -81,13 +81,13 @@ public class MongoDBTest {
             collection.insertOne(document);
         }
 
-        info("name [%s] inserted", name);
+        info("[%s] name [%s] inserted", mongoDBTestEnvironment.getName(), name);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testQuery(MongoDBTestEnvironment mongoDBTestEnvironment) {
-        info("testing testQuery() ...");
+        info("[%s] testing testQuery() ...", mongoDBTestEnvironment.getName());
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(
@@ -109,12 +109,11 @@ public class MongoDBTest {
 
     @Verifyica.AfterAll
     public void destroyTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) throws Throwable {
-        info("destroy test environment ...");
+        info("[%s] destroy test environment ...", mongoDBTestEnvironment.getName());
 
         List<Trap> traps = new ArrayList<>();
 
-        traps.add(
-                new Trap(() -> Optional.ofNullable(mongoDBTestEnvironment).ifPresent(MongoDBTestEnvironment::destroy)));
+        traps.add(new Trap(mongoDBTestEnvironment::destroy));
         traps.add(new Trap(() -> Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
         traps.add(new Trap(nameThreadLocal::remove));
         traps.add(new Trap(networkThreadLocal::remove));

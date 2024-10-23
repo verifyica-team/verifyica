@@ -52,27 +52,32 @@ public class MongoDBTest2 {
 
     @Verifyica.BeforeAll
     public void initializeTestEnvironment(ArgumentContext argumentContext) {
-        info("initialize test environment ...");
+        info(
+                "[%s] initialize test environment ...",
+                argumentContext.getTestArgument().getName());
 
         Network network = Network.newNetwork();
         network.getId();
 
         argumentContext.getMap().put(NETWORK, network);
-        argumentContext.getTestArgumentPayload(MongoDBTestEnvironment.class).initialize(network);
+        argumentContext
+                .getTestArgument()
+                .getPayload(MongoDBTestEnvironment.class)
+                .initialize(network);
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testInsert(ArgumentContext argumentContext) {
-        info("testing testInsert() ...");
+        info("[%s] testing testInsert() ...", argumentContext.getTestArgument().getName());
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
-                argumentContext.getTestArgumentPayload(MongoDBTestEnvironment.class);
+                argumentContext.getTestArgument().getPayload(MongoDBTestEnvironment.class);
 
         String name = randomString(16);
         argumentContext.getMap().put(NAME, name);
 
-        info("name [%s]", name);
+        info("[%s] name [%s]", argumentContext.getTestArgument().getName(), name);
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(
@@ -86,16 +91,16 @@ public class MongoDBTest2 {
             collection.insertOne(document);
         }
 
-        info("name [%s] inserted", name);
+        info("[%s] name [%s] inserted", argumentContext.getTestArgument().getName(), name);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testQuery(ArgumentContext argumentContext) {
-        info("testing testQuery() ...");
+        info("[%s] testing testQuery() ...", argumentContext.getTestArgument().getName());
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
-                argumentContext.getTestArgumentPayload(MongoDBTestEnvironment.class);
+                argumentContext.getTestArgument().getPayload(MongoDBTestEnvironment.class);
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(
@@ -117,12 +122,16 @@ public class MongoDBTest2 {
 
     @Verifyica.AfterAll
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
-        info("destroy test environment ...");
+        info(
+                "[%s] destroy test environment ...",
+                argumentContext.getTestArgument().getName());
 
         List<Trap> traps = new ArrayList<>();
 
-        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.testArgumentPayload(MongoDBTestEnvironment.class))
-                .ifPresent(MongoDBTestEnvironment::destroy)));
+        traps.add(new Trap(() -> argumentContext
+                .getTestArgument()
+                .getPayload(MongoDBTestEnvironment.class)
+                .destroy()));
         traps.add(new Trap(() -> Optional.ofNullable(argumentContext.map().removeAs(NETWORK, Network.class))
                 .ifPresent(Network::close)));
         traps.add(new Trap(() -> argumentContext.map().clear()));

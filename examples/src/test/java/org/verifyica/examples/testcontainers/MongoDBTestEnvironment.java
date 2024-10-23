@@ -16,8 +16,6 @@
 
 package org.verifyica.examples.testcontainers;
 
-import static org.verifyica.examples.support.TestSupport.info;
-
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
@@ -66,13 +64,13 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
      * @param network the network
      */
     public void initialize(Network network) {
-        info("initializing test environment [%s] ...", dockerImageName);
+        // info("initializing test environment [%s] ...", dockerImageName);
 
         mongoDBContainer = new MongoDBContainer(DockerImageName.parse(dockerImageName));
         mongoDBContainer.withNetwork(network);
         mongoDBContainer.start();
 
-        info("test environment [%s] initialized", dockerImageName);
+        // info("test environment [%s] initialized", dockerImageName);
     }
 
     public MongoDBContainer getMongoDBContainer() {
@@ -83,13 +81,13 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
      * Method to destroy the MongoDBTestEnvironment
      */
     public void destroy() {
-        info("destroying test environment [%s] ...", dockerImageName);
+        // info("destroying test environment [%s] ...", dockerImageName);
 
         if (mongoDBContainer != null) {
             mongoDBContainer.stop();
             mongoDBContainer = null;
         }
 
-        info("test environment [%s] destroyed", dockerImageName);
+        // info("test environment [%s] destroyed", dockerImageName);
     }
 }

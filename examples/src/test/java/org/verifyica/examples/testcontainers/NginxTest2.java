@@ -28,19 +28,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.NginxContainer;
-import org.testcontainers.utility.DockerImageName;
-import org.verifyica.api.Argument;
-import org.verifyica.api.ExtendedMap;
+import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 
 public class NginxTest2 {
 
     private final String NETWORK = "network";
-
-    private final ThreadLocal<ExtendedMap<String, Object>> extendedMapThreadLocal =
-            ThreadLocal.withInitial(ExtendedMap::new);
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<NginxTestEnvironment> arguments() {
@@ -52,39 +46,48 @@ public class NginxTest2 {
     }
 
     @Verifyica.BeforeAll
-    public void initializeTestEnvironment(NginxTestEnvironment nginxTestEnvironment) {
-        info("initialize test environment ...");
+    public void initializeTestEnvironment(ArgumentContext argumentContext) {
+        info(
+                "[%s] initialize test environment ...",
+                argumentContext.getTestArgument().getName());
 
         Network network = Network.newNetwork();
         network.getId();
 
-        extendedMapThreadLocal.get().put(NETWORK, network);
-        nginxTestEnvironment.initialize(network);
+        argumentContext.getMap().put(NETWORK, network);
+        argumentContext.getTestArgument().getPayload(NginxTestEnvironment.class).initialize(network);
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testGet(NginxTestEnvironment nginxTestEnvironment) throws Throwable {
-        info("testing testGet() ...");
+    public void testGet(ArgumentContext argumentContext) throws Throwable {
+        info("[%s] testing testGet() ...", argumentContext.getTestArgument().getName());
 
-        int port = nginxTestEnvironment.getNginxContainer().getMappedPort(80);
+        int port = argumentContext
+                .getTestArgument()
+                .getPayload(NginxTestEnvironment.class)
+                .getNginxContainer()
+                .getMappedPort(80);
         String content = doGet("http://localhost:" + port);
 
         assertThat(content).contains("Welcome to nginx!");
     }
 
     @Verifyica.AfterAll
-    public void destroyTestEnvironment(NginxTestEnvironment nginxTestEnvironment) throws Throwable {
-        info("destroy test environment ...");
+    public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
+        info(
+                "[%s] destroy test environment ...",
+                argumentContext.getTestArgument().getName());
 
         List<Trap> traps = new ArrayList<>();
 
-        traps.add(new Trap(() -> Optional.ofNullable(nginxTestEnvironment).ifPresent(NginxTestEnvironment::destroy)));
-        traps.add(
-                new Trap(() -> Optional.ofNullable(extendedMapThreadLocal.get().getAs(NETWORK, Network.class))
-                        .ifPresent(Network::close)));
-        traps.add(new Trap(() -> extendedMapThreadLocal.get().clear()));
-        traps.add(new Trap(extendedMapThreadLocal::remove));
+        traps.add(new Trap(() -> argumentContext
+                .getTestArgument()
+                .getPayload(NginxTestEnvironment.class)
+                .destroy()));
+        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.getMap().getAs(NETWORK, Network.class))
+                .ifPresent(Network::close)));
+        traps.add(new Trap(() -> argumentContext.getMap().clear()));
 
         Trap.assertEmpty(traps);
     }
@@ -102,72 +105,5 @@ public class NginxTest2 {
         }
 
         return result.toString();
-    }
-
-    /** Class to implement a NginxTestEnvironment */
-    public static class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
-
-        private final String dockerImageName;
-        private NginxContainer<?> nginxContainer;
-
-        /**
-         * Constructor
-         *
-         * @param dockerImageName the name
-         */
-        public NginxTestEnvironment(String dockerImageName) {
-            this.dockerImageName = dockerImageName;
-        }
-
-        /**
-         * Method to get the name
-         *
-         * @return the name
-         */
-        @Override
-        public String getName() {
-            return dockerImageName;
-        }
-
-        /**
-         * Method to get the payload (ourself)
-         *
-         * @return the payload
-         */
-        @Override
-        public NginxTestEnvironment getPayload() {
-            return this;
-        }
-
-        /**
-         * Method to initialize the MongoDBTestEnvironment using a specific network
-         *
-         * @param network the network
-         */
-        public void initialize(Network network) {
-            info("initializing test environment [%s] ...", dockerImageName);
-
-            nginxContainer = new NginxContainer<>(DockerImageName.parse(dockerImageName));
-            nginxContainer.withNetwork(network);
-            nginxContainer.start();
-
-            info("test environment [%s] initialized", dockerImageName);
-        }
-
-        public NginxContainer getNginxContainer() {
-            return nginxContainer;
-        }
-
-        /** Method to destroy the MongoDBTestEnvironment */
-        public void destroy() {
-            info("destroying test environment [%s] ...", dockerImageName);
-
-            if (nginxContainer != null) {
-                nginxContainer.stop();
-                nginxContainer = null;
-            }
-
-            info("test environment [%s] destroyed", dockerImageName);
-        }
     }
 }

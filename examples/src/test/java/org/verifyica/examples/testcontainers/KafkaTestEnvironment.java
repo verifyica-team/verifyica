@@ -16,8 +16,6 @@
 
 package org.verifyica.examples.testcontainers;
 
-import static org.verifyica.examples.support.TestSupport.info;
-
 import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -66,14 +64,18 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
      * @param network the network
      */
     public void initialize(Network network) {
-        info("initialize test environment [%s] ...", dockerImageName);
+        // info("initialize test environment [%s] ...", dockerImageName);
 
         kafkaContainer =
                 new KafkaContainer(DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"));
         kafkaContainer.withNetwork(network);
         kafkaContainer.start();
 
-        info("test environment [%s] initialized", dockerImageName);
+        // info("test environment [%s] initialized", dockerImageName);
+    }
+
+    public String bootstrapServers() {
+        return kafkaContainer.getBootstrapServers();
     }
 
     /**
@@ -89,13 +91,13 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
      * Method to destroy the KafkaTestEnvironment
      */
     public void destroy() {
-        info("destroying test environment [%s] ...", dockerImageName);
+        // info("destroying test environment [%s] ...", dockerImageName);
 
         if (kafkaContainer != null) {
             kafkaContainer.stop();
             kafkaContainer = null;
         }
 
-        info("test environment [%s] destroyed", dockerImageName);
+        // info("test environment [%s] destroyed", dockerImageName);
     }
 }

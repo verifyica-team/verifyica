@@ -28,12 +28,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
+import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 
-public class NginxTest {
+public class NginxTest3 {
 
-    private final ThreadLocal<Network> networkThreadLocal = new ThreadLocal<>();
+    private final String NETWORK = "network";
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<NginxTestEnvironment> arguments() {
@@ -45,36 +46,46 @@ public class NginxTest {
     }
 
     @Verifyica.BeforeAll
-    public void initializeTestEnvironment(NginxTestEnvironment nginxTestEnvironment) {
-        info("[%s] initialize test environment ...", nginxTestEnvironment.getName());
+    public void initializeTestEnvironment(ArgumentContext argumentContext) {
+        info(
+                "[%s] initialize test environment ...",
+                argumentContext.testArgument().name());
 
         Network network = Network.newNetwork();
         network.getId();
 
-        networkThreadLocal.set(network);
-        nginxTestEnvironment.initialize(network);
+        argumentContext.getMap().put(NETWORK, network);
+        argumentContext.testArgument().payload(NginxTestEnvironment.class).initialize(network);
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testGet(NginxTestEnvironment nginxTestEnvironment) throws Throwable {
-        info("[%s] testing testGet() ...", nginxTestEnvironment.getName());
+    public void testGet(ArgumentContext argumentContext) throws Throwable {
+        info("[%s] testing testGet() ...", argumentContext.testArgument().name());
 
-        int port = nginxTestEnvironment.getNginxContainer().getMappedPort(80);
+        int port = argumentContext
+                .testArgument()
+                .payload(NginxTestEnvironment.class)
+                .getNginxContainer()
+                .getMappedPort(80);
         String content = doGet("http://localhost:" + port);
 
         assertThat(content).contains("Welcome to nginx!");
     }
 
     @Verifyica.AfterAll
-    public void destroyTestEnvironment(NginxTestEnvironment nginxTestEnvironment) throws Throwable {
-        info("[%s] destroy test environment ...", nginxTestEnvironment.getName());
+    public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
+        info("[%s] destroy test environment ...", argumentContext.testArgument().name());
 
         List<Trap> traps = new ArrayList<>();
 
-        traps.add(new Trap(nginxTestEnvironment::destroy));
-        traps.add(new Trap(() -> Optional.ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
-        traps.add(new Trap(networkThreadLocal::remove));
+        traps.add(new Trap(() -> argumentContext
+                .testArgument()
+                .payload(NginxTestEnvironment.class)
+                .destroy()));
+        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.getMap().getAs(NETWORK, Network.class))
+                .ifPresent(Network::close)));
+        traps.add(new Trap(() -> argumentContext.getMap().clear()));
 
         Trap.assertEmpty(traps);
     }
