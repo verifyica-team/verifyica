@@ -57,27 +57,12 @@ public class ConcreteConfiguration implements Configuration {
 
     @Override
     public Optional<Path> propertiesPath() {
-        return propertiesPath != null ? Optional.of(propertiesPath) : Optional.empty();
-    }
-
-    @Override
-    public Optional<Path> getPropertiesFilename() {
-        return propertiesPath();
-    }
-
-    @Override
-    public Optional<Path> getPropertiesPath() {
-        return propertiesPath();
+        return Optional.ofNullable(propertiesPath);
     }
 
     @Override
     public Properties properties() {
         return properties;
-    }
-
-    @Override
-    public Properties getProperties() {
-        return properties();
     }
 
     /**
