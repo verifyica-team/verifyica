@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Class to implement Cleanup\
+ * Class to implement Cleanup
  *
  * <p>Deprecated - @see Trap
  */

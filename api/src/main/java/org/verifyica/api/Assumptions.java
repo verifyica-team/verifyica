@@ -21,7 +21,7 @@ import java.util.function.BooleanSupplier;
 /**
  * Class to implement Assumptions
  *
- * <p>Deprecated - @see SkipExecution
+ * <p>Deprecated - @see Execution
  */
 @Deprecated
 public class Assumptions {
