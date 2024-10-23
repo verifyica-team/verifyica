@@ -56,12 +56,12 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     @Override
-    public Optional<Path> propertiesPath() {
+    public Optional<Path> getPropertiesPath() {
         return Optional.ofNullable(propertiesPath);
     }
 
     @Override
-    public Properties properties() {
+    public Properties getProperties() {
         return properties;
     }
 

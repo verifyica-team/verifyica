@@ -29,7 +29,18 @@ public interface Configuration {
      * @return an Optional containing the Path to the Properties configuration file, or Optional.empty()
      *     if no properties configuration file was found
      */
-    Optional<Path> propertiesPath();
+    default Optional<Path> propertiesPath() {
+        return getPropertiesPath();
+    }
+
+    /**
+     * Get the configuration Properties
+     *
+     * @return configuration Properties
+     */
+    default Properties properties() {
+        return getProperties();
+    }
 
     /**
      * Get the Path to the Properties configuration file
@@ -37,25 +48,14 @@ public interface Configuration {
      * @return an Optional containing the Path to the Properties configuration file, or Optional.empty()
      *     if no properties configuration file was found
      */
-    default Optional<Path> getPropertiesPath() {
-        return propertiesPath();
-    }
+    Optional<Path> getPropertiesPath();
 
     /**
      * Get the configuration Properties
      *
      * @return configuration Properties
      */
-    Properties properties();
-
-    /**
-     * Get the configuration Properties
-     *
-     * @return configuration Properties
-     */
-    default Properties getProperties() {
-        return properties();
-    }
+    Properties getProperties();
 
     /**
      * Get the Path to the Properties configuration file
@@ -65,6 +65,6 @@ public interface Configuration {
      */
     @Deprecated
     default Optional<Path> getPropertiesFilename() {
-        return propertiesPath();
+        return getPropertiesPath();
     }
 }
