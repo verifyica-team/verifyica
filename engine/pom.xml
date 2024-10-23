@@ -292,10 +292,6 @@
                         <file>${project.basedir}/../assets/license-header.txt</file>
                     </licenseHeader>
                     <java>
-                        <excludes>
-                            <!-- Exclude specific files or directories -->
-                            <exclude>src/main/java/org/verifyica/engine/common/Streams.java</exclude>
-                        </excludes>
                         <palantirJavaFormat>
                             <version>2.50.0</version>
                             <style>PALANTIR</style>
