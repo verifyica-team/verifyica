@@ -73,8 +73,13 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
         // info("test environment [%s] initialized", dockerImageName);
     }
 
-    public MongoDBContainer getMongoDBContainer() {
-        return mongoDBContainer;
+    /**
+     * Method to get the MongoDB connection string
+     *
+     * @return the MongoDB connection string
+     */
+    public String connectionString() {
+        return mongoDBContainer.getConnectionString();
     }
 
     /**

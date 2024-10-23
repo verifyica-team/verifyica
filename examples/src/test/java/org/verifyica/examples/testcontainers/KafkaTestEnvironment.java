@@ -74,17 +74,13 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
         // info("test environment [%s] initialized", dockerImageName);
     }
 
+    /**
+     * Method to get the Kafka bootstrap servers
+     *
+     * @return the Kafka bootstrap servers
+     */
     public String bootstrapServers() {
         return kafkaContainer.getBootstrapServers();
-    }
-
-    /**
-     * Method to get the KafkaContainer
-     *
-     * @return the KafkaContainer
-     */
-    public KafkaContainer getKafkaContainer() {
-        return kafkaContainer;
     }
 
     /**

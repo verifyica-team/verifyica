@@ -80,8 +80,7 @@ public class MongoDBTest2 {
         info("[%s] name [%s]", argumentContext.getTestArgument().getName(), name);
 
         MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(
-                        mongoDBTestEnvironment.getMongoDBContainer().getConnectionString()))
+                .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.connectionString()))
                 .build();
 
         try (MongoClient mongoClient = MongoClients.create(settings)) {
@@ -103,8 +102,7 @@ public class MongoDBTest2 {
                 argumentContext.getTestArgument().getPayload(MongoDBTestEnvironment.class);
 
         MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(
-                        mongoDBTestEnvironment.getMongoDBContainer().getConnectionString()))
+                .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.connectionString()))
                 .build();
 
         String name = name(argumentContext);
