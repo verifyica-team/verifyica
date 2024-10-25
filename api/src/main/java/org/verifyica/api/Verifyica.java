@@ -59,12 +59,6 @@ public @interface Verifyica {
     @Retention(RetentionPolicy.RUNTIME)
     @interface Test {}
 
-    /** Independent annotation */
-    @org.junit.platform.commons.annotation.Testable
-    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface Independent {}
-
     /** AfterEach annotation */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)

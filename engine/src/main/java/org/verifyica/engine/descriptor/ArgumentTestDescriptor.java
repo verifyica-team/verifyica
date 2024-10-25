@@ -52,8 +52,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
     private enum State {
         START,
         BEFORE_ALL,
-        TEST_DEPENDENT,
-        TEST_INDEPENDENT,
+        TEST,
         SKIP,
         AFTER_ALL,
         CLOSE,
@@ -154,13 +153,8 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                         state = doBeforeAll();
                         break;
                     }
-                    case TEST_DEPENDENT: {
-                        state = doTestDependent();
-                        break;
-                    }
-                    case TEST_INDEPENDENT: {
-                        // Currently not used
-                        state = doTestIndependent();
+                    case TEST: {
+                        state = doTest();
                         break;
                     }
                     case SKIP: {
@@ -272,13 +266,13 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         if (markSkipped) {
             return State.SKIP;
         } else if (throwable == null) {
-            return State.TEST_DEPENDENT;
+            return State.TEST;
         } else {
             return State.AFTER_ALL;
         }
     }
 
-    private State doTestDependent() {
+    private State doTest() {
         Iterator<TestableTestDescriptor> testableTestDescriptorIterator =
                 getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).iterator();
 
@@ -292,18 +286,6 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         while (testableTestDescriptorIterator.hasNext()) {
             TestableTestDescriptor testableTestDescriptor = testableTestDescriptorIterator.next();
             testableTestDescriptor.skip();
-        }
-
-        return State.AFTER_ALL;
-    }
-
-    private State doTestIndependent() {
-        Iterator<TestableTestDescriptor> testableTestDescriptorIterator =
-                getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).iterator();
-
-        while (testableTestDescriptorIterator.hasNext()) {
-            TestableTestDescriptor testableTestDescriptor = testableTestDescriptorIterator.next();
-            testableTestDescriptor.test();
         }
 
         return State.AFTER_ALL;

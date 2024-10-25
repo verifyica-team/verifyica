@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.discovery.MethodSelector;
-import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Stopwatch;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
@@ -64,22 +63,16 @@ public class MethodSelectorResolver {
             LOGGER.trace("testClass [%s] testMethod [%s]", testClass.getName(), testMethod.getName());
 
             if (ResolverPredicates.TEST_CLASS.test(testClass) && ResolverPredicates.TEST_METHOD.test(testMethod)) {
-                if (testMethod.isAnnotationPresent(Verifyica.Independent.class)) {
+                List<Method> testMethods = OrderSupport.orderMethods(ClassSupport.findMethods(
+                        testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
+
+                for (Method method : testMethods) {
                     classMethodSet
                             .computeIfAbsent(testClass, set -> new LinkedHashSet<>())
-                            .add(testMethod);
-                } else {
-                    List<Method> testMethods = OrderSupport.orderMethods(ClassSupport.findMethods(
-                            testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
+                            .add(method);
 
-                    for (Method method : testMethods) {
-                        classMethodSet
-                                .computeIfAbsent(testClass, set -> new LinkedHashSet<>())
-                                .add(method);
-
-                        if (method.equals(testMethod)) {
-                            break;
-                        }
+                    if (method.equals(testMethod)) {
+                        break;
                     }
                 }
             }
