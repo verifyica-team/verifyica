@@ -43,12 +43,57 @@ public class OrderSupport {
      * Method to order a List of Classes by display name then Order annotation
      *
      * @param classes classes
+     * @return an order List of classes
      */
-    public static void orderClasses(List<Class<?>> classes) {
+    public static List<Class<?>> orderClasses(List<Class<?>> classes) {
         Precondition.notNull(classes, "classes is null");
 
         classes.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
-        classes.sort(Comparator.comparingInt(OrderSupport::getOrder));
+
+        classes.sort((c1, c2) -> {
+            Verifyica.Order o1 = c1.getAnnotation(Verifyica.Order.class);
+            Verifyica.Order o2 = c2.getAnnotation(Verifyica.Order.class);
+
+            if (o1 == null && o2 == null) {
+                return 0;
+            } else if (o1 == null) {
+                return 1;
+            } else if (o2 == null) {
+                return -1;
+            }
+
+            int orderValue1 = o1.value();
+            int orderValue2 = o2.value();
+
+            if (orderValue1 == 0 && orderValue2 == 0) {
+                return 0;
+            } else if (orderValue1 == 0) {
+                return -1;
+            } else if (orderValue2 == 0) {
+                return 1;
+            } else {
+                return Integer.compare(orderValue1, orderValue2);
+            }
+        });
+
+        return classes;
+    }
+
+    /**
+     * Method to order a Set of Classes by display name then Order annotation
+     *
+     * <p>orders the Set in place
+     *
+     * @param classes classes
+     * @return an ordered Set of Methods
+     */
+    public static Set<Class<?>> orderClasses(Set<Class<?>> classes) {
+        List<Class<?>> list = orderClasses(new ArrayList<>(classes));
+
+        classes.clear();
+        classes.addAll(list);
+
+        return classes;
     }
 
     /**

@@ -59,9 +59,9 @@ public class OrderSupportTest {
 
         assertThat(classes).isNotNull();
         assertThat(classes).hasSize(3);
-        assertThat(classes.get(0)).isEqualTo(TestClass1.class);
-        assertThat(classes.get(1)).isEqualTo(TestClass2.class);
-        assertThat(classes.get(2)).isEqualTo(TestClass3.class);
+        assertThat(classes.get(0)).isEqualTo(TestClass3.class);
+        assertThat(classes.get(1)).isEqualTo(TestClass1.class);
+        assertThat(classes.get(2)).isEqualTo(TestClass2.class);
     }
 
     @Test
@@ -80,10 +80,10 @@ public class OrderSupportTest {
 
         assertThat(classes).isNotNull();
         assertThat(classes).hasSize(4);
-        assertThat(classes.get(0)).isEqualTo(TestClass4.class);
-        assertThat(classes.get(1)).isEqualTo(TestClass1.class);
-        assertThat(classes.get(2)).isEqualTo(TestClass2.class);
-        assertThat(classes.get(3)).isEqualTo(TestClass3.class);
+        assertThat(classes.get(0)).isEqualTo(TestClass3.class);
+        assertThat(classes.get(1)).isEqualTo(TestClass4.class);
+        assertThat(classes.get(2)).isEqualTo(TestClass1.class);
+        assertThat(classes.get(3)).isEqualTo(TestClass2.class);
     }
 
     private static class TestClass1 {
@@ -94,12 +94,12 @@ public class OrderSupportTest {
         // INTENTIONALLY BLANK
     }
 
-    @Verifyica.Order(Integer.MAX_VALUE)
+    @Verifyica.Order(1)
     private static class TestClass3 {
         // INTENTIONALLY BLANK
     }
 
-    @Verifyica.Order(Integer.MIN_VALUE)
+    @Verifyica.Order(1)
     private static class TestClass4 {
         // INTENTIONALLY BLANK
     }

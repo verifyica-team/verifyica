@@ -249,6 +249,12 @@ public class VerifyicaTestEngine implements TestEngine {
                             new ThreadNameRunnable(threadName, testableTestDescriptor::test);
                     Future<?> future = classExecutorService.submit(threadNameRunnable);
                     futures.add(future);
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        // INTENTIONALLY BLANK
+                    }
                 }
 
                 ExecutorSupport.waitForAllFutures(futures, classExecutorService);

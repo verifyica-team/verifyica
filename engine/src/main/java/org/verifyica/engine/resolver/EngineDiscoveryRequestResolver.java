@@ -21,14 +21,14 @@ import static java.lang.String.format;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -74,10 +74,6 @@ public class EngineDiscoveryRequestResolver {
 
     private static final List<Class<? extends DiscoverySelector>> DISCOVERY_SELECTORS_CLASSES;
 
-    private static final Comparator<Object> CLASS_COMPARATOR = Comparator.comparing(
-                    clazz -> OrderSupport.getOrder((Class<?>) clazz))
-            .thenComparing(clazz -> DisplayNameSupport.getDisplayName((Class<?>) clazz));
-
     static {
         DISCOVERY_SELECTORS_CLASSES = new ArrayList<>();
         DISCOVERY_SELECTORS_CLASSES.add(FileSelector.class);
@@ -111,9 +107,9 @@ public class EngineDiscoveryRequestResolver {
 
         Stopwatch stopwatch = new Stopwatch();
 
-        Map<Class<?>, Set<Method>> testClassMethodSet = new TreeMap<>(CLASS_COMPARATOR);
-        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new TreeMap<>(CLASS_COMPARATOR);
-        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new TreeMap<>(CLASS_COMPARATOR);
+        Map<Class<?>, Set<Method>> testClassMethodSet = new HashMap<>();
+        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new HashMap<>();
+        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new HashMap<>();
 
         try {
             List<DiscoverySelector> discoverySelectors = new ArrayList<>();
@@ -141,7 +137,9 @@ public class EngineDiscoveryRequestResolver {
 
             List<ClassDefinition> classDefinitions = new ArrayList<>();
 
-            testClassMethodSet.keySet().forEach(testClass -> {
+            Set<Class<?>> orderedKeySet = OrderSupport.orderClasses(new LinkedHashSet<>(testClassMethodSet.keySet()));
+
+            orderedKeySet.forEach(testClass -> {
                 List<Argument<?>> testArguments = testClassArgumentMap.get(testClass);
 
                 Set<Method> testMethods = OrderSupport.orderMethods(testClassMethodSet.get(testClass));
@@ -192,7 +190,6 @@ public class EngineDiscoveryRequestResolver {
 
             pruneClassDefinitions(classDefinitions);
             ClassDefinitionFilter.filter(classDefinitions);
-            // orderStepMethods(classDefinitions);
             buildEngineDescriptor(classDefinitions, testDescriptor);
             prunedDisabledTestMethods(testDescriptor);
         } catch (EngineException e) {
@@ -365,15 +362,6 @@ public class EngineDiscoveryRequestResolver {
             prunedTestDescriptor.removeFromHierarchy();
         }
     }
-
-    /*
-    private static void orderStepMethods(List<ClassDefinition> classDefinitions) {
-        LOGGER.trace("orderStepMethods()");
-
-        StepMethodOrderer stepMethodOrderer = new StepMethodOrderer();
-        classDefinitions.forEach(stepMethodOrderer::orderMethods);
-    }
-    */
 
     /**
      * Method to build the EngineDescriptor
