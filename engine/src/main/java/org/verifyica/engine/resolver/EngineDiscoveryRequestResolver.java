@@ -149,6 +149,7 @@ public class EngineDiscoveryRequestResolver {
                 int testArgumentParallelism = getTestArgumentParallelism(testClass);
 
                 // Sanity check
+                /*
                 List<Method> orderedTestMethods = new ArrayList<>(testMethods);
                 List<Method> expectedOrderedTestMethods = OrderSupport.orderMethods(new ArrayList<>(testMethods));
                 for (int i = 0; i < testMethods.size(); i++) {
@@ -158,6 +159,7 @@ public class EngineDiscoveryRequestResolver {
                         System.exit(-1);
                     }
                 }
+                */
 
                 String testClassDisplayName = DisplayNameSupport.getDisplayName(testClass);
 

@@ -16,13 +16,20 @@
 
 package org.verifyica.engine.support;
 
+import static java.lang.String.format;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Precondition;
+import org.verifyica.engine.exception.TestClassDefinitionException;
 
 /** Class to implement OrderSupport */
 public class OrderSupport {
@@ -102,6 +109,8 @@ public class OrderSupport {
             }
         });
 
+        orderMethodsByDependencies(methods);
+
         return methods;
     }
 
@@ -120,5 +129,165 @@ public class OrderSupport {
         methods.addAll(list);
 
         return methods;
+    }
+
+    /**
+     * Orders methods based on their DependsOn annotations while maintaining stability.
+     * Methods with the same dependencies maintain their original relative order.
+     *
+     * @param methods List of methods to order
+     * @return Ordered list of methods with dependency groups
+     * @throws TestClassDefinitionException if circular dependencies are detected
+     */
+    private static List<Method> orderMethodsByDependencies(List<Method> methods) {
+        // Create map of method name to Method object and original position
+        Map<String, Method> methodMap = new HashMap<>();
+        Map<String, Integer> originalOrder = new HashMap<>();
+
+        for (int i = 0; i < methods.size(); i++) {
+            Method method = methods.get(i);
+            String tag = getMethodTag(method);
+            methodMap.put(tag, method);
+            originalOrder.put(tag, i);
+        }
+
+        // Create dependency graph
+        Map<String, Set<String>> dependents = new HashMap<>();
+        Map<String, Set<String>> dependencies = new HashMap<>();
+
+        // Initialize graphs
+        methods.forEach(method -> {
+            String methodTag = getMethodTag(method);
+            dependents.put(methodTag, new HashSet<>());
+            dependencies.put(methodTag, new HashSet<>());
+        });
+
+        // Build the dependency relationships
+        for (Method method : methods) {
+            Verifyica.Experimental.DependsOn[] dependsOnAnnotations =
+                    method.getAnnotationsByType(Verifyica.Experimental.DependsOn.class);
+
+            if (dependsOnAnnotations != null && dependsOnAnnotations.length > 0) {
+                String dependent = getMethodTag(method);
+
+                for (Verifyica.Experimental.DependsOn dependency : dependsOnAnnotations) {
+                    String dependencyTag = dependency.value();
+                    if (!methodMap.containsKey(dependencyTag)) {
+                        throw new TestClassDefinitionException(
+                                format("Dependency tag [%s] not found for method tag [%s]", dependencyTag, dependent));
+                    }
+                    dependents.get(dependencyTag).add(dependent);
+                    dependencies.get(dependent).add(dependencyTag);
+                }
+            }
+        }
+
+        List<Method> result = new ArrayList<>();
+        Set<String> processed = new HashSet<>();
+        Set<String> processing = new HashSet<>();
+
+        // Process methods in original order, grouping dependencies
+        for (Method method : methods) {
+            String methodTag = getMethodTag(method);
+            // If method has no dependencies, process it and its dependents
+            if (!processed.contains(methodTag) && dependencies.get(methodTag).isEmpty()) {
+                processMethodAndDependents(
+                        methodTag, methodMap, dependents, dependencies, processed, processing, result, originalOrder);
+            }
+        }
+
+        // Handle any remaining methods
+        for (Method method : methods) {
+            String methodTag = getMethodTag(method);
+            if (!processed.contains(methodTag)) {
+                processMethodAndDependents(
+                        methodTag, methodMap, dependents, dependencies, processed, processing, result, originalOrder);
+            }
+        }
+
+        // Verify all methods were processed
+        if (result.size() != methods.size()) {
+            throw new TestClassDefinitionException("Circular dependency detected in method ordering");
+        }
+
+        methods.clear();
+        methods.addAll(result);
+
+        return result;
+    }
+
+    /**
+     * Recursively processes a method and all its dependent methods.
+     * Methods with the same dependencies are processed in their original order.
+     */
+    private static void processMethodAndDependents(
+            String methodTag,
+            Map<String, Method> methodMap,
+            Map<String, Set<String>> dependents,
+            Map<String, Set<String>> dependencies,
+            Set<String> processed,
+            Set<String> processing,
+            List<Method> result,
+            Map<String, Integer> originalOrder) {
+
+        // Check for circular dependencies
+        if (processing.contains(methodTag)) {
+            throw new TestClassDefinitionException(
+                    format("Circular dependency detected involving method tag [%s]", methodTag));
+        }
+
+        // Skip if already processed
+        if (processed.contains(methodTag)) {
+            return;
+        }
+
+        processing.add(methodTag);
+
+        // Process all dependencies first
+        for (String dependency : dependencies.get(methodTag)) {
+            if (!processed.contains(dependency)) {
+                processMethodAndDependents(
+                        dependency, methodMap, dependents, dependencies, processed, processing, result, originalOrder);
+            }
+        }
+
+        // Add current method
+        result.add(methodMap.get(methodTag));
+        processed.add(methodTag);
+
+        // Find all immediate dependents that have all dependencies processed
+        List<String> readyDependents = dependents.get(methodTag).stream()
+                .filter(dependent -> !processed.contains(dependent)
+                        && dependencies.get(dependent).stream().allMatch(processed::contains))
+                .sorted((a, b) -> {
+                    // If dependencies are the same, maintain original order
+                    Set<String> depsA = dependencies.get(a);
+                    Set<String> depsB = dependencies.get(b);
+                    if (depsA.equals(depsB)) {
+                        return originalOrder.get(a).compareTo(originalOrder.get(b));
+                    }
+                    // Otherwise order by dependency sets
+                    return depsA.size() != depsB.size()
+                            ? Integer.compare(depsA.size(), depsB.size())
+                            : originalOrder.get(a).compareTo(originalOrder.get(b));
+                })
+                .collect(Collectors.toList());
+
+        // Process ready dependents in order
+        for (String dependent : readyDependents) {
+            processMethodAndDependents(
+                    dependent, methodMap, dependents, dependencies, processed, processing, result, originalOrder);
+        }
+
+        processing.remove(methodTag);
+    }
+
+    /**
+     * Gets the tag associated with a method, which is used for dependency matching.
+     * If no tag annotation is present, returns the method name.
+     */
+    private static String getMethodTag(Method method) {
+        Verifyica.Tag tagAnnotation = method.getAnnotation(Verifyica.Tag.class);
+        return tagAnnotation != null ? tagAnnotation.value() : method.getName();
     }
 }
