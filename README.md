@@ -12,7 +12,7 @@
 
 ![Verifyica](assets/verifyica.png)
 
-A multithreaded Java test engine for parameterized / scenario / integration testing based on [JUnit 5](https://junit.org/junit5/) Platform.
+A multithreaded Java test engine for parameterized class / scenario / integration testing based on [JUnit 5](https://junit.org/junit5/) Platform.
 
 # Purpose
 
