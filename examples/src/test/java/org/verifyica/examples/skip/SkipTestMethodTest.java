@@ -17,12 +17,12 @@
 package org.verifyica.examples.skip;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.verifyica.api.Execution.skipIfCondition;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.SkipExecution;
 import org.verifyica.api.Verifyica;
 
 public class SkipTestMethodTest {
@@ -38,7 +38,7 @@ public class SkipTestMethodTest {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
-        SkipExecution.ifTrue(argumentContext.testArgumentPayload(Integer.class) % 2 == 0);
+        skipIfCondition(argumentContext.testArgumentPayload(Integer.class) % 2 == 0);
 
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();

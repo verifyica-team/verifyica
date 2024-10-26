@@ -29,10 +29,8 @@ import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.MethodSource;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.Assumptions;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Execution;
-import org.verifyica.api.SkipExecution;
 import org.verifyica.engine.inject.Inject;
 import org.verifyica.engine.inject.Named;
 import org.verifyica.engine.logger.Logger;
@@ -208,9 +206,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
                 }
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (cause instanceof Assumptions.Failed
-                        || cause instanceof SkipExecution
-                        || cause instanceof Execution.ExecutionSkippedException) {
+                if (cause instanceof Execution.ExecutionSkippedException) {
                     markSkipped = true;
                 } else {
                     throwable = cause;
@@ -255,9 +251,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
                 invoke(testMethod, argumentContext.getClassContext().getTestInstance(), invocationArguments);
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (cause instanceof Assumptions.Failed
-                        || cause instanceof SkipExecution
-                        || cause instanceof Execution.ExecutionSkippedException) {
+                if (cause instanceof Execution.ExecutionSkippedException) {
                     markSkipped = true;
                 } else {
                     throwable = cause;
@@ -297,9 +291,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
                 }
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (!(cause instanceof Assumptions.Failed
-                        || cause instanceof SkipExecution
-                        || cause instanceof Execution.ExecutionSkippedException)) {
+                if (!(cause instanceof Execution.ExecutionSkippedException)) {
                     throwable = cause;
                 }
             } catch (Throwable t) {

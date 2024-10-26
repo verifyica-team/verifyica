@@ -17,13 +17,13 @@
 package org.verifyica.examples.skip;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.verifyica.api.Execution.skipIfCondition;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.SkipExecution;
 import org.verifyica.api.Verifyica;
 
 @SuppressWarnings("unchecked")
@@ -41,7 +41,7 @@ public class SkipEvenArgumentsTest {
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) throws Throwable {
         // Skip even arguments
-        SkipExecution.ifTrue(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 0);
+        skipIfCondition(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 0);
     }
 
     @Verifyica.BeforeEach

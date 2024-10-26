@@ -31,11 +31,9 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.UniqueId;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.Assumptions;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Execution;
-import org.verifyica.api.SkipExecution;
 import org.verifyica.engine.context.ConcreteArgumentContext;
 import org.verifyica.engine.inject.Inject;
 import org.verifyica.engine.inject.Injector;
@@ -241,9 +239,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                 }
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (cause instanceof Assumptions.Failed
-                        || cause instanceof SkipExecution
-                        || cause instanceof Execution.ExecutionSkippedException) {
+                if (cause instanceof Execution.ExecutionSkippedException) {
                     markSkipped = true;
                 } else {
                     throwable = cause;
@@ -321,9 +317,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                 }
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (!(cause instanceof Assumptions.Failed
-                        || cause instanceof SkipExecution
-                        || cause instanceof Execution.ExecutionSkippedException)) {
+                if (!(cause instanceof Execution.ExecutionSkippedException)) {
                     throwable = cause;
                 }
             } catch (Throwable t) {
