@@ -62,7 +62,7 @@ public class DependsOnTest1 {
 
     @Verifyica.Test
     @Verifyica.Tag("test3")
-    @Verifyica.Experimental.DependsOn("test2")
+    @Verifyica.DependsOn("test2")
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test3(name[%s], payload[%s])%n",
@@ -73,7 +73,7 @@ public class DependsOnTest1 {
     }
 
     @Verifyica.Test
-    @Verifyica.Experimental.DependsOn("test2")
+    @Verifyica.DependsOn("test2")
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test4(name[%s], payload[%s])%n",

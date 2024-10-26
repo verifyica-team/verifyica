@@ -51,7 +51,7 @@ public class DependsOnTest4 {
 
     @Verifyica.Test
     @Verifyica.Tag("test2")
-    @Verifyica.Experimental.DependsOn("test5")
+    @Verifyica.DependsOn("test5")
     public void test2(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test2(name[%s], payload[%s])%n",
@@ -63,7 +63,7 @@ public class DependsOnTest4 {
 
     @Verifyica.Test
     @Verifyica.Tag("test3")
-    @Verifyica.Experimental.DependsOn("test1")
+    @Verifyica.DependsOn("test1")
     public void test3(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test3(name[%s], payload[%s])%n",
@@ -75,7 +75,7 @@ public class DependsOnTest4 {
 
     @Verifyica.Test
     @Verifyica.Tag("test4")
-    @Verifyica.Experimental.DependsOn("test2")
+    @Verifyica.DependsOn("test2")
     public void test4(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test4(name[%s], payload[%s])%n",
@@ -87,7 +87,7 @@ public class DependsOnTest4 {
 
     @Verifyica.Test
     @Verifyica.Tag("test5")
-    @Verifyica.Experimental.DependsOn("test3")
+    @Verifyica.DependsOn("test3")
     public void test5(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test5(name[%s], payload[%s])%n",
@@ -99,7 +99,7 @@ public class DependsOnTest4 {
 
     @Verifyica.Test
     @Verifyica.Tag("test6")
-    @Verifyica.Experimental.DependsOn("test4")
+    @Verifyica.DependsOn("test4")
     public void test6(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "test6(name[%s], payload[%s])%n",

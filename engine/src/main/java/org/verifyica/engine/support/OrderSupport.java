@@ -209,13 +209,12 @@ public class OrderSupport {
 
         // Build the dependency relationships
         for (Method method : methods) {
-            Verifyica.Experimental.DependsOn[] dependsOnAnnotations =
-                    method.getAnnotationsByType(Verifyica.Experimental.DependsOn.class);
+            Verifyica.DependsOn[] dependsOnAnnotations = method.getAnnotationsByType(Verifyica.DependsOn.class);
 
             if (dependsOnAnnotations != null && dependsOnAnnotations.length > 0) {
                 String dependent = getMethodTag(method);
 
-                for (Verifyica.Experimental.DependsOn dependency : dependsOnAnnotations) {
+                for (Verifyica.DependsOn dependency : dependsOnAnnotations) {
                     String dependencyTag = dependency.value();
                     if (!methodMap.containsKey(dependencyTag)) {
                         throw new TestClassDefinitionException(

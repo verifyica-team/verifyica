@@ -52,7 +52,7 @@ public class DependsOnTest3 {
 
     @Verifyica.Test
     @Verifyica.Tag("beta")
-    @Verifyica.Experimental.DependsOn("alpha")
+    @Verifyica.DependsOn("alpha")
     public void beta(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "beta(name[%s], payload[%s])%n",
@@ -64,7 +64,7 @@ public class DependsOnTest3 {
 
     @Verifyica.Test
     @Verifyica.Tag("gamma")
-    @Verifyica.Experimental.DependsOn("beta")
+    @Verifyica.DependsOn("beta")
     public void gamma(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "gamma(name[%s], payload[%s])%n",
@@ -76,7 +76,7 @@ public class DependsOnTest3 {
 
     @Verifyica.Test
     @Verifyica.Tag("delta")
-    @Verifyica.Experimental.DependsOn("gamma")
+    @Verifyica.DependsOn("gamma")
     public void delta(ArgumentContext argumentContext) throws Throwable {
         System.out.printf(
                 "delta(name[%s], payload[%s])%n",

@@ -148,34 +148,30 @@ public @interface Verifyica {
     @Retention(RetentionPolicy.RUNTIME)
     @interface Testable {}
 
-    /** Interface that contains all experimental Verifyica annotations */
-    @interface Experimental {
+    /** DependsOn annotation */
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Repeatable(DependsOns.class)
+    @interface DependsOn {
 
-        /** DependsOn annotation */
-        @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-        @Retention(RetentionPolicy.RUNTIME)
-        @Repeatable(DependsOns.class)
-        @interface DependsOn {
+        /**
+         * Tag value
+         *
+         * @return the tag value
+         */
+        String value();
+    }
 
-            /**
-             * Tag value
-             *
-             * @return the tag value
-             */
-            String value();
-        }
+    /** DependsOns annotation */
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface DependsOns {
 
-        /** DependsOns annotation */
-        @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-        @Retention(RetentionPolicy.RUNTIME)
-        @interface DependsOns {
-
-            /**
-             * DependsOn values
-             *
-             * @return the DependsOn array
-             */
-            DependsOn[] value();
-        }
+        /**
+         * DependsOn values
+         *
+         * @return the DependsOn array
+         */
+        DependsOn[] value();
     }
 }
