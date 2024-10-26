@@ -21,8 +21,11 @@ import java.util.Collection;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.Logger;
 
 public class ParallelArgumentTest {
+
+    private static final Logger LOGGER = Logger.createLogger(ParallelArgumentTest.class);
 
     @Verifyica.ArgumentSupplier(parallelism = 2)
     public static Object arguments() {
@@ -37,46 +40,46 @@ public class ParallelArgumentTest {
 
     @Verifyica.Prepare
     public void prepare(ClassContext classContext) {
-        System.out.println("prepare()");
+        LOGGER.info("prepare()");
     }
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) {
-        System.out.printf("beforeAll() argument [%s]%n", argumentContext.getTestArgument());
+        LOGGER.info("beforeAll() argument [%s]", argumentContext.getTestArgument());
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) {
-        System.out.printf("beforeEach() argument [%s]%n", argumentContext.getTestArgument());
+        LOGGER.info("beforeEach() argument [%s]", argumentContext.getTestArgument());
     }
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) {
-        System.out.printf("test1() argument [%s]%n", argumentContext.getTestArgument());
+        LOGGER.info("test1() argument [%s]", argumentContext.getTestArgument());
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
-        System.out.printf("test2() argument [%s]%n", argumentContext.getTestArgument());
+        LOGGER.info("test2() argument [%s]", argumentContext.getTestArgument());
     }
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) {
-        System.out.printf("test3() argument [%s]%n", argumentContext.getTestArgument());
+        LOGGER.info("test3() argument [%s]", argumentContext.getTestArgument());
     }
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) {
-        System.out.printf("afterEach() argument [%s]%n", argumentContext.getTestArgument());
+        LOGGER.info("afterEach() argument [%s]", argumentContext.getTestArgument());
     }
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) {
-        System.out.printf("afterAll() argument [%s]%n", argumentContext.getTestArgument());
+        LOGGER.info("afterAll() argument [%s]", argumentContext.getTestArgument());
     }
 
     @Verifyica.Conclude
     public void conclude(ClassContext classContext) {
-        System.out.println("conclude()");
+        LOGGER.info("conclude()");
     }
 }

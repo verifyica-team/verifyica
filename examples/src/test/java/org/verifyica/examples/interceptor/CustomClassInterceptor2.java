@@ -20,34 +20,35 @@ import java.lang.reflect.Method;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
+import org.verifyica.examples.support.Logger;
 
 public class CustomClassInterceptor2 implements ClassInterceptor {
 
-    private static final String CLASS_NAME = CustomClassInterceptor2.class.getSimpleName();
+    private static final Logger LOGGER = Logger.createLogger(CustomClassInterceptor2.class);
 
     @Override
     public void initialize(EngineContext engineContext) throws Throwable {
-        System.out.printf("%s::initialize()%n", CLASS_NAME);
+        LOGGER.info("initialize()");
     }
 
     @Override
     public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
-        System.out.printf(
-                "%s::preTest() test class [%s] test method [%s]%n",
-                CLASS_NAME, argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
+        LOGGER.info(
+                "preTest() test class [%s] test method [%s]",
+                argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
     }
 
     @Override
     public void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) throws Throwable {
-        System.out.printf(
-                "%s::postTest() test class [%s] test method [%s]%n",
-                CLASS_NAME, argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
+        LOGGER.info(
+                "postTest() test class [%s] test method [%s]",
+                argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
 
         rethrow(throwable);
     }
 
     @Override
     public void destroy(EngineContext engineContext) throws Throwable {
-        System.out.printf("%s::destroy()%n", CustomClassInterceptor2.class.getName());
+        LOGGER.info("destroy()");
     }
 }

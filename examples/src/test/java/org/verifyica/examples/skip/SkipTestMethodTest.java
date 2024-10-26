@@ -24,8 +24,11 @@ import java.util.Collection;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.Logger;
 
 public class SkipTestMethodTest {
+
+    private static final Logger LOGGER = Logger.createLogger(SkipTestMethodTest.class);
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Object arguments() {
@@ -43,16 +46,16 @@ public class SkipTestMethodTest {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
 
-        System.out.printf(
-                "test1(name[%s], payload[%s])%n",
+        LOGGER.info(
+                "test1(name[%s], payload[%s])",
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
-        System.out.printf(
-                "test2(name[%s], payload[%s])%n",
+        LOGGER.info(
+                "test2(name[%s], payload[%s])",
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
     }

@@ -20,36 +20,37 @@ import java.lang.reflect.Method;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
+import org.verifyica.examples.support.Logger;
 
 public class TestMethodElapsedTimeClassInterceptor implements ClassInterceptor {
 
-    private static final String CLASS_NAME = TestMethodElapsedTimeClassInterceptor.class.getSimpleName();
+    private static final Logger LOGGER = Logger.createLogger(TestMethodElapsedTimeClassInterceptor.class);
 
     private static final String TIMESTAMP = "timestamp";
 
     @Override
     public void initialize(EngineContext engineContext) throws Throwable {
-        System.out.printf("%s::initialize()%n", CLASS_NAME);
+        LOGGER.info("initialize()");
     }
 
     @Override
     public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
         argumentContext.map().put(TIMESTAMP, System.nanoTime());
 
-        System.out.printf(
-                "%s::preTest() test class [%s] test method [%s]%n",
-                CLASS_NAME, argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
+        LOGGER.info(
+                "preTest() test class [%s] test method [%s]",
+                argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
     }
 
     @Override
     public void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) throws Throwable {
-        System.out.printf(
-                "%s::postTest() test class [%s] test method [%s]%n",
-                CLASS_NAME, argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
+        LOGGER.info(
+                "postTest() test class [%s] test method [%s]",
+                argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
 
         long elapsedTime = System.nanoTime() - argumentContext.map().removeAs(TIMESTAMP, Long.class);
-        System.out.printf(
-                "test class [%s] test method [%s] test argument [%s] elapsed time [%d] ns%n",
+        LOGGER.info(
+                "test class [%s] test method [%s] test argument [%s] elapsed time [%d] ns",
                 argumentContext.classContext().testClass().getName(),
                 testMethod.getName(),
                 argumentContext.testArgument().name(),
@@ -60,6 +61,6 @@ public class TestMethodElapsedTimeClassInterceptor implements ClassInterceptor {
 
     @Override
     public void destroy(EngineContext engineContext) throws Throwable {
-        System.out.printf("%s::destroy()%n", TestMethodElapsedTimeClassInterceptor.class.getName());
+        LOGGER.info("destroy()", TestMethodElapsedTimeClassInterceptor.class.getName());
     }
 }

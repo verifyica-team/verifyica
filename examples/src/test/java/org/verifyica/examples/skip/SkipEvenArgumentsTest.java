@@ -25,9 +25,12 @@ import java.util.List;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.Logger;
 
 @SuppressWarnings("unchecked")
 public class SkipEvenArgumentsTest {
+
+    private static final Logger LOGGER = Logger.createLogger(SkipEvenArgumentsTest.class);
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Object arguments() {
@@ -55,8 +58,8 @@ public class SkipEvenArgumentsTest {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
 
-        System.out.printf(
-                "test1(name[%s], payload[%s])%n",
+        LOGGER.info(
+                "test1(name[%s], payload[%s])",
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
@@ -69,8 +72,8 @@ public class SkipEvenArgumentsTest {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
 
-        System.out.printf(
-                "test2(name[%s], payload[%s])%n",
+        LOGGER.info(
+                "test2(name[%s], payload[%s])",
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
@@ -82,8 +85,8 @@ public class SkipEvenArgumentsTest {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
 
-        System.out.printf(
-                "test3(name[%s], payload[%s])%n",
+        LOGGER.info(
+                "test3(name[%s], payload[%s])",
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
@@ -95,8 +98,8 @@ public class SkipEvenArgumentsTest {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
 
-        System.out.printf(
-                "test4(name[%s], payload[%s])%n",
+        LOGGER.info(
+                "test4(name[%s], payload[%s])",
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
@@ -108,8 +111,8 @@ public class SkipEvenArgumentsTest {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
 
-        System.out.printf(
-                "test5(name[%s], payload[%s])%n",
+        LOGGER.info(
+                "test5(name[%s], payload[%s])",
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
