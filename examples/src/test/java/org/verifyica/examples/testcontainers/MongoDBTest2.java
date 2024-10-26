@@ -17,8 +17,7 @@
 package org.verifyica.examples.testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.verifyica.examples.support.TestSupport.info;
-import static org.verifyica.examples.support.TestSupport.randomString;
+import static org.verifyica.examples.support.RandomSupport.randomString;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -35,8 +34,11 @@ import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.Logger;
 
 public class MongoDBTest2 {
+
+    private static final Logger LOGGER = Logger.createLogger(MongoDBTest2.class);
 
     private static final String NETWORK = "network";
     private static final String NAME = "name";
@@ -52,7 +54,7 @@ public class MongoDBTest2 {
 
     @Verifyica.BeforeAll
     public void initializeTestEnvironment(ArgumentContext argumentContext) {
-        info(
+        LOGGER.info(
                 "[%s] initialize test environment ...",
                 argumentContext.getTestArgument().getName());
 
@@ -69,7 +71,9 @@ public class MongoDBTest2 {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testInsert(ArgumentContext argumentContext) {
-        info("[%s] testing testInsert() ...", argumentContext.getTestArgument().getName());
+        LOGGER.info(
+                "[%s] testing testInsert() ...",
+                argumentContext.getTestArgument().getName());
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
                 argumentContext.getTestArgument().getPayload(MongoDBTestEnvironment.class);
@@ -77,7 +81,7 @@ public class MongoDBTest2 {
         String name = randomString(16);
         argumentContext.getMap().put(NAME, name);
 
-        info("[%s] name [%s]", argumentContext.getTestArgument().getName(), name);
+        LOGGER.info("[%s] name [%s]", argumentContext.getTestArgument().getName(), name);
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.connectionString()))
@@ -90,13 +94,15 @@ public class MongoDBTest2 {
             collection.insertOne(document);
         }
 
-        info("[%s] name [%s] inserted", argumentContext.getTestArgument().getName(), name);
+        LOGGER.info("[%s] name [%s] inserted", argumentContext.getTestArgument().getName(), name);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testQuery(ArgumentContext argumentContext) {
-        info("[%s] testing testQuery() ...", argumentContext.getTestArgument().getName());
+        LOGGER.info(
+                "[%s] testing testQuery() ...",
+                argumentContext.getTestArgument().getName());
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
                 argumentContext.getTestArgument().getPayload(MongoDBTestEnvironment.class);
@@ -120,7 +126,7 @@ public class MongoDBTest2 {
 
     @Verifyica.AfterAll
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
-        info(
+        LOGGER.info(
                 "[%s] destroy test environment ...",
                 argumentContext.getTestArgument().getName());
 

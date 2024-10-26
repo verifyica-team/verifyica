@@ -19,8 +19,11 @@ package org.verifyica.examples.simple;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.Logger;
 
 public class SequentialArgumentTest {
+
+    private static final Logger LOGGER = Logger.createLogger(ParallelArgumentTest.class);
 
     @Verifyica.ArgumentSupplier
     public static Object arguments() {
@@ -35,46 +38,46 @@ public class SequentialArgumentTest {
 
     @Verifyica.Prepare
     public void prepare() {
-        System.out.println("prepare()");
+        LOGGER.info("prepare()");
     }
 
     @Verifyica.BeforeAll
     public void beforeAll(String argument) {
-        System.out.printf("beforeAll() argument [%s]%n", argument);
+        LOGGER.info("beforeAll() argument [%s]", argument);
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(String argument) {
-        System.out.printf("beforeEach() argument [%s]%n", argument);
+        LOGGER.info("beforeEach() argument [%s]", argument);
     }
 
     @Verifyica.Test
     public void test1(String argument) {
-        System.out.printf("test1() argument [%s]%n", argument);
+        LOGGER.info("test1() argument [%s]", argument);
     }
 
     @Verifyica.Test
     public void test2(String argument) {
-        System.out.printf("test2() argument [%s]%n", argument);
+        LOGGER.info("test2() argument [%s]", argument);
     }
 
     @Verifyica.Test
     public void test3(String argument) {
-        System.out.printf("test3() argument [%s]%n", argument);
+        LOGGER.info("test3() argument [%s]", argument);
     }
 
     @Verifyica.AfterEach
     public void afterEach(String argument) {
-        System.out.printf("afterEach() argument [%s]%n", argument);
+        LOGGER.info("afterEach() argument [%s]", argument);
     }
 
     @Verifyica.AfterAll
     public void afterAll(String argument) {
-        System.out.printf("afterAll() argument [%s]%n", argument);
+        LOGGER.info("afterAll() argument [%s]", argument);
     }
 
     @Verifyica.Conclude
     public void conclude() {
-        System.out.println("conclude()");
+        LOGGER.info("conclude()");
     }
 }

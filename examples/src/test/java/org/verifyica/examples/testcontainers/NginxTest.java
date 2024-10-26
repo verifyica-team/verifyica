@@ -17,7 +17,6 @@
 package org.verifyica.examples.testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.verifyica.examples.support.TestSupport.info;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -30,8 +29,11 @@ import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.Logger;
 
 public class NginxTest {
+
+    private static final Logger LOGGER = Logger.createLogger(NginxTest.class);
 
     private final ThreadLocal<Network> networkThreadLocal = new ThreadLocal<>();
 
@@ -46,7 +48,7 @@ public class NginxTest {
 
     @Verifyica.BeforeAll
     public void initializeTestEnvironment(NginxTestEnvironment nginxTestEnvironment) {
-        info("[%s] initialize test environment ...", nginxTestEnvironment.getName());
+        LOGGER.info("[%s] initialize test environment ...", nginxTestEnvironment.getName());
 
         Network network = Network.newNetwork();
         network.getId();
@@ -58,7 +60,7 @@ public class NginxTest {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testGet(NginxTestEnvironment nginxTestEnvironment) throws Throwable {
-        info("[%s] testing testGet() ...", nginxTestEnvironment.getName());
+        LOGGER.info("[%s] testing testGet() ...", nginxTestEnvironment.getName());
 
         int port = nginxTestEnvironment.getNginxContainer().getMappedPort(80);
         String content = doGet("http://localhost:" + port);
@@ -68,7 +70,7 @@ public class NginxTest {
 
     @Verifyica.AfterAll
     public void destroyTestEnvironment(NginxTestEnvironment nginxTestEnvironment) throws Throwable {
-        info("[%s] destroy test environment ...", nginxTestEnvironment.getName());
+        LOGGER.info("[%s] destroy test environment ...", nginxTestEnvironment.getName());
 
         List<Trap> traps = new ArrayList<>();
 

@@ -17,8 +17,7 @@
 package org.verifyica.examples.testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.verifyica.examples.support.TestSupport.info;
-import static org.verifyica.examples.support.TestSupport.randomString;
+import static org.verifyica.examples.support.RandomSupport.randomString;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -41,8 +40,11 @@ import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.Logger;
 
 public class KafkaTest3 {
+
+    private static final Logger LOGGER = Logger.createLogger(KafkaTest3.class);
 
     private static final String NETWORK = "network";
     private static final String MESSAGE = "message";
@@ -62,7 +64,7 @@ public class KafkaTest3 {
 
     @Verifyica.BeforeAll
     public void initializeTestEnvironment(ArgumentContext argumentContext) {
-        info(
+        LOGGER.info(
                 "[%s] initialize test environment ...",
                 argumentContext.testArgument().name());
 
@@ -76,25 +78,30 @@ public class KafkaTest3 {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testProduce(ArgumentContext argumentContext) throws ExecutionException, InterruptedException {
-        info("[%s] testing testProduce() ...", argumentContext.testArgument().name());
+        LOGGER.info(
+                "[%s] testing testProduce() ...", argumentContext.testArgument().name());
 
         String message = randomString(16);
         argumentContext.map().put(MESSAGE, message);
-        info("[%s] producing message [%s] ...", argumentContext.testArgument().name(), message);
+        LOGGER.info(
+                "[%s] producing message [%s] ...",
+                argumentContext.testArgument().name(), message);
 
         try (KafkaProducer<String, String> producer = createKafkaProducer(argumentContext)) {
             ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC, message);
             producer.send(producerRecord).get();
         }
 
-        info("[%s] message [%s] produced", argumentContext.testArgument().name(), message);
+        LOGGER.info("[%s] message [%s] produced", argumentContext.testArgument().name(), message);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testConsume1(ArgumentContext argumentContext) {
-        info("[%s] testing testConsume1() ...", argumentContext.testArgument().name());
-        info("[%s] consuming message ...", argumentContext.testArgument().name());
+        LOGGER.info(
+                "[%s] testing testConsume1() ...",
+                argumentContext.testArgument().name());
+        LOGGER.info("[%s] consuming message ...", argumentContext.testArgument().name());
 
         String expectedMessage = argumentContext.map().getAs(MESSAGE);
         boolean messageMatched = false;
@@ -104,7 +111,7 @@ public class KafkaTest3 {
 
             ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                info(
+                LOGGER.info(
                         "[%s] consumed message [%s]",
                         argumentContext.testArgument().name(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
@@ -118,8 +125,10 @@ public class KafkaTest3 {
     @Verifyica.Test
     @Verifyica.Order(3)
     public void testConsume2(ArgumentContext argumentContext) {
-        info("[%s] testing testConsume2() ...", argumentContext.testArgument().name());
-        info("[%s] consuming message ...", argumentContext.testArgument().name());
+        LOGGER.info(
+                "[%s] testing testConsume2() ...",
+                argumentContext.testArgument().name());
+        LOGGER.info("[%s] consuming message ...", argumentContext.testArgument().name());
 
         String expectedMessage = argumentContext.map().getAs(MESSAGE);
         boolean messageMatched = false;
@@ -129,7 +138,7 @@ public class KafkaTest3 {
 
             ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                info(
+                LOGGER.info(
                         "[%s] consumed message [%s]",
                         argumentContext.testArgument().name(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
@@ -142,7 +151,9 @@ public class KafkaTest3 {
 
     @Verifyica.AfterAll
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
-        info("[%s] destroy test environment ...", argumentContext.testArgument().name());
+        LOGGER.info(
+                "[%s] destroy test environment ...",
+                argumentContext.testArgument().name());
 
         List<Trap> traps = new ArrayList<>();
 

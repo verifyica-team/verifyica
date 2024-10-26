@@ -18,38 +18,10 @@ package org.verifyica.examples.support;
 
 import java.util.Random;
 
-public class TestSupport {
+public class RandomSupport {
 
-    /** Constructor */
-    private TestSupport() {
+    private RandomSupport() {
         // INTENTIONALLY BLANK
-    }
-
-    /**
-     * Method to log a message
-     *
-     * @param object object
-     */
-    public static void info(Object object) {
-        System.out.println(object);
-    }
-
-    /**
-     * Method to log a message
-     *
-     * @param format format
-     * @param objects objects
-     */
-    public static void info(String format, Object... objects) {
-        if (format == null) {
-            throw new IllegalArgumentException("format is null");
-        }
-
-        if (format.trim().isEmpty()) {
-            throw new IllegalArgumentException("format is blank");
-        }
-
-        System.out.printf(format + "%n", objects);
     }
 
     /**

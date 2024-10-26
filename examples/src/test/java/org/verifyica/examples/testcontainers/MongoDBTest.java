@@ -17,8 +17,7 @@
 package org.verifyica.examples.testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.verifyica.examples.support.TestSupport.info;
-import static org.verifyica.examples.support.TestSupport.randomString;
+import static org.verifyica.examples.support.RandomSupport.randomString;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -34,8 +33,11 @@ import org.bson.Document;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.Logger;
 
 public class MongoDBTest {
+
+    private static final Logger LOGGER = Logger.createLogger(MongoDBTest.class);
 
     private final ThreadLocal<Network> networkThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<String> nameThreadLocal = new ThreadLocal<>();
@@ -51,7 +53,7 @@ public class MongoDBTest {
 
     @Verifyica.BeforeAll
     public void initializeTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) {
-        info("[%s] initialize test environment ...", mongoDBTestEnvironment.getName());
+        LOGGER.info("[%s] initialize test environment ...", mongoDBTestEnvironment.getName());
 
         Network network = Network.newNetwork();
         network.getId();
@@ -63,11 +65,11 @@ public class MongoDBTest {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testInsert(MongoDBTestEnvironment mongoDBTestEnvironment) {
-        info("[%s] testing testInsert() ...", mongoDBTestEnvironment.getName());
+        LOGGER.info("[%s] testing testInsert() ...", mongoDBTestEnvironment.getName());
 
         String name = randomString(16);
         nameThreadLocal.set(name);
-        info("[%s] name [%s]", mongoDBTestEnvironment.getName(), name);
+        LOGGER.info("[%s] name [%s]", mongoDBTestEnvironment.getName(), name);
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.connectionString()))
@@ -80,13 +82,13 @@ public class MongoDBTest {
             collection.insertOne(document);
         }
 
-        info("[%s] name [%s] inserted", mongoDBTestEnvironment.getName(), name);
+        LOGGER.info("[%s] name [%s] inserted", mongoDBTestEnvironment.getName(), name);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testQuery(MongoDBTestEnvironment mongoDBTestEnvironment) {
-        info("[%s] testing testQuery() ...", mongoDBTestEnvironment.getName());
+        LOGGER.info("[%s] testing testQuery() ...", mongoDBTestEnvironment.getName());
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.connectionString()))
@@ -107,7 +109,7 @@ public class MongoDBTest {
 
     @Verifyica.AfterAll
     public void destroyTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) throws Throwable {
-        info("[%s] destroy test environment ...", mongoDBTestEnvironment.getName());
+        LOGGER.info("[%s] destroy test environment ...", mongoDBTestEnvironment.getName());
 
         List<Trap> traps = new ArrayList<>();
 

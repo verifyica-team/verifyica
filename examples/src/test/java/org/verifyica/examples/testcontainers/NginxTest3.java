@@ -17,7 +17,6 @@
 package org.verifyica.examples.testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.verifyica.examples.support.TestSupport.info;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -31,8 +30,11 @@ import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.Logger;
 
 public class NginxTest3 {
+
+    private static final Logger LOGGER = Logger.createLogger(NginxTest3.class);
 
     private final String NETWORK = "network";
 
@@ -47,7 +49,7 @@ public class NginxTest3 {
 
     @Verifyica.BeforeAll
     public void initializeTestEnvironment(ArgumentContext argumentContext) {
-        info(
+        LOGGER.info(
                 "[%s] initialize test environment ...",
                 argumentContext.testArgument().name());
 
@@ -61,7 +63,7 @@ public class NginxTest3 {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testGet(ArgumentContext argumentContext) throws Throwable {
-        info("[%s] testing testGet() ...", argumentContext.testArgument().name());
+        LOGGER.info("[%s] testing testGet() ...", argumentContext.testArgument().name());
 
         int port = argumentContext
                 .testArgument()
@@ -75,7 +77,9 @@ public class NginxTest3 {
 
     @Verifyica.AfterAll
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
-        info("[%s] destroy test environment ...", argumentContext.testArgument().name());
+        LOGGER.info(
+                "[%s] destroy test environment ...",
+                argumentContext.testArgument().name());
 
         List<Trap> traps = new ArrayList<>();
 
