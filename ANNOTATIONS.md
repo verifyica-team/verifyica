@@ -219,7 +219,7 @@ All methods annotated with `@Verifyica.Test`:
 
 ### @Verifyica.Order
 
-Used by Verifyica to order test classes / test methods.
+Used to order test classes / test methods.
 
 - optional
 
@@ -243,9 +243,26 @@ Used by Verifyica to order test classes / test methods.
 
 ---
 
+### @Verifyica.DependsOn
+
+Used by to order tagged (`@Verifyica.Tag`) test methods (`@Verify.Test`) to define execution dependency.
+
+- optional
+- uses `@Verifyica.Tag` / tag value to identify dependency
+
+Test method ordering algorithm...
+
+Test method ordering algorithm...
+
+1. order test methods by `@Verifyica.DisplayName` annotations (the default display name is the full method name).
+2. order test methods by `@Verifyica.Order` annotations
+3. order test methods by `@Verifyica.Experimental.DependsOn` / `@Verifyica.Experimental.DependsOn` annotations
+
+---
+
 ### @Verifyica.DisplayName
 
-Used by Verifyica to set the test class / test method display name.
+Used to set the test class / test method display name.
 
 - optional
 
