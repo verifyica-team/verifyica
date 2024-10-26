@@ -18,18 +18,35 @@ package org.verifyica.examples.support;
 
 import static java.lang.String.format;
 
+/** Class to implement Logger */
 public class Logger {
 
     private final String name;
 
-    private Logger(Class<?> clazz) {
-        name = clazz.getName();
+    /**
+     * Constructor
+     *
+     * @param name name
+     */
+    private Logger(String name) {
+        this.name = name;
     }
 
+    /**
+     * Log an info print
+     *
+     * @param object object
+     */
     public void info(Object object) {
         System.out.printf("%s | %s%n", name, object);
     }
 
+    /**
+     * Log an info print
+     *
+     * @param format format
+     * @param objects objects
+     */
     public void info(String format, Object... objects) {
         if (format == null) {
             throw new IllegalArgumentException("format is null");
@@ -42,11 +59,17 @@ public class Logger {
         info(format(format, objects));
     }
 
+    /**
+     * Create a Logger
+     *
+     * @param clazz clazz
+     * @return a Logger
+     */
     public static Logger createLogger(Class<?> clazz) {
         if (clazz == null) {
             throw new IllegalArgumentException("clazz is null");
         }
 
-        return new Logger(clazz);
+        return new Logger(clazz.getName());
     }
 }
