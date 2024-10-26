@@ -23,15 +23,16 @@ import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Verifyica;
+import org.verifyica.examples.support.Logger;
 
 @Verifyica.Autowired
 public class AutowiredClassInterceptor implements ClassInterceptor {
 
-    private static final String CLASS_NAME = AutowiredClassInterceptor.class.getSimpleName();
+    private static final Logger LOGGER = Logger.createLogger(AutowiredClassInterceptor.class);
 
     @Override
     public void initialize(EngineContext engineContext) throws Throwable {
-        System.out.printf("%s::initialize()%n", CLASS_NAME);
+        LOGGER.info("initialize()");
     }
 
     @Override
@@ -42,22 +43,22 @@ public class AutowiredClassInterceptor implements ClassInterceptor {
 
     @Override
     public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
-        System.out.printf(
-                "%s::preTest() test class [%s] test method [%s]%n",
-                CLASS_NAME, argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
+        LOGGER.info(
+                "preTest() test class [%s] test method [%s]",
+                argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
     }
 
     @Override
     public void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) throws Throwable {
-        System.out.printf(
-                "%s::postTest() test class [%s] test method [%s]%n",
-                CLASS_NAME, argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
+        LOGGER.info(
+                "postTest() test class [%s] test method [%s]",
+                argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
 
         rethrow(throwable);
     }
 
     @Override
     public void destroy(EngineContext engineContext) throws Throwable {
-        System.out.printf("%s::destroy()%n", AutowiredClassInterceptor.class.getName());
+        LOGGER.info("destroy()");
     }
 }
