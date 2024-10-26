@@ -65,7 +65,7 @@ import org.verifyica.engine.listener.TracingEngineExecutionListener;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.resolver.EngineDiscoveryRequestResolver;
-import org.verifyica.engine.support.ExecutorSupport;
+import org.verifyica.engine.support.ExecutorServiceSupport;
 import org.verifyica.engine.support.HashSupport;
 import org.verifyica.engine.support.ListSupport;
 
@@ -197,7 +197,7 @@ public class VerifyicaTestEngine implements TestEngine {
             }
 
             ExecutorService classExecutorService =
-                    ExecutorSupport.newExecutorService(getEngineClassParallelism(configuration));
+                    ExecutorServiceSupport.newExecutorService(getEngineClassParallelism(configuration));
 
             ExecutorService argumentExecutorService =
                     new FairExecutorService(getEngineArgumentParallelism(configuration));
@@ -257,13 +257,13 @@ public class VerifyicaTestEngine implements TestEngine {
                     }
                 }
 
-                ExecutorSupport.waitForAllFutures(futures, classExecutorService);
+                ExecutorServiceSupport.waitForAllFutures(futures, classExecutorService);
             } catch (Throwable t) {
                 StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                 throwables.add(t);
             } finally {
-                ExecutorSupport.shutdownAndAwaitTermination(argumentExecutorService);
-                ExecutorSupport.shutdownAndAwaitTermination(classExecutorService);
+                ExecutorServiceSupport.shutdownAndAwaitTermination(argumentExecutorService);
+                ExecutorServiceSupport.shutdownAndAwaitTermination(classExecutorService);
 
                 Map<String, Object> map = engineContext.getMap();
 

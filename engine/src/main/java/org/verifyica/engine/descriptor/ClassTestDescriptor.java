@@ -51,7 +51,7 @@ import org.verifyica.engine.inject.Injector;
 import org.verifyica.engine.inject.Named;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
-import org.verifyica.engine.support.ExecutorSupport;
+import org.verifyica.engine.support.ExecutorServiceSupport;
 import org.verifyica.engine.support.HashSupport;
 
 /** Class to implement ClassTestDescriptor */
@@ -390,7 +390,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             futures.add(future);
         }
 
-        ExecutorSupport.waitForAllFutures(futures, argumentExecutorService);
+        ExecutorServiceSupport.waitForAllFutures(futures, argumentExecutorService);
 
         return State.CONCLUDE;
     }

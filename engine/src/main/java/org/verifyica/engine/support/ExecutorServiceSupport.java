@@ -39,15 +39,15 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement ExecutorSupport */
-public class ExecutorSupport {
+public class ExecutorServiceSupport {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorSupport.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorServiceSupport.class);
 
     private static final String PLATFORM = "platform";
     private static final String EPHEMERAL = "ephemeral";
 
     /** Constructor */
-    private ExecutorSupport() {
+    private ExecutorServiceSupport() {
         // INTENTIONALLY BLANK
     }
 

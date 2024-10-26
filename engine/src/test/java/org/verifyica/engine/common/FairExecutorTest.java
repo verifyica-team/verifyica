@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.verifyica.engine.support.ExecutorSupport;
+import org.verifyica.engine.support.ExecutorServiceSupport;
 
 public class FairExecutorTest {
 
@@ -58,7 +58,7 @@ public class FairExecutorTest {
             for (Thread thread : threads) {
                 thread.join();
             }
-            ExecutorSupport.waitForAllFutures(FUTURES, EXECUTOR_SERVICE);
+            ExecutorServiceSupport.waitForAllFutures(FUTURES, EXECUTOR_SERVICE);
         }
     }
 
