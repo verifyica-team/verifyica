@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.ClassContext;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
@@ -63,8 +64,7 @@ public class SkipOddArgumentsTest {
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
-        storeState(argumentContext, "test1");
-        argumentContext.getMap().put("test1", "X");
+        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test1");
     }
 
     @Verifyica.Test
@@ -77,7 +77,7 @@ public class SkipOddArgumentsTest {
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
-        storeState(argumentContext, "test2");
+        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test2");
     }
 
     @Verifyica.Test
@@ -90,7 +90,7 @@ public class SkipOddArgumentsTest {
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
-        storeState(argumentContext, "test3");
+        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test3");
     }
 
     @Verifyica.Test
@@ -103,7 +103,7 @@ public class SkipOddArgumentsTest {
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
-        storeState(argumentContext, "test4");
+        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test4");
     }
 
     @Verifyica.Test
@@ -116,7 +116,21 @@ public class SkipOddArgumentsTest {
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
-        storeState(argumentContext, "test5");
+        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test5");
+    }
+
+    @Verifyica.Conclude
+    public void conclude(ClassContext classContext) {
+        List<String> list = classContext.getMap().getAs("state");
+
+        assertThat(list).isNotNull();
+        assertThat(list).hasSize(25);
+
+        for (int i = 0; i < 10; i = i + 2) {
+            for (int j = 1; j <= 5; j++) {
+                assertThat(list).contains(i + ".test" + j);
+            }
+        }
     }
 
     private static void storeState(ArgumentContext argumentContext, String state) {

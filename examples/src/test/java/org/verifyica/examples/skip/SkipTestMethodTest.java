@@ -21,11 +21,14 @@ import static org.verifyica.api.Execution.skipIfCondition;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.ClassContext;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
+@SuppressWarnings("unchecked")
 public class SkipTestMethodTest {
 
     private static final Logger LOGGER = Logger.createLogger(SkipTestMethodTest.class);
@@ -50,6 +53,8 @@ public class SkipTestMethodTest {
                 "test1(name[%s], payload[%s])",
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
+
+        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test1");
     }
 
     @Verifyica.Test
@@ -58,5 +63,31 @@ public class SkipTestMethodTest {
                 "test2(name[%s], payload[%s])",
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
+
+        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test2");
+    }
+
+    @Verifyica.Conclude
+    public void conclude(ClassContext classContext) {
+        List<String> list = classContext.getMap().getAs("state");
+
+        assertThat(list).isNotNull();
+        assertThat(list).hasSize(15);
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 1; j <= 2; j++) {
+                if (i % 2 == 1) {
+                    assertThat(list).contains(i + ".test" + j);
+                } else if (j == 2) {
+                    assertThat(list).contains(i + ".test" + j);
+                }
+            }
+        }
+    }
+
+    private static void storeState(ArgumentContext argumentContext, String state) {
+        List<String> list = (List<String>)
+                argumentContext.getClassContext().getMap().computeIfAbsent("state", object -> new ArrayList<>());
+        list.add(state);
     }
 }
