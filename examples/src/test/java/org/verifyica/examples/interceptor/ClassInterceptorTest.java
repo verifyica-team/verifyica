@@ -29,7 +29,6 @@ public class ClassInterceptorTest {
     @Verifyica.ClassInterceptorSupplier
     public static Collection<ClassInterceptor> classInterceptors() {
         Collection<ClassInterceptor> collections = new ArrayList<>();
-        collections.add(new TestMethodElapsedTimeClassInterceptor());
         collections.add(new CustomClassInterceptor2());
         return collections;
     }

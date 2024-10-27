@@ -20,11 +20,13 @@ import java.lang.reflect.Method;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
+import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
-public class TestMethodElapsedTimeClassInterceptor implements ClassInterceptor {
+@Verifyica.Autowired
+public class ElapsedTimeClassInterceptor implements ClassInterceptor {
 
-    private static final Logger LOGGER = Logger.createLogger(TestMethodElapsedTimeClassInterceptor.class);
+    private static final Logger LOGGER = Logger.createLogger(ElapsedTimeClassInterceptor.class);
 
     private static final String TIMESTAMP = "timestamp";
 
@@ -36,31 +38,23 @@ public class TestMethodElapsedTimeClassInterceptor implements ClassInterceptor {
     @Override
     public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
         argumentContext.map().put(TIMESTAMP, System.nanoTime());
-
-        LOGGER.info(
-                "preTest() test class [%s] test method [%s]",
-                argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
     }
 
     @Override
     public void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) throws Throwable {
-        LOGGER.info(
-                "postTest() test class [%s] test method [%s]",
-                argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());
-
         long elapsedTime = System.nanoTime() - argumentContext.map().removeAs(TIMESTAMP, Long.class);
         LOGGER.info(
-                "test class [%s] test method [%s] test argument [%s] elapsed time [%d] ns",
+                "test class [%s] test argument [%s] test method [%s] elapsed time [%f] ms",
                 argumentContext.classContext().testClass().getName(),
-                testMethod.getName(),
                 argumentContext.testArgument().name(),
-                elapsedTime);
+                testMethod.getName(),
+                elapsedTime / 1_000_000.0);
 
         rethrow(throwable);
     }
 
     @Override
     public void destroy(EngineContext engineContext) throws Throwable {
-        LOGGER.info("destroy()", TestMethodElapsedTimeClassInterceptor.class.getName());
+        LOGGER.info("destroy()", ElapsedTimeClassInterceptor.class.getName());
     }
 }
