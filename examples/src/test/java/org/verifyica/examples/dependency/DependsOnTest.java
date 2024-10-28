@@ -110,6 +110,16 @@ public class DependsOnTest {
         argumentContext.classContext().map().getAs(LIST, List.class).add("test6");
     }
 
+    @Verifyica.Test
+    public void test7(ArgumentContext argumentContext) throws Throwable {
+        System.out.printf(
+                "test7(name[%s], payload[%s])%n",
+                argumentContext.getTestArgument(),
+                argumentContext.getTestArgument().getPayload());
+
+        argumentContext.classContext().map().getAs(LIST, List.class).add("test7");
+    }
+
     @Verifyica.Conclude
     public void conclude(ClassContext classContext) {
         List<String> expected = new ArrayList<>();
@@ -119,6 +129,7 @@ public class DependsOnTest {
         expected.add("test3");
         expected.add("test4");
         expected.add("test5");
+        expected.add("test7");
 
         List<String> actual = classContext.map().getAs(LIST);
 
