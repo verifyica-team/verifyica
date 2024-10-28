@@ -74,6 +74,7 @@ Verifyica uses a dependent test method paradigm ...
 - Scenario based testing
   - if a test method fails, remaining test methods will be marked as skipped
   - default test method execution based on `@Verifyica.Order` annotation
+  - additional annotation `@Verifyica.DependsOn` can be used to define dependency order
 - Multithreaded test class / test argument testing
   - configurable constraints
   - test arguments can be tested multithreaded
