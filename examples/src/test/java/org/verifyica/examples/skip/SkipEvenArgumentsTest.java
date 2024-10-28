@@ -21,6 +21,7 @@ import static org.verifyica.api.Execution.skipIfCondition;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
@@ -134,8 +135,10 @@ public class SkipEvenArgumentsTest {
     }
 
     private static void storeState(ArgumentContext argumentContext, String state) {
-        List<String> list = (List<String>)
-                argumentContext.getClassContext().getMap().computeIfAbsent("state", object -> new ArrayList<>());
+        List<String> list = (List<String>) argumentContext
+                .getClassContext()
+                .getMap()
+                .computeIfAbsent("state", object -> Collections.synchronizedList(new ArrayList<>()));
         list.add(state);
     }
 }
