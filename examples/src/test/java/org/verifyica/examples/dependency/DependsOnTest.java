@@ -16,14 +16,13 @@
 
 package org.verifyica.examples.dependency;
 
-import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.ClassContext;
-import org.verifyica.api.Verifyica;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.ClassContext;
+import org.verifyica.api.Verifyica;
 
 @SuppressWarnings("unchecked")
 public class DependsOnTest {
