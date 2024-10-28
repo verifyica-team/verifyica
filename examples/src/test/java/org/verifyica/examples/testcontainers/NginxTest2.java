@@ -58,6 +58,12 @@ public class NginxTest2 {
 
         argumentContext.getMap().put(NETWORK, network);
         argumentContext.getTestArgument().getPayload(NginxTestEnvironment.class).initialize(network);
+
+        assertThat(argumentContext
+                        .getTestArgument()
+                        .getPayload(NginxTestEnvironment.class)
+                        .isRunning())
+                .isTrue();
     }
 
     @Verifyica.Test

@@ -73,6 +73,12 @@ public class KafkaTest2 {
 
         argumentContext.getMap().put(NETWORK, network);
         argumentContext.getTestArgument().getPayload(KafkaTestEnvironment.class).initialize(network);
+
+        assertThat(argumentContext
+                        .getTestArgument()
+                        .getPayload(KafkaTestEnvironment.class)
+                        .isRunning())
+                .isTrue();
     }
 
     @Verifyica.Test

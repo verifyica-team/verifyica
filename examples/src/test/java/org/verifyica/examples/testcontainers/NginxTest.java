@@ -55,6 +55,8 @@ public class NginxTest {
 
         networkThreadLocal.set(network);
         nginxTestEnvironment.initialize(network);
+
+        assertThat(nginxTestEnvironment.isRunning()).isTrue();
     }
 
     @Verifyica.Test

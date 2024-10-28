@@ -75,6 +75,15 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
     }
 
     /**
+     * Method to determine if the KafkaTestEnvironment is running
+     *
+     * @return true if the KafkaTestEnvironment is running, else false
+     */
+    public boolean isRunning() {
+        return kafkaContainer.isRunning();
+    }
+
+    /**
      * Method to get the Kafka bootstrap servers
      *
      * @return the Kafka bootstrap servers

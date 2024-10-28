@@ -60,6 +60,8 @@ public class MongoDBTest {
 
         networkThreadLocal.set(network);
         mongoDBTestEnvironment.initialize(network);
+
+        assertThat(mongoDBTestEnvironment.isRunning()).isTrue();
     }
 
     @Verifyica.Test

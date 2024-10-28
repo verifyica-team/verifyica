@@ -70,6 +70,8 @@ public class KafkaTest {
 
         networkThreadLocal.set(network);
         kafkaTestEnvironment.initialize(network);
+
+        assertThat(kafkaTestEnvironment.isRunning()).isTrue();
     }
 
     @Verifyica.Test

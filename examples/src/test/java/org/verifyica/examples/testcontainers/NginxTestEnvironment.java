@@ -59,7 +59,7 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     }
 
     /**
-     * Method to initialize the MongoDBTestEnvironment using a specific network
+     * Method to initialize the NginxTestEnvironment using a specific network
      *
      * @param network the network
      */
@@ -73,12 +73,26 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
         // info("test environment [%s] initialized", dockerImageName);
     }
 
+    /**
+     * Method to determine if the NginxTestEnvironment is running
+     *
+     * @return true if the NginxTestEnvironment is running, else false
+     */
+    public boolean isRunning() {
+        return nginxContainer.isRunning();
+    }
+
+    /**
+     * Method to get the NginxContainer
+     *
+     * @return the NginxContainer
+     */
     public NginxContainer<?> getNginxContainer() {
         return nginxContainer;
     }
 
     /**
-     * Method to destroy the MongoDBTestEnvironment
+     * Method to destroy the NginxTestEnvironment
      */
     public void destroy() {
         // info("destroying test environment [%s] ...", dockerImageName);

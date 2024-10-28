@@ -66,6 +66,12 @@ public class MongoDBTest2 {
                 .getTestArgument()
                 .getPayload(MongoDBTestEnvironment.class)
                 .initialize(network);
+
+        assertThat(argumentContext
+                        .getTestArgument()
+                        .getPayload(MongoDBTestEnvironment.class)
+                        .isRunning())
+                .isTrue();
     }
 
     @Verifyica.Test

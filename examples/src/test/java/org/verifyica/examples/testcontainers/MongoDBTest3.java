@@ -63,6 +63,12 @@ public class MongoDBTest3 {
 
         argumentContext.map().put(NETWORK, network);
         argumentContext.testArgument().payload(MongoDBTestEnvironment.class).initialize(network);
+
+        assertThat(argumentContext
+                        .testArgument()
+                        .payload(MongoDBTestEnvironment.class)
+                        .isRunning())
+                .isTrue();
     }
 
     @Verifyica.Test
