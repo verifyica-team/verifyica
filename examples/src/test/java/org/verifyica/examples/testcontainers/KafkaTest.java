@@ -59,7 +59,9 @@ public class KafkaTest {
                 new KafkaTestEnvironment("apache/kafka:3.7.0"),
                 new KafkaTestEnvironment("apache/kafka:3.7.1"),
                 new KafkaTestEnvironment("apache/kafka:3.8.0"),
-                new KafkaTestEnvironment("apache/kafka-native:3.8.0"));
+                new KafkaTestEnvironment("apache/kafka:3.8.1"),
+                new KafkaTestEnvironment("apache/kafka-native:3.8.0"),
+                new KafkaTestEnvironment("apache/kafka-native:3.8.1"));
     }
 
     @Verifyica.BeforeAll
@@ -105,14 +107,11 @@ public class KafkaTest {
         try (KafkaConsumer<String, String> consumer = createKafkaConsumer(kafkaTestEnvironment)) {
             consumer.subscribe(Collections.singletonList(TOPIC));
 
-            for (int i = 0; i < 10; i++) {
-                ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
-                for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                    LOGGER.info("[%s] consumed message [%s]", kafkaTestEnvironment.name(), consumerRecord.value());
-                    assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
-                    messageMatched = true;
-                    break;
-                }
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10000));
+            for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
+                LOGGER.info("[%s] consumed message [%s]", kafkaTestEnvironment.name(), consumerRecord.value());
+                assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
+                messageMatched = true;
             }
         }
 
@@ -131,14 +130,11 @@ public class KafkaTest {
         try (KafkaConsumer<String, String> consumer = createKafkaConsumer(kafkaTestEnvironment)) {
             consumer.subscribe(Collections.singletonList(TOPIC));
 
-            for (int i = 0; i < 10; i++) {
-                ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
-                for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                    LOGGER.info("[%s] consumed message [%s]", kafkaTestEnvironment.name(), consumerRecord.value());
-                    assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
-                    messageMatched = true;
-                    break;
-                }
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10000));
+            for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
+                LOGGER.info("[%s] consumed message [%s]", kafkaTestEnvironment.name(), consumerRecord.value());
+                assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
+                messageMatched = true;
             }
         }
 
