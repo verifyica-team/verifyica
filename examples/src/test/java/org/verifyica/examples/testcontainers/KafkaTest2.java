@@ -42,6 +42,7 @@ import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
+@SuppressWarnings("PMD.AvoidBranchingStatementAsLastInLoop")
 public class KafkaTest2 {
 
     private static final Logger LOGGER = Logger.createLogger(KafkaTest2.class);
