@@ -118,13 +118,16 @@ public class KafkaTest2 {
         try (KafkaConsumer<String, String> consumer = createKafkaConsumer(argumentContext)) {
             consumer.subscribe(Collections.singletonList(TOPIC));
 
-            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
-            for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                LOGGER.info(
-                        "[%s] consumed message [%s]",
-                        argumentContext.getTestArgument().getName(), consumerRecord.value());
-                assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
-                messageMatched = true;
+            for (int i = 0; i < 10; i++) {
+                ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
+                for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
+                    LOGGER.info(
+                            "[%s] consumed message [%s]",
+                            argumentContext.getTestArgument().getName(), consumerRecord.value());
+                    assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
+                    messageMatched = true;
+                    break;
+                }
             }
         }
 
@@ -146,13 +149,16 @@ public class KafkaTest2 {
         try (KafkaConsumer<String, String> consumer = createKafkaConsumer(argumentContext)) {
             consumer.subscribe(Collections.singletonList(TOPIC));
 
-            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
-            for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                LOGGER.info(
-                        "[%s] consumed message [%s]",
-                        argumentContext.getTestArgument().getName(), consumerRecord.value());
-                assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
-                messageMatched = true;
+            for (int i = 0; i < 10; i++) {
+                ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
+                for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
+                    LOGGER.info(
+                            "[%s] consumed message [%s]",
+                            argumentContext.getTestArgument().getName(), consumerRecord.value());
+                    assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
+                    messageMatched = true;
+                    break;
+                }
             }
         }
 
