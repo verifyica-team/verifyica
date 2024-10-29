@@ -237,11 +237,11 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             throw new MojoExecutionException(t);
         }
 
-        Optional<TestableTestDescriptor> optionalExecutableTestDescriptor = testDescriptor.getChildren().stream()
+        Optional<TestableTestDescriptor> optionalExecutableTestDescriptor = testDescriptor.getDescendants().stream()
                 .filter(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_FILTER)
                 .map(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_MAPPER)
-                .filter(executableTestDescriptor ->
-                        executableTestDescriptor.getTestDescriptorStatus().isFailure())
+                .filter(testableTestDescriptor ->
+                        testableTestDescriptor.getTestDescriptorStatus().isFailure())
                 .findFirst();
 
         if (optionalExecutableTestDescriptor.isPresent()) {
