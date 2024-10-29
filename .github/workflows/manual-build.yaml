@@ -1,4 +1,4 @@
-name: Build - Manual
+name: Manual Build
 on: [workflow_dispatch]
 jobs:
   build:
