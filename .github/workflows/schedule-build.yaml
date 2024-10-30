@@ -1,0 +1,18 @@
+name: Scheduled Build (every hour)
+on:
+  schedule:
+    - cron: "0 * * * *"
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main' && github.repository == 'verifyica-team/verifyica'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: maven
+      - name: Build
+        run: ./mvnw --batch-mode clean verify
