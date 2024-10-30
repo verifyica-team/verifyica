@@ -4,7 +4,7 @@ on:
     - cron: "0 * * * *"
 jobs:
   build:
-    if: github.ref == 'refs/heads/main' && github.repository == 'verifyica-team/verifyica'
+    if: github.repository == 'verifyica-team/verifyica'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
