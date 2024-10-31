@@ -15,4 +15,4 @@ jobs:
         distribution: 'corretto'
         cache: maven
     - name: Build
-      run: ./mvnw --batch-mode clean verify
+      run: ./mvnw clean verify
