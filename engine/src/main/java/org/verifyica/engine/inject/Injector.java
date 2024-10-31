@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.verifyica.engine.exception.EngineException;
 
 /** Class to implement Injector */
+@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class Injector {
 
     private static final Map<Class<?>, List<Field>> FIELD_CACHE = new ConcurrentHashMap<>();
