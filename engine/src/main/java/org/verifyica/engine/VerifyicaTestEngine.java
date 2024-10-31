@@ -107,10 +107,6 @@ public class VerifyicaTestEngine implements TestEngine {
     private final List<Throwable> throwables;
 
     private Configuration configuration;
-    private EngineExecutionListener engineExecutionListener;
-    private EngineContext engineContext;
-    private EngineInterceptorRegistry engineInterceptorRegistry;
-    private ClassInterceptorRegistry classInterceptorRegistry;
 
     @Override
     public String getId() {
@@ -192,6 +188,11 @@ public class VerifyicaTestEngine implements TestEngine {
         Stopwatch stopwatch = new Stopwatch();
 
         LOGGER.trace("execute()");
+
+        EngineExecutionListener engineExecutionListener = null;
+        EngineContext engineContext = null;
+        EngineInterceptorRegistry engineInterceptorRegistry = null;
+        ClassInterceptorRegistry classInterceptorRegistry = null;
 
         try {
             if (LOGGER.isTraceEnabled()) {
