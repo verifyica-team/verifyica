@@ -17,6 +17,7 @@
 package org.verifyica.engine.descriptor;
 
 import static java.lang.String.format;
+import static java.util.Optional.of;
 
 import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.lang.reflect.InvocationTargetException;
@@ -140,7 +141,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
 
     @Override
     public Optional<TestSource> getSource() {
-        return Optional.of(ClassSource.from(testClass));
+        return of(ClassSource.from(testClass));
     }
 
     /**

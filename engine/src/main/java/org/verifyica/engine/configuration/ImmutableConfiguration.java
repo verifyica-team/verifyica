@@ -16,6 +16,8 @@
 
 package org.verifyica.engine.configuration;
 
+import static java.util.Optional.ofNullable;
+
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Properties;
@@ -40,7 +42,7 @@ public class ImmutableConfiguration implements Configuration {
 
     @Override
     public Optional<Path> propertiesPath() {
-        return Optional.ofNullable(propertiesFilenamePath);
+        return ofNullable(propertiesFilenamePath);
     }
 
     @Override

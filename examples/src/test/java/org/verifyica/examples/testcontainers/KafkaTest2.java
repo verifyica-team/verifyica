@@ -16,6 +16,7 @@
 
 package org.verifyica.examples.testcontainers;
 
+import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.verifyica.examples.support.RandomSupport.randomString;
 
@@ -23,7 +24,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
@@ -172,7 +172,7 @@ public class KafkaTest2 {
         List<Trap> traps = new ArrayList<>();
 
         traps.add(new Trap(argumentContext.getTestArgument().getPayload(KafkaTestEnvironment.class)::destroy));
-        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.getMap().getAs(NETWORK, Network.class))
+        traps.add(new Trap(() -> ofNullable(argumentContext.getMap().getAs(NETWORK, Network.class))
                 .ifPresent(Network::close)));
         traps.add(new Trap(() -> argumentContext.getMap().clear()));
 

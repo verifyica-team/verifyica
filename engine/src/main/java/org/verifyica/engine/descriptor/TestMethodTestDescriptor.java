@@ -17,6 +17,7 @@
 package org.verifyica.engine.descriptor;
 
 import static java.lang.String.format;
+import static java.util.Optional.of;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -105,7 +106,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
 
     @Override
     public Optional<TestSource> getSource() {
-        return Optional.of(MethodSource.from(testMethod));
+        return of(MethodSource.from(testMethod));
     }
 
     /**

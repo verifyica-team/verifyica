@@ -17,6 +17,8 @@
 package org.verifyica.engine;
 
 import static java.lang.String.format;
+import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
 
 import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.io.IOException;
@@ -117,17 +119,17 @@ public class VerifyicaTestEngine implements TestEngine {
 
     @Override
     public Optional<String> getGroupId() {
-        return Optional.of(GROUP_ID);
+        return of(GROUP_ID);
     }
 
     @Override
     public Optional<String> getArtifactId() {
-        return Optional.of(ARTIFACT_ID);
+        return of(ARTIFACT_ID);
     }
 
     @Override
     public Optional<String> getVersion() {
-        return Optional.of(VERSION);
+        return of(VERSION);
     }
 
     /** Constructor */
@@ -396,7 +398,7 @@ public class VerifyicaTestEngine implements TestEngine {
     private static int getEngineClassParallelism(Configuration configuration) {
         LOGGER.trace("getEngineClassParallelism()");
 
-        int engineClassParallelism = Optional.ofNullable(
+        int engineClassParallelism = ofNullable(
                         configuration.getProperties().getProperty(Constants.ENGINE_CLASS_PARALLELISM))
                 .map(value -> {
                     int intValue;
@@ -429,7 +431,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
         int engineClassParallelism = getEngineClassParallelism(configuration);
 
-        int engineArgumentParallelism = Optional.ofNullable(
+        int engineArgumentParallelism = ofNullable(
                         configuration.getProperties().getProperty(Constants.ENGINE_ARGUMENT_PARALLELISM))
                 .map(value -> {
                     int intValue;

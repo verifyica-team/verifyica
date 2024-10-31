@@ -17,6 +17,7 @@
 package org.verifyica.api;
 
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -49,7 +50,7 @@ public class Trap {
      * @return an Optional containing the trapped Throwable or an empty Optional if no Throwable was trapped
      */
     public Optional<Throwable> throwable() {
-        return Optional.ofNullable(throwable);
+        return ofNullable(throwable);
     }
 
     /**

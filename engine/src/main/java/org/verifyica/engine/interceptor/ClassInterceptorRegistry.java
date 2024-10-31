@@ -17,6 +17,7 @@
 package org.verifyica.engine.interceptor;
 
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -259,7 +259,7 @@ public class ClassInterceptorRegistry {
     private void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        Optional.ofNullable(configuration
+        ofNullable(configuration
                         .getProperties()
                         .getProperty(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX))
                 .ifPresent(regex -> {
@@ -279,7 +279,7 @@ public class ClassInterceptorRegistry {
                     }
                 });
 
-        Optional.ofNullable(configuration
+        ofNullable(configuration
                         .getProperties()
                         .getProperty(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX))
                 .ifPresent(regex -> {

@@ -16,6 +16,7 @@
 
 package org.verifyica.examples.testcontainers;
 
+import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedReader;
@@ -24,7 +25,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
@@ -93,7 +93,7 @@ public class NginxTest3 {
                 .testArgument()
                 .payload(NginxTestEnvironment.class)
                 .destroy()));
-        traps.add(new Trap(() -> Optional.ofNullable(argumentContext.getMap().getAs(NETWORK, Network.class))
+        traps.add(new Trap(() -> ofNullable(argumentContext.getMap().getAs(NETWORK, Network.class))
                 .ifPresent(Network::close)));
         traps.add(new Trap(() -> argumentContext.getMap().clear()));
 

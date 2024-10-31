@@ -42,10 +42,11 @@ public class HashSupport {
     public static String alphanumeric(int length) {
         Precondition.isTrue(length > 0, "length is less than 1");
 
+        StringBuilder stringBuilder = new StringBuilder(length);
         String hash;
 
         do {
-            StringBuilder stringBuilder = new StringBuilder(length);
+            stringBuilder.setLength(0);
             for (int i = 0; i < length; i++) {
                 stringBuilder.append(
                         ALPHA_NUMERIC_CHARACTERS.charAt(RANDOM.nextInt(ALPHA_NUMERIC_CHARACTERS.length())));
