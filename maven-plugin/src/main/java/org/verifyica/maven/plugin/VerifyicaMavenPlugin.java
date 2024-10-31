@@ -132,17 +132,13 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             .append(" ")
             .build();
 
+    @Parameter(defaultValue = "${project}", readonly = true, required = true)
+    private MavenProject mavenProject;
+
     @Parameter(defaultValue = "${session}", required = true, readonly = true)
     private MavenSession mavenSession;
 
-    @Parameter(property = "project", required = true, readonly = true)
-    private MavenProject mavenProject;
-
-    @Parameter(property = "properties")
-    private Map<String, String> properties;
-
     private Logger logger;
-
     private VerifyicaTestEngine verifyicaTestEngine;
 
     static {
@@ -169,11 +165,11 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
      * @throws MojoFailureException MojoFailureException
      */
     public void execute() throws MojoFailureException, MojoExecutionException {
-        if (properties.containsKey("skipTests") || System.getProperty("skipTests") != null) {
+        initialize();
+
+        if (System.getProperties().containsKey("skipTests") || System.getProperty("skipTests") != null) {
             return;
         }
-
-        initialize();
 
         Stopwatch stopwatch = new Stopwatch();
 
@@ -254,10 +250,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
     private void initialize() {
         logger = Logger.create(getLog());
-        verifyicaTestEngine = new VerifyicaTestEngine();
-    }
 
-    private TestDescriptor discovery() throws Throwable {
         Configuration configuration = ConcreteConfiguration.getInstance();
 
         configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN, Constants.TRUE);
@@ -274,15 +267,30 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, BATCH);
         }
 
-        if (properties != null) {
-            for (Map.Entry<String, String> entry : properties.entrySet()) {
-                if (entry.getKey() != null && entry.getValue() != null) {
-                    System.setProperty(entry.getKey(), entry.getValue());
-                    logger.debug("property [%s] = [%s]", entry.getKey(), entry.getValue());
-                }
+        System.getProperties().putAll(configuration.getProperties());
+
+        if (mavenProject.getProperties() != null) {
+            System.getProperties().putAll(mavenProject.getProperties());
+        }
+
+        if (mavenSession.getSystemProperties() != null) {
+            System.getProperties().putAll(mavenSession.getSystemProperties());
+        }
+
+        if (mavenSession.getUserProperties() != null) {
+            System.getProperties().putAll(mavenSession.getUserProperties());
+        }
+
+        for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
+            if (entry.getKey() != null && entry.getValue() != null) {
+                logger.debug("property [%s] = [%s]", entry.getKey(), entry.getValue());
             }
         }
 
+        verifyicaTestEngine = new VerifyicaTestEngine();
+    }
+
+    private TestDescriptor discovery() throws Throwable {
         Set<Path> artifactPaths = new LinkedHashSet<>();
 
         artifactPaths.addAll(resolveClasspathElements(mavenProject.getCompileClasspathElements()));
