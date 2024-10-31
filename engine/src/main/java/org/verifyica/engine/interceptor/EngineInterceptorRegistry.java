@@ -16,11 +16,12 @@
 
 package org.verifyica.engine.interceptor;
 
+import static java.util.Optional.ofNullable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -143,7 +144,7 @@ public class EngineInterceptorRegistry {
     private void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
-        Optional.ofNullable(configuration
+        ofNullable(configuration
                         .getProperties()
                         .getProperty(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX))
                 .ifPresent(regex -> {
@@ -163,7 +164,7 @@ public class EngineInterceptorRegistry {
                     }
                 });
 
-        Optional.ofNullable(configuration
+        ofNullable(configuration
                         .getProperties()
                         .getProperty(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX))
                 .ifPresent(regex -> {

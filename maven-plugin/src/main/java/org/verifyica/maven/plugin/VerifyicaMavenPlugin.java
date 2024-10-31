@@ -17,6 +17,7 @@
 package org.verifyica.maven.plugin;
 
 import static java.lang.String.format;
+import static java.util.Optional.of;
 import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNamePatterns;
 
 import java.io.File;
@@ -156,7 +157,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
      * @return the version
      */
     public Optional<String> getVersion() {
-        return Optional.of(VERSION);
+        return of(VERSION);
     }
 
     /**
@@ -253,20 +254,6 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
         Configuration configuration = ConcreteConfiguration.getInstance();
 
-        configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN, Constants.TRUE);
-        logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN, Constants.TRUE);
-
-        configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN_VERSION, VERSION);
-        logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_VERSION, VERSION);
-
-        if (mavenSession.getRequest().isInteractiveMode()) {
-            configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
-            logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
-        } else {
-            configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN_MODE, BATCH);
-            logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, BATCH);
-        }
-
         System.getProperties().putAll(configuration.getProperties());
 
         if (mavenProject.getProperties() != null) {
@@ -279,6 +266,20 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
 
         if (mavenSession.getUserProperties() != null) {
             System.getProperties().putAll(mavenSession.getUserProperties());
+        }
+
+        configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN, Constants.TRUE);
+        logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN, Constants.TRUE);
+
+        configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN_VERSION, VERSION);
+        logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_VERSION, VERSION);
+
+        if (mavenSession.getRequest().isInteractiveMode()) {
+            configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
+            logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, INTERACTIVE);
+        } else {
+            configuration.getProperties().setProperty(Constants.MAVEN_PLUGIN_MODE, BATCH);
+            logger.debug("property [%s] = [%s]", Constants.MAVEN_PLUGIN_MODE, BATCH);
         }
 
         for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {

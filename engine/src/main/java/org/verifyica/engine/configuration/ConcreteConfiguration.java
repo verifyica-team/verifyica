@@ -16,6 +16,9 @@
 
 package org.verifyica.engine.configuration;
 
+import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -57,7 +60,7 @@ public class ConcreteConfiguration implements Configuration {
 
     @Override
     public Optional<Path> getPropertiesPath() {
-        return Optional.ofNullable(propertiesPath);
+        return ofNullable(propertiesPath);
     }
 
     @Override
@@ -93,7 +96,7 @@ public class ConcreteConfiguration implements Configuration {
 
         try {
             // Get the properties file from a system property
-            Optional<File> optional = Optional.ofNullable(System.getProperties().get(VERIFYICA_PROPERTIES_FILENAME))
+            Optional<File> optional = ofNullable(System.getProperties().get(VERIFYICA_PROPERTIES_FILENAME))
                     .map(value -> new File(value.toString()).getAbsoluteFile());
 
             // If a system property didn't exist, scan from the
@@ -159,7 +162,7 @@ public class ConcreteConfiguration implements Configuration {
                 if (IS_TRACE_ENABLED) {
                     trace("found [" + file.getAbsoluteFile() + "]");
                 }
-                return Optional.of(file);
+                return of(file);
             }
 
             currentPath = currentPath.getParent();
