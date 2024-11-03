@@ -226,7 +226,7 @@ To perform integration testing, you need a test context/environment. Typically t
 
 Alternatively, tests can be performed on an external environment/resource. Ideally the external environment/resource would have an API to initialize and destroy it.
 
-An [EngineInterceptor](api/src/main/java/org/verifyica/api/engine/EngineInterceptor.java) can be used to initialize and destroy an external environment/resource before and after execution of tests.
+An [EngineInterceptor](api/src/main/java/org/verifyica/api/EngineInterceptor.java) can be used to initialize and destroy an external environment/resource before and after execution of tests.
 
 # Documentation
 
