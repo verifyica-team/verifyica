@@ -236,7 +236,7 @@ An [EngineInterceptor](api/src/main/java/org/verifyica/api/EngineInterceptor.jav
 - [Locking](LOCKING.md)
 - [Configuration](CONFIGURATION.md)
 - [Filters](FILTERS.md)
-- [Wiki](https://github.com/verifyica/wiki)
+- [Wiki](https://github.com/verifyica-team/verifyica/wiki)
 
 **Notes**
 
