@@ -23,6 +23,9 @@ public final class Constants {
     public static final String TRUE = "true";
 
     /** Configuration constant */
+    public static final String FALSE = "false";
+
+    /** Configuration constant */
     public static final String PREFIX = "verifyica";
 
     /** Configuration constant */
@@ -42,6 +45,9 @@ public final class Constants {
 
     /** Configuration constant */
     public static final String ENGINE_AUTOWIRED = ENGINE + ".autowired";
+
+    /** Configuration constant */
+    public static final String ENGINE_PRUNE_STACK_TRACE = ENGINE + ".prune.stacktraces";
 
     /** Configuration constant */
     public static final String ENGINE_AUTOWIRED_ENGINE = ENGINE_AUTOWIRED + ".engine";
