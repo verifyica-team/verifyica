@@ -35,10 +35,6 @@ function emit_error () {
   exit 1;
 }
 
-echo "Needs to be refactored, exiting"
-
-exit 0
-
 # Usage
 if [ "$#" -ne 1 ];
 then
@@ -90,13 +86,13 @@ check_exit_code "Git tag [${VERSION}] failed"
 git push origin "${VERSION}"
 check_exit_code "Git tag [${VERSION}] push failed"
 
-# Checkout a release branch
-git checkout -b "release-${VERSION}"
-check_exit_code "Git checkout [${VERSION}] failed"
-
 # Build and deploy
 ./mvnw -s ~/.m2/verifyica.settings.xml -P release clean deploy
 check_exit_code "Maven deploy [${VERSION}] failed"
+
+# Checkout a release branch
+git checkout -b "release-${VERSION}"
+check_exit_code "Git checkout [${VERSION}] failed"
 
 # Push the branch
 git push --set-upstream origin release-"${VERSION}"
