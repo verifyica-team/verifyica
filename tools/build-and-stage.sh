@@ -75,7 +75,7 @@ git add -u
 check_exit_code "Git add failed"
 
 # Commit the changed files
-git commit -m "${VERSION}"
+git commit -m "Prepare for release"
 check_exit_code "Git commit failed"
 
 # Tag the version
@@ -112,7 +112,7 @@ git add -u
 check_exit_code "Git add failed"
 
 # Commit the changed files
-git commit -m "${VERSION}"
+git commit -m "Prepare for development"
 check_exit_code "Git commit failed"
 
 # Push the branch
