@@ -104,7 +104,7 @@ check_exit_code "Git checkout [${CURRENT_BRANCH}] failed"
 
 # Update the build version
 ./mvnw versions:set -DnewVersion="${VERSION}-post" -DprocessAllModules
-check_exit_code "Maven update versions [${VERSION}] failed"
+check_exit_code "Maven update versions [${VERSION}-post] failed"
 rm -Rf $(find . -name "*versionsBackup")
 
 # Add changed files
