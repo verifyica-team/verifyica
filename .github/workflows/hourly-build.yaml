@@ -1,4 +1,4 @@
-name: Scheduled Build (hourly)
+name: Hourly Build
 on:
   schedule:
     - cron: "0 * * * *"
@@ -15,4 +15,4 @@ jobs:
           distribution: 'corretto'
           cache: maven
       - name: Build
-        run: ./mvnw clean verify
+        run: ./mvnw --batch-mode clean verify
