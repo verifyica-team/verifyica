@@ -1,4 +1,4 @@
-name: Run Dependabot
+name: Manual Dependabot
 on:
   workflow_dispatch:
 jobs:
@@ -19,7 +19,7 @@ jobs:
           directory: "/"
           schedule: "weekly"
       - name: Run Maven Dependabot
-        uses: dependabot/dependabot-core@v2
+        uses: dependabot/dependabot-core@v3.7.3
         with:
           package-ecosystem: "maven"
           directory: "/"
