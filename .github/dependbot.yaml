@@ -12,4 +12,4 @@ updates:
       - dependency-name: "org.apache.maven:maven-plugin-api"
         versions: ["*"]
       - dependency-name: "org.apache.maven:maven-core"
-        versions: ["*"]  
+        versions: ["*"]
