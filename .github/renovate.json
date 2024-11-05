@@ -7,5 +7,22 @@
   "ignoreDeps": [
     "org.apache.maven:maven-core",
     "org.apache.maven:maven-plugin-api"
-  ]
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["org.apache.maven:maven-core", "org.apache.maven:maven-plugin-api"],
+      "enabled": false
+    },
+    {
+      "matchPackagePatterns": ["*"],
+      "enabled": true
+    }
+  ],
+  "labels": ["dependencies"],
+  "schedule": ["at any time"],
+  "versioning": {
+    "maven": {
+      "enabled": true
+    }
+  }
 }
