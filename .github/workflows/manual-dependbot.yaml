@@ -13,13 +13,13 @@ jobs:
           distribution: 'corretto'
           cache: maven
       - name: Run Dependabot
-        uses: dependabot/dependabot-core@v2
+        uses: dependabot/dependabot-core@v0.283.0
         with:
           package-ecosystem: "github-actions"
           directory: "/"
           schedule: "weekly"
       - name: Run Maven Dependabot
-        uses: dependabot/dependabot-core@v3.7.3
+        uses: dependabot/dependabot-core@v0.283.0
         with:
           package-ecosystem: "maven"
           directory: "/"
