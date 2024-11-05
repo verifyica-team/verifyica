@@ -19,10 +19,5 @@
     }
   ],
   "labels": ["dependencies"],
-  "schedule": ["at any time"],
-  "versioning": {
-    "maven": {
-      "enabled": true
-    }
-  }
+  "schedule": ["at any time"]
 }
