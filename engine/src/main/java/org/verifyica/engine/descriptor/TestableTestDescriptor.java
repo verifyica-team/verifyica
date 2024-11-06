@@ -27,8 +27,10 @@ import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
+import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.StackTracePrinter;
+import org.verifyica.engine.common.Throttle;
 import org.verifyica.engine.exception.TestClassDefinitionException;
 import org.verifyica.engine.inject.Inject;
 import org.verifyica.engine.inject.Named;
@@ -168,6 +170,34 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
         throw new TestClassDefinitionException(format(
                 "Test class [%s] method [%s] invalid argument type",
                 method.getDeclaringClass().getName(), method.getName()));
+    }
+
+    /**
+     * Method to create a Throttle
+     *
+     * @param configuration configuration
+     * @param name name
+     * @return a Throttle
+     */
+    protected Throttle createThrottle(Configuration configuration, String name) {
+        String value = configuration.getProperties().getProperty(name);
+
+        if (value != null && !value.trim().isEmpty()) {
+            try {
+                String[] tokens = value.split("[\\s,]+");
+                if (tokens.length == 1) {
+                    return new Throttle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[0]));
+                } else if (tokens.length == 2) {
+                    return new Throttle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[1]));
+                } else {
+                    return new Throttle(name, 0, 0);
+                }
+            } catch (Throwable t) {
+                return new Throttle(name, 0, 0);
+            }
+        } else {
+            return new Throttle(name, 0, 0);
+        }
     }
 
     /**
