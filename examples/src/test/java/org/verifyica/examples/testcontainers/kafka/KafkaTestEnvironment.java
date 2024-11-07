@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package org.verifyica.examples.testcontainers;
+package org.verifyica.examples.testcontainers.kafka;
 
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.NginxContainer;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
 
 /**
- * Class to implement a NginxTestEnvironment
+ * Class to implement a KafkaTestEnvironment
  */
-public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
+public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
 
     private final String dockerImageName;
-    private NginxContainer<?> nginxContainer;
+    private KafkaContainer kafkaContainer;
 
     /**
      * Constructor
      *
      * @param dockerImageName the name
      */
-    public NginxTestEnvironment(String dockerImageName) {
+    public KafkaTestEnvironment(String dockerImageName) {
         this.dockerImageName = dockerImageName;
     }
 
@@ -54,52 +54,53 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
      * @return the payload
      */
     @Override
-    public NginxTestEnvironment getPayload() {
+    public KafkaTestEnvironment getPayload() {
         return this;
     }
 
     /**
-     * Method to initialize the NginxTestEnvironment using a specific network
+     * Method to initialize the KafkaTestEnvironment using a specific network
      *
      * @param network the network
      */
     public void initialize(Network network) {
-        // info("initializing test environment [%s] ...", dockerImageName);
+        // info("initialize test environment [%s] ...", dockerImageName);
 
-        nginxContainer = new NginxContainer<>(DockerImageName.parse(dockerImageName));
-        nginxContainer.withNetwork(network);
-        nginxContainer.start();
+        kafkaContainer =
+                new KafkaContainer(DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"));
+        kafkaContainer.withNetwork(network);
+        kafkaContainer.start();
 
         // info("test environment [%s] initialized", dockerImageName);
     }
 
     /**
-     * Method to determine if the NginxTestEnvironment is running
+     * Method to determine if the KafkaTestEnvironment is running
      *
-     * @return true if the NginxTestEnvironment is running, else false
+     * @return true if the KafkaTestEnvironment is running, else false
      */
     public boolean isRunning() {
-        return nginxContainer.isRunning();
+        return kafkaContainer.isRunning();
     }
 
     /**
-     * Method to get the NginxContainer
+     * Method to get the Kafka bootstrap servers
      *
-     * @return the NginxContainer
+     * @return the Kafka bootstrap servers
      */
-    public NginxContainer<?> getNginxContainer() {
-        return nginxContainer;
+    public String bootstrapServers() {
+        return kafkaContainer.getBootstrapServers();
     }
 
     /**
-     * Method to destroy the NginxTestEnvironment
+     * Method to destroy the KafkaTestEnvironment
      */
     public void destroy() {
         // info("destroying test environment [%s] ...", dockerImageName);
 
-        if (nginxContainer != null) {
-            nginxContainer.stop();
-            nginxContainer = null;
+        if (kafkaContainer != null) {
+            kafkaContainer.stop();
+            kafkaContainer = null;
         }
 
         // info("test environment [%s] destroyed", dockerImageName);

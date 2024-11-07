@@ -92,6 +92,26 @@ Verifyica is designed to use either platform threads or virtual threads dependin
 
 - When use virtual threads, threads are automatically ephemeral
 
+## Engine Throttling
+
+By design, Verifyica will execute as fast as possible based on engine / argument parallelism. For some scenarios, you may want to throttle execution.
+
+The configuration values...
+
+- `verifyica.engine.class.throttle`
+- `verifyica.engine.argument.throttle`
+- `verifyica.engine.argument.test.throttle`
+
+... can be defined to throttle the execution of the engine's state machines.
+
+Example:
+
+```
+verifyica.engine.argument.throttle=0, 1000
+```
+
+- Throttles execution of argument related methods randomly between `0` and `1000` milliseconds
+
 ## Logging
 
 ## Configuration Logging

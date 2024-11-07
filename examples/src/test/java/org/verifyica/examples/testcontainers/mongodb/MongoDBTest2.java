@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.examples.testcontainers;
+package org.verifyica.examples.testcontainers.mongodb;
 
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,47 +31,59 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.bson.Document;
 import org.testcontainers.containers.Network;
+import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
-public class MongoDBTest {
+public class MongoDBTest2 {
 
-    private static final Logger LOGGER = Logger.createLogger(MongoDBTest.class);
+    private static final Logger LOGGER = Logger.createLogger(MongoDBTest2.class);
 
-    private final ThreadLocal<Network> networkThreadLocal = new ThreadLocal<>();
-    private final ThreadLocal<String> nameThreadLocal = new ThreadLocal<>();
+    private static final String NETWORK = "network";
+    private static final String NAME = "name";
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<MongoDBTestEnvironment> arguments() {
-        return Stream.of(
-                new MongoDBTestEnvironment("mongo:4.4"),
-                new MongoDBTestEnvironment("mongo:5.0"),
-                new MongoDBTestEnvironment("mongo:6.0"),
-                new MongoDBTestEnvironment("mongo:7.0"));
+        return MongoDBTestEnvironmentFactory.createTestEnvironments();
     }
 
     @Verifyica.BeforeAll
-    public void initializeTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) {
-        LOGGER.info("[%s] initialize test environment ...", mongoDBTestEnvironment.getName());
+    public void initializeTestEnvironment(ArgumentContext argumentContext) {
+        LOGGER.info(
+                "[%s] initialize test environment ...",
+                argumentContext.getTestArgument().getName());
 
         Network network = Network.newNetwork();
         network.getId();
 
-        networkThreadLocal.set(network);
-        mongoDBTestEnvironment.initialize(network);
+        argumentContext.getMap().put(NETWORK, network);
+        argumentContext
+                .getTestArgument()
+                .getPayload(MongoDBTestEnvironment.class)
+                .initialize(network);
 
-        assertThat(mongoDBTestEnvironment.isRunning()).isTrue();
+        assertThat(argumentContext
+                        .getTestArgument()
+                        .getPayload(MongoDBTestEnvironment.class)
+                        .isRunning())
+                .isTrue();
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testInsert(MongoDBTestEnvironment mongoDBTestEnvironment) {
-        LOGGER.info("[%s] testing testInsert() ...", mongoDBTestEnvironment.getName());
+    public void testInsert(ArgumentContext argumentContext) {
+        LOGGER.info(
+                "[%s] testing testInsert() ...",
+                argumentContext.getTestArgument().getName());
+
+        MongoDBTestEnvironment mongoDBTestEnvironment =
+                argumentContext.getTestArgument().getPayload(MongoDBTestEnvironment.class);
 
         String name = randomString(16);
-        nameThreadLocal.set(name);
-        LOGGER.info("[%s] name [%s]", mongoDBTestEnvironment.getName(), name);
+        argumentContext.getMap().put(NAME, name);
+
+        LOGGER.info("[%s] name [%s]", argumentContext.getTestArgument().getName(), name);
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.connectionString()))
@@ -84,19 +96,24 @@ public class MongoDBTest {
             collection.insertOne(document);
         }
 
-        LOGGER.info("[%s] name [%s] inserted", mongoDBTestEnvironment.getName(), name);
+        LOGGER.info("[%s] name [%s] inserted", argumentContext.getTestArgument().getName(), name);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
-    public void testQuery(MongoDBTestEnvironment mongoDBTestEnvironment) {
-        LOGGER.info("[%s] testing testQuery() ...", mongoDBTestEnvironment.getName());
+    public void testQuery(ArgumentContext argumentContext) {
+        LOGGER.info(
+                "[%s] testing testQuery() ...",
+                argumentContext.getTestArgument().getName());
+
+        MongoDBTestEnvironment mongoDBTestEnvironment =
+                argumentContext.getTestArgument().getPayload(MongoDBTestEnvironment.class);
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.connectionString()))
                 .build();
 
-        String name = nameThreadLocal.get();
+        String name = name(argumentContext);
 
         try (MongoClient mongoClient = MongoClients.create(settings)) {
             MongoDatabase database = mongoClient.getDatabase("test-db");
@@ -110,16 +127,31 @@ public class MongoDBTest {
     }
 
     @Verifyica.AfterAll
-    public void destroyTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) throws Throwable {
-        LOGGER.info("[%s] destroy test environment ...", mongoDBTestEnvironment.getName());
+    public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
+        LOGGER.info(
+                "[%s] destroy test environment ...",
+                argumentContext.getTestArgument().getName());
 
         List<Trap> traps = new ArrayList<>();
 
-        traps.add(new Trap(mongoDBTestEnvironment::destroy));
-        traps.add(new Trap(() -> ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
-        traps.add(new Trap(nameThreadLocal::remove));
-        traps.add(new Trap(networkThreadLocal::remove));
+        traps.add(new Trap(() -> argumentContext
+                .getTestArgument()
+                .getPayload(MongoDBTestEnvironment.class)
+                .destroy()));
+        traps.add(new Trap(() -> ofNullable(argumentContext.map().removeAs(NETWORK, Network.class))
+                .ifPresent(Network::close)));
+        traps.add(new Trap(() -> argumentContext.map().clear()));
 
         Trap.assertEmpty(traps);
+    }
+
+    /**
+     * Helper method to get the name from the ArgumentContext
+     *
+     * @param argumentContext argumentContext
+     * @return the name
+     */
+    private static String name(ArgumentContext argumentContext) {
+        return (String) argumentContext.getMap().get(NAME);
     }
 }

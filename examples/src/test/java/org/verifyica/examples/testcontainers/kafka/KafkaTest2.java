@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.examples.testcontainers;
+package org.verifyica.examples.testcontainers.kafka;
 
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,13 +56,7 @@ public class KafkaTest2 {
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<KafkaTestEnvironment> arguments() {
-        return Stream.of(
-                new KafkaTestEnvironment("apache/kafka:3.7.0"),
-                new KafkaTestEnvironment("apache/kafka:3.7.1"),
-                new KafkaTestEnvironment("apache/kafka:3.8.0"),
-                new KafkaTestEnvironment("apache/kafka:3.8.1"),
-                new KafkaTestEnvironment("apache/kafka-native:3.8.0"),
-                new KafkaTestEnvironment("apache/kafka-native:3.8.1"));
+        return KafkaTestEnvironmentFactory.createTestEnvironments();
     }
 
     @Verifyica.BeforeAll

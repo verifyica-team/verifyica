@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.examples.testcontainers;
+package org.verifyica.examples.testcontainers.nginx;
 
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,75 +27,54 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
-import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
-public class NginxTest3 {
+public class NginxTest {
 
-    private static final Logger LOGGER = Logger.createLogger(NginxTest3.class);
+    private static final Logger LOGGER = Logger.createLogger(NginxTest.class);
 
-    private final String NETWORK = "network";
+    private final ThreadLocal<Network> networkThreadLocal = new ThreadLocal<>();
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<NginxTestEnvironment> arguments() {
-        return Stream.of(
-                new NginxTestEnvironment("nginx:1.24.0"),
-                new NginxTestEnvironment("nginx:1.25.2"),
-                new NginxTestEnvironment("nginx:1.26.2"),
-                new NginxTestEnvironment("nginx:1.27.2"));
+        return NginxTestEnvironmentFactory.createTestEnvironments();
     }
 
     @Verifyica.BeforeAll
-    public void initializeTestEnvironment(ArgumentContext argumentContext) {
-        LOGGER.info(
-                "[%s] initialize test environment ...",
-                argumentContext.testArgument().name());
+    public void initializeTestEnvironment(NginxTestEnvironment nginxTestEnvironment) {
+        LOGGER.info("[%s] initialize test environment ...", nginxTestEnvironment.getName());
 
         Network network = Network.newNetwork();
         network.getId();
 
-        argumentContext.getMap().put(NETWORK, network);
-        argumentContext.testArgument().payload(NginxTestEnvironment.class).initialize(network);
+        networkThreadLocal.set(network);
+        nginxTestEnvironment.initialize(network);
 
-        assertThat(argumentContext
-                        .testArgument()
-                        .payload(NginxTestEnvironment.class)
-                        .isRunning())
-                .isTrue();
+        assertThat(nginxTestEnvironment.isRunning()).isTrue();
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testGet(ArgumentContext argumentContext) throws Throwable {
-        LOGGER.info("[%s] testing testGet() ...", argumentContext.testArgument().name());
+    public void testGet(NginxTestEnvironment nginxTestEnvironment) throws Throwable {
+        LOGGER.info("[%s] testing testGet() ...", nginxTestEnvironment.getName());
 
-        int port = argumentContext
-                .testArgument()
-                .payload(NginxTestEnvironment.class)
-                .getNginxContainer()
-                .getMappedPort(80);
+        int port = nginxTestEnvironment.getNginxContainer().getMappedPort(80);
         String content = doGet("http://localhost:" + port);
 
         assertThat(content).contains("Welcome to nginx!");
     }
 
     @Verifyica.AfterAll
-    public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
-        LOGGER.info(
-                "[%s] destroy test environment ...",
-                argumentContext.testArgument().name());
+    public void destroyTestEnvironment(NginxTestEnvironment nginxTestEnvironment) throws Throwable {
+        LOGGER.info("[%s] destroy test environment ...", nginxTestEnvironment.getName());
 
         List<Trap> traps = new ArrayList<>();
 
-        traps.add(new Trap(() -> argumentContext
-                .testArgument()
-                .payload(NginxTestEnvironment.class)
-                .destroy()));
-        traps.add(new Trap(() -> ofNullable(argumentContext.getMap().getAs(NETWORK, Network.class))
-                .ifPresent(Network::close)));
-        traps.add(new Trap(() -> argumentContext.getMap().clear()));
+        traps.add(new Trap(nginxTestEnvironment::destroy));
+        traps.add(new Trap(() -> ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
+        traps.add(new Trap(networkThreadLocal::remove));
 
         Trap.assertEmpty(traps);
     }

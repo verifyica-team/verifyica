@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package org.verifyica.examples.testcontainers;
+package org.verifyica.examples.testcontainers.mongodb;
 
+import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
 
 /**
- * Class to implement a KafkaTestEnvironment
+ * Class to implement a MongoDBTestEnvironment
  */
-public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
+public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> {
 
     private final String dockerImageName;
-    private KafkaContainer kafkaContainer;
+    private MongoDBContainer mongoDBContainer;
 
     /**
      * Constructor
      *
      * @param dockerImageName the name
      */
-    public KafkaTestEnvironment(String dockerImageName) {
+    public MongoDBTestEnvironment(String dockerImageName) {
         this.dockerImageName = dockerImageName;
     }
 
@@ -54,53 +54,52 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
      * @return the payload
      */
     @Override
-    public KafkaTestEnvironment getPayload() {
+    public MongoDBTestEnvironment getPayload() {
         return this;
     }
 
     /**
-     * Method to initialize the KafkaTestEnvironment using a specific network
+     * Method to initialize the MongoDBTestEnvironment using a specific network
      *
      * @param network the network
      */
     public void initialize(Network network) {
-        // info("initialize test environment [%s] ...", dockerImageName);
+        // info("initializing test environment [%s] ...", dockerImageName);
 
-        kafkaContainer =
-                new KafkaContainer(DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"));
-        kafkaContainer.withNetwork(network);
-        kafkaContainer.start();
+        mongoDBContainer = new MongoDBContainer(DockerImageName.parse(dockerImageName));
+        mongoDBContainer.withNetwork(network);
+        mongoDBContainer.start();
 
         // info("test environment [%s] initialized", dockerImageName);
     }
 
     /**
-     * Method to determine if the KafkaTestEnvironment is running
+     * Method to determine if the MongoDBTestEnvironment is running
      *
-     * @return true if the KafkaTestEnvironment is running, else false
+     * @return true if the MongoDBTestEnvironment is running, else false
      */
     public boolean isRunning() {
-        return kafkaContainer.isRunning();
+        return mongoDBContainer.isRunning();
     }
 
     /**
-     * Method to get the Kafka bootstrap servers
+     * Method to get the MongoDB connection string
      *
-     * @return the Kafka bootstrap servers
+     * @return the MongoDB connection string
      */
-    public String bootstrapServers() {
-        return kafkaContainer.getBootstrapServers();
+    public String connectionString() {
+        return mongoDBContainer.getConnectionString();
     }
 
     /**
-     * Method to destroy the KafkaTestEnvironment
+     * Method to destroy the MongoDBTestEnvironment
      */
     public void destroy() {
         // info("destroying test environment [%s] ...", dockerImageName);
 
-        if (kafkaContainer != null) {
-            kafkaContainer.stop();
-            kafkaContainer = null;
+        if (mongoDBContainer != null) {
+            mongoDBContainer.stop();
+            mongoDBContainer = null;
         }
 
         // info("test environment [%s] destroyed", dockerImageName);
