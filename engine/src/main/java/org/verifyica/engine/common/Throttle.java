@@ -35,6 +35,7 @@ public class Throttle {
     /**
      * Constructor
      *
+     * @param name name
      * @param minimum minimum
      * @param maximum maximum
      */
@@ -55,7 +56,7 @@ public class Throttle {
 
         try {
             long throttle = randomLong(minimum, maximum);
-            LOGGER.trace("name [%s] throttle [%d]", name, throttle);
+            LOGGER.trace("name [%s] throttle [%d] ms", name, throttle);
             Thread.sleep(throttle);
         } catch (InterruptedException e) {
             // INTENTIONALLY BLANK
