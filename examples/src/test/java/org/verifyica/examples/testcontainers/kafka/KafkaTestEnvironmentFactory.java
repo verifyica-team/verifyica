@@ -37,6 +37,8 @@ public class KafkaTestEnvironmentFactory {
         return Stream.of(
                 new KafkaTestEnvironment("apache/kafka:3.7.1"),
                 new KafkaTestEnvironment("apache/kafka:3.8.1"),
-                new KafkaTestEnvironment("apache/kafka-native:3.8.1"));
+                new KafkaTestEnvironment("apache/kafka-native:3.8.1"),
+                new KafkaTestEnvironment("apache/kafka:3.9.0"),
+                new KafkaTestEnvironment("apache/kafka-native:3.9.0"));
     }
 }
