@@ -140,7 +140,8 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
             engineExecutionListener.executionStarted(this);
 
-            Throttle throttle = createThrottle(classContext.getConfiguration(), Constants.ENGINE_ARGUMENT_THROTTLE);
+            Throttle throttle =
+                    createThrottle(classContext.getConfiguration(), Constants.ENGINE_ARGUMENT_STATE_MACHINE_THROTTLE);
 
             State state = State.START;
             while (state != State.END) {

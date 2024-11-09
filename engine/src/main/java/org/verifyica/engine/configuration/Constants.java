@@ -109,7 +109,7 @@ public final class Constants {
     public static final String ENGINE_CLASS_PARALLELISM = ENGINE_CLASS + ".parallelism";
 
     /** Configuration constant */
-    public static final String ENGINE_CLASS_THROTTLE = ENGINE_CLASS + ".throttle";
+    public static final String ENGINE_CLASS_STATE_MACHINE_THROTTLE = ENGINE_CLASS + ".state.machine.throttle";
 
     /** Configuration constant */
     public static final String ENGINE_ARGUMENT = ENGINE + ".argument";
@@ -118,10 +118,13 @@ public final class Constants {
     public static final String ENGINE_ARGUMENT_PARALLELISM = ENGINE_ARGUMENT + ".parallelism";
 
     /** Configuration constant */
-    public static final String ENGINE_ARGUMENT_THROTTLE = ENGINE_ARGUMENT + ".throttle";
+    public static final String ENGINE_ARGUMENT_STATE_MACHINE_THROTTLE = ENGINE_ARGUMENT + ".state.machine.throttle";
 
     /** Configuration constant */
-    public static final String ENGINE_ARGUMENT_TEST_THROTTLE = ENGINE_ARGUMENT + ".test.throttle";
+    public static final String ENGINE_TEST = ENGINE + ".test";
+
+    /** Configuration constant */
+    public static final String ENGINE_TEST_STATE_MACHINE_THROTTLE = ENGINE_TEST + ".state.machine.throttle";
 
     /** Configuration constant */
     public static final String MAVEN_PLUGIN = PREFIX + ".maven.plugin";

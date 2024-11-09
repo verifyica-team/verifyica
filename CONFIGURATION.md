@@ -98,9 +98,9 @@ By design, Verifyica will execute as fast as possible based on engine / argument
 
 The configuration values...
 
-- `verifyica.engine.class.throttle`
-- `verifyica.engine.argument.throttle`
-- `verifyica.engine.argument.test.throttle`
+- `verifyica.engine.class.state.machine.throttle`
+- `verifyica.engine.argument.state.machine.throttle`
+- `verifyica.engine.argument.test.state.machine.throttle`
 
 ... can be defined to throttle the execution of the engine's state machines.
 

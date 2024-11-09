@@ -41,8 +41,8 @@ public class Throttle {
      */
     public Throttle(String name, long minimum, long maximum) {
         this.name = name;
-        this.minimum = Math.min(minimum, maximum);
-        this.maximum = Math.max(minimum, maximum);
+        this.minimum = minimum >= 0 ? Math.min(minimum, maximum) : 0;
+        this.maximum = maximum >= 0 ? Math.max(minimum, maximum) : 0;
     }
 
     /**
@@ -55,7 +55,12 @@ public class Throttle {
         }
 
         try {
-            long throttle = randomLong(minimum, maximum);
+            long throttle;
+            if (minimum == maximum) {
+                throttle = minimum;
+            } else {
+                throttle = randomLong(minimum, maximum);
+            }
             LOGGER.trace("name [%s] throttle [%d] ms", name, throttle);
             Thread.sleep(throttle);
         } catch (InterruptedException e) {

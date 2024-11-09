@@ -189,7 +189,8 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
                 Injector.inject(CLASS_CONTEXT, classContext, testDescriptor);
             }
 
-            Throttle throttle = createThrottle(classContext.getConfiguration(), Constants.ENGINE_CLASS_THROTTLE);
+            Throttle throttle =
+                    createThrottle(classContext.getConfiguration(), Constants.ENGINE_CLASS_STATE_MACHINE_THROTTLE);
 
             State state = State.START;
             while (state != State.END) {

@@ -130,7 +130,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             engineExecutionListener.executionStarted(this);
 
             Throttle throttle =
-                    createThrottle(argumentContext.getConfiguration(), Constants.ENGINE_ARGUMENT_TEST_THROTTLE);
+                    createThrottle(argumentContext.getConfiguration(), Constants.ENGINE_TEST_STATE_MACHINE_THROTTLE);
 
             State state = State.START;
             while (state != State.END) {
