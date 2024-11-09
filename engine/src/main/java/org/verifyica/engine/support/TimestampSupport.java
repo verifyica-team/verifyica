@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement HumanReadableTimeSupport */
+/** Class to implement TimestampSupport */
 // Suppress PMD.UselessParentheses - PMD has bug around UselessParentheses calculating milliseconds
 @SuppressWarnings("PMD.UselessParentheses")
 public final class TimestampSupport {
@@ -48,17 +48,17 @@ public final class TimestampSupport {
      * @return the return value
      */
     public static String toHumanReadable(long nanoseconds) {
-        return toHumanReadable(nanoseconds, Format.LONG);
+        return toHumanReadable(Format.LONG, nanoseconds);
     }
 
     /**
      * Method to convert a duration into a human-readable time
      *
-     * @param nanoseconds nanoseconds
      * @param format format
+     * @param nanoseconds nanoseconds
      * @return the return value
      */
-    public static String toHumanReadable(long nanoseconds, Format format) {
+    public static String toHumanReadable(Format format, long nanoseconds) {
         Precondition.notNull(format, "format is null");
 
         long nanosecondsPositive = nanoseconds > 0 ? nanoseconds : -nanoseconds;
@@ -159,9 +159,7 @@ public final class TimestampSupport {
      * @return a milliseconds.nanoseconds String
      */
     public static String convertDurationToMillisAndNanoseconds(Duration duration) {
-        long millis = duration.toMillis();
-        int nanos = duration.getNano() % 1000000;
-        return millis + "." + String.format("%06d", nanos);
+        return String.format("%d.%06d", duration.toMillis(), duration.getNano() % 1_000_000);
     }
 
     /**

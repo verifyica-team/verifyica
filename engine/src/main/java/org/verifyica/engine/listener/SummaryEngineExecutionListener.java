@@ -326,7 +326,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                         .append(INFO)
                         .append(AnsiColor.TEXT_WHITE_BRIGHT.wrap(counterKeyToMessageDisplayStringMap.get(key)))
                         .append(": ")
-                        .append(AnsiColor.TEXT_WHITE_BRIGHT.wrap(pad(totalCount, countPad)));
+                        .append(AnsiColor.TEXT_WHITE_BRIGHT.wrap(pad(countPad, totalCount)));
 
                 compactSummary.append(" ").append(AnsiColor.TEXT_WHITE_BRIGHT.wrap(totalCount));
 
@@ -341,15 +341,15 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
                     if (subKey.endsWith(".successful")) {
                         messageDisplayString = AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(messageDisplayString);
-                        countDisplayString = AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(pad(count, successPad));
+                        countDisplayString = AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(pad(successPad, count));
                         compactSummary.append(" ").append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap(count));
                     } else if (subKey.endsWith(".failed")) {
                         messageDisplayString = AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(messageDisplayString);
-                        countDisplayString = AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(pad(count, failedPad));
+                        countDisplayString = AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(pad(failedPad, count));
                         compactSummary.append(" ").append(AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap(count));
                     } else if (subKey.endsWith(".skipped")) {
                         messageDisplayString = AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(messageDisplayString);
-                        countDisplayString = AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(pad(count, skipPad));
+                        countDisplayString = AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(pad(skipPad, count));
                         compactSummary.append(" ").append(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT.wrap(count));
                     }
 
@@ -403,7 +403,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     .append(INFO)
                     .append(AnsiColor.TEXT_WHITE_BRIGHT)
                     .append("Total time  : ")
-                    .append(TimestampSupport.toHumanReadable(elapsedTime.toNanos(), TimestampSupport.Format.SHORT))
+                    .append(TimestampSupport.toHumanReadable(TimestampSupport.Format.SHORT, elapsedTime.toNanos()))
                     .append(" (")
                     .append(elapsedTime.toNanos() / 1e+6D)
                     .append(" ms)")
@@ -420,6 +420,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 println(INFO + SEPARATOR);
             }
         } catch (Throwable t) {
+            t.printStackTrace(System.err);
             StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
         }
     }
@@ -440,30 +441,24 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
      * @return the return pad
      */
     private static int getPad(List<AtomicLong> atomicLongs) {
-        int pad = 0;
-
-        for (AtomicLong atomicLong : atomicLongs) {
-            pad = Math.max(pad, String.valueOf(atomicLong.get()).length());
-        }
-
-        return pad;
+        return atomicLongs.stream()
+                .mapToInt(atomicLong -> String.valueOf(atomicLong.get()).length())
+                .max()
+                .orElse(0);
     }
 
     /**
      * Method to get a String that is the value passed to a specific width
      *
-     * @param value value
      * @param width width
+     * @param value value
      * @return the return value
      */
-    private static String pad(long value, long width) {
-        String string = String.valueOf(value);
-        StringBuilder stringBuilder = new StringBuilder();
-
-        while ((stringBuilder.length() + string.length()) < width) {
-            stringBuilder.append(" ");
+    private static String pad(long width, long value) {
+        if (width > 0) {
+            return String.format("%" + width + "d", value);
+        } else {
+            return String.valueOf(value);
         }
-
-        return stringBuilder.append(string).toString();
     }
 }

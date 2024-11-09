@@ -205,7 +205,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                     .append(ERROR)
                     .append(AnsiColor.TEXT_WHITE_BRIGHT)
                     .append("Total time  : ")
-                    .append(TimestampSupport.toHumanReadable(elapsedTime.toNanos(), TimestampSupport.Format.SHORT))
+                    .append(TimestampSupport.toHumanReadable(TimestampSupport.Format.SHORT, elapsedTime.toNanos()))
                     .append(" (")
                     .append(elapsedTime.toNanos() / 1e+6D)
                     .append(" ms)")
