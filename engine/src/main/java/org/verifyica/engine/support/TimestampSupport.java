@@ -42,7 +42,7 @@ public final class TimestampSupport {
     }
 
     /**
-     * Method to convert a duration into a human-readable time
+     * Method to convert nanoseconds into a human-readable time
      *
      * @param nanoseconds nanoseconds
      * @return the return value
@@ -52,7 +52,7 @@ public final class TimestampSupport {
     }
 
     /**
-     * Method to convert a duration into a human-readable time
+     * Method to convert nanoseconds into a human-readable time
      *
      * @param format format
      * @param nanoseconds nanoseconds
