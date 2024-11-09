@@ -420,7 +420,6 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 println(INFO + SEPARATOR);
             }
         } catch (Throwable t) {
-            t.printStackTrace(System.err);
             StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
         }
     }
