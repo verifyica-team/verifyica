@@ -17,6 +17,7 @@
 package org.verifyica.engine.support;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +26,7 @@ import org.verifyica.engine.common.Precondition;
 /** Class to implement HumanReadableTimeSupport */
 // Suppress PMD.UselessParentheses - PMD has bug around UselessParentheses calculating milliseconds
 @SuppressWarnings("PMD.UselessParentheses")
-public final class HumanReadableTimeSupport {
+public final class TimestampSupport {
 
     /** Format */
     public enum Format {
@@ -36,7 +37,7 @@ public final class HumanReadableTimeSupport {
     }
 
     /** Constructor */
-    private HumanReadableTimeSupport() {
+    private TimestampSupport() {
         // INTENTIONALLY BLANK
     }
 
@@ -149,6 +150,18 @@ public final class HumanReadableTimeSupport {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ENGLISH);
 
         return simpleDateFormat.format(new Date());
+    }
+
+    /**
+     * Method to convert a duration to milliseconds.nanoseconds String
+     *
+     * @param duration duration
+     * @return a milliseconds.nanoseconds String
+     */
+    public static String convertDurationToMillisAndNanoseconds(Duration duration) {
+        long millis = duration.toMillis();
+        int nanos = duration.getNano() % 1000000;
+        return millis + "." + String.format("%06d", nanos);
     }
 
     /**

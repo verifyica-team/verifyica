@@ -65,7 +65,7 @@ import org.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.verifyica.engine.listener.StatusEngineExecutionListener;
 import org.verifyica.engine.listener.SummaryEngineExecutionListener;
 import org.verifyica.engine.listener.TracingEngineExecutionListener;
-import org.verifyica.engine.support.HumanReadableTimeSupport;
+import org.verifyica.engine.support.TimestampSupport;
 
 /** Class to implement VerifyicaMavenPlugin */
 @SuppressWarnings({"unused", "deprecation"})
@@ -205,8 +205,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                     .append(ERROR)
                     .append(AnsiColor.TEXT_WHITE_BRIGHT)
                     .append("Total time  : ")
-                    .append(HumanReadableTimeSupport.toHumanReadable(
-                            elapsedTime.toNanos(), HumanReadableTimeSupport.Format.SHORT))
+                    .append(TimestampSupport.toHumanReadable(elapsedTime.toNanos(), TimestampSupport.Format.SHORT))
                     .append(" (")
                     .append(elapsedTime.toNanos() / 1e+6D)
                     .append(" ms)")
@@ -216,7 +215,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                     .append(ERROR)
                     .append(AnsiColor.TEXT_WHITE_BRIGHT)
                     .append("Finished at : ")
-                    .append(HumanReadableTimeSupport.now())
+                    .append(TimestampSupport.now())
                     .append(AnsiColor.NONE));
 
             System.out.println(ERROR + SEPARATOR);
