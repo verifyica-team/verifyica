@@ -35,7 +35,7 @@ import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
-import org.verifyica.engine.support.HumanReadableTimeSupport;
+import org.verifyica.engine.support.TimestampSupport;
 
 /** Class to implement StatusEngineExecutionListener */
 public class StatusEngineExecutionListener implements EngineExecutionListener {
@@ -191,7 +191,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
                 ansiColoredString
                         .append(" ")
-                        .append(HumanReadableTimeSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits));
+                        .append(TimestampSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits));
 
                 ansiColoredString.append(AnsiColor.NONE);
 
@@ -269,7 +269,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
                 ansiColoredString
                         .append(" ")
-                        .append(HumanReadableTimeSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits))
+                        .append(TimestampSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits))
                         .append(AnsiColor.NONE);
 
                 System.out.println(ansiColoredString);

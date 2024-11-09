@@ -17,15 +17,16 @@
 package org.verifyica.engine.support;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement HumanReadableTimeSupport */
+/** Class to implement TimestampSupport */
 // Suppress PMD.UselessParentheses - PMD has bug around UselessParentheses calculating milliseconds
 @SuppressWarnings("PMD.UselessParentheses")
-public final class HumanReadableTimeSupport {
+public final class TimestampSupport {
 
     /** Format */
     public enum Format {
@@ -36,28 +37,28 @@ public final class HumanReadableTimeSupport {
     }
 
     /** Constructor */
-    private HumanReadableTimeSupport() {
+    private TimestampSupport() {
         // INTENTIONALLY BLANK
     }
 
     /**
-     * Method to convert a duration into a human-readable time
+     * Method to convert nanoseconds into a human-readable time
      *
      * @param nanoseconds nanoseconds
      * @return the return value
      */
     public static String toHumanReadable(long nanoseconds) {
-        return toHumanReadable(nanoseconds, Format.LONG);
+        return toHumanReadable(Format.LONG, nanoseconds);
     }
 
     /**
-     * Method to convert a duration into a human-readable time
+     * Method to convert nanoseconds into a human-readable time
      *
-     * @param nanoseconds nanoseconds
      * @param format format
+     * @param nanoseconds nanoseconds
      * @return the return value
      */
-    public static String toHumanReadable(long nanoseconds, Format format) {
+    public static String toHumanReadable(Format format, long nanoseconds) {
         Precondition.notNull(format, "format is null");
 
         long nanosecondsPositive = nanoseconds > 0 ? nanoseconds : -nanoseconds;
@@ -149,6 +150,16 @@ public final class HumanReadableTimeSupport {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ENGLISH);
 
         return simpleDateFormat.format(new Date());
+    }
+
+    /**
+     * Method to convert a duration to milliseconds.nanoseconds String
+     *
+     * @param duration duration
+     * @return a milliseconds.nanoseconds String
+     */
+    public static String convertDurationToMillisAndNanoseconds(Duration duration) {
+        return String.format("%d.%06d", duration.toMillis(), duration.getNano() % 1_000_000);
     }
 
     /**
