@@ -67,7 +67,7 @@ public final class TimestampSupport {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(millisecondsDuration) - (hours * 60);
         long seconds = TimeUnit.MILLISECONDS.toSeconds(millisecondsDuration) - ((hours * 60 * 60) + (minutes * 60));
         long milliseconds =
-                millisecondsDuration - ((hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000));
+                millisecondsDuration - ((hours * 60 * 60 * 1000) + (minutes * 60 * 1_000) + (seconds * 1_000));
 
         StringBuilder stringBuilder = new StringBuilder();
 
