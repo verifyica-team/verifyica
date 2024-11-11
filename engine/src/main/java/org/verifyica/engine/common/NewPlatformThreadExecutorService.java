@@ -82,18 +82,17 @@ public class NewPlatformThreadExecutorService extends AbstractExecutorService {
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
         long deadline = System.nanoTime() + unit.toNanos(timeout);
+
         while (!isTerminated()) {
             long remainingTime = deadline - System.nanoTime();
             if (remainingTime <= 0) {
                 return false;
             }
 
-            if (remainingTime > TimeUnit.SECONDS.toNanos(1)) {
-                Thread.sleep(1000);
-            } else {
-                Thread.sleep(TimeUnit.NANOSECONDS.toMillis(remainingTime));
-            }
+            long sleepTimeMillis = Math.min(TimeUnit.NANOSECONDS.toMillis(remainingTime), 1_000);
+            Thread.sleep(sleepTimeMillis);
         }
+
         return true;
     }
 }
