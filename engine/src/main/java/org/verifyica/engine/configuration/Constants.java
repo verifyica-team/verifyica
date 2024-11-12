@@ -26,16 +26,25 @@ public final class Constants {
     public static final String FALSE = "false";
 
     /** Configuration constant */
+    public static final String VIRTUAL = "virtual";
+
+    /** Configuration constant */
+    public static final String PLATFORM = "platform";
+
+    /** Configuration constant */
+    public static final String PLATFORM_EPHEMERAL = "platform-ephemeral";
+
+    /** Configuration constant */
     public static final String PREFIX = "verifyica";
 
     /** Configuration constant */
     public static final String ENGINE = PREFIX + ".engine";
 
     /** Configuration constant */
-    public static final String ENGINE_THREADS = ENGINE + ".threads";
+    public static final String ENGINE_THREAD = ENGINE + ".thread";
 
     /** Configuration constant */
-    public static final String ENGINE_THREADS_PLATFORM = ENGINE_THREADS + ".platform";
+    public static final String ENGINE_THREAD_TYPE = ENGINE_THREAD + ".type";
 
     /** Configuration constant */
     public static final String ENGINE_LOGGER_REGEX = ENGINE + ".logger.regex";

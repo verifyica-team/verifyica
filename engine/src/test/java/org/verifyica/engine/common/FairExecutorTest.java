@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.verifyica.engine.support.ExecutorServiceSupport;
@@ -29,7 +30,8 @@ import org.verifyica.engine.support.ExecutorServiceSupport;
 public class FairExecutorTest {
 
     private static final AtomicInteger ATOMIC_INTEGER = new AtomicInteger(-1);
-    private static final ExecutorService EXECUTOR_SERVICE = new FairExecutorService(1);
+    private static final ExecutorService EXECUTOR_SERVICE = new FairExecutorService(
+            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     private static final List<Future<?>> FUTURES = new ArrayList<>();
 
     public static void main(String[] args) throws InterruptedException {

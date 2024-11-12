@@ -20,6 +20,7 @@ import static java.lang.String.format;
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 
+import io.github.thunkware.vt.bridge.SemaphoreExecutor;
 import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +34,10 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.junit.platform.engine.EngineDiscoveryRequest;
@@ -48,9 +52,12 @@ import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 import org.verifyica.engine.common.AnsiColor;
+import org.verifyica.engine.common.EphemeralExecutorService;
 import org.verifyica.engine.common.FairExecutorService;
+import org.verifyica.engine.common.PlatformThreadFactory;
 import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Stopwatch;
+import org.verifyica.engine.common.VirtualThreadFactory;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.context.ConcreteEngineContext;
@@ -199,11 +206,9 @@ public class VerifyicaTestEngine implements TestEngine {
                 traceEngineDescriptor(executionRequest.getRootTestDescriptor());
             }
 
-            ExecutorService classExecutorService =
-                    ExecutorServiceSupport.newExecutorService(getEngineClassParallelism(configuration));
-
-            ExecutorService argumentExecutorService =
-                    new FairExecutorService(getEngineArgumentParallelism(configuration));
+            ThreadFactory threadFactory = createThreadFactory(configuration);
+            ExecutorService classExecutorService = createEngineClassExecutorService(configuration, threadFactory);
+            ExecutorService argumentExecutorService = createEngineArgumentExecutorService(configuration, threadFactory);
 
             engineExecutionListener = configureEngineExecutionListeners(executionRequest);
             engineInterceptorRegistry = new EngineInterceptorRegistry(configuration);
@@ -252,12 +257,6 @@ public class VerifyicaTestEngine implements TestEngine {
                             new ThreadNameRunnable(threadName, testableTestDescriptor::test);
                     Future<?> future = classExecutorService.submit(threadNameRunnable);
                     futures.add(future);
-
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // INTENTIONALLY BLANK
-                    }
                 }
 
                 ExecutorServiceSupport.waitForAllFutures(futures, classExecutorService);
@@ -285,8 +284,13 @@ public class VerifyicaTestEngine implements TestEngine {
                 map.clear();
             }
         } finally {
-            classInterceptorRegistry.destroy(engineContext);
-            engineInterceptorRegistry.destroy(engineContext);
+            if (classInterceptorRegistry != null) {
+                classInterceptorRegistry.destroy(engineContext);
+            }
+
+            if (engineInterceptorRegistry != null) {
+                engineInterceptorRegistry.destroy(engineContext);
+            }
 
             TestExecutionResult testExecutionResult = throwables.isEmpty()
                     ? TestExecutionResult.successful()
@@ -389,6 +393,81 @@ public class VerifyicaTestEngine implements TestEngine {
 
         testDescriptor.getChildren().forEach((Consumer<TestDescriptor>)
                 childTestDescriptor -> traceTestDescriptor(childTestDescriptor, level + 2));
+    }
+
+    /**
+     * Method to create a ThreadFactory
+     *
+     * @param configuration configuration
+     * @return a ThreadFactory
+     */
+    private static ThreadFactory createThreadFactory(Configuration configuration) {
+        LOGGER.trace("createThreadFactory()");
+
+        String engineThreadType =
+                configuration.getProperties().getProperty(Constants.ENGINE_THREAD_TYPE, Constants.VIRTUAL);
+        LOGGER.trace("engineThreadType [%s]", engineThreadType);
+
+        if (Constants.PLATFORM.equals(engineThreadType.trim())
+                || Constants.PLATFORM_EPHEMERAL.equals(engineThreadType.trim())) {
+            LOGGER.trace("creating PlatformThreadFactory");
+            return new PlatformThreadFactory();
+        }
+
+        LOGGER.trace("creating VirtualThreadFactory");
+        return new VirtualThreadFactory();
+    }
+
+    /**
+     * Method to create an engine class ExecutorService
+     *
+     * @param configuration configuration
+     * @param threadFactory threadFactory
+     * @return an engine class ExecutorService
+     */
+    private static ExecutorService createEngineClassExecutorService(
+            Configuration configuration, ThreadFactory threadFactory) {
+        LOGGER.trace("createEngineClassExecutorService()");
+
+        String engineThreadType =
+                configuration.getProperties().getProperty(Constants.ENGINE_THREAD_TYPE, Constants.VIRTUAL);
+
+        int engineClassParallelism = getEngineClassParallelism(configuration);
+
+        if (Constants.PLATFORM_EPHEMERAL.equals(engineThreadType.trim())) {
+            LOGGER.trace("creating EphemeralExecutorService");
+            return new SemaphoreExecutor(
+                    new EphemeralExecutorService(threadFactory), new Semaphore(engineClassParallelism));
+        } else {
+            LOGGER.trace("creating FixedThreadPool");
+            return Executors.newFixedThreadPool(engineClassParallelism, threadFactory);
+        }
+    }
+
+    /**
+     * Method to create an engine argument ExecutorService
+     *
+     * @param configuration configuration
+     * @param threadFactory threadFactory
+     * @return an engine argument ExecutorService
+     */
+    private static ExecutorService createEngineArgumentExecutorService(
+            Configuration configuration, ThreadFactory threadFactory) {
+        LOGGER.trace("createEngineClassExecutorService()");
+
+        String engineThreadType =
+                configuration.getProperties().getProperty(Constants.ENGINE_THREAD_TYPE, Constants.VIRTUAL);
+
+        int engineArgumentParallelism = getEngineArgumentParallelism(configuration);
+
+        if (Constants.PLATFORM_EPHEMERAL.equals(engineThreadType.trim())) {
+            LOGGER.trace("creating EphemeralExecutorService");
+            return new SemaphoreExecutor(
+                    new EphemeralExecutorService(threadFactory), new Semaphore(engineArgumentParallelism));
+        } else {
+            LOGGER.trace("creating FairExecutorService");
+            return new FairExecutorService(Executors.newFixedThreadPool(engineArgumentParallelism, threadFactory));
+        }
     }
 
     /**
