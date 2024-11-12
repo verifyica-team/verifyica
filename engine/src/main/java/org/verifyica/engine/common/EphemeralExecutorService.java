@@ -20,17 +20,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /** Class to implement NewPlatformThreadExecutorService */
-public class NewPlatformThreadExecutorService extends AbstractExecutorService {
+public class EphemeralExecutorService extends AbstractExecutorService {
 
-    private volatile boolean isShutdown;
+    private final ThreadFactory threadFactory;
     private final List<Thread> runningThreads;
+    private volatile boolean isShutdown;
 
-    /** Constructor */
-    public NewPlatformThreadExecutorService() {
-        runningThreads = Collections.synchronizedList(new ArrayList<>());
+    /**
+     * Constructor
+     *
+     * @param threadFactory threadFactory
+     */
+    public EphemeralExecutorService(ThreadFactory threadFactory) {
+        this.threadFactory = threadFactory;
+        this.runningThreads = Collections.synchronizedList(new ArrayList<>());
     }
 
     @Override
@@ -39,7 +46,7 @@ public class NewPlatformThreadExecutorService extends AbstractExecutorService {
             throw new IllegalStateException("Executor service is shut down");
         }
 
-        Thread thread = new Thread(() -> {
+        Thread thread = threadFactory.newThread(() -> {
             try {
                 runningThreads.add(Thread.currentThread());
                 runnable.run();

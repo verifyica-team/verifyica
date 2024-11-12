@@ -16,29 +16,19 @@
 
 package org.verifyica.engine.support;
 
-import io.github.thunkware.vt.bridge.ExecutorTool;
-import io.github.thunkware.vt.bridge.SemaphoreExecutor;
-import io.github.thunkware.vt.bridge.ThreadTool;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import org.verifyica.engine.common.NewPlatformThreadExecutorService;
 import org.verifyica.engine.common.Precondition;
-import org.verifyica.engine.configuration.ConcreteConfiguration;
-import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement ExecutorSupport */
+/** Class to implement ExecutorServiceSupport */
 public class ExecutorServiceSupport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorServiceSupport.class);
@@ -49,51 +39,6 @@ public class ExecutorServiceSupport {
     /** Constructor */
     private ExecutorServiceSupport() {
         // INTENTIONALLY BLANK
-    }
-
-    /**
-     * Method to create a new ExecutorService
-     *
-     * @param parallelism parallelism
-     * @return an ExecutorService
-     */
-    public static ExecutorService newExecutorService(int parallelism) {
-        Precondition.isTrue(parallelism > 0, "parallelism is less than 1");
-
-        LOGGER.trace("newExecutorService() parallelism [%d]", parallelism);
-
-        boolean usePlatformThreads = PLATFORM.equals(
-                ConcreteConfiguration.getInstance().getProperties().getProperty(Constants.ENGINE_THREADS));
-
-        ExecutorService executorService;
-
-        if (!usePlatformThreads && ThreadTool.hasVirtualThreads()) {
-            LOGGER.trace("using virtual threads");
-
-            executorService = new SemaphoreExecutor(
-                    ExecutorTool.newVirtualThreadPerTaskExecutor(), new Semaphore(parallelism, true));
-        } else {
-            if (EPHEMERAL.equals(ConcreteConfiguration.getInstance()
-                    .getProperties()
-                    .getProperty(Constants.ENGINE_THREADS_PLATFORM))) {
-                LOGGER.trace("using ephemeral platform threads");
-
-                executorService =
-                        new SemaphoreExecutor(new NewPlatformThreadExecutorService(), new Semaphore(parallelism, true));
-            } else {
-                LOGGER.trace("using platform thread pool");
-
-                executorService = new ThreadPoolExecutor(
-                        parallelism,
-                        parallelism,
-                        60L,
-                        TimeUnit.SECONDS,
-                        new ArrayBlockingQueue<>(parallelism * 10),
-                        new BlockingRejectedExecutionHandler());
-            }
-        }
-
-        return executorService;
     }
 
     /**
@@ -150,11 +95,13 @@ public class ExecutorServiceSupport {
     }
 
     /** Class to implement BlockingRejectedExecutionHandler */
+    /*
     private static class BlockingRejectedExecutionHandler implements RejectedExecutionHandler {
 
         private static final Logger LOGGER = LoggerFactory.getLogger(BlockingRejectedExecutionHandler.class);
 
         /** Constructor */
+    /*
         public BlockingRejectedExecutionHandler() {
             // INTENTIONALLY BLANK
         }
@@ -174,4 +121,5 @@ public class ExecutorServiceSupport {
             }
         }
     }
+    */
 }

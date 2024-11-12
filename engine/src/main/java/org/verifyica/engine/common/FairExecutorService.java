@@ -16,128 +16,225 @@
 
 package org.verifyica.engine.common;
 
-import io.github.thunkware.vt.bridge.ThreadTool;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.AbstractExecutorService;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.verifyica.engine.logger.Logger;
-import org.verifyica.engine.logger.LoggerFactory;
-import org.verifyica.engine.support.ThreadSupport;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /** Class to implement FairExecutorService */
-public class FairExecutorService extends AbstractExecutorService {
+public class FairExecutorService implements ExecutorService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FairExecutorService.class);
-
-    private final int blockingQueueCount;
-    private final List<BlockingQueue<Runnable>> blockingQueues;
-    private final List<Thread> threads;
-    private final AtomicInteger blockingQueueIndex;
-    private final AtomicBoolean isShutdown;
+    private final ExecutorService executorService;
+    private final Map<Thread, Queue<Runnable>> taskQueueByThread;
+    private final Lock lock = new ReentrantLock();
+    private final Queue<Thread> threadQueue;
+    private final Condition notEmpty;
+    private volatile boolean isShutdown = false;
 
     /**
      * Constructor
      *
-     * @param parallelism parallelism
+     * @param executorService executorService
      */
-    public FairExecutorService(int parallelism) {
-        Precondition.isTrue(parallelism > 0, "parallelism is less than 1");
+    public FairExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+        this.taskQueueByThread = new ConcurrentHashMap<>();
+        this.threadQueue = new LinkedList<>();
+        this.notEmpty = lock.newCondition();
+    }
 
-        LOGGER.trace("parallelism [%d]", parallelism);
-
-        if (ThreadTool.hasVirtualThreads()) {
-            LOGGER.trace("using virtual threads");
-        } else {
-            LOGGER.trace("using platform threads");
+    @Override
+    public void execute(Runnable task) {
+        if (isShutdown) {
+            throw new RejectedExecutionException("ExecutorService has been shut down.");
         }
 
-        this.blockingQueueCount = parallelism;
-        this.blockingQueues = new ArrayList<>(parallelism);
-        this.threads = new ArrayList<>(parallelism);
-        this.blockingQueueIndex = new AtomicInteger(0);
-        this.isShutdown = new AtomicBoolean();
+        Thread currentThread = Thread.currentThread();
 
-        for (int i = 0; i < parallelism; i++) {
-            BlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>(10);
-            blockingQueues.add(blockingQueue);
+        lock.lock();
+        try {
+            taskQueueByThread
+                    .computeIfAbsent(currentThread, k -> {
+                        threadQueue.add(currentThread);
+                        return new LinkedList<>();
+                    })
+                    .add(task);
+            notEmpty.signal();
+        } finally {
+            lock.unlock();
+        }
 
-            Thread thread = ThreadSupport.newThread(() -> processBlockingQueue(blockingQueue));
-            threads.add(thread);
-            thread.start();
+        executorService.execute(this::runTasks);
+    }
+
+    /**
+     * Method to run tasks
+     */
+    private void runTasks() {
+        while (true) {
+            Runnable task = null;
+
+            lock.lock();
+            try {
+                while (threadQueue.isEmpty() && !isShutdown) {
+                    notEmpty.await();
+                }
+
+                if (isShutdown && threadQueue.isEmpty()) {
+                    break;
+                }
+
+                Thread nextThread = threadQueue.peek();
+                Queue<Runnable> nextQueue = taskQueueByThread.get(nextThread);
+
+                if (nextQueue != null && !nextQueue.isEmpty()) {
+                    task = nextQueue.poll();
+                    if (nextQueue.isEmpty()) {
+                        threadQueue.poll();
+                        taskQueueByThread.remove(nextThread);
+                    }
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            } finally {
+                lock.unlock();
+            }
+
+            if (task != null) {
+                task.run();
+            } else {
+                break;
+            }
         }
     }
 
     @Override
     public void shutdown() {
-        isShutdown.set(true);
+        isShutdown = true;
+        lock.lock();
+        try {
+            notEmpty.signalAll();
+        } finally {
+            lock.unlock();
+        }
+        executorService.shutdown();
     }
 
     @Override
     public List<Runnable> shutdownNow() {
-        isShutdown.set(true);
-        List<Runnable> remainingRunnables = new ArrayList<>();
-        for (BlockingQueue<Runnable> queue : blockingQueues) {
-            queue.drainTo(remainingRunnables);
+        isShutdown = true;
+        lock.lock();
+        try {
+            notEmpty.signalAll();
+        } finally {
+            lock.unlock();
         }
-        return remainingRunnables;
+        return executorService.shutdownNow();
     }
 
     @Override
     public boolean isShutdown() {
-        return isShutdown.get();
+        return isShutdown;
     }
 
     @Override
     public boolean isTerminated() {
-        return threads.stream().noneMatch(Thread::isAlive);
+        return executorService.isTerminated();
     }
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        long endTime = System.nanoTime() + unit.toNanos(timeout);
-        for (Thread thread : threads) {
-            long timeLeft = endTime - System.nanoTime();
-            if (timeLeft > 0) {
-                thread.join(timeLeft / 1_000_000, (int) (timeLeft % 1_000_000));
-            } else {
-                break;
-            }
-        }
-        return isTerminated();
+        return executorService.awaitTermination(timeout, unit);
     }
 
     @Override
-    public void execute(Runnable runnable) {
-        Precondition.notNull(runnable, "runnable is null");
+    public <T> Future<T> submit(Callable<T> task) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        execute(() -> {
+            try {
+                future.complete(task.call());
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        });
+        return future;
+    }
 
-        int index = blockingQueueIndex.getAndUpdate(i -> (i + 1) % blockingQueueCount);
+    @Override
+    public <T> Future<T> submit(Runnable task, T result) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        execute(() -> {
+            try {
+                task.run();
+                future.complete(result);
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        });
+        return future;
+    }
+
+    @Override
+    public Future<?> submit(Runnable task) {
+        return submit(task, null);
+    }
+
+    @Override
+    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) {
+        List<Future<T>> futures = new ArrayList<>();
+        for (Callable<T> task : tasks) {
+            futures.add(submit(task));
+        }
+        return futures;
+    }
+
+    @Override
+    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) {
+        List<Future<T>> futures = new ArrayList<>();
+        long end = System.nanoTime() + unit.toNanos(timeout);
+
+        for (Callable<T> task : tasks) {
+            long timeLeft = end - System.nanoTime();
+            if (timeLeft <= 0) break;
+
+            futures.add(submit(task));
+        }
+        return futures;
+    }
+
+    @Override
+    public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
         try {
-            blockingQueues.get(index).put(runnable);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            return invokeAny(tasks, Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (TimeoutException e) {
+            throw new ExecutionException(e);
         }
     }
 
-    /**
-     * Method to process a BlockingQueue
-     *
-     * @param blockingQueue blockingQueue
-     */
-    private void processBlockingQueue(BlockingQueue<Runnable> blockingQueue) {
-        while (!isShutdown.get()) {
-            try {
-                Runnable runnable = blockingQueue.poll(100, TimeUnit.MILLISECONDS);
-                if (runnable != null) {
-                    runnable.run();
+    @Override
+    public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        List<Future<T>> futures = invokeAll(tasks, timeout, unit);
+        for (Future<T> future : futures) {
+            if (future.isDone()) {
+                try {
+                    return future.get();
+                } catch (ExecutionException e) {
+                    throw e;
+                } finally {
+                    for (Future<T> f : futures) {
+                        f.cancel(true);
+                    }
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
             }
         }
+        throw new TimeoutException("Timeout waiting for tasks to complete.");
     }
 }
