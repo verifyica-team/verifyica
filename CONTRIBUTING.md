@@ -17,7 +17,7 @@ For changes, you should...
 - Create a branch for your work off of `main`
 - Make changes on your branch
 - Build and test your changes
-- Open a pull request targeting `development`, tagging `@antublue` for review
+- Open a pull request targeting `main`, tagging `@antublue` for review
 - A [Developer Certificate of Origin](DCO.md) (DCO) is required for all contributions
 
 ---
