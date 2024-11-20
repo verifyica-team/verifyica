@@ -33,9 +33,6 @@ public class ExecutorServiceSupport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorServiceSupport.class);
 
-    private static final String PLATFORM = "platform";
-    private static final String EPHEMERAL = "ephemeral";
-
     /** Constructor */
     private ExecutorServiceSupport() {
         // INTENTIONALLY BLANK
@@ -93,33 +90,4 @@ public class ExecutorServiceSupport {
             Thread.currentThread().interrupt();
         }
     }
-
-    /** Class to implement BlockingRejectedExecutionHandler */
-    /*
-    private static class BlockingRejectedExecutionHandler implements RejectedExecutionHandler {
-
-        private static final Logger LOGGER = LoggerFactory.getLogger(BlockingRejectedExecutionHandler.class);
-
-        /** Constructor */
-    /*
-        public BlockingRejectedExecutionHandler() {
-            // INTENTIONALLY BLANK
-        }
-
-        @Override
-        public void rejectedExecution(Runnable runnable, ThreadPoolExecutor executor) {
-            Precondition.notNull(runnable, "runnable is null");
-            Precondition.notNull(executor, "executor is null");
-
-            if (!executor.isShutdown()) {
-                try {
-                    executor.getQueue().put(runnable);
-                } catch (InterruptedException e) {
-                    LOGGER.error("Runnable discarded!!!");
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
-    }
-    */
 }
