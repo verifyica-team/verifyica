@@ -45,7 +45,7 @@ public class Trap {
     }
 
     /**
-     * Get the Throwable is trapped
+     * Get the Throwable if trapped
      *
      * @return an Optional containing the trapped Throwable or an empty Optional if no Throwable was trapped
      */
