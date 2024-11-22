@@ -16,6 +16,7 @@
 
 package org.verifyica.examples.testcontainers.kafka;
 
+import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -110,5 +111,19 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
         }
 
         // info("test environment [%s] destroyed", dockerImageName);
+    }
+
+    /**
+     * Method to create a Stream of KafkaTestEnvironments
+     *
+     * @return a Stream of KafkaTestEnvironments
+     */
+    public static Stream<KafkaTestEnvironment> createTestEnvironments() {
+        return Stream.of(
+                new KafkaTestEnvironment("apache/kafka:3.7.1"),
+                new KafkaTestEnvironment("apache/kafka:3.8.1"),
+                new KafkaTestEnvironment("apache/kafka-native:3.8.1"),
+                new KafkaTestEnvironment("apache/kafka:3.9.0"),
+                new KafkaTestEnvironment("apache/kafka-native:3.9.0"));
     }
 }

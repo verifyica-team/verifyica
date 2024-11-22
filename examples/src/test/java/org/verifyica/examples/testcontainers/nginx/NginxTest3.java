@@ -40,7 +40,7 @@ public class NginxTest3 {
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<NginxTestEnvironment> arguments() {
-        return NginxTestEnvironmentFactory.createTestEnvironments();
+        return NginxTestEnvironment.createTestEnvironments();
     }
 
     @Verifyica.BeforeAll
@@ -72,6 +72,7 @@ public class NginxTest3 {
                 .payload(NginxTestEnvironment.class)
                 .getNginxContainer()
                 .getMappedPort(80);
+
         String content = doGet("http://localhost:" + port);
 
         assertThat(content).contains("Welcome to nginx!");

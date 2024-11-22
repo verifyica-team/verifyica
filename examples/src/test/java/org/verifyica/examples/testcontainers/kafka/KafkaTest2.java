@@ -56,7 +56,7 @@ public class KafkaTest2 {
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<KafkaTestEnvironment> arguments() {
-        return KafkaTestEnvironmentFactory.createTestEnvironments();
+        return KafkaTestEnvironment.createTestEnvironments();
     }
 
     @Verifyica.BeforeAll

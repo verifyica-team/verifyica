@@ -16,6 +16,7 @@
 
 package org.verifyica.examples.testcontainers.mongodb;
 
+import java.util.stream.Stream;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
@@ -103,5 +104,18 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
         }
 
         // info("test environment [%s] destroyed", dockerImageName);
+    }
+
+    /**
+     * Method to create a Stream of MongoDBTestEnvironments
+     *
+     * @return a Stream of MongoDBTestEnvironments
+     */
+    public static Stream<MongoDBTestEnvironment> createTestEnvironments() {
+        return Stream.of(
+                new MongoDBTestEnvironment("mongo:4.4"),
+                new MongoDBTestEnvironment("mongo:5.0"),
+                new MongoDBTestEnvironment("mongo:6.0"),
+                new MongoDBTestEnvironment("mongo:7.0"));
     }
 }

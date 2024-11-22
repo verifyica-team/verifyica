@@ -45,7 +45,7 @@ public class MongoDBTest3 {
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
     public static Stream<MongoDBTestEnvironment> arguments() {
-        return MongoDBTestEnvironmentFactory.createTestEnvironments();
+        return MongoDBTestEnvironment.createTestEnvironments();
     }
 
     @Verifyica.BeforeAll

@@ -16,6 +16,7 @@
 
 package org.verifyica.examples.testcontainers.nginx;
 
+import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.NginxContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -103,5 +104,18 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
         }
 
         // info("test environment [%s] destroyed", dockerImageName);
+    }
+
+    /**
+     * Method to create a Stream of NginxTestEnvironments
+     *
+     * @return a Stream of NginxTestEnvironments
+     */
+    public static Stream<NginxTestEnvironment> createTestEnvironments() {
+        return Stream.of(
+                new NginxTestEnvironment("nginx:1.24.0"),
+                new NginxTestEnvironment("nginx:1.25.2"),
+                new NginxTestEnvironment("nginx:1.26.2"),
+                new NginxTestEnvironment("nginx:1.27.2"));
     }
 }
