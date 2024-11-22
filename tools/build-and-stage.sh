@@ -46,6 +46,7 @@ VERSION="${1}"
 PROJECT_ROOT_DIRECTORY=$(git rev-parse --show-toplevel)
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
+# shellcheck disable=SC2164
 cd "${PROJECT_ROOT_DIRECTORY}"
 check_exit_code "Failed to change to project root directory"
 
@@ -68,7 +69,7 @@ check_exit_code "Maven build failed"
 # Update the build version
 ./mvnw versions:set -DnewVersion="${VERSION}" -DprocessAllModules
 check_exit_code "Maven update versions [${VERSION}] failed"
-rm -Rf $(find . -name "*versionsBackup")
+rm -Rf "$(find . -name "*versionsBackup")"
 
 # Add changed files
 git add -u
@@ -105,7 +106,7 @@ check_exit_code "Git checkout [${CURRENT_BRANCH}] failed"
 # Update the build version
 ./mvnw versions:set -DnewVersion="${VERSION}-post" -DprocessAllModules
 check_exit_code "Maven update versions [${VERSION}-post] failed"
-rm -Rf $(find . -name "*versionsBackup")
+rm -Rf "$(find . -name "*versionsBackup")"
 
 # Add changed files
 git add -u
