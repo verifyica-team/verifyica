@@ -103,10 +103,21 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
             .append("Verifyica ")
             .append(VerifyicaTestEngine.staticGetVersion())
+            .append(" (")
+            .append(TimestampSupport.now())
+            .append(")")
             .append(AnsiColor.NONE)
             .build();
 
-    private static final String SUMMARY_BANNER = BANNER + AnsiColor.TEXT_WHITE_BRIGHT.wrap(" Summary");
+    private static final String SUMMARY_BANNER = new AnsiColoredString()
+            .append(AnsiColor.TEXT_WHITE_BRIGHT)
+            .append("Verifyica ")
+            .append(VerifyicaTestEngine.staticGetVersion())
+            .append(" Summary (")
+            .append(TimestampSupport.now())
+            .append(")")
+            .append(AnsiColor.NONE)
+            .build();
 
     private static final String SEPARATOR = AnsiColor.TEXT_WHITE_BRIGHT.wrap(
             "------------------------------------------------------------------------");

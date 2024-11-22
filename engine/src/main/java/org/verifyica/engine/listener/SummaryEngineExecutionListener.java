@@ -41,14 +41,15 @@ import org.verifyica.engine.support.TimestampSupport;
 /** Class to implement a SummaryEngineExecutionListener */
 public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
-    private static final String BANNER = new AnsiColoredString()
+    private static final String SUMMARY_BANNER = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
             .append("Verifyica ")
             .append(VerifyicaTestEngine.staticGetVersion())
+            .append(" Summary (")
+            .append(TimestampSupport.now())
+            .append(")")
             .append(AnsiColor.NONE)
             .build();
-
-    private static final String SUMMARY_BANNER = BANNER + AnsiColor.TEXT_WHITE_BRIGHT.wrap(" Summary");
 
     private static final String COMPACT_SUMMARY_BANNER = AnsiColor.TEXT_WHITE_BRIGHT.wrap("Compact Summary");
 
