@@ -1,0 +1,38 @@
+pipeline:
+  name: release
+  jobs:
+    - name: release
+      enabled: true
+      steps:
+        - name: change version
+          run: |
+            ./mvnw versions:set -DnewVersion="${{ INPUT_release }}" -DprocessAllModules >> /dev/null
+            rm -Rf $(find . -name "*versionsBackup")
+        - name: build & verify
+          run: ./mvnw clean verify
+        - name: build & deploy
+          run: ./mvnw -s ~/.m2/verifyica.settings.xml -P release clean deploy
+        - name: commit version
+          run: |
+            git add -u
+            git commit -s -m "release-${{ INPUT_release }}"
+        - name: tag version
+          run: |
+            git tag "${{ INPUT_release }}"
+            git push --tags
+        - name: checkout & push release branch
+          run: |
+            git checkout -b "release-${{ INPUT_release }}"
+            git push --set-upstream origin "release-${{ INPUT_release }}"
+        - name: checkout main
+          run: git checkout main
+        - name: change version
+          run: |
+            ./mvnw versions:set -DnewVersion="${{ INPUT_release }}-post" -DprocessAllModules >> /dev/null
+            rm -Rf $(find . -name "*versionsBackup")
+        - name: commit version
+          run: |
+            git add -u
+            git commit -s -m "Prepare for development"
+        - name: git push
+          run: git push
