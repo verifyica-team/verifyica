@@ -148,7 +148,10 @@ public final class Constants {
     public static final String MAVEN_PLUGIN_LOG = MAVEN_PLUGIN + ".log";
 
     /** Configuration constant */
-    public static final String MAVEN_PLUGIN_TIMING_UNITS = MAVEN_PLUGIN_LOG + ".units";
+    public static final String MAVEN_PLUGIN_LOG_TESTS = MAVEN_PLUGIN_LOG + ".tests";
+
+    /** Configuration constant */
+    public static final String MAVEN_PLUGIN_LOG_TIMING_UNITS = MAVEN_PLUGIN_LOG + ".units";
 
     /** Constructor */
     private Constants() {

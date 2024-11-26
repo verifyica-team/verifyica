@@ -76,6 +76,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
             .append(AnsiColor.NONE)
             .build();
 
+    private final boolean consoleLogTests;
     private final String consoleLogTimingUnits;
     private final Map<TestDescriptor, Stopwatch> stopwatches;
 
@@ -83,10 +84,17 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     public StatusEngineExecutionListener() {
         Configuration configuration = ConcreteConfiguration.getInstance();
 
-        consoleLogTimingUnits =
-                configuration.getProperties().getProperty(Constants.MAVEN_PLUGIN_TIMING_UNITS, "milliseconds");
+        if ("false".equals(configuration.getProperties().getProperty(Constants.MAVEN_PLUGIN_LOG_TESTS, "true"))) {
+            consoleLogTests = false;
+        } else {
+            consoleLogTests = true;
+        }
 
-        LOGGER.trace("configuration property [%s] = [%s]", Constants.MAVEN_PLUGIN_TIMING_UNITS, consoleLogTimingUnits);
+        consoleLogTimingUnits =
+                configuration.getProperties().getProperty(Constants.MAVEN_PLUGIN_LOG_TIMING_UNITS, "milliseconds");
+
+        LOGGER.trace(
+                "configuration property [%s] = [%s]", Constants.MAVEN_PLUGIN_LOG_TIMING_UNITS, consoleLogTimingUnits);
 
         stopwatches = new ConcurrentHashMap<>();
     }
@@ -96,50 +104,52 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
         if (testDescriptor instanceof TestableTestDescriptor) {
             stopwatches.put(testDescriptor, new Stopwatch());
 
-            try {
-                String testArgumentDisplayName = null;
-                String testMethodDisplayName = null;
-                String testClassDisplayName =
-                        findClassTestDescriptor(testDescriptor).getDisplayName();
+            if (consoleLogTests) {
+                try {
+                    String testArgumentDisplayName = null;
+                    String testMethodDisplayName = null;
+                    String testClassDisplayName =
+                            findClassTestDescriptor(testDescriptor).getDisplayName();
 
-                // TODO ? check maven configuration, if truncate.class.name=true and class name != display name,
-                // truncate
-                // testClassDisplayName = truncateClassName(testClassDisplayName);
+                    // TODO ? check maven configuration, if truncate.class.name=true and class name != display name,
+                    // truncate
+                    // testClassDisplayName = truncateClassName(testClassDisplayName);
 
-                ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
-                if (argumentTestDescriptor != null) {
-                    testArgumentDisplayName =
-                            argumentTestDescriptor.getArgument().getName();
+                    ArgumentTestDescriptor argumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
+                    if (argumentTestDescriptor != null) {
+                        testArgumentDisplayName =
+                                argumentTestDescriptor.getArgument().getName();
+                    }
+
+                    TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
+                    if (testMethodTestDescriptor != null) {
+                        testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
+                    }
+
+                    AnsiColoredString ansiColorAnsiColoredString = new AnsiColoredString()
+                            .append(INFO)
+                            .append(" ")
+                            .append(Thread.currentThread().getName())
+                            .append(" | ")
+                            .append(TEST)
+                            .append(AnsiColor.NONE);
+
+                    if (testArgumentDisplayName != null) {
+                        ansiColorAnsiColoredString.append(" | ").append(testArgumentDisplayName);
+                    }
+
+                    ansiColorAnsiColoredString.append(" | ").append(testClassDisplayName);
+
+                    if (testMethodDisplayName != null) {
+                        ansiColorAnsiColoredString.append(" | ").append(testMethodDisplayName);
+                    }
+
+                    ansiColorAnsiColoredString.append(AnsiColor.NONE);
+
+                    System.out.println(ansiColorAnsiColoredString);
+                } catch (Throwable t) {
+                    StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                 }
-
-                TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
-                if (testMethodTestDescriptor != null) {
-                    testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
-                }
-
-                AnsiColoredString ansiColorAnsiColoredString = new AnsiColoredString()
-                        .append(INFO)
-                        .append(" ")
-                        .append(Thread.currentThread().getName())
-                        .append(" | ")
-                        .append(TEST)
-                        .append(AnsiColor.NONE);
-
-                if (testArgumentDisplayName != null) {
-                    ansiColorAnsiColoredString.append(" | ").append(testArgumentDisplayName);
-                }
-
-                ansiColorAnsiColoredString.append(" | ").append(testClassDisplayName);
-
-                if (testMethodDisplayName != null) {
-                    ansiColorAnsiColoredString.append(" | ").append(testMethodDisplayName);
-                }
-
-                ansiColorAnsiColoredString.append(AnsiColor.NONE);
-
-                System.out.println(ansiColorAnsiColoredString);
-            } catch (Throwable t) {
-                StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }
         }
     }

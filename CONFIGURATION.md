@@ -137,6 +137,16 @@ verifyica.engine.logger.regex=
 - `verifyica.engine.logger.regex` controls which classes are enabled.
   - an empty value "" is mapped to `.*`
 
+## Maven Plugin Test Logging
+
+Verifyica Maven Plugin test banner logging can be disabled using the property `verifyica.maven.plugin.log.tests=false`.
+
+This will prevent test banners such as ...
+
+```
+[INFO] 4EOx9O/i9Jpb4 | TEST | mongo:4.4 | org.verifyica.examples.testcontainers.mongodb.MongoDBTest2 | testInsert()
+```
+
 ---
 
 Copyright (C) 2024-present Verifyica project authors and contributors
