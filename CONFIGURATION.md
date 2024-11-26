@@ -139,9 +139,9 @@ verifyica.engine.logger.regex=
 
 ## Maven Plugin Test Logging
 
-Verifyica Maven Plugin test banner logging can be disabled using the property `verifyica.maven.plugin.log.tests=false`.
+Verifyica Maven Plugin test banner logging for each test can be disabled using the property `verifyica.maven.plugin.log.tests=false`.
 
-This will prevent test banners such as ...
+This will prevent test banner logger for each test such as ...
 
 ```
 [INFO] 4EOx9O/i9Jpb4 | TEST | mongo:4.4 | org.verifyica.examples.testcontainers.mongodb.MongoDBTest2 | testInsert()
