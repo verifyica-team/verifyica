@@ -19,6 +19,14 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
+    <modules>
+        <module>api</module>
+        <module>engine</module>
+        <module>maven-plugin</module>
+        <module>tests</module>
+        <module>examples</module>
+    </modules>
+
     <build>
         <plugins>
             <plugin>
@@ -81,13 +89,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <modules>
-        <module>api</module>
-        <module>engine</module>
-        <module>maven-plugin</module>
-        <module>tests</module>
-        <module>examples</module>
-    </modules>
 
 </project>
