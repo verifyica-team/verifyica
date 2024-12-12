@@ -24,21 +24,21 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 
 /** Class to implement OrderedProperties */
 public class OrderedProperties extends Properties {
 
     /** Ordered Map */
-    private final LinkedHashMap<Object, Object> orderedMap;
+    private final TreeMap<Object, Object> orderedMap;
 
     /** Constructor */
     public OrderedProperties() {
-        this.orderedMap = new LinkedHashMap<>();
+        this.orderedMap = new TreeMap<>();
     }
 
     @Override
@@ -90,24 +90,14 @@ public class OrderedProperties extends Properties {
 
     @Override
     public synchronized void store(OutputStream out, String comments) throws IOException {
-        Properties tempProperties = new Properties() {
-            @Override
-            public Set<Map.Entry<Object, Object>> entrySet() {
-                return orderedMap.entrySet();
-            }
-        };
-        tempProperties.store(out, comments);
+        // TODO store in order
+        super.store(out, comments);
     }
 
     @Override
     public synchronized void store(Writer writer, String comments) throws IOException {
-        Properties tempProperties = new Properties() {
-            @Override
-            public Set<Map.Entry<Object, Object>> entrySet() {
-                return orderedMap.entrySet();
-            }
-        };
-        tempProperties.store(writer, comments);
+        // TODO store in order
+        super.store(writer, comments);
     }
 
     @Override
