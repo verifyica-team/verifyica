@@ -9,7 +9,7 @@ pipeline:
             ./mvnw -B versions:set -DnewVersion="${{ release }}" -DprocessAllModules >> /dev/null
             rm -Rf $(find . -name "*versionsBackup")
         - name: build & verify
-          run: ./mvnw clean verify
+          run: ./mvnw -B clean verify
         - name: build & deploy
           run: ./mvnw -B -s ~/.m2/verifyica.settings.xml -P release clean deploy
         - name: commit version
