@@ -16,9 +16,9 @@
 
 package org.verifyica.engine.support;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import org.verifyica.engine.common.Precondition;
@@ -27,6 +27,8 @@ import org.verifyica.engine.common.Precondition;
 // Suppress PMD.UselessParentheses - PMD has bug around UselessParentheses calculating milliseconds
 @SuppressWarnings("PMD.UselessParentheses")
 public final class TimestampSupport {
+
+    private static final DateTimeFormatter DATE_TIME_FORMATER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     /** Format */
     public enum Format {
@@ -147,9 +149,7 @@ public final class TimestampSupport {
      * @return the return value
      */
     public static String now() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ENGLISH);
-
-        return simpleDateFormat.format(new Date());
+        return LocalDateTime.now().format(DATE_TIME_FORMATER);
     }
 
     /**
