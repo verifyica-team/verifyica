@@ -11,7 +11,7 @@ pipeline:
         - name: build & verify
           run: ./mvnw -B clean verify
         - name: build & deploy
-          run: ./mvnw -B -s ~/.m2/verifyica.settings.xml -P release clean deploy
+          run: ./mvnw -s ~/.m2/verifyica.settings.xml -P release clean deploy
         - name: commit version
           run: |
             git add -u
