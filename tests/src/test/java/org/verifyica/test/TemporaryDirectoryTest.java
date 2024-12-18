@@ -18,6 +18,7 @@ package org.verifyica.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,18 +29,22 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.TemporaryDirectory;
 import org.verifyica.api.Verifyica;
 
+@SuppressWarnings("deprecation")
 public class TemporaryDirectoryTest {
 
     private static final String TEMPORARY_DIRECTORY_DEFAULT_PREFIX = "temporary.directory.default.prefix";
     private static final String TEMPORARY_DIRECTORY_CUSTOM_PREFIX = "temporary.directory.custom.prefix";
+    private static final String TEMPORARY_DIRECTORY_CUSTOM_PREFIX_3 = "temporary.directory.custom.prefix.2";
 
     @Verifyica.ArgumentSupplier(parallelism = 4)
     public static Object arguments() {
         Collection<String> collection = new ArrayList<>();
+
         collection.add("test-1");
         collection.add("test-2");
         collection.add("test-3");
         collection.add("test-4");
+
         return collection;
     }
 
@@ -55,6 +60,7 @@ public class TemporaryDirectoryTest {
         assertThat(temporaryDirectory.path().toFile()).exists();
         assertThat(temporaryDirectory.getPath().toFile()).exists();
         assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.getPath());
+        assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.toPath());
     }
 
     @Verifyica.Test
@@ -69,6 +75,35 @@ public class TemporaryDirectoryTest {
         assertThat(temporaryDirectory.path().toFile()).exists();
         assertThat(temporaryDirectory.getPath().toFile()).exists();
         assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.getPath());
+        assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.toPath());
+    }
+
+    @Verifyica.Test
+    public void createTemporaryFile(ArgumentContext argumentContext) throws Throwable {
+        TemporaryDirectory temporaryDirectory = new TemporaryDirectory();
+        argumentContext.map().put(TEMPORARY_DIRECTORY_CUSTOM_PREFIX_3, temporaryDirectory);
+
+        System.out.printf(
+                "argument [%s] temporary directory [%s]%n",
+                argumentContext.testArgumentPayload(), temporaryDirectory.getPath());
+
+        assertThat(temporaryDirectory.path().toFile()).exists();
+        assertThat(temporaryDirectory.getPath().toFile()).exists();
+        assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.getPath());
+        assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.toPath());
+
+        File temporaryFile = temporaryDirectory.newFile();
+
+        assertThat(temporaryFile).exists();
+
+        File temporaryFile2 = temporaryDirectory.newFile("test1.txt");
+
+        assertThat(temporaryFile2).exists();
+
+        File temporaryFile3 = new File(temporaryDirectory.toPath().toAbsolutePath() + "/" + "test2.txt");
+        temporaryFile3.createNewFile();
+
+        assertThat(temporaryFile3).exists();
     }
 
     @Verifyica.Conclude
@@ -77,6 +112,8 @@ public class TemporaryDirectoryTest {
         // to the ArgumentContext which gets cleaned up after testing the argument
         assertThat(noFileWithPrefixExists("temp-")).isTrue();
         assertThat(noFileWithPrefixExists("foo-")).isTrue();
+        assertThat(noFileWithPrefixExists("test1.txt")).isTrue();
+        assertThat(noFileWithPrefixExists("test2.txt")).isTrue();
     }
 
     private static boolean noFileWithPrefixExists(String prefix) throws Throwable {
