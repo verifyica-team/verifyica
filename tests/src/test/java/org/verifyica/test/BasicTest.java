@@ -49,7 +49,7 @@ public class BasicTest {
         classContext
                 .getEngineContext()
                 .getConfiguration()
-                .getPropertiesFilename()
+                .getPropertiesPath()
                 .ifPresent(path -> System.out.printf("properties filename [%s]%n", path));
     }
 

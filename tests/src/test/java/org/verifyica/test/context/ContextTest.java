@@ -55,7 +55,7 @@ public class ContextTest {
 
         classContext
                 .getConfiguration()
-                .getPropertiesFilename()
+                .getPropertiesPath()
                 .ifPresent(path -> System.out.printf("properties filename [%s]%n", path));
 
         ContextTest.engineContext = classContext.getEngineContext();

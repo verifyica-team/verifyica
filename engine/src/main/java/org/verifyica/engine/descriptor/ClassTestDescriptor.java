@@ -58,7 +58,6 @@ import org.verifyica.engine.support.ExecutorServiceSupport;
 import org.verifyica.engine.support.HashSupport;
 
 /** Class to implement ClassTestDescriptor */
-@SuppressWarnings("deprecation")
 public class ClassTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptor.class);

@@ -36,18 +36,13 @@ public class ImmutableConfiguration implements Configuration {
      * @param configuration configuration
      */
     public ImmutableConfiguration(Configuration configuration) {
-        propertiesFilenamePath = configuration.getPropertiesFilename().orElse(null);
+        propertiesFilenamePath = configuration.getPropertiesPath().orElse(null);
         properties = new ImmutableProperties(configuration.getProperties());
     }
 
     @Override
     public Optional<Path> propertiesPath() {
         return ofNullable(propertiesFilenamePath);
-    }
-
-    @Override
-    public Optional<Path> getPropertiesFilename() {
-        return propertiesPath();
     }
 
     @Override

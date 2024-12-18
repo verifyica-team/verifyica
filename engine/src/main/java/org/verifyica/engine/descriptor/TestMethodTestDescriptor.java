@@ -40,7 +40,6 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement TestMethodDescriptor */
-@SuppressWarnings("deprecation")
 public class TestMethodTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestMethodTestDescriptor.class);

@@ -29,7 +29,6 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.TemporaryDirectory;
 import org.verifyica.api.Verifyica;
 
-@SuppressWarnings("deprecation")
 public class TemporaryDirectoryTest {
 
     private static final String TEMPORARY_DIRECTORY_DEFAULT_PREFIX = "temporary.directory.default.prefix";
@@ -54,12 +53,10 @@ public class TemporaryDirectoryTest {
         argumentContext.map().put(TEMPORARY_DIRECTORY_DEFAULT_PREFIX, temporaryDirectory);
 
         System.out.printf(
-                "argument [%s] temporary directory [%s]%n",
-                argumentContext.testArgumentPayload(), temporaryDirectory.getPath());
+                "argument [%s] temporary directory [%s]%n", argumentContext.testArgumentPayload(), temporaryDirectory);
 
         assertThat(temporaryDirectory.path().toFile()).exists();
-        assertThat(temporaryDirectory.getPath().toFile()).exists();
-        assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.getPath());
+        assertThat(temporaryDirectory.toPath().toFile()).exists();
         assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.toPath());
     }
 
@@ -69,12 +66,10 @@ public class TemporaryDirectoryTest {
         argumentContext.map().put(TEMPORARY_DIRECTORY_CUSTOM_PREFIX, temporaryDirectory);
 
         System.out.printf(
-                "argument [%s] temporary directory [%s]%n",
-                argumentContext.testArgumentPayload(), temporaryDirectory.getPath());
+                "argument [%s] temporary directory [%s]%n", argumentContext.testArgumentPayload(), temporaryDirectory);
 
         assertThat(temporaryDirectory.path().toFile()).exists();
-        assertThat(temporaryDirectory.getPath().toFile()).exists();
-        assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.getPath());
+        assertThat(temporaryDirectory.toPath().toFile()).exists();
         assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.toPath());
     }
 
@@ -84,12 +79,10 @@ public class TemporaryDirectoryTest {
         argumentContext.map().put(TEMPORARY_DIRECTORY_CUSTOM_PREFIX_3, temporaryDirectory);
 
         System.out.printf(
-                "argument [%s] temporary directory [%s]%n",
-                argumentContext.testArgumentPayload(), temporaryDirectory.getPath());
+                "argument [%s] temporary directory [%s]%n", argumentContext.testArgumentPayload(), temporaryDirectory);
 
         assertThat(temporaryDirectory.path().toFile()).exists();
-        assertThat(temporaryDirectory.getPath().toFile()).exists();
-        assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.getPath());
+        assertThat(temporaryDirectory.toPath().toFile()).exists();
         assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.toPath());
 
         File temporaryFile = temporaryDirectory.newFile();

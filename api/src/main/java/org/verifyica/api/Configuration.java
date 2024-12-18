@@ -56,15 +56,4 @@ public interface Configuration {
      * @return configuration Properties
      */
     Properties getProperties();
-
-    /**
-     * Get the Path to the Properties configuration file
-     *
-     * @return an Optional containing the Path to the Properties configuration file, or Optional.empty()
-     *     if no properties configuration file was found
-     */
-    @Deprecated
-    default Optional<Path> getPropertiesFilename() {
-        return getPropertiesPath();
-    }
 }
