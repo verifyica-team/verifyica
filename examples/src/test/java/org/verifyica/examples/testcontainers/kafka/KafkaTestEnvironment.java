@@ -120,7 +120,7 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
      */
     public static Stream<KafkaTestEnvironment> createTestEnvironments() {
         return Stream.of(
-                new KafkaTestEnvironment("apache/kafka:3.7.1"),
+                new KafkaTestEnvironment("apache/kafka:3.7.2"),
                 new KafkaTestEnvironment("apache/kafka:3.8.1"),
                 new KafkaTestEnvironment("apache/kafka-native:3.8.1"),
                 new KafkaTestEnvironment("apache/kafka:3.9.0"),
