@@ -25,7 +25,6 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.LockManager;
 import org.verifyica.api.Verifyica;
 
-@SuppressWarnings("deprecation")
 public class ObjectLockTest {
 
     private static final String LOCK_KEY = ObjectLockTest.class.getName() + ".lockKey";

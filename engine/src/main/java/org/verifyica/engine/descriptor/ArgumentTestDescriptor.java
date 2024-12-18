@@ -44,7 +44,6 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /** Class to implement ArgumentTestDescriptor */
-@SuppressWarnings("deprecation")
 public class ArgumentTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArgumentTestDescriptor.class);

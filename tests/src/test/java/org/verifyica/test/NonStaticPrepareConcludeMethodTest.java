@@ -37,8 +37,8 @@ public class NonStaticPrepareConcludeMethodTest {
         assertThat(classContext.getMap()).isNotNull();
         assertThat(classContext.getConfiguration())
                 .isSameAs(classContext.getEngineContext().getConfiguration());
-        assertThat(classContext.getConfiguration().getPropertiesFilename())
-                .isEqualTo(classContext.getEngineContext().getConfiguration().getPropertiesFilename());
+        assertThat(classContext.getConfiguration().getPropertiesPath())
+                .isEqualTo(classContext.getEngineContext().getConfiguration().getPropertiesPath());
         assertThat(classContext.getTestInstance()).isNotNull();
     }
 
@@ -63,8 +63,8 @@ public class NonStaticPrepareConcludeMethodTest {
         assertThat(classContext.getMap()).isNotNull();
         assertThat(classContext.getConfiguration())
                 .isSameAs(classContext.getEngineContext().getConfiguration());
-        assertThat(classContext.getConfiguration().getPropertiesFilename())
-                .isEqualTo(classContext.getEngineContext().getConfiguration().getPropertiesFilename());
+        assertThat(classContext.getConfiguration().getPropertiesPath())
+                .isEqualTo(classContext.getEngineContext().getConfiguration().getPropertiesPath());
         assertThat(classContext.getTestInstance()).isNotNull();
     }
 }

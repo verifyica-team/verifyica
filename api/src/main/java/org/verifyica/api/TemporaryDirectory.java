@@ -25,6 +25,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 /** Class to implement TemporaryDirectory */
@@ -36,7 +37,7 @@ public class TemporaryDirectory implements AutoCloseable {
 
     private static final String DEFAULT_PREFIX = "verifyica-temp-";
 
-    private Path temporaryDirectory;
+    private Path path;
 
     /** Enum to implement CleanupMode */
     public enum CleanupMode {
@@ -111,10 +112,10 @@ public class TemporaryDirectory implements AutoCloseable {
             throw new IllegalArgumentException("cleanupMode is null");
         }
 
-        temporaryDirectory = Files.createTempDirectory(prefix.trim() + UUID.randomUUID());
+        path = Files.createTempDirectory(prefix.trim() + UUID.randomUUID());
 
         if (cleanupMode == CleanupMode.ALWAYS) {
-            registerShutdownHook(temporaryDirectory);
+            registerShutdownHook(path);
         }
     }
 
@@ -124,7 +125,7 @@ public class TemporaryDirectory implements AutoCloseable {
      * @return the temporary directory File
      */
     public File file() {
-        return new File(temporaryDirectory.toString());
+        return new File(path.toString());
     }
 
     /**
@@ -142,7 +143,7 @@ public class TemporaryDirectory implements AutoCloseable {
      * @return the temporary directory Path
      */
     public Path path() {
-        return getPath();
+        return toPath();
     }
 
     /**
@@ -151,17 +152,7 @@ public class TemporaryDirectory implements AutoCloseable {
      * @return the temporary directory Path
      */
     public Path toPath() {
-        return temporaryDirectory;
-    }
-
-    /**
-     * Get the temporary directory Path
-     *
-     * @return the temporary directory Path
-     */
-    @Deprecated
-    public Path getPath() {
-        return temporaryDirectory;
+        return path;
     }
 
     @Override
@@ -175,7 +166,7 @@ public class TemporaryDirectory implements AutoCloseable {
      * @throws IOException IOException
      */
     public void delete() throws IOException {
-        deleteRecursively(temporaryDirectory);
+        deleteRecursively(path);
     }
 
     /**
@@ -196,9 +187,26 @@ public class TemporaryDirectory implements AutoCloseable {
      * @throws IOException IOException
      */
     public File newFile(String name) throws IOException {
-        File file = new File(temporaryDirectory.toFile(), name);
+        File file = new File(path.toFile(), name);
         file.createNewFile();
         return file;
+    }
+
+    @Override
+    public String toString() {
+        return path.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == null || getClass() != object.getClass()) return false;
+        TemporaryDirectory that = (TemporaryDirectory) object;
+        return Objects.equals(path, that.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(path);
     }
 
     /**

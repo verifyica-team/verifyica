@@ -23,7 +23,6 @@ import org.verifyica.api.EngineInterceptor;
 import org.verifyica.api.Verifyica;
 
 /** Class to implement InterceptorPredicates */
-@SuppressWarnings("deprecation")
 public class InterceptorPredicates {
 
     /** Predicate to filter autowired engine interceptors classes */

@@ -25,7 +25,6 @@ import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.Verifyica;
 
-@SuppressWarnings("deprecation")
 public class ClassContextStoreSemaphoreTest {
 
     private static final String SEMAPHORE_KEY = ClassContextStoreSemaphoreTest.class.getName() + ".semaphore";

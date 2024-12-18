@@ -23,7 +23,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("deprecation")
 public class TemporaryDirectoryTest {
 
     @Test
@@ -32,7 +31,6 @@ public class TemporaryDirectoryTest {
         TemporaryDirectory temporaryDirectory = new TemporaryDirectory();
 
         assertThat(temporaryDirectory.path().toFile()).exists();
-        assertThat(temporaryDirectory.getPath().toFile()).exists();
         assertThat(temporaryDirectory.toPath().toFile()).exists();
         assertThat(temporaryDirectory.toFile()).exists();
         assertThat(temporaryDirectory.toPath().toFile()).isDirectory();
@@ -50,7 +48,6 @@ public class TemporaryDirectoryTest {
         TemporaryDirectory temporaryDirectory = new TemporaryDirectory();
 
         assertThat(temporaryDirectory.path().toFile()).exists();
-        assertThat(temporaryDirectory.getPath().toFile()).exists();
         assertThat(temporaryDirectory.toPath().toFile()).exists();
         assertThat(temporaryDirectory.toFile()).exists();
         assertThat(temporaryDirectory.toPath().toFile()).isDirectory();

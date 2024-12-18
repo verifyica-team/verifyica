@@ -51,7 +51,7 @@ public class ClassThreadLocalTest1 {
         classContext
                 .getEngineContext()
                 .getConfiguration()
-                .getPropertiesFilename()
+                .getPropertiesPath()
                 .ifPresent(path -> System.out.printf("properties filename [%s]%n", path));
 
         synchronized (classContext.getTestInstance()) {
