@@ -16,7 +16,6 @@
 
 package org.verifyica.test.argument;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -46,12 +45,12 @@ public class InheritedArgumentTest {
 
     @Verifyica.BeforeAll
     public void beforeAll(ConcreteCustomArgument argument) {
-        System.out.println(format("beforeAll(%s)", argument));
+        System.out.printf("beforeAll(%s)%n", argument);
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ConcreteCustomArgument argument) {
-        System.out.println(format("beforeEach(%s)", argument));
+        System.out.printf("beforeEach(%s)%n", argument);
     }
 
     @Verifyica.Test
@@ -78,12 +77,12 @@ public class InheritedArgumentTest {
 
     @Verifyica.AfterEach
     public void afterEach(ConcreteCustomArgument argument) {
-        System.out.println(format("afterEach(%s)", argument));
+        System.out.printf("afterEach(%s)%n", argument);
     }
 
     @Verifyica.AfterAll
     public void afterAll(ConcreteCustomArgument argument) {
-        System.out.println(format("afterAll(%s)", argument));
+        System.out.printf("afterAll(%s)%n", argument);
     }
 
     @Verifyica.Conclude

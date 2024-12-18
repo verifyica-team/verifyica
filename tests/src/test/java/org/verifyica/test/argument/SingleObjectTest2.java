@@ -16,8 +16,6 @@
 
 package org.verifyica.test.argument;
 
-import static java.lang.String.format;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import org.verifyica.api.Argument;
@@ -43,12 +41,12 @@ public class SingleObjectTest2 {
 
     @Verifyica.BeforeAll
     public void beforeAll(Integer integer) {
-        System.out.println(format("beforeAll(%d)", integer));
+        System.out.printf("beforeAll(%d)%n", integer);
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(Integer integer) {
-        System.out.println(format("beforeEach(%d)", integer));
+        System.out.printf("beforeEach(%d)%n", integer);
     }
 
     @Verifyica.Test
@@ -72,12 +70,12 @@ public class SingleObjectTest2 {
 
     @Verifyica.AfterEach
     public void afterEach(Integer integer) {
-        System.out.println(format("afterEach(%d)", integer));
+        System.out.printf("afterEach(%d)%n", integer);
     }
 
     @Verifyica.AfterAll
     public void afterAll(Integer integer) {
-        System.out.println(format("afterAll(%d)", integer));
+        System.out.printf("afterAll(%d)%n", integer);
     }
 
     @Verifyica.Conclude
