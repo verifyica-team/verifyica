@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -99,7 +100,7 @@ public class NginxTest3 {
 
     public static String doGet(String urlString) throws Throwable {
         StringBuilder result = new StringBuilder();
-        URL url = new URL(urlString);
+        URL url = new URI(urlString).toURL();
         URLConnection connection = url.openConnection();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
