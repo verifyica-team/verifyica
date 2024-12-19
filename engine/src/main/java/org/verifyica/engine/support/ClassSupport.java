@@ -235,7 +235,7 @@ public class ClassSupport {
             while (jarEntryEnumeration.hasMoreElements()) {
                 JarEntry jarEntry = jarEntryEnumeration.nextElement();
                 if (!jarEntry.isDirectory() && predicate.test(jarEntry.getName())) {
-                    uris.add(new URI("jar:" + jarPath.toUri() + "!/" + jarEntry.getName()));
+                    uris.add(URI.create("jar:" + jarPath.toUri() + "!/" + jarEntry.getName()));
                 }
             }
         }

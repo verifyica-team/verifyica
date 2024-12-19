@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,10 +97,9 @@ public class NginxTest3 {
         Trap.assertEmpty(traps);
     }
 
-    public static String doGet(String urlString) throws Throwable {
+    private static String doGet(String url) throws Throwable {
         StringBuilder result = new StringBuilder();
-        URL url = new URI(urlString).toURL();
-        URLConnection connection = url.openConnection();
+        URLConnection connection = URI.create(url).toURL().openConnection();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
             String line;
