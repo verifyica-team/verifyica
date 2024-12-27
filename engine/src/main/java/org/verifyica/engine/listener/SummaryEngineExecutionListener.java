@@ -391,9 +391,9 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                     AnsiColor.TEXT_WHITE_BRIGHT.wrap(" " + convertDurationToMillisAndNanoseconds(elapsedTime) + " ms"));
 
             if (failureCount.get() > 0) {
-                compactSummary.append(" | ").append(AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("F"));
+                compactSummary.append(" | ").append(AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("FAILED"));
             } else {
-                compactSummary.append(" | ").append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("P"));
+                compactSummary.append(" | ").append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("PASSED"));
             }
 
             println(INFO + SEPARATOR);
