@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public final class LoggerFactory {
 
-    private static final Logger ROOT_LOGGER = new Logger("ROOT");
+    private static final Logger ROOT_LOGGER = new Logger("<ROOT>");
 
     private final Map<String, Logger> loggers = new ConcurrentHashMap<>();
 
