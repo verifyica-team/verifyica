@@ -116,6 +116,7 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
                 new MongoDBTestEnvironment("mongo:4.4"),
                 new MongoDBTestEnvironment("mongo:5.0"),
                 new MongoDBTestEnvironment("mongo:6.0"),
-                new MongoDBTestEnvironment("mongo:7.0"));
+                new MongoDBTestEnvironment("mongo:7.0"),
+                new MongoDBTestEnvironment("mongo:8.0"));
     }
 }
