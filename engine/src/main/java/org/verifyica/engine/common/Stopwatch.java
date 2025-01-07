@@ -18,6 +18,7 @@ package org.verifyica.engine.common;
 
 import java.time.Duration;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -25,6 +26,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @SuppressWarnings("UnusedReturnValue")
 public class Stopwatch {
 
+    private final UUID uuid;
     private final ReadWriteLock readWriteLock;
     private long startNanoTime;
     private Long stopNanoTime;
@@ -35,6 +37,7 @@ public class Stopwatch {
      * <p>The Stopwatch starts automatically
      */
     public Stopwatch() {
+        uuid = UUID.randomUUID();
         readWriteLock = new ReentrantReadWriteLock(true);
         reset();
     }
@@ -98,22 +101,11 @@ public class Stopwatch {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Stopwatch stopwatch = (Stopwatch) o;
-
-        readWriteLock.readLock().lock();
-        try {
-            return startNanoTime == stopwatch.startNanoTime && Objects.equals(stopNanoTime, stopwatch.stopNanoTime);
-        } finally {
-            readWriteLock.readLock().unlock();
-        }
+        return Objects.equals(uuid, stopwatch.uuid);
     }
 
     @Override
     public int hashCode() {
-        readWriteLock.readLock().lock();
-        try {
-            return Objects.hash(startNanoTime, stopNanoTime);
-        } finally {
-            readWriteLock.readLock().unlock();
-        }
+        return Objects.hash(uuid);
     }
 }
