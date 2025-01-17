@@ -65,7 +65,7 @@ verifyica.engine.argument.parallelism=20
 
 - if `verifyica.engine.argument.parallelism` is less than `verifyica.engine.class.parallelism`...
   - `verifyica.engine.argument.parallelism` will be set to `verifyica.engine.class.parallelism`
-  - a `WARN` log print will be printed 
+  - a `WARN` log print will be printed
 
 
 - `@Verifyica.ArgumentSupplier(parallelism = X)` is constrained to a maximum upper limit of `verifyica.engine.argument.parallelism`

@@ -26,7 +26,7 @@ Parameterized testing is traditionally test method oriented ...
 for (TestMethod testMethod : TestMethods) {
    for (TestArgument testArgument : TestArguments) {
       testMethod(testArgument)
-   }   
+   }
 }
 ```
 
@@ -47,14 +47,14 @@ for (TestArgument testArgument : TestArguments) {
 Unit testing is traditionally used where test methods in a test class are isolated and independent of each other ...
 
 - for a test class
-  - all test methods are executed 
-  - i.e. a failure of one test method doesn't affect the testing of other test methods 
+  - all test methods are executed
+  - i.e. a failure of one test method doesn't affect the testing of other test methods
 
 Verifyica uses a dependent test method paradigm ...
 
 - for a test class
   - order the test methods
-  - for a test argument 
+  - for a test argument
     - execute the test methods sequentially
     - if a test method fails, remaining test methods are skipped
 
@@ -63,7 +63,7 @@ Verifyica uses a dependent test method paradigm ...
 - default test method ordering is by test method name (or display name if defined), then by `@Verifyica.Order` annotations.
 
 - if a specific test method is selected, run all test methods that are ordered before the selected test method
- 
+
 - IntelliJ has test method selection issues if multiple test methods are selected
   - In these scenarios, all test methods will be executed
 
@@ -78,7 +78,7 @@ Verifyica uses a dependent test method paradigm ...
 - Multithreaded test class / test argument testing
   - configurable constraints
   - test arguments can be tested multithreaded
-  - test methods are always tested sequentially for a test argument 
+  - test methods are always tested sequentially for a test argument
 - Virtual thread support (Java 21+)
 - Properties file driven configuration
 - Test class filtering
@@ -92,7 +92,7 @@ Verifyica uses a dependent test method paradigm ...
 - Object / resource sharing via contexts
   - [EngineContext](api/src/main/java/org/verifyica/api/EngineContext.java)
   - [ClassContext](api/src/main/java/org/verifyica/api/ClassContext.java)
-  - [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
+  - [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java)
 - LockManager
   - locking semantics
 - [IntelliJ](https://www.jetbrains.com/idea/) support
@@ -110,23 +110,23 @@ for (TestClass testClass : TestClasses) {
     execute @Verifyica.Prepare methods (superclass then subclass)
 
     for (TestArgument testArgument : TestArguments) {
-    
+
        execute @Verifyica.BeforeAll methods (superclass then subclass)
-      
+
        for (test method : Test methods) {
-       
+
           execute @Verifyica.BeforeEach methods (superclass then subclass)
-          
+
               execute test method
-          
+
           execute @Verifyica.AfterEach methods (subclass then superclass)
        }
-       
+
        execute @Verifyica.AfterAll methods (subclass then superclass)
     }
 
     execute @Verificya.Conclude methods (subclass then superclass)
-   
+
     destroy test class instance
 }
 ```

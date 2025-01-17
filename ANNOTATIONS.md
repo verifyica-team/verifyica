@@ -28,7 +28,7 @@ All test classes must define a single method annotated with `@Verifyica.Argument
 **Notes**
 
 - may return mixed types
-  - i.e. `Argument<?>` 
+  - i.e. `Argument<?>`
 
 
 - `Argument.EMPTY` may be used in scenarios where the argument is irrelevant
@@ -45,7 +45,7 @@ Test argument parallelism (parallel test argument testing) can be defined with a
 - The default `parallelism` value is `1`
 
 
-- `parallelism` will be constrained to `verifyica.engine.argument.parallelism` 
+- `parallelism` will be constrained to `verifyica.engine.argument.parallelism`
 
 **Notes**
 
@@ -91,7 +91,7 @@ public static Object[] arguments() {
 ```
 
 ```java
-// Test 2 arguments in parallel/execution submission in order 
+// Test 2 arguments in parallel/execution submission in order
 @Verifyica.ArgumentSupplier(parallelism = 2)
 public static Collection<Argument<String>> arguments() {
     Collection<Argument<String>> collection = new ArrayList<>();
@@ -138,7 +138,7 @@ When using test class inheritance, `@Verifyica.Prepare` and `@Verifyica.Conclude
 
 - `@Verifyica.Conclude`
   - subclass method before superclass method
- 
+
 ---
 
 ### @Verifyica.BeforeAll / @Verifyica.AfterAll
@@ -239,7 +239,7 @@ Used to order test classes / test methods.
 - If `verifyica.engine.class.parallelism` is greater than `1`, orders test class **execution submission order**.
   - Test class execution will still be in parallel.
 
-- Test methods with an `@Verifyica.Order` annotation are ordered before test methods without an `@Verifyica.Order` annotation 
+- Test methods with an `@Verifyica.Order` annotation are ordered before test methods without an `@Verifyica.Order` annotation
 
 ---
 
