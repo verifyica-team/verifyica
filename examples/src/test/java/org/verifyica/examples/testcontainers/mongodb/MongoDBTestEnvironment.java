@@ -113,10 +113,10 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
      */
     public static Stream<MongoDBTestEnvironment> createTestEnvironments() {
         return Stream.of(
-                new MongoDBTestEnvironment("mongo:4.4"),
-                new MongoDBTestEnvironment("mongo:5.0"),
-                new MongoDBTestEnvironment("mongo:6.0"),
-                new MongoDBTestEnvironment("mongo:7.0"),
-                new MongoDBTestEnvironment("mongo:8.0"));
+                new MongoDBTestEnvironment("mongo:4.4.29"),
+                new MongoDBTestEnvironment("mongo:5.0.31"),
+                new MongoDBTestEnvironment("mongo:6.0.20"),
+                new MongoDBTestEnvironment("mongo:7.0.16"),
+                new MongoDBTestEnvironment("mongo:8.0.4"));
     }
 }
