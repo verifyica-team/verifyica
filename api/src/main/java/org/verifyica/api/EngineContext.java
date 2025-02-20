@@ -29,25 +29,9 @@ public interface EngineContext extends Context {
     }
 
     /**
-     * Get the Engine Configuration
-     *
-     * @return the Engine Configuration
-     */
-    default Configuration configuration() {
-        return getConfiguration();
-    }
-
-    /**
      * Get the Engine version
      *
      * @return the Engine version
      */
     String getVersion();
-
-    /**
-     * Get the Engine Configuration
-     *
-     * @return the Engine Configuration
-     */
-    Configuration getConfiguration();
 }
