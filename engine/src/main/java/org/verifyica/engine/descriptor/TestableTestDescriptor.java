@@ -185,12 +185,16 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
         if (value != null && !value.trim().isEmpty()) {
             try {
                 String[] tokens = value.split("[\\s,]+");
-                if (tokens.length == 1) {
-                    return new Throttle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[0]));
-                } else if (tokens.length == 2) {
-                    return new Throttle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[1]));
-                } else {
-                    return new Throttle(name, 0, 0);
+                switch (tokens.length) {
+                    case 1: {
+                        return new Throttle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[0]));
+                    }
+                    case 2: {
+                        return new Throttle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[1]));
+                    }
+                    default: {
+                        return new Throttle(name, 0, 0);
+                    }
                 }
             } catch (Throwable t) {
                 return new Throttle(name, 0, 0);
