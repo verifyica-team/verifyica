@@ -18,6 +18,7 @@ package org.verifyica.examples.interceptor;
 
 import java.lang.reflect.Method;
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Verifyica;
@@ -31,12 +32,17 @@ public class ElapsedTimeClassInterceptor implements ClassInterceptor {
     private static final String TIMESTAMP = "timestamp";
 
     @Override
-    public void initialize(EngineContext engineContext) throws Throwable {
+    public void initialize(EngineContext engineContext) {
         LOGGER.info("initialize()");
     }
 
     @Override
-    public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
+    public void prePrepare(ClassContext classContext) {
+        classContext.map().put(TIMESTAMP, System.nanoTime());
+    }
+
+    @Override
+    public void preTest(ArgumentContext argumentContext, Method testMethod) {
         argumentContext.map().put(TIMESTAMP, System.nanoTime());
     }
 
@@ -49,6 +55,15 @@ public class ElapsedTimeClassInterceptor implements ClassInterceptor {
                 argumentContext.testArgument().name(),
                 testMethod.getName(),
                 elapsedTime / 1_000_000.0);
+
+        rethrow(throwable);
+    }
+
+    @Override
+    public void postConclude(ClassContext classContext, Throwable throwable) throws Throwable {
+        long elapsedTime = System.nanoTime() - classContext.map().removeAs(TIMESTAMP, Long.class);
+        LOGGER.info(
+                "test class [%s] elapsed time [%f] ms", classContext.testClass().getName(), elapsedTime / 1_000_000.0);
 
         rethrow(throwable);
     }
