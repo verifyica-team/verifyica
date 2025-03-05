@@ -24,6 +24,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
@@ -34,8 +36,6 @@ import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Execution;
 import org.verifyica.engine.common.Throttle;
 import org.verifyica.engine.configuration.Constants;
-import org.verifyica.engine.inject.Inject;
-import org.verifyica.engine.inject.Named;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 

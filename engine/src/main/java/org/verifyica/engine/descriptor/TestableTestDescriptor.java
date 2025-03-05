@@ -23,6 +23,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
@@ -32,8 +34,6 @@ import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Throttle;
 import org.verifyica.engine.exception.TestClassDefinitionException;
-import org.verifyica.engine.inject.Inject;
-import org.verifyica.engine.inject.Named;
 
 /** Class to implement TestableTestDescriptor */
 public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
