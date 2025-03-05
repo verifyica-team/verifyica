@@ -293,6 +293,10 @@
                                     <shadedPattern>6bc6660d778dec84d62bc72b295ffd7b.org.yaml</shadedPattern>
                                 </relocation>
                                 <relocation>
+                                    <pattern>javax</pattern>
+                                    <shadedPattern>6bc6660d778dec84d62bc72b295ffd7b.javax</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>org.apache</pattern>
                                     <shadedPattern>6bc6660d778dec84d62bc72b295ffd7b.org.apache</shadedPattern>
                                 </relocation>
