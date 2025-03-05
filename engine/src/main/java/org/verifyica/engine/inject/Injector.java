@@ -23,13 +23,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.verifyica.engine.exception.EngineException;
 
 /** Class to implement Injector */
-@SuppressWarnings({"deprecation", "PMD.AvoidAccessibilityAlteration"})
+@SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class Injector {
 
+    private static final String JAVA_PACKAGE = "java.";
+    private static final String SUN_PACKAGE = "sun.";
+
     private static final Map<Class<?>, List<Field>> FIELD_CACHE = new ConcurrentHashMap<>();
+    private static final ReentrantLock FIELD_LOCK = new ReentrantLock(true);
 
     /**
      * Constructor
@@ -39,7 +46,7 @@ public class Injector {
     }
 
     /**
-     * Method to inject a value into annotated named fields
+     * Method to inject a value into named annotated fields
      *
      * @param name name
      * @param value value
@@ -47,10 +54,9 @@ public class Injector {
      */
     public static void inject(String name, Object value, Object target) {
         Class<?> clazz = target.getClass();
+        String className = clazz.getName();
 
-        while (clazz != null
-                && !clazz.getName().startsWith("java")
-                && !clazz.getName().startsWith("sun")) {
+        while (!className.startsWith(JAVA_PACKAGE) && !className.startsWith(SUN_PACKAGE)) {
             for (Field field : getFields(clazz)) {
                 Inject inject = field.getAnnotation(Inject.class);
                 Named named = field.getAnnotation(Named.class);
@@ -59,11 +65,12 @@ public class Injector {
                         && named.value().equals(name)
                         && !Modifier.isStatic(field.getModifiers())
                         && field.getType().isAssignableFrom(value.getClass())) {
-                    injectField(field, target, value);
+                    setField(field, target, value);
                 }
             }
 
             clazz = clazz.getSuperclass();
+            className = clazz.getName();
         }
     }
 
@@ -76,24 +83,24 @@ public class Injector {
      */
     public static void inject(Class<? extends Annotation> annotation, Object value, Object target) {
         Class<?> clazz = target.getClass();
+        String className = clazz.getName();
 
-        while (clazz != null
-                && !clazz.getName().startsWith("java")
-                && !clazz.getName().startsWith("sun")) {
+        while (!className.startsWith(JAVA_PACKAGE) && !className.startsWith(SUN_PACKAGE)) {
             for (Field field : getFields(clazz)) {
                 if (!Modifier.isStatic(field.getModifiers())
                         && field.isAnnotationPresent(annotation)
                         && field.getType().isAssignableFrom(value.getClass())) {
-                    injectField(field, target, value);
+                    setField(field, target, value);
                 }
             }
 
             clazz = clazz.getSuperclass();
+            className = clazz.getName();
         }
     }
 
     /**
-     * Method to inject a value into annotated fields
+     * Method to inject a value into annotated static fields
      *
      * @param annotation annotation
      * @param value value
@@ -101,19 +108,19 @@ public class Injector {
      */
     public static void inject(Class<? extends Annotation> annotation, Object value, Class<?> target) {
         Class<?> clazz = target;
+        String className = clazz.getName();
 
-        while (clazz != null
-                && !clazz.getName().startsWith("java")
-                && !clazz.getName().startsWith("sun")) {
+        while (!className.startsWith(JAVA_PACKAGE) && !className.startsWith(SUN_PACKAGE)) {
             for (Field field : getFields(clazz)) {
                 if (Modifier.isStatic(field.getModifiers())
                         && field.isAnnotationPresent(annotation)
                         && field.getType().isAssignableFrom(value.getClass())) {
-                    injectField(field, null, value);
+                    setField(field, null, value);
                 }
             }
 
             clazz = clazz.getSuperclass();
+            className = clazz.getName();
         }
     }
 
@@ -124,8 +131,9 @@ public class Injector {
      * @param target target (null for static field)
      * @param value value
      */
-    private static void injectField(Field field, Object target, Object value) {
-        synchronized (field) {
+    private static void setField(Field field, Object target, Object value) {
+        FIELD_LOCK.lock();
+        try {
             boolean originalAccessibility = field.isAccessible();
             try {
                 field.setAccessible(true);
@@ -136,6 +144,8 @@ public class Injector {
             } finally {
                 field.setAccessible(originalAccessibility);
             }
+        } finally {
+            FIELD_LOCK.unlock();
         }
     }
 
