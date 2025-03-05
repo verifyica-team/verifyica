@@ -125,6 +125,16 @@ public class Injector {
     }
 
     /**
+     * Method to get all fields for a class
+     *
+     * @param clazz clazz
+     * @return a List of fields for a class
+     */
+    private static List<Field> getFields(Class<?> clazz) {
+        return FIELD_CACHE.computeIfAbsent(clazz, c -> Arrays.asList(c.getDeclaredFields()));
+    }
+
+    /**
      * Method to inject a field
      *
      * @param field field
@@ -147,15 +157,5 @@ public class Injector {
         } finally {
             FIELD_LOCK.unlock();
         }
-    }
-
-    /**
-     * Method to get all fields for a class
-     *
-     * @param clazz clazz
-     * @return a List of fields for a class
-     */
-    private static List<Field> getFields(Class<?> clazz) {
-        return FIELD_CACHE.computeIfAbsent(clazz, c -> Arrays.asList(c.getDeclaredFields()));
     }
 }
