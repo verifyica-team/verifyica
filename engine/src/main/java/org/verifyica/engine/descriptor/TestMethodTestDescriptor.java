@@ -34,7 +34,7 @@ import org.junit.platform.engine.support.descriptor.MethodSource;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Execution;
-import org.verifyica.engine.common.SystemLoadThrottle;
+import org.verifyica.engine.common.SystemLoadAverageThrottle;
 import org.verifyica.engine.common.Throttle;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
@@ -130,11 +130,12 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
 
             Throttle throttle =
                     // createThrottle(argumentContext.getConfiguration(), Constants.ENGINE_TEST_STATE_MACHINE_THROTTLE);
-                    new SystemLoadThrottle(500, .9);
+                    SystemLoadAverageThrottle.getInstance();
 
             State state = State.START;
             while (state != State.END) {
                 LOGGER.trace("testDescriptor [%s] state [%s]", this, state);
+
                 throttle.throttle();
 
                 switch (state) {
