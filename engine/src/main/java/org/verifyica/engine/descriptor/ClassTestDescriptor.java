@@ -362,7 +362,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         } else if (throwable == null) {
             return State.TEST;
         } else {
-            return State.CONCLUDE;
+            return State.SKIP;
         }
     }
 

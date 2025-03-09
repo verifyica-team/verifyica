@@ -269,7 +269,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         } else if (throwable == null) {
             return State.TEST;
         } else {
-            return State.AFTER_ALL;
+            return State.SKIP;
         }
     }
 

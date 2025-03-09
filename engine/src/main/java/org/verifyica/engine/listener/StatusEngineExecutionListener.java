@@ -18,6 +18,7 @@ package org.verifyica.engine.listener;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
@@ -31,6 +32,7 @@ import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.verifyica.engine.descriptor.ClassTestDescriptor;
+import org.verifyica.engine.descriptor.TestDescriptorStatus;
 import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.logger.Logger;
@@ -245,7 +247,9 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                         .append(" | ")
                         .append(AnsiColor.TEXT_WHITE_BRIGHT);
 
-                TestExecutionResult.Status status = testExecutionResult.getStatus();
+                TestExecutionResult.Status status = getDescendantFailureCount(testDescriptor) > 0
+                        ? TestExecutionResult.Status.FAILED
+                        : testExecutionResult.getStatus();
 
                 switch (status) {
                     case SUCCESSFUL: {
@@ -287,6 +291,19 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }
         }
+    }
+
+    private static long getDescendantFailureCount(TestDescriptor testDescriptor) {
+        Set<? extends TestDescriptor> descendants = testDescriptor.getDescendants();
+
+        return descendants.stream()
+                .filter(descendant -> descendant instanceof TestableTestDescriptor)
+                .map(descendant -> (TestableTestDescriptor) descendant)
+                .filter(testableTestDescriptor -> {
+                    TestDescriptorStatus testDescriptorStatus = testableTestDescriptor.getTestDescriptorStatus();
+                    return testDescriptorStatus != null && testDescriptorStatus.isFailure();
+                })
+                .count();
     }
 
     /**
