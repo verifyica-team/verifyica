@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -35,7 +36,9 @@ import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Stopwatch;
 import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
 import org.verifyica.engine.descriptor.ClassTestDescriptor;
+import org.verifyica.engine.descriptor.TestDescriptorStatus;
 import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
+import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.support.TimestampSupport;
 
 /** Class to implement a SummaryEngineExecutionListener */
@@ -84,15 +87,17 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         counterKeyToMessageDisplayStringMap.put("test.method.count.skipped", "Skipped");
     }
 
-    private final Map<ClassTestDescriptor, TestExecutionResult> classTestDescriptorTestExecutionResultMap;
+    private final Map<ClassTestDescriptor, TestExecutionResult.Status> classTestDescriptorTestExecutionResultStatusMap;
 
     private final Map<ClassTestDescriptor, String> classTestDescriptorSkippedMap;
 
-    private final Map<ArgumentTestDescriptor, TestExecutionResult> argumentTestDescriptorTestExecutionResultMap;
+    private final Map<ArgumentTestDescriptor, TestExecutionResult.Status>
+            argumentTestDescriptorTestExecutionResultStatusMap;
 
     private final Map<ArgumentTestDescriptor, String> argumentTestDescriptorSkippedMap;
 
-    private final Map<TestMethodTestDescriptor, TestExecutionResult> testMethodTestDescriptorTestExecutionResultMap;
+    private final Map<TestMethodTestDescriptor, TestExecutionResult.Status>
+            testMethodTestDescriptorTestExecutionResultStatusMap;
 
     private final Map<TestMethodTestDescriptor, String> testMethodTestDescriptorSkippedMap;
 
@@ -102,13 +107,13 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     /** Constructor */
     public SummaryEngineExecutionListener() {
-        classTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
+        classTestDescriptorTestExecutionResultStatusMap = new ConcurrentHashMap<>();
         classTestDescriptorSkippedMap = new ConcurrentHashMap<>();
 
-        argumentTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
+        argumentTestDescriptorTestExecutionResultStatusMap = new ConcurrentHashMap<>();
         argumentTestDescriptorSkippedMap = new ConcurrentHashMap<>();
 
-        testMethodTestDescriptorTestExecutionResultMap = new ConcurrentHashMap<>();
+        testMethodTestDescriptorTestExecutionResultStatusMap = new ConcurrentHashMap<>();
         testMethodTestDescriptorSkippedMap = new ConcurrentHashMap<>();
 
         failureCount = new AtomicLong();
@@ -137,14 +142,16 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     @Override
     public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
+        TestExecutionResult.Status status = getDescendantFailureCount(testDescriptor) > 0
+                ? TestExecutionResult.Status.FAILED
+                : testExecutionResult.getStatus();
+
         if (testDescriptor instanceof ClassTestDescriptor) {
-            classTestDescriptorTestExecutionResultMap.put((ClassTestDescriptor) testDescriptor, testExecutionResult);
+            classTestDescriptorTestExecutionResultStatusMap.put((ClassTestDescriptor) testDescriptor, status);
         } else if (testDescriptor instanceof ArgumentTestDescriptor) {
-            argumentTestDescriptorTestExecutionResultMap.put(
-                    (ArgumentTestDescriptor) testDescriptor, testExecutionResult);
+            argumentTestDescriptorTestExecutionResultStatusMap.put((ArgumentTestDescriptor) testDescriptor, status);
         } else if (testDescriptor instanceof TestMethodTestDescriptor) {
-            testMethodTestDescriptorTestExecutionResultMap.put(
-                    (TestMethodTestDescriptor) testDescriptor, testExecutionResult);
+            testMethodTestDescriptorTestExecutionResultStatusMap.put((TestMethodTestDescriptor) testDescriptor, status);
         }
 
         if (testExecutionResult.getStatus() == TestExecutionResult.Status.FAILED) {
@@ -188,10 +195,9 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                         .incrementAndGet();
             }
 
-            for (Map.Entry<ClassTestDescriptor, TestExecutionResult> mapEntry :
-                    classTestDescriptorTestExecutionResultMap.entrySet()) {
-                TestExecutionResult testExecutionResult = mapEntry.getValue();
-                TestExecutionResult.Status status = testExecutionResult.getStatus();
+            for (Map.Entry<ClassTestDescriptor, TestExecutionResult.Status> mapEntry :
+                    classTestDescriptorTestExecutionResultStatusMap.entrySet()) {
+                TestExecutionResult.Status status = mapEntry.getValue();
                 String key = "test.class.count";
 
                 counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
@@ -221,10 +227,9 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 }
             }
 
-            for (Map.Entry<ArgumentTestDescriptor, TestExecutionResult> mapEntry :
-                    argumentTestDescriptorTestExecutionResultMap.entrySet()) {
-                TestExecutionResult testExecutionResult = mapEntry.getValue();
-                TestExecutionResult.Status status = testExecutionResult.getStatus();
+            for (Map.Entry<ArgumentTestDescriptor, TestExecutionResult.Status> mapEntry :
+                    argumentTestDescriptorTestExecutionResultStatusMap.entrySet()) {
+                TestExecutionResult.Status status = mapEntry.getValue();
                 String key = "test.argument.count";
 
                 counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
@@ -254,10 +259,9 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 }
             }
 
-            for (Map.Entry<TestMethodTestDescriptor, TestExecutionResult> mapEntry :
-                    testMethodTestDescriptorTestExecutionResultMap.entrySet()) {
-                TestExecutionResult testExecutionResult = mapEntry.getValue();
-                TestExecutionResult.Status status = testExecutionResult.getStatus();
+            for (Map.Entry<TestMethodTestDescriptor, TestExecutionResult.Status> mapEntry :
+                    testMethodTestDescriptorTestExecutionResultStatusMap.entrySet()) {
+                TestExecutionResult.Status status = mapEntry.getValue();
                 String key = "test.method.count";
 
                 counterMap.computeIfAbsent(key, k -> new AtomicLong()).incrementAndGet();
@@ -423,6 +427,19 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         } catch (Throwable t) {
             StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
         }
+    }
+
+    private static long getDescendantFailureCount(TestDescriptor testDescriptor) {
+        Set<? extends TestDescriptor> descendants = testDescriptor.getDescendants();
+
+        return descendants.stream()
+                .filter(descendant -> descendant instanceof TestableTestDescriptor)
+                .map(descendant -> (TestableTestDescriptor) descendant)
+                .filter(testableTestDescriptor -> {
+                    TestDescriptorStatus testDescriptorStatus = testableTestDescriptor.getTestDescriptorStatus();
+                    return testDescriptorStatus != null && testDescriptorStatus.isFailure();
+                })
+                .count();
     }
 
     /**
