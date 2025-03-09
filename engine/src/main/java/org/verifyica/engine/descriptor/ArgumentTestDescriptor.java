@@ -36,8 +36,8 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Execution;
+import org.verifyica.engine.common.SystemLoadThrottle;
 import org.verifyica.engine.common.Throttle;
-import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.context.ConcreteArgumentContext;
 import org.verifyica.engine.inject.Injector;
 import org.verifyica.engine.logger.Logger;
@@ -140,7 +140,8 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             engineExecutionListener.executionStarted(this);
 
             Throttle throttle =
-                    createThrottle(classContext.getConfiguration(), Constants.ENGINE_ARGUMENT_STATE_MACHINE_THROTTLE);
+                    // createThrottle(classContext.getConfiguration(), Constants.ENGINE_CLASS_STATE_MACHINE_THROTTLE);
+                    new SystemLoadThrottle(500, .9);
 
             State state = State.START;
             while (state != State.END) {

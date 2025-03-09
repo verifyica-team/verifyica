@@ -31,6 +31,7 @@ import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.AnsiColor;
+import org.verifyica.engine.common.RandomMillisecondsThrottle;
 import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Throttle;
 import org.verifyica.engine.exception.TestClassDefinitionException;
@@ -187,20 +188,22 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
                 String[] tokens = value.split("[\\s,]+");
                 switch (tokens.length) {
                     case 1: {
-                        return new Throttle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[0]));
+                        return new RandomMillisecondsThrottle(
+                                name, Long.parseLong(tokens[0]), Long.parseLong(tokens[0]));
                     }
                     case 2: {
-                        return new Throttle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[1]));
+                        return new RandomMillisecondsThrottle(
+                                name, Long.parseLong(tokens[0]), Long.parseLong(tokens[1]));
                     }
                     default: {
-                        return new Throttle(name, 0, 0);
+                        return new RandomMillisecondsThrottle(name, 0, 0);
                     }
                 }
             } catch (Throwable t) {
-                return new Throttle(name, 0, 0);
+                return new RandomMillisecondsThrottle(name, 0, 0);
             }
         } else {
-            return new Throttle(name, 0, 0);
+            return new RandomMillisecondsThrottle(name, 0, 0);
         }
     }
 

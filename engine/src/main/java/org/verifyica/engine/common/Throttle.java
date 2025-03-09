@@ -16,70 +16,12 @@
 
 package org.verifyica.engine.common;
 
-import java.util.Random;
-import org.verifyica.engine.logger.Logger;
-import org.verifyica.engine.logger.LoggerFactory;
-
 /** Class to implement Throttle */
 @SuppressWarnings("PMD.EmptyCatchBlock")
-public class Throttle {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Throttle.class);
-
-    private static final Random RANDOM = new Random();
-
-    private final String name;
-    private final long minimum;
-    private final long maximum;
-
-    /**
-     * Constructor
-     *
-     * @param name name
-     * @param minimum minimum
-     * @param maximum maximum
-     */
-    public Throttle(String name, long minimum, long maximum) {
-        this.name = name;
-        this.minimum = minimum >= 0 ? Math.min(minimum, maximum) : 0;
-        this.maximum = maximum >= 0 ? Math.max(minimum, maximum) : 0;
-    }
+public interface Throttle {
 
     /**
      * Method to throttle
      */
-    public void throttle() {
-        if (minimum == maximum && minimum == 0) {
-            LOGGER.trace("name [%s] no throttle", name);
-            return;
-        }
-
-        try {
-            long throttle;
-            if (minimum == maximum) {
-                throttle = minimum;
-            } else {
-                throttle = randomLong(minimum, maximum);
-            }
-            LOGGER.trace("name [%s] throttle [%d] ms", name, throttle);
-            Thread.sleep(throttle);
-        } catch (InterruptedException e) {
-            // INTENTIONALLY BLANK
-        }
-    }
-
-    /**
-     * Method to create a random long between minimum and maximum (inclusive)
-     *
-     * @param minimum minimum
-     * @param maximum maximum
-     * @return a random long between minimum and maximum (inclusive)
-     */
-    private static long randomLong(long minimum, long maximum) {
-        if (minimum == maximum) {
-            return minimum;
-        }
-
-        return (long) (RANDOM.nextDouble() * (maximum - minimum + 1)) + minimum;
-    }
+    void throttle();
 }
