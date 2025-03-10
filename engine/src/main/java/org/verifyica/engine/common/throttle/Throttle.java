@@ -21,6 +21,8 @@ public interface Throttle {
 
     /**
      * Method to throttle
+     *
+     * @throws InterruptedException if the thread is interrupted
      */
-    void throttle();
+    void throttle() throws InterruptedException;
 }

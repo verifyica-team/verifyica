@@ -46,26 +46,22 @@ public class RandomSleepThrottle implements Throttle {
     }
 
     @Override
-    public void throttle() {
+    public void throttle() throws InterruptedException {
         if (minimum == maximum && minimum == 0) {
             return;
         }
 
-        try {
-            long throttle;
+        long throttle;
 
-            if (minimum == maximum) {
-                throttle = minimum;
-            } else {
-                throttle = randomLong(minimum, maximum);
-            }
-
-            LOGGER.trace("name [%s] throttle [%d] ms", name, throttle);
-
-            Thread.sleep(throttle);
-        } catch (InterruptedException e) {
-            // INTENTIONALLY BLANK
+        if (minimum == maximum) {
+            throttle = minimum;
+        } else {
+            throttle = randomLong(minimum, maximum);
         }
+
+        LOGGER.trace("name [%s] throttle [%d] ms", name, throttle);
+
+        Thread.sleep(throttle);
     }
 
     /**

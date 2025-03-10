@@ -41,9 +41,7 @@ public class NoopThrottle implements Throttle {
         return Holder.INSTANCE;
     }
 
-    /**
-     * Class to implement Holder
-     */
+    /** Class to implement Holder */
     private static class Holder {
 
         /**
