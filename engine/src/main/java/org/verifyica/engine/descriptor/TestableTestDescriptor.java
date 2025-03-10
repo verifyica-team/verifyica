@@ -32,7 +32,9 @@ import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.StackTracePrinter;
-import org.verifyica.engine.common.Throttle;
+import org.verifyica.engine.common.throttle.NoopThrottle;
+import org.verifyica.engine.common.throttle.RandomSleepThrottle;
+import org.verifyica.engine.common.throttle.Throttle;
 import org.verifyica.engine.exception.TestClassDefinitionException;
 
 /** Class to implement TestableTestDescriptor */
@@ -187,20 +189,20 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
                 String[] tokens = value.split("[\\s,]+");
                 switch (tokens.length) {
                     case 1: {
-                        return new Throttle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[0]));
+                        return new RandomSleepThrottle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[0]));
                     }
                     case 2: {
-                        return new Throttle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[1]));
+                        return new RandomSleepThrottle(name, Long.parseLong(tokens[0]), Long.parseLong(tokens[1]));
                     }
                     default: {
-                        return new Throttle(name, 0, 0);
+                        return new RandomSleepThrottle(name, 0, 0);
                     }
                 }
             } catch (Throwable t) {
-                return new Throttle(name, 0, 0);
+                return NoopThrottle.getInstance();
             }
         } else {
-            return new Throttle(name, 0, 0);
+            return NoopThrottle.getInstance();
         }
     }
 

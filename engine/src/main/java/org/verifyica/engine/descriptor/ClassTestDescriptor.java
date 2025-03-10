@@ -48,7 +48,7 @@ import org.verifyica.api.Execution;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.DirectExecutorService;
 import org.verifyica.engine.common.SemaphoreRunnable;
-import org.verifyica.engine.common.Throttle;
+import org.verifyica.engine.common.throttle.Throttle;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.context.ConcreteClassContext;
 import org.verifyica.engine.inject.Injector;
@@ -194,6 +194,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             State state = State.START;
             while (state != State.END) {
                 LOGGER.trace("testDescriptor [%s] state [%s]", this, state);
+
                 throttle.throttle();
 
                 switch (state) {

@@ -36,7 +36,7 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Execution;
-import org.verifyica.engine.common.Throttle;
+import org.verifyica.engine.common.throttle.Throttle;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.context.ConcreteArgumentContext;
 import org.verifyica.engine.inject.Injector;
@@ -145,6 +145,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
             State state = State.START;
             while (state != State.END) {
                 LOGGER.trace("testDescriptor [%s] state [%s]", this, state);
+
                 throttle.throttle();
 
                 switch (state) {
