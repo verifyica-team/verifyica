@@ -34,7 +34,7 @@ import org.junit.platform.engine.support.descriptor.MethodSource;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Execution;
-import org.verifyica.engine.common.Throttle;
+import org.verifyica.engine.common.throttle.Throttle;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
@@ -134,6 +134,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             State state = State.START;
             while (state != State.END) {
                 LOGGER.trace("testDescriptor [%s] state [%s]", this, state);
+
                 throttle.throttle();
 
                 switch (state) {

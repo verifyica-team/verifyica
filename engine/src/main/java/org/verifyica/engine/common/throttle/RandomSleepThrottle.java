@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.verifyica.engine.common;
+package org.verifyica.engine.common.throttle;
 
 import java.util.Random;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement Throttle */
+/** Class to implement RandomSleepThrottle */
 @SuppressWarnings("PMD.EmptyCatchBlock")
-public class Throttle {
+public class RandomSleepThrottle implements Throttle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Throttle.class);
 
@@ -39,29 +39,29 @@ public class Throttle {
      * @param minimum minimum
      * @param maximum maximum
      */
-    public Throttle(String name, long minimum, long maximum) {
+    public RandomSleepThrottle(String name, long minimum, long maximum) {
         this.name = name;
         this.minimum = minimum >= 0 ? Math.min(minimum, maximum) : 0;
         this.maximum = maximum >= 0 ? Math.max(minimum, maximum) : 0;
     }
 
-    /**
-     * Method to throttle
-     */
+    @Override
     public void throttle() {
         if (minimum == maximum && minimum == 0) {
-            LOGGER.trace("name [%s] no throttle", name);
             return;
         }
 
         try {
             long throttle;
+
             if (minimum == maximum) {
                 throttle = minimum;
             } else {
                 throttle = randomLong(minimum, maximum);
             }
+
             LOGGER.trace("name [%s] throttle [%d] ms", name, throttle);
+
             Thread.sleep(throttle);
         } catch (InterruptedException e) {
             // INTENTIONALLY BLANK
