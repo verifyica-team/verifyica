@@ -228,6 +228,11 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         setTestDescriptorStatus(TestDescriptorStatus.skipped());
     }
 
+    /**
+     * Method to do before all
+     *
+     * @return the next state
+     */
     private State doBeforeAll() {
         Throwable throwable = null;
 
@@ -275,6 +280,11 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         }
     }
 
+    /**
+     * Method to test child test descriptors
+     *
+     * @return the next state
+     */
     private State doTest() {
         Iterator<TestableTestDescriptor> testableTestDescriptorIterator =
                 getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).iterator();
@@ -294,6 +304,11 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         return State.AFTER_ALL;
     }
 
+    /**
+     * Method to do skip child test descriptors
+     *
+     * @return the next state
+     */
     private State doSkipChildren() {
         getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(testableTestDescriptor -> {
             Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
@@ -306,6 +321,11 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         return State.AFTER_ALL;
     }
 
+    /**
+     * Method to do after all
+     *
+     * @return the next state
+     */
     private State doAfterAll() {
         Throwable throwable = null;
 
@@ -344,6 +364,11 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         return State.CLOSE;
     }
 
+    /**
+     * Method to do close the argument
+     *
+     * @return the next state
+     */
     private State doClose() {
         if (argument instanceof AutoCloseable) {
             try {
@@ -357,6 +382,11 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
         return State.CLEAN_UP;
     }
 
+    /**
+     * Method to clean up the argument context
+     *
+     * @return the next state
+     */
     private State doCleanup() {
         Map<String, Object> map = argumentContext.getMap();
 

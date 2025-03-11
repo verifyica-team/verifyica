@@ -196,6 +196,11 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
         setTestDescriptorStatus(TestDescriptorStatus.skipped());
     }
 
+    /**
+     * Method to do before each
+     *
+     * @return the next state
+     */
     private State doBeforeEach() {
         Throwable throwable = null;
 
@@ -243,6 +248,11 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
         }
     }
 
+    /**
+     * Method to execute the test method
+     *
+     * @return the next state
+     */
     private State doTest() {
         Throwable throwable = null;
 
@@ -281,6 +291,11 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
         return State.AFTER_EACH;
     }
 
+    /**
+     * Method to do after each
+     *
+     * @return the next state
+     */
     private State doAfterEach() {
         Throwable throwable = null;
 

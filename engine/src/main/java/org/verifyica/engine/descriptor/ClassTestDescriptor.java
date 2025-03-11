@@ -279,6 +279,11 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         setTestDescriptorStatus(TestDescriptorStatus.skipped());
     }
 
+    /**
+     * Method to instantiate the test class
+     *
+     * @return the next state
+     */
     private State doInstantiate() {
         Throwable throwable = null;
 
@@ -321,6 +326,11 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         return throwable == null ? State.PREPARE : State.CLEAN_UP;
     }
 
+    /**
+     * Method to prepare the test class
+     *
+     * @return the next state
+     */
     private State doPrepare() {
         Throwable throwable = null;
 
@@ -370,6 +380,8 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
 
     /**
      * Method to test child test descriptors
+     *
+     * @return the next state
      */
     private State doTest() {
         ExecutorService executorService;
@@ -403,6 +415,11 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         return State.CONCLUDE;
     }
 
+    /**
+     * Method to skip child test descriptors
+     *
+     * @return the next state
+     */
     private State doSkipChildren() {
         getChildren().stream().map(TESTABLE_TEST_DESCRIPTOR_MAPPER).forEach(testableTestDescriptor -> {
             Injector.inject(ENGINE_EXECUTION_LISTENER, engineExecutionListener, testableTestDescriptor);
@@ -415,6 +432,11 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         return State.CONCLUDE;
     }
 
+    /**
+     * Method to conclude the test class
+     *
+     * @return the next state
+     */
     private State doConclude() {
         Throwable throwable = null;
 
@@ -453,6 +475,11 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         return State.DESTROY;
     }
 
+    /**
+     * Method to call test class interceptors onDestroy
+     *
+     * @return the next state
+     */
     private State doDestroy() {
         try {
             for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
@@ -466,6 +493,11 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         return State.CLOSE;
     }
 
+    /**
+     * Method to close the test class
+     *
+     * @return the next state
+     */
     private State doClose() {
         if (testInstanceAtomicReference.get() instanceof AutoCloseable) {
             try {
@@ -481,6 +513,11 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         return State.CLEAN_UP;
     }
 
+    /**
+     * Method to clean up the class context
+     *
+     * @return the next state
+     */
     private State doCleanup() {
         Map<String, Object> map = classContext.getMap();
 

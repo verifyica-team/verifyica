@@ -18,7 +18,7 @@ package org.verifyica.engine.descriptor;
 
 import java.util.Objects;
 
-/** Class to implement TestDescriptorResult */
+/** Class to implement TestDescriptorStatus */
 public class TestDescriptorStatus {
 
     private static final TestDescriptorStatus PASSED = new TestDescriptorStatus(Type.PASSED);
