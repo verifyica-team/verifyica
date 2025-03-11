@@ -380,7 +380,6 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 println(stringBuilder);
             }
 
-            println(INFO);
             println(INFO + SEPARATOR);
 
             String message = failureCount.get() > 0
@@ -391,14 +390,14 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
             Duration elapsedTime = stopwatch.elapsedTime();
 
-            compactSummary.append(
-                    AnsiColor.TEXT_WHITE_BRIGHT.wrap(" " + convertDurationToMillisAndNanoseconds(elapsedTime) + " ms"));
-
             if (failureCount.get() > 0) {
-                compactSummary.append(" | ").append(AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("FAILED"));
+                compactSummary.append(" ").append(AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("TESTS FAILED"));
             } else {
-                compactSummary.append(" | ").append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("PASSED"));
+                compactSummary.append(" ").append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("TESTS PASSED"));
             }
+
+            compactSummary.append(AnsiColor.TEXT_WHITE_BRIGHT.wrap(
+                    " | " + convertDurationToMillisAndNanoseconds(elapsedTime) + " ms"));
 
             println(INFO + SEPARATOR);
             println(INFO + AnsiColor.TEXT_WHITE_BRIGHT.wrap(compactSummary));
