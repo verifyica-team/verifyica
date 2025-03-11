@@ -132,6 +132,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
                     createThrottle(argumentContext.getConfiguration(), Constants.ENGINE_TEST_STATE_MACHINE_THROTTLE);
 
             State state = State.START;
+
             while (state != State.END) {
                 LOGGER.trace("testDescriptor [%s] state [%s]", this, state);
 

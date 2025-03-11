@@ -143,6 +143,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                     createThrottle(classContext.getConfiguration(), Constants.ENGINE_ARGUMENT_STATE_MACHINE_THROTTLE);
 
             State state = State.START;
+
             while (state != State.END) {
                 LOGGER.trace("testDescriptor [%s] state [%s]", this, state);
 
