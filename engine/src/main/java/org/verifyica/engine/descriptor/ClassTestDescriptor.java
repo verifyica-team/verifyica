@@ -228,11 +228,11 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
                         break;
                     }
                     case CLOSE: {
-                        state = doClose();
+                        state = doCloseInstance();
                         break;
                     }
                     case CLEAN_UP: {
-                        state = doCleanup();
+                        state = doCleanupClassContext();
                         break;
                     }
                     default: {
@@ -494,11 +494,11 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to close the test class
+     * Method to close the test class instance
      *
      * @return the next state
      */
-    private State doClose() {
+    private State doCloseInstance() {
         if (testInstanceAtomicReference.get() instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) testInstanceAtomicReference.get()).close();
@@ -518,7 +518,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
      *
      * @return the next state
      */
-    private State doCleanup() {
+    private State doCleanupClassContext() {
         Map<String, Object> map = classContext.getMap();
 
         Set<Map.Entry<String, Object>> entrySet = map.entrySet();

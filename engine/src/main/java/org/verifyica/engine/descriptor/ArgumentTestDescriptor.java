@@ -171,11 +171,11 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
                         break;
                     }
                     case CLOSE: {
-                        state = doClose();
+                        state = doCloseArgument();
                         break;
                     }
                     case CLEAN_UP: {
-                        state = doCleanup();
+                        state = doCleanupArgumentContext();
                         break;
                     }
                     default: {
@@ -365,11 +365,11 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to do close the argument
+     * Method to close the argument
      *
      * @return the next state
      */
-    private State doClose() {
+    private State doCloseArgument() {
         if (argument instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) argument).close();
@@ -387,7 +387,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
      *
      * @return the next state
      */
-    private State doCleanup() {
+    private State doCleanupArgumentContext() {
         Map<String, Object> map = argumentContext.getMap();
 
         Set<Map.Entry<String, Object>> entrySet = map.entrySet();
