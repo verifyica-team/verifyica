@@ -124,6 +124,8 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
                 new KafkaTestEnvironment("apache/kafka:3.8.1"),
                 new KafkaTestEnvironment("apache/kafka-native:3.8.1"),
                 new KafkaTestEnvironment("apache/kafka:3.9.0"),
-                new KafkaTestEnvironment("apache/kafka-native:3.9.0"));
+                new KafkaTestEnvironment("apache/kafka-native:3.9.0"),
+                new KafkaTestEnvironment("apache/kafka:4.0.0"),
+                new KafkaTestEnvironment("apache/kafka-native:4.0.0"));
     }
 }
