@@ -123,7 +123,7 @@ public class Repeater {
      *
      * @throws Throwable Throwable
      */
-    public void test() throws Throwable {
+    public void run() throws Throwable {
         Throwable throwable = null;
 
         for (int i = 1; i <= iterations; i++) {

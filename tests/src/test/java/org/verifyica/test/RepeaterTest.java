@@ -57,7 +57,7 @@ public class RepeaterTest {
                 })
                 .after(() -> afterEach(argumentContext))
                 .throttle(new Repeater.FixedThrottle(100))
-                .test();
+                .run();
     }
 
     @Verifyica.Test
@@ -84,7 +84,7 @@ public class RepeaterTest {
                     }
                 })
                 .throttle(new Repeater.ExponentialBackoffThrottle(10000))
-                .test());
+                .run());
     }
 
     public void afterEach(ArgumentContext argumentContext) {
