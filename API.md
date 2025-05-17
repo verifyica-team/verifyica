@@ -98,4 +98,4 @@ It can only be used in methods annotated with...
 
 ---
 
-Copyright (C) 2024-present Verifyica project authors and contributors
+Copyright (C) Verifyica project authors and contributors
