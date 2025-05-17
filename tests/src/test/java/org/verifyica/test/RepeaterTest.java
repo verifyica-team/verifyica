@@ -44,7 +44,7 @@ public class RepeaterTest {
     public void test1(ArgumentContext argumentContext) throws Throwable {
         new Repeater(10)
                 .before(() -> beforeEach(argumentContext))
-                .execute(() -> {
+                .test(() -> {
                     assertThat(argumentContext).isNotNull();
                     assertThat(argumentContext.getMap()).isNotNull();
                     assertThat(argumentContext.getTestArgument()).isNotNull();
@@ -57,14 +57,14 @@ public class RepeaterTest {
                 })
                 .after(() -> afterEach(argumentContext))
                 .throttle(new Repeater.FixedThrottle(100))
-                .execute();
+                .test();
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> new Repeater(10)
                 .before(() -> beforeEach(argumentContext))
-                .execute(() -> {
+                .test(() -> {
                     assertThat(argumentContext).isNotNull();
                     assertThat(argumentContext.getMap()).isNotNull();
                     assertThat(argumentContext.getTestArgument()).isNotNull();
@@ -84,7 +84,7 @@ public class RepeaterTest {
                     }
                 })
                 .throttle(new Repeater.ExponentialBackoffThrottle(10000))
-                .execute());
+                .test());
     }
 
     public void afterEach(ArgumentContext argumentContext) {

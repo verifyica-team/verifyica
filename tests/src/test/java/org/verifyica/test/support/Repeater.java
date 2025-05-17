@@ -88,7 +88,7 @@ public class Repeater {
      * @param throwableRunnable throwableRunnable
      * @return the Repeater
      */
-    public Repeater execute(ThrowableRunnable throwableRunnable) {
+    public Repeater test(ThrowableRunnable throwableRunnable) {
         test = throwableRunnable;
 
         return this;
@@ -123,7 +123,7 @@ public class Repeater {
      *
      * @throws Throwable Throwable
      */
-    public void execute() throws Throwable {
+    public void test() throws Throwable {
         Throwable throwable = null;
 
         for (int i = 1; i <= iterations; i++) {
