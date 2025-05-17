@@ -38,6 +38,7 @@ public class Repeater {
         if (iterations < 1) {
             throw new IllegalArgumentException(format("iterations [%d] is less than 1", iterations));
         }
+
         this.iterations = iterations;
     }
 
@@ -45,12 +46,13 @@ public class Repeater {
      * Method to set a throttle time between tests
      *
      * @param milliseconds milliseconds
-     * @return this
+     * @return the Repeater
      */
     public Repeater throttle(long milliseconds) {
         if (milliseconds >= 0) {
             throttle = new FixedThrottle(milliseconds);
         }
+
         return this;
     }
 
@@ -58,12 +60,13 @@ public class Repeater {
      * Method to set a Throwable to throttle time between tests
      *
      * @param throttle throttle
-     * @return this
+     * @return the Repeater
      */
     public Repeater throttle(Throttle throttle) {
         if (throttle != null) {
             this.throttle = throttle;
         }
+
         return this;
     }
 
@@ -71,10 +74,11 @@ public class Repeater {
      * Method to run code before a test
      *
      * @param throwableRunnable throwableRunnable
-     * @return this
+     * @return the Repeater
      */
     public Repeater before(ThrowableRunnable throwableRunnable) {
         beforeEach = throwableRunnable;
+
         return this;
     }
 
@@ -82,10 +86,11 @@ public class Repeater {
      * Method to run the test. If code ran before the test fails, the test will be skipped.
      *
      * @param throwableRunnable throwableRunnable
-     * @return this
+     * @return the Repeater
      */
     public Repeater execute(ThrowableRunnable throwableRunnable) {
         test = throwableRunnable;
+
         return this;
     }
 
@@ -93,10 +98,11 @@ public class Repeater {
      * Method to run code after the test. Always runs.
      *
      * @param throwableRunnable throwableRunnable
-     * @return this
+     * @return the Repeater
      */
     public Repeater after(ThrowableRunnable throwableRunnable) {
         afterEach = throwableRunnable;
+
         return this;
     }
 
@@ -104,26 +110,35 @@ public class Repeater {
      * Method to set a consumer
      *
      * @param throwableConsumer throwableConsumer
-     * @throws Throwable Throwable
-     * @return this
+     * @return the Repeater
      */
-    public Repeater accept(ThrowableConsumer throwableConsumer) throws Throwable {
+    public Repeater accept(ThrowableConsumer throwableConsumer) {
         this.throwableConsumer = throwableConsumer;
+
         return this;
     }
 
+    /**
+     * Method to execute the test
+     *
+     * @throws Throwable Throwable
+     */
     public void execute() throws Throwable {
         Throwable throwable = null;
 
         for (int i = 1; i <= iterations; i++) {
             try {
-                beforeEach.run();
+                if (beforeEach != null) {
+                    beforeEach.run();
+                }
                 test.run();
             } catch (Throwable t) {
                 throwable = t;
             } finally {
                 try {
-                    afterEach.run();
+                    if (afterEach != null) {
+                        afterEach.run();
+                    }
                 } catch (Throwable t) {
                     throwable = throwable != null ? throwable : t;
                 }
@@ -154,7 +169,9 @@ public class Repeater {
         }
     }
 
-    /** Method to abort a test */
+    /**
+     * Method to abort a test
+     */
     public static void abort() {
         throw new RuntimeException("4dbf35e7-415c-4e66-a61e-f6a7057e382e");
     }
@@ -171,25 +188,33 @@ public class Repeater {
         }
     }
 
-    /** Interface to define code */
+    /**
+     * Interface to define code
+     */
     public interface ThrowableRunnable {
 
         void run() throws Throwable;
     }
 
-    /** Interface to consume the result */
+    /**
+     * Interface to consume the result
+     */
     public interface ThrowableConsumer {
 
         void accept(int counter, Throwable throwable) throws Throwable;
     }
 
-    /** Interface to implement a Throttle */
+    /**
+     * Interface to implement a Throttle
+     */
     public interface Throttle {
 
         void throttle();
     }
 
-    /** Class to implement a fixed throttle */
+    /**
+     * Class to implement a fixed throttle
+     */
     public static class FixedThrottle implements Throttle {
 
         private final long milliseconds;
@@ -213,7 +238,9 @@ public class Repeater {
         }
     }
 
-    /** Class to implement an exponential backoff throttle */
+    /**
+     * Class to implement an exponential backoff throttle
+     */
     public static class ExponentialBackoffThrottle implements Throttle {
 
         private final long maxMilliseconds;
