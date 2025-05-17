@@ -119,7 +119,7 @@ public class Repeater {
     }
 
     /**
-     * Method to execute the test
+     * Method to run the test
      *
      * @throws Throwable Throwable
      */
