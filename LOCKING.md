@@ -47,4 +47,4 @@ try {
 
 ---
 
-Copyright (C) 2024-present Verifyica project authors and contributors
+Copyright (C) Verifyica project authors and contributors
