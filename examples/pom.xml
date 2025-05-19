@@ -7,7 +7,7 @@
 
     <groupId>org.verifyica</groupId>
     <artifactId>verfiyica-examples</artifactId>
-    <version>0.11.0-post</version>
+    <version>0.12.0</version>
     <packaging>jar</packaging>
     <name>Verifyica Examples</name>
 
@@ -22,13 +22,13 @@
         <dependency>
             <groupId>org.verifyica</groupId>
             <artifactId>verifyica-api</artifactId>
-            <version>0.11.0-post</version>
+            <version>0.12.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.verifyica</groupId>
             <artifactId>verifyica-engine</artifactId>
-            <version>0.11.0-post</version>
+            <version>0.12.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -150,7 +150,7 @@
             <plugin>
                 <groupId>org.verifyica</groupId>
                 <artifactId>verifyica-maven-plugin</artifactId>
-                <version>0.11.0-post</version>
+                <version>0.12.0</version>
                 <executions>
                     <execution>
                         <phase>integration-test</phase>
