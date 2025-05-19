@@ -63,7 +63,7 @@ import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.exception.TestClassDefinitionException;
 import org.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.verifyica.engine.listener.StatusEngineExecutionListener;
-import org.verifyica.engine.listener.SummaryEngineExecutionListener;
+import org.verifyica.engine.listener.SummaryEngineExecutionListener2;
 import org.verifyica.engine.listener.TracingEngineExecutionListener;
 import org.verifyica.engine.support.TimestampSupport;
 
@@ -103,9 +103,8 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
             .append("Verifyica ")
             .append(VerifyicaTestEngine.staticGetVersion())
-            .append(" (")
+            .append(" @ ")
             .append(TimestampSupport.now())
-            .append(")")
             .append(AnsiColor.NONE)
             .build();
 
@@ -113,14 +112,13 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
             .append("Verifyica ")
             .append(VerifyicaTestEngine.staticGetVersion())
-            .append(" Summary (")
+            .append(" Summary @ ")
             .append(TimestampSupport.now())
-            .append(")")
             .append(AnsiColor.NONE)
             .build();
 
-    private static final String SEPARATOR = AnsiColor.TEXT_WHITE_BRIGHT.wrap(
-            "------------------------------------------------------------------------");
+    private static final String SEPARATOR =
+            AnsiColor.TEXT_WHITE_BRIGHT.wrap("-----------------------------------------------");
 
     private static final String INFO = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE)
@@ -338,7 +336,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         ChainedEngineExecutionListener chainedEngineExecutionListener = new ChainedEngineExecutionListener(
                 new TracingEngineExecutionListener(),
                 new StatusEngineExecutionListener(),
-                new SummaryEngineExecutionListener());
+                new SummaryEngineExecutionListener2());
 
         ExecutionRequest executionRequest = new ExecutionRequest(
                 testDescriptor,
