@@ -18,6 +18,8 @@ package org.verifyica.test.support;
 
 import static java.lang.String.format;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /** Class to implement Repeater */
 @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 public class Repeater {
@@ -239,6 +241,48 @@ public class Repeater {
     }
 
     /**
+     * Class to implement a random throttle
+     */
+    public static class RandomThrottle implements Throttle {
+
+        private final long minMilliseconds;
+        private final long maxMilliseconds;
+
+        /**
+         * Constructor
+         *
+         * @param minMilliseconds the minimum number of milliseconds to throttle
+         * @param maxMilliseconds the maximum number of milliseconds to throttle
+         */
+        public RandomThrottle(long minMilliseconds, long maxMilliseconds) {
+            if (minMilliseconds < 0) {
+                throw new IllegalArgumentException("minMilliseconds must be >= 0");
+            }
+
+            if (maxMilliseconds < minMilliseconds) {
+                throw new IllegalArgumentException("maxMilliseconds must be >= minMilliseconds");
+            }
+
+            this.minMilliseconds = minMilliseconds;
+            this.maxMilliseconds = maxMilliseconds;
+        }
+
+        @Override
+        public void throttle() {
+            long sleep = (minMilliseconds == maxMilliseconds)
+                    ? minMilliseconds
+                    : ThreadLocalRandom.current().nextLong(minMilliseconds, maxMilliseconds + 1);
+            if (sleep > 0) {
+                try {
+                    Thread.sleep(sleep);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+
+    /**
      * Class to implement an exponential backoff throttle
      */
     public static class ExponentialBackoffThrottle implements Throttle {
@@ -249,7 +293,7 @@ public class Repeater {
         /**
          * Constructor
          *
-         * @param maxMilliseconds maxMilliseconds
+         * @param maxMilliseconds the maximum number of milliseconds to back off
          */
         public ExponentialBackoffThrottle(long maxMilliseconds) {
             this.maxMilliseconds = maxMilliseconds;
