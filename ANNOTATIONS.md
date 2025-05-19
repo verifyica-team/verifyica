@@ -52,7 +52,7 @@ Test argument parallelism (parallel test argument testing) can be defined with a
 - If the `@Verifyica.ArgumentSupplier` method returns a `null` object, the test class will be ignored/not reported.
 
 
-- `Argument.EMTPY` can be used when the argument is not being used
+- `Argument.EMPTY` can be used when the argument is not being used
   - The payload for `Argument.EMPTY` is `null`
 
 Examples:

@@ -28,7 +28,7 @@ import org.verifyica.engine.common.Precondition;
 @SuppressWarnings("PMD.UselessParentheses")
 public final class TimestampSupport {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     /** Format */
     public enum Format {
@@ -149,7 +149,7 @@ public final class TimestampSupport {
      * @return the return value
      */
     public static String now() {
-        return LocalDateTime.now().format(DATE_TIME_FORMATER);
+        return LocalDateTime.now().format(DATE_TIME_FORMATTER);
     }
 
     /**
