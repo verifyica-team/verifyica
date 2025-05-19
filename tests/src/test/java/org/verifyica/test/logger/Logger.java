@@ -152,7 +152,7 @@ public class Logger {
      * @param objects objects
      */
     public void trace(String format, Object... objects) {
-        Precondition.notBlank(format, "format is null", "format is blank");
+        Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isTraceEnabled()) {
             log(System.out, Level.TRACE, format, objects);
@@ -177,7 +177,7 @@ public class Logger {
      * @param objects objects
      */
     public void debug(String format, Object... objects) {
-        Precondition.notBlank(format, "format is null", "format is blank");
+        Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isDebugEnabled()) {
             log(System.out, Level.DEBUG, format, objects);
@@ -202,7 +202,7 @@ public class Logger {
      * @param objects objects
      */
     public void info(String format, Object... objects) {
-        Precondition.notBlank(format, "format is null", "format is blank");
+        Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isInfoEnabled()) {
             log(System.out, Level.INFO, format, objects);
@@ -227,7 +227,7 @@ public class Logger {
      * @param objects objects
      */
     public void warn(String format, Object... objects) {
-        Precondition.notBlank(format, "format is null", "format is blank");
+        Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isWarnEnabled()) {
             log(System.out, Level.WARN, format, objects);
@@ -252,7 +252,7 @@ public class Logger {
      * @param objects objects
      */
     public void error(String format, Object... objects) {
-        Precondition.notBlank(format, "format is null", "format is blank");
+        Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isErrorEnabled()) {
             log(System.err, Level.ERROR, format, objects);
