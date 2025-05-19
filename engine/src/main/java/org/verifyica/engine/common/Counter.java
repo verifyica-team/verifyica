@@ -79,9 +79,7 @@ public class Counter {
     }
 
     /**
-     * Method to increment the counter by a specified value.
-     * <p/>
-     * The value must be greater than or equal to 0.
+     * Method to increment the counter by a specified value. The value must be greater than or equal to 0.
      *
      * @param value the value to increment by
      */
