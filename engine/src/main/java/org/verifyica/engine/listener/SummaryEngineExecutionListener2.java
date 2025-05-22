@@ -57,8 +57,8 @@ public class SummaryEngineExecutionListener2 implements EngineExecutionListener 
 
     private static final String COMPACT_SUMMARY_BANNER = AnsiColor.TEXT_WHITE_BRIGHT.wrap("Compact Summary");
 
-    private static final String SEPARATOR =
-            AnsiColor.TEXT_WHITE_BRIGHT.wrap("-------------------------------------------------------");
+    private static final String SEPARATOR = AnsiColor.TEXT_WHITE_BRIGHT.wrap(
+            "------------------------------------------------------------------------");
 
     private static final String INFO = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE)
@@ -186,17 +186,19 @@ public class SummaryEngineExecutionListener2 implements EngineExecutionListener 
 
             println(INFO
                     + AnsiColor.TEXT_WHITE_BRIGHT.wrap(
-                            format("%-11s | %11s | %11s | %11s |", "Status", "Classes", "Arguments", "Methods")));
-            println(INFO + AnsiColor.TEXT_WHITE_BRIGHT.wrap("------------+-------------+-------------+-------------+"));
+                            format("%-16s | %15s | %15s | %15s |", "Status", "Classes", "Arguments", "Methods")));
+            println(INFO
+                    + AnsiColor.TEXT_WHITE_BRIGHT.wrap(
+                            "-----------------+-----------------+-----------------+-----------------+"));
 
             for (String status : statuses) {
-                print(INFO + AnsiColor.TEXT_WHITE_BRIGHT.wrap(format("%-11s |", capitalize(status))));
+                print(INFO + AnsiColor.TEXT_WHITE_BRIGHT.wrap(format("%-16s |", capitalize(status))));
 
                 for (String group : groups) {
                     String key = format("%s.%s", group, status);
                     Counter counter = counterMap.get(key);
                     String val = (counter != null) ? String.valueOf(counter.count()) : "-";
-                    print(AnsiColor.TEXT_WHITE_BRIGHT.wrap(format(" %11s |", val)));
+                    print(AnsiColor.TEXT_WHITE_BRIGHT.wrap(format(" %15s |", val)));
 
                     if ("failed".equals(status) && counter != null) {
                         failureCount += counter.count();

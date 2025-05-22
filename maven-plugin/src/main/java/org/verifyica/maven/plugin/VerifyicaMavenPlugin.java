@@ -117,8 +117,8 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             .append(AnsiColor.NONE)
             .build();
 
-    private static final String SEPARATOR =
-            AnsiColor.TEXT_WHITE_BRIGHT.wrap("-----------------------------------------------");
+    private static final String SEPARATOR = AnsiColor.TEXT_WHITE_BRIGHT.wrap(
+            "------------------------------------------------------------------------");
 
     private static final String INFO = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE)
