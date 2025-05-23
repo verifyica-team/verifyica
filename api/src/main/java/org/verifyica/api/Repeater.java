@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.test.support;
+package org.verifyica.api;
 
 import static java.lang.String.format;
 
@@ -26,15 +26,15 @@ public class Repeater {
 
     private final int iterations;
     private Throttle throttle;
-    private ThrowableRunnable beforeEach;
+    private ThrowableRunnable before;
     private ThrowableRunnable test;
-    private ThrowableRunnable afterEach;
+    private ThrowableRunnable after;
     private ThrowableConsumer throwableConsumer;
 
     /**
      * Constructor
      *
-     * @param iterations iterations
+     * @param iterations the number of iterations to run the test
      */
     public Repeater(int iterations) {
         if (iterations < 1) {
@@ -45,9 +45,9 @@ public class Repeater {
     }
 
     /**
-     * Method to set a throttle time between tests
+     * Method to set a fixed throttle time between tests
      *
-     * @param milliseconds milliseconds
+     * @param milliseconds fixed throttle time in milliseconds
      * @return the Repeater
      */
     public Repeater throttle(long milliseconds) {
@@ -61,12 +61,12 @@ public class Repeater {
     /**
      * Method to set a Throwable to throttle time between tests
      *
-     * @param throttle throttle
+     * @param throttle the throttle
      * @return the Repeater
      */
     public Repeater throttle(Throttle throttle) {
-        if (throttle != null) {
-            this.throttle = throttle;
+        if (throttle == null) {
+            throw new IllegalArgumentException("throttle is null");
         }
 
         return this;
@@ -79,7 +79,11 @@ public class Repeater {
      * @return the Repeater
      */
     public Repeater before(ThrowableRunnable throwableRunnable) {
-        beforeEach = throwableRunnable;
+        if (throwableRunnable == null) {
+            throw new IllegalArgumentException("throwableRunnable is null");
+        }
+
+        before = throwableRunnable;
 
         return this;
     }
@@ -91,6 +95,10 @@ public class Repeater {
      * @return the Repeater
      */
     public Repeater test(ThrowableRunnable throwableRunnable) {
+        if (throwableRunnable == null) {
+            throw new IllegalArgumentException("throwableRunnable is null");
+        }
+
         test = throwableRunnable;
 
         return this;
@@ -103,7 +111,11 @@ public class Repeater {
      * @return the Repeater
      */
     public Repeater after(ThrowableRunnable throwableRunnable) {
-        afterEach = throwableRunnable;
+        if (throwableRunnable == null) {
+            throw new IllegalArgumentException("throwableRunnable is null");
+        }
+
+        after = throwableRunnable;
 
         return this;
     }
@@ -115,37 +127,51 @@ public class Repeater {
      * @return the Repeater
      */
     public Repeater accept(ThrowableConsumer throwableConsumer) {
+        if (throwableConsumer == null) {
+            throw new IllegalArgumentException("throwableConsumer is null");
+        }
+
         this.throwableConsumer = throwableConsumer;
 
         return this;
     }
 
     /**
-     * Method to run the test
+     * Method to execute the repeater
      *
      * @throws Throwable Throwable
      */
-    public void run() throws Throwable {
+    public void execute() throws Throwable {
+        if (test == null) {
+            throw new IllegalArgumentException("test is null");
+        }
+
         Throwable throwable = null;
 
+        // Run the test
         for (int i = 1; i <= iterations; i++) {
             try {
-                if (beforeEach != null) {
-                    beforeEach.run();
+                // If we have a before, run it
+                if (before != null) {
+                    before.run();
                 }
+
+                // Run the test
                 test.run();
             } catch (Throwable t) {
                 throwable = t;
-            } finally {
+            }
+
+            // If we have an after, run it
+            if (after != null) {
                 try {
-                    if (afterEach != null) {
-                        afterEach.run();
-                    }
+                    after.run();
                 } catch (Throwable t) {
                     throwable = throwable != null ? throwable : t;
                 }
             }
 
+            // If we have a Throwable consumer, call it
             if (throwableConsumer != null) {
                 try {
                     throwableConsumer.accept(i, throwable);
@@ -161,7 +187,8 @@ public class Repeater {
                 throw throwable;
             }
 
-            if (i < iterations && throttle != null) {
+            // If we have a throttle, throttle the test
+            if (throttle != null && i < iterations) {
                 throttle.throttle();
             }
         }
@@ -195,6 +222,11 @@ public class Repeater {
      */
     public interface ThrowableRunnable {
 
+        /**
+         * Method to run the code
+         *
+         * @throws Throwable Throwable
+         */
         void run() throws Throwable;
     }
 
@@ -203,6 +235,13 @@ public class Repeater {
      */
     public interface ThrowableConsumer {
 
+        /**
+         * Method to accept and process a Throwable
+         *
+         * @param counter the counter
+         * @param throwable the throwable
+         * @throws Throwable Throwable
+         */
         void accept(int counter, Throwable throwable) throws Throwable;
     }
 
@@ -211,6 +250,9 @@ public class Repeater {
      */
     public interface Throttle {
 
+        /**
+         * Method to throttle the test
+         */
         void throttle();
     }
 
