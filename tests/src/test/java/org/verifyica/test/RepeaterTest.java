@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.Repeater;
 import org.verifyica.api.Verifyica;
-import org.verifyica.test.support.Repeater;
 
 @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 public class RepeaterTest {
@@ -31,8 +31,8 @@ public class RepeaterTest {
         return "test";
     }
 
-    public void beforeEach(ArgumentContext argumentContext) {
-        System.out.println("beforeEach()");
+    public void before(ArgumentContext argumentContext) {
+        System.out.println("before()");
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
@@ -43,7 +43,7 @@ public class RepeaterTest {
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws Throwable {
         new Repeater(10)
-                .before(() -> beforeEach(argumentContext))
+                .before(() -> before(argumentContext))
                 .test(() -> {
                     assertThat(argumentContext).isNotNull();
                     assertThat(argumentContext.getMap()).isNotNull();
@@ -55,15 +55,15 @@ public class RepeaterTest {
                             argumentContext.getTestArgument(),
                             argumentContext.getTestArgument().getPayload());
                 })
-                .after(() -> afterEach(argumentContext))
+                .after(() -> after(argumentContext))
                 .throttle(new Repeater.FixedThrottle(100))
-                .run();
+                .execute();
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws Throwable {
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> new Repeater(10)
-                .before(() -> beforeEach(argumentContext))
+                .before(() -> before(argumentContext))
                 .test(() -> {
                     assertThat(argumentContext).isNotNull();
                     assertThat(argumentContext.getMap()).isNotNull();
@@ -77,18 +77,18 @@ public class RepeaterTest {
 
                     throw new RuntimeException("Forced");
                 })
-                .after(() -> afterEach(argumentContext))
+                .after(() -> after(argumentContext))
                 .accept((counter, throwable) -> {
                     if (counter >= 10) {
                         Repeater.rethrow(throwable);
                     }
                 })
                 .throttle(new Repeater.ExponentialBackoffThrottle(10000))
-                .run());
+                .execute());
     }
 
-    public void afterEach(ArgumentContext argumentContext) {
-        System.out.println("afterEach()");
+    public void after(ArgumentContext argumentContext) {
+        System.out.println("after()");
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
