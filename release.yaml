@@ -2,6 +2,8 @@ pipeline:
   name: release
   jobs:
     - name: release
+      if: |
+        "${{ release }}" != ''
       enabled: true
       steps:
         - name: check for release property
@@ -40,3 +42,11 @@ pipeline:
             git commit -s -m "Prepare for development"
         - name: git push
           run: git push
+    - name: error
+      if: |
+        "${{ release }}" == ''
+      steps:
+        - name: error
+          run: |
+            echo "\"release\" variable is required"
+            exit 1
