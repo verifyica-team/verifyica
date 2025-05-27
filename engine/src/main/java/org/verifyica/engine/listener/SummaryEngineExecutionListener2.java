@@ -18,6 +18,7 @@ package org.verifyica.engine.listener;
 
 import static java.lang.String.format;
 
+import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
@@ -175,6 +176,7 @@ public class SummaryEngineExecutionListener2 implements EngineExecutionListener 
             stopwatch.stop();
 
             Duration elapsedTime = stopwatch.elapsedTime();
+
             long failureCount = 0;
 
             println(INFO + SEPARATOR);
@@ -191,14 +193,16 @@ public class SummaryEngineExecutionListener2 implements EngineExecutionListener 
                     + AnsiColor.TEXT_WHITE_BRIGHT.wrap(
                             "-----------------+-----------------+-----------------+-----------------+"));
 
+            NumberFormat numberFormat = NumberFormat.getIntegerInstance();
+
             for (String status : statuses) {
                 print(INFO + AnsiColor.TEXT_WHITE_BRIGHT.wrap(format("%-16s |", capitalize(status))));
 
                 for (String group : groups) {
                     String key = format("%s.%s", group, status);
                     Counter counter = counterMap.get(key);
-                    String val = (counter != null) ? String.valueOf(counter.count()) : "-";
-                    print(AnsiColor.TEXT_WHITE_BRIGHT.wrap(format(" %15s |", val)));
+                    String count = (counter != null) ? numberFormat.format(counter.count()) : "-";
+                    print(AnsiColor.TEXT_WHITE_BRIGHT.wrap(format(" %15s |", count)));
 
                     if ("failed".equals(status) && counter != null) {
                         failureCount += counter.count();
