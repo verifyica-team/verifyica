@@ -20,37 +20,98 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import org.junit.jupiter.api.Order;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 public class TemporaryDirectoryTest {
 
     @Test
-    @Order(1)
-    public void testCreateTemporaryDirectory() throws IOException {
-        TemporaryDirectory temporaryDirectory = new TemporaryDirectory();
+    public void testCreateTemporaryDirectoryAndFile() throws IOException, InterruptedException {
+        String permissions = "rwx------";
 
-        assertThat(temporaryDirectory.path().toFile()).exists();
-        assertThat(temporaryDirectory.toPath().toFile()).exists();
+        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+
+        assertThat(temporaryDirectory.toPath()).exists();
         assertThat(temporaryDirectory.toFile()).exists();
-        assertThat(temporaryDirectory.toPath().toFile()).isDirectory();
+        assertThat(temporaryDirectory.toPath()).isDirectory();
         assertThat(temporaryDirectory.toFile()).isDirectory();
+        assertThat(getLinuxPermissionString(temporaryDirectory.toPath())).isEqualTo(permissions);
+        assertThat(getLinuxPermissionString(temporaryDirectory.toFile())).isEqualTo(permissions);
 
-        File file = temporaryDirectory.newFile();
+        File temporaryFile = temporaryDirectory.newFile();
 
-        assertThat(file).exists();
-        assertThat(file).isFile();
+        assertThat(temporaryFile).exists();
+        assertThat(temporaryFile).isFile();
+        assertThat(temporaryFile).canRead();
+        assertThat(temporaryFile).canWrite();
+
+        assertThat(getLinuxPermissionString(temporaryFile)).isEqualTo(permissions);
     }
 
     @Test
-    @Order(2)
-    public void testCreateTemporaryDirectoryAndFile() throws IOException {
-        TemporaryDirectory temporaryDirectory = new TemporaryDirectory();
+    public void testCreateTemporaryDirectoryAndFileWithPermissions() throws IOException, InterruptedException {
+        String permissions = "rwxr-xr-x";
 
-        assertThat(temporaryDirectory.path().toFile()).exists();
-        assertThat(temporaryDirectory.toPath().toFile()).exists();
+        Set<PosixFilePermission> posixFilePermissionsSet = PosixFilePermissions.fromString(permissions);
+
+        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory(posixFilePermissionsSet);
+
+        assertThat(temporaryDirectory.toPath()).exists();
         assertThat(temporaryDirectory.toFile()).exists();
-        assertThat(temporaryDirectory.toPath().toFile()).isDirectory();
+        assertThat(temporaryDirectory.toPath()).isDirectory();
         assertThat(temporaryDirectory.toFile()).isDirectory();
+        assertThat(getLinuxPermissionString(temporaryDirectory.toPath())).isEqualTo(permissions);
+        assertThat(getLinuxPermissionString(temporaryDirectory.toPath().toFile()))
+                .isEqualTo(permissions);
+
+        File temporaryFile = temporaryDirectory.newFile();
+
+        assertThat(temporaryFile).exists();
+        assertThat(temporaryFile).isFile();
+        assertThat(temporaryFile).canRead();
+        assertThat(temporaryFile).canWrite();
+
+        assertThat(getLinuxPermissionString(temporaryFile)).isEqualTo(permissions);
+
+        permissions = "r--r--r--";
+
+        posixFilePermissionsSet = PosixFilePermissions.fromString(permissions);
+
+        temporaryFile = temporaryDirectory.newFile(posixFilePermissionsSet);
+
+        assertThat(temporaryFile).exists();
+        assertThat(temporaryFile).isFile();
+        assertThat(temporaryFile).canRead();
+        assertThat(temporaryFile.canWrite()).isFalse();
+
+        assertThat(getLinuxPermissionString(temporaryFile)).isEqualTo(permissions);
+    }
+
+    private static String getLinuxPermissionString(File file) throws IOException {
+        return getLinuxPermissionString(file.toPath());
+    }
+
+    private static String getLinuxPermissionString(Path path) throws IOException {
+        Set<PosixFilePermission> perms = Files.getPosixFilePermissions(path);
+
+        StringBuilder stringBuilder = new StringBuilder(9);
+
+        stringBuilder.append(perms.contains(PosixFilePermission.OWNER_READ) ? "r" : "-");
+        stringBuilder.append(perms.contains(PosixFilePermission.OWNER_WRITE) ? "w" : "-");
+        stringBuilder.append(perms.contains(PosixFilePermission.OWNER_EXECUTE) ? "x" : "-");
+
+        stringBuilder.append(perms.contains(PosixFilePermission.GROUP_READ) ? "r" : "-");
+        stringBuilder.append(perms.contains(PosixFilePermission.GROUP_WRITE) ? "w" : "-");
+        stringBuilder.append(perms.contains(PosixFilePermission.GROUP_EXECUTE) ? "x" : "-");
+
+        stringBuilder.append(perms.contains(PosixFilePermission.OTHERS_READ) ? "r" : "-");
+        stringBuilder.append(perms.contains(PosixFilePermission.OTHERS_WRITE) ? "w" : "-");
+        stringBuilder.append(perms.contains(PosixFilePermission.OTHERS_EXECUTE) ? "x" : "-");
+
+        return stringBuilder.toString();
     }
 }

@@ -23,109 +23,40 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.security.SecureRandom;
+import java.util.HashSet;
 import java.util.Objects;
-import java.util.UUID;
+import java.util.Set;
 
 /** Class to implement TemporaryDirectory */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class TemporaryDirectory implements AutoCloseable {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
+    private static final String DEFAULT_DIRECTORY_PREFIX = "verifyica-tmp-";
 
-    private static final String DEFAULT_PREFIX = "verifyica-temp-";
+    private static final Set<PosixFilePermission> DEFAULT_POSIX_FILE_PERMISSIONS =
+            PosixFilePermissions.fromString("rwx------");
 
-    private Path path;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    /** Enum to implement CleanupMode */
-    public enum CleanupMode {
-        /** Always delete */
-        ALWAYS,
-        /** Never delete */
-        NEVER
-    }
+    private final Set<PosixFilePermission> posixFilePermissions;
+    private final Path path;
 
     /**
      * Constructor
      *
+     * @param posixFilePermissions permissions to set for the temporary directory
      * @throws IOException IOException if the temporary directory can't be created
      */
-    public TemporaryDirectory() throws IOException {
-        initialize(DEFAULT_PREFIX, CleanupMode.ALWAYS);
-    }
+    private TemporaryDirectory(Set<PosixFilePermission> posixFilePermissions) throws IOException {
+        this.path = Files.createTempDirectory(DEFAULT_DIRECTORY_PREFIX);
+        this.posixFilePermissions = new HashSet<>(posixFilePermissions);
 
-    /**
-     * Constructor
-     *
-     * @param cleanupMode cleanupMode
-     *
-     * @throws IOException IOException if the temporary directory can't be created
-     */
-    public TemporaryDirectory(CleanupMode cleanupMode) throws IOException {
-        if (cleanupMode == null) {
-            throw new IllegalArgumentException("cleanupMode is null");
-        }
+        Files.setPosixFilePermissions(path, posixFilePermissions);
 
-        initialize(DEFAULT_PREFIX, cleanupMode);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param prefix prefix
-     * @throws IOException IOException if the temporary directory can't be created
-     */
-    public TemporaryDirectory(String prefix) throws IOException {
-        initialize(prefix, CleanupMode.ALWAYS);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param prefix prefix
-     * @param cleanupMode cleanupMode
-     * @throws IOException IOException if the temporary directory can't be created
-     */
-    public TemporaryDirectory(String prefix, CleanupMode cleanupMode) throws IOException {
-        initialize(prefix, cleanupMode);
-    }
-
-    /**
-     * Method to initialize the temporary directory
-     *
-     * @param prefix prefix
-     * @param cleanupMode cleanupMode
-     * @throws IOException IOException
-     */
-    private void initialize(String prefix, CleanupMode cleanupMode) throws IOException {
-        if (prefix == null) {
-            throw new IllegalArgumentException("prefix is null");
-        }
-
-        if (prefix.trim().isEmpty()) {
-            throw new IllegalArgumentException("prefix is blank");
-        }
-
-        if (cleanupMode == null) {
-            throw new IllegalArgumentException("cleanupMode is null");
-        }
-
-        path = Files.createTempDirectory(prefix.trim() + UUID.randomUUID());
-
-        if (cleanupMode == CleanupMode.ALWAYS) {
-            registerShutdownHook(path);
-        }
-    }
-
-    /**
-     * Get the temporary directory File
-     *
-     * @return the temporary directory File
-     */
-    public File file() {
-        return new File(path.toString());
+        registerShutdownHook(path);
     }
 
     /**
@@ -134,16 +65,7 @@ public class TemporaryDirectory implements AutoCloseable {
      * @return the temporary directory File
      */
     public File toFile() {
-        return file();
-    }
-
-    /**
-     * Get the temporary directory Path
-     *
-     * @return the temporary directory Path
-     */
-    public Path path() {
-        return toPath();
+        return path.toFile();
     }
 
     /**
@@ -170,25 +92,39 @@ public class TemporaryDirectory implements AutoCloseable {
     }
 
     /**
-     * Method to create a new file in the temporary directory
+     * Method to create a new file in the temporary directory, using the permissions set for the temporary directory
      *
      * @return the new file
      * @throws IOException IOException
      */
     public File newFile() throws IOException {
-        return newFile(UUID.randomUUID().toString());
+        return newFile(posixFilePermissions);
     }
 
     /**
-     * Method to create a new file in the temporary directory
+     * Method to create a new file in the temporary directory with specified permissions
      *
-     * @param name name
+     * @param posixFilePermissions the permissions to set for the new file
      * @return the new file
-     * @throws IOException IOException
+     * @throws IOException If an I/O error occurs
      */
-    public File newFile(String name) throws IOException {
-        File file = new File(path.toFile(), name);
-        file.createNewFile();
+    public File newFile(Set<PosixFilePermission> posixFilePermissions) throws IOException {
+        if (posixFilePermissions == null) {
+            throw new IllegalArgumentException("posixFilePermissions is null");
+        }
+
+        if (posixFilePermissions.isEmpty()) {
+            throw new IllegalArgumentException("posixFilePermissions is empty");
+        }
+
+        File file;
+
+        do {
+            file = new File(path.toFile(), generateRandomId());
+        } while (!file.createNewFile());
+
+        Files.setPosixFilePermissions(file.toPath(), posixFilePermissions);
+
         return file;
     }
 
@@ -229,6 +165,44 @@ public class TemporaryDirectory implements AutoCloseable {
                 return FileVisitResult.CONTINUE;
             }
         });
+    }
+
+    /**
+     * Method to create a new temporary directory with default permissions
+     *
+     * @return a new TemporaryDirectory
+     * @throws IOException If an I/O error occurs
+     */
+    public static TemporaryDirectory newDirectory() throws IOException {
+        return newDirectory(DEFAULT_POSIX_FILE_PERMISSIONS);
+    }
+
+    /**
+     * Method to create a new temporary directory with specified POSIX file permissions
+     *
+     * @param posixFilePermissions the POSIX file permissions to set for the temporary directory
+     * @return a new TemporaryDirectory
+     * @throws IOException If an I/O error occurs
+     */
+    public static TemporaryDirectory newDirectory(Set<PosixFilePermission> posixFilePermissions) throws IOException {
+        if (posixFilePermissions == null) {
+            throw new IllegalArgumentException("posixFilePermissions is null");
+        }
+
+        if (posixFilePermissions.isEmpty()) {
+            throw new IllegalArgumentException("posixFilePermissions is empty");
+        }
+
+        return new TemporaryDirectory(posixFilePermissions);
+    }
+
+    /**
+     * Method to generate a random id
+     *
+     * @return a random id
+     */
+    private static String generateRandomId() {
+        return String.valueOf(Long.toUnsignedString(SECURE_RANDOM.nextLong()));
     }
 
     /**
