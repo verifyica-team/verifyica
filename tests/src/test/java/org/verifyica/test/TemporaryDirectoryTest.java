@@ -19,21 +19,17 @@ package org.verifyica.test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Stream;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.TemporaryDirectory;
 import org.verifyica.api.Verifyica;
 
 public class TemporaryDirectoryTest {
 
-    private static final String TEMPORARY_DIRECTORY_DEFAULT_PREFIX = "temporary.directory.default.prefix";
-    private static final String TEMPORARY_DIRECTORY_CUSTOM_PREFIX = "temporary.directory.custom.prefix";
-    private static final String TEMPORARY_DIRECTORY_CUSTOM_PREFIX_3 = "temporary.directory.custom.prefix.2";
+    private static final String TEMPORARY_DIRECTORY_KEY = "temporaryDirectory";
+
+    private static final String TEMPORARY_FILE_KEY = "temporaryFile";
 
     @Verifyica.ArgumentSupplier(parallelism = 4)
     public static Object arguments() {
@@ -48,71 +44,62 @@ public class TemporaryDirectoryTest {
     }
 
     @Verifyica.Test
-    public void createTemporaryDirectory1(ArgumentContext argumentContext) throws Throwable {
-        TemporaryDirectory temporaryDirectory = new TemporaryDirectory();
-        argumentContext.map().put(TEMPORARY_DIRECTORY_DEFAULT_PREFIX, temporaryDirectory);
+    public void createTemporaryDirectory(ArgumentContext argumentContext) throws Throwable {
+        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+
+        argumentContext.map().put(TEMPORARY_DIRECTORY_KEY, temporaryDirectory);
 
         System.out.printf(
                 "argument [%s] temporary directory [%s]%n", argumentContext.testArgumentPayload(), temporaryDirectory);
 
-        assertThat(temporaryDirectory.path().toFile()).exists();
-        assertThat(temporaryDirectory.toPath().toFile()).exists();
-        assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.toPath());
-    }
-
-    @Verifyica.Test
-    public void createTemporaryDirectory2(ArgumentContext argumentContext) throws Throwable {
-        TemporaryDirectory temporaryDirectory = new TemporaryDirectory("foo-");
-        argumentContext.map().put(TEMPORARY_DIRECTORY_CUSTOM_PREFIX, temporaryDirectory);
-
-        System.out.printf(
-                "argument [%s] temporary directory [%s]%n", argumentContext.testArgumentPayload(), temporaryDirectory);
-
-        assertThat(temporaryDirectory.path().toFile()).exists();
-        assertThat(temporaryDirectory.toPath().toFile()).exists();
-        assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.toPath());
+        assertThat(temporaryDirectory.toPath()).exists();
+        assertThat(temporaryDirectory.toFile()).exists();
     }
 
     @Verifyica.Test
     public void createTemporaryFile(ArgumentContext argumentContext) throws Throwable {
-        TemporaryDirectory temporaryDirectory = new TemporaryDirectory();
-        argumentContext.map().put(TEMPORARY_DIRECTORY_CUSTOM_PREFIX_3, temporaryDirectory);
+        TemporaryDirectory temporaryDirectory = argumentContext.map().getAs(TEMPORARY_DIRECTORY_KEY);
 
         System.out.printf(
                 "argument [%s] temporary directory [%s]%n", argumentContext.testArgumentPayload(), temporaryDirectory);
 
-        assertThat(temporaryDirectory.path().toFile()).exists();
-        assertThat(temporaryDirectory.toPath().toFile()).exists();
-        assertThat(temporaryDirectory.path()).isSameAs(temporaryDirectory.toPath());
+        assertThat(temporaryDirectory.toPath()).exists();
+        assertThat(temporaryDirectory.toFile()).exists();
 
         File temporaryFile = temporaryDirectory.newFile();
 
+        System.out.printf("argument [%s] temporary file [%s]%n", argumentContext.testArgumentPayload(), temporaryFile);
+
         assertThat(temporaryFile).exists();
 
-        File temporaryFile2 = temporaryDirectory.newFile("test1.txt");
-
-        assertThat(temporaryFile2).exists();
-
-        File temporaryFile3 = new File(temporaryDirectory.toPath().toAbsolutePath() + "/" + "test2.txt");
-        temporaryFile3.createNewFile();
-
-        assertThat(temporaryFile3).exists();
+        argumentContext.map().put(TEMPORARY_FILE_KEY, temporaryFile);
     }
 
-    @Verifyica.Conclude
-    public void conclude() throws Throwable {
-        // Assert that no temporary directories exist since they were scoped
-        // to the ArgumentContext which gets cleaned up after testing the argument
-        assertThat(noFileWithPrefixExists("temp-")).isTrue();
-        assertThat(noFileWithPrefixExists("foo-")).isTrue();
-        assertThat(noFileWithPrefixExists("test1.txt")).isTrue();
-        assertThat(noFileWithPrefixExists("test2.txt")).isTrue();
-    }
+    @Verifyica.AfterAll
+    public void afterAll(ArgumentContext argumentContext) throws Throwable {
+        File temporaryFile = argumentContext.map().removeAs(TEMPORARY_FILE_KEY);
 
-    private static boolean noFileWithPrefixExists(String prefix) throws Throwable {
-        Path temporaryDirectory = Paths.get(System.getProperty("java.io.tmpdir"));
-        try (Stream<Path> files = Files.list(temporaryDirectory)) {
-            return files.noneMatch(file -> file.getFileName().toString().startsWith(prefix));
-        }
+        assertThat(temporaryFile).exists();
+        assertThat(temporaryFile).canRead();
+        assertThat(temporaryFile).canWrite();
+        assertThat(temporaryFile).isExecutable();
+        assertThat(temporaryFile).isFile();
+
+        TemporaryDirectory temporaryDirectory = argumentContext.map().removeAs(TEMPORARY_DIRECTORY_KEY);
+
+        assertThat(temporaryDirectory.toPath()).exists();
+        assertThat(temporaryDirectory.toFile()).exists();
+        assertThat(temporaryDirectory.toFile()).canRead();
+        assertThat(temporaryDirectory.toFile()).canWrite();
+        assertThat(temporaryDirectory.toPath()).isExecutable();
+        assertThat(temporaryDirectory.toFile()).isExecutable();
+        assertThat(temporaryDirectory.toPath()).isDirectory();
+        assertThat(temporaryDirectory.toFile()).isDirectory();
+
+        temporaryDirectory.close();
+
+        assertThat(temporaryFile).doesNotExist();
+        assertThat(temporaryDirectory.toPath()).doesNotExist();
+        assertThat(temporaryDirectory.toFile()).doesNotExist();
     }
 }
