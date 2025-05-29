@@ -103,28 +103,28 @@ public class LockManagerTest {
 
                 LockManager.lock(uuid.toString());
                 try {
-                    System.out.printf("thread [%-9s] locked %n", threadName);
-                    System.out.printf("  thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
+                    // System.out.printf("thread [%-9s] locked %n", threadName);
+                    // System.out.printf("  thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
 
                     assertThat(atomicInteger.incrementAndGet()).isEqualTo(1);
 
-                    System.out.printf("  thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
+                    // System.out.printf("  thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
 
                     try {
                         long sleepTime = RandomSupport.randomLong(0, 200);
-                        System.out.printf("  thread [%-9s] sleep [%d]%n", threadName, sleepTime);
+                        // System.out.printf("  thread [%-9s] sleep [%d]%n", threadName, sleepTime);
                         Thread.sleep(sleepTime);
                     } catch (InterruptedException e) {
                         // INTENTIONALLY BLANK
                     }
                 } finally {
-                    System.out.printf("  thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
+                    // System.out.printf("  thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
 
                     assertThat(atomicInteger.get()).isEqualTo(1);
                     assertThat(atomicInteger.decrementAndGet()).isEqualTo(0);
 
-                    System.out.printf("  thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
-                    System.out.printf("thread [%-9s] unlocked%n", threadName);
+                    // System.out.printf("  thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
+                    // System.out.printf("thread [%-9s] unlocked%n", threadName);
 
                     LockManager.unlock(uuid.toString());
                 }
