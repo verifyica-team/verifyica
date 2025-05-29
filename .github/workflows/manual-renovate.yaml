@@ -13,3 +13,4 @@ jobs:
           renovate-version: "latest"
         env:
           RENOVATE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RENOVATE_REPOSITORIES: verifyica-team/verifyica
