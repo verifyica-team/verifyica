@@ -17,6 +17,18 @@
       "enabled": false
     },
     {
+      "matchPackageNames": ["org.verifyica:verifyica-maven-plugin"],
+      "enabled": true
+    },
+    {
+      "matchPackageNames": ["org.verifyica:verifyica-tests"],
+      "enabled": true
+    },
+    {
+      "matchPackageNames": ["org.verifyica:verifyica-examples"],
+      "enabled": true
+    },
+    {
       "matchManagers": ["maven"],
       "groupName": "Maven dependencies"
     }
