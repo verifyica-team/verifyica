@@ -17,14 +17,17 @@
       "enabled": false
     },
     {
+      "matchManagers": ["maven"],
       "matchPackageNames": ["org.verifyica:verifyica-maven-plugin"],
       "enabled": true
     },
     {
+      "matchManagers": ["maven"],
       "matchPackageNames": ["org.verifyica:verifyica-tests"],
       "enabled": true
     },
     {
+      "matchManagers": ["maven"],
       "matchPackageNames": ["org.verifyica:verifyica-examples"],
       "enabled": true
     },
