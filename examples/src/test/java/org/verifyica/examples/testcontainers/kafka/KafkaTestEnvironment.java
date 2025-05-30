@@ -16,8 +16,11 @@
 
 package org.verifyica.examples.testcontainers.kafka;
 
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.output.OutputFrame;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
@@ -70,6 +73,9 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
         kafkaContainer =
                 new KafkaContainer(DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"));
         kafkaContainer.withNetwork(network);
+        kafkaContainer.waitingFor(
+                Wait.forLogMessage(
+                        ".*Kafka Server started.*", 1));
 
         /*
          * Workaround for Kafka 3.9.0 issue with listeners
