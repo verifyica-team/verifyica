@@ -18,18 +18,6 @@
     },
     {
       "matchManagers": ["maven"],
-      "matchPackageNames": [
-        "org.verifyica:verifyica-api",
-        "org.verifyica:verifyica-engine",
-        "org.verifyica:verifyica-maven-plugin",
-        "org.verifyica:verifyica-tests",
-        "org.verifyica:verifyica-examples"
-      ],
-      "enabled": true,
-      "groupName": "Maven dependencies"
-    },
-    {
-      "matchManagers": ["maven"],
       "groupName": "Maven dependencies"
     }
   ]
