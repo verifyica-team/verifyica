@@ -9,6 +9,14 @@
       "groupName": "Maven wrapper pinned to 3.9.6"
     },
     {
+      "matchPackageNames": ["org.apache.maven:maven-core"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["org.apache.maven:maven-plugin-ap"],
+      "enabled": false
+    },
+    {
       "matchManagers": ["maven"],
       "groupName": "Maven dependencies"
     }
