@@ -88,7 +88,7 @@ public class NamedArgumentTest {
         assertThat(classContext).isNotNull();
     }
 
-    private static class CustomArgument implements Named {
+    public static class CustomArgument implements Named {
 
         private final int value;
 
