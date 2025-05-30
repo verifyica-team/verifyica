@@ -48,6 +48,7 @@ import org.junit.platform.engine.discovery.PackageSelector;
 import org.junit.platform.engine.discovery.UniqueIdSelector;
 import org.junit.platform.engine.discovery.UriSelector;
 import org.verifyica.api.Argument;
+import org.verifyica.api.Named;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.api.ClassDefinition;
 import org.verifyica.engine.api.MethodDefinition;
@@ -266,7 +267,15 @@ public class EngineDiscoveryRequestResolver {
                     if (o instanceof Argument<?>) {
                         testArguments.add((Argument<?>) o);
                     } else {
-                        testArguments.add(Argument.of("argument[" + index + "]", o));
+                        String name;
+                        if (o instanceof Named) {
+                            name = ((Named) o).name();
+                        } else if (o != null && o.getClass().isEnum()) {
+                            name = ((Enum<?>) o).name();
+                        } else {
+                            name = "argument[" + index + "]";
+                        }
+                        testArguments.add(Argument.of(name, o));
                     }
                     index++;
                 }
@@ -299,10 +308,20 @@ public class EngineDiscoveryRequestResolver {
                 if (o instanceof Argument<?>) {
                     testArguments.add((Argument<?>) o);
                 } else {
-                    testArguments.add(Argument.of("argument[" + index + "]", o));
+                    String name;
+                    if (o instanceof Named) {
+                        name = ((Named) o).name();
+                    } else if (o != null && o.getClass().isEnum()) {
+                        name = ((Enum<?>) o).name();
+                    } else {
+                        name = "argument[" + index + "]";
+                    }
+                    testArguments.add(Argument.of(name, o));
                 }
                 index++;
             }
+        } else if (object instanceof Named) {
+            testArguments.add(Argument.of(((Named) object).name(), object));
         } else {
             testArguments.add(Argument.of("argument[0]", object));
         }
