@@ -6,7 +6,7 @@ pipeline:
         "${{ release }}" != ''
       enabled: true
       steps:
-        - name: check for ~/.m2/prometheus.settings.xml
+        - name: check for ~/.m2/verifyica.settings.xml
           run: if [ -f "~/.m2/verifyica.settings.xml" ]; then echo "~/.m2/verifyica.settings.xml required, exiting" && exit 1; fi
         - name: change version
           run: |
