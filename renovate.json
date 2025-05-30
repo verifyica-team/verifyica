@@ -13,7 +13,7 @@
       "enabled": false
     },
     {
-      "matchPackageNames": ["org.apache.maven:maven-plugin-ap"],
+      "matchPackageNames": ["org.apache.maven:maven-plugin-api"],
       "enabled": false
     },
     {
