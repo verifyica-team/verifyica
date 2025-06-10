@@ -16,6 +16,7 @@
 
 package org.verifyica.examples.testcontainers.kafka;
 
+import java.time.Duration;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -81,6 +82,13 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
          */
         if (dockerImageName.contains("3.9.0")) {
             kafkaContainer.withEnv("KAFKA_LISTENERS", "PLAINTEXT://:9092,BROKER://:9093,CONTROLLER://:9094");
+        }
+
+        /*
+         * Workaround for Kafka 4.0.0:native startup timeout issue
+         */
+        if (dockerImageName.contains("4.0.0:native")) {
+            kafkaContainer.withStartupTimeout(Duration.ofSeconds(120));
         }
 
         kafkaContainer.start();
