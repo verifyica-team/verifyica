@@ -99,7 +99,7 @@ public class LockManagerTest {
         Thread[] threads = new Thread[threadCount];
         for (int i = 0; i < threadCount; i++) {
             threads[i] = new Thread(() -> {
-                String threadName = Thread.currentThread().getName();
+                //String threadName = Thread.currentThread().getName();
 
                 LockManager.lock(uuid.toString());
                 try {
