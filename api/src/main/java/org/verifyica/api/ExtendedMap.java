@@ -36,7 +36,7 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     /**
      * Constructor
      *
-     * @param initialCapacity initialCapacity
+     * @param initialCapacity the initial capacity
      */
     public ExtendedMap(int initialCapacity) {
         super(initialCapacity);
@@ -45,17 +45,17 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     /**
      * Constructor
      *
-     * @param m m
+     * @param map the map to copy
      */
-    public ExtendedMap(Map<? extends K, ? extends V> m) {
-        super(m);
+    public ExtendedMap(Map<? extends K, ? extends V> map) {
+        super(map);
     }
 
     /**
      * Constructor
      *
-     * @param initialCapacity initialCapacity
-     * @param loadFactor loadFactor
+     * @param initialCapacity the initial capacity
+     * @param loadFactor the load factor
      */
     public ExtendedMap(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
@@ -64,9 +64,9 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     /**
      * Constructor
      *
-     * @param initialCapacity initialCapacity
-     * @param loadFactor loadFactor
-     * @param concurrencyLevel concurrencyLevel
+     * @param initialCapacity the initial capacity
+     * @param loadFactor the load factor
+     * @param concurrencyLevel the concurrency level
      */
     public ExtendedMap(int initialCapacity, float loadFactor, int concurrencyLevel) {
         super(initialCapacity, loadFactor, concurrencyLevel);
@@ -75,7 +75,7 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     /**
      * Returns the value to which the specified key is mapped cast to the assigned type, or null if this map contains no mapping for the key.
      *
-     * @param key key
+     * @param key the key
      * @return the value to which the specified key is mapped cast to the assigned type, or null if this map contains no mapping for the key
      * @param <T> the assigned type
      */
@@ -86,8 +86,8 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     /**
      * Returns the value to which the specified key is mapped cast to the requested type, or null if this map contains no mapping for the key.
      *
-     * @param key key
-     * @param type type
+     * @param key the key
+     * @param type the requested type
      * @return the value to which the specified key is mapped cast to the requested type, or null if this map contains no mapping for the key
      * @param <T> the requested type
      */
@@ -102,7 +102,7 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     /**
      * Removes the mapping for a key from this map if it is present, casting to the assigned type.
      *
-     * @param key key
+     * @param key the key
      * @return the previous value associated with key cast to the assigned type, or null if there was no mapping for key
      * @param <T> the assigned type
      */
@@ -113,8 +113,8 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     /**
      * Removes the mapping for a key from this map if it is present, casting to the requested type.
      *
-     * @param key key
-     * @param type type
+     * @param key the key
+     * @param type the requested type
      * @return the previous value associated with key cast to the requested type, or null if there was no mapping for key
      * @param <T> the assigned type
      */
