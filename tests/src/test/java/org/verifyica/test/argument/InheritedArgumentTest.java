@@ -26,7 +26,6 @@ import org.verifyica.api.ClassContext;
 import org.verifyica.api.Named;
 import org.verifyica.api.Verifyica;
 
-@SuppressWarnings("deprecation")
 public class InheritedArgumentTest {
 
     @Verifyica.ArgumentSupplier
@@ -73,7 +72,7 @@ public class InheritedArgumentTest {
         System.out.printf("testArgumentContext(name[%s], payload[%s])%n", argument.getName(), argument.getPayload());
 
         argumentContext.getTestArgument(AbstractCustomArgument.class);
-        argumentContext.getTestArgumentPayload(AbstractCustomArgument.class);
+        argumentContext.getTestArgument().getPayload(AbstractCustomArgument.class);
     }
 
     @Verifyica.AfterEach

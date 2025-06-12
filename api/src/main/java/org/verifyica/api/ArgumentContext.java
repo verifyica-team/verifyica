@@ -73,7 +73,9 @@ public interface ArgumentContext extends Context {
      *
      * @return the Argument payload
      * @param <V> type
+     * @deprecated Use {@link Argument#payload()}
      */
+    @Deprecated
     default <V> V testArgumentPayload() {
         return getTestArgumentPayload();
     }
@@ -84,7 +86,9 @@ public interface ArgumentContext extends Context {
      * @param type type
      * @return the Argument
      * @param <V> type
+     * @deprecated Use {@link Argument#payload(Class)}
      */
+    @Deprecated
     default <V> V testArgumentPayload(Class<V> type) {
         return getTestArgumentPayload(type);
     }
@@ -135,7 +139,9 @@ public interface ArgumentContext extends Context {
      *
      * @return the Argument payload
      * @param <V> type
+     * @deprecated Use {@link Argument#getPayload()}
      */
+    @Deprecated
     <V> V getTestArgumentPayload();
 
     /**
@@ -144,6 +150,8 @@ public interface ArgumentContext extends Context {
      * @param type type
      * @return the Argument payload
      * @param <V> type
+     * @deprecated Use {@link Argument#getPayload(Class)}
      */
+    @Deprecated
     <V> V getTestArgumentPayload(Class<V> type);
 }
