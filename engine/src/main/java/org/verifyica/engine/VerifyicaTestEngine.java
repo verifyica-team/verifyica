@@ -344,7 +344,7 @@ public class VerifyicaTestEngine implements TestEngine {
     /**
      * Method to return whether the code is running via the Verifyica Maven plugin
      *
-     * @return true if running via the Verifyica Maven plugin, else false
+     * @return true if running via the Verifyica Maven plugin, otherwise false
      */
     private static boolean isRunningViaVerifyicaMavenPlugin() {
         boolean isRunningViaVerifyicaMavenPlugin = "true".equals(System.getProperty(Constants.MAVEN_PLUGIN));
@@ -357,7 +357,7 @@ public class VerifyicaTestEngine implements TestEngine {
     /**
      * Method to return whether the code is running via the Maven Surefire plugin
      *
-     * @return true if running via the Maven Surefire plugin, else false
+     * @return true if running via the Maven Surefire plugin, otherwise false
      */
     private static boolean isRunningViaMavenSurefirePlugin() {
         if (System.getProperty("surefire.test.class.path") != null) {

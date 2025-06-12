@@ -78,7 +78,7 @@ public class TestDescriptorStatus {
     /**
      * Method to return if the result is success
      *
-     * @return true if the result is success, else false
+     * @return true if the result is success, otherwise false
      */
     public boolean isSuccess() {
         return type == Type.PASSED;
@@ -87,7 +87,7 @@ public class TestDescriptorStatus {
     /**
      * Method to return if the result is failure
      *
-     * @return true if the result is failure, else false
+     * @return true if the result is failure, otherwise false
      */
     public boolean isFailure() {
         return type == Type.FAILED;
@@ -96,7 +96,7 @@ public class TestDescriptorStatus {
     /**
      * Method to return if the result is skipped
      *
-     * @return true if the result is skipped, else false
+     * @return true if the result is skipped, otherwise false
      */
     public boolean isSkipped() {
         return type == Type.SKIPPED;
@@ -105,7 +105,7 @@ public class TestDescriptorStatus {
     /**
      * Method to return if the result is skipped with a Throwable
      *
-     * @return true if the result is skipped with a Throwable, else false
+     * @return true if the result is skipped with a Throwable, otherwise false
      */
     public boolean isSkippedWithThrowable() {
         return type == Type.SKIPPED && throwable != null;

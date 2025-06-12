@@ -56,7 +56,7 @@ public class InterceptorPredicates {
      * Method to return if a Class has a default constructor
      *
      * @param clazz clazz
-     * @return true if the Class has a default constructor, else false
+     * @return true if the Class has a default constructor, otherwise false
      */
     private static boolean hasDefaultConstructor(Class<?> clazz) {
         try {

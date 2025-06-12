@@ -77,7 +77,7 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     /**
      * Method to determine if the NginxTestEnvironment is running
      *
-     * @return true if the NginxTestEnvironment is running, else false
+     * @return true if the NginxTestEnvironment is running, otherwise false
      */
     public boolean isRunning() {
         return nginxContainer.isRunning();

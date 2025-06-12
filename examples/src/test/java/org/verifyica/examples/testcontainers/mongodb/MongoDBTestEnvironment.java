@@ -77,7 +77,7 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     /**
      * Method to determine if the MongoDBTestEnvironment is running
      *
-     * @return true if the MongoDBTestEnvironment is running, else false
+     * @return true if the MongoDBTestEnvironment is running, otherwise false
      */
     public boolean isRunning() {
         return mongoDBContainer.isRunning();

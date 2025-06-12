@@ -44,7 +44,7 @@ public interface Filter {
      * Method to return if a Filter matches a Class
      *
      * @param testClass testClass
-     * @return true if the test class matches, else false
+     * @return true if the test class matches, otherwise false
      */
     boolean matches(Class<?> testClass);
 }

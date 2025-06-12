@@ -56,7 +56,7 @@ public class Trap {
     /**
      * Checks if a Throwable was trapped
      *
-     * @return true if no Throwable was trapped, else false
+     * @return true if no Throwable was trapped, otherwise false
      */
     public boolean isEmpty() {
         return throwable == null;

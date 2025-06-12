@@ -315,7 +315,7 @@ public class AnsiColor {
     /**
      * Method to indicate whether ANSI color escape sequences are supported
      *
-     * @return true if ANSI color escape sequences are supported, else false
+     * @return true if ANSI color escape sequences are supported, otherwise false
      */
     public static boolean isSupported() {
         return ANSI_COLOR_SUPPORTED;

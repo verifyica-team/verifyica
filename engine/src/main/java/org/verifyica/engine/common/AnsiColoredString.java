@@ -230,7 +230,7 @@ public class AnsiColoredString {
     /**
      * Method to return if Ansi colors are supported
      *
-     * @return true if Ansi colors are supported, else false
+     * @return true if Ansi colors are supported, otherwise false
      */
     public boolean isAnsiColorSupported() {
         return AnsiColor.isSupported();

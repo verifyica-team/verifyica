@@ -79,7 +79,7 @@ public interface Argument<T> extends Named {
     /**
      * Method to return if the Argument has a non-null payload
      *
-     * @return true if the Argument payload is not null, else false
+     * @return true if the Argument payload is not null, otherwise false
      */
     default boolean hasPayload() {
         return getPayload() != null;
