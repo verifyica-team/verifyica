@@ -53,6 +53,11 @@
             <version>0.14.0-post</version>
         </dependency>
         <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.13.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>3.9.6</version>
@@ -75,11 +80,6 @@
             <artifactId>maven-core</artifactId>
             <version>3.9.6</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <version>1.13.1</version>
         </dependency>
     </dependencies>
 
