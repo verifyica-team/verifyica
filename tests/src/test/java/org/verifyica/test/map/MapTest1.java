@@ -39,9 +39,9 @@ public class MapTest1 {
     public void putIntoMaps(ArgumentContext argumentContext) {
         System.out.printf("putIntoMaps(%s)%n", argumentContext.getTestArgument().getPayload());
 
-        argumentContext.getMap().put(ARGUMENT_CONTEXT_KEY, "argument");
-        argumentContext.getClassContext().getMap().put(CLASS_CONTEXT_KEY, "class");
         argumentContext.getClassContext().getEngineContext().getMap().put(ENGINE_CONTEXT_KEY, "engine");
+        argumentContext.getClassContext().getMap().put(CLASS_CONTEXT_KEY, "class");
+        argumentContext.getMap().put(ARGUMENT_CONTEXT_KEY, "argument");
     }
 
     @Verifyica.Test
@@ -50,22 +50,22 @@ public class MapTest1 {
         System.out.printf(
                 "getOutOfMaps(%s)%n", argumentContext.getTestArgument().getPayload());
 
-        assertThat(argumentContext.getMap().get(ARGUMENT_CONTEXT_KEY)).isEqualTo("argument");
+        assertThat(argumentContext.getClassContext().getEngineContext().getMap().get(ENGINE_CONTEXT_KEY))
+                .isEqualTo("engine");
 
         assertThat(argumentContext.getClassContext().getMap().get(CLASS_CONTEXT_KEY))
                 .isEqualTo("class");
 
-        assertThat(argumentContext.getClassContext().getEngineContext().getMap().get(ENGINE_CONTEXT_KEY))
-                .isEqualTo("engine");
+        assertThat(argumentContext.getMap().get(ARGUMENT_CONTEXT_KEY)).isEqualTo("argument");
     }
 
     @Verifyica.Conclude
     public static void conclude(ClassContext classContext) {
         System.out.println("conclude()");
 
-        assertThat(classContext.getMap().remove(CLASS_CONTEXT_KEY)).isEqualTo("class");
-
         assertThat(classContext.getEngineContext().getMap().remove(ENGINE_CONTEXT_KEY))
                 .isEqualTo("engine");
+
+        assertThat(classContext.getMap().remove(CLASS_CONTEXT_KEY)).isEqualTo("class");
     }
 }

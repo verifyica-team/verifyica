@@ -24,10 +24,11 @@ import org.verifyica.api.Verifyica;
 
 public class MapTest2 {
 
-    private static final String PREFIX = MapTest2.class.getName();
-    private static final String ARGUMENT_CONTEXT_KEY = PREFIX + "argument.context.key";
-    private static final String CLASS_CONTEXT_KEY = PREFIX + "class.context.key";
-    private static final String ENGINE_CONTEXT_KEY = PREFIX + "engine.context.key";
+    enum Key {
+        MAP_TEST_3_ENGINE_CONTEXT_KEY,
+        MAP_TEST_3_CLASS_CONTEXT_KEY,
+        MAP_TEST_3_ARGUMENT_CONTEXT_KEY
+    }
 
     @Verifyica.ArgumentSupplier
     public static String arguments() {
@@ -36,39 +37,55 @@ public class MapTest2 {
 
     @Verifyica.Test
     @Verifyica.Order(0)
-    public void putIntoMaps(ArgumentContext argumentContext) throws Throwable {
+    public void putIntoMaps(ArgumentContext argumentContext) {
         System.out.printf("putIntoMaps(%s)%n", argumentContext.getTestArgument().getPayload());
 
-        argumentContext.getMap().put(ARGUMENT_CONTEXT_KEY, "argument");
-        argumentContext.getClassContext().getMap().put(CLASS_CONTEXT_KEY, "class");
-        argumentContext.getClassContext().getEngineContext().getMap().put(ENGINE_CONTEXT_KEY, "engine");
+        argumentContext
+                .getClassContext()
+                .getEngineContext()
+                .getMap()
+                .put(scopedName(Key.MAP_TEST_3_ENGINE_CONTEXT_KEY), "engine");
+        argumentContext.getClassContext().getMap().put(scopedName(Key.MAP_TEST_3_CLASS_CONTEXT_KEY), "class");
+        argumentContext.getMap().put(scopedName(Key.MAP_TEST_3_ARGUMENT_CONTEXT_KEY), "argument");
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void getOutOfMaps(ArgumentContext argumentContext) throws Throwable {
+    public void getOutOfMaps(ArgumentContext argumentContext) {
         System.out.printf(
                 "getOutOfMaps(%s)%n", argumentContext.getTestArgument().getPayload());
 
-        assertThat(argumentContext.getMap().get(ARGUMENT_CONTEXT_KEY)).isEqualTo("argument");
+        assertThat(argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getMap()
+                        .get(scopedName(Key.MAP_TEST_3_ENGINE_CONTEXT_KEY)))
+                .isEqualTo("engine");
 
-        assertThat(argumentContext.getClassContext().getMap().get(CLASS_CONTEXT_KEY))
+        assertThat(argumentContext.getClassContext().getMap().get(scopedName(Key.MAP_TEST_3_CLASS_CONTEXT_KEY)))
                 .isEqualTo("class");
 
-        assertThat(argumentContext.getClassContext().getEngineContext().getMap().get(ENGINE_CONTEXT_KEY))
-                .isEqualTo("engine");
-
-        assertThat(argumentContext.getClassContext().getEngineContext().getMap().get(ENGINE_CONTEXT_KEY))
-                .isEqualTo("engine");
+        assertThat(argumentContext.getMap().get(scopedName(Key.MAP_TEST_3_ARGUMENT_CONTEXT_KEY)))
+                .isEqualTo("argument");
     }
 
     @Verifyica.Conclude
     public static void conclude(ClassContext classContext) {
         System.out.println("conclude()");
 
-        assertThat(classContext.getMap().remove(CLASS_CONTEXT_KEY)).isEqualTo("class");
-
-        assertThat(classContext.getEngineContext().getMap().remove(ENGINE_CONTEXT_KEY))
+        assertThat(classContext.getEngineContext().getMap().remove(scopedName(Key.MAP_TEST_3_ENGINE_CONTEXT_KEY)))
                 .isEqualTo("engine");
+
+        assertThat(classContext.getMap().remove(scopedName(Key.MAP_TEST_3_CLASS_CONTEXT_KEY)))
+                .isEqualTo("class");
+    }
+
+    /**
+     * Returns a scoped name for the key, which is the class name + "." + the enum name.
+     *
+     * @return the scoped name
+     */
+    private static String scopedName(Enum<?> e) {
+        return e.getClass().getName() + "." + e.name();
     }
 }
