@@ -41,7 +41,7 @@ public class DependsOnTest {
 
     @Verifyica.Test
     @Verifyica.Tag("test1")
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         System.out.printf(
                 "test1(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -53,7 +53,7 @@ public class DependsOnTest {
     @Verifyica.Test
     @Verifyica.Tag("test2")
     @Verifyica.DependsOn("test1")
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) {
         System.out.printf(
                 "test2(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -64,7 +64,7 @@ public class DependsOnTest {
 
     @Verifyica.Test
     @Verifyica.Tag("test3")
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) {
         System.out.printf(
                 "test3(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -76,7 +76,7 @@ public class DependsOnTest {
     @Verifyica.Test
     @Verifyica.Tag("test4")
     @Verifyica.DependsOn("test3")
-    public void test4(ArgumentContext argumentContext) throws Throwable {
+    public void test4(ArgumentContext argumentContext) {
         System.out.printf(
                 "test4(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -89,7 +89,7 @@ public class DependsOnTest {
     @Verifyica.Tag("test5")
     @Verifyica.DependsOn("test2")
     @Verifyica.DependsOn("test4")
-    public void test5(ArgumentContext argumentContext) throws Throwable {
+    public void test5(ArgumentContext argumentContext) {
         System.out.printf(
                 "test5(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -101,7 +101,7 @@ public class DependsOnTest {
     @Verifyica.Test
     @Verifyica.Tag("test6")
     @Verifyica.DependsOn("test1")
-    public void test6(ArgumentContext argumentContext) throws Throwable {
+    public void test6(ArgumentContext argumentContext) {
         System.out.printf(
                 "test6(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -111,7 +111,7 @@ public class DependsOnTest {
     }
 
     @Verifyica.Test
-    public void test7(ArgumentContext argumentContext) throws Throwable {
+    public void test7(ArgumentContext argumentContext) {
         System.out.printf(
                 "test7(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),

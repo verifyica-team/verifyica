@@ -71,7 +71,7 @@ public class NestedTest {
         }
 
         @Verifyica.Test
-        public void test1(ArgumentContext argumentContext) throws Throwable {
+        public void test1(ArgumentContext argumentContext) {
             assertArgumentContext(argumentContext);
 
             System.out.printf(
@@ -81,7 +81,7 @@ public class NestedTest {
         }
 
         @Verifyica.Test
-        public void test2(ArgumentContext argumentContext) throws Throwable {
+        public void test2(ArgumentContext argumentContext) {
             assertArgumentContext(argumentContext);
 
             System.out.printf(
@@ -91,7 +91,7 @@ public class NestedTest {
         }
 
         @Verifyica.Test
-        public void test3(ArgumentContext argumentContext) throws Throwable {
+        public void test3(ArgumentContext argumentContext) {
             assertArgumentContext(argumentContext);
 
             System.out.printf(
@@ -170,7 +170,7 @@ public class NestedTest {
         }
 
         @Verifyica.Test
-        public void test1(ArgumentContext argumentContext) throws Throwable {
+        public void test1(ArgumentContext argumentContext) {
             assertArgumentContext(argumentContext);
 
             System.out.printf(
@@ -180,7 +180,7 @@ public class NestedTest {
         }
 
         @Verifyica.Test
-        public void test2(ArgumentContext argumentContext) throws Throwable {
+        public void test2(ArgumentContext argumentContext) {
             assertArgumentContext(argumentContext);
 
             System.out.printf(
@@ -190,7 +190,7 @@ public class NestedTest {
         }
 
         @Verifyica.Test
-        public void test3(ArgumentContext argumentContext) throws Throwable {
+        public void test3(ArgumentContext argumentContext) {
             assertArgumentContext(argumentContext);
 
             System.out.printf(

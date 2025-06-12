@@ -87,7 +87,7 @@ public class ClassThreadLocalTest2 {
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         System.out.printf(
                 "test1(index=[%d], name=[%s])%n",
                 argumentContext.getTestArgumentIndex(),
@@ -99,7 +99,7 @@ public class ClassThreadLocalTest2 {
     }
 
     @Verifyica.Test
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) {
         System.out.printf(
                 "test2(index=[%d], name=[%s])%n",
                 argumentContext.getTestArgumentIndex(),
@@ -111,7 +111,7 @@ public class ClassThreadLocalTest2 {
     }
 
     @Verifyica.Test
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) {
         System.out.printf(
                 "test3(index=[%d], name=[%s])%n",
                 argumentContext.getTestArgumentIndex(),

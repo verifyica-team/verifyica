@@ -31,7 +31,7 @@ public class EngineInterceptorTest1 {
 
     @Verifyica.Test
     @Verifyica.Order(0)
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
@@ -59,7 +59,7 @@ public class EngineInterceptorTest1 {
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
@@ -87,7 +87,7 @@ public class EngineInterceptorTest1 {
 
     @Verifyica.Test
     @Verifyica.Order(2)
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
@@ -114,7 +114,7 @@ public class EngineInterceptorTest1 {
     }
 
     // @Verifyica.Test
-    public void test4(ArgumentContext argumentContext) throws Throwable {
+    public void test4(ArgumentContext argumentContext) {
         System.out.printf("test4(%s)%n", argumentContext.getTestArgument().getPayload());
 
         fail("Should not execute... filtered by engine interceptor");

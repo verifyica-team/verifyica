@@ -54,7 +54,7 @@ public class LifecycleTest1 implements AutoCloseable {
     }
 
     @Verifyica.Prepare
-    public static void prepare(ClassContext classContext) throws Throwable {
+    public static void prepare(ClassContext classContext) {
         System.out.printf("  %s prepare()%n", classContext.getTestClass().getName());
 
         assertThat(classContext).isNotNull();
@@ -69,7 +69,7 @@ public class LifecycleTest1 implements AutoCloseable {
     }
 
     @Verifyica.BeforeAll
-    public void beforeAll(ArgumentContext argumentContext) throws Throwable {
+    public void beforeAll(ArgumentContext argumentContext) {
         System.out.printf(
                 "  %s beforeAll()%n", argumentContext.getTestArgument().getPayload());
 
@@ -77,7 +77,7 @@ public class LifecycleTest1 implements AutoCloseable {
     }
 
     @Verifyica.BeforeEach
-    public void beforeEach(ArgumentContext argumentContext) throws Throwable {
+    public void beforeEach(ArgumentContext argumentContext) {
         System.out.printf(
                 "  %s beforeEach()%n", argumentContext.getTestArgument().getPayload());
 
@@ -85,7 +85,7 @@ public class LifecycleTest1 implements AutoCloseable {
     }
 
     @Verifyica.Test
-    public void test0(ArgumentContext argumentContext) throws Throwable {
+    public void test0(ArgumentContext argumentContext) {
         System.out.printf("  %s test0()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("test0");
@@ -93,7 +93,7 @@ public class LifecycleTest1 implements AutoCloseable {
 
     @Verifyica.Test
     @Verifyica.Order(0)
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         System.out.printf("  %s test1()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("test1");
@@ -101,7 +101,7 @@ public class LifecycleTest1 implements AutoCloseable {
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) {
         System.out.printf("  %s test2()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("test2");
@@ -109,14 +109,14 @@ public class LifecycleTest1 implements AutoCloseable {
 
     @Verifyica.Test
     @Verifyica.Order(2)
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) {
         System.out.printf("  %s test3()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("test3");
     }
 
     @Verifyica.AfterEach
-    public void afterEach(ArgumentContext argumentContext) throws Throwable {
+    public void afterEach(ArgumentContext argumentContext) {
         System.out.printf(
                 "  %s afterEach()%n", argumentContext.getTestArgument().getPayload());
 
@@ -124,14 +124,14 @@ public class LifecycleTest1 implements AutoCloseable {
     }
 
     @Verifyica.AfterAll
-    public void afterAll(ArgumentContext argumentContext) throws Throwable {
+    public void afterAll(ArgumentContext argumentContext) {
         System.out.printf("  %s afterAll()%n", argumentContext.getTestArgument().getPayload());
 
         actual.add("afterAll");
     }
 
     @Verifyica.Conclude
-    public static void conclude(ClassContext classContext) throws Throwable {
+    public static void conclude(ClassContext classContext) {
         System.out.printf("  %s conclude()%n", classContext.getTestClass().getName());
 
         assertThat(classContext).isNotNull();
@@ -224,7 +224,7 @@ public class LifecycleTest1 implements AutoCloseable {
         }
 
         @Override
-        public void preInstantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
+        public void preInstantiate(EngineContext engineContext, Class<?> testClass) {
             System.out.printf("%s preInstantiate()%n", getClass().getName());
 
             actual.add("preInstantiate");
@@ -232,8 +232,7 @@ public class LifecycleTest1 implements AutoCloseable {
 
         @Override
         public void postInstantiate(
-                EngineContext engineContext, Class<?> testClass, Object testInstance, Throwable throwable)
-                throws Throwable {
+                EngineContext engineContext, Class<?> testClass, Object testInstance, Throwable throwable) {
             System.out.printf("%s postInstantiate()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -241,7 +240,7 @@ public class LifecycleTest1 implements AutoCloseable {
         }
 
         @Override
-        public void prePrepare(ClassContext classContext) throws Throwable {
+        public void prePrepare(ClassContext classContext) {
             System.out.printf("%s prePrepare()%n", getClass().getName());
 
             assertThat(classContext).isNotNull();
@@ -250,7 +249,7 @@ public class LifecycleTest1 implements AutoCloseable {
         }
 
         @Override
-        public void postPrepare(ClassContext classContext, Throwable throwable) throws Throwable {
+        public void postPrepare(ClassContext classContext, Throwable throwable) {
             System.out.printf("%s postPrepare()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -258,14 +257,14 @@ public class LifecycleTest1 implements AutoCloseable {
         }
 
         @Override
-        public void preBeforeAll(ArgumentContext argumentContext) throws Throwable {
+        public void preBeforeAll(ArgumentContext argumentContext) {
             System.out.printf("%s preBeforeAll()%n", getClass().getName());
 
             actual.add("preBeforeAll");
         }
 
         @Override
-        public void postBeforeAll(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
+        public void postBeforeAll(ArgumentContext argumentContext, Throwable throwable) {
             System.out.printf("%s postBeforeAll()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -273,14 +272,14 @@ public class LifecycleTest1 implements AutoCloseable {
         }
 
         @Override
-        public void preBeforeEach(ArgumentContext argumentContext) throws Throwable {
+        public void preBeforeEach(ArgumentContext argumentContext) {
             System.out.printf("%s preBeforeEach()%n", getClass().getName());
 
             actual.add("preBeforeEach");
         }
 
         @Override
-        public void postBeforeEach(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
+        public void postBeforeEach(ArgumentContext argumentContext, Throwable throwable) {
             System.out.printf("%s postBeforeEach()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -288,14 +287,14 @@ public class LifecycleTest1 implements AutoCloseable {
         }
 
         @Override
-        public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
+        public void preTest(ArgumentContext argumentContext, Method testMethod) {
             System.out.printf("%s preTest()%n", getClass().getName());
 
             actual.add("preTest");
         }
 
         @Override
-        public void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) throws Throwable {
+        public void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) {
             System.out.printf("%s postTest()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -303,14 +302,14 @@ public class LifecycleTest1 implements AutoCloseable {
         }
 
         @Override
-        public void preAfterEach(ArgumentContext argumentContext) throws Throwable {
+        public void preAfterEach(ArgumentContext argumentContext) {
             System.out.printf("%s preAfterEach()%n", getClass().getName());
 
             actual.add("preAfterEach");
         }
 
         @Override
-        public void postAfterEach(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
+        public void postAfterEach(ArgumentContext argumentContext, Throwable throwable) {
             System.out.printf("%s postAfterEach()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -318,14 +317,14 @@ public class LifecycleTest1 implements AutoCloseable {
         }
 
         @Override
-        public void preAfterAll(ArgumentContext argumentContext) throws Throwable {
+        public void preAfterAll(ArgumentContext argumentContext) {
             System.out.printf("%s preAfterAll()%n", getClass().getName());
 
             actual.add("preAfterAll");
         }
 
         @Override
-        public void postAfterAll(ArgumentContext argumentContext, Throwable throwable) throws Throwable {
+        public void postAfterAll(ArgumentContext argumentContext, Throwable throwable) {
             System.out.printf("%s postAfterAll()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -333,14 +332,14 @@ public class LifecycleTest1 implements AutoCloseable {
         }
 
         @Override
-        public void preConclude(ClassContext classContext) throws Throwable {
+        public void preConclude(ClassContext classContext) {
             System.out.printf("%s preConclude()%n", getClass().getName());
 
             actual.add("preConclude");
         }
 
         @Override
-        public void postConclude(ClassContext classContext, Throwable throwable) throws Throwable {
+        public void postConclude(ClassContext classContext, Throwable throwable) {
             System.out.printf("%s postConclude()%n", getClass().getName());
 
             assertThat(throwable).isNull();
@@ -348,7 +347,7 @@ public class LifecycleTest1 implements AutoCloseable {
         }
 
         @Override
-        public void onDestroy(ClassContext classContext) throws Throwable {
+        public void onDestroy(ClassContext classContext) {
             System.out.printf("%s onDestroy()%n", getClass().getName());
 
             actual.add("onDestroy");

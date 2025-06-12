@@ -40,7 +40,7 @@ public class OrderTest5 {
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void step1(ArgumentContext argumentContext) throws Throwable {
+    public void step1(ArgumentContext argumentContext) {
         System.out.printf(
                 "step1(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -53,7 +53,7 @@ public class OrderTest5 {
 
     @Verifyica.Test
     @Verifyica.Order(2)
-    public void step2(ArgumentContext argumentContext) throws Throwable {
+    public void step2(ArgumentContext argumentContext) {
         System.out.printf(
                 "step2(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -66,7 +66,7 @@ public class OrderTest5 {
 
     @Verifyica.Test
     @Verifyica.Order(3)
-    public void step3(ArgumentContext argumentContext) throws Throwable {
+    public void step3(ArgumentContext argumentContext) {
         System.out.printf(
                 "step3(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),

@@ -42,7 +42,7 @@ public class AutowiredClassInterceptor implements ClassInterceptor {
     }
 
     @Override
-    public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
+    public void preTest(ArgumentContext argumentContext, Method testMethod) {
         LOGGER.info(
                 "preTest() test class [%s] test method [%s]",
                 argumentContext.getClassContext().getTestClass().getSimpleName(), testMethod.getName());

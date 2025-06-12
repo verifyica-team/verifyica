@@ -51,7 +51,7 @@ public class CustomArgumentWithSemaphoreTest {
     }
 
     @Verifyica.BeforeAll
-    public void beforeAll(ArgumentContext argumentContext) throws Throwable {
+    public void beforeAll(ArgumentContext argumentContext) throws InterruptedException {
         argumentContext.getTestArgument(CustomArgument.class).getPayload().acquire();
 
         System.out.printf("beforeAll(%s)%n", argumentContext.getTestArgument());
@@ -71,7 +71,7 @@ public class CustomArgumentWithSemaphoreTest {
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) throws InterruptedException {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
@@ -82,7 +82,7 @@ public class CustomArgumentWithSemaphoreTest {
     }
 
     @Verifyica.Test
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) throws InterruptedException {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
@@ -102,7 +102,7 @@ public class CustomArgumentWithSemaphoreTest {
     }
 
     @Verifyica.AfterAll
-    public void afterAll(ArgumentContext argumentContext) throws Throwable {
+    public void afterAll(ArgumentContext argumentContext) {
         System.out.printf("afterAll(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();

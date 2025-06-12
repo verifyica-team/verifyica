@@ -43,7 +43,7 @@ public class NonStaticPrepareConcludeMethodTest {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    public void test(ArgumentContext argumentContext) {
         System.out.printf(
                 "test(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),

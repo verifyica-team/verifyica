@@ -41,53 +41,53 @@ public class ClassInterceptorTest1 {
     }
 
     @Verifyica.Prepare
-    public static void prepare(ClassContext classContext) throws Throwable {
+    public static void prepare(ClassContext classContext) {
         System.out.printf("  %s prepare()%n", classContext.getTestClass().getName());
     }
 
     @Verifyica.BeforeAll
-    public void beforeAll(ArgumentContext argumentContext) throws Throwable {
+    public void beforeAll(ArgumentContext argumentContext) {
         System.out.printf(
                 "  %s beforeAll()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.BeforeEach
-    public void beforeEach(ArgumentContext argumentContext) throws Throwable {
+    public void beforeEach(ArgumentContext argumentContext) {
         System.out.printf(
                 "  %s beforeEach()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test
     @Verifyica.Order(0)
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         System.out.printf("  %s test1()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) {
         System.out.printf("  %s test2()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) {
         System.out.printf("  %s test3()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.AfterEach
-    public void afterEach(ArgumentContext argumentContext) throws Throwable {
+    public void afterEach(ArgumentContext argumentContext) {
         System.out.printf(
                 "  %s afterEach()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.AfterAll
-    public void afterAll(ArgumentContext argumentContext) throws Throwable {
+    public void afterAll(ArgumentContext argumentContext) {
         System.out.printf("  %s afterAll()%n", argumentContext.getTestArgument().getPayload());
     }
 
     @Verifyica.Conclude
-    public static void conclude(ClassContext classContext) throws Throwable {
+    public static void conclude(ClassContext classContext) {
         System.out.printf("  %s conclude()%n", classContext.getTestClass().getName());
     }
 }

@@ -34,7 +34,7 @@ public class ClassRenameTest {
             return classDefinition -> classDefinition.getTestClass() == ClassRenameTest.class;
         }
 
-        public void onTestDiscovery(EngineContext engineContext, ClassDefinition classDefinition) throws Throwable {
+        public void onTestDiscovery(EngineContext engineContext, ClassDefinition classDefinition) {
             assertThat(classDefinition.getTestClass()).isEqualTo(ClassRenameTest.class);
 
             String fullDisplayName = classDefinition.getDisplayName();
@@ -51,7 +51,7 @@ public class ClassRenameTest {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    public void test(ArgumentContext argumentContext) {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();

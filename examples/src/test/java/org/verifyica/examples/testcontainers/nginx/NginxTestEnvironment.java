@@ -50,7 +50,7 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     }
 
     /**
-     * Method to get the payload (ourself)
+     * Method to get the payload
      *
      * @return the payload
      */

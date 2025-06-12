@@ -38,7 +38,7 @@ public class PrintStreamsTest {
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         sleep();
         System.out.println("test1() A");
         sleep();

@@ -30,7 +30,7 @@ public class DisplayNameTest {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    public void test(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
         System.out.printf(
