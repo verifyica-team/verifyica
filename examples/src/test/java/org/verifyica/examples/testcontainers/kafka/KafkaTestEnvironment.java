@@ -52,7 +52,7 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
     }
 
     /**
-     * Method to get the payload (ourself)
+     * Method to get the payload
      *
      * @return the payload
      */

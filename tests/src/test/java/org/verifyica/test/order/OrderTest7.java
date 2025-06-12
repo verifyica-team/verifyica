@@ -39,7 +39,7 @@ public class OrderTest7 {
 
     @Verifyica.Test
     @Verifyica.Order(0)
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
@@ -49,7 +49,7 @@ public class OrderTest7 {
 
     @Verifyica.Test
     @Verifyica.Order(Integer.MAX_VALUE)
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) {
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
@@ -59,7 +59,7 @@ public class OrderTest7 {
 
     @Verifyica.Test
     @Verifyica.Order(Integer.MIN_VALUE)
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();

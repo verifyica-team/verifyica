@@ -40,7 +40,7 @@ public class EnumArgumentsTest {
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testDirectArgument(EnumArgument enumArgument) throws Throwable {
+    public void testDirectArgument(EnumArgument enumArgument) {
         System.out.printf("test(name[%s], payload[%s])%n", enumArgument, enumArgument);
 
         assertThat(enumArgument).isNotNull();
@@ -48,7 +48,7 @@ public class EnumArgumentsTest {
 
     @Verifyica.Test
     @Verifyica.Order(2)
-    public void testArgumentContext(ArgumentContext argumentContext) throws Throwable {
+    public void testArgumentContext(ArgumentContext argumentContext) {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 

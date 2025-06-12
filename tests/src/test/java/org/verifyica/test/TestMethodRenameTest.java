@@ -32,8 +32,7 @@ public class TestMethodRenameTest {
     @Verifyica.Autowired
     public static class DisplayNameEngineInterceptor implements EngineInterceptor {
 
-        public void onTestDiscovery(EngineContext engineContext, List<ClassDefinition> classDefinitions)
-                throws Throwable {
+        public void onTestDiscovery(EngineContext engineContext, List<ClassDefinition> classDefinitions) {
             classDefinitions.stream()
                     .filter(classDefinition -> classDefinition.getTestClass() == TestMethodRenameTest.class)
                     .forEach(classDefinition -> {
@@ -58,7 +57,7 @@ public class TestMethodRenameTest {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    public void test(ArgumentContext argumentContext) {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();

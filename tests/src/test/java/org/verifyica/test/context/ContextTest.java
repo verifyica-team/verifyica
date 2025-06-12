@@ -65,7 +65,7 @@ public class ContextTest {
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
         ;
 
@@ -100,7 +100,7 @@ public class ContextTest {
     }
 
     @Verifyica.Test
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) throws NoSuchFieldException, IllegalAccessException {
         assertThat(argumentContext.getClassContext().getEngineContext()).isSameAs(ContextTest.engineContext);
 
         assertThat(argumentContext.getClassContext()).isSameAs(ContextTest.classContext);

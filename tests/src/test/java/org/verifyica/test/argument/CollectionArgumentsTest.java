@@ -36,7 +36,7 @@ public class CollectionArgumentsTest {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    public void test(ArgumentContext argumentContext) {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();

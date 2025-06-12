@@ -35,7 +35,7 @@ public class OrderTest1 implements AutoCloseable {
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
@@ -44,7 +44,7 @@ public class OrderTest1 implements AutoCloseable {
 
     @Verifyica.Test
     @Verifyica.Order(0)
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
@@ -53,7 +53,7 @@ public class OrderTest1 implements AutoCloseable {
 
     @Verifyica.Test
     @Verifyica.Order(0)
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
@@ -61,7 +61,7 @@ public class OrderTest1 implements AutoCloseable {
     }
 
     @Verifyica.Test
-    public void test4(ArgumentContext argumentContext) throws Throwable {
+    public void test4(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
         System.out.printf("test4(%s)%n", argumentContext.getTestArgument());

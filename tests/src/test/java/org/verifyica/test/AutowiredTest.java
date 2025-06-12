@@ -45,7 +45,7 @@ public class AutowiredTest {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    public void test(ArgumentContext argumentContext) {
         logArgumentContext("test()", argumentContext);
 
         assertArgumentContext(argumentContext);
@@ -79,7 +79,7 @@ public class AutowiredTest {
         }
 
         @Verifyica.Test
-        public void test(ArgumentContext argumentContext) throws Throwable {
+        public void test(ArgumentContext argumentContext) {
             logArgumentContext("test()", argumentContext);
 
             assertArgumentContext(argumentContext);

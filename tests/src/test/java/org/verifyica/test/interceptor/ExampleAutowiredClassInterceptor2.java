@@ -32,7 +32,7 @@ public class ExampleAutowiredClassInterceptor2 implements ClassInterceptor {
     }
 
     @Override
-    public void preInstantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
+    public void preInstantiate(EngineContext engineContext, Class<?> testClass) {
         System.out.printf("%s preInstantiate()%n", getClass().getName());
     }
 
@@ -45,7 +45,7 @@ public class ExampleAutowiredClassInterceptor2 implements ClassInterceptor {
     }
 
     @Override
-    public void prePrepare(ClassContext classContext) throws Throwable {
+    public void prePrepare(ClassContext classContext) {
         System.out.printf(
                 "%s prePrepare(%s)%n",
                 getClass().getName(), classContext.getTestClass().getName());
@@ -60,7 +60,7 @@ public class ExampleAutowiredClassInterceptor2 implements ClassInterceptor {
     }
 
     @Override
-    public void preBeforeAll(ArgumentContext argumentContext) throws Throwable {
+    public void preBeforeAll(ArgumentContext argumentContext) {
         System.out.printf(
                 "%s preBeforeAll(%s %s)%n",
                 getClass().getName(),
@@ -79,7 +79,7 @@ public class ExampleAutowiredClassInterceptor2 implements ClassInterceptor {
     }
 
     @Override
-    public void preBeforeEach(ArgumentContext argumentContext) throws Throwable {
+    public void preBeforeEach(ArgumentContext argumentContext) {
         System.out.printf(
                 "%s preBeforeEach(%s %s)%n",
                 getClass().getName(),
@@ -98,7 +98,7 @@ public class ExampleAutowiredClassInterceptor2 implements ClassInterceptor {
     }
 
     @Override
-    public void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
+    public void preTest(ArgumentContext argumentContext, Method testMethod) {
         System.out.printf(
                 "%s preTest(%s %s %s)%n",
                 getClass().getName(),
@@ -119,7 +119,7 @@ public class ExampleAutowiredClassInterceptor2 implements ClassInterceptor {
     }
 
     @Override
-    public void preAfterEach(ArgumentContext argumentContext) throws Throwable {
+    public void preAfterEach(ArgumentContext argumentContext) {
         System.out.printf(
                 "%s preAfterEach(%s %s)%n",
                 getClass().getName(),
@@ -138,7 +138,7 @@ public class ExampleAutowiredClassInterceptor2 implements ClassInterceptor {
     }
 
     @Override
-    public void preAfterAll(ArgumentContext argumentContext) throws Throwable {
+    public void preAfterAll(ArgumentContext argumentContext) {
         System.out.printf(
                 "%s preAfterAll(%s %s)%n",
                 getClass().getName(),
@@ -157,7 +157,7 @@ public class ExampleAutowiredClassInterceptor2 implements ClassInterceptor {
     }
 
     @Override
-    public void preConclude(ClassContext classContext) throws Throwable {
+    public void preConclude(ClassContext classContext) {
         System.out.printf(
                 "%s preConclude(%s)%n",
                 getClass().getName(), classContext.getTestClass().getName());
@@ -172,7 +172,7 @@ public class ExampleAutowiredClassInterceptor2 implements ClassInterceptor {
     }
 
     @Override
-    public void onDestroy(ClassContext classContext) throws Throwable {
+    public void onDestroy(ClassContext classContext) {
         System.out.printf(
                 "%s onDestroy(%s)%n",
                 getClass().getName(), classContext.getTestClass().getName());

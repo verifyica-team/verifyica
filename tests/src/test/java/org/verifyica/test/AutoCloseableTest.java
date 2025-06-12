@@ -65,7 +65,7 @@ public class AutoCloseableTest implements AutoCloseable {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    public void test(ArgumentContext argumentContext) {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();

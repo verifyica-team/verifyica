@@ -29,37 +29,37 @@ public class EmptyArgumentTest {
     }
 
     @Verifyica.Prepare
-    public static void prepare(ClassContext classContext) throws Throwable {
+    public static void prepare(ClassContext classContext) {
         System.out.printf("prepare()%n");
     }
 
     @Verifyica.BeforeAll
-    public void beforeAll(ArgumentContext argumentContext) throws Throwable {
+    public void beforeAll(ArgumentContext argumentContext) {
         System.out.printf("beforeAll()%n");
     }
 
     @Verifyica.BeforeEach
-    public void beforeEach(ArgumentContext argumentContext) throws Throwable {
+    public void beforeEach(ArgumentContext argumentContext) {
         System.out.printf("beforeEach()%n");
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    public void test(ArgumentContext argumentContext) {
         System.out.printf("test()%n");
     }
 
     @Verifyica.AfterEach
-    public void afterEach(ArgumentContext argumentContext) throws Throwable {
+    public void afterEach(ArgumentContext argumentContext) {
         System.out.printf("afterEach()%n");
     }
 
     @Verifyica.AfterAll
-    public void afterAll(ArgumentContext argumentContext) throws Throwable {
+    public void afterAll(ArgumentContext argumentContext) {
         System.out.printf("afterAll()%n");
     }
 
     @Verifyica.Conclude
-    public static void conclude(ClassContext classContext) throws Throwable {
+    public static void conclude(ClassContext classContext) {
         System.out.printf("conclude()%n");
     }
 }

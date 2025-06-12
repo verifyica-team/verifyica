@@ -42,7 +42,7 @@ public class ClassContextStoreSemaphoreTest {
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
@@ -50,7 +50,7 @@ public class ClassContextStoreSemaphoreTest {
     }
 
     @Verifyica.Test
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) throws InterruptedException {
         Semaphore semaphore = (Semaphore)
                 argumentContext.getClassContext().getMap().computeIfAbsent(SEMAPHORE_KEY, k -> new Semaphore(2));
 
@@ -72,7 +72,7 @@ public class ClassContextStoreSemaphoreTest {
     }
 
     @Verifyica.Test
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());

@@ -40,7 +40,7 @@ public class TagTest2 {
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
         assertThat(argumentContext.getClassContext().getTestClassTags()).isNotEmpty();
         assertThat(argumentContext.getClassContext().getTestClassTags()).contains("Tag2");
@@ -49,14 +49,14 @@ public class TagTest2 {
     }
 
     @Verifyica.Test
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
         System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
     }
 
     @Verifyica.Test
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());

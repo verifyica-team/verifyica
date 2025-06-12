@@ -73,7 +73,7 @@ public class ParallelArgumentTest {
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) throws InterruptedException {
         System.out.printf(
                 "test1(index=[%d], name=[%s])%n",
                 argumentContext.getTestArgumentIndex(),
@@ -87,7 +87,7 @@ public class ParallelArgumentTest {
     }
 
     @Verifyica.Test
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) throws InterruptedException {
         System.out.printf(
                 "test2(index=[%d], name=[%s])%n",
                 argumentContext.getTestArgumentIndex(),

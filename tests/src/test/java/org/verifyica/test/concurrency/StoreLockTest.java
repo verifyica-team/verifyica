@@ -42,7 +42,7 @@ public class StoreLockTest {
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
@@ -51,7 +51,7 @@ public class StoreLockTest {
     }
 
     @Verifyica.Test
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) throws InterruptedException {
         Lock lock = (Lock)
                 argumentContext.getClassContext().getMap().computeIfAbsent(LOCK_KEY, k -> new ReentrantLock(true));
 
@@ -73,7 +73,7 @@ public class StoreLockTest {
     }
 
     @Verifyica.Test
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) {
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();

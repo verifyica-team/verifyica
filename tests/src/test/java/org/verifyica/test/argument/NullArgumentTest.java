@@ -28,37 +28,37 @@ public class NullArgumentTest {
     }
 
     @Verifyica.Prepare
-    public static void prepare(ClassContext classContext) throws Throwable {
+    public static void prepare(ClassContext classContext) {
         throw new IllegalStateException("Should not be executed");
     }
 
     @Verifyica.BeforeAll
-    public void beforeAll(ArgumentContext argumentContext) throws Throwable {
+    public void beforeAll(ArgumentContext argumentContext) {
         throw new IllegalStateException("Should not be executed");
     }
 
     @Verifyica.BeforeEach
-    public void beforeEach(ArgumentContext argumentContext) throws Throwable {
+    public void beforeEach(ArgumentContext argumentContext) {
         throw new IllegalStateException("Should not be executed");
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    public void test(ArgumentContext argumentContext) {
         throw new IllegalStateException("Should not be executed");
     }
 
     @Verifyica.AfterEach
-    public void afterEach(ArgumentContext argumentContext) throws Throwable {
+    public void afterEach(ArgumentContext argumentContext) {
         throw new IllegalStateException("Should not be executed");
     }
 
     @Verifyica.AfterAll
-    public void afterAll(ArgumentContext argumentContext) throws Throwable {
+    public void afterAll(ArgumentContext argumentContext) {
         throw new IllegalStateException("Should not be executed");
     }
 
     @Verifyica.Conclude
-    public static void conclude(ClassContext classContext) throws Throwable {
+    public static void conclude(ClassContext classContext) {
         throw new IllegalStateException("Should not be executed");
     }
 }

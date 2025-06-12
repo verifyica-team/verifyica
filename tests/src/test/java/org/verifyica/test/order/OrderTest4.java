@@ -28,7 +28,7 @@ public class OrderTest4 {
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void step0(ArgumentContext argumentContext) throws Throwable {
+    public void step0(ArgumentContext argumentContext) {
         System.out.printf(
                 "step0(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -37,7 +37,7 @@ public class OrderTest4 {
 
     @Verifyica.Test
     @Verifyica.Order(2)
-    public void step2(ArgumentContext argumentContext) throws Throwable {
+    public void step2(ArgumentContext argumentContext) {
         System.out.printf(
                 "step2(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -46,7 +46,7 @@ public class OrderTest4 {
 
     @Verifyica.Test
     @Verifyica.Order(3)
-    public void step4(ArgumentContext argumentContext) throws Throwable {
+    public void step4(ArgumentContext argumentContext) {
         System.out.printf(
                 "step4(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -55,7 +55,7 @@ public class OrderTest4 {
 
     @Verifyica.Test
     @Verifyica.Order(4)
-    public void step1(ArgumentContext argumentContext) throws Throwable {
+    public void step1(ArgumentContext argumentContext) {
         System.out.printf(
                 "step1(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -64,7 +64,7 @@ public class OrderTest4 {
 
     @Verifyica.Test
     @Verifyica.Order(5)
-    public void step3(ArgumentContext argumentContext) throws Throwable {
+    public void step3(ArgumentContext argumentContext) {
         System.out.printf(
                 "step3(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -73,7 +73,7 @@ public class OrderTest4 {
 
     @Verifyica.Test
     @Verifyica.Order(6)
-    public void step5(ArgumentContext argumentContext) throws Throwable {
+    public void step5(ArgumentContext argumentContext) {
         System.out.printf(
                 "step5(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),
@@ -82,7 +82,7 @@ public class OrderTest4 {
 
     @Verifyica.Test
     @Verifyica.Order(0)
-    public void random(ArgumentContext argumentContext) throws Throwable {
+    public void random(ArgumentContext argumentContext) {
         System.out.printf(
                 "random(name[%s], payload[%s])%n",
                 argumentContext.getTestArgument(),

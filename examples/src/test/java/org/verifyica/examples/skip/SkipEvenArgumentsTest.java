@@ -44,19 +44,19 @@ public class SkipEvenArgumentsTest {
     }
 
     @Verifyica.BeforeAll
-    public void beforeAll(ArgumentContext argumentContext) throws Throwable {
+    public void beforeAll(ArgumentContext argumentContext) {
         // Skip even arguments
         skipIfCondition(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 0);
     }
 
     @Verifyica.BeforeEach
-    public void beforeEach(ArgumentContext argumentContext) throws Throwable {
+    public void beforeEach(ArgumentContext argumentContext) {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
 
@@ -69,7 +69,7 @@ public class SkipEvenArgumentsTest {
     }
 
     @Verifyica.Test
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
 
@@ -82,7 +82,7 @@ public class SkipEvenArgumentsTest {
     }
 
     @Verifyica.Test
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
 
@@ -95,7 +95,7 @@ public class SkipEvenArgumentsTest {
     }
 
     @Verifyica.Test
-    public void test4(ArgumentContext argumentContext) throws Throwable {
+    public void test4(ArgumentContext argumentContext) {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
 
@@ -108,7 +108,7 @@ public class SkipEvenArgumentsTest {
     }
 
     @Verifyica.Test
-    public void test5(ArgumentContext argumentContext) throws Throwable {
+    public void test5(ArgumentContext argumentContext) {
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
                 .isOdd();
 

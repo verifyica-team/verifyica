@@ -16,13 +16,12 @@
 
 package org.verifyica.test.map;
 
-import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.Verifyica;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.Verifyica;
 
 public class MapTest4 {
 
@@ -66,8 +65,7 @@ public class MapTest4 {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void getOutOfMaps(ArgumentContext argumentContext) {
-        System.out.printf(
-                "getOutOfMaps(%s)%n", argumentContext.testArgument().payload());
+        System.out.printf("getOutOfMaps(%s)%n", argumentContext.testArgument().payload());
 
         String payload = argumentContext.testArgument().payload(String.class);
 

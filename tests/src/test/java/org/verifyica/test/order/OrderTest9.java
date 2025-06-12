@@ -38,7 +38,7 @@ public class OrderTest9 {
     }
 
     @Verifyica.Test
-    public void testX(ArgumentContext argumentContext) throws Throwable {
+    public void testX(ArgumentContext argumentContext) {
         System.out.printf("testX(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
@@ -47,7 +47,7 @@ public class OrderTest9 {
     }
 
     @Verifyica.Test
-    public void testY(ArgumentContext argumentContext) throws Throwable {
+    public void testY(ArgumentContext argumentContext) {
         System.out.printf("testY(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();
@@ -57,7 +57,7 @@ public class OrderTest9 {
 
     @Verifyica.Test
     @Verifyica.Order(Integer.MAX_VALUE)
-    public void testA(ArgumentContext argumentContext) throws Throwable {
+    public void testA(ArgumentContext argumentContext) {
         System.out.printf("testA(%s)%n", argumentContext.getTestArgument());
 
         assertThat(argumentContext).isNotNull();

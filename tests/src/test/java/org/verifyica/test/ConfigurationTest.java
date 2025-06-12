@@ -27,7 +27,7 @@ public class ConfigurationTest {
     }
 
     @Verifyica.Test
-    public void test(ArgumentContext argumentContext) throws Throwable {
+    public void test(ArgumentContext argumentContext) {
         System.out.printf("test(%s)%n", argumentContext.getTestArgument().getPayload());
 
         System.out.printf(

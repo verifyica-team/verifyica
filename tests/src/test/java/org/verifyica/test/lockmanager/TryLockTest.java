@@ -43,14 +43,14 @@ public class TryLockTest {
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
         System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
     }
 
     @Verifyica.Test
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) throws InterruptedException {
         if (LockManager.tryLock(LOCK_KEY, 100, TimeUnit.MILLISECONDS)) {
             try {
                 System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
@@ -72,7 +72,7 @@ public class TryLockTest {
     }
 
     @Verifyica.Test
-    public void test3(ArgumentContext argumentContext) throws Throwable {
+    public void test3(ArgumentContext argumentContext) throws InterruptedException {
         if (LockManager.tryLock(LOCK_KEY)) {
             try {
                 System.out.printf("test3(%s) locked%n", argumentContext.getTestArgument());
@@ -94,7 +94,7 @@ public class TryLockTest {
     }
 
     @Verifyica.Test
-    public void test4(ArgumentContext argumentContext) throws Throwable {
+    public void test4(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
         System.out.printf("test3(%s)%n", argumentContext.getTestArgument());

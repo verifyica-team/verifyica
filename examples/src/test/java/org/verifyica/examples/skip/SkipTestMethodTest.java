@@ -29,7 +29,7 @@ import org.verifyica.api.ClassContext;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "deprecation"})
 public class SkipTestMethodTest {
 
     private static final Logger LOGGER = Logger.createLogger(SkipTestMethodTest.class);
@@ -44,7 +44,7 @@ public class SkipTestMethodTest {
     }
 
     @Verifyica.Test
-    public void test1(ArgumentContext argumentContext) throws Throwable {
+    public void test1(ArgumentContext argumentContext) {
         skipIfCondition(argumentContext.testArgumentPayload(Integer.class) % 2 == 0);
 
         assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
@@ -59,7 +59,7 @@ public class SkipTestMethodTest {
     }
 
     @Verifyica.Test
-    public void test2(ArgumentContext argumentContext) throws Throwable {
+    public void test2(ArgumentContext argumentContext) {
         LOGGER.info(
                 "test2(name[%s], payload[%s])",
                 argumentContext.getTestArgument(),

@@ -19,12 +19,14 @@ package org.verifyica.test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.TemporaryDirectory;
 import org.verifyica.api.Verifyica;
 
+@SuppressWarnings("deprecation")
 public class TemporaryDirectoryTest {
 
     private static final String TEMPORARY_DIRECTORY_KEY = "temporaryDirectory";
@@ -44,7 +46,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Verifyica.Test
-    public void createTemporaryDirectory(ArgumentContext argumentContext) throws Throwable {
+    public void createTemporaryDirectory(ArgumentContext argumentContext) throws IOException {
         TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
 
         argumentContext.map().put(TEMPORARY_DIRECTORY_KEY, temporaryDirectory);
@@ -57,7 +59,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Verifyica.Test
-    public void createTemporaryFile(ArgumentContext argumentContext) throws Throwable {
+    public void createTemporaryFile(ArgumentContext argumentContext) throws IOException {
         TemporaryDirectory temporaryDirectory = argumentContext.map().getAs(TEMPORARY_DIRECTORY_KEY);
 
         System.out.printf(
@@ -76,7 +78,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Verifyica.AfterAll
-    public void afterAll(ArgumentContext argumentContext) throws Throwable {
+    public void afterAll(ArgumentContext argumentContext) throws IOException {
         File temporaryFile = argumentContext.map().removeAs(TEMPORARY_FILE_KEY);
 
         assertThat(temporaryFile).exists();

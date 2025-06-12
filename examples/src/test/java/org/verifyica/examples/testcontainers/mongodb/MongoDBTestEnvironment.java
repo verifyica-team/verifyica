@@ -50,7 +50,7 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     }
 
     /**
-     * Method to get the payload (ourself)
+     * Method to get the payload
      *
      * @return the payload
      */

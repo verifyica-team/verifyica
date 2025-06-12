@@ -26,6 +26,7 @@ import org.verifyica.api.ClassContext;
 import org.verifyica.api.Named;
 import org.verifyica.api.Verifyica;
 
+@SuppressWarnings("deprecation")
 public class InheritedArgumentTest {
 
     @Verifyica.ArgumentSupplier
