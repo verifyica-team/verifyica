@@ -26,7 +26,6 @@ import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.TemporaryDirectory;
 import org.verifyica.api.Verifyica;
 
-@SuppressWarnings("deprecation")
 public class TemporaryDirectoryTest {
 
     private static final String TEMPORARY_DIRECTORY_KEY = "temporaryDirectory";
@@ -52,7 +51,8 @@ public class TemporaryDirectoryTest {
         argumentContext.map().put(TEMPORARY_DIRECTORY_KEY, temporaryDirectory);
 
         System.out.printf(
-                "argument [%s] temporary directory [%s]%n", argumentContext.testArgumentPayload(), temporaryDirectory);
+                "argument [%s] temporary directory [%s]%n",
+                argumentContext.testArgument().payload(), temporaryDirectory);
 
         assertThat(temporaryDirectory.toPath()).exists();
         assertThat(temporaryDirectory.toFile()).exists();
@@ -63,14 +63,17 @@ public class TemporaryDirectoryTest {
         TemporaryDirectory temporaryDirectory = argumentContext.map().getAs(TEMPORARY_DIRECTORY_KEY);
 
         System.out.printf(
-                "argument [%s] temporary directory [%s]%n", argumentContext.testArgumentPayload(), temporaryDirectory);
+                "argument [%s] temporary directory [%s]%n",
+                argumentContext.testArgument().payload(), temporaryDirectory);
 
         assertThat(temporaryDirectory.toPath()).exists();
         assertThat(temporaryDirectory.toFile()).exists();
 
         File temporaryFile = temporaryDirectory.newFile();
 
-        System.out.printf("argument [%s] temporary file [%s]%n", argumentContext.testArgumentPayload(), temporaryFile);
+        System.out.printf(
+                "argument [%s] temporary file [%s]%n",
+                argumentContext.testArgument().payload(), temporaryFile);
 
         assertThat(temporaryFile).exists();
 
