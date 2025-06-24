@@ -53,6 +53,7 @@ public class Logger {
 
         String loggerLevel =
                 configuration.getProperties().getProperty(Constants.ENGINE_LOGGER_LEVEL, Level.INFO.toString());
+
         String regex = configuration.getProperties().getProperty(Constants.ENGINE_LOGGER_REGEX, ".*");
 
         try {
@@ -276,9 +277,9 @@ public class Logger {
     private void log(PrintStream printStream, Level level, String format, Object... objects) {
         printStream.println(LocalDateTime.now().format(DATE_TIME_FORMATTER)
                 + " | "
-                + Thread.currentThread().getName()
-                + " | "
                 + level.toString()
+                + " | "
+                + Thread.currentThread().getName()
                 + " | "
                 + name
                 + " | "
