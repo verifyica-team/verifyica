@@ -5,8 +5,8 @@
   "packageRules": [
     {
       "matchManagers": ["maven-wrapper"],
-      "allowedVersions": "3.9.6",
-      "groupName": "Maven wrapper pinned to 3.9.6"
+      "allowedVersions": "3.9.11",
+      "groupName": "Maven wrapper pinned to 3.9.11"
     },
     {
       "matchPackageNames": ["org.apache.maven:maven-core"],
