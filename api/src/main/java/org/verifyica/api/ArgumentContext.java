@@ -16,7 +16,9 @@
 
 package org.verifyica.api;
 
-/** Interface to implement ArgumentContext */
+/**
+ * Interface to implement ArgumentContext
+ */
 public interface ArgumentContext extends Context {
 
     /**

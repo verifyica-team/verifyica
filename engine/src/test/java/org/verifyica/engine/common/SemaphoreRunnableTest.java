@@ -40,7 +40,7 @@ public class SemaphoreRunnableTest {
                 }
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                // INTENTIONALLY BLANK
+                // INTENTIONALLY EMPTY
             } finally {
                 int value = counter.decrementAndGet();
                 if (value != 0) {

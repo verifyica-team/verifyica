@@ -28,9 +28,11 @@ import org.verifyica.engine.common.Precondition;
 /** Class to implement UrlSupport */
 public class UrlSupport {
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private UrlSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

@@ -28,9 +28,11 @@ public class HashSupport {
 
     private static final Random RANDOM = new Random();
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private HashSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

@@ -26,7 +26,9 @@ import org.verifyica.api.Verifyica;
 @Verifyica.Autowired
 public class ExampleAutowiredClassInterceptor2 implements ClassInterceptor {
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public ExampleAutowiredClassInterceptor2() {
         System.out.printf("%s constructor%n", getClass().getName());
     }

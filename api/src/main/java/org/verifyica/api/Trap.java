@@ -22,7 +22,9 @@ import static java.util.Optional.ofNullable;
 import java.util.Collection;
 import java.util.Optional;
 
-/** Class to implement Trap */
+/**
+ * Class to implement Trap
+ */
 public class Trap {
 
     private Throwable throwable;

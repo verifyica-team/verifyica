@@ -23,9 +23,11 @@ import org.verifyica.api.ClassInterceptor;
  */
 public class DefaultClassInterceptor implements ClassInterceptor {
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public DefaultClassInterceptor() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     // Delegates to default interface methods to propagate

@@ -18,7 +18,9 @@ package org.verifyica.engine.api;
 
 import java.lang.reflect.Method;
 
-/** Interface to implement MethodDefinition */
+/**
+ * Interface to implement MethodDefinition
+ */
 public interface MethodDefinition {
 
     /**

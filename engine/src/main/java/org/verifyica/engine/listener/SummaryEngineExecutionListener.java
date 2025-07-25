@@ -105,7 +105,9 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     private final Map<String, AtomicLong> counterMap;
     private final Stopwatch stopwatch;
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public SummaryEngineExecutionListener() {
         classTestDescriptorTestExecutionResultStatusMap = new ConcurrentHashMap<>();
         classTestDescriptorSkippedMap = new ConcurrentHashMap<>();
@@ -222,7 +224,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                         break;
                     }
                     default: {
-                        // INTENTIONALLY BLANK
+                        // INTENTIONALLY EMPTY
                     }
                 }
             }
@@ -254,7 +256,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                         break;
                     }
                     default: {
-                        // INTENTIONALLY BLANK
+                        // INTENTIONALLY EMPTY
                     }
                 }
             }
@@ -286,7 +288,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                         break;
                     }
                     default: {
-                        // INTENTIONALLY BLANK
+                        // INTENTIONALLY EMPTY
                     }
                 }
             }

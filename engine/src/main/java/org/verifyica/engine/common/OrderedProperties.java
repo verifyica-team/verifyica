@@ -30,13 +30,19 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 
-/** Class to implement OrderedProperties */
+/**
+ * Class to implement OrderedProperties
+ */
 public class OrderedProperties extends Properties {
 
-    /** Ordered Map */
+    /**
+     * Ordered Map
+     */
     private final TreeMap<Object, Object> orderedMap;
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public OrderedProperties() {
         this.orderedMap = new TreeMap<>();
     }

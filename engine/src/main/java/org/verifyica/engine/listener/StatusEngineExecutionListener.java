@@ -82,7 +82,9 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     private final String consoleLogTimingUnits;
     private final Map<TestDescriptor, Stopwatch> stopwatches;
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public StatusEngineExecutionListener() {
         Configuration configuration = ConcreteConfiguration.getInstance();
 

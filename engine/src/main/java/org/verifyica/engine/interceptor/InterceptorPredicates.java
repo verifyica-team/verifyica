@@ -47,9 +47,11 @@ public class InterceptorPredicates {
                 && hasDefaultConstructor(clazz);
     };
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private InterceptorPredicates() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

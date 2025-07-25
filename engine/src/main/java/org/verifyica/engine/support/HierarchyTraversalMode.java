@@ -26,7 +26,9 @@ public enum HierarchyTraversalMode {
     /** Bottom up */
     BOTTOM_UP;
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     HierarchyTraversalMode() {}
 
     /**

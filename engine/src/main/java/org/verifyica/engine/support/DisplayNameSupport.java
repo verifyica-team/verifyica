@@ -20,12 +20,16 @@ import java.lang.reflect.Method;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement DisplayNameSupport */
+/**
+ * Class to implement DisplayNameSupport
+ */
 public class DisplayNameSupport {
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private DisplayNameSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

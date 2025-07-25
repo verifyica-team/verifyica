@@ -25,7 +25,7 @@ public class PlatformThreadFactory implements ThreadFactory {
      * Constructor
      */
     public PlatformThreadFactory() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     @Override

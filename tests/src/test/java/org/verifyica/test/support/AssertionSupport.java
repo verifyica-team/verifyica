@@ -25,7 +25,7 @@ import org.verifyica.api.EngineContext;
 public class AssertionSupport {
 
     private AssertionSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     public static void assertEngineContext(EngineContext engineContext) {

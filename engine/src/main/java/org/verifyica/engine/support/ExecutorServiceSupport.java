@@ -33,9 +33,11 @@ public class ExecutorServiceSupport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorServiceSupport.class);
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private ExecutorServiceSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

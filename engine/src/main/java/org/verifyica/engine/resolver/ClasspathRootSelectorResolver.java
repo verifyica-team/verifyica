@@ -41,9 +41,11 @@ public class ClasspathRootSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathRootSelectorResolver.class);
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public ClasspathRootSelectorResolver() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

@@ -59,6 +59,6 @@ public class ClassInterceptorTest {
 
     public static class MockClassInterceptor implements ClassInterceptor {
 
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 }

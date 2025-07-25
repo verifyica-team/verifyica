@@ -37,9 +37,11 @@ public class StackTracePrinter {
                 });
     }
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private StackTracePrinter() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

@@ -87,20 +87,20 @@ public class OrderSupportTest {
     }
 
     private static class TestClass1 {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     private static class TestClass2 {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     @Verifyica.Order(1)
     private static class TestClass3 {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     @Verifyica.Order(1)
     private static class TestClass4 {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 }

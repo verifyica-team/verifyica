@@ -27,9 +27,11 @@ public final class LoggerFactory {
 
     private final Map<String, Logger> loggers = new ConcurrentHashMap<>();
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private LoggerFactory() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

@@ -20,14 +20,28 @@ import static java.lang.String.format;
 
 import java.util.Random;
 
+/**
+ * Utility class for generating random numbers within a specified range.
+ */
 public class RandomSupport {
 
     private static final Random RANDOM = new Random();
 
+    /**
+     * Constructor
+     */
     private RandomSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
+    /**
+     * Generates a random long value between the specified minimum and maximum values, inclusive.
+     *
+     * @param minimum the minimum value (inclusive)
+     * @param maximum the maximum value (inclusive)
+     * @return a random long value within the specified range
+     * @throws IllegalArgumentException if minimum is greater than maximum
+     */
     public static long randomLong(long minimum, long maximum) {
         if (minimum == maximum) {
             return minimum;

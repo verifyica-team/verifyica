@@ -18,7 +18,9 @@ package org.verifyica.engine.filter;
 
 import java.util.regex.Pattern;
 
-/** Class to implement AbstractFilter */
+/**
+ * Class to implement AbstractFilter
+ */
 public abstract class AbstractFilter implements Filter {
 
     private final Pattern classNamePattern;

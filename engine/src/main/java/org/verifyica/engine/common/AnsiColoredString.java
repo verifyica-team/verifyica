@@ -24,7 +24,9 @@ public class AnsiColoredString {
     private final StringBuilder stringBuilder;
     private AnsiColor lastAnsiColor;
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public AnsiColoredString() {
         this((AnsiColor) null);
     }

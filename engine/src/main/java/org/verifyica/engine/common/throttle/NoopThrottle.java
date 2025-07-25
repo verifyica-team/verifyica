@@ -24,12 +24,12 @@ public class NoopThrottle implements Throttle {
      * Constructor
      */
     private NoopThrottle() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     @Override
     public void throttle() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

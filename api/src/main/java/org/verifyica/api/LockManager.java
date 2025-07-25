@@ -26,15 +26,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/** Class to implement LockManager */
+/**
+ * Class to implement LockManager
+ */
 public class LockManager {
 
     private static final Lock LOCK = new ReentrantLock(true);
     private static final Map<String, LockReference> LOCK_REFERENCES = new HashMap<>();
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private LockManager() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -219,13 +223,17 @@ public class LockManager {
         }
     }
 
-    /** Class to implement LockReference */
+    /**
+     * Class to implement LockReference
+     */
     private static class LockReference {
 
         private final ReentrantLock reentrantLock;
         private final Set<Thread> threads;
 
-        /** Constructor */
+        /**
+         * Constructor
+         */
         private LockReference() {
             reentrantLock = new ReentrantLock(true);
             threads = new HashSet<>();

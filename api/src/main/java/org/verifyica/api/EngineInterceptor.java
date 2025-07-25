@@ -16,7 +16,9 @@
 
 package org.verifyica.api;
 
-/** Interface to implement EngineInterceptor */
+/**
+ * Interface to implement EngineInterceptor
+ */
 public interface EngineInterceptor {
 
     /**
@@ -26,7 +28,7 @@ public interface EngineInterceptor {
      * @throws Throwable Throwable
      */
     default void initialize(EngineContext engineContext) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -36,6 +38,6 @@ public interface EngineInterceptor {
      * @throws Throwable Throwable
      */
     default void destroy(EngineContext engineContext) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 }

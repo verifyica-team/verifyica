@@ -25,9 +25,11 @@ import org.verifyica.engine.common.Precondition;
 /** Class to implement TagSupport */
 public class TagSupport {
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private TagSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

@@ -53,7 +53,9 @@ public class ConcreteConfiguration implements Configuration {
     private final Properties properties;
     private Path propertiesPath;
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private ConcreteConfiguration() {
         properties = load();
     }

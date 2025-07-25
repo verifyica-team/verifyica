@@ -34,11 +34,11 @@ public class DisplayNameSupportTest {
     }
 
     private static class TestClass1 {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     @Verifyica.DisplayName("CustomDisplayName")
     private static class TestClass2 {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 }

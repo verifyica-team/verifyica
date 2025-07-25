@@ -26,7 +26,7 @@ public class VirtualThreadFactory implements ThreadFactory {
      * Constructor
      */
     public VirtualThreadFactory() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     @Override

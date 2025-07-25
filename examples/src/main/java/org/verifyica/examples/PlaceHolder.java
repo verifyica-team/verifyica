@@ -16,11 +16,15 @@
 
 package org.verifyica.examples;
 
-/** PlaceHolder to prevent Maven warning */
+/**
+ * PlaceHolder to prevent Maven warning
+ */
 public class PlaceHolder {
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public PlaceHolder() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 }

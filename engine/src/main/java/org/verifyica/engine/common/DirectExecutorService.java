@@ -28,9 +28,11 @@ public class DirectExecutorService extends AbstractExecutorService {
 
     private volatile boolean isShutdown = false;
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public DirectExecutorService() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     @Override

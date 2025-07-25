@@ -22,10 +22,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/** Interface that contains all Verifyica annotations */
+/**
+ * Interface that contains all Verifyica annotations
+ */
 public @interface Verifyica {
 
-    /** ArgumentSupplier annotation */
+    /**
+     * ArgumentSupplier annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface ArgumentSupplier {
@@ -38,43 +42,59 @@ public @interface Verifyica {
         int parallelism() default 1;
     }
 
-    /** Prepare annotation */
+    /**
+     * Prepare annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Prepare {}
 
-    /** BeforeAll annotation */
+    /**
+     * BeforeAll annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface BeforeAll {}
 
-    /** BeforeEach annotation */
+    /**
+     * BeforeEach annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface BeforeEach {}
 
-    /** Test annotation */
+    /**
+     * Test annotation
+     */
     @org.junit.platform.commons.annotation.Testable
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Test {}
 
-    /** AfterEach annotation */
+    /**
+     * AfterEach annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface AfterEach {}
 
-    /** AfterAll annotation */
+    /**
+     * AfterAll annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface AfterAll {}
 
-    /** Conclude annotation */
+    /**
+     * Conclude annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Conclude {}
 
-    /** Order annotation */
+    /**
+     * Order annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Order {
@@ -87,12 +107,16 @@ public @interface Verifyica {
         int value();
     }
 
-    /** Disabled annotation */
+    /**
+     * Disabled annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Disabled {}
 
-    /** Tag annotation */
+    /**
+     * Tag annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @Repeatable(Tags.class)
@@ -106,7 +130,9 @@ public @interface Verifyica {
         String value();
     }
 
-    /** Tags annotation */
+    /**
+     * Tags annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Tags {
@@ -119,7 +145,9 @@ public @interface Verifyica {
         Tag[] value();
     }
 
-    /** DisplayName annotation */
+    /**
+     * DisplayName annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface DisplayName {
@@ -132,23 +160,31 @@ public @interface Verifyica {
         String value();
     }
 
-    /** ClassInterceptorSupplier annotation */
+    /**
+     * ClassInterceptorSupplier annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface ClassInterceptorSupplier {}
 
-    /** Autowired annotation */
+    /**
+     * Autowired annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Autowired {}
 
-    /** Testable annotation */
+    /**
+     * Testable annotation
+     */
     @org.junit.platform.commons.annotation.Testable
     @Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Testable {}
 
-    /** DependsOn annotation */
+    /**
+     * DependsOn annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @Repeatable(DependsOns.class)
@@ -162,7 +198,9 @@ public @interface Verifyica {
         String value();
     }
 
-    /** DependsOns annotation */
+    /**
+     * DependsOns annotation
+     */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface DependsOns {

@@ -16,7 +16,9 @@
 
 package org.verifyica.api;
 
-/** Interface to implement Context */
+/**
+ * Interface to implement Context
+ */
 public interface Context {
 
     /**

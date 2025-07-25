@@ -24,7 +24,9 @@ import org.verifyica.api.EngineContext;
 
 public class ExampleClassInterceptor1 implements ClassInterceptor {
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public ExampleClassInterceptor1() {
         System.out.printf("%s constructor%n", getClass().getName());
     }

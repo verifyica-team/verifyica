@@ -20,7 +20,9 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Properties;
 
-/** Interface to implement Configuration */
+/**
+ * Interface to implement Configuration
+ */
 public interface Configuration {
 
     /**

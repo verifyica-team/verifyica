@@ -35,9 +35,11 @@ public class ClassSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassSelectorResolver.class);
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public ClassSelectorResolver() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

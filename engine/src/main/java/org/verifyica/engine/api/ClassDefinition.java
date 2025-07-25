@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Set;
 import org.verifyica.api.Argument;
 
-/** Class to implement ClassDefinition */
+/**
+ * Class to implement ClassDefinition
+ */
 public interface ClassDefinition {
 
     /**

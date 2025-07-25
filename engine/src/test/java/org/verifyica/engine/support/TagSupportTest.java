@@ -66,22 +66,22 @@ public class TagSupportTest {
     }
 
     private static class TestClass1 {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     @Verifyica.Tag("tag1")
     @Verifyica.Tag("tag2")
     private static class TestClass2 {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     @Verifyica.Tag("\r\n\ttag1\r\n\t ")
     private static class TestClass3 {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     @Verifyica.Tag("")
     private static class TestClass4 {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 }

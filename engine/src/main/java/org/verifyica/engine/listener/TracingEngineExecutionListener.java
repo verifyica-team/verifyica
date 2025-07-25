@@ -28,9 +28,11 @@ public class TracingEngineExecutionListener implements EngineExecutionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TracingEngineExecutionListener.class);
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public TracingEngineExecutionListener() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     @Override

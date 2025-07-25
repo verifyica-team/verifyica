@@ -30,7 +30,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-/** Class to implement TemporaryDirectory */
+/**
+ * Class to implement TemporaryDirectory
+ */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class TemporaryDirectory implements AutoCloseable {
 
@@ -215,7 +217,7 @@ public class TemporaryDirectory implements AutoCloseable {
             try {
                 deleteRecursively(path);
             } catch (IOException e) {
-                // INTENTIONALLY BLANK
+                // INTENTIONALLY EMPTY
             }
         }));
     }

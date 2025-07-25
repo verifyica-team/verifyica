@@ -18,14 +18,16 @@ package org.verifyica.api;
 
 import java.util.function.BooleanSupplier;
 
-/** Class to implement Execution */
+/**
+ * Class to implement Execution
+ */
 public class Execution {
 
     /**
      * Constructor
      */
     private Execution() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

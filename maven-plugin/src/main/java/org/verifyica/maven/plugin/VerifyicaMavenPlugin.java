@@ -155,7 +155,9 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         System.setProperty(Constants.MAVEN_PLUGIN, "true");
     }
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public VerifyicaMavenPlugin() {
         super();
     }
@@ -434,7 +436,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                 value = properties.getProperty(MAVEN_PLUGIN_VERSION_KEY).trim();
             }
         } catch (IOException e) {
-            // INTENTIONALLY BLANK
+            // INTENTIONALLY EMPTY
         }
 
         return value;

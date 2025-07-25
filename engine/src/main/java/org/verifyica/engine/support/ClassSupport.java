@@ -51,9 +51,11 @@ public class ClassSupport {
     private static final Lock LOCK = new ReentrantLock(true);
     private static List<URI> URIS;
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private ClassSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

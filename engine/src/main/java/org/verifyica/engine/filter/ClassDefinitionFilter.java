@@ -23,14 +23,18 @@ import org.verifyica.engine.api.ClassDefinition;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement ClassDefinitionFilter */
+/**
+ * Class to implement ClassDefinitionFilter
+ */
 public class ClassDefinitionFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassDefinitionFilter.class);
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private ClassDefinitionFilter() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -64,7 +68,7 @@ public class ClassDefinitionFilter {
                         break;
                     }
                     default: {
-                        // INTENTIONALLY BLANK
+                        // INTENTIONALLY EMPTY
                     }
                 }
             }

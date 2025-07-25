@@ -16,12 +16,16 @@
 
 package org.verifyica.engine.common;
 
-/** Class to implement Precondition */
+/**
+ * Class to implement Precondition
+ */
 public class Precondition {
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private Precondition() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

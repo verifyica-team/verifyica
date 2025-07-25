@@ -19,7 +19,9 @@ package org.verifyica.api;
 import java.lang.reflect.Method;
 import java.util.function.Predicate;
 
-/** Interface to implement ClassInterceptor */
+/**
+ * Interface to implement ClassInterceptor
+ */
 public interface ClassInterceptor {
 
     /**
@@ -34,7 +36,7 @@ public interface ClassInterceptor {
      * @throws Throwable throwable
      */
     default void initialize(EngineContext engineContext) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -54,7 +56,7 @@ public interface ClassInterceptor {
      * @throws Throwable Throwable
      */
     default void preInstantiate(EngineContext engineContext, Class<?> testClass) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -79,7 +81,7 @@ public interface ClassInterceptor {
      * @throws Throwable Throwable
      */
     default void prePrepare(ClassContext classContext) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -100,7 +102,7 @@ public interface ClassInterceptor {
      * @throws Throwable Throwable
      */
     default void preBeforeAll(ArgumentContext argumentContext) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -121,7 +123,7 @@ public interface ClassInterceptor {
      * @throws Throwable Throwable
      */
     default void preBeforeEach(ArgumentContext argumentContext) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -143,7 +145,7 @@ public interface ClassInterceptor {
      * @throws Throwable Throwable
      */
     default void preTest(ArgumentContext argumentContext, Method testMethod) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -165,7 +167,7 @@ public interface ClassInterceptor {
      * @throws Throwable Throwable
      */
     default void preAfterEach(ArgumentContext argumentContext) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -186,7 +188,7 @@ public interface ClassInterceptor {
      * @throws Throwable Throwable
      */
     default void preAfterAll(ArgumentContext argumentContext) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -207,7 +209,7 @@ public interface ClassInterceptor {
      * @throws Throwable Throwable
      */
     default void preConclude(ClassContext classContext) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -228,7 +230,7 @@ public interface ClassInterceptor {
      * @throws Throwable Throwable
      */
     default void onDestroy(ClassContext classContext) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
@@ -238,7 +240,7 @@ public interface ClassInterceptor {
      * @throws Throwable Throwable
      */
     default void destroy(EngineContext engineContext) throws Throwable {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

@@ -36,9 +36,11 @@ public class MethodSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodSelectorResolver.class);
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public MethodSelectorResolver() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

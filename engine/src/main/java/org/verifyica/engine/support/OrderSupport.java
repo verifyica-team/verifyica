@@ -34,9 +34,11 @@ import org.verifyica.engine.exception.TestClassDefinitionException;
 /** Class to implement OrderSupport */
 public class OrderSupport {
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private OrderSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

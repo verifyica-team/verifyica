@@ -25,7 +25,7 @@ public class RandomSupport {
     private static final Random RANDOM = new Random();
 
     private RandomSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     public static long randomLong(long minimum, long maximum) {

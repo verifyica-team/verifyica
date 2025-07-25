@@ -38,9 +38,11 @@ public final class TimestampSupport {
         SHORT
     }
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private TimestampSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

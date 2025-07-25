@@ -53,7 +53,7 @@ public class PrintStreamsTest {
         try {
             Thread.sleep(RandomSupport.randomLong(0, 1000));
         } catch (InterruptedException e) {
-            // INTENTIONALLY BLANK
+            // INTENTIONALLY EMPTY
         }
     }
 }

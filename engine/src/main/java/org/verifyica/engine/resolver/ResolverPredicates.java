@@ -132,9 +132,11 @@ public class ResolverPredicates {
                 && method.isAnnotationPresent(Verifyica.Conclude.class);
     };
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private ResolverPredicates() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

@@ -21,7 +21,7 @@ import java.util.Random;
 public class RandomSupport {
 
     private RandomSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

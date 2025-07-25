@@ -387,7 +387,7 @@ public class ArgumentTest {
     public static class TestObject1 {
 
         public TestObject1() {
-            // INTENTIONALLY BLANK
+            // INTENTIONALLY EMPTY
         }
     }
 

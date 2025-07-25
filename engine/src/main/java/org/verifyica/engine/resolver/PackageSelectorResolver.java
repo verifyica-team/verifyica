@@ -36,9 +36,11 @@ public class PackageSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PackageSelectorResolver.class);
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public PackageSelectorResolver() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

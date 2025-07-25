@@ -63,7 +63,7 @@ public class Logger {
                 level.set(Level.decode(loggerLevel));
             }
         } catch (Throwable t) {
-            // INTENTIONALLY BLANK
+            // INTENTIONALLY EMPTY
         }
     }
 

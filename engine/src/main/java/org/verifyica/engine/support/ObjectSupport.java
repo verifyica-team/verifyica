@@ -27,9 +27,11 @@ import org.verifyica.engine.common.Precondition;
 @SuppressWarnings("unchecked")
 public class ObjectSupport {
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private ObjectSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

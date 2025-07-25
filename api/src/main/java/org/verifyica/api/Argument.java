@@ -26,7 +26,9 @@ import java.math.BigInteger;
  */
 public interface Argument<T> extends Named {
 
-    /** Empty Argument */
+    /**
+     * Empty Argument
+     */
     Argument<Object> EMPTY = new Empty();
 
     @Override
@@ -269,12 +271,16 @@ public interface Argument<T> extends Named {
         }
     }
 
-    /** Class to implement Empty */
+    /**
+     * Class to implement Empty
+     */
     class Empty implements Argument<Object> {
 
         private final String NAME = "---";
 
-        /** Constructor */
+        /**
+         * Constructor
+         */
         private Empty() {
             // INITIALLY BLANK
         }

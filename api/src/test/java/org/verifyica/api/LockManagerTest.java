@@ -115,7 +115,7 @@ public class LockManagerTest {
                         // System.out.printf("  thread [%-9s] sleep [%d]%n", threadName, sleepTime);
                         Thread.sleep(sleepTime);
                     } catch (InterruptedException e) {
-                        // INTENTIONALLY BLANK
+                        // INTENTIONALLY EMPTY
                     }
                 } finally {
                     // System.out.printf("  thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
@@ -164,7 +164,7 @@ public class LockManagerTest {
             try {
                 countDownLatch.await();
             } catch (InterruptedException e) {
-                // INTENTIONALLY BLANK
+                // INTENTIONALLY EMPTY
             }
 
             LockManager.unlock(key);

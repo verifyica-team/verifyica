@@ -76,7 +76,9 @@ public class SummaryEngineExecutionListener2 implements EngineExecutionListener 
 
     private final Stopwatch stopwatch;
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public SummaryEngineExecutionListener2() {
         counterMap = Collections.synchronizedMap(new LinkedHashMap<>());
 

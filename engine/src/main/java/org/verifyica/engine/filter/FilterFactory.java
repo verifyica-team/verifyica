@@ -47,9 +47,11 @@ public class FilterFactory {
         filterTypeMap.put("ExcludeTaggedClass", Filter.Type.EXCLUDE_TAGGED_CLASS);
     }
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private FilterFactory() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

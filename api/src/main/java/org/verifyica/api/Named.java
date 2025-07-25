@@ -16,7 +16,9 @@
 
 package org.verifyica.api;
 
-/** Interface to implement Named */
+/**
+ * Interface to implement Named
+ */
 public interface Named {
 
     /**

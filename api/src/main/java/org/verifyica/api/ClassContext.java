@@ -18,7 +18,9 @@ package org.verifyica.api;
 
 import java.util.Set;
 
-/** Interface to implement ClassContext */
+/**
+ * Interface to implement ClassContext
+ */
 public interface ClassContext extends Context {
 
     /**

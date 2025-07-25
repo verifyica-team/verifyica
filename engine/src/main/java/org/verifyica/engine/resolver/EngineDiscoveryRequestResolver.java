@@ -94,7 +94,7 @@ public class EngineDiscoveryRequestResolver {
      * Constructor
      */
     public EngineDiscoveryRequestResolver() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

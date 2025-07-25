@@ -22,7 +22,7 @@ import org.verifyica.api.ClassContext;
 public class TestSupport {
 
     private TestSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

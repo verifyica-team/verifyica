@@ -153,8 +153,10 @@ public final class Constants {
     /** Configuration constant */
     public static final String MAVEN_PLUGIN_LOG_TIMING_UNITS = MAVEN_PLUGIN_LOG + ".units";
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private Constants() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 }

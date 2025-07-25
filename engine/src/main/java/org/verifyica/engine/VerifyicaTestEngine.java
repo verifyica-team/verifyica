@@ -80,7 +80,9 @@ import org.verifyica.engine.support.ExecutorServiceSupport;
 import org.verifyica.engine.support.HashSupport;
 import org.verifyica.engine.support.ListSupport;
 
-/** Class to implement VerifyicaEngine */
+/**
+ * Class to implement VerifyicaEngine
+ */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class VerifyicaTestEngine implements TestEngine {
 
@@ -137,7 +139,9 @@ public class VerifyicaTestEngine implements TestEngine {
         return of(VERSION);
     }
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public VerifyicaTestEngine() {
         throwables = new ArrayList<>();
     }
@@ -319,7 +323,7 @@ public class VerifyicaTestEngine implements TestEngine {
                 value = properties.getProperty(ENGINE_PROPERTIES_VERSION_KEY).trim();
             }
         } catch (IOException e) {
-            // INTENTIONALLY BLANK
+            // INTENTIONALLY EMPTY
         }
 
         return value;

@@ -42,7 +42,7 @@ public class Injector {
      * Constructor
      */
     private Injector() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

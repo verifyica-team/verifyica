@@ -39,9 +39,11 @@ public class UniqueIdSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UniqueIdSelectorResolver.class);
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public UniqueIdSelectorResolver() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**

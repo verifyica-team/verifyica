@@ -23,9 +23,11 @@ import java.util.List;
 /** Class to implement ListSupport */
 public class ListSupport {
 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     private ListSupport() {
-        // INTENTIONALLY BLANK
+        // INTENTIONALLY EMPTY
     }
 
     /**
