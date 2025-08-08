@@ -16,6 +16,8 @@
 
 package org.verifyica.engine.support;
 
+import static java.lang.String.format;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -161,7 +163,7 @@ public final class TimestampSupport {
      * @return a milliseconds.nanoseconds String
      */
     public static String convertDurationToMillisAndNanoseconds(Duration duration) {
-        return String.format("%d.%06d", duration.toMillis(), duration.getNano() % 1_000_000);
+        return format("%d.%06d", duration.toMillis(), duration.getNano() % 1_000_000);
     }
 
     /**

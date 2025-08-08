@@ -16,6 +16,7 @@
 
 package org.verifyica.engine.listener;
 
+import static java.lang.String.format;
 import static org.verifyica.engine.support.TimestampSupport.convertDurationToMillisAndNanoseconds;
 
 import java.time.Duration;
@@ -474,7 +475,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
      */
     private static String pad(long width, long value) {
         if (width > 0) {
-            return String.format("%" + width + "d", value);
+            return format("%" + width + "d", value);
         } else {
             return String.valueOf(value);
         }

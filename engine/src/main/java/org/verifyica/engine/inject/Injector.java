@@ -16,6 +16,8 @@
 
 package org.verifyica.engine.inject;
 
+import static java.lang.String.format;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -149,8 +151,7 @@ public class Injector {
                 field.setAccessible(true);
                 field.set(target, value);
             } catch (IllegalAccessException e) {
-                throw new EngineException(
-                        String.format("Exception injecting object into field [%s]", field.getName()), e);
+                throw new EngineException(format("Exception injecting object into field [%s]", field.getName()), e);
             } finally {
                 field.setAccessible(originalAccessibility);
             }
