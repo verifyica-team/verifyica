@@ -27,44 +27,44 @@ public class StopwatchTest {
     public void test() {
         Stopwatch stopwatch = new Stopwatch();
 
-        assertThat(stopwatch.elapsedTime()).isNotNull();
+        assertThat(stopwatch.elapsed()).isNotNull();
 
         long start = System.currentTimeMillis();
         sleep();
         long stop = System.currentTimeMillis();
 
-        assertThat(stopwatch.elapsedTime().toMillis()).isBetween(0L, (stop - start) + 50);
+        assertThat(stopwatch.elapsed().toMillis()).isBetween(0L, (stop - start) + 50);
 
         sleep();
 
         stop = System.currentTimeMillis();
 
-        assertThat(stopwatch.elapsedTime().toMillis()).isBetween(0L, (stop - start) + 50);
+        assertThat(stopwatch.elapsed().toMillis()).isBetween(0L, (stop - start) + 50);
 
         stopwatch.stop();
 
-        Duration duration = stopwatch.elapsedTime();
+        Duration duration = stopwatch.elapsed();
         assertThat(duration).isNotNull();
 
         sleep();
 
-        Duration duration2 = stopwatch.elapsedTime();
+        Duration duration2 = stopwatch.elapsed();
         assertThat(duration2).isEqualTo(duration);
 
         start = System.currentTimeMillis();
 
         stopwatch.reset();
-        assertThat(stopwatch.elapsedTime()).isNotNull();
+        assertThat(stopwatch.elapsed()).isNotNull();
 
         sleep();
 
         stop = System.currentTimeMillis();
 
-        assertThat(stopwatch.elapsedTime().toMillis()).isBetween(0L, (stop - start) + 50);
+        assertThat(stopwatch.elapsed().toMillis()).isBetween(0L, (stop - start) + 50);
 
         stopwatch.stop();
 
-        assertThat(stopwatch.elapsedTime().toNanos()).isEqualTo(Long.parseLong(stopwatch.toString()));
+        assertThat(stopwatch.elapsed().toNanos()).isEqualTo(Long.parseLong(stopwatch.toString()));
     }
 
     private static void sleep() {

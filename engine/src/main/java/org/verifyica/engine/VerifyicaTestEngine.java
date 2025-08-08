@@ -175,8 +175,7 @@ public class VerifyicaTestEngine implements TestEngine {
             LOGGER.trace(
                     "discovered [%d] test classes",
                     engineDescriptor.getChildren().size());
-            LOGGER.trace(
-                    "discover() elapsedTime [%d] ms", stopwatch.elapsedTime().toMillis());
+            LOGGER.trace("discover() elapsedTime [%d] ms", stopwatch.elapsed().toMillis());
 
             return engineDescriptor;
         } catch (TestClassDefinitionException e) {
@@ -303,8 +302,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
             engineExecutionListener.executionFinished(executionRequest.getRootTestDescriptor(), testExecutionResult);
 
-            LOGGER.trace(
-                    "execute() elapsedTime [%d] ms", stopwatch.elapsedTime().toMillis());
+            LOGGER.trace("execute() elapsedTime [%d] ms", stopwatch.elapsed().toMillis());
         }
     }
 

@@ -161,7 +161,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     @Override
     public void executionSkipped(TestDescriptor testDescriptor, String reason) {
         if (testDescriptor instanceof TestableTestDescriptor) {
-            Duration elapsedTime = stopwatches.remove(testDescriptor).stop().elapsedTime();
+            Duration elapsedTime = stopwatches.remove(testDescriptor).stop().elapsed();
 
             try {
                 String testArgumentDisplayName = null;
@@ -219,7 +219,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     @Override
     public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
         if (testDescriptor instanceof TestableTestDescriptor) {
-            Duration elapsedTime = stopwatches.remove(testDescriptor).stop().elapsedTime();
+            Duration elapsedTime = stopwatches.remove(testDescriptor).stop().elapsed();
 
             try {
                 String testArgumentDisplayName = null;

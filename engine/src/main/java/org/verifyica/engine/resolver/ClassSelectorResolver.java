@@ -72,7 +72,7 @@ public class ClassSelectorResolver {
 
         LOGGER.trace(
                 "resolve() classSelectors [%d] elapsedTime [%d] ms",
-                classSelectorCount.get(), stopwatch.elapsedTime().toMillis());
+                classSelectorCount.get(), stopwatch.elapsed().toMillis());
     }
 
     private void processInnerClasses(Class<?> testClass, Map<Class<?>, Set<Method>> classMethodSet) {

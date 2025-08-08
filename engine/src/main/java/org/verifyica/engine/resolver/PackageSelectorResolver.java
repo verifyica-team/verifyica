@@ -73,6 +73,6 @@ public class PackageSelectorResolver {
 
         LOGGER.trace(
                 "resolve() packageSelectors [%d] elapsedTime [%d] ms",
-                packageSelectorsCount.get(), stopwatch.elapsedTime().toMillis());
+                packageSelectorsCount.get(), stopwatch.elapsed().toMillis());
     }
 }

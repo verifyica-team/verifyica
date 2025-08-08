@@ -18,40 +18,64 @@ package org.verifyica.engine.common;
 
 import java.time.Duration;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/** Class to implement Stopwatch */
-@SuppressWarnings("UnusedReturnValue")
-public class Stopwatch {
+/**
+ * Class to implement a Stopwatch
+ *
+ * <p>This class provides a simple way to measure elapsed time, supporting
+ * multiple start/stop cycles with accumulated duration. All operations are
+ * thread-safe.
+ */
+public final class Stopwatch {
 
-    private final UUID uuid;
+    /**
+     * Unique identifier for this stopwatch instance.
+     */
+    private final FastId fastId = FastId.randomFastId();
+
+    /**
+     * Read-write lock to ensure thread safety.
+     */
     private final ReadWriteLock readWriteLock;
+
+    /**
+     * Accumulated time across completed runs (nanoseconds).
+     */
+    private long accumulatedNanos;
+
+    /**
+     * Start time of current running segment (nanoseconds), valid only when running
+     */
     private long startNanoTime;
-    private Long stopNanoTime;
+
+    /**
+     * Whether the stopwatch is currently running.
+     */
+    private boolean running;
 
     /**
      * Constructor
      *
-     * <p>The Stopwatch starts automatically
+     * <p>The Stopwatch starts automatically.
      */
     public Stopwatch() {
-        uuid = UUID.randomUUID();
-        readWriteLock = new ReentrantReadWriteLock(true);
-        reset();
+        this.readWriteLock = new ReentrantReadWriteLock(true);
+        reset(); // auto-starts
     }
 
     /**
-     * Method to reset the Stopwatch
+     * Reset the stopwatch and start it running.
      *
-     * @return the Stopwatch
+     * @return this stopwatch
      */
     public Stopwatch reset() {
         readWriteLock.writeLock().lock();
         try {
+            accumulatedNanos = 0L;
             startNanoTime = System.nanoTime();
-            stopNanoTime = null;
+            running = true;
             return this;
         } finally {
             readWriteLock.writeLock().unlock();
@@ -59,14 +83,37 @@ public class Stopwatch {
     }
 
     /**
-     * Method to stop the Stopwatch
+     * Start (or resume) the stopwatch. No-op if already running.
      *
-     * @return the Stopwatch
+     * @return this stopwatch
+     */
+    public Stopwatch start() {
+        readWriteLock.writeLock().lock();
+        try {
+            if (!running) {
+                startNanoTime = System.nanoTime();
+                running = true;
+            }
+            return this;
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Stop (pause) the stopwatch and accumulate elapsed time.
+     * No-op if already stopped.
+     *
+     * @return this stopwatch
      */
     public Stopwatch stop() {
         readWriteLock.writeLock().lock();
         try {
-            stopNanoTime = System.nanoTime();
+            if (running) {
+                long now = System.nanoTime();
+                accumulatedNanos += (now - startNanoTime);
+                running = false;
+            }
             return this;
         } finally {
             readWriteLock.writeLock().unlock();
@@ -74,18 +121,42 @@ public class Stopwatch {
     }
 
     /**
-     * Method to get the Stopwatch elapsed time in nanoseconds
+     * Returns the total elapsed time across all runs.
+     * If running, includes time since the last start.
      *
-     * @return the Stopwatch elapsed time in nanoseconds
+     * @return total elapsed duration
      */
-    public Duration elapsedTime() {
+    public Duration elapsed() {
         readWriteLock.readLock().lock();
         try {
-            if (stopNanoTime == null) {
-                return Duration.ofNanos(System.nanoTime() - startNanoTime);
-            } else {
-                return Duration.ofNanos(stopNanoTime - startNanoTime);
+            long total = accumulatedNanos;
+            if (running) {
+                total += (System.nanoTime() - startNanoTime);
             }
+            return Duration.ofNanos(total);
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Alias for {@link #elapsed()}.
+     *
+     * @return total elapsed duration
+     */
+    public Duration lap() {
+        return elapsed();
+    }
+
+    /**
+     * Check if the stopwatch is currently running.
+     *
+     * @return whether the stopwatch is currently running
+     */
+    public boolean isRunning() {
+        readWriteLock.readLock().lock();
+        try {
+            return running;
         } finally {
             readWriteLock.readLock().unlock();
         }
@@ -93,19 +164,18 @@ public class Stopwatch {
 
     @Override
     public String toString() {
-        return String.valueOf(elapsedTime().toNanos());
+        return String.valueOf(elapsed().toNanos());
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Stopwatch)) return false;
         Stopwatch stopwatch = (Stopwatch) o;
-        return Objects.equals(uuid, stopwatch.uuid);
+        return Objects.equals(fastId, stopwatch.fastId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid);
+        return Objects.hashCode(fastId);
     }
 }
