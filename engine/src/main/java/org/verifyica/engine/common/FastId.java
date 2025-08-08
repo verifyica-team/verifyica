@@ -23,6 +23,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class FastId implements Comparable<FastId> {
 
+    private static final char[] HEX = "0123456789abcdef".toCharArray();
+
     private final long msb;
     private final long lsb;
 
@@ -69,8 +71,6 @@ public final class FastId implements Comparable<FastId> {
         writeHex(out, 24, lsb & 0xffffffffffffL, 12);
         return new String(out);
     }
-
-    private static final char[] HEX = "0123456789abcdef".toCharArray();
 
     private static void writeHex(char[] dest, int offset, long value, int digits) {
         for (int i = digits - 1; i >= 0; i--) {
