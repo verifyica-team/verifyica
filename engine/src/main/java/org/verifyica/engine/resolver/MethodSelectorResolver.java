@@ -82,6 +82,6 @@ public class MethodSelectorResolver {
 
         LOGGER.trace(
                 "resolve() methodSelectors [%d] elapsedTime [%d] ms",
-                methodSelectorCount.get(), stopwatch.elapsedTime().toMillis());
+                methodSelectorCount.get(), stopwatch.elapsed().toMillis());
     }
 }

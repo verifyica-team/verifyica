@@ -120,6 +120,6 @@ public class UniqueIdSelectorResolver {
 
         LOGGER.trace(
                 "resolve() uniqueIdSelectors [%d] elapsedTime [%d] ms",
-                uniqueIdSelectorCount.get(), stopwatch.elapsedTime().toMillis());
+                uniqueIdSelectorCount.get(), stopwatch.elapsed().toMillis());
     }
 }

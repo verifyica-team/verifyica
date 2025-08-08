@@ -390,7 +390,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
             println(INFO + message);
 
-            Duration elapsedTime = stopwatch.elapsedTime();
+            Duration elapsedTime = stopwatch.elapsed();
 
             if (failureCount.get() > 0) {
                 compactSummary.append(" ").append(AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("TESTS FAILED"));

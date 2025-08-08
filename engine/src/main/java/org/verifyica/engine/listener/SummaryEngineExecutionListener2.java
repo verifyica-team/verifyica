@@ -177,7 +177,7 @@ public class SummaryEngineExecutionListener2 implements EngineExecutionListener 
         try {
             stopwatch.stop();
 
-            Duration elapsedTime = stopwatch.elapsedTime();
+            Duration elapsedTime = stopwatch.elapsed();
 
             long failureCount = 0;
 

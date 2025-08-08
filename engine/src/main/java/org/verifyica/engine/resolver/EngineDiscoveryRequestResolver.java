@@ -201,7 +201,7 @@ public class EngineDiscoveryRequestResolver {
             stopwatch.stop();
             LOGGER.trace(
                     "resolveSelectors() elapsedTime [%d] ms",
-                    stopwatch.elapsedTime().toMillis());
+                    stopwatch.elapsed().toMillis());
         }
     }
 
@@ -239,7 +239,7 @@ public class EngineDiscoveryRequestResolver {
 
         LOGGER.trace(
                 "resolveTestArguments() elapsedTime [%d] ms",
-                stopwatch.elapsedTime().toMillis());
+                stopwatch.elapsed().toMillis());
     }
 
     /**
@@ -327,8 +327,7 @@ public class EngineDiscoveryRequestResolver {
         }
 
         LOGGER.trace(
-                "getTestArguments() elapsedTime [%d] ms",
-                stopwatch.elapsedTime().toMillis());
+                "getTestArguments() elapsedTime [%d] ms", stopwatch.elapsed().toMillis());
 
         return testArguments;
     }
@@ -493,7 +492,7 @@ public class EngineDiscoveryRequestResolver {
 
         LOGGER.trace(
                 "buildEngineDescriptor() elapsedTime [%d] ms",
-                stopwatch.elapsedTime().toMillis());
+                stopwatch.elapsed().toMillis());
     }
 
     /**

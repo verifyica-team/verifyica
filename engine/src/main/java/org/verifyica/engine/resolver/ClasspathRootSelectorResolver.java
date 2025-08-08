@@ -93,6 +93,6 @@ public class ClasspathRootSelectorResolver {
 
         LOGGER.trace(
                 "resolve() classpathRootSelectors [%d] elapsedTime [%d] ms",
-                classpathRootSelectorCount.get(), stopwatch.elapsedTime().toMillis());
+                classpathRootSelectorCount.get(), stopwatch.elapsed().toMillis());
     }
 }

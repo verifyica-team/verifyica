@@ -210,7 +210,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                     .append(AnsiColor.NONE));
             System.out.println(ERROR + SEPARATOR);
 
-            Duration elapsedTime = stopwatch.elapsedTime();
+            Duration elapsedTime = stopwatch.elapsed();
 
             System.out.println(new AnsiColoredString()
                     .append(ERROR)
