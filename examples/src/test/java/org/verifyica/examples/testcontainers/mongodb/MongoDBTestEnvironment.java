@@ -114,8 +114,8 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     public static Stream<MongoDBTestEnvironment> createTestEnvironments() {
         return Stream.of(
                 new MongoDBTestEnvironment("mongo:5.0.31"),
-                new MongoDBTestEnvironment("mongo:6.0.24"),
-                new MongoDBTestEnvironment("mongo:7.0.21"),
-                new MongoDBTestEnvironment("mongo:8.0.10"));
+                new MongoDBTestEnvironment("mongo:6.0.26"),
+                new MongoDBTestEnvironment("mongo:7.0.23"),
+                new MongoDBTestEnvironment("mongo:8.0.13"));
     }
 }
