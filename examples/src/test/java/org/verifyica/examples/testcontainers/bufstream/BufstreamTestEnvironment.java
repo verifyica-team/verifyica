@@ -76,13 +76,13 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
         // info("initialize test environment [%s] ...", dockerImageName);
 
         for (int i = 0; i < 10; i++) {
-            int HOST_KAFKA = getFreePort();
-            int HOST_ADMIN = getFreePort();
+            int HOST_KAFKA_PORT = getFreePort();
+            int HOST_ADMIN_PORT = getFreePort();
 
             String configuration = new TextBlock()
                     .line("kafka:")
                     .line("  address: 0.0.0.0:9092")
-                    .line("  public_address: localhost:" + HOST_KAFKA)
+                    .line("  public_address: localhost:" + HOST_KAFKA_PORT)
                     .line("  num_partitions: 1")
                     .line("admin_address: 0.0.0.0:9089")
                     .toString();
@@ -97,8 +97,8 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
                         // bind fixed host ports -> container ports
                         .withCreateContainerCmdModifier(createContainerCmd -> {
                             Ports bindings = new Ports();
-                            bindings.bind(ExposedPort.tcp(9092), Ports.Binding.bindPort(HOST_KAFKA));
-                            bindings.bind(ExposedPort.tcp(9089), Ports.Binding.bindPort(HOST_ADMIN));
+                            bindings.bind(ExposedPort.tcp(9092), Ports.Binding.bindPort(HOST_KAFKA_PORT));
+                            bindings.bind(ExposedPort.tcp(9089), Ports.Binding.bindPort(HOST_ADMIN_PORT));
                             Objects.requireNonNull(createContainerCmd.getHostConfig())
                                     .withPortBindings(bindings);
                         })
