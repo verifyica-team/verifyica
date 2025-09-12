@@ -69,6 +69,8 @@ public class KafkaTest {
         kafkaTestEnvironment.initialize(network);
 
         assertThat(kafkaTestEnvironment.isRunning()).isTrue();
+
+        LOGGER.info("bootstrap servers: %s", kafkaTestEnvironment.bootstrapServers());
     }
 
     @Verifyica.Test
