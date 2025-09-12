@@ -91,7 +91,12 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
             kafkaContainer.withStartupTimeout(Duration.ofSeconds(120));
         }
 
-        kafkaContainer.start();
+        try {
+            kafkaContainer.start();
+        } catch (Exception e) {
+            kafkaContainer.stop();
+            throw e;
+        }
 
         // info("test environment [%s] initialized", dockerImageName);
     }

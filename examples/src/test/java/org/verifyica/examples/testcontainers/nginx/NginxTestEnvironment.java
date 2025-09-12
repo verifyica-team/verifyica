@@ -69,7 +69,13 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
 
         nginxContainer = new NginxContainer<>(DockerImageName.parse(dockerImageName));
         nginxContainer.withNetwork(network);
-        nginxContainer.start();
+
+        try {
+            nginxContainer.start();
+        } catch (Exception e) {
+            nginxContainer.stop();
+            throw e;
+        }
 
         // info("test environment [%s] initialized", dockerImageName);
     }

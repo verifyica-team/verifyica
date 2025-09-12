@@ -69,7 +69,13 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
 
         mongoDBContainer = new MongoDBContainer(DockerImageName.parse(dockerImageName));
         mongoDBContainer.withNetwork(network);
-        mongoDBContainer.start();
+
+        try {
+            mongoDBContainer.start();
+        } catch (Exception e) {
+            mongoDBContainer.stop();
+            throw e;
+        }
 
         // info("test environment [%s] initialized", dockerImageName);
     }

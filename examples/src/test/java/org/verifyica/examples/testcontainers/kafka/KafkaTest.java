@@ -126,7 +126,7 @@ public class KafkaTest {
         try (KafkaConsumer<String, String> consumer = createKafkaConsumer(kafkaTestEnvironment)) {
             consumer.subscribe(Collections.singletonList(TOPIC));
 
-            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10000));
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(5000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 LOGGER.info("[%s] consumed message [%s]", kafkaTestEnvironment.name(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
