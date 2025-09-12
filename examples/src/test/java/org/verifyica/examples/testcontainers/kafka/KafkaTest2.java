@@ -77,7 +77,12 @@ public class KafkaTest2 {
                         .isRunning())
                 .isTrue();
 
-        LOGGER.info("bootstrap servers: %s", argumentContext.getTestArgument().getPayload(KafkaTestEnvironment.class).bootstrapServers());
+        LOGGER.info(
+                "bootstrap servers: %s",
+                argumentContext
+                        .getTestArgument()
+                        .getPayload(KafkaTestEnvironment.class)
+                        .bootstrapServers());
     }
 
     @Verifyica.Test
