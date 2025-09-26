@@ -21,6 +21,7 @@ import com.github.dockerjava.api.model.Ports;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Stream;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -34,6 +35,8 @@ import org.verifyica.examples.support.TextBlock;
  * Class to implement a BufstreamTestEnvironment
  */
 public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironment> {
+
+    private static final Random RANDOM = new Random();
 
     private final String dockerImageName;
     private GenericContainer<?> genericContainer;
@@ -90,7 +93,7 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
             try {
                 genericContainer = new GenericContainer<>(DockerImageName.parse(dockerImageName))
                         .withNetwork(network)
-                        .withNetworkAliases("bufstream")
+                        .withNetworkAliases("bufstream-" + randomId())
                         .withExposedPorts(9092, 9089)
                         .withCopyToContainer(Transferable.of(configuration), "/etc/bufstream.yaml")
                         .withCommand("serve", "--inmemory", "-c", "/etc/bufstream.yaml")
@@ -175,5 +178,21 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Method to generate a random 8-character string
+     *
+     * @return a random 8-character string
+     */
+    private static String randomId() {
+        int leftLimit = 97; // 'a'
+        int rightLimit = 122; // 'z'
+        int targetStringLength = 8;
+
+        return RANDOM.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
     }
 }
