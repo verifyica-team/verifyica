@@ -140,6 +140,7 @@ Examples:
 Example tests using [testcontainers-java](https://java.testcontainers.org/)
 
 - [KafkaTest.java](examples/src/test/java/org/verifyica/examples/testcontainers/kafka/KafkaTest.java)
+- [BufstreamTest.java](examples/src/test/java/org/verifyica/examples/testcontainers/bufstream/BufstreamTest.java)
 - [MongoDBTest.java](examples/src/test/java/org/verifyica/examples/testcontainers/mongodb/MongoDBTest.java)
 - [NginxTest.java](examples/src/test/java/org/verifyica/examples/testcontainers/nginx/NginxTest.java)
 
