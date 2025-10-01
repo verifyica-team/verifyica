@@ -85,9 +85,9 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
         }
 
         /*
-         * Workaround for Kafka 4.0.0:native startup timeout issue
+         * Workaround for Kafka native image startup timeout issue
          */
-        if (dockerImageName.contains("4.0.0:native")) {
+        if (dockerImageName.contains("native")) {
             kafkaContainer.withStartupTimeout(Duration.ofSeconds(120));
         }
 
