@@ -410,7 +410,9 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
             futures.add(future);
         }
 
-        ExecutorServiceSupport.waitForAllFutures(futures, argumentExecutorService);
+        if (testArgumentParallelism > 1) {
+            ExecutorServiceSupport.waitForAllFutures(futures, executorService);
+        }
 
         return State.CONCLUDE;
     }
