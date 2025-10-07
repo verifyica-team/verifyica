@@ -203,7 +203,7 @@
                     </licenseHeader>
                     <java>
                         <palantirJavaFormat>
-                            <version>2.75.0</version>
+                            <version>2.76.0</version>
                             <style>PALANTIR</style>
                         </palantirJavaFormat>
                     </java>
@@ -228,7 +228,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>3.6.1</version>
+                        <version>3.6.2</version>
                         <executions>
                             <execution>
                                 <id>enforce-maven</id>
