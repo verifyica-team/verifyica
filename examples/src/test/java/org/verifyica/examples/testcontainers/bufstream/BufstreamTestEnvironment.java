@@ -20,9 +20,15 @@ import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.Ports;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.time.Duration;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Stream;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.common.Node;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -30,6 +36,7 @@ import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
 import org.verifyica.examples.support.TextBlock;
+import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
  * Class to implement a BufstreamTestEnvironment
@@ -82,13 +89,31 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
             int HOST_KAFKA_PORT = getFreePort();
             int HOST_ADMIN_PORT = getFreePort();
 
-            String configuration = new TextBlock()
-                    .line("kafka:")
-                    .line("  address: 0.0.0.0:9092")
-                    .line("  public_address: localhost:" + HOST_KAFKA_PORT)
-                    .line("  num_partitions: 1")
-                    .line("admin_address: 0.0.0.0:9089")
-                    .toString();
+            String configuration;
+
+            if (dockerImageName.contains("0.3.")) {
+                configuration = new TextBlock()
+                        .line("kafka:")
+                        .line("  address: 0.0.0.0:9092")
+                        .line("  public_address: localhost:" + HOST_KAFKA_PORT)
+                        .line("  num_partitions: 1")
+                        .line("admin_address: 0.0.0.0:9089")
+                        .toString();
+            } else {
+                configuration = new TextBlock()
+                        .line("version: v1beta1")
+                        .line("cluster: test")
+                        .line("admin:")
+                        .line("  listen_address: 0.0.0.0:9089")
+                        .line("kafka:")
+                        .line("  listeners:")
+                        .line("    - name: plain")
+                        .line("      listen_address: 0.0.0.0:9092")
+                        .line("      advertise_address: localhost:" + HOST_KAFKA_PORT)
+                        .line("metadata:")
+                        .line("  etcd: {}")
+                        .toString();
+            }
 
             try {
                 genericContainer = new GenericContainer<>(DockerImageName.parse(dockerImageName))
@@ -105,7 +130,9 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
                             Objects.requireNonNull(createContainerCmd.getHostConfig())
                                     .withPortBindings(bindings);
                         })
-                        .waitingFor(Wait.forHttp("/-/status").forPort(9089).forStatusCode(200));
+                        .withLogConsumer(new ContainerLogConsumer(getClass().getName(), dockerImageName))
+                        .waitingFor(Wait.forHttp("/-/status").forPort(9089).forStatusCode(200))
+                        .withStartupTimeout(Duration.ofSeconds(30));
 
                 genericContainer.start();
 
@@ -163,7 +190,9 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
      * @return a Stream of BufstreamTestEnvironment
      */
     public static Stream<BufstreamTestEnvironment> createTestEnvironments() {
-        return Stream.of(new BufstreamTestEnvironment("bufbuild/bufstream:0.3.44"));
+        return Stream.of(
+                new BufstreamTestEnvironment("bufbuild/bufstream:0.3.44"),
+                new BufstreamTestEnvironment("bufbuild/bufstream:0.4.3"));
     }
 
     /**
