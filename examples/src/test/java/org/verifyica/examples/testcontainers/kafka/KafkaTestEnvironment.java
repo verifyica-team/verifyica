@@ -23,6 +23,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
+import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
  * Class to implement a KafkaTestEnvironment
@@ -69,10 +70,12 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
     public void initialize(Network network) {
         // info("initialize test environment [%s] ...", dockerImageName);
 
-        kafkaContainer =
-                new KafkaContainer(DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"));
-        kafkaContainer.withNetwork(network);
-        kafkaContainer.waitingFor(Wait.forLogMessage(".*Kafka Server started.*", 1));
+        kafkaContainer = new KafkaContainer(
+                        DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"))
+                .withNetwork(network)
+                .withStartupTimeout(Duration.ofSeconds(30))
+                .withLogConsumer(new ContainerLogConsumer(dockerImageName))
+                .waitingFor(Wait.forLogMessage(".*Kafka Server started.*", 1));
 
         /*
          * Workaround for Kafka 3.9.0 issue with listeners

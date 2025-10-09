@@ -16,11 +16,13 @@
 
 package org.verifyica.examples.testcontainers.nginx;
 
+import java.time.Duration;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.NginxContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
+import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
  * Class to implement a NginxTestEnvironment
@@ -67,8 +69,10 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     public void initialize(Network network) {
         // info("initializing test environment [%s] ...", dockerImageName);
 
-        nginxContainer = new NginxContainer<>(DockerImageName.parse(dockerImageName));
-        nginxContainer.withNetwork(network);
+        nginxContainer = new NginxContainer<>(DockerImageName.parse(dockerImageName))
+                .withNetwork(network)
+                .withLogConsumer(new ContainerLogConsumer(dockerImageName))
+                .withStartupTimeout(Duration.ofSeconds(30));
 
         try {
             nginxContainer.start();

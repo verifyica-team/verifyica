@@ -16,11 +16,13 @@
 
 package org.verifyica.examples.testcontainers.mongodb;
 
+import java.time.Duration;
 import java.util.stream.Stream;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
+import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
  * Class to implement a MongoDBTestEnvironment
@@ -67,8 +69,10 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     public void initialize(Network network) {
         // info("initializing test environment [%s] ...", dockerImageName);
 
-        mongoDBContainer = new MongoDBContainer(DockerImageName.parse(dockerImageName));
-        mongoDBContainer.withNetwork(network);
+        mongoDBContainer = new MongoDBContainer(DockerImageName.parse(dockerImageName))
+                .withNetwork(network)
+                .withLogConsumer(new ContainerLogConsumer(dockerImageName))
+                .withStartupTimeout(Duration.ofSeconds(30));
 
         try {
             mongoDBContainer.start();
