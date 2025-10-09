@@ -19,23 +19,45 @@ package org.verifyica.examples.support;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class to build a block of text
+ */
 public class TextBlock {
 
     private final List<String> lines;
 
+    /**
+     * Constructor
+     */
     public TextBlock() {
         this.lines = new ArrayList<>();
     }
 
+    /**
+     * Method to add a line of text
+     *
+     * @param line line of text
+     * @return this
+     */
     public TextBlock line(String line) {
         this.lines.add(line);
         return this;
     }
 
+    /**
+     * Method to add an empty line of text
+     *
+     * @return this
+     */
     public TextBlock line() {
         return line("");
     }
 
+    /**
+     * Method to get the text block as a string
+     *
+     * @return the text block as a string
+     */
     public String toString() {
         return String.join(System.lineSeparator(), lines);
     }
