@@ -74,7 +74,7 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
                         DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"))
                 .withNetwork(network)
                 .withStartupTimeout(Duration.ofSeconds(30))
-                .withLogConsumer(new ContainerLogConsumer(dockerImageName))
+                .withLogConsumer(new ContainerLogConsumer(getClass().getName(), dockerImageName))
                 .waitingFor(Wait.forLogMessage(".*Kafka Server started.*", 1));
 
         /*
