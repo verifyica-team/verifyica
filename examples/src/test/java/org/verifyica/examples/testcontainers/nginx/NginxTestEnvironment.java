@@ -71,7 +71,7 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
 
         nginxContainer = new NginxContainer<>(DockerImageName.parse(dockerImageName))
                 .withNetwork(network)
-                .withLogConsumer(new ContainerLogConsumer(dockerImageName))
+                .withLogConsumer(new ContainerLogConsumer(getClass().getName(), dockerImageName))
                 .withStartupTimeout(Duration.ofSeconds(30));
 
         try {

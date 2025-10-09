@@ -21,10 +21,12 @@ import org.testcontainers.containers.output.OutputFrame;
 
 public class ContainerLogConsumer implements Consumer<OutputFrame> {
 
-    private final String name;
+    private final String prefix;
+    private final String dockerImageName;
 
-    public ContainerLogConsumer(String name) {
-        this.name = name;
+    public ContainerLogConsumer(String prefix, String dockerImageName) {
+        this.prefix = prefix;
+        this.dockerImageName = dockerImageName;
     }
 
     @Override
@@ -34,8 +36,7 @@ public class ContainerLogConsumer implements Consumer<OutputFrame> {
             message = message.trim();
 
             if (!message.isEmpty()) {
-                System.out.print("[" + name + "] ");
-                System.out.print(outputFrame.getUtf8String());
+                System.out.printf("%s | [%s] %s%n", prefix, dockerImageName, message);
             }
         }
     }
