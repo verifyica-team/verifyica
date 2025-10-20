@@ -145,6 +145,7 @@ public class ResolverPredicates {
      * @param clazz clazz
      * @return true if the Class has a default constructor, otherwise false
      */
+    @SuppressWarnings("PMD.UselessPureMethodCall")
     private static boolean hasDefaultConstructor(Class<?> clazz) {
         try {
             clazz.getDeclaredConstructor();

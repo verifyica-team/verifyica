@@ -62,7 +62,7 @@ public class ExecutorServiceSupport {
         for (int i = 0; i < futures.size(); i++) {
             try {
                 Future<Object> completedFuture = completionService.take();
-                futureMap.get(completedFuture);
+                futureMap.remove(completedFuture);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.err.printf("Error waiting for future [%s]%n", e.getMessage());
