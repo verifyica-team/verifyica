@@ -187,7 +187,7 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     public static Stream<BufstreamTestEnvironment> createTestEnvironments() {
         return Stream.of(
                 new BufstreamTestEnvironment("bufbuild/bufstream:0.3.44"),
-                new BufstreamTestEnvironment("bufbuild/bufstream:0.4.3"));
+                new BufstreamTestEnvironment("bufbuild/bufstream:0.4.4"));
     }
 
     /**
