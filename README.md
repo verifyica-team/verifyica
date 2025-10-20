@@ -125,7 +125,7 @@ for (TestClass testClass : TestClasses) {
        execute @Verifyica.AfterAll methods (subclass then superclass)
     }
 
-    execute @Verificya.Conclude methods (subclass then superclass)
+    execute @Verifyica.Conclude methods (subclass then superclass)
 
     destroy test class instance
 }
