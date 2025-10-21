@@ -54,8 +54,8 @@ import org.verifyica.engine.api.ClassDefinition;
 import org.verifyica.engine.api.MethodDefinition;
 import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.common.Stopwatch;
-import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
-import org.verifyica.engine.descriptor.ClassTestDescriptor;
+import org.verifyica.engine.descriptor.TestArgumentTestDescriptor;
+import org.verifyica.engine.descriptor.TestClassTestDescriptor;
 import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.verifyica.engine.exception.EngineException;
 import org.verifyica.engine.exception.TestClassDefinitionException;
@@ -407,7 +407,7 @@ public class EngineDiscoveryRequestResolver {
 
             validateSingleMethodPerClass(Verifyica.Conclude.class, concludeMethods);
 
-            ClassTestDescriptor classTestDescriptor = new ClassTestDescriptor(
+            TestClassTestDescriptor testClassTestDescriptor = new TestClassTestDescriptor(
                     classTestDescriptorUniqueId,
                     classDefinition.getDisplayName(),
                     classDefinition.getTags(),
@@ -416,7 +416,7 @@ public class EngineDiscoveryRequestResolver {
                     prepareMethods,
                     concludeMethods);
 
-            testDescriptor.addChild(classTestDescriptor);
+            testDescriptor.addChild(testClassTestDescriptor);
 
             int testArgumentIndex = 0;
             for (Argument<?> testArgument : classDefinition.getArguments()) {
@@ -433,7 +433,7 @@ public class EngineDiscoveryRequestResolver {
 
                 validateSingleMethodPerClass(Verifyica.AfterAll.class, afterAllMethods);
 
-                ArgumentTestDescriptor argumentTestDescriptor = new ArgumentTestDescriptor(
+                TestArgumentTestDescriptor testArgumentTestDescriptor = new TestArgumentTestDescriptor(
                         argumentTestDescriptorUniqueId,
                         testArgument.getName(),
                         testArgumentIndex,
@@ -441,7 +441,7 @@ public class EngineDiscoveryRequestResolver {
                         beforeAllMethods,
                         afterAllMethods);
 
-                classTestDescriptor.addChild(argumentTestDescriptor);
+                testClassTestDescriptor.addChild(testArgumentTestDescriptor);
 
                 for (MethodDefinition testMethodDefinition : classDefinition.getTestMethodDefinitions()) {
                     Method testMethod = testMethodDefinition.getMethod();
@@ -483,7 +483,7 @@ public class EngineDiscoveryRequestResolver {
                             testMethodDefinition.getMethod(),
                             afterEachMethods);
 
-                    argumentTestDescriptor.addChild(testMethodTestDescriptor);
+                    testArgumentTestDescriptor.addChild(testMethodTestDescriptor);
                 }
 
                 testArgumentIndex++;

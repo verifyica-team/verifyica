@@ -43,10 +43,10 @@ import org.verifyica.engine.inject.Injector;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement ArgumentTestDescriptor */
-public class ArgumentTestDescriptor extends TestableTestDescriptor {
+/** Class to implement TestArgumentTestDescriptor */
+public class TestArgumentTestDescriptor extends TestableTestDescriptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ArgumentTestDescriptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestArgumentTestDescriptor.class);
 
     private enum State {
         START,
@@ -60,7 +60,7 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     private final int argumentIndex;
-    private final Argument<?> argument;
+    private final Argument<?> testArgument;
     private final List<Method> beforeAllMethods;
     private final List<Method> afterAllMethods;
     private final List<Object> invocationArguments;
@@ -91,21 +91,21 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
      * @param uniqueId uniqueId
      * @param displayName displayName
      * @param argumentIndex argumentIndex
-     * @param argument argument
+     * @param testArgument argument
      * @param beforeAllMethods beforeAllMethods
      * @param afterAllMethods afterAllMethods
      */
-    public ArgumentTestDescriptor(
+    public TestArgumentTestDescriptor(
             UniqueId uniqueId,
             String displayName,
             int argumentIndex,
-            Argument<?> argument,
+            Argument<?> testArgument,
             List<Method> beforeAllMethods,
             List<Method> afterAllMethods) {
         super(uniqueId, displayName);
 
         this.argumentIndex = argumentIndex;
-        this.argument = argument;
+        this.testArgument = testArgument;
         this.beforeAllMethods = beforeAllMethods;
         this.afterAllMethods = afterAllMethods;
         this.invocationArguments = new ArrayList<>();
@@ -117,14 +117,14 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
      *
      * @return the argument
      */
-    public Argument<?> getArgument() {
-        return argument;
+    public Argument<?> getTestArgument() {
+        return testArgument;
     }
 
     @Override
-    public ArgumentTestDescriptor test() {
+    public TestArgumentTestDescriptor test() {
         try {
-            argumentContext = new ConcreteArgumentContext(classContext, argumentIndex, argument);
+            argumentContext = new ConcreteArgumentContext(classContext, argumentIndex, testArgument);
 
             invocationArguments.add(argumentContext.getTestArgument().getPayload());
             invocationArguments.add(argumentContext.getTestArgument());
@@ -370,9 +370,9 @@ public class ArgumentTestDescriptor extends TestableTestDescriptor {
      * @return the next state
      */
     private State doCloseArgument() {
-        if (argument instanceof AutoCloseable) {
+        if (testArgument instanceof AutoCloseable) {
             try {
-                ((AutoCloseable) argument).close();
+                ((AutoCloseable) testArgument).close();
             } catch (Throwable t) {
                 printStackTrace(t);
                 throwables.add(t);

@@ -35,8 +35,8 @@ import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.AnsiColoredString;
 import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Stopwatch;
-import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
-import org.verifyica.engine.descriptor.ClassTestDescriptor;
+import org.verifyica.engine.descriptor.TestArgumentTestDescriptor;
+import org.verifyica.engine.descriptor.TestClassTestDescriptor;
 import org.verifyica.engine.descriptor.TestDescriptorStatus;
 import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.verifyica.engine.descriptor.TestableTestDescriptor;
@@ -88,14 +88,15 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         counterKeyToMessageDisplayStringMap.put("test.method.count.skipped", "Skipped");
     }
 
-    private final Map<ClassTestDescriptor, TestExecutionResult.Status> classTestDescriptorTestExecutionResultStatusMap;
+    private final Map<TestClassTestDescriptor, TestExecutionResult.Status>
+            classTestDescriptorTestExecutionResultStatusMap;
 
-    private final Map<ClassTestDescriptor, String> classTestDescriptorSkippedMap;
+    private final Map<TestClassTestDescriptor, String> classTestDescriptorSkippedMap;
 
-    private final Map<ArgumentTestDescriptor, TestExecutionResult.Status>
+    private final Map<TestArgumentTestDescriptor, TestExecutionResult.Status>
             argumentTestDescriptorTestExecutionResultStatusMap;
 
-    private final Map<ArgumentTestDescriptor, String> argumentTestDescriptorSkippedMap;
+    private final Map<TestArgumentTestDescriptor, String> argumentTestDescriptorSkippedMap;
 
     private final Map<TestMethodTestDescriptor, TestExecutionResult.Status>
             testMethodTestDescriptorTestExecutionResultStatusMap;
@@ -133,10 +134,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     @Override
     public void executionSkipped(TestDescriptor testDescriptor, String reason) {
-        if (testDescriptor instanceof ClassTestDescriptor) {
-            classTestDescriptorSkippedMap.put((ClassTestDescriptor) testDescriptor, reason);
-        } else if (testDescriptor instanceof ArgumentTestDescriptor) {
-            argumentTestDescriptorSkippedMap.put((ArgumentTestDescriptor) testDescriptor, reason);
+        if (testDescriptor instanceof TestClassTestDescriptor) {
+            classTestDescriptorSkippedMap.put((TestClassTestDescriptor) testDescriptor, reason);
+        } else if (testDescriptor instanceof TestArgumentTestDescriptor) {
+            argumentTestDescriptorSkippedMap.put((TestArgumentTestDescriptor) testDescriptor, reason);
         } else if (testDescriptor instanceof TestMethodTestDescriptor) {
             testMethodTestDescriptorSkippedMap.put(
                     (TestMethodTestDescriptor) testDescriptor, reason != null ? reason : "Skipped");
@@ -149,10 +150,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 ? TestExecutionResult.Status.FAILED
                 : testExecutionResult.getStatus();
 
-        if (testDescriptor instanceof ClassTestDescriptor) {
-            classTestDescriptorTestExecutionResultStatusMap.put((ClassTestDescriptor) testDescriptor, status);
-        } else if (testDescriptor instanceof ArgumentTestDescriptor) {
-            argumentTestDescriptorTestExecutionResultStatusMap.put((ArgumentTestDescriptor) testDescriptor, status);
+        if (testDescriptor instanceof TestClassTestDescriptor) {
+            classTestDescriptorTestExecutionResultStatusMap.put((TestClassTestDescriptor) testDescriptor, status);
+        } else if (testDescriptor instanceof TestArgumentTestDescriptor) {
+            argumentTestDescriptorTestExecutionResultStatusMap.put((TestArgumentTestDescriptor) testDescriptor, status);
         } else if (testDescriptor instanceof TestMethodTestDescriptor) {
             testMethodTestDescriptorTestExecutionResultStatusMap.put((TestMethodTestDescriptor) testDescriptor, status);
         }
@@ -198,7 +199,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                         .incrementAndGet();
             }
 
-            for (Map.Entry<ClassTestDescriptor, TestExecutionResult.Status> mapEntry :
+            for (Map.Entry<TestClassTestDescriptor, TestExecutionResult.Status> mapEntry :
                     classTestDescriptorTestExecutionResultStatusMap.entrySet()) {
                 TestExecutionResult.Status status = mapEntry.getValue();
                 String key = "test.class.count";
@@ -230,7 +231,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 }
             }
 
-            for (Map.Entry<ArgumentTestDescriptor, TestExecutionResult.Status> mapEntry :
+            for (Map.Entry<TestArgumentTestDescriptor, TestExecutionResult.Status> mapEntry :
                     argumentTestDescriptorTestExecutionResultStatusMap.entrySet()) {
                 TestExecutionResult.Status status = mapEntry.getValue();
                 String key = "test.argument.count";

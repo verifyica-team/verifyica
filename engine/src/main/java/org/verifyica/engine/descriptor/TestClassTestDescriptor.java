@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
@@ -57,10 +58,10 @@ import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ExecutorServiceSupport;
 import org.verifyica.engine.support.HashSupport;
 
-/** Class to implement ClassTestDescriptor */
-public class ClassTestDescriptor extends TestableTestDescriptor {
+/** Class to implement TestClassTestDescriptor */
+public class TestClassTestDescriptor extends TestableTestDescriptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClassTestDescriptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestClassTestDescriptor.class);
 
     private static final ExecutorService DIRECT_EXECUTOR_SERVICE = new DirectExecutorService();
 
@@ -120,7 +121,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
      * @param prepareMethods prepareMethods
      * @param concludeMethods concludeMethods
      */
-    public ClassTestDescriptor(
+    public TestClassTestDescriptor(
             UniqueId uniqueId,
             String displayName,
             Set<String> tags,
@@ -131,7 +132,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         super(uniqueId, displayName);
 
         this.tags = tags;
-        this.testArgumentParallelism = testArgumentParallelism;
+        this.testArgumentParallelism = Math.max(1, testArgumentParallelism);
         this.testClass = testClass;
         this.prepareMethods = prepareMethods;
         this.concludeMethods = concludeMethods;
@@ -155,7 +156,7 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
     }
 
     @Override
-    public ClassTestDescriptor test() {
+    public TestClassTestDescriptor test() {
         try {
             classContext = new ConcreteClassContext(
                     engineContext,
@@ -384,34 +385,36 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
      * @return the next state
      */
     private State doTest() {
-        ExecutorService executorService;
-
-        if (testArgumentParallelism > 1) {
-            executorService = argumentExecutorService;
-        } else {
-            executorService = DIRECT_EXECUTOR_SERVICE;
-        }
+        ExecutorService executorService =
+                (testArgumentParallelism > 1) ? argumentExecutorService : DIRECT_EXECUTOR_SERVICE;
 
         List<TestableTestDescriptor> testableTestDescriptors = getChildren().stream()
                 .filter(TESTABLE_TEST_DESCRIPTOR_FILTER)
                 .map(TESTABLE_TEST_DESCRIPTOR_MAPPER)
                 .collect(Collectors.toList());
 
-        List<Future<?>> futures = new ArrayList<>();
-
         Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
+        List<Future<?>> futures = new ArrayList<>(testableTestDescriptors.size());
 
         for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
-            String threadName = Thread.currentThread().getName();
-            threadName = threadName.substring(0, threadName.indexOf("/") + 1) + HashSupport.alphanumeric(6);
-            ThreadNameRunnable threadNameRunnable = new ThreadNameRunnable(threadName, testableTestDescriptor::test);
-            SemaphoreRunnable semaphoreRunnable = new SemaphoreRunnable(semaphore, threadNameRunnable);
-            Future<?> future = executorService.submit(semaphoreRunnable);
-            futures.add(future);
+            try {
+                String threadName = getNextThreadName(Thread.currentThread().getName());
+                ThreadNameRunnable threadNameRunnable =
+                        new ThreadNameRunnable(threadName, testableTestDescriptor::test);
+                Runnable runnable = new SemaphoreRunnable(semaphore, threadNameRunnable);
+
+                futures.add(executorService.submit(runnable));
+            } catch (RejectedExecutionException e) {
+                ThreadNameRunnable threadNameRunnable =
+                        new ThreadNameRunnable(Thread.currentThread().getName(), testableTestDescriptor::test);
+                Runnable runnable = new SemaphoreRunnable(semaphore, threadNameRunnable);
+
+                futures.add(DIRECT_EXECUTOR_SERVICE.submit(runnable));
+            }
         }
 
-        if (testArgumentParallelism > 1) {
-            ExecutorServiceSupport.waitForAllFutures(futures, executorService);
+        if (!futures.isEmpty()) {
+            ExecutorServiceSupport.waitForAllFutures(futures);
         }
 
         return State.CONCLUDE;
@@ -538,5 +541,17 @@ public class ClassTestDescriptor extends TestableTestDescriptor {
         map.clear();
 
         return State.END;
+    }
+
+    /**
+     * Method to get the next thread name
+     *
+     * @param currentThreadName the current thread name
+     * @return the next thread name
+     */
+    private static String getNextThreadName(String currentThreadName) {
+        int slash = currentThreadName.indexOf('/');
+        String baseThreadName = slash >= 0 ? currentThreadName.substring(0, slash + 1) : currentThreadName + "/";
+        return baseThreadName + HashSupport.alphanumeric(6);
     }
 }
