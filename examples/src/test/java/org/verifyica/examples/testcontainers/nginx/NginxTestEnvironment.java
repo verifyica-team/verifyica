@@ -125,6 +125,6 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
         return Stream.of(
                 new NginxTestEnvironment("nginx:1.27.5"),
                 new NginxTestEnvironment("nginx:1.28.0"),
-                new NginxTestEnvironment("nginx:1.29.1"));
+                new NginxTestEnvironment("nginx:1.29.2"));
     }
 }
