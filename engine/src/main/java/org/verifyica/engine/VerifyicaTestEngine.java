@@ -37,7 +37,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -57,6 +56,7 @@ import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.EphemeralExecutorService;
+import org.verifyica.engine.common.HeadOfQueueRejectedExecutionHandler;
 import org.verifyica.engine.common.PlatformThreadFactory;
 import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Stopwatch;
@@ -433,15 +433,8 @@ public class VerifyicaTestEngine implements TestEngine {
 
             BlockingQueue<Runnable> blockingQueue = new ArrayBlockingQueue<>(availableProcessors * 2, true);
 
-            RejectedExecutionHandler rejectedExecutionHandler = (runnable, threadPoolExecutor) -> {
-                Runnable oldestRunnable = threadPoolExecutor.getQueue().poll();
-                if (oldestRunnable != null) {
-                    oldestRunnable.run();
-                    threadPoolExecutor.execute(runnable);
-                } else {
-                    runnable.run();
-                }
-            };
+            HeadOfQueueRejectedExecutionHandler headOfQueueRejectedExecutionHandler =
+                    new HeadOfQueueRejectedExecutionHandler();
 
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                     engineTestClassParallelism,
@@ -450,7 +443,7 @@ public class VerifyicaTestEngine implements TestEngine {
                     TimeUnit.MILLISECONDS,
                     blockingQueue,
                     threadFactory,
-                    rejectedExecutionHandler);
+                    headOfQueueRejectedExecutionHandler);
 
             threadPoolExecutor.prestartAllCoreThreads();
 
@@ -485,15 +478,8 @@ public class VerifyicaTestEngine implements TestEngine {
 
             BlockingQueue<Runnable> blockingQueue = new ArrayBlockingQueue<>(availableProcessors * 2, true);
 
-            RejectedExecutionHandler rejectedExecutionHandler = (runnable, threadPoolExecutor) -> {
-                Runnable oldestRunnable = threadPoolExecutor.getQueue().poll();
-                if (oldestRunnable != null) {
-                    oldestRunnable.run();
-                    threadPoolExecutor.execute(runnable);
-                } else {
-                    runnable.run();
-                }
-            };
+            HeadOfQueueRejectedExecutionHandler headOfQueueRejectedExecutionHandler =
+                    new HeadOfQueueRejectedExecutionHandler();
 
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                     engineTestArgumentParallelism,
@@ -502,7 +488,7 @@ public class VerifyicaTestEngine implements TestEngine {
                     TimeUnit.MILLISECONDS,
                     blockingQueue,
                     threadFactory,
-                    rejectedExecutionHandler);
+                    headOfQueueRejectedExecutionHandler);
 
             threadPoolExecutor.prestartAllCoreThreads();
 
