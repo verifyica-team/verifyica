@@ -16,27 +16,26 @@
 
 package org.verifyica.test.support;
 
-import static java.lang.String.format;
-
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomSupport {
-
-    private static final Random RANDOM = new Random();
 
     private RandomSupport() {
         // INTENTIONALLY EMPTY
     }
 
+    /**
+     * Method to create a random long that is inclusive of minimum and maximum.
+     *
+     * @param minimum minimum value (inclusive)
+     * @param maximum maximum value (inclusive)
+     * @return a random long between minimum and maximum, inclusive
+     */
     public static long randomLong(long minimum, long maximum) {
-        if (minimum == maximum) {
-            return minimum;
+        if (minimum >= maximum) {
+            throw new IllegalArgumentException("maximum must be greater than minimum");
         }
 
-        if (minimum > maximum) {
-            throw new IllegalArgumentException(format("Minimum [%d] is greater than maximum [%d]", minimum, maximum));
-        }
-
-        return (long) (RANDOM.nextDouble() * (maximum - minimum + 1)) + minimum;
+        return ThreadLocalRandom.current().nextLong(minimum, maximum + 1);
     }
 }

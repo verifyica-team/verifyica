@@ -17,7 +17,7 @@
 package org.verifyica.engine.support;
 
 import java.util.Locale;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import org.verifyica.engine.common.Precondition;
 
 /** Class to implement HashSupport */
@@ -25,8 +25,6 @@ public class HashSupport {
 
     private static final String ALPHA_NUMERIC_CHARACTERS =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz" + "0123456789";
-
-    private static final Random RANDOM = new Random();
 
     /**
      * Constructor
@@ -49,10 +47,12 @@ public class HashSupport {
 
         do {
             stringBuilder.setLength(0);
+
             for (int i = 0; i < length; i++) {
-                stringBuilder.append(
-                        ALPHA_NUMERIC_CHARACTERS.charAt(RANDOM.nextInt(ALPHA_NUMERIC_CHARACTERS.length())));
+                stringBuilder.append(ALPHA_NUMERIC_CHARACTERS.charAt(
+                        ThreadLocalRandom.current().nextInt(ALPHA_NUMERIC_CHARACTERS.length())));
             }
+
             hash = stringBuilder.toString();
         } while (hash.toLowerCase(Locale.US).contains("fail"));
 

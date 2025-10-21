@@ -16,7 +16,7 @@
 
 package org.verifyica.examples.support;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomSupport {
 
@@ -31,10 +31,25 @@ public class RandomSupport {
      * @return a random String
      */
     public static String randomString(int length) {
-        return new Random()
+        return ThreadLocalRandom.current()
                 .ints(97, 123 + 1)
                 .limit(length)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
+    }
+
+    /**
+     * Method to create a random long that is inclusive of minimum and maximum.
+     *
+     * @param minimum minimum value (inclusive)
+     * @param maximum maximum value (inclusive)
+     * @return a random long between minimum and maximum, inclusive
+     */
+    public static long randomLong(long minimum, long maximum) {
+        if (minimum >= maximum) {
+            throw new IllegalArgumentException("maximum must be greater than minimum");
+        }
+
+        return ThreadLocalRandom.current().nextLong(minimum, maximum + 1);
     }
 }

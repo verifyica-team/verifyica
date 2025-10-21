@@ -16,41 +16,40 @@
 
 package org.verifyica.api;
 
-import static java.lang.String.format;
+import java.util.concurrent.ThreadLocalRandom;
 
-import java.util.Random;
-
-/**
- * Utility class for generating random numbers within a specified range.
- */
 public class RandomSupport {
 
-    private static final Random RANDOM = new Random();
-
-    /**
-     * Constructor
-     */
     private RandomSupport() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Generates a random long value between the specified minimum and maximum values, inclusive.
+     * Method to create a random string
      *
-     * @param minimum the minimum value (inclusive)
-     * @param maximum the maximum value (inclusive)
-     * @return a random long value within the specified range
-     * @throws IllegalArgumentException if minimum is greater than maximum
+     * @param length length
+     * @return a random String
+     */
+    public static String randomString(int length) {
+        return ThreadLocalRandom.current()
+                .ints(97, 123 + 1)
+                .limit(length)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
+    /**
+     * Method to create a random long that is inclusive of minimum and maximum.
+     *
+     * @param minimum minimum value (inclusive)
+     * @param maximum maximum value (inclusive)
+     * @return a random long between minimum and maximum, inclusive
      */
     public static long randomLong(long minimum, long maximum) {
-        if (minimum == maximum) {
-            return minimum;
+        if (minimum >= maximum) {
+            throw new IllegalArgumentException("maximum must be greater than minimum");
         }
 
-        if (minimum > maximum) {
-            throw new IllegalArgumentException(format("Minimum [%d] is greater than maximum [%d]", minimum, maximum));
-        }
-
-        return (long) (RANDOM.nextDouble() * (maximum - minimum + 1)) + minimum;
+        return ThreadLocalRandom.current().nextLong(minimum, maximum + 1);
     }
 }

@@ -16,7 +16,7 @@
 
 package org.verifyica.engine.common.throttle;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
@@ -25,8 +25,6 @@ import org.verifyica.engine.logger.LoggerFactory;
 public class RandomSleepThrottle implements Throttle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Throttle.class);
-
-    private static final Random RANDOM = new Random();
 
     private final String name;
     private final long minimum;
@@ -65,17 +63,17 @@ public class RandomSleepThrottle implements Throttle {
     }
 
     /**
-     * Method to create a random long between minimum and maximum (inclusive)
+     * Method to create a random long that is inclusive of minimum and maximum.
      *
-     * @param minimum minimum
-     * @param maximum maximum
-     * @return a random long between minimum and maximum (inclusive)
+     * @param minimum minimum value (inclusive)
+     * @param maximum maximum value (inclusive)
+     * @return a random long between minimum and maximum, inclusive
      */
     private static long randomLong(long minimum, long maximum) {
-        if (minimum == maximum) {
-            return minimum;
+        if (minimum >= maximum) {
+            throw new IllegalArgumentException("maximum must be greater than minimum");
         }
 
-        return (long) (RANDOM.nextDouble() * (maximum - minimum + 1)) + minimum;
+        return ThreadLocalRandom.current().nextLong(minimum, maximum + 1);
     }
 }
