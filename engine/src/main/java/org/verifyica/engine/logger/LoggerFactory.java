@@ -19,7 +19,9 @@ package org.verifyica.engine.logger;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Class to implement LoggerFactory */
+/**
+ * Class to implement LoggerFactory
+ */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public final class LoggerFactory {
 
@@ -70,10 +72,14 @@ public final class LoggerFactory {
         return logger != null ? logger : ROOT_LOGGER;
     }
 
-    /** Class to hold the singleton instance */
+    /**
+     * Class to hold the singleton instance
+     */
     private static final class SingletonHolder {
 
-        /** The singleton instance */
+        /**
+         * The singleton instance
+         */
         private static final LoggerFactory SINGLETON = new LoggerFactory();
     }
 }

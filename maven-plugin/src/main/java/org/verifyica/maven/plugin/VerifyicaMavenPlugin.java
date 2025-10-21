@@ -67,7 +67,9 @@ import org.verifyica.engine.listener.SummaryEngineExecutionListener2;
 import org.verifyica.engine.listener.TracingEngineExecutionListener;
 import org.verifyica.engine.support.TimestampSupport;
 
-/** Class to implement VerifyicaMavenPlugin */
+/**
+ * Class to implement VerifyicaMavenPlugin
+ */
 @SuppressWarnings({"unused", "deprecation"})
 @org.apache.maven.plugins.annotations.Mojo(
         name = "test",
@@ -75,28 +77,44 @@ import org.verifyica.engine.support.TimestampSupport;
         requiresDependencyResolution = ResolutionScope.TEST)
 public class VerifyicaMavenPlugin extends AbstractMojo {
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String MAVEN_PLUGIN_PROPERTIES_RESOURCE = "/maven-plugin.properties";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String MAVEN_PLUGIN_VERSION_KEY = "version";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String UNKNOWN_VERSION = "unknown";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String INTERACTIVE = "interactive";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String BATCH = "batch";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String GROUP_ID = "org.verifyica";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String ARTIFACT_ID = "maven-plugin";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     public static final String VERSION = version();
 
     private static final String BANNER = new AnsiColoredString()
@@ -442,7 +460,9 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         return value;
     }
 
-    /** Class to implement Logger */
+    /**
+     * Class to implement Logger
+     */
     private static class Logger {
 
         private final Log log;

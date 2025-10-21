@@ -20,7 +20,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement RandomSleepThrottle */
+/**
+ * Class to implement RandomSleepThrottle
+ */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class RandomSleepThrottle implements Throttle {
 

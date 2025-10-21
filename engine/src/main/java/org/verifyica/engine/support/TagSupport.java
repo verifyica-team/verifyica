@@ -22,7 +22,9 @@ import java.util.Set;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement TagSupport */
+/**
+ * Class to implement TagSupport
+ */
 public class TagSupport {
 
     /**

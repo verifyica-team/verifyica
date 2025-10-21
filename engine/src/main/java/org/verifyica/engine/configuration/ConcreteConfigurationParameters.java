@@ -26,7 +26,9 @@ import org.junit.platform.engine.ConfigurationParameters;
 import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement ConcreteConfigurationParameters */
+/**
+ * Class to implement ConcreteConfigurationParameters
+ */
 @SuppressWarnings("deprecation")
 public class ConcreteConfigurationParameters implements ConfigurationParameters {
 

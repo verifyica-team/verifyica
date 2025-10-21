@@ -36,7 +36,9 @@ import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.OrderSupport;
 
-/** Class to implement ClasspathRootSelectorResolver */
+/**
+ * Class to implement ClasspathRootSelectorResolver
+ */
 public class ClasspathRootSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathRootSelectorResolver.class);

@@ -25,7 +25,9 @@ import org.verifyica.api.ClassContext;
 import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement ConcreteArgumentContext */
+/**
+ * Class to implement ConcreteArgumentContext
+ */
 @SuppressWarnings("unchecked")
 public class ConcreteArgumentContext extends AbstractContext implements ArgumentContext {
 

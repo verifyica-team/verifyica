@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement ObjectSupport */
+/**
+ * Class to implement ObjectSupport
+ */
 @SuppressWarnings("unchecked")
 public class ObjectSupport {
 

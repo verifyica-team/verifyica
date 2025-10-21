@@ -35,7 +35,9 @@ import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.OrderedProperties;
 import org.verifyica.engine.exception.EngineConfigurationException;
 
-/** Class to implement ConcreteConfiguration */
+/**
+ * Class to implement ConcreteConfiguration
+ */
 public class ConcreteConfiguration implements Configuration {
 
     private static final String VERIFYICA_CONFIGURATION_TRACE = "VERIFYICA_CONFIGURATION_TRACE";
@@ -79,10 +81,14 @@ public class ConcreteConfiguration implements Configuration {
         return SingletonHolder.SINGLETON;
     }
 
-    /** Class to hold the singleton instance */
+    /**
+     * Class to hold the singleton instance
+     */
     private static class SingletonHolder {
 
-        /** The singleton instance */
+        /**
+         * The singleton instance
+         */
         private static final ConcreteConfiguration SINGLETON = new ConcreteConfiguration();
     }
 

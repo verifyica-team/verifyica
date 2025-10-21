@@ -16,7 +16,9 @@
 
 package org.verifyica.engine.common.throttle;
 
-/** Interface to implement Throttle */
+/**
+ * Interface to implement Throttle
+ */
 public interface Throttle {
 
     /**

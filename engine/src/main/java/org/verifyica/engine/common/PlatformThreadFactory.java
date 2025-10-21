@@ -18,7 +18,9 @@ package org.verifyica.engine.common;
 
 import java.util.concurrent.ThreadFactory;
 
-/** Class to implement PlatformThreadFactory */
+/**
+ * Class to implement PlatformThreadFactory
+ */
 public class PlatformThreadFactory implements ThreadFactory {
 
     /**

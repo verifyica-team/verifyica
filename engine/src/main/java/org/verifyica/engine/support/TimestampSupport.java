@@ -25,18 +25,28 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement TimestampSupport */
+/**
+ * Class to implement TimestampSupport
+ */
 // Suppress PMD.UselessParentheses - PMD has bug around UselessParentheses calculating milliseconds
 @SuppressWarnings("PMD.UselessParentheses")
 public final class TimestampSupport {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
-    /** Format */
+    /**
+     * Format
+     */
     public enum Format {
-        /** Long */
+
+        /**
+         * Long.
+         */
         LONG,
-        /** Short */
+
+        /**
+         * Short.
+         */
         SHORT
     }
 

@@ -20,7 +20,9 @@ import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement HashSupport */
+/**
+ * Class to implement HashSupport
+ */
 public class HashSupport {
 
     private static final String ALPHA_NUMERIC_CHARACTERS =

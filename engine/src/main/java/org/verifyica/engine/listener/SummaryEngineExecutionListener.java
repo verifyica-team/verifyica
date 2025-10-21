@@ -42,7 +42,9 @@ import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.support.TimestampSupport;
 
-/** Class to implement a SummaryEngineExecutionListener */
+/**
+ * Class to implement a SummaryEngineExecutionListener
+ */
 public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     private static final String SUMMARY_BANNER = new AnsiColoredString()
@@ -167,7 +169,9 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         }
     }
 
-    /** Method to print the summary */
+    /**
+     * Method to print the summary
+     */
     private void summary() {
         try {
             stopwatch.stop();

@@ -24,7 +24,9 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement ChainedEngineExecutionListener */
+/**
+ * Class to implement ChainedEngineExecutionListener
+ */
 public class ChainedEngineExecutionListener implements EngineExecutionListener {
 
     private final Collection<EngineExecutionListener> engineExecutionListeners = new ArrayList<>();

@@ -20,7 +20,9 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.util.concurrent.TimeUnit;
 
-/** Class to implement SystemLoadAverageThrottle */
+/**
+ * Class to implement SystemLoadAverageThrottle
+ */
 public class SystemLoadAverageThrottle implements Throttle {
 
     // Target maximum system load
@@ -125,7 +127,9 @@ public class SystemLoadAverageThrottle implements Throttle {
         return Holder.INSTANCE;
     }
 
-    /** Class to implement Holder */
+    /**
+     * Class to implement Holder
+     */
     private static class Holder {
 
         /**

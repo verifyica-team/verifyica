@@ -19,7 +19,9 @@ package org.verifyica.engine.common;
 import io.github.thunkware.vt.bridge.ThreadTool;
 import java.util.concurrent.ThreadFactory;
 
-/** Class to implement VirtualThreadFactory */
+/**
+ * Class to implement VirtualThreadFactory
+ */
 public class VirtualThreadFactory implements ThreadFactory {
 
     /**

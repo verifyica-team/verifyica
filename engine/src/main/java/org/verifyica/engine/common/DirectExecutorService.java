@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/** Class to implement DirectExecutorService */
+/**
+ * Class to implement DirectExecutorService
+ */
 public class DirectExecutorService extends AbstractExecutorService {
 
     private static final List<Runnable> EMPTY_LIST = new ArrayList<>();

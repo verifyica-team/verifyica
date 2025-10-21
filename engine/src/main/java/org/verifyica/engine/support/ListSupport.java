@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** Class to implement ListSupport */
+/**
+ * Class to implement ListSupport
+ */
 public class ListSupport {
 
     /**

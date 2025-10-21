@@ -23,7 +23,9 @@ import java.util.Arrays;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 
-/** Class to implement StackTracePrinter */
+/**
+ * Class to implement StackTracePrinter
+ */
 public class StackTracePrinter {
 
     private static boolean pruneStackTraces = true;

@@ -20,213 +20,344 @@ import java.io.Console;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-/** Class to implement ANSIColor */
+/**
+ * Class to implement ANSIColor
+ */
 @SuppressWarnings("unused")
 public class AnsiColor {
 
-    /** Configuration constant */
+    /**
+     * Constant
+     */
     private static final String PREFIX = "verifyica.test.engine";
 
-    /** Configuration constant */
+    /**
+     * Constant
+     */
     private static final String MAVEN_PLUGIN_MODE = PREFIX + ".maven.plugin.mode";
 
-    /** Configuration constant */
+    /**
+     * Constant
+     */
     private static final String MAVEN_PLUGIN_BATCH = PREFIX + ".maven.plugin.batch";
 
+    /**
+     * Constant
+     */
     private static final Pattern ANSI_PATTERN = Pattern.compile("\\u001B\\[[;\\d]*m");
 
-    /** Configuration constant */
+    /**
+     * Constant
+     */
     private static final String ANSI_COLOR_ENVIRONMENT_VARIABLE = "ANSI_COLOR";
 
-    /** Configuration constant */
+    /**
+     * Constant
+     */
     private static final String NO_COLOR_ENVIRONMENT_VARIABLE = "NO_COLOR";
 
-    /* Configuration constant */
+    /**
+     * Constant
+     */
     private static final String EMPTY_STRING = "";
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor NONE = new AnsiColor("\033[0m");
 
     // Regular Colors
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_BLACK = new AnsiColor("\033[0;30m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_RED = new AnsiColor("\033[0;38;5;160m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_GREEN = new AnsiColor("\033[0;32m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_YELLOW = new AnsiColor("\033[0;33m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_BLUE = new AnsiColor("\033[0;34m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_PURPLE = new AnsiColor("\033[0;35m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_CYAN = new AnsiColor("\033[0;36m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_WHITE = new AnsiColor("\033[0;37m");
 
     // Bold
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_BLACK_BOLD = new AnsiColor("\033[1;30m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_RED_BOLD = new AnsiColor("\033[1;31m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_GREEN_BOLD = new AnsiColor("\033[1;32m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_YELLOW_BOLD = new AnsiColor("\033[1;33m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_BLUE_BOLD = new AnsiColor("\033[1;34m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_PURPLE_BOLD = new AnsiColor("\033[1;35m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_CYAN_BOLD = new AnsiColor("\033[1;36m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_WHITE_BOLD = new AnsiColor("\033[1;37m");
 
     // Underline
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_BLACK_UNDERLINED = new AnsiColor("\033[4;30m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_RED_UNDERLINED = new AnsiColor("\033[4;31m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_GREEN_UNDERLINED = new AnsiColor("\033[4;32m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_YELLOW_UNDERLINED = new AnsiColor("\033[4;33m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_BLUE_UNDERLINED = new AnsiColor("\033[4;34m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_PURPLE_UNDERLINED = new AnsiColor("\033[4;35m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_CYAN_UNDERLINED = new AnsiColor("\033[4;36m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_WHITE_UNDERLINED = new AnsiColor("\033[4;37m");
 
     // High Intensity
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_BLACK_BRIGHT = new AnsiColor("\033[0;90m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_RED_BRIGHT = new AnsiColor("\033[0;38;5;196m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_GREEN_BRIGHT = new AnsiColor("\033[0;92m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_YELLOW_BRIGHT = new AnsiColor("\033[0;93m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_BLUE_BRIGHT = new AnsiColor("\033[0;94m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_PURPLE_BRIGHT = new AnsiColor("\033[0;95m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_CYAN_BRIGHT = new AnsiColor("\033[0;96m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_WHITE_BRIGHT = new AnsiColor("\033[1;97m");
 
     // Bold High Intensity
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_BLACK_BOLD_BRIGHT = new AnsiColor("\033[1;90m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_RED_BOLD_BRIGHT = new AnsiColor("\033[1;38;5;160m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_GREEN_BOLD_BRIGHT = new AnsiColor("\033[1;92m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_YELLOW_BOLD_BRIGHT = new AnsiColor("\033[1;93m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_BLUE_BOLD_BRIGHT = new AnsiColor("\033[1;94m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_PURPLE_BOLD_BRIGHT = new AnsiColor("\033[1;95m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_CYAN_BOLD_BRIGHT = new AnsiColor("\033[1;96m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor TEXT_WHITE_BOLD_BRIGHT = new AnsiColor("\033[1;97m");
 
     // Background
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_BLACK = new AnsiColor("\033[40m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_RED = new AnsiColor("\033[41m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_GREEN = new AnsiColor("\033[42m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_YELLOW = new AnsiColor("\033[43m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_BLUE = new AnsiColor("\033[44m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_PURPLE = new AnsiColor("\033[45m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_CYAN = new AnsiColor("\033[46m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_WHITE = new AnsiColor("\033[47m");
 
     // High Intensity backgrounds
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_BLACK_BRIGHT = new AnsiColor("\033[0;100m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_RED_BRIGHT = new AnsiColor("\033[0;101m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_GREEN_BRIGHT = new AnsiColor("\033[0;102m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_YELLOW_BRIGHT = new AnsiColor("\033[0;103m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_BLUE_BRIGHT = new AnsiColor("\033[0;104m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_PURPLE_BRIGHT = new AnsiColor("\033[0;105m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_CYAN_BRIGHT = new AnsiColor("\033[0;106m");
 
-    /** AnsiColor constant */
+    /**
+     * AnsiColor constant
+     */
     public static final AnsiColor BACKGROUND_WHITE_BRIGHT = new AnsiColor("\033[0;107m");
 
     private static boolean ANSI_COLOR_SUPPORTED;

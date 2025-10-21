@@ -18,7 +18,9 @@ package org.verifyica.engine.common;
 
 import java.util.concurrent.Semaphore;
 
-/** Class to implement SemaphoreControlledRunnable */
+/**
+ * Class to implement SemaphoreControlledRunnable
+ */
 public class SemaphoreRunnable implements Runnable {
 
     private final Semaphore semaphore;

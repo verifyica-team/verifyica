@@ -39,7 +39,9 @@ import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement TestMethodDescriptor */
+/**
+ * Class to implement TestMethodDescriptor
+ */
 public class TestMethodTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestMethodTestDescriptor.class);

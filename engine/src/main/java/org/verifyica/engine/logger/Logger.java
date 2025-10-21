@@ -30,7 +30,9 @@ import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 
-/** Class to implement Logger */
+/**
+ * Class to implement Logger
+ */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class Logger {
 
@@ -260,7 +262,9 @@ public class Logger {
         }
     }
 
-    /** Method to flush */
+    /**
+     * Method to flush
+     */
     public void flush() {
         System.err.flush();
         System.out.flush();

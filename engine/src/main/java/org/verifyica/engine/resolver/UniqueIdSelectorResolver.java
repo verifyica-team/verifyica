@@ -34,7 +34,9 @@ import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.OrderSupport;
 
-/** Class to implement UniqueIdSelectorResolver */
+/**
+ * Class to implement UniqueIdSelectorResolver
+ */
 public class UniqueIdSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UniqueIdSelectorResolver.class);

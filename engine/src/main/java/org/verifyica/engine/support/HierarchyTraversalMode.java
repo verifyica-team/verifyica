@@ -18,12 +18,19 @@ package org.verifyica.engine.support;
 
 import static java.lang.String.format;
 
-/** Class to implement HierarchyTraversalMode */
+/**
+ * Class to implement HierarchyTraversalMode
+ */
 public enum HierarchyTraversalMode {
 
-    /** Top down */
+    /**
+     * Top down traversal mode.
+     */
     TOP_DOWN,
-    /** Bottom up */
+
+    /**
+     * Bottom up traversal mode.
+     */
     BOTTOM_UP;
 
     /**

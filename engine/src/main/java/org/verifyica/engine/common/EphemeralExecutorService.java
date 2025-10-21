@@ -23,7 +23,9 @@ import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-/** Class to implement NewPlatformThreadExecutorService */
+/**
+ * Class to implement NewPlatformThreadExecutorService
+ */
 public class EphemeralExecutorService extends AbstractExecutorService {
 
     private final ThreadFactory threadFactory;
