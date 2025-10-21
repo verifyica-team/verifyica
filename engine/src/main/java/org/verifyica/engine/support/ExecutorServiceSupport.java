@@ -17,10 +17,7 @@
 package org.verifyica.engine.support;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -44,28 +41,20 @@ public class ExecutorServiceSupport {
      * Method to wait for all Futures to complete
      *
      * @param futures futures
-     * @param executorService executorService
      */
-    public static void waitForAllFutures(Collection<Future<?>> futures, ExecutorService executorService) {
+    public static void waitForAllFutures(Collection<Future<?>> futures) {
         Precondition.notNull(futures, "futures is null");
-        Precondition.notNull(executorService, "executorService is null");
 
         LOGGER.trace("waitForAllFutures() futures [%d]", futures.size());
 
-        CompletionService<Object> completionService = new ExecutorCompletionService<>(executorService);
-        Map<Future<?>, Future<?>> futureMap = new HashMap<>();
-
         for (Future<?> future : futures) {
-            futureMap.put(completionService.submit(future::get), future);
-        }
-
-        for (int i = 0; i < futures.size(); i++) {
             try {
-                Future<Object> completedFuture = completionService.take();
-                futureMap.remove(completedFuture);
+                future.get();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.err.printf("Error waiting for future [%s]%n", e.getMessage());
+                LOGGER.error("Error waiting for future [%s]", e.getMessage());
+            } catch (ExecutionException ee) {
+                LOGGER.error("Future error [%s]", ee.getMessage());
             }
         }
     }

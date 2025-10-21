@@ -63,7 +63,7 @@ import org.verifyica.engine.common.VirtualThreadFactory;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.context.ConcreteEngineContext;
-import org.verifyica.engine.descriptor.ClassTestDescriptor;
+import org.verifyica.engine.descriptor.TestClassTestDescriptor;
 import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.exception.EngineConfigurationException;
 import org.verifyica.engine.exception.EngineException;
@@ -211,8 +211,8 @@ public class VerifyicaTestEngine implements TestEngine {
                 traceEngineDescriptor(executionRequest.getRootTestDescriptor());
             }
 
-            ExecutorService classExecutorService = createEngineClassExecutorService(configuration);
-            ExecutorService argumentExecutorService = createEngineArgumentExecutorService(configuration);
+            ExecutorService classExecutorService = createTestClassExecutorService(configuration);
+            ExecutorService argumentExecutorService = createTestArgumentExecutorService(configuration);
 
             engineExecutionListener = configureEngineExecutionListeners(executionRequest);
             engineInterceptorRegistry = new EngineInterceptorRegistry(configuration);
@@ -234,22 +234,28 @@ public class VerifyicaTestEngine implements TestEngine {
                 List<Future<?>> futures = new ArrayList<>();
 
                 for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
-                    Class<?> testClass = ((ClassTestDescriptor) testableTestDescriptor).getTestClass();
+                    Class<?> testClass = ((TestClassTestDescriptor) testableTestDescriptor).getTestClass();
+
                     List<ClassInterceptor> classInterceptors =
                             classInterceptorRegistry.getClassInterceptors(engineContext, testClass);
+
                     List<ClassInterceptor> classInterceptorsReversed = ListSupport.copyAndReverse(classInterceptors);
 
                     Injector.inject(
                             TestableTestDescriptor.ENGINE_EXECUTION_LISTENER,
                             engineExecutionListener,
                             testableTestDescriptor);
+
                     Injector.inject(TestableTestDescriptor.ENGINE_CONTEXT, engineContext, testableTestDescriptor);
+
                     Injector.inject(
                             TestableTestDescriptor.ARGUMENT_EXECUTOR_SERVICE,
                             argumentExecutorService,
                             testableTestDescriptor);
+
                     Injector.inject(
                             TestableTestDescriptor.CLASS_INTERCEPTORS, classInterceptors, testableTestDescriptor);
+
                     Injector.inject(
                             TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED,
                             classInterceptorsReversed,
@@ -263,7 +269,7 @@ public class VerifyicaTestEngine implements TestEngine {
                     futures.add(future);
                 }
 
-                ExecutorServiceSupport.waitForAllFutures(futures, classExecutorService);
+                ExecutorServiceSupport.waitForAllFutures(futures);
             } catch (Throwable t) {
                 StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                 throwables.add(t);
@@ -399,36 +405,34 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to create an engine class ExecutorService
+     * Method to create a test class ExecutorService
      *
      * @param configuration configuration
-     * @return an engine class ExecutorService
+     * @return a test class ExecutorService
      */
-    private static ExecutorService createEngineClassExecutorService(Configuration configuration) {
-        LOGGER.trace("createEngineClassExecutorService()");
-
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
+    private static ExecutorService createTestClassExecutorService(Configuration configuration) {
+        LOGGER.trace("createTestClassExecutorService()");
 
         String engineThreadType =
                 configuration.getProperties().getProperty(Constants.ENGINE_THREAD_TYPE, Constants.VIRTUAL);
 
-        int engineClassParallelism = getEngineClassParallelism(configuration);
+        int engineTestClassParallelism = getEngineTestClassParallelism(configuration);
 
         ThreadFactory threadFactory = createThreadFactory(configuration);
 
         if (Constants.PLATFORM_EPHEMERAL.equals(engineThreadType.trim())) {
             LOGGER.trace("creating EphemeralExecutorService");
             return new SemaphoreExecutor(
-                    new EphemeralExecutorService(threadFactory), new Semaphore(engineClassParallelism));
+                    new EphemeralExecutorService(threadFactory), new Semaphore(engineTestClassParallelism));
         } else {
             LOGGER.trace("creating ThreadPoolExecutor");
 
             return new ThreadPoolExecutor(
-                    engineClassParallelism,
-                    engineClassParallelism,
+                    engineTestClassParallelism,
+                    engineTestClassParallelism,
                     Long.MAX_VALUE,
                     TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<>(availableProcessors * 4),
+                    new LinkedBlockingQueue<>(engineTestClassParallelism),
                     threadFactory,
                     (r, executor) -> {
                         try {
@@ -445,44 +449,34 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to create an engine argument ExecutorService
+     * Method to create a test argument ExecutorService
      *
      * @param configuration configuration
-     * @return an engine argument ExecutorService
+     * @return a test argument ExecutorService
      */
-    private static ExecutorService createEngineArgumentExecutorService(Configuration configuration) {
-        LOGGER.trace("createEngineClassExecutorService()");
-
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
+    private static ExecutorService createTestArgumentExecutorService(Configuration configuration) {
+        LOGGER.trace("createTestArgumentExecutorService()");
 
         String engineThreadType =
                 configuration.getProperties().getProperty(Constants.ENGINE_THREAD_TYPE, Constants.VIRTUAL);
 
-        int engineArgumentParallelism = getEngineArgumentParallelism(configuration);
+        int engineTestArgumentParallelism = getEngineTestArgumentParallelism(configuration);
 
         ThreadFactory threadFactory = createThreadFactory(configuration);
 
         if (Constants.PLATFORM_EPHEMERAL.equals(engineThreadType.trim())) {
             LOGGER.trace("creating EphemeralExecutorService");
             return new SemaphoreExecutor(
-                    new EphemeralExecutorService(threadFactory), new Semaphore(engineArgumentParallelism));
+                    new EphemeralExecutorService(threadFactory), new Semaphore(engineTestArgumentParallelism));
         } else {
             LOGGER.trace("creating ThreadPoolExecutor");
             return new ThreadPoolExecutor(
-                    engineArgumentParallelism,
-                    engineArgumentParallelism,
+                    engineTestArgumentParallelism,
+                    engineTestArgumentParallelism,
                     Long.MAX_VALUE,
                     TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<>(availableProcessors * 4),
-                    (r, executor) -> {
-                        try {
-                            executor.getQueue().put(r);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            throw new RejectedExecutionException(
-                                    "Task was interrupted while waiting for space in the queue", e);
-                        }
-                    });
+                    new LinkedBlockingQueue<>(engineTestArgumentParallelism),
+                    new ThreadPoolExecutor.AbortPolicy());
 
             // return Executors.newFixedThreadPool(engineArgumentParallelism, threadFactory);
         }
@@ -512,14 +506,14 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to get the engine class parallelism configuration value
+     * Method to get the engine test class parallelism configuration value
      *
      * @return the engine parallelism value
      */
-    private static int getEngineClassParallelism(Configuration configuration) {
-        LOGGER.trace("getEngineClassParallelism()");
+    private static int getEngineTestClassParallelism(Configuration configuration) {
+        LOGGER.trace("getEngineTestClassParallelism()");
 
-        int engineClassParallelism = ofNullable(
+        int engineTestClassParallelism = ofNullable(
                         configuration.getProperties().getProperty(Constants.ENGINE_CLASS_PARALLELISM))
                 .map(value -> {
                     int intValue;
@@ -537,22 +531,22 @@ public class VerifyicaTestEngine implements TestEngine {
                 })
                 .orElse(Runtime.getRuntime().availableProcessors());
 
-        LOGGER.trace("engineClassParallelism [%d]", engineClassParallelism);
+        LOGGER.trace("engineTestClassParallelism [%d]", engineTestClassParallelism);
 
-        return engineClassParallelism;
+        return engineTestClassParallelism;
     }
 
     /**
-     * Method to get the engine argument parallelism configuration value
+     * Method to get the engine test argument parallelism configuration value
      *
-     * @return the engine parallelism value
+     * @return the engine test argument parallelism value
      */
-    private static int getEngineArgumentParallelism(Configuration configuration) {
-        LOGGER.trace("getEngineArgumentParallelism()");
+    private static int getEngineTestArgumentParallelism(Configuration configuration) {
+        LOGGER.trace("getEngineTestArgumentParallelism()");
 
-        int engineClassParallelism = getEngineClassParallelism(configuration);
+        int engineTestClassParallelism = getEngineTestClassParallelism(configuration);
 
-        int engineArgumentParallelism = ofNullable(
+        int engineTestArgumentParallelism = ofNullable(
                         configuration.getProperties().getProperty(Constants.ENGINE_ARGUMENT_PARALLELISM))
                 .map(value -> {
                     int intValue;
@@ -568,21 +562,21 @@ public class VerifyicaTestEngine implements TestEngine {
                                 format("Invalid %s value [%s]", Constants.ENGINE_ARGUMENT_PARALLELISM, value), e);
                     }
                 })
-                .orElse(engineClassParallelism);
+                .orElse(engineTestClassParallelism);
 
-        if (engineArgumentParallelism < engineClassParallelism) {
+        if (engineTestArgumentParallelism < engineTestClassParallelism) {
             LOGGER.warn(
                     "[%s] is less than [%s], setting [%s] to [%d]",
                     Constants.ENGINE_ARGUMENT_PARALLELISM,
                     Constants.ENGINE_CLASS_PARALLELISM,
                     Constants.ENGINE_ARGUMENT_PARALLELISM,
-                    engineClassParallelism);
+                    engineTestClassParallelism);
 
-            engineArgumentParallelism = engineClassParallelism;
+            engineTestArgumentParallelism = engineTestClassParallelism;
         }
 
-        LOGGER.trace("engineArgumentParallelism [%d]", engineArgumentParallelism);
+        LOGGER.trace("engineTestArgumentParallelism [%d]", engineTestArgumentParallelism);
 
-        return engineArgumentParallelism;
+        return engineTestArgumentParallelism;
     }
 }

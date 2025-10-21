@@ -36,8 +36,8 @@ import org.verifyica.engine.common.AnsiColoredString;
 import org.verifyica.engine.common.Counter;
 import org.verifyica.engine.common.StackTracePrinter;
 import org.verifyica.engine.common.Stopwatch;
-import org.verifyica.engine.descriptor.ArgumentTestDescriptor;
-import org.verifyica.engine.descriptor.ClassTestDescriptor;
+import org.verifyica.engine.descriptor.TestArgumentTestDescriptor;
+import org.verifyica.engine.descriptor.TestClassTestDescriptor;
 import org.verifyica.engine.descriptor.TestDescriptorStatus;
 import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.verifyica.engine.descriptor.TestableTestDescriptor;
@@ -107,9 +107,9 @@ public class SummaryEngineExecutionListener2 implements EngineExecutionListener 
         String type = null;
         String suffix = ".count";
 
-        if (testDescriptor instanceof ClassTestDescriptor) {
+        if (testDescriptor instanceof TestClassTestDescriptor) {
             type = "class";
-        } else if (testDescriptor instanceof ArgumentTestDescriptor) {
+        } else if (testDescriptor instanceof TestArgumentTestDescriptor) {
             type = "argument";
         } else if (testDescriptor instanceof TestMethodTestDescriptor) {
             type = "method";
@@ -125,9 +125,9 @@ public class SummaryEngineExecutionListener2 implements EngineExecutionListener 
         String type = null;
         String suffix = ".skipped";
 
-        if (testDescriptor instanceof ClassTestDescriptor) {
+        if (testDescriptor instanceof TestClassTestDescriptor) {
             type = "class";
-        } else if (testDescriptor instanceof ArgumentTestDescriptor) {
+        } else if (testDescriptor instanceof TestArgumentTestDescriptor) {
             type = "argument";
         } else if (testDescriptor instanceof TestMethodTestDescriptor) {
             type = "method";
@@ -147,9 +147,9 @@ public class SummaryEngineExecutionListener2 implements EngineExecutionListener 
         String type = null;
         String suffix = null;
 
-        if (testDescriptor instanceof ClassTestDescriptor) {
+        if (testDescriptor instanceof TestClassTestDescriptor) {
             type = "class";
-        } else if (testDescriptor instanceof ArgumentTestDescriptor) {
+        } else if (testDescriptor instanceof TestArgumentTestDescriptor) {
             type = "argument";
         } else if (testDescriptor instanceof TestMethodTestDescriptor) {
             type = "method";

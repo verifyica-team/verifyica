@@ -53,6 +53,9 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     public static final String ARGUMENT_EXECUTOR_SERVICE = "argumentExecutorService";
 
     /** Named annotation field constant */
+    public static final String ARGUMENT_EXECUTOR_POOL = "argumentExecutorPool";
+
+    /** Named annotation field constant */
     public static final String ENGINE_CONTEXT = "engineContext";
 
     /** Named annotation field constant */
