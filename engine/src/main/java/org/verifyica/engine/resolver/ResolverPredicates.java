@@ -23,10 +23,14 @@ import org.verifyica.api.Verifyica;
 import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
 
-/** Class to implement ResolverPredicates */
+/**
+ * Class to implement ResolverPredicates
+ */
 public class ResolverPredicates {
 
-    /** Predicate to filter class interceptor supplier methods */
+    /**
+     * Predicate to filter class interceptor supplier methods
+     */
     public static final Predicate<Method> CLASS_INTERCEPTOR_SUPPLIER = method -> {
         int modifiers = method.getModifiers();
         return Modifier.isPublic(modifiers)
@@ -36,7 +40,9 @@ public class ResolverPredicates {
                 && method.isAnnotationPresent(Verifyica.ClassInterceptorSupplier.class);
     };
 
-    /** Predicate to filter argument supplier methods */
+    /**
+     * Predicate to filter argument supplier methods
+     */
     public static final Predicate<Method> ARGUMENT_SUPPLIER_METHOD = method -> {
         int modifiers = method.getModifiers();
         return Modifier.isPublic(modifiers)
@@ -46,7 +52,9 @@ public class ResolverPredicates {
                 && method.isAnnotationPresent(Verifyica.ArgumentSupplier.class);
     };
 
-    /** Predicate to filter test methods */
+    /**
+     * Predicate to filter test methods
+     */
     public static final Predicate<Method> TEST_METHOD = method -> {
         int modifiers = method.getModifiers();
         return !Modifier.isAbstract(modifiers)
@@ -56,7 +64,9 @@ public class ResolverPredicates {
                 && method.isAnnotationPresent(Verifyica.Test.class);
     };
 
-    /** Predicate to filter test classes */
+    /**
+     * Predicate to filter test classes
+     */
     public static final Predicate<Class<?>> TEST_CLASS = clazz -> {
         int modifiers = clazz.getModifiers();
         return !Modifier.isAbstract(modifiers)
@@ -68,7 +78,9 @@ public class ResolverPredicates {
                         .isEmpty();
     };
 
-    /** Predicate to filter prepare methods */
+    /**
+     * Predicate to filter prepare methods
+     */
     public static final Predicate<Method> PREPARE_METHOD = method -> {
         int modifiers = method.getModifiers();
         return !Modifier.isAbstract(modifiers)
@@ -78,7 +90,9 @@ public class ResolverPredicates {
                 && method.isAnnotationPresent(Verifyica.Prepare.class);
     };
 
-    /** Predicate to filter before all methods */
+    /**
+     * Predicate to filter before all methods
+     */
     public static final Predicate<Method> BEFORE_ALL_METHOD = method -> {
         int modifiers = method.getModifiers();
         return !Modifier.isAbstract(modifiers)
@@ -89,7 +103,9 @@ public class ResolverPredicates {
                 && method.isAnnotationPresent(Verifyica.BeforeAll.class);
     };
 
-    /** Predicate to filter before each methods */
+    /**
+     * Predicate to filter before each methods
+     */
     public static final Predicate<Method> BEFORE_EACH_METHOD = method -> {
         int modifiers = method.getModifiers();
         return !Modifier.isAbstract(modifiers)
@@ -100,7 +116,9 @@ public class ResolverPredicates {
                 && method.isAnnotationPresent(Verifyica.BeforeEach.class);
     };
 
-    /** Predicate to filter after each methods */
+    /**
+     * Predicate to filter after each methods
+     */
     public static final Predicate<Method> AFTER_EACH_METHOD = method -> {
         int modifiers = method.getModifiers();
         return !Modifier.isAbstract(modifiers)
@@ -111,7 +129,9 @@ public class ResolverPredicates {
                 && method.isAnnotationPresent(Verifyica.AfterEach.class);
     };
 
-    /** Predicate to filter after all methods */
+    /**
+     * Predicate to filter after all methods
+     */
     public static final Predicate<Method> AFTER_ALL_METHOD = method -> {
         int modifiers = method.getModifiers();
         return !Modifier.isAbstract(modifiers)
@@ -122,7 +142,9 @@ public class ResolverPredicates {
                 && method.isAnnotationPresent(Verifyica.AfterAll.class);
     };
 
-    /** Predicate to filter conclude methods */
+    /**
+     * Predicate to filter conclude methods
+     */
     public static final Predicate<Method> CONCLUDE_METHOD = method -> {
         int modifiers = method.getModifiers();
         return !Modifier.isAbstract(modifiers)

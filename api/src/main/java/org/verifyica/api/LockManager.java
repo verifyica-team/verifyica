@@ -248,12 +248,16 @@ public class LockManager {
             return reentrantLock;
         }
 
-        /** Method to add the current Thread */
+        /**
+         * Method to add the current Thread
+         */
         private void addThread() {
             threads.add(Thread.currentThread());
         }
 
-        /** Method to remove the current Thread */
+        /**
+         * Method to remove the current Thread
+         */
         private void removeThread() {
             threads.remove(Thread.currentThread());
         }

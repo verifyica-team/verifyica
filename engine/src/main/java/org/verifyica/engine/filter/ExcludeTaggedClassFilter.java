@@ -18,7 +18,9 @@ package org.verifyica.engine.filter;
 
 import org.verifyica.engine.support.TagSupport;
 
-/** Class to implement ExcludeTaggedClassFilter */
+/**
+ * Class to implement ExcludeTaggedClassFilter
+ */
 public class ExcludeTaggedClassFilter extends AbstractFilter {
 
     /**

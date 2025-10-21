@@ -23,7 +23,9 @@ import org.junit.platform.engine.reporting.ReportEntry;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement TracingEngineExecutionListener */
+/**
+ * Class to implement TracingEngineExecutionListener
+ */
 public class TracingEngineExecutionListener implements EngineExecutionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TracingEngineExecutionListener.class);

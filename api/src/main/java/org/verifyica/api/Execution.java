@@ -142,7 +142,9 @@ public class Execution {
         skipIfNotCondition(supplier.getAsBoolean(), message);
     }
 
-    /** Class to implement ExecutionSkippedException */
+    /**
+     * Class to implement ExecutionSkippedException
+     */
     public static class ExecutionSkippedException extends RuntimeException {
 
         /**

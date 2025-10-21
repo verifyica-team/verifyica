@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-/** Class to implement ImmutableProperties */
+/**
+ * Class to implement ImmutableProperties
+ */
 public class ImmutableProperties extends Properties {
 
     private static final long serialVersionUID = 1L;

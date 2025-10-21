@@ -23,7 +23,9 @@ import org.verifyica.api.ClassContext;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 
-/** Class to implement ConcreteClassContext */
+/**
+ * Class to implement ConcreteClassContext
+ */
 public class ConcreteClassContext extends AbstractContext implements ClassContext {
 
     private final EngineContext engineContext;

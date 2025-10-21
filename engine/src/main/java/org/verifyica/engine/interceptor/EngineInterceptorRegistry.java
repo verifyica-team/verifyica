@@ -40,7 +40,9 @@ import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.ObjectSupport;
 import org.verifyica.engine.support.OrderSupport;
 
-/** Class to implement EngineInterceptorRegistry */
+/**
+ * Class to implement EngineInterceptorRegistry
+ */
 public class EngineInterceptorRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);

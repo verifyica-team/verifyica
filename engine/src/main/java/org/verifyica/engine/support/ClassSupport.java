@@ -45,7 +45,9 @@ import org.junit.platform.commons.support.ReflectionSupport;
 import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.exception.UncheckedURISyntaxException;
 
-/** Class to implement ClassPathSupport */
+/**
+ * Class to implement ClassPathSupport
+ */
 public class ClassSupport {
 
     private static final Lock LOCK = new ReentrantLock(true);
@@ -243,7 +245,9 @@ public class ClassSupport {
         }
     }
 
-    /** Class to implement PathSimpleFileVisitor */
+    /**
+     * Class to implement PathSimpleFileVisitor
+     */
     private static class PathSimpleFileVisitor extends SimpleFileVisitor<Path> {
 
         private final Predicate<String> predicate;

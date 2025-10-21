@@ -56,7 +56,9 @@ import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.ExecutorServiceSupport;
 import org.verifyica.engine.support.HashSupport;
 
-/** Class to implement TestClassTestDescriptor */
+/**
+ * Class to implement TestClassTestDescriptor
+ */
 public class TestClassTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestClassTestDescriptor.class);

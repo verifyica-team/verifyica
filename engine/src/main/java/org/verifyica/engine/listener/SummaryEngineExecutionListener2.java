@@ -43,7 +43,9 @@ import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.support.TimestampSupport;
 
-/** Class to implement a SummaryEngineExecutionListener2 */
+/**
+ * Class to implement a SummaryEngineExecutionListener2
+ */
 @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.UnusedPrivateField", "PMD.EmptyCatchBlock"})
 public class SummaryEngineExecutionListener2 implements EngineExecutionListener {
 
@@ -172,7 +174,9 @@ public class SummaryEngineExecutionListener2 implements EngineExecutionListener 
         }
     }
 
-    /** Method to print the summary */
+    /**
+     * Method to print the summary
+     */
     private void summary() {
         try {
             stopwatch.stop();

@@ -16,7 +16,9 @@
 
 package org.verifyica.engine.filter;
 
-/** Class to implement IncludeClassFilter */
+/**
+ * Class to implement IncludeClassFilter
+ */
 public class IncludeClassFilter extends AbstractFilter {
 
     /**

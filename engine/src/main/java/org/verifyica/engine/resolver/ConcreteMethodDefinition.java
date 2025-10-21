@@ -20,7 +20,9 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import org.verifyica.engine.api.MethodDefinition;
 
-/** Class to implement ConcreteMethodDefinition */
+/**
+ * Class to implement ConcreteMethodDefinition
+ */
 public class ConcreteMethodDefinition implements MethodDefinition {
 
     private final Method method;

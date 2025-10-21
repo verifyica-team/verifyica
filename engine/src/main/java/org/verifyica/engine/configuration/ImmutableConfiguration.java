@@ -24,7 +24,9 @@ import java.util.Properties;
 import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.ImmutableProperties;
 
-/** Class to implement ImmutableConfiguration */
+/**
+ * Class to implement ImmutableConfiguration
+ */
 public class ImmutableConfiguration implements Configuration {
 
     private final Path propertiesFilenamePath;

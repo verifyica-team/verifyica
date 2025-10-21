@@ -16,20 +16,39 @@
 
 package org.verifyica.engine.filter;
 
-/** Interface to implement Filter */
+/**
+ * Interface to implement Filter
+ */
 public interface Filter {
 
-    /** Filter type */
+    /**
+     * Filter type
+     */
     enum Type {
-        /** Unknown */
+
+        /**
+         * Unknown
+         */
         UNKNOWN,
-        /** IncludeClass */
+
+        /**
+         * IncludeClass
+         */
         INCLUDE_CLASS,
-        /** ExcludeClass */
+
+        /**
+         * ExcludeClass
+         */
         EXCLUDE_CLASS,
-        /** IncludeTaggedClass */
+
+        /**
+         * IncludeTaggedClass
+         */
         INCLUDE_TAGGED_CLASS,
-        /** ExcludeTaggedClass */
+
+        /**
+         * ExcludeTaggedClass
+         */
         EXCLUDE_TAGGED_CLASS
     }
 

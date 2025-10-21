@@ -24,7 +24,9 @@ import org.verifyica.api.Argument;
 import org.verifyica.engine.api.ClassDefinition;
 import org.verifyica.engine.api.MethodDefinition;
 
-/** Class to implement ConcreteClassDefinition */
+/**
+ * Class to implement ConcreteClassDefinition
+ */
 public class ConcreteClassDefinition implements ClassDefinition {
 
     private final Class<?> testClass;

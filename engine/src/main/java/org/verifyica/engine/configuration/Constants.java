@@ -16,141 +16,227 @@
 
 package org.verifyica.engine.configuration;
 
-/** Class to implement Constants */
+/**
+ * Class to implement Constants
+ */
 public final class Constants {
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String TRUE = "true";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String FALSE = "false";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String VIRTUAL = "virtual";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String PLATFORM = "platform";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String PLATFORM_EPHEMERAL = "platform-ephemeral";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String PREFIX = "verifyica";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE = PREFIX + ".engine";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_THREAD = ENGINE + ".thread";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_THREAD_TYPE = ENGINE_THREAD + ".type";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_LOGGER_REGEX = ENGINE + ".logger.regex";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_LOGGER_LEVEL = ENGINE + ".logger.level";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED = ENGINE + ".autowired";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_PRUNE_STACK_TRACE = ENGINE + ".prune.stacktraces";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_ENGINE = ENGINE_AUTOWIRED + ".engine";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS = ENGINE_AUTOWIRED_ENGINE + ".interceptors";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE =
             ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS + ".include";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX =
             ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE + ".regex";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE =
             ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS + ".exclude";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX =
             ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE + ".regex";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_CLASS = ENGINE + ".class";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_CLASS = ENGINE_AUTOWIRED + ".class";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS = ENGINE_AUTOWIRED_CLASS + ".interceptors";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE =
             ENGINE_AUTOWIRED_CLASS_INTERCEPTORS + ".include";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX =
             ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE + ".regex";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE =
             ENGINE_AUTOWIRED_CLASS_INTERCEPTORS + ".exclude";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX =
             ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE + ".regex";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_FILTER = ENGINE + ".filter";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_FILTER_DEFINITIONS = ENGINE_FILTER + ".definitions";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_FILTER_DEFINITIONS_FILENAME = ENGINE_FILTER_DEFINITIONS + ".filename";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_CLASS_PARALLELISM = ENGINE_CLASS + ".parallelism";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_CLASS_STATE_MACHINE_THROTTLE = ENGINE_CLASS + ".state.machine.throttle";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_ARGUMENT = ENGINE + ".argument";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_ARGUMENT_PARALLELISM = ENGINE_ARGUMENT + ".parallelism";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_ARGUMENT_STATE_MACHINE_THROTTLE = ENGINE_ARGUMENT + ".state.machine.throttle";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_TEST = ENGINE + ".test";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String ENGINE_TEST_STATE_MACHINE_THROTTLE = ENGINE_TEST + ".state.machine.throttle";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String MAVEN_PLUGIN = PREFIX + ".maven.plugin";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String MAVEN_PLUGIN_MODE = MAVEN_PLUGIN + ".mode";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String MAVEN_PLUGIN_VERSION = MAVEN_PLUGIN + ".version";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String MAVEN_PLUGIN_LOG = MAVEN_PLUGIN + ".log";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String MAVEN_PLUGIN_LOG_TESTS = MAVEN_PLUGIN_LOG + ".tests";
 
-    /** Configuration constant */
+    /**
+     * Configuration constant
+     */
     public static final String MAVEN_PLUGIN_LOG_TIMING_UNITS = MAVEN_PLUGIN_LOG + ".units";
 
     /**

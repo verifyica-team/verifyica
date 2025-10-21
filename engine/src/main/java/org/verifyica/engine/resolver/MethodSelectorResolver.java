@@ -31,7 +31,9 @@ import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.OrderSupport;
 
-/** Class to implement MethodSelectorResolver */
+/**
+ * Class to implement MethodSelectorResolver
+ */
 public class MethodSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodSelectorResolver.class);

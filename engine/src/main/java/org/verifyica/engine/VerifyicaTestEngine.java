@@ -89,31 +89,49 @@ public class VerifyicaTestEngine implements TestEngine {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VerifyicaTestEngine.class);
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String UNKNOWN_VERSION = "unknown";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String DISPLAY_NAME = "Verifyica";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String ID = DISPLAY_NAME.toLowerCase(Locale.ENGLISH);
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String GROUP_ID = "org.verifyica";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String ARTIFACT_ID = "engine";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String VERSION = version();
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String UNIQUE_ID = "[engine:" + ID + "]";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String ENGINE_PROPERTIES_RESOURCE = "/engine.properties";
 
-    /** Constant */
+    /**
+     * Constant
+     */
     private static final String ENGINE_PROPERTIES_VERSION_KEY = "version";
 
     private final List<Throwable> throwables;

@@ -54,7 +54,9 @@ import org.verifyica.engine.support.ListSupport;
 import org.verifyica.engine.support.ObjectSupport;
 import org.verifyica.engine.support.OrderSupport;
 
-/** Class to implement ClassInterceptorRegistry */
+/**
+ * Class to implement ClassInterceptorRegistry
+ */
 public class ClassInterceptorRegistry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);

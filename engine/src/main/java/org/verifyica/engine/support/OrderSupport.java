@@ -31,7 +31,9 @@ import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.exception.TestClassDefinitionException;
 
-/** Class to implement OrderSupport */
+/**
+ * Class to implement OrderSupport
+ */
 public class OrderSupport {
 
     /**

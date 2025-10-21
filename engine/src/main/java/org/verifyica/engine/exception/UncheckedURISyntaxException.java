@@ -18,7 +18,9 @@ package org.verifyica.engine.exception;
 
 import java.net.URISyntaxException;
 
-/** Class to implement UncheckedURISyntaxException */
+/**
+ * Class to implement UncheckedURISyntaxException
+ */
 public class UncheckedURISyntaxException extends RuntimeException {
 
     /**
@@ -31,7 +33,9 @@ public class UncheckedURISyntaxException extends RuntimeException {
         super(message, uriSyntaxException);
     }
 
-    /** Method to propagate (throw) the exception */
+    /**
+     * Method to propagate (throw) the exception
+     */
     public void throwUnchecked() {
         throw this;
     }

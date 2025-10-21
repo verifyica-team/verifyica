@@ -30,7 +30,9 @@ import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.OrderSupport;
 
-/** Class to implement ClassSelectorResolver */
+/**
+ * Class to implement ClassSelectorResolver
+ */
 public class ClassSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassSelectorResolver.class);

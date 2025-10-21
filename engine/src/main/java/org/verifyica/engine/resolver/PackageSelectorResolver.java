@@ -31,7 +31,9 @@ import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.OrderSupport;
 
-/** Class to implement PackageSelectorResolver */
+/**
+ * Class to implement PackageSelectorResolver
+ */
 public class PackageSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PackageSelectorResolver.class);

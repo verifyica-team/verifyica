@@ -21,7 +21,9 @@ import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 import org.verifyica.engine.configuration.ImmutableConfiguration;
 
-/** Class to implement ConcreteEngineContext */
+/**
+ * Class to implement ConcreteEngineContext
+ */
 public class ConcreteEngineContext extends AbstractContext implements EngineContext {
 
     private final Configuration configuration;

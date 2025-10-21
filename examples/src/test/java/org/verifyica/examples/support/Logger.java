@@ -18,7 +18,9 @@ package org.verifyica.examples.support;
 
 import static java.lang.String.format;
 
-/** Class to implement Logger */
+/**
+ * Class to implement Logger
+ */
 public class Logger {
 
     private final String name;

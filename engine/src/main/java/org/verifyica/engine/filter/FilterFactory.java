@@ -33,7 +33,9 @@ import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.exception.EngineConfigurationException;
 import org.yaml.snakeyaml.Yaml;
 
-/** Class to implement FilterFactory */
+/**
+ * Class to implement FilterFactory
+ */
 @SuppressWarnings("unchecked")
 public class FilterFactory {
 

@@ -137,7 +137,9 @@ public class Trap {
         }
     }
 
-    /** Interface to implement Runnable */
+    /**
+     * Interface to implement Runnable
+     */
     public interface Runnable {
 
         /**

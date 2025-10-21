@@ -18,19 +18,32 @@ package org.verifyica.engine.descriptor;
 
 import java.util.Objects;
 
-/** Class to implement TestDescriptorStatus */
+/**
+ * Class to implement TestDescriptorStatus
+ */
 public class TestDescriptorStatus {
 
     private static final TestDescriptorStatus PASSED = new TestDescriptorStatus(Type.PASSED);
     private static final TestDescriptorStatus SKIPPED = new TestDescriptorStatus(Type.SKIPPED);
 
-    /** InvocationResult Type */
+    /**
+     * InvocationResult Type
+     */
     public enum Type {
-        /** Passed */
+
+        /**
+         * Passed result.
+         */
         PASSED,
-        /** Failed */
+
+        /**
+         * Failed result.
+         */
         FAILED,
-        /** Skipped */
+
+        /**
+         * Skipped result.
+         */
         SKIPPED
     }
 

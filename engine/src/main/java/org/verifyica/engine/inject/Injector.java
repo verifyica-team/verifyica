@@ -30,7 +30,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.verifyica.engine.exception.EngineException;
 
-/** Class to implement Injector */
+/**
+ * Class to implement Injector
+ */
 @SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class Injector {
 

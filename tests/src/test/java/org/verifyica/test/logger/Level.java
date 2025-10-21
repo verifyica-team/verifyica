@@ -20,25 +20,39 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-/** Class to implement Level */
+/**
+ * Class to implement Level
+ */
 public final class Level {
 
-    /** ERROR log level */
+    /**
+     * ERROR log level
+     */
     public static final Level ERROR = new Level(100, "ERROR");
 
-    /** WARN log level */
+    /**
+     * WARN log level
+     */
     public static final Level WARN = new Level(200, "WARN");
 
-    /** INFO log level */
+    /**
+     * INFO log level
+     */
     public static final Level INFO = new Level(300, "INFO");
 
-    /** DEBUG log level */
+    /**
+     * DEBUG log level
+     */
     public static final Level DEBUG = new Level(400, "DEBUG");
 
-    /** TRACE log level */
+    /**
+     * TRACE log level
+     */
     public static final Level TRACE = new Level(500, "TRACE");
 
-    /** ALL log level */
+    /**
+     * ALL log level
+     */
     public static final Level ALL = new Level(Integer.MAX_VALUE, "ALL");
 
     private static final Map<String, Level> LEVEL_MAP = new HashMap<>();

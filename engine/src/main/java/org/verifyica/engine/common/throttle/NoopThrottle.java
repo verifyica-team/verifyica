@@ -16,7 +16,9 @@
 
 package org.verifyica.engine.common.throttle;
 
-/** Class to implement NoopThrottle */
+/**
+ * Class to implement NoopThrottle
+ */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class NoopThrottle implements Throttle {
 
@@ -41,7 +43,9 @@ public class NoopThrottle implements Throttle {
         return Holder.INSTANCE;
     }
 
-    /** Class to implement Holder */
+    /**
+     * Class to implement Holder
+     */
     private static class Holder {
 
         /**

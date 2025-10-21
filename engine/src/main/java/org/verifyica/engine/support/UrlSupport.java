@@ -25,7 +25,9 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import org.verifyica.engine.common.Precondition;
 
-/** Class to implement UrlSupport */
+/**
+ * Class to implement UrlSupport
+ */
 public class UrlSupport {
 
     /**

@@ -18,7 +18,9 @@ package org.verifyica.engine.common;
 
 import java.util.Objects;
 
-/** Class to implement AnsiColoredString */
+/**
+ * Class to implement AnsiColoredString
+ */
 public class AnsiColoredString {
 
     private final StringBuilder stringBuilder;

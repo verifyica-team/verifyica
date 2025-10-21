@@ -16,7 +16,9 @@
 
 package org.verifyica.engine.exception;
 
-/** Class to implement EngineException */
+/**
+ * Class to implement EngineException
+ */
 public class EngineException extends RuntimeException {
 
     /**

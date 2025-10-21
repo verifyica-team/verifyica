@@ -22,10 +22,14 @@ import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineInterceptor;
 import org.verifyica.api.Verifyica;
 
-/** Class to implement InterceptorPredicates */
+/**
+ * Class to implement InterceptorPredicates
+ */
 public class InterceptorPredicates {
 
-    /** Predicate to filter autowired engine interceptors classes */
+    /**
+     * Predicate to filter autowired engine interceptors classes
+     */
     public static final Predicate<Class<?>> AUTOWIRED_ENGINE_INTERCEPTOR_CLASS = clazz -> {
         int modifiers = clazz.getModifiers();
         return Modifier.isPublic(modifiers)
@@ -36,7 +40,9 @@ public class InterceptorPredicates {
                 && hasDefaultConstructor(clazz);
     };
 
-    /** Predicate to filter autowired class interceptor classes */
+    /**
+     * Predicate to filter autowired class interceptor classes
+     */
     public static final Predicate<Class<?>> AUTOWIRED_CLASS_INTERCEPTOR_CLASS = clazz -> {
         int modifiers = clazz.getModifiers();
         return Modifier.isPublic(modifiers)

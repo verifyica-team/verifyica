@@ -43,19 +43,56 @@ import org.verifyica.engine.inject.Injector;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
-/** Class to implement TestArgumentTestDescriptor */
+/**
+ * Class to implement TestArgumentTestDescriptor
+ */
 public class TestArgumentTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestArgumentTestDescriptor.class);
 
+    /**
+     * Enum representing state.
+     */
     private enum State {
+
+        /**
+         * Start state.
+         */
         START,
+
+        /**
+         * Before all state.
+         */
         BEFORE_ALL,
+
+        /**
+         * Test state.
+         */
         TEST,
+
+        /**
+         * Skip state.
+         */
         SKIP,
+
+        /**
+         * After all state.
+         */
         AFTER_ALL,
+
+        /**
+         * Close state.
+         */
         CLOSE,
+
+        /**
+         * Clean up state.
+         */
         CLEAN_UP,
+
+        /**
+         * End state.
+         */
         END
     }
 

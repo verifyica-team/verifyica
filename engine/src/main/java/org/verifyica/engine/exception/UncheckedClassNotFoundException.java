@@ -16,7 +16,9 @@
 
 package org.verifyica.engine.exception;
 
-/** Class to implement UncheckedClassNotFoundException */
+/**
+ * Class to implement UncheckedClassNotFoundException
+ */
 public class UncheckedClassNotFoundException extends RuntimeException {
 
     /**
@@ -29,7 +31,9 @@ public class UncheckedClassNotFoundException extends RuntimeException {
         super(message, classNotFoundException);
     }
 
-    /** Method to propagate (throw) the exception */
+    /**
+     * Method to propagate (throw) the exception
+     */
     public void throwUnchecked() {
         throw this;
     }
