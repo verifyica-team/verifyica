@@ -33,10 +33,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -417,6 +419,7 @@ public class VerifyicaTestEngine implements TestEngine {
         String engineThreadType =
                 configuration.getProperties().getProperty(Constants.ENGINE_THREAD_TYPE, Constants.VIRTUAL);
 
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
         int engineTestClassParallelism = getEngineTestClassParallelism(configuration);
 
         ThreadFactory threadFactory = createThreadFactory(configuration);
@@ -428,14 +431,30 @@ public class VerifyicaTestEngine implements TestEngine {
         } else {
             LOGGER.trace("creating ThreadPoolExecutor");
 
-            return new ThreadPoolExecutor(
+            BlockingQueue<Runnable> blockingQueue = new ArrayBlockingQueue<>(availableProcessors * 2, true);
+
+            RejectedExecutionHandler rejectedExecutionHandler = (runnable, threadPoolExecutor) -> {
+                Runnable oldestRunnable = threadPoolExecutor.getQueue().poll();
+                if (oldestRunnable != null) {
+                    oldestRunnable.run();
+                    threadPoolExecutor.execute(runnable);
+                } else {
+                    runnable.run();
+                }
+            };
+
+            ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                     engineTestClassParallelism,
                     engineTestClassParallelism,
                     Long.MAX_VALUE,
                     TimeUnit.MILLISECONDS,
-                    new SynchronousQueue<>(),
+                    blockingQueue,
                     threadFactory,
-                    new ThreadPoolExecutor.CallerRunsPolicy());
+                    rejectedExecutionHandler);
+
+            threadPoolExecutor.prestartAllCoreThreads();
+
+            return threadPoolExecutor;
         }
     }
 
@@ -451,6 +470,7 @@ public class VerifyicaTestEngine implements TestEngine {
         String engineThreadType =
                 configuration.getProperties().getProperty(Constants.ENGINE_THREAD_TYPE, Constants.VIRTUAL);
 
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
         int engineTestArgumentParallelism = getEngineTestArgumentParallelism(configuration);
 
         ThreadFactory threadFactory = createThreadFactory(configuration);
@@ -463,13 +483,30 @@ public class VerifyicaTestEngine implements TestEngine {
         } else {
             LOGGER.trace("creating ThreadPoolExecutor");
 
-            return new ThreadPoolExecutor(
+            BlockingQueue<Runnable> blockingQueue = new ArrayBlockingQueue<>(availableProcessors * 2, true);
+
+            RejectedExecutionHandler rejectedExecutionHandler = (runnable, threadPoolExecutor) -> {
+                Runnable oldestRunnable = threadPoolExecutor.getQueue().poll();
+                if (oldestRunnable != null) {
+                    oldestRunnable.run();
+                    threadPoolExecutor.execute(runnable);
+                } else {
+                    runnable.run();
+                }
+            };
+
+            ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                     engineTestArgumentParallelism,
                     engineTestArgumentParallelism,
                     Long.MAX_VALUE,
                     TimeUnit.MILLISECONDS,
-                    new SynchronousQueue<>(),
-                    new ThreadPoolExecutor.CallerRunsPolicy());
+                    blockingQueue,
+                    threadFactory,
+                    rejectedExecutionHandler);
+
+            threadPoolExecutor.prestartAllCoreThreads();
+
+            return threadPoolExecutor;
         }
     }
 
@@ -493,6 +530,7 @@ public class VerifyicaTestEngine implements TestEngine {
         }
 
         LOGGER.trace("creating VirtualThreadFactory");
+
         return new VirtualThreadFactory();
     }
 
@@ -521,6 +559,8 @@ public class VerifyicaTestEngine implements TestEngine {
                     }
                 })
                 .orElse(Runtime.getRuntime().availableProcessors());
+
+        engineTestClassParallelism = Math.max(1, engineTestClassParallelism);
 
         LOGGER.trace("engineTestClassParallelism [%d]", engineTestClassParallelism);
 
@@ -565,6 +605,8 @@ public class VerifyicaTestEngine implements TestEngine {
 
             engineTestArgumentParallelism = engineTestClassParallelism;
         }
+
+        engineTestArgumentParallelism = Math.max(1, engineTestArgumentParallelism);
 
         LOGGER.trace("engineTestArgumentParallelism [%d]", engineTestArgumentParallelism);
 
