@@ -35,9 +35,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -306,7 +305,8 @@ public class VerifyicaTestEngine implements TestEngine {
                     : TestExecutionResult.failed(throwables.get(0));
 
             if (engineExecutionListener != null) {
-                engineExecutionListener.executionFinished(executionRequest.getRootTestDescriptor(), testExecutionResult);
+                engineExecutionListener.executionFinished(
+                        executionRequest.getRootTestDescriptor(), testExecutionResult);
             }
 
             LOGGER.trace("execute() elapsedTime [%d] ms", stopwatch.elapsed().toMillis());
@@ -433,19 +433,9 @@ public class VerifyicaTestEngine implements TestEngine {
                     engineTestClassParallelism,
                     Long.MAX_VALUE,
                     TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<>(engineTestClassParallelism),
+                    new SynchronousQueue<>(),
                     threadFactory,
-                    (r, executor) -> {
-                        try {
-                            executor.getQueue().put(r);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            throw new RejectedExecutionException(
-                                    "Task was interrupted while waiting for space in the queue", e);
-                        }
-                    });
-
-            // return Executors.newFixedThreadPool(engineClassParallelism, threadFactory);
+                    new ThreadPoolExecutor.CallerRunsPolicy());
         }
     }
 
@@ -467,19 +457,19 @@ public class VerifyicaTestEngine implements TestEngine {
 
         if (Constants.PLATFORM_EPHEMERAL.equals(engineThreadType.trim())) {
             LOGGER.trace("creating EphemeralExecutorService");
+
             return new SemaphoreExecutor(
                     new EphemeralExecutorService(threadFactory), new Semaphore(engineTestArgumentParallelism));
         } else {
             LOGGER.trace("creating ThreadPoolExecutor");
+
             return new ThreadPoolExecutor(
                     engineTestArgumentParallelism,
                     engineTestArgumentParallelism,
                     Long.MAX_VALUE,
                     TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<>(engineTestArgumentParallelism),
-                    new ThreadPoolExecutor.AbortPolicy());
-
-            // return Executors.newFixedThreadPool(engineArgumentParallelism, threadFactory);
+                    new SynchronousQueue<>(),
+                    new ThreadPoolExecutor.CallerRunsPolicy());
         }
     }
 
