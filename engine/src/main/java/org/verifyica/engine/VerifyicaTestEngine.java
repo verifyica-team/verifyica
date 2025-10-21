@@ -161,9 +161,9 @@ public class VerifyicaTestEngine implements TestEngine {
             return new EngineDescriptor(uniqueId, "Verifyica disabled under Maven Surefire");
         }
 
-        Stopwatch stopwatch = new Stopwatch();
-
         LOGGER.trace("discover()");
+
+        Stopwatch stopwatch = new Stopwatch();
 
         try {
             configuration = ConcreteConfiguration.getInstance();
@@ -197,10 +197,9 @@ public class VerifyicaTestEngine implements TestEngine {
             return;
         }
 
-        Stopwatch stopwatch = new Stopwatch();
-
         LOGGER.trace("execute()");
 
+        Stopwatch stopwatch = new Stopwatch();
         EngineExecutionListener engineExecutionListener = null;
         EngineContext engineContext = null;
         EngineInterceptorRegistry engineInterceptorRegistry = null;
@@ -211,8 +210,8 @@ public class VerifyicaTestEngine implements TestEngine {
                 traceEngineDescriptor(executionRequest.getRootTestDescriptor());
             }
 
-            ExecutorService classExecutorService = createTestClassExecutorService(configuration);
-            ExecutorService argumentExecutorService = createTestArgumentExecutorService(configuration);
+            ExecutorService testClassExecutorService = createTestClassExecutorService(configuration);
+            ExecutorService testArgumentExecutorService = createTestArgumentExecutorService(configuration);
 
             engineExecutionListener = configureEngineExecutionListeners(executionRequest);
             engineInterceptorRegistry = new EngineInterceptorRegistry(configuration);
@@ -249,8 +248,8 @@ public class VerifyicaTestEngine implements TestEngine {
                     Injector.inject(TestableTestDescriptor.ENGINE_CONTEXT, engineContext, testableTestDescriptor);
 
                     Injector.inject(
-                            TestableTestDescriptor.ARGUMENT_EXECUTOR_SERVICE,
-                            argumentExecutorService,
+                            TestableTestDescriptor.TEST_ARGUMENT_EXECUTOR_SERVICE,
+                            testArgumentExecutorService,
                             testableTestDescriptor);
 
                     Injector.inject(
@@ -265,8 +264,8 @@ public class VerifyicaTestEngine implements TestEngine {
                     String threadName = hash + "/" + hash;
                     ThreadNameRunnable threadNameRunnable =
                             new ThreadNameRunnable(threadName, testableTestDescriptor::test);
-                    Future<?> future = classExecutorService.submit(threadNameRunnable);
-                    futures.add(future);
+
+                    futures.add(testClassExecutorService.submit(threadNameRunnable));
                 }
 
                 ExecutorServiceSupport.waitForAllFutures(futures);
@@ -274,8 +273,8 @@ public class VerifyicaTestEngine implements TestEngine {
                 StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                 throwables.add(t);
             } finally {
-                ExecutorServiceSupport.shutdownAndAwaitTermination(argumentExecutorService);
-                ExecutorServiceSupport.shutdownAndAwaitTermination(classExecutorService);
+                ExecutorServiceSupport.shutdownAndAwaitTermination(testArgumentExecutorService);
+                ExecutorServiceSupport.shutdownAndAwaitTermination(testClassExecutorService);
 
                 Map<String, Object> map = engineContext.getMap();
 
@@ -306,7 +305,9 @@ public class VerifyicaTestEngine implements TestEngine {
                     ? TestExecutionResult.successful()
                     : TestExecutionResult.failed(throwables.get(0));
 
-            engineExecutionListener.executionFinished(executionRequest.getRootTestDescriptor(), testExecutionResult);
+            if (engineExecutionListener != null) {
+                engineExecutionListener.executionFinished(executionRequest.getRootTestDescriptor(), testExecutionResult);
+            }
 
             LOGGER.trace("execute() elapsedTime [%d] ms", stopwatch.elapsed().toMillis());
         }

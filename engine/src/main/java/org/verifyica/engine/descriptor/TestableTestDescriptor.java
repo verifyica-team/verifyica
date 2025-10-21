@@ -50,7 +50,7 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     public static final String CLASS_INTERCEPTORS_REVERSED = "classInterceptorsReversed";
 
     /** Named annotation field constant */
-    public static final String ARGUMENT_EXECUTOR_SERVICE = "argumentExecutorService";
+    public static final String TEST_ARGUMENT_EXECUTOR_SERVICE = "argumentExecutorService";
 
     /** Named annotation field constant */
     public static final String ARGUMENT_EXECUTOR_POOL = "argumentExecutorPool";

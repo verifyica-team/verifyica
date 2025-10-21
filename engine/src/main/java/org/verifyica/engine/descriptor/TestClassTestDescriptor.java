@@ -99,8 +99,8 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
     private List<ClassInterceptor> classInterceptorsReversed;
 
     @Inject
-    @Named(ARGUMENT_EXECUTOR_SERVICE)
-    private ExecutorService argumentExecutorService;
+    @Named(TEST_ARGUMENT_EXECUTOR_SERVICE)
+    private ExecutorService testArgumentExecutorService;
 
     @Inject
     @Named(ENGINE_CONTEXT)
@@ -385,8 +385,8 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
      * @return the next state
      */
     private State doTest() {
-        ExecutorService executorService =
-                (testArgumentParallelism > 1) ? argumentExecutorService : DIRECT_EXECUTOR_SERVICE;
+        ExecutorService testArgumentExecutorService =
+                testArgumentParallelism > 1 ? this.testArgumentExecutorService : DIRECT_EXECUTOR_SERVICE;
 
         List<TestableTestDescriptor> testableTestDescriptors = getChildren().stream()
                 .filter(TESTABLE_TEST_DESCRIPTOR_FILTER)
@@ -403,11 +403,15 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
                         new ThreadNameRunnable(threadName, testableTestDescriptor::test);
                 Runnable runnable = new SemaphoreRunnable(semaphore, threadNameRunnable);
 
-                futures.add(executorService.submit(runnable));
+                futures.add(testArgumentExecutorService.submit(runnable));
+
+                LOGGER.info("DEBUG DEBUG running via testArgumentExecutorService");
             } catch (RejectedExecutionException e) {
                 ThreadNameRunnable threadNameRunnable =
                         new ThreadNameRunnable(Thread.currentThread().getName(), testableTestDescriptor::test);
                 Runnable runnable = new SemaphoreRunnable(semaphore, threadNameRunnable);
+
+                LOGGER.info("DEBUG DEBUG running via DIRECT_EXECUTOR_SERVICE");
 
                 futures.add(DIRECT_EXECUTOR_SERVICE.submit(runnable));
             }
