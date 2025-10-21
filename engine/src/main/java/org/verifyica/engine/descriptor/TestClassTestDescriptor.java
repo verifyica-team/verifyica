@@ -23,14 +23,13 @@ import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -48,7 +47,6 @@ import org.verifyica.api.EngineContext;
 import org.verifyica.api.Execution;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.DirectExecutorService;
-import org.verifyica.engine.common.SemaphoreRunnable;
 import org.verifyica.engine.common.throttle.Throttle;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.context.ConcreteClassContext;
@@ -385,41 +383,33 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
      * @return the next state
      */
     private State doTest() {
-        ExecutorService testArgumentExecutorService =
-                testArgumentParallelism > 1 ? this.testArgumentExecutorService : DIRECT_EXECUTOR_SERVICE;
-
         List<TestableTestDescriptor> testableTestDescriptors = getChildren().stream()
                 .filter(TESTABLE_TEST_DESCRIPTOR_FILTER)
                 .map(TESTABLE_TEST_DESCRIPTOR_MAPPER)
                 .collect(Collectors.toList());
 
-        Semaphore semaphore = new Semaphore(testArgumentParallelism, true);
-        List<Future<?>> futures = new ArrayList<>(testableTestDescriptors.size());
-
-        for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
-            try {
-                String threadName = getNextThreadName(Thread.currentThread().getName());
-                ThreadNameRunnable threadNameRunnable =
-                        new ThreadNameRunnable(threadName, testableTestDescriptor::test);
-                Runnable runnable = new SemaphoreRunnable(semaphore, threadNameRunnable);
-
-                futures.add(testArgumentExecutorService.submit(runnable));
-
-                LOGGER.info("DEBUG DEBUG running via testArgumentExecutorService");
-            } catch (RejectedExecutionException e) {
-                ThreadNameRunnable threadNameRunnable =
-                        new ThreadNameRunnable(Thread.currentThread().getName(), testableTestDescriptor::test);
-                Runnable runnable = new SemaphoreRunnable(semaphore, threadNameRunnable);
-
-                LOGGER.info("DEBUG DEBUG running via DIRECT_EXECUTOR_SERVICE");
-
-                futures.add(DIRECT_EXECUTOR_SERVICE.submit(runnable));
+        // Single-threaded test argument execution
+        if (testArgumentParallelism <= 1) {
+            for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
+                DIRECT_EXECUTOR_SERVICE.submit(testableTestDescriptor::test);
             }
+
+            ExecutorServiceSupport.waitForAllFutures(Collections.emptyList());
+
+            return State.CONCLUDE;
         }
 
-        if (!futures.isEmpty()) {
-            ExecutorServiceSupport.waitForAllFutures(futures);
+        // Parallel test argument execution
+        List<Future<?>> futures = new ArrayList<>(testableTestDescriptors.size());
+        for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
+            String threadName = getNextThreadName(Thread.currentThread().getName());
+            Runnable runnable = new ThreadNameRunnable(threadName, testableTestDescriptor::test);
+            // No try/catch since the test argument executor service uses CallerRunsPolicy executes r.run() on the
+            // submitting thread when saturated
+            futures.add(testArgumentExecutorService.submit(runnable));
         }
+
+        ExecutorServiceSupport.waitForAllFutures(futures);
 
         return State.CONCLUDE;
     }
