@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.time.Duration;
 import java.util.Objects;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -37,8 +37,6 @@ import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
  * Class to implement a BufstreamTestEnvironment
  */
 public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironment> {
-
-    private static final Random RANDOM = new Random();
 
     private final String dockerImageName;
     private GenericContainer<?> genericContainer;
@@ -214,7 +212,8 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
         int rightLimit = 122; // 'z'
         int targetStringLength = 8;
 
-        return RANDOM.ints(leftLimit, rightLimit + 1)
+        return ThreadLocalRandom.current()
+                .ints(leftLimit, rightLimit + 1)
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
