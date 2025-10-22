@@ -43,6 +43,13 @@ public @interface Verifyica {
     }
 
     /**
+     * ArgumentExecutorServiceSupplier annotation
+     */
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface ArgumentExecutorServiceSupplier {}
+
+    /**
      * Prepare annotation
      */
     @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
