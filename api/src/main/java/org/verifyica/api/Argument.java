@@ -198,6 +198,21 @@ public interface Argument<T> extends Named {
     }
 
     /**
+     * Method to create an Argument of type BigInteger
+     *
+     * @param value value
+     * @return an Argument
+     */
+    static Argument<BigInteger> ofBigInteger(String value) {
+        if (value == null) {
+            return of("BigInteger=/null/", null);
+        } else {
+            BigInteger bigInteger = new BigInteger(value);
+            return of(bigInteger.toString(), bigInteger);
+        }
+    }
+
+    /**
      * Method to create an Argument of type BigDecimal
      *
      * @param value value
@@ -208,6 +223,21 @@ public interface Argument<T> extends Named {
             return of("BigDecimal=/null/", null);
         } else {
             return of(value.toString(), value);
+        }
+    }
+
+    /**
+     * Method to create an Argument of type BigDecimal
+     *
+     * @param value value
+     * @return an Argument
+     */
+    static Argument<BigDecimal> ofBigDecimal(String value) {
+        if (value == null) {
+            return of("BigDecimal=/null/", null);
+        } else {
+            BigDecimal bigDecimal = new BigDecimal(value);
+            return of(bigDecimal.toString(), bigDecimal);
         }
     }
 
