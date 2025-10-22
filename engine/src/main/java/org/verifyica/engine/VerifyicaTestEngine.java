@@ -687,7 +687,7 @@ public class VerifyicaTestEngine implements TestEngine {
                             object.getClass().getName()));
                 }
 
-                LOGGER.trace("test class [%s] using custom argument ExecutorService", testClass.getName());
+                LOGGER.trace("testClass [%s] using custom argument ExecutorService", testClass.getName());
 
                 testClassArgumentExecutorServiceMap.put(testClass, (ExecutorService) object);
             }
@@ -706,7 +706,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
         for (Map.Entry<Class<?>, ExecutorService> entry : testClassArgumentExecutorServiceMap.entrySet()) {
             LOGGER.trace(
-                    "shutting down test class [%s] executor service",
+                    "shutting down testClass [%s] executor service",
                     entry.getKey().getName());
 
             try {
