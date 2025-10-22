@@ -24,9 +24,13 @@ import io.github.thunkware.vt.bridge.SemaphoreExecutor;
 import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -42,6 +46,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.EngineExecutionListener;
@@ -54,6 +59,7 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
+import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.AnsiColor;
 import org.verifyica.engine.common.EphemeralExecutorService;
 import org.verifyica.engine.common.HeadOfQueueRejectedExecutionHandler;
@@ -77,8 +83,10 @@ import org.verifyica.engine.listener.TracingEngineExecutionListener;
 import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.resolver.EngineDiscoveryRequestResolver;
+import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.ExecutorServiceSupport;
 import org.verifyica.engine.support.HashSupport;
+import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.ListSupport;
 
 /**
@@ -133,6 +141,12 @@ public class VerifyicaTestEngine implements TestEngine {
      * Constant
      */
     private static final String ENGINE_PROPERTIES_VERSION_KEY = "version";
+
+    /**
+     * Predicate to find an ArgumentExecutorServiceSupplier method
+     */
+    private static final Predicate<Method> ARGUMENT_EXECUTOR_SERVICE_SUPPLIER_METHOD =
+            new ArgumentExecutorServiceSupplierMethod();
 
     private final List<Throwable> throwables;
 
@@ -223,6 +237,7 @@ public class VerifyicaTestEngine implements TestEngine {
         EngineContext engineContext = null;
         EngineInterceptorRegistry engineInterceptorRegistry = null;
         ClassInterceptorRegistry classInterceptorRegistry = null;
+        Map<Class<?>, ExecutorService> testClassArgumentExecutorServiceMap = new HashMap<>();
 
         try {
             if (LOGGER.isTraceEnabled()) {
@@ -249,10 +264,16 @@ public class VerifyicaTestEngine implements TestEngine {
                                 .map(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_MAPPER)
                                 .collect(Collectors.toList());
 
+                configureTestClassArgumentExecutorServices(
+                        testableTestDescriptors, testClassArgumentExecutorServiceMap);
+
                 List<Future<?>> futures = new ArrayList<>();
 
                 for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
                     Class<?> testClass = ((TestClassTestDescriptor) testableTestDescriptor).getTestClass();
+
+                    ExecutorService testClassArgumentExecutorService =
+                            testClassArgumentExecutorServiceMap.getOrDefault(testClass, testArgumentExecutorService);
 
                     List<ClassInterceptor> classInterceptors =
                             classInterceptorRegistry.getClassInterceptors(engineContext, testClass);
@@ -268,7 +289,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
                     Injector.inject(
                             TestableTestDescriptor.TEST_ARGUMENT_EXECUTOR_SERVICE,
-                            testArgumentExecutorService,
+                            testClassArgumentExecutorService,
                             testableTestDescriptor);
 
                     Injector.inject(
@@ -310,6 +331,8 @@ public class VerifyicaTestEngine implements TestEngine {
                 }
 
                 map.clear();
+
+                cleanupTestClassExecutorServices(testClassArgumentExecutorServiceMap);
             }
         } finally {
             if (classInterceptorRegistry != null) {
@@ -615,5 +638,103 @@ public class VerifyicaTestEngine implements TestEngine {
         LOGGER.trace("engineTestArgumentParallelism [%d]", engineTestArgumentParallelism);
 
         return engineTestArgumentParallelism;
+    }
+
+    /**
+     * Method to configure test class argument executor services
+     *
+     * @param testableTestDescriptors testableTestDescriptors
+     * @param testClassArgumentExecutorServiceMap testClassArgumentExecutorServiceMap
+     * @throws IllegalAccessException IllegalAccessException
+     * @throws InvocationTargetException InvocationTargetException
+     */
+    private static void configureTestClassArgumentExecutorServices(
+            List<TestableTestDescriptor> testableTestDescriptors,
+            Map<Class<?>, ExecutorService> testClassArgumentExecutorServiceMap)
+            throws IllegalAccessException, InvocationTargetException {
+        LOGGER.trace("configureTestClassArgumentExecutorServices()");
+
+        String annotationDisplayName = "@Verifyica." + ArgumentExecutorServiceSupplierMethod.class.getSimpleName();
+
+        for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
+            Class<?> testClass = ((TestClassTestDescriptor) testableTestDescriptor).getTestClass();
+
+            List<Method> argumentExecutorServiceSupplierMethods = ClassSupport.findMethods(
+                    testClass, ARGUMENT_EXECUTOR_SERVICE_SUPPLIER_METHOD, HierarchyTraversalMode.BOTTOM_UP);
+
+            if (!argumentExecutorServiceSupplierMethods.isEmpty()) {
+                if (argumentExecutorServiceSupplierMethods.size() > 1) {
+                    throw new TestClassDefinitionException(format(
+                            "Test class [%s] contains more than one method annotated with [%s]",
+                            testClass.getName(), annotationDisplayName));
+                }
+
+                Method argumentExecutorServiceSupplierMethod = argumentExecutorServiceSupplierMethods.get(0);
+
+                Object object = argumentExecutorServiceSupplierMethod.invoke(null, (Object[]) null);
+
+                if (object == null) {
+                    throw new TestClassDefinitionException(format(
+                            "Test class [%s] %s annotated method returned null",
+                            testClass.getName(), annotationDisplayName));
+                }
+
+                if (!(object instanceof ExecutorService)) {
+                    throw new TestClassDefinitionException(format(
+                            "Test class [%s] %s annotated method must return an ExecutorService. Return type [%s]",
+                            testClass.getName(),
+                            annotationDisplayName,
+                            object.getClass().getName()));
+                }
+
+                LOGGER.trace("test class [%s] using custom argument ExecutorService", testClass.getName());
+
+                testClassArgumentExecutorServiceMap.put(testClass, (ExecutorService) object);
+            }
+        }
+
+        LOGGER.trace("testClassArgumentExecutorServiceMap.size() [%d]", testClassArgumentExecutorServiceMap.size());
+    }
+
+    /**
+     * Method to clean up test class argument executor services
+     *
+     * @param testClassArgumentExecutorServiceMap testClassArgumentExecutorServiceMap
+     */
+    private void cleanupTestClassExecutorServices(Map<Class<?>, ExecutorService> testClassArgumentExecutorServiceMap) {
+        LOGGER.trace("cleanupTestClassExecutorServices()");
+
+        for (Map.Entry<Class<?>, ExecutorService> entry : testClassArgumentExecutorServiceMap.entrySet()) {
+            LOGGER.trace(
+                    "shutting down test class [%s] executor service",
+                    entry.getKey().getName());
+
+            try {
+                ExecutorService executorService = entry.getValue();
+                executorService.shutdownNow();
+            } catch (Throwable t) {
+                LOGGER.error(
+                        "Exception shutting down test class [%s] executor service",
+                        entry.getKey().getName());
+            }
+        }
+
+        testClassArgumentExecutorServiceMap.clear();
+    }
+
+    /**
+     * Predicate to find an ArgumentExecutorServiceSupplier method
+     */
+    private static class ArgumentExecutorServiceSupplierMethod implements Predicate<Method> {
+
+        @Override
+        public boolean test(Method method) {
+            int modifiers = method.getModifiers();
+            return Modifier.isPublic(modifiers)
+                    && Modifier.isStatic(modifiers)
+                    && method.getParameterCount() == 0
+                    && !method.getReturnType().equals(Void.TYPE)
+                    && method.isAnnotationPresent(Verifyica.ArgumentExecutorServiceSupplier.class);
+        }
     }
 }
