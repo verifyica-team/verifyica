@@ -1,0 +1,4 @@
+# This file lists all Bufstream test environments to be used in the tests.
+# Each line specifies a different version of the Bufstream Docker image.
+bufbuild/bufstream:0.3.44
+bufbuild/bufstream:0.4.11
