@@ -39,15 +39,25 @@ public final class Resource {
     /**
      * Method to load a resource from the classpath as a list of strings
      *
-     * @param resourceName the resource name
+     * @param clazz                the class to derive the package from
+     * @param relativeResourceName the relative resource name
      * @return the list of strings
      * @throws IOException when an I/O error occurs
      */
-    public static List<String> load(String resourceName) throws IOException {
+    public static List<String> load(Class<?> clazz, String relativeResourceName) throws IOException {
+        String packageName = clazz.getPackage().getName().replace('.', '/');
+
+        String qualifiedResourceName;
+        if (relativeResourceName.startsWith("/")) {
+            qualifiedResourceName = packageName + relativeResourceName;
+        } else {
+            qualifiedResourceName = packageName + "/" + relativeResourceName;
+        }
+
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(resourceName);
+        InputStream inputStream = classLoader.getResourceAsStream(qualifiedResourceName);
         if (inputStream == null) {
-            throw new IOException("Classpath resource not found: " + resourceName);
+            throw new IOException("Classpath resource not found: " + qualifiedResourceName);
         }
 
         try (BufferedReader bufferedReader =

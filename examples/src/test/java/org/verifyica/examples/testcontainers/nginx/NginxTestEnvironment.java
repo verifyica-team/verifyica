@@ -128,7 +128,7 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     public static Stream<NginxTestEnvironment> createTestEnvironments() throws IOException {
         List<NginxTestEnvironment> nginxTestEnvironments = new ArrayList<>();
 
-        for (String version : Resource.load("NginxTestEnvironments.txt")) {
+        for (String version : Resource.load(NginxTestEnvironment.class, "/docker-images.txt")) {
             nginxTestEnvironments.add(new NginxTestEnvironment(version));
         }
 

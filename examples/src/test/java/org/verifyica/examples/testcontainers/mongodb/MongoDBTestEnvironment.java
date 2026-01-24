@@ -128,7 +128,7 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     public static Stream<MongoDBTestEnvironment> createTestEnvironments() throws IOException {
         List<MongoDBTestEnvironment> mongoDBTestEnvironments = new ArrayList<>();
 
-        for (String version : Resource.load("MongoDBTestEnvironments.txt")) {
+        for (String version : Resource.load(MongoDBTestEnvironment.class, "/docker-images.txt")) {
             mongoDBTestEnvironments.add(new MongoDBTestEnvironment(version));
         }
 

@@ -188,7 +188,7 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     public static Stream<BufstreamTestEnvironment> createTestEnvironments() throws IOException {
         List<BufstreamTestEnvironment> bufstreamTestEnvironments = new ArrayList<>();
 
-        for (String version : Resource.load("BufstreamTestEnvironments.txt")) {
+        for (String version : Resource.load(BufstreamTestEnvironment.class, "/docker-images.txt")) {
             bufstreamTestEnvironments.add(new BufstreamTestEnvironment(version));
         }
 

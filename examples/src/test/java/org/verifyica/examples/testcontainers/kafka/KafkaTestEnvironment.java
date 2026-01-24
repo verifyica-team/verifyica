@@ -148,7 +148,7 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
     public static Stream<KafkaTestEnvironment> createTestEnvironments() throws IOException {
         List<KafkaTestEnvironment> kafkaTestEnvironments = new ArrayList<>();
 
-        for (String version : Resource.load("KafkaTestEnvironments.txt")) {
+        for (String version : Resource.load(KafkaTestEnvironment.class, "/docker-images.txt")) {
             kafkaTestEnvironments.add(new KafkaTestEnvironment(version));
         }
 
