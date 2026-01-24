@@ -20,6 +20,7 @@ import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URLConnection;
@@ -39,7 +40,7 @@ public class NginxTest2 {
     private final String NETWORK = "network";
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
-    public static Stream<NginxTestEnvironment> arguments() {
+    public static Stream<NginxTestEnvironment> arguments() throws IOException {
         return NginxTestEnvironment.createTestEnvironments();
     }
 

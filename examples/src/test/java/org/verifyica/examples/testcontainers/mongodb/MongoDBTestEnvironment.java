@@ -16,12 +16,16 @@
 
 package org.verifyica.examples.testcontainers.mongodb;
 
+import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
+import org.verifyica.examples.support.Resource;
 import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
@@ -121,11 +125,13 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
      *
      * @return a Stream of MongoDBTestEnvironments
      */
-    public static Stream<MongoDBTestEnvironment> createTestEnvironments() {
-        return Stream.of(
-                new MongoDBTestEnvironment("mongo:5.0.31"),
-                new MongoDBTestEnvironment("mongo:6.0.26"),
-                new MongoDBTestEnvironment("mongo:7.0.25"),
-                new MongoDBTestEnvironment("mongo:8.0.15"));
+    public static Stream<MongoDBTestEnvironment> createTestEnvironments() throws IOException {
+        List<MongoDBTestEnvironment> mongoDBTestEnvironments = new ArrayList<>();
+
+        for (String version : Resource.load("MongoDBTestEnvironments.txt")) {
+            mongoDBTestEnvironments.add(new MongoDBTestEnvironment(version));
+        }
+
+        return mongoDBTestEnvironments.stream();
     }
 }

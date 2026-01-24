@@ -16,12 +16,16 @@
 
 package org.verifyica.examples.testcontainers.nginx;
 
+import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.NginxContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
+import org.verifyica.examples.support.Resource;
 import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
@@ -121,10 +125,13 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
      *
      * @return a Stream of NginxTestEnvironments
      */
-    public static Stream<NginxTestEnvironment> createTestEnvironments() {
-        return Stream.of(
-                new NginxTestEnvironment("nginx:1.27.5"),
-                new NginxTestEnvironment("nginx:1.28.0"),
-                new NginxTestEnvironment("nginx:1.29.2"));
+    public static Stream<NginxTestEnvironment> createTestEnvironments() throws IOException {
+        List<NginxTestEnvironment> nginxTestEnvironments = new ArrayList<>();
+
+        for (String version : Resource.load("NginxTestEnvironments.txt")) {
+            nginxTestEnvironments.add(new NginxTestEnvironment(version));
+        }
+
+        return nginxTestEnvironments.stream();
     }
 }

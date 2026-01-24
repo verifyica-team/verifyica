@@ -26,6 +26,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -43,7 +44,7 @@ public class MongoDBTest {
     private final ThreadLocal<String> nameThreadLocal = new ThreadLocal<>();
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
-    public static Stream<MongoDBTestEnvironment> arguments() {
+    public static Stream<MongoDBTestEnvironment> arguments() throws IOException {
         return MongoDBTestEnvironment.createTestEnvironments();
     }
 
