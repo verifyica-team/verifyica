@@ -20,6 +20,7 @@ import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.verifyica.examples.support.RandomSupport.randomString;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +56,7 @@ public class KafkaTest2 {
     private static final String EARLIEST = "earliest";
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
-    public static Stream<KafkaTestEnvironment> arguments() {
+    public static Stream<KafkaTestEnvironment> arguments() throws IOException {
         return KafkaTestEnvironment.createTestEnvironments();
     }
 

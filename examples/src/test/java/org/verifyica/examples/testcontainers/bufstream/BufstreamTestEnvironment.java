@@ -21,6 +21,8 @@ import com.github.dockerjava.api.model.Ports;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
@@ -30,6 +32,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
+import org.verifyica.examples.support.Resource;
 import org.verifyica.examples.support.TextBlock;
 import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
@@ -182,10 +185,14 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
      *
      * @return a Stream of BufstreamTestEnvironment
      */
-    public static Stream<BufstreamTestEnvironment> createTestEnvironments() {
-        return Stream.of(
-                new BufstreamTestEnvironment("bufbuild/bufstream:0.3.44"),
-                new BufstreamTestEnvironment("bufbuild/bufstream:0.4.5"));
+    public static Stream<BufstreamTestEnvironment> createTestEnvironments() throws IOException {
+        List<BufstreamTestEnvironment> bufstreamTestEnvironments = new ArrayList<>();
+
+        for (String version : Resource.load("BufstreamTestEnvironments.txt")) {
+            bufstreamTestEnvironments.add(new BufstreamTestEnvironment(version));
+        }
+
+        return bufstreamTestEnvironments.stream();
     }
 
     /**

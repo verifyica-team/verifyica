@@ -20,6 +20,7 @@ import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.verifyica.examples.support.RandomSupport.randomString;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +56,7 @@ public class BufstreamTest {
     private final ThreadLocal<String> messageThreadLocal = new ThreadLocal<>();
 
     @Verifyica.ArgumentSupplier(parallelism = Integer.MAX_VALUE)
-    public static Stream<BufstreamTestEnvironment> arguments() {
+    public static Stream<BufstreamTestEnvironment> arguments() throws IOException {
         return BufstreamTestEnvironment.createTestEnvironments();
     }
 

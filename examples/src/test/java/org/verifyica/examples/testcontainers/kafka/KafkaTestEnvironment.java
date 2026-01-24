@@ -16,13 +16,17 @@
 
 package org.verifyica.examples.testcontainers.kafka;
 
+import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.verifyica.api.Argument;
+import org.verifyica.examples.support.Resource;
 import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
@@ -141,15 +145,13 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
      *
      * @return a Stream of KafkaTestEnvironments
      */
-    public static Stream<KafkaTestEnvironment> createTestEnvironments() {
-        return Stream.of(
-                new KafkaTestEnvironment("apache/kafka:3.7.2"),
-                new KafkaTestEnvironment("apache/kafka:3.8.1"),
-                new KafkaTestEnvironment("apache/kafka-native:3.8.1"),
-                new KafkaTestEnvironment("apache/kafka:3.9.1"),
-                new KafkaTestEnvironment("apache/kafka-native:3.9.1"),
-                new KafkaTestEnvironment("apache/kafka:4.0.1"),
-                new KafkaTestEnvironment("apache/kafka:4.1.1"),
-                new KafkaTestEnvironment("apache/kafka-native:4.1.1"));
+    public static Stream<KafkaTestEnvironment> createTestEnvironments() throws IOException {
+        List<KafkaTestEnvironment> kafkaTestEnvironments = new ArrayList<>();
+
+        for (String version : Resource.load("KafkaTestEnvironments.txt")) {
+            kafkaTestEnvironments.add(new KafkaTestEnvironment(version));
+        }
+
+        return kafkaTestEnvironments.stream();
     }
 }
