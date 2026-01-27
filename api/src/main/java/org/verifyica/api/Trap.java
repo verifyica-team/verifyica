@@ -24,6 +24,8 @@ import java.util.Optional;
 
 /**
  * Class to implement Trap
+ *
+ * @deprecated superseded by @{code org.verifyica.api.CleanupPlan} and @{code org.verifyica.api.CleanupAction}
  */
 public class Trap {
 

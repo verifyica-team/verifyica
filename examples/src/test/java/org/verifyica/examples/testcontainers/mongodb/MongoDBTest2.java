@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 import org.bson.Document;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
@@ -133,17 +134,11 @@ public class MongoDBTest2 {
                 "[%s] destroy test environment ...",
                 argumentContext.getTestArgument().getName());
 
-        List<Trap> traps = new ArrayList<>();
-
-        traps.add(new Trap(() -> argumentContext
-                .getTestArgument()
-                .getPayload(MongoDBTestEnvironment.class)
-                .destroy()));
-        traps.add(new Trap(() -> ofNullable(argumentContext.map().removeAs(NETWORK, Network.class))
-                .ifPresent(Network::close)));
-        traps.add(new Trap(() -> argumentContext.map().clear()));
-
-        Trap.assertEmpty(traps);
+        new CleanupPlan()
+                .addAction(() -> argumentContext.getTestArgument().getPayload(MongoDBTestEnvironment.class).destroy())
+                .addAction(() -> argumentContext.getMap().removeAs(NETWORK, Network.class).close())
+                .addAction(() -> argumentContext.getMap().clear())
+                .verify();
     }
 
     /**

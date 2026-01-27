@@ -38,9 +38,12 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.testcontainers.containers.Network;
+import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
+import org.verifyica.examples.testcontainers.kafka.KafkaTestEnvironment;
 
 @SuppressWarnings("PMD.AvoidBranchingStatementAsLastInLoop")
 // @Verifyica.Disabled
@@ -144,14 +147,12 @@ public class BufstreamTest {
     public void destroyTestEnvironment(BufstreamTestEnvironment bufstreamTestEnvironment) throws Throwable {
         LOGGER.info("[%s] destroy test environment ...", bufstreamTestEnvironment.name());
 
-        List<Trap> traps = new ArrayList<>();
-
-        traps.add(new Trap(bufstreamTestEnvironment::destroy));
-        traps.add(new Trap(() -> ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
-        traps.add(new Trap(messageThreadLocal::remove));
-        traps.add(new Trap(networkThreadLocal::remove));
-
-        Trap.assertEmpty(traps);
+        new CleanupPlan()
+                .addAction(bufstreamTestEnvironment::destroy)
+                .addActionIfPresent(networkThreadLocal::get, Network::close)
+                .addAction(networkThreadLocal::remove)
+                .addAction(messageThreadLocal::remove)
+                .verify();
     }
 
     /**

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
+import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
@@ -72,13 +73,11 @@ public class NginxTest {
     public void destroyTestEnvironment(NginxTestEnvironment nginxTestEnvironment) throws Throwable {
         LOGGER.info("[%s] destroy test environment ...", nginxTestEnvironment.getName());
 
-        List<Trap> traps = new ArrayList<>();
-
-        traps.add(new Trap(nginxTestEnvironment::destroy));
-        traps.add(new Trap(() -> ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
-        traps.add(new Trap(networkThreadLocal::remove));
-
-        Trap.assertEmpty(traps);
+        new CleanupPlan()
+                .addAction(nginxTestEnvironment::destroy)
+                .addActionIfPresent(networkThreadLocal::get, Network::close)
+                .addAction(networkThreadLocal::remove)
+                .verify();
     }
 
     private static String doGet(String url) throws Throwable {

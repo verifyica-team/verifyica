@@ -38,6 +38,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.testcontainers.containers.Network;
+import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
@@ -142,14 +143,12 @@ public class KafkaTest {
     public void destroyTestEnvironment(KafkaTestEnvironment kafkaTestEnvironment) throws Throwable {
         LOGGER.info("[%s] destroy test environment ...", kafkaTestEnvironment.name());
 
-        List<Trap> traps = new ArrayList<>();
-
-        traps.add(new Trap(kafkaTestEnvironment::destroy));
-        traps.add(new Trap(() -> ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
-        traps.add(new Trap(messageThreadLocal::remove));
-        traps.add(new Trap(networkThreadLocal::remove));
-
-        Trap.assertEmpty(traps);
+        new CleanupPlan()
+                .addAction(kafkaTestEnvironment::destroy)
+                .addActionIfPresent(networkThreadLocal::get, Network::close)
+                .addAction(networkThreadLocal::remove)
+                .addAction(messageThreadLocal::remove)
+                .verify();
     }
 
     /**
