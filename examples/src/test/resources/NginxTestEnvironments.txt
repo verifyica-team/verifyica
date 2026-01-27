@@ -1,5 +1,5 @@
 # This file lists the available Nginx Docker image versions for testing purposes.
 # Each line represents a different version of the Nginx image.
 nginx:1.27.5
-nginx:1.28.0
-nginx:1.29.2
+nginx:1.28.1
+nginx:1.29.4
