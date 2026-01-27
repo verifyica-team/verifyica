@@ -16,7 +16,6 @@
 
 package org.verifyica.examples.testcontainers.mongodb;
 
-import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.verifyica.examples.support.RandomSupport.randomString;
 
@@ -27,14 +26,11 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 import org.bson.Document;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.CleanupPlan;
-import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
@@ -130,8 +126,12 @@ public class MongoDBTest3 {
                 argumentContext.testArgument().getName());
 
         new CleanupPlan()
-                .addAction(() -> argumentContext.testArgument().payload(MongoDBTestEnvironment.class).destroy())
-                .addAction(() -> argumentContext.map().removeAs(NETWORK, Network.class).close())
+                .addAction(() -> argumentContext
+                        .testArgument()
+                        .payload(MongoDBTestEnvironment.class)
+                        .destroy())
+                .addAction(() ->
+                        argumentContext.map().removeAs(NETWORK, Network.class).close())
                 .addAction(() -> argumentContext.map().clear())
                 .verify();
     }

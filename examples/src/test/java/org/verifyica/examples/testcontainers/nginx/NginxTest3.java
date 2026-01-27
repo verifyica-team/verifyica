@@ -16,7 +16,6 @@
 
 package org.verifyica.examples.testcontainers.nginx;
 
-import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedReader;
@@ -24,13 +23,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.CleanupPlan;
-import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
@@ -87,8 +83,12 @@ public class NginxTest3 {
                 argumentContext.testArgument().name());
 
         new CleanupPlan()
-                .addAction(() -> argumentContext.testArgument().payload(NginxTestEnvironment.class).destroy())
-                .addAction(() -> argumentContext.map().removeAs(NETWORK, Network.class).close())
+                .addAction(() -> argumentContext
+                        .testArgument()
+                        .payload(NginxTestEnvironment.class)
+                        .destroy())
+                .addAction(() ->
+                        argumentContext.map().removeAs(NETWORK, Network.class).close())
                 .addAction(() -> argumentContext.map().clear())
                 .verify();
     }
