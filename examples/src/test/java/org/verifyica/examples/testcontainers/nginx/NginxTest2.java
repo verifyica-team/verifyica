@@ -29,9 +29,11 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Trap;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
+import org.verifyica.examples.testcontainers.mongodb.MongoDBTestEnvironment;
 
 public class NginxTest2 {
 
@@ -86,17 +88,11 @@ public class NginxTest2 {
                 "[%s] destroy test environment ...",
                 argumentContext.getTestArgument().getName());
 
-        List<Trap> traps = new ArrayList<>();
-
-        traps.add(new Trap(() -> argumentContext
-                .getTestArgument()
-                .getPayload(NginxTestEnvironment.class)
-                .destroy()));
-        traps.add(new Trap(() -> ofNullable(argumentContext.getMap().getAs(NETWORK, Network.class))
-                .ifPresent(Network::close)));
-        traps.add(new Trap(() -> argumentContext.getMap().clear()));
-
-        Trap.assertEmpty(traps);
+        new CleanupPlan()
+                .addAction(() -> argumentContext.getTestArgument().getPayload(NginxTestEnvironment.class).destroy())
+                .addAction(() -> argumentContext.getMap().removeAs(NETWORK, Network.class).close())
+                .addAction(() -> argumentContext.getMap().clear())
+                .verify();
     }
 
     private static String doGet(String url) throws Throwable {

@@ -74,9 +74,9 @@ The [ArgumentContext](api/src/main/java/org/verifyica/api/ArgumentContext.java) 
 
 ---
 
-## Trap
+## CleanupPlan / CleanupAction
 
-[Trap](api/src/main/java/org/verifyica/api/Trap.java) provides a way to run a task, capturing any exceptions that may occur.
+[CleanupPlan](api/src/main/java/org/verifyica/api/CleanupPlan.java) provides a way to run a [CleanupAction](api/src/main/java/org/verifyica/api/CleanupAction.java), capturing any exceptions that may occur.
 
 - Use to clean up resources
 

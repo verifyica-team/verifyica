@@ -16,7 +16,6 @@
 
 package org.verifyica.examples.testcontainers.mongodb;
 
-import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.verifyica.examples.support.RandomSupport.randomString;
 
@@ -27,12 +26,10 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 import org.bson.Document;
 import org.testcontainers.containers.Network;
-import org.verifyica.api.Trap;
+import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
@@ -110,13 +107,11 @@ public class MongoDBTest {
     public void destroyTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) throws Throwable {
         LOGGER.info("[%s] destroy test environment ...", mongoDBTestEnvironment.getName());
 
-        List<Trap> traps = new ArrayList<>();
-
-        traps.add(new Trap(mongoDBTestEnvironment::destroy));
-        traps.add(new Trap(() -> ofNullable(networkThreadLocal.get()).ifPresent(Network::close)));
-        traps.add(new Trap(nameThreadLocal::remove));
-        traps.add(new Trap(networkThreadLocal::remove));
-
-        Trap.assertEmpty(traps);
+        new CleanupPlan()
+                .addAction(mongoDBTestEnvironment::destroy)
+                .addActionIfPresent(networkThreadLocal::get, Network::close)
+                .addAction(nameThreadLocal::remove)
+                .addAction(networkThreadLocal::remove)
+                .verify();
     }
 }
