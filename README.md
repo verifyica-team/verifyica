@@ -14,6 +14,10 @@
 
 A multithreaded Java test engine for parameterized class / scenario / integration testing based on [JUnit 5](https://junit.org/junit5/) Platform.
 
+# Quick Start
+
+Quick Start guide is available in [Quick Start](QUICK_START.md)
+
 # Purpose
 
 ### Parameterized Testing
