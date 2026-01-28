@@ -22,7 +22,7 @@ package org.verifyica.api;
 public interface Named {
 
     /**
-     * Method to get the name
+     * Get the name
      *
      * @return the name
      */
@@ -31,7 +31,7 @@ public interface Named {
     }
 
     /**
-     * Method to get the name
+     * Get the name
      *
      * @return the name
      */

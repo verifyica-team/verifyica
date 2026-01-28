@@ -23,7 +23,7 @@ package org.verifyica.api;
 public interface CleanupAction {
 
     /**
-     * Method to run the cleanup action
+     * Run the cleanup action
      *
      * @throws Throwable if any error occurs
      */

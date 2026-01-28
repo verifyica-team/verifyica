@@ -292,7 +292,7 @@ public interface Argument<T> extends Named {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }
-        
+
         if (string.trim().isEmpty()) {
             throw new IllegalArgumentException(blankMessage);
         }

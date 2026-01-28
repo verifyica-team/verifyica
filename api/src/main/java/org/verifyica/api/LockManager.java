@@ -42,7 +42,7 @@ public class LockManager {
     }
 
     /**
-     * Method to try to lock a key
+     * Try to lock a key
      *
      * @param key key
      * @return true if the lock was free or locked by the current Thread, otherwise false
@@ -69,7 +69,7 @@ public class LockManager {
     }
 
     /**
-     * Method to try to lock a key
+     * Try to lock a key
      *
      * @param key key
      * @param timeout timeout
@@ -100,7 +100,7 @@ public class LockManager {
     }
 
     /**
-     * Method to lock a key
+     * Lock a key
      *
      * @param key key
      */
@@ -126,7 +126,7 @@ public class LockManager {
     }
 
     /**
-     * Method to unlock a key
+     * Unlock a key
      *
      * @param key key
      */
@@ -159,7 +159,7 @@ public class LockManager {
     }
 
     /**
-     * Method to return if a key is locked
+     * Return if a key is locked
      *
      * @param key key
      * @return true if the key is locked, otherwise false
@@ -178,7 +178,7 @@ public class LockManager {
     }
 
     /**
-     * Method to assert the number of LockReferences
+     * Assert the number of LockReferences
      *
      * @param size size
      */
@@ -194,7 +194,7 @@ public class LockManager {
     }
 
     /**
-     * Method to validate an Object is not null, throwing an IllegalArgumentException if it is null
+     * Vlidate an Object is not null, throwing an IllegalArgumentException if it is null
      *
      * @param object object
      * @param message message
@@ -206,7 +206,7 @@ public class LockManager {
     }
 
     /**
-     * Method to validate a String is not null and not blank, throwing an IllegalArgumentException
+     * Validate a String is not null and not blank, throwing an IllegalArgumentException
      * if it is null or blank
      *
      * @param string string
@@ -240,7 +240,7 @@ public class LockManager {
         }
 
         /**
-         * Method to get the Lock
+         * Get the Lock
          *
          * @return the Lock
          */
@@ -249,21 +249,21 @@ public class LockManager {
         }
 
         /**
-         * Method to add the current Thread
+         * Add the current Thread
          */
         private void addThread() {
             threads.add(Thread.currentThread());
         }
 
         /**
-         * Method to remove the current Thread
+         * Remove the current Thread
          */
         private void removeThread() {
             threads.remove(Thread.currentThread());
         }
 
         /**
-         * Method to get the Thread count
+         * Get the Thread count
          *
          * @return the Thread count
          */

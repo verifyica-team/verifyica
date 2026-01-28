@@ -35,7 +35,7 @@ public @interface Verifyica {
     @interface ArgumentSupplier {
 
         /**
-         * Method to get parallelism
+         * Get the parallelism
          *
          * @return the parallelism value
          */

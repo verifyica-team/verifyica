@@ -85,7 +85,7 @@ public class TemporaryDirectory implements AutoCloseable {
     }
 
     /**
-     * Method to delete the temporary directory
+     * Delete the temporary directory
      *
      * @throws IOException IOException
      */
@@ -94,7 +94,7 @@ public class TemporaryDirectory implements AutoCloseable {
     }
 
     /**
-     * Method to create a new file in the temporary directory, using the permissions set for the temporary directory
+     * Create a new file in the temporary directory, using the permissions set for the temporary directory
      *
      * @return the new file
      * @throws IOException IOException
@@ -104,7 +104,7 @@ public class TemporaryDirectory implements AutoCloseable {
     }
 
     /**
-     * Method to create a new file in the temporary directory with specified permissions
+     * Create a new file in the temporary directory with specified permissions
      *
      * @param posixFilePermissions the permissions to set for the new file
      * @return the new file
@@ -148,7 +148,7 @@ public class TemporaryDirectory implements AutoCloseable {
     }
 
     /**
-     * Method to recursively delete the temporary directory and all subdirectories/files
+     * Recursively delete the temporary directory and all subdirectories/files
      *
      * @param path path
      * @throws IOException IOException
@@ -170,7 +170,7 @@ public class TemporaryDirectory implements AutoCloseable {
     }
 
     /**
-     * Method to create a new temporary directory with default permissions
+     * Create a new temporary directory with default permissions
      *
      * @return a new TemporaryDirectory
      * @throws IOException If an I/O error occurs
@@ -180,7 +180,7 @@ public class TemporaryDirectory implements AutoCloseable {
     }
 
     /**
-     * Method to create a new temporary directory with specified POSIX file permissions
+     * Create a new temporary directory with specified POSIX file permissions
      *
      * @param posixFilePermissions the POSIX file permissions to set for the temporary directory
      * @return a new TemporaryDirectory
@@ -199,7 +199,7 @@ public class TemporaryDirectory implements AutoCloseable {
     }
 
     /**
-     * Method to generate a random id
+     * Generate a random id
      *
      * @return a random id
      */
@@ -208,7 +208,7 @@ public class TemporaryDirectory implements AutoCloseable {
     }
 
     /**
-     * Method to register a shutdown hook to delete the temporary directory
+     * Register a shutdown hook to delete the temporary directory
      *
      * @param path path
      */

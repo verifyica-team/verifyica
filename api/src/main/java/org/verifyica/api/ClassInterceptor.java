@@ -30,7 +30,7 @@ public interface ClassInterceptor {
     Predicate<ClassContext> ACCEPT_ALL = classContext -> true;
 
     /**
-     * ClassInterceptor initialize
+     * Initialize the ClassInterceptor
      *
      * @param engineContext engineContext
      * @throws Throwable throwable
@@ -40,7 +40,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor Predicate
+     * Gets the Predicate to filter ClassContext
      *
      * @return a Predicate
      */
@@ -49,7 +49,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor preInstantiate callback
+     * Pre Instantiate callback
      *
      * @param engineContext engineContext
      * @param testClass testClass
@@ -60,7 +60,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor postInstantiate callback
+     * Post Instantiate callback
      *
      * @param engineContext engineContext
      * @param testClass testClass
@@ -75,7 +75,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor prePrepare callback
+     * Pre Prepare callback
      *
      * @param classContext classContext
      * @throws Throwable Throwable
@@ -85,7 +85,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor postPrepare callback
+     * Post Prepare callback
      *
      * @param classContext classContext
      * @param throwable throwable
@@ -96,7 +96,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor preBeforeAll callback
+     * Pre BeforeAll callback
      *
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
@@ -106,7 +106,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor postBeforeAll callback
+     * Post BeforeAll callback
      *
      * @param argumentContext argumentContext
      * @param throwable throwable
@@ -117,7 +117,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor preBeforeEach callback
+     * Pre BeforeEach callback
      *
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
@@ -127,7 +127,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor postBeforeEach callback
+     * Post BeforeEach callback
      *
      * @param argumentContext argumentContext
      * @param throwable throwable
@@ -138,7 +138,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor preTest callback
+     * Pre Test callback
      *
      * @param argumentContext argumentContext
      * @param testMethod testMethod
@@ -149,7 +149,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor postTest callback
+     * Post Test callback
      *
      * @param argumentContext argumentContext
      * @param testMethod testMethod
@@ -161,7 +161,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor preAfterEach callback
+     * Pre AfterEach callback
      *
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
@@ -171,7 +171,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor postAfterEach callback
+     * Post AfterEach callback
      *
      * @param argumentContext argumentContext
      * @param throwable throwable
@@ -182,7 +182,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor preAfterAll callback
+     * Pre AfterAll callback
      *
      * @param argumentContext argumentContext
      * @throws Throwable Throwable
@@ -192,7 +192,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor postAfterAll callback
+     * Post afterAll callback
      *
      * @param argumentContext argumentContext
      * @param throwable throwable
@@ -203,7 +203,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor preConclude callback
+     * Pre Conclude callback
      *
      * @param classContext classContext
      * @throws Throwable Throwable
@@ -213,7 +213,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor postConclude callback
+     * Post Conclude callback
      *
      * @param classContext classContext
      * @param throwable throwable
@@ -224,7 +224,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor onDestroy callback
+     * OnDestroy callback
      *
      * @param classContext classContext
      * @throws Throwable Throwable
@@ -234,7 +234,7 @@ public interface ClassInterceptor {
     }
 
     /**
-     * ClassInterceptor destroy
+     * Destroy callback
      *
      * @param engineContext engineContext
      * @throws Throwable Throwable
