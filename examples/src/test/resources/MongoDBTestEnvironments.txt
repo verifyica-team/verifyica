@@ -1,6 +1,7 @@
-# This file lists the MongoDB Docker image versions to be used for testing.
+# This file lists all MongoDB Docker images to be used in the tests.
 # Each line specifies a different version of the MongoDB image.
 mongo:5.0.32
 mongo:6.0.27
 mongo:7.0.28
 mongo:8.0.17
+mongo:8.2.3
