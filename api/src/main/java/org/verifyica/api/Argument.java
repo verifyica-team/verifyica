@@ -27,51 +27,65 @@ import java.math.BigInteger;
 public interface Argument<T> extends Named {
 
     /**
-     * Empty Argument
+     * An empty {@code Argument} instance.
      */
     Argument<Object> EMPTY = new Empty();
 
+    /**
+     * Returns the name of this argument.
+     *
+     * @return the argument name
+     */
     @Override
     default String name() {
         return getName();
     }
 
+    /**
+     * Returns the name of this argument.
+     *
+     * @return the argument name
+     */
     @Override
     String getName();
 
     /**
-     * Method to get the Argument payload
+     * Returns the payload of this argument.
      *
-     * @return the Argument payload
+     * @return the argument payload
      */
     default T payload() {
         return getPayload();
     }
 
     /**
-     * Method to get the Argument payload
+     * Returns the payload of this argument.
      *
-     * @return the Argument payload
+     * @return the argument payload
      */
     T getPayload();
 
     /**
-     * Method to get the Argument payload
+     * Returns the payload cast to the given type.
      *
-     * @param type type
-     * @return the Argument payload
+     * @param type the expected payload type
      * @param <V> the return type
+     * @return the payload cast to {@code type}
+     * @throws IllegalArgumentException if {@code type} is {@code null}
+     * @throws ClassCastException if the payload cannot be cast to {@code type}
      */
     default <V> V payload(Class<V> type) {
         return getPayload(type);
     }
 
     /**
-     * Method to get the Argument payload
+     * Returns the payload cast to the given type.
      *
-     * @param type type
-     * @return the Argument payload
+     * @param type the expected payload type
      * @param <V> the return type
+     * @return the payload cast to {@code type}
+     * @throws IllegalArgumentException if {@code type} is {@code null}
+     * @throws ClassCastException if the payload cannot be cast to {@code type}
      */
     default <V> V getPayload(Class<V> type) {
         notNull(type, "type is null");
@@ -79,99 +93,99 @@ public interface Argument<T> extends Named {
     }
 
     /**
-     * Method to return if the Argument has a non-null payload
+     * Returns whether this argument has a non-null payload.
      *
-     * @return true if the Argument payload is not null, otherwise false
+     * @return {@code true} if the payload is non-null, otherwise {@code false}
      */
     default boolean hasPayload() {
         return getPayload() != null;
     }
 
     /**
-     * Method to create an Argument of type boolean
+     * Creates a boolean argument.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the value
      */
     static Argument<Boolean> ofBoolean(boolean value) {
         return of(String.valueOf(value), value);
     }
 
     /**
-     * Method to create an Argument of type byte
+     * Creates a byte argument.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the value
      */
     static Argument<Byte> ofByte(byte value) {
         return of(String.valueOf(value), value);
     }
 
     /**
-     * Method to create an Argument of type char
+     * Creates a char argument.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the value
      */
     static Argument<Character> ofChar(char value) {
         return of(String.valueOf(value), value);
     }
 
     /**
-     * Method to create an Argument of type short
+     * Creates a short argument.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the value
      */
     static Argument<Short> ofShort(short value) {
         return of(String.valueOf(value), value);
     }
 
     /**
-     * Method to create an Argument of type int
+     * Creates an int argument.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the value
      */
     static Argument<Integer> ofInt(int value) {
         return of(String.valueOf(value), value);
     }
 
     /**
-     * Method to create an Argument of type long
+     * Creates a long argument.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the value
      */
     static Argument<Long> ofLong(long value) {
         return of(String.valueOf(value), value);
     }
 
     /**
-     * Method to create an Argument of type float
+     * Creates a float argument.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the value
      */
     static Argument<Float> ofFloat(float value) {
         return of(String.valueOf(value), value);
     }
 
     /**
-     * Method to create an Argument of type double
+     * Creates a double argument.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the value
      */
     static Argument<Double> ofDouble(double value) {
         return of(String.valueOf(value), value);
     }
 
     /**
-     * Method to create an Argument of type String
+     * Creates a string argument with special handling for {@code null} and empty values.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the value
      */
     static Argument<String> ofString(String value) {
         if (value == null) {
@@ -184,76 +198,58 @@ public interface Argument<T> extends Named {
     }
 
     /**
-     * Method to create an Argument of type BigInteger
+     * Creates a {@code BigInteger} argument.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the value
      */
     static Argument<BigInteger> ofBigInteger(BigInteger value) {
-        if (value == null) {
-            return of("BigInteger=/null/", null);
-        } else {
-            return of(value.toString(), value);
-        }
+        return value == null ? of("BigInteger=/null/", null) : of(value.toString(), value);
     }
 
     /**
-     * Method to create an Argument of type BigInteger
+     * Creates a {@code BigInteger} argument from a string.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the parsed value
      */
     static Argument<BigInteger> ofBigInteger(String value) {
-        if (value == null) {
-            return of("BigInteger=/null/", null);
-        } else {
-            BigInteger bigInteger = new BigInteger(value);
-            return of(bigInteger.toString(), bigInteger);
-        }
+        return value == null ? of("BigInteger=/null/", null) : ofBigInteger(new BigInteger(value));
     }
 
     /**
-     * Method to create an Argument of type BigDecimal
+     * Creates a {@code BigDecimal} argument.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the value
      */
     static Argument<BigDecimal> ofBigDecimal(BigDecimal value) {
-        if (value == null) {
-            return of("BigDecimal=/null/", null);
-        } else {
-            return of(value.toString(), value);
-        }
+        return value == null ? of("BigDecimal=/null/", null) : of(value.toString(), value);
     }
 
     /**
-     * Method to create an Argument of type BigDecimal
+     * Creates a {@code BigDecimal} argument from a string.
      *
-     * @param value value
-     * @return an Argument
+     * @param value the value
+     * @return an {@code Argument} containing the parsed value
      */
     static Argument<BigDecimal> ofBigDecimal(String value) {
-        if (value == null) {
-            return of("BigDecimal=/null/", null);
-        } else {
-            BigDecimal bigDecimal = new BigDecimal(value);
-            return of(bigDecimal.toString(), bigDecimal);
-        }
+        return value == null ? of("BigDecimal=/null/", null) : ofBigDecimal(new BigDecimal(value));
     }
 
     /**
-     * Method to create an Argument of type T
+     * Creates an argument with the given name and payload.
      *
-     * @param name name
-     * @param payload payload
-     * @return an Argument
-     * @param <T> type T
+     * @param name the argument name
+     * @param payload the payload
+     * @param <T> the payload type
+     * @return a new {@code Argument}
+     * @throws IllegalArgumentException if {@code name} is null or blank
      */
     static <T> Argument<T> of(String name, T payload) {
         notBlank(name, "name is null", "name is blank");
 
         return new Argument<T>() {
-
             @Override
             public String getName() {
                 return name;
@@ -272,10 +268,11 @@ public interface Argument<T> extends Named {
     }
 
     /**
-     * Method to validate an Object is not null, throwing an IllegalArgumentException if it is null
+     * Validates that the given object is not {@code null}.
      *
-     * @param object object
-     * @param message message
+     * @param object the object to validate
+     * @param message the exception message
+     * @throws IllegalArgumentException if {@code object} is {@code null}
      */
     static void notNull(Object object, String message) {
         if (object == null) {
@@ -284,58 +281,59 @@ public interface Argument<T> extends Named {
     }
 
     /**
-     * Method to validate a String is not null and not blank, throwing an IllegalArgumentException
-     * if it is null or blank
+     * Validates that the given string is not {@code null} and not blank.
      *
-     * @param string string
-     * @param nullMessage nullMessage
-     * @param blankMessage blankMessage
+     * @param string the string to validate
+     * @param nullMessage the exception message if {@code string} is {@code null}
+     * @param blankMessage the exception message if {@code string} is blank
+     * @throws IllegalArgumentException if validation fails
      */
     static void notBlank(String string, String nullMessage, String blankMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }
-
+        
         if (string.trim().isEmpty()) {
             throw new IllegalArgumentException(blankMessage);
         }
     }
 
     /**
-     * Class to implement Empty
+     * Empty {@code Argument} implementation.
      */
-    class Empty implements Argument<Object> {
+    final class Empty implements Argument<Object> {
 
-        private final String NAME = "---";
+        private static final String NAME = "---";
 
-        /**
-         * Constructor
-         */
         private Empty() {
-            // INITIALLY BLANK
+            // intentionally empty
         }
 
+        /**
+         * Returns the empty argument name.
+         *
+         * @return the name
+         */
         @Override
         public String getName() {
             return NAME;
         }
 
+        /**
+         * Returns {@code null}.
+         *
+         * @return {@code null}
+         */
         @Override
         public Object getPayload() {
             return null;
         }
 
-        @Override
-        public <V> V getPayload(Class<V> type) {
-            notNull(type, "type is null");
-            return type.cast(null);
-        }
-
-        @Override
-        public boolean hasPayload() {
-            return false;
-        }
-
+        /**
+         * Returns the argument name.
+         *
+         * @return the name
+         */
         @Override
         public String toString() {
             return NAME;
