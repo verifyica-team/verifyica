@@ -149,4 +149,4 @@ This will prevent test banner logger for each test such as ...
 
 ---
 
-Copyright (C) Verifyica project authors and contributors
+Copyright (C) Verifyica project authors and contributors. All rights reserved.

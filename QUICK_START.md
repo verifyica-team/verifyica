@@ -156,4 +156,4 @@ For more information on the Verifyica API and available annotations, refer to th
 
 ---
 
-Copyright (C) Verifyica project authors and contributors
+Copyright (C) Verifyica project authors and contributors. All rights reserved.

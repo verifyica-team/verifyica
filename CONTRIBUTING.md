@@ -22,4 +22,4 @@ For changes, you should...
 
 ---
 
-Copyright (C) Verifyica project authors and contributors
+Copyright (C) Verifyica project authors and contributors. All rights reserved.

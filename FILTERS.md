@@ -85,4 +85,4 @@ Example File:
 
 ---
 
-Copyright (C) Verifyica project authors and contributors
+Copyright (C) Verifyica project authors and contributors. All rights reserved.
