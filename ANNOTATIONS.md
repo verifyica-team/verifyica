@@ -309,4 +309,4 @@ Used to mark a class as having inner test classes when using IntelliJ.
 
 ---
 
-Copyright (C) Verifyica project authors and contributors
+Copyright (C) Verifyica project authors and contributors. All rights reserved.

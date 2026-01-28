@@ -37,4 +37,4 @@ A concrete example using a `ClassInterceptor` to test the test engine lifecycle 
 
 ---
 
-Copyright (C) Verifyica project authors and contributors
+Copyright (C) Verifyica project authors and contributors. All rights reserved.
