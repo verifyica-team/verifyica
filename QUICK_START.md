@@ -24,7 +24,7 @@ Configure the Maven Surefire Plugin in your `pom.xml` to include only JUnit test
 
 # Configure the Verifyica Maven Plugin
 
-Next, configure the Verifyica Maven Plugin in your `pom.xml`. The plugin will only run Verifyica tests.
+Configure the Verifyica Maven Plugin in your `pom.xml`. The plugin will only run Verifyica tests.
 
 ```xml
 <plugin>
