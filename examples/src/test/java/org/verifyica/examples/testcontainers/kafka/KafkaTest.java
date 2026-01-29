@@ -17,7 +17,6 @@
 package org.verifyica.examples.testcontainers.kafka;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.verifyica.examples.support.RandomSupport.randomString;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -36,6 +35,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.CleanupPlan;
+import org.verifyica.api.RandomSupport;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
@@ -76,7 +76,7 @@ public class KafkaTest {
     public void testProduce(KafkaTestEnvironment kafkaTestEnvironment) throws ExecutionException, InterruptedException {
         LOGGER.info("[%s] testing testProduce() ...", kafkaTestEnvironment.name());
 
-        String message = randomString(16);
+        String message = RandomSupport.alphaString(16);
         LOGGER.info("[%s] producing message [%s] ...", kafkaTestEnvironment.name(), message);
 
         messageThreadLocal.set(message);
@@ -101,7 +101,7 @@ public class KafkaTest {
         try (KafkaConsumer<String, String> consumer = createKafkaConsumer(kafkaTestEnvironment)) {
             consumer.subscribe(Collections.singletonList(TOPIC));
 
-            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10000));
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10_000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 LOGGER.info("[%s] consumed message [%s]", kafkaTestEnvironment.name(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
@@ -124,7 +124,7 @@ public class KafkaTest {
         try (KafkaConsumer<String, String> consumer = createKafkaConsumer(kafkaTestEnvironment)) {
             consumer.subscribe(Collections.singletonList(TOPIC));
 
-            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(5000));
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(5_000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 LOGGER.info("[%s] consumed message [%s]", kafkaTestEnvironment.name(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);

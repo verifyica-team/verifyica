@@ -111,7 +111,7 @@ public class LockManagerTest {
                     // System.out.printf("  thread [%-9s] value [%d]%n", threadName, atomicInteger.get());
 
                     try {
-                        long sleepTime = RandomSupport.randomLong(0, 200);
+                        long sleepTime = RandomSupport.nextLong(0, 200);
                         // System.out.printf("  thread [%-9s] sleep [%d]%n", threadName, sleepTime);
                         Thread.sleep(sleepTime);
                     } catch (InterruptedException e) {

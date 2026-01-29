@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.RandomSupport;
 import org.verifyica.api.Verifyica;
-import org.verifyica.test.support.RandomSupport;
 
 public class ArgumentExecutorServiceSupplierTest {
 
@@ -55,6 +55,6 @@ public class ArgumentExecutorServiceSupplierTest {
                 argumentContext.getTestArgument(),
                 argumentContext.getTestArgument().getPayload());
 
-        Thread.sleep(RandomSupport.randomLong(0, 1000));
+        Thread.sleep(RandomSupport.nextLong(0, 1_000));
     }
 }

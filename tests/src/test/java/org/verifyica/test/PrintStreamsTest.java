@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.RandomSupport;
 import org.verifyica.api.Verifyica;
-import org.verifyica.test.support.RandomSupport;
 
 @Verifyica.Disabled
 public class PrintStreamsTest {
@@ -51,7 +51,7 @@ public class PrintStreamsTest {
 
     private static void sleep() {
         try {
-            Thread.sleep(RandomSupport.randomLong(0, 1000));
+            Thread.sleep(RandomSupport.nextLong(0, 1_000));
         } catch (InterruptedException e) {
             // INTENTIONALLY EMPTY
         }
