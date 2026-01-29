@@ -383,7 +383,7 @@ public class RandomSupportTest {
     @Test
     public void gaussianWithZeroStddevAlwaysReturnsMean() {
         RandomSupport.useSeed(123L);
-        
+
         for (int i = 0; i < 1_000; i++) {
             assertThat(RandomSupport.gaussian(12.34, 0.0)).isEqualTo(12.34);
         }
