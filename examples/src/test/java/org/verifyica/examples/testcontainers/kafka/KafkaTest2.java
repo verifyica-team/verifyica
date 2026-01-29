@@ -17,7 +17,6 @@
 package org.verifyica.examples.testcontainers.kafka;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.verifyica.examples.support.RandomSupport.randomString;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -37,6 +36,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.CleanupPlan;
+import org.verifyica.api.RandomSupport;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
@@ -90,7 +90,7 @@ public class KafkaTest2 {
                 "[%s] testing testProduce() ...",
                 argumentContext.getTestArgument().getName());
 
-        String message = randomString(16);
+        String message = RandomSupport.alphaString(16);
         argumentContext.getMap().put(MESSAGE, message);
         LOGGER.info(
                 "[%s] producing message [%s] ...",
@@ -120,7 +120,7 @@ public class KafkaTest2 {
         try (KafkaConsumer<String, String> consumer = createKafkaConsumer(argumentContext)) {
             consumer.subscribe(Collections.singletonList(TOPIC));
 
-            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10000));
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10_000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 LOGGER.info(
                         "[%s] consumed message [%s]",
@@ -148,7 +148,7 @@ public class KafkaTest2 {
         try (KafkaConsumer<String, String> consumer = createKafkaConsumer(argumentContext)) {
             consumer.subscribe(Collections.singletonList(TOPIC));
 
-            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10000));
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10_000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 LOGGER.info(
                         "[%s] consumed message [%s]",

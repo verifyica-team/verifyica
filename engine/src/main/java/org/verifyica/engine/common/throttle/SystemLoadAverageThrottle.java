@@ -32,7 +32,7 @@ public class SystemLoadAverageThrottle implements Throttle {
     private static final long BASE_SLEEP_TIME_MS = 100;
 
     // Maximum sleep time in milliseconds
-    private static final long MAXIMUM_SLEEP_TIME_MS = 5000;
+    private static final long MAXIMUM_SLEEP_TIME_MS = 5_000;
 
     // Maximum system load allowed
     private final double maximumLoad;

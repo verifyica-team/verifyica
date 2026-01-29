@@ -17,7 +17,6 @@
 package org.verifyica.examples.testcontainers.mongodb;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.verifyica.examples.support.RandomSupport.randomString;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -31,6 +30,7 @@ import org.bson.Document;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.CleanupPlan;
+import org.verifyica.api.RandomSupport;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
@@ -74,7 +74,7 @@ public class MongoDBTest3 {
         MongoDBTestEnvironment mongoDBTestEnvironment =
                 argumentContext.testArgument().payload(MongoDBTestEnvironment.class);
 
-        String name = randomString(16);
+        String name = RandomSupport.alphaString(16);
         argumentContext.map().put(NAME, name);
 
         LOGGER.info("[%s] name [%s]", argumentContext.testArgument().getName(), name);

@@ -23,8 +23,8 @@ import java.util.Collection;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
+import org.verifyica.api.RandomSupport;
 import org.verifyica.api.Verifyica;
-import org.verifyica.test.support.RandomSupport;
 
 public class AutoCloseableCustomArgumentTest {
 
@@ -73,7 +73,7 @@ public class AutoCloseableCustomArgumentTest {
         assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
-        Thread.sleep(RandomSupport.randomLong(0, 1000));
+        Thread.sleep(RandomSupport.nextLong(0, 1_000));
     }
 
     @Verifyica.Test
@@ -84,7 +84,7 @@ public class AutoCloseableCustomArgumentTest {
         assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
-        Thread.sleep(RandomSupport.randomLong(0, 1000));
+        Thread.sleep(RandomSupport.nextLong(0, 1_000));
     }
 
     @Verifyica.AfterEach

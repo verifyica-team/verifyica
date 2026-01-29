@@ -63,7 +63,7 @@ public class ClassContextStoreSemaphoreTest {
             assertThat(argumentContext.getMap()).isNotNull();
             assertThat(argumentContext.getTestArgument()).isNotNull();
 
-            Thread.sleep(1000);
+            Thread.sleep(1_000);
 
             System.out.printf("test2(%s) released%n", argumentContext.getTestArgument());
         } finally {
