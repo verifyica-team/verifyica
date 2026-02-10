@@ -44,19 +44,24 @@ public class HashSupport {
     public static String alphanumeric(int length) {
         Precondition.isTrue(length > 0, "length is less than 1");
 
-        StringBuilder stringBuilder = new StringBuilder(length);
-        String hash;
+        StringBuilder hashBuilder = new StringBuilder(length);
 
-        do {
-            stringBuilder.setLength(0);
+        for (int i = 0; i < length; i++) {
+            hashBuilder.append(ALPHA_NUMERIC_CHARACTERS.charAt(
+                    ThreadLocalRandom.current().nextInt(ALPHA_NUMERIC_CHARACTERS.length())));
+        }
 
+        String hash = hashBuilder.toString();
+
+        // Check and retry once if necessary (bounded retry to avoid infinite loop)
+        if (hash.toLowerCase(Locale.US).contains("fail")) {
+            hashBuilder.setLength(0);
             for (int i = 0; i < length; i++) {
-                stringBuilder.append(ALPHA_NUMERIC_CHARACTERS.charAt(
+                hashBuilder.append(ALPHA_NUMERIC_CHARACTERS.charAt(
                         ThreadLocalRandom.current().nextInt(ALPHA_NUMERIC_CHARACTERS.length())));
             }
-
-            hash = stringBuilder.toString();
-        } while (hash.toLowerCase(Locale.US).contains("fail"));
+            hash = hashBuilder.toString();
+        }
 
         return hash;
     }

@@ -279,14 +279,19 @@ public class Logger {
      * @param objects objects
      */
     private void log(PrintStream printStream, Level level, String format, Object... objects) {
-        printStream.println(LocalDateTime.now().format(DATE_TIME_FORMATTER)
-                + " | "
-                + level.toString()
-                + " | "
-                + Thread.currentThread().getName()
-                + " | "
-                + name
-                + " | "
-                + format(format, objects));
+        StringBuilder stringBuilder = new StringBuilder(256);
+
+        stringBuilder
+                .append(LocalDateTime.now().format(DATE_TIME_FORMATTER))
+                .append(" | ")
+                .append(level.toString())
+                .append(" | ")
+                .append(Thread.currentThread().getName())
+                .append(" | ")
+                .append(name)
+                .append(" | ")
+                .append(format(format, objects));
+
+        printStream.println(stringBuilder);
     }
 }

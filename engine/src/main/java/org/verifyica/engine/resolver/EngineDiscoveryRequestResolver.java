@@ -110,12 +110,12 @@ public class EngineDiscoveryRequestResolver {
 
         Stopwatch stopwatch = new Stopwatch();
 
-        Map<Class<?>, Set<Method>> testClassMethodSet = new HashMap<>();
-        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new HashMap<>();
-        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new HashMap<>();
+        Map<Class<?>, Set<Method>> testClassMethodSet = new HashMap<>(32);
+        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new HashMap<>(32);
+        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new HashMap<>(32);
 
         try {
-            List<DiscoverySelector> discoverySelectors = new ArrayList<>();
+            List<DiscoverySelector> discoverySelectors = new ArrayList<>(16);
 
             if (LOGGER.isTraceEnabled()) {
                 for (Class<? extends DiscoverySelector> discoverySelectorClass : DISCOVERY_SELECTORS_CLASSES) {
@@ -138,7 +138,7 @@ public class EngineDiscoveryRequestResolver {
 
             resolveTestArguments(testClassMethodSet, testClassArgumentMap, testClassArgumentIndexMap);
 
-            List<ClassDefinition> classDefinitions = new ArrayList<>();
+            List<ClassDefinition> classDefinitions = new ArrayList<>(testClassMethodSet.size());
 
             Set<Class<?>> orderedKeySet = OrderSupport.orderClasses(new LinkedHashSet<>(testClassMethodSet.keySet()));
 
