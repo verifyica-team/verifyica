@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
     <name>Verifyica Parent</name>
     <description>Verifyica Parent</description>
-    <url>http://github.com/verifyica-team/verifyica</url>
+    <url>https://github.com/verifyica-team/verifyica</url>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -58,7 +58,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.9.12</version>
+                                    <version>[3.9.12,)</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
