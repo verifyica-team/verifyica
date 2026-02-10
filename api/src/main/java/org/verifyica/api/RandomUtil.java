@@ -38,7 +38,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * {@link IllegalArgumentException} on invalid input.
  * </p>
  */
-public final class RandomSupport {
+public final class RandomUtil {
 
     /** Alphabetic characters. */
     private static final char[] ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
@@ -56,7 +56,7 @@ public final class RandomSupport {
     /**
      * Prevent instantiation.
      */
-    private RandomSupport() {}
+    private RandomUtil() {}
 
     /* ============================================================
      * Configuration

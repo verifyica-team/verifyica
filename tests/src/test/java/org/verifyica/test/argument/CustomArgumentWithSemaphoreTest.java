@@ -24,7 +24,7 @@ import java.util.concurrent.Semaphore;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
-import org.verifyica.api.RandomSupport;
+import org.verifyica.api.RandomUtil;
 import org.verifyica.api.Verifyica;
 
 public class CustomArgumentWithSemaphoreTest {
@@ -78,7 +78,7 @@ public class CustomArgumentWithSemaphoreTest {
         assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
-        Thread.sleep(RandomSupport.nextLong(0, 1_000));
+        Thread.sleep(RandomUtil.nextLong(0, 1_000));
     }
 
     @Verifyica.Test
@@ -89,7 +89,7 @@ public class CustomArgumentWithSemaphoreTest {
         assertThat(argumentContext.getMap()).isNotNull();
         assertThat(argumentContext.getTestArgument()).isNotNull();
 
-        Thread.sleep(RandomSupport.nextLong(0, 1_000));
+        Thread.sleep(RandomUtil.nextLong(0, 1_000));
     }
 
     @Verifyica.AfterEach

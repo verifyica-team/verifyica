@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 import org.bson.Document;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.CleanupPlan;
-import org.verifyica.api.RandomSupport;
+import org.verifyica.api.RandomUtil;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
@@ -63,7 +63,7 @@ public class MongoDBTest {
     public void testInsert(MongoDBTestEnvironment mongoDBTestEnvironment) {
         LOGGER.info("[%s] testing testInsert() ...", mongoDBTestEnvironment.getName());
 
-        String name = RandomSupport.alphaString(16);
+        String name = RandomUtil.alphaString(16);
         nameThreadLocal.set(name);
         LOGGER.info("[%s] name [%s]", mongoDBTestEnvironment.getName(), name);
 

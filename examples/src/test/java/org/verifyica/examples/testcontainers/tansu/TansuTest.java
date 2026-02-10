@@ -35,7 +35,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.CleanupPlan;
-import org.verifyica.api.RandomSupport;
+import org.verifyica.api.RandomUtil;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
@@ -79,7 +79,7 @@ public class TansuTest {
     public void testProduce(TansuTestEnvironment tansuTestEnvironment) throws ExecutionException, InterruptedException {
         LOGGER.info("[%s] testing testProduce() ...", tansuTestEnvironment.name());
 
-        String message = RandomSupport.alphaString(16);
+        String message = RandomUtil.alphaString(16);
         LOGGER.info("[%s] producing message [%s] ...", tansuTestEnvironment.name(), message);
 
         messageThreadLocal.set(message);
