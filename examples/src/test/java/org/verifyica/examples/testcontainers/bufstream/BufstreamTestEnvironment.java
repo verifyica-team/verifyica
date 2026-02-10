@@ -16,6 +16,7 @@
 
 package org.verifyica.examples.testcontainers.bufstream;
 
+import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.Ports;
 import java.io.IOException;
@@ -82,59 +83,34 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
         // info("initialize test environment [%s] ...", dockerImageName);
 
         for (int i = 0; i < 10; i++) {
-            int HOST_KAFKA_PORT = getFreePort();
-            int HOST_ADMIN_PORT = getFreePort();
+            int kafkaPort = getFreePort();
+            int adminPort = getFreePort();
 
-            String configuration;
+            String configuration = buildConfiguration(kafkaPort);
 
-            if (dockerImageName.contains("0.3.")) {
-                configuration = new TextBlock()
-                        .line("kafka:")
-                        .line("  address: 0.0.0.0:9092")
-                        .line("  public_address: localhost:" + HOST_KAFKA_PORT)
-                        .line("  num_partitions: 1")
-                        .line("admin_address: 0.0.0.0:9089")
-                        .toString();
-            } else {
-                configuration = new TextBlock()
-                        .line("version: v1beta1")
-                        .line("cluster: test")
-                        .line("admin:")
-                        .line("  listen_address: 0.0.0.0:9089")
-                        .line("kafka:")
-                        .line("  listeners:")
-                        .line("    - name: plain")
-                        .line("      listen_address: 0.0.0.0:9092")
-                        .line("      advertise_address: localhost:" + HOST_KAFKA_PORT)
-                        .line("metadata:")
-                        .line("  etcd: {}")
-                        .toString();
-            }
+            GenericContainer<?> container = null;
 
             try {
-                genericContainer = new GenericContainer<>(DockerImageName.parse(dockerImageName))
+                container = new GenericContainer<>(DockerImageName.parse(dockerImageName))
                         .withNetwork(network)
                         .withNetworkAliases("bufstream-" + randomId())
                         .withExposedPorts(9092, 9089)
                         .withCopyToContainer(Transferable.of(configuration), "/etc/bufstream.yaml")
                         .withCommand("serve", "--inmemory", "-c", "/etc/bufstream.yaml")
                         // bind fixed host ports -> container ports
-                        .withCreateContainerCmdModifier(createContainerCmd -> {
-                            Ports bindings = new Ports();
-                            bindings.bind(ExposedPort.tcp(9092), Ports.Binding.bindPort(HOST_KAFKA_PORT));
-                            bindings.bind(ExposedPort.tcp(9089), Ports.Binding.bindPort(HOST_ADMIN_PORT));
-                            Objects.requireNonNull(createContainerCmd.getHostConfig())
-                                    .withPortBindings(bindings);
-                        })
+                        .withCreateContainerCmdModifier(
+                                createContainerCmd -> bindHostPorts(createContainerCmd, kafkaPort, adminPort))
                         .withLogConsumer(new ContainerLogConsumer(getClass().getName(), dockerImageName))
                         .waitingFor(Wait.forHttp("/-/status").forPort(9089).forStatusCode(200))
                         .withStartupTimeout(Duration.ofSeconds(30));
 
-                genericContainer.start();
+                container.start();
 
-                break;
+                genericContainer = container;
+
+                return;
             } catch (Exception e) {
-                genericContainer.stop();
+                safeStop(container);
 
                 if (i < 9) {
                     // try again
@@ -193,6 +169,70 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
         }
 
         return bufstreamTestEnvironments.stream();
+    }
+
+    /**
+     * Method to build the Bufstream configuration
+     *
+     * @param HOST_KAFKA_PORT the kafka port
+     * @return the configuration
+     */
+    private String buildConfiguration(int HOST_KAFKA_PORT) {
+        if (dockerImageName.contains("0.3.")) {
+            return new TextBlock()
+                    .line("kafka:")
+                    .line("  address: 0.0.0.0:9092")
+                    .line("  public_address: localhost:" + HOST_KAFKA_PORT)
+                    .line("  num_partitions: 1")
+                    .line("admin_address: 0.0.0.0:9089")
+                    .toString();
+        }
+
+        return new TextBlock()
+                .line("version: v1beta1")
+                .line("cluster: test")
+                .line("admin:")
+                .line("  listen_address: 0.0.0.0:9089")
+                .line("kafka:")
+                .line("  listeners:")
+                .line("    - name: plain")
+                .line("      listen_address: 0.0.0.0:9092")
+                .line("      advertise_address: localhost:" + HOST_KAFKA_PORT)
+                .line("metadata:")
+                .line("  etcd: {}")
+                .toString();
+    }
+
+    /**
+     * Method to bind fixed host ports -> container ports
+     *
+     * @param createContainerCmd the create container command
+     * @param HOST_KAFKA_PORT the kafka port
+     * @param HOST_ADMIN_PORT the admin port
+     */
+    private static void bindHostPorts(CreateContainerCmd createContainerCmd, int HOST_KAFKA_PORT, int HOST_ADMIN_PORT) {
+        Ports bindings = new Ports();
+        bindings.bind(ExposedPort.tcp(9092), Ports.Binding.bindPort(HOST_KAFKA_PORT));
+        bindings.bind(ExposedPort.tcp(9089), Ports.Binding.bindPort(HOST_ADMIN_PORT));
+
+        Objects.requireNonNull(createContainerCmd.getHostConfig()).withPortBindings(bindings);
+    }
+
+    /**
+     * Method to safely stop a container
+     *
+     * @param container the container
+     */
+    private static void safeStop(GenericContainer<?> container) {
+        if (container == null) {
+            return;
+        }
+
+        try {
+            container.stop();
+        } catch (Exception ignored) {
+            // ignore
+        }
     }
 
     /**
