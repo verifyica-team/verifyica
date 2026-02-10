@@ -200,6 +200,11 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
         Objects.requireNonNull(createContainerCmd.getHostConfig()).withPortBindings(bindings);
     }
 
+    /**
+     * Method to safely stop a container
+     *
+     * @param container the container to stop
+     */
     private static void safeStop(GenericContainer<?> container) {
         if (container == null) {
             return;
@@ -212,6 +217,12 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
         }
     }
 
+    /**
+     * Method to get a free port on localhost
+     *
+     * @return a free port on localhost
+     * @throws IOException if an I/O error occurs when opening the socket
+     */
     private static int getFreePort() throws IOException {
         try (ServerSocket serverSocket = new ServerSocket(0)) {
             serverSocket.setReuseAddress(true);
