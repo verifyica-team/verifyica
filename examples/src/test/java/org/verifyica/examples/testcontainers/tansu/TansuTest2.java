@@ -36,7 +36,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.CleanupPlan;
-import org.verifyica.api.RandomSupport;
+import org.verifyica.api.RandomUtil;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
@@ -93,7 +93,7 @@ public class TansuTest2 {
                 "[%s] testing testProduce() ...",
                 argumentContext.getTestArgument().getName());
 
-        String message = RandomSupport.alphaString(16);
+        String message = RandomUtil.alphaString(16);
         argumentContext.getMap().put(MESSAGE, message);
         LOGGER.info(
                 "[%s] producing message [%s] ...",

@@ -30,7 +30,7 @@ import org.bson.Document;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.CleanupPlan;
-import org.verifyica.api.RandomSupport;
+import org.verifyica.api.RandomUtil;
 import org.verifyica.api.Verifyica;
 import org.verifyica.examples.support.Logger;
 
@@ -74,7 +74,7 @@ public class MongoDBTest3 {
         MongoDBTestEnvironment mongoDBTestEnvironment =
                 argumentContext.testArgument().payload(MongoDBTestEnvironment.class);
 
-        String name = RandomSupport.alphaString(16);
+        String name = RandomUtil.alphaString(16);
         argumentContext.map().put(NAME, name);
 
         LOGGER.info("[%s] name [%s]", argumentContext.testArgument().getName(), name);
