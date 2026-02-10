@@ -58,7 +58,7 @@ public class BufstreamTest {
     }
 
     @Verifyica.BeforeAll
-    public void initializeTestEnvironment(BufstreamTestEnvironment bufstreamTestEnvironment) {
+    public void initializeTestEnvironment(BufstreamTestEnvironment bufstreamTestEnvironment) throws IOException {
         LOGGER.info("[%s] initialize test environment ...", bufstreamTestEnvironment.name());
 
         Network network = Network.newNetwork();

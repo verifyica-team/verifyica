@@ -78,8 +78,9 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
      * Method to initialize the BufstreamTestEnvironment using a specific network
      *
      * @param network the network
+     * @throws IOException if an error occurs
      */
-    public void initialize(Network network) {
+    public void initialize(Network network) throws IOException {
         // info("initialize test environment [%s] ...", dockerImageName);
 
         for (int i = 0; i < 10; i++) {
@@ -97,7 +98,6 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
                         .withExposedPorts(9092, 9089)
                         .withCopyToContainer(Transferable.of(configuration), "/etc/bufstream.yaml")
                         .withCommand("serve", "--inmemory", "-c", "/etc/bufstream.yaml")
-                        // bind fixed host ports -> container ports
                         .withCreateContainerCmdModifier(
                                 createContainerCmd -> bindHostPorts(createContainerCmd, kafkaPort, adminPort))
                         .withLogConsumer(new ContainerLogConsumer(getClass().getName(), dockerImageName))
@@ -221,7 +221,7 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     /**
      * Method to safely stop a container
      *
-     * @param container the container
+     * @param container the container to stop
      */
     private static void safeStop(GenericContainer<?> container) {
         if (container == null) {
@@ -239,13 +239,12 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
      * Method to get a free port on localhost
      *
      * @return a free port on localhost
+     * @throws IOException if an I/O error occurs when opening the socket
      */
-    private static int getFreePort() {
+    private static int getFreePort() throws IOException {
         try (ServerSocket serverSocket = new ServerSocket(0)) {
             serverSocket.setReuseAddress(true);
             return serverSocket.getLocalPort();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
