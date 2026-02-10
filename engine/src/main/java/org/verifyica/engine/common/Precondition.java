@@ -53,9 +53,28 @@ public class Precondition {
             throw new IllegalArgumentException(nullMessage);
         }
 
-        if (string.trim().isEmpty()) {
+        if (isBlank(string)) {
             throw new IllegalArgumentException(blankMessage);
         }
+    }
+
+    /**
+     * Method to check if a String is blank (empty or contains only whitespace)
+     *
+     * @param string string
+     * @return true if the string is blank, false otherwise
+     */
+    private static boolean isBlank(String string) {
+        int length = string.length();
+        if (length == 0) {
+            return true;
+        }
+        for (int i = 0; i < length; i++) {
+            if (!Character.isWhitespace(string.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

@@ -35,8 +35,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -50,9 +48,6 @@ import org.verifyica.engine.exception.UncheckedURISyntaxException;
  */
 public class ClassSupport {
 
-    private static final Lock LOCK = new ReentrantLock(true);
-    private static List<URI> URIS;
-
     /**
      * Constructor
      */
@@ -61,27 +56,29 @@ public class ClassSupport {
     }
 
     /**
+     * Lazy holder for classpath URIs - initialized on first access
+     */
+    private static class ClasspathUrisHolder {
+        static final List<URI> URIS = initializeClasspathUris();
+
+        private static List<URI> initializeClasspathUris() {
+            Set<URI> uriSet = new LinkedHashSet<>();
+            String classpath = System.getProperty("java.class.path");
+            String[] paths = classpath.split(File.pathSeparator);
+            for (String path : paths) {
+                uriSet.add(new File(path).toURI());
+            }
+            return new ArrayList<>(uriSet);
+        }
+    }
+
+    /**
      * Method to get a List of classpath URIs
      *
      * @return a List of classpath URIs
      */
     public static List<URI> getClasspathURIs() {
-        LOCK.lock();
-        try {
-            if (URIS == null) {
-                URIS = new ArrayList<>();
-                Set<URI> uriSet = new LinkedHashSet<>();
-                String classpath = System.getProperty("java.class.path");
-                String[] paths = classpath.split(File.pathSeparator);
-                for (String path : paths) {
-                    uriSet.add(new File(path).toURI());
-                }
-                URIS.addAll(uriSet);
-            }
-            return URIS;
-        } finally {
-            LOCK.unlock();
-        }
+        return ClasspathUrisHolder.URIS;
     }
 
     /**

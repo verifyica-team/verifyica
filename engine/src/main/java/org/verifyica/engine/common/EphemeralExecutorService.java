@@ -17,9 +17,10 @@
 package org.verifyica.engine.common;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class EphemeralExecutorService extends AbstractExecutorService {
 
     private final ThreadFactory threadFactory;
-    private final List<Thread> runningThreads;
+    private final Set<Thread> runningThreads;
     private volatile boolean isShutdown;
 
     /**
@@ -39,7 +40,7 @@ public class EphemeralExecutorService extends AbstractExecutorService {
      */
     public EphemeralExecutorService(ThreadFactory threadFactory) {
         this.threadFactory = threadFactory;
-        this.runningThreads = Collections.synchronizedList(new ArrayList<>());
+        this.runningThreads = ConcurrentHashMap.newKeySet();
     }
 
     @Override
@@ -69,10 +70,8 @@ public class EphemeralExecutorService extends AbstractExecutorService {
     public List<Runnable> shutdownNow() {
         isShutdown = true;
 
-        synchronized (runningThreads) {
-            for (Thread thread : runningThreads) {
-                thread.interrupt();
-            }
+        for (Thread thread : runningThreads) {
+            thread.interrupt();
         }
 
         return new ArrayList<>();

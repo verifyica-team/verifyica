@@ -190,10 +190,11 @@ public class OrderSupport {
      */
     private static List<Method> orderMethodsByDependencies(List<Method> methods) {
         // Create map of method name to Method object and original position
-        Map<String, Method> methodMap = new HashMap<>();
-        Map<String, Integer> originalOrder = new HashMap<>();
+        int methodCount = methods.size();
+        Map<String, Method> methodMap = new HashMap<>(methodCount);
+        Map<String, Integer> originalOrder = new HashMap<>(methodCount);
 
-        for (int i = 0; i < methods.size(); i++) {
+        for (int i = 0; i < methodCount; i++) {
             Method method = methods.get(i);
             String tag = getMethodTag(method);
             methodMap.put(tag, method);
@@ -201,8 +202,8 @@ public class OrderSupport {
         }
 
         // Create dependency graph
-        Map<String, Set<String>> dependents = new HashMap<>();
-        Map<String, Set<String>> dependencies = new HashMap<>();
+        Map<String, Set<String>> dependents = new HashMap<>(methodCount);
+        Map<String, Set<String>> dependencies = new HashMap<>(methodCount);
 
         // Initialize graphs
         methods.forEach(method -> {
@@ -230,9 +231,9 @@ public class OrderSupport {
             }
         }
 
-        List<Method> result = new ArrayList<>();
-        Set<String> processed = new HashSet<>();
-        Set<String> processing = new HashSet<>();
+        List<Method> result = new ArrayList<>(methodCount);
+        Set<String> processed = new HashSet<>(methodCount);
+        Set<String> processing = new HashSet<>(methodCount);
 
         // Process methods in original order, grouping dependencies
         for (Method method : methods) {
