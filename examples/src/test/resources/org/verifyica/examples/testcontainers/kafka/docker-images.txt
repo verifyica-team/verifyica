@@ -1,4 +1,4 @@
-# This file lists the Kafka Docker images used for testing purposes.
+# This file lists all Kafka Docker images to be used in the tests.
 # Each line specifies a different version of the Kafka image.
 apache/kafka:3.7.2
 apache/kafka:3.8.1
