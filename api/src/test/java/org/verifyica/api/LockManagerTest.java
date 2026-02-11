@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
+import org.verifyica.api.util.RandomUtil;
 
 public class LockManagerTest {
 

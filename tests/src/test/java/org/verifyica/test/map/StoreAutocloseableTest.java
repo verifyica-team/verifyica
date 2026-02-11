@@ -23,8 +23,8 @@ import java.util.Collection;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
 import org.verifyica.api.ClassContext;
-import org.verifyica.api.RandomUtil;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.util.RandomUtil;
 
 public class StoreAutocloseableTest {
 

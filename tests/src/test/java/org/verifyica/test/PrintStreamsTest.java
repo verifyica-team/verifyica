@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.RandomUtil;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.util.RandomUtil;
 
 @Verifyica.Disabled
 public class PrintStreamsTest {
