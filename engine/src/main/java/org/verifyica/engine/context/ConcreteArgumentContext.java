@@ -59,17 +59,17 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
     }
 
     @Override
-    public int getTestArgumentIndex() {
+    public int getArgumentIndex() {
         return argumentIndex;
     }
 
     @Override
-    public Argument<?> getTestArgument() {
+    public Argument<?> getArgument() {
         return argument;
     }
 
     @Override
-    public <V> Argument<V> getTestArgument(Class<V> type) {
+    public <V> Argument<V> getArgumentAs(Class<V> type) {
         Precondition.notNull(type, "type is null");
 
         if (argument.getPayload() == null) {
@@ -81,18 +81,6 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
                     "Cannot cast Argument<%s> to Argument<%s>",
                     argument.getPayload().getClass().getName(), type.getName()));
         }
-    }
-
-    @Override
-    public <V> V getTestArgumentPayload() {
-        return argument != null ? (V) argument.getPayload() : null;
-    }
-
-    @Override
-    public <V> V getTestArgumentPayload(Class<V> type) {
-        Precondition.notNull(type, "type is null");
-
-        return argument != null ? argument.getPayload(type) : null;
     }
 
     @Override

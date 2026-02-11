@@ -59,7 +59,7 @@ public class BufstreamTest {
 
     @Verifyica.BeforeAll
     public void initializeTestEnvironment(BufstreamTestEnvironment bufstreamTestEnvironment) throws IOException {
-        LOGGER.info("[%s] initialize test environment ...", bufstreamTestEnvironment.name());
+        LOGGER.info("[%s] initialize test environment ...", bufstreamTestEnvironment.getName());
 
         Network network = Network.newNetwork();
         network.getId();
@@ -69,17 +69,17 @@ public class BufstreamTest {
 
         assertThat(bufstreamTestEnvironment.isRunning()).isTrue();
 
-        LOGGER.info("bootstrap servers: %s", bufstreamTestEnvironment.bootstrapServers());
+        LOGGER.info("bootstrap servers: %s", bufstreamTestEnvironment.getBootstrapServers());
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testProduce(BufstreamTestEnvironment bufstreamTestEnvironment)
             throws ExecutionException, InterruptedException {
-        LOGGER.info("[%s] testing testProduce() ...", bufstreamTestEnvironment.name());
+        LOGGER.info("[%s] testing testProduce() ...", bufstreamTestEnvironment.getName());
 
         String message = RandomUtil.alphaString(16);
-        LOGGER.info("[%s] producing message [%s] ...", bufstreamTestEnvironment.name(), message);
+        LOGGER.info("[%s] producing message [%s] ...", bufstreamTestEnvironment.getName(), message);
 
         messageThreadLocal.set(message);
 
@@ -88,14 +88,14 @@ public class BufstreamTest {
             producer.send(producerRecord).get();
         }
 
-        LOGGER.info("[%s] message [%s] produced", bufstreamTestEnvironment.name(), message);
+        LOGGER.info("[%s] message [%s] produced", bufstreamTestEnvironment.getName(), message);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testConsume1(BufstreamTestEnvironment bufstreamTestEnvironment) {
-        LOGGER.info("[%s] testing testConsume1() ...", bufstreamTestEnvironment.name());
-        LOGGER.info("[%s] consuming message ...", bufstreamTestEnvironment.name());
+        LOGGER.info("[%s] testing testConsume1() ...", bufstreamTestEnvironment.getName());
+        LOGGER.info("[%s] consuming message ...", bufstreamTestEnvironment.getName());
 
         String expectedMessage = messageThreadLocal.get();
         boolean messageMatched = false;
@@ -105,7 +105,7 @@ public class BufstreamTest {
 
             ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10_000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                LOGGER.info("[%s] consumed message [%s]", bufstreamTestEnvironment.name(), consumerRecord.value());
+                LOGGER.info("[%s] consumed message [%s]", bufstreamTestEnvironment.getName(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
                 messageMatched = true;
             }
@@ -117,8 +117,8 @@ public class BufstreamTest {
     @Verifyica.Test
     @Verifyica.Order(3)
     public void testConsume2(BufstreamTestEnvironment bufstreamTestEnvironment) {
-        LOGGER.info("[%s] testing testConsume2() ...", bufstreamTestEnvironment.name());
-        LOGGER.info("[%s] consuming message ...", bufstreamTestEnvironment.name());
+        LOGGER.info("[%s] testing testConsume2() ...", bufstreamTestEnvironment.getName());
+        LOGGER.info("[%s] consuming message ...", bufstreamTestEnvironment.getName());
 
         String expectedMessage = messageThreadLocal.get();
         boolean messageMatched = false;
@@ -128,7 +128,7 @@ public class BufstreamTest {
 
             ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(5_000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                LOGGER.info("[%s] consumed message [%s]", bufstreamTestEnvironment.name(), consumerRecord.value());
+                LOGGER.info("[%s] consumed message [%s]", bufstreamTestEnvironment.getName(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
                 messageMatched = true;
             }
@@ -139,7 +139,7 @@ public class BufstreamTest {
 
     @Verifyica.AfterAll
     public void destroyTestEnvironment(BufstreamTestEnvironment bufstreamTestEnvironment) throws Throwable {
-        LOGGER.info("[%s] destroy test environment ...", bufstreamTestEnvironment.name());
+        LOGGER.info("[%s] destroy test environment ...", bufstreamTestEnvironment.getName());
 
         new CleanupExecutor()
                 .addTask(bufstreamTestEnvironment::destroy)
@@ -159,7 +159,7 @@ public class BufstreamTest {
             BufstreamTestEnvironment bufstreamTestEnvironment) {
         Properties properties = new Properties();
 
-        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bufstreamTestEnvironment.bootstrapServers());
+        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bufstreamTestEnvironment.getBootstrapServers());
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
@@ -176,7 +176,7 @@ public class BufstreamTest {
             BufstreamTestEnvironment bufstreamTestEnvironment) {
         Properties properties = new Properties();
 
-        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bufstreamTestEnvironment.bootstrapServers());
+        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bufstreamTestEnvironment.getBootstrapServers());
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);

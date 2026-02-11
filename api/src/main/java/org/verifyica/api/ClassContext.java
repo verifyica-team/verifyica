@@ -28,71 +28,6 @@ public interface ClassContext extends Context {
      *
      * @return the EngineContext
      */
-    default EngineContext engineContext() {
-        return getEngineContext();
-    }
-
-    /**
-     * Get the test class
-     *
-     * @return the test class
-     */
-    default Class<?> testClass() {
-        return getTestClass();
-    }
-
-    /**
-     * Get the test class display name
-     *
-     * @return the test class display name
-     */
-    default String testClassDisplayName() {
-        return getTestClassDisplayName();
-    }
-
-    /**
-     * Get the test class tags
-     *
-     * @return a Set of test class tags; may be empty
-     */
-    default Set<String> testClassTags() {
-        return getTestClassTags();
-    }
-
-    /**
-     * Get the test argument parallelism
-     *
-     * @return the test argument parallelism
-     */
-    default int testArgumentParallelism() {
-        return getTestArgumentParallelism();
-    }
-
-    /**
-     * Get the test class instance
-     *
-     * @return the test class instance
-     */
-    default Object testInstance() {
-        return getTestInstance();
-    }
-
-    /**
-     * Get the test class instance
-     *
-     * @param type type
-     * @return the test class instance
-     * @param <V> the type
-     */
-    default <V> V testInstance(Class<V> type) {
-        return getTestInstance(type);
-    }
-
-    /**
-     * Get the EngineContext
-     *
-     * @return the EngineContext
-     */
     EngineContext getEngineContext();
 
     /**
@@ -131,11 +66,11 @@ public interface ClassContext extends Context {
     Object getTestInstance();
 
     /**
-     * Get the test class instance
+     * Get the test class instance as the specified type
      *
-     * @param type type
+     * @param type the type to cast the test class instance to
      * @return the test class instance
      * @param <V> the type
      */
-    <V> V getTestInstance(Class<V> type);
+    <V> V getTestInstanceAs(Class<V> type);
 }

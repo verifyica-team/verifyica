@@ -48,47 +48,47 @@ public class ConcreteTest1 extends AbstractTest1 {
 
     @Verifyica.BeforeAll
     public void beforeAll2(ArgumentContext argumentContext) {
-        System.out.printf("    ConcreteTest1 beforeAll2(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("    ConcreteTest1 beforeAll2(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.BeforeEach
     public void beforeEach2(ArgumentContext argumentContext) {
-        System.out.printf("    ConcreteTest1 beforeEach2(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("    ConcreteTest1 beforeEach2(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
-        System.out.printf("    ConcreteTest1 test2(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("    ConcreteTest1 test2(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.AfterEach
     public void afterEach2(ArgumentContext argumentContext) {
-        System.out.printf("    ConcreteTest1 afterEach2(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("    ConcreteTest1 afterEach2(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.AfterAll
     public void afterAll2(ArgumentContext argumentContext) {
-        System.out.printf("    ConcreteTest1 afterAll2(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("    ConcreteTest1 afterAll2(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.Conclude

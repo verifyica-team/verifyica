@@ -50,20 +50,17 @@ public class MongoDBTest2 {
     public void initializeTestEnvironment(ArgumentContext argumentContext) {
         LOGGER.info(
                 "[%s] initialize test environment ...",
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
 
         Network network = Network.newNetwork();
         network.getId();
 
         argumentContext.getMap().put(NETWORK, network);
-        argumentContext
-                .getTestArgument()
-                .getPayload(MongoDBTestEnvironment.class)
-                .initialize(network);
+        argumentContext.getArgument().getPayloadAs(MongoDBTestEnvironment.class).initialize(network);
 
         assertThat(argumentContext
-                        .getTestArgument()
-                        .getPayload(MongoDBTestEnvironment.class)
+                        .getArgument()
+                        .getPayloadAs(MongoDBTestEnvironment.class)
                         .isRunning())
                 .isTrue();
     }
@@ -72,19 +69,18 @@ public class MongoDBTest2 {
     @Verifyica.Order(1)
     public void testInsert(ArgumentContext argumentContext) {
         LOGGER.info(
-                "[%s] testing testInsert() ...",
-                argumentContext.getTestArgument().getName());
+                "[%s] testing testInsert() ...", argumentContext.getArgument().getName());
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
-                argumentContext.getTestArgument().getPayload(MongoDBTestEnvironment.class);
+                argumentContext.getArgument().getPayloadAs(MongoDBTestEnvironment.class);
 
         String name = RandomUtil.alphaString(16);
         argumentContext.getMap().put(NAME, name);
 
-        LOGGER.info("[%s] name [%s]", argumentContext.getTestArgument().getName(), name);
+        LOGGER.info("[%s] name [%s]", argumentContext.getArgument().getName(), name);
 
         MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.connectionString()))
+                .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.getConnectionString()))
                 .build();
 
         try (MongoClient mongoClient = MongoClients.create(settings)) {
@@ -94,21 +90,20 @@ public class MongoDBTest2 {
             collection.insertOne(document);
         }
 
-        LOGGER.info("[%s] name [%s] inserted", argumentContext.getTestArgument().getName(), name);
+        LOGGER.info("[%s] name [%s] inserted", argumentContext.getArgument().getName(), name);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testQuery(ArgumentContext argumentContext) {
         LOGGER.info(
-                "[%s] testing testQuery() ...",
-                argumentContext.getTestArgument().getName());
+                "[%s] testing testQuery() ...", argumentContext.getArgument().getName());
 
         MongoDBTestEnvironment mongoDBTestEnvironment =
-                argumentContext.getTestArgument().getPayload(MongoDBTestEnvironment.class);
+                argumentContext.getArgument().getPayloadAs(MongoDBTestEnvironment.class);
 
         MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.connectionString()))
+                .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.getConnectionString()))
                 .build();
 
         String name = name(argumentContext);
@@ -128,12 +123,12 @@ public class MongoDBTest2 {
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
         LOGGER.info(
                 "[%s] destroy test environment ...",
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
 
         new CleanupExecutor()
                 .addTask(() -> argumentContext
-                        .getTestArgument()
-                        .getPayload(MongoDBTestEnvironment.class)
+                        .getArgument()
+                        .getPayloadAs(MongoDBTestEnvironment.class)
                         .destroy())
                 .addTask(() -> argumentContext
                         .getMap()

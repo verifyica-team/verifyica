@@ -100,37 +100,37 @@ public class ParallelArgumentTest {
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) {
-        LOGGER.info("beforeAll() argument [%s]", argumentContext.testArgument());
+        LOGGER.info("beforeAll() argument [%s]", argumentContext.getArgument());
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) {
-        LOGGER.info("beforeEach() argument [%s]", argumentContext.testArgument());
+        LOGGER.info("beforeEach() argument [%s]", argumentContext.getArgument());
     }
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) {
-        LOGGER.info("test1() argument [%s]", argumentContext.testArgument());
+        LOGGER.info("test1() argument [%s]", argumentContext.getArgument());
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
-        LOGGER.info("test2() argument [%s]", argumentContext.testArgument());
+        LOGGER.info("test2() argument [%s]", argumentContext.getArgument());
     }
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) {
-        LOGGER.info("test3() argument [%s]", argumentContext.testArgument());
+        LOGGER.info("test3() argument [%s]", argumentContext.getArgument());
     }
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) {
-        LOGGER.info("afterEach() argument [%s]", argumentContext.testArgument());
+        LOGGER.info("afterEach() argument [%s]", argumentContext.getArgument());
     }
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) {
-        LOGGER.info("afterAll() argument [%s]", argumentContext.testArgument());
+        LOGGER.info("afterAll() argument [%s]", argumentContext.getArgument());
     }
 
     @Verifyica.Conclude

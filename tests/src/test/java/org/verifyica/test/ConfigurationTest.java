@@ -28,7 +28,7 @@ public class ConfigurationTest {
 
     @Verifyica.Test
     public void test(ArgumentContext argumentContext) {
-        System.out.printf("test(%s)%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("test(%s)%n", argumentContext.getArgument().getPayload());
 
         System.out.printf(
                 "engine.version [%s]%n",

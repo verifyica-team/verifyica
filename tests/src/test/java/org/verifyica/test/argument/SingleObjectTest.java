@@ -32,12 +32,11 @@ public class SingleObjectTest {
     public void test(ArgumentContext argumentContext) {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
-        assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo("test");
+        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getArgument().getPayload()).isEqualTo("test");
 
         System.out.printf(
                 "test(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
     }
 }

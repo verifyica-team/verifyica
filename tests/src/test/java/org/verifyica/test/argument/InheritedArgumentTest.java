@@ -68,11 +68,11 @@ public class InheritedArgumentTest {
     @Verifyica.Test
     @Verifyica.Order(4)
     public void testArgumentContext(ArgumentContext argumentContext) {
-        Argument<ConcreteCustomArgument> argument = argumentContext.getTestArgument(ConcreteCustomArgument.class);
+        Argument<ConcreteCustomArgument> argument = argumentContext.getArgumentAs(ConcreteCustomArgument.class);
         System.out.printf("testArgumentContext(name[%s], payload[%s])%n", argument.getName(), argument.getPayload());
 
-        argumentContext.getTestArgument(AbstractCustomArgument.class);
-        argumentContext.getTestArgument().getPayload(AbstractCustomArgument.class);
+        argumentContext.getArgumentAs(AbstractCustomArgument.class);
+        argumentContext.getArgument().getPayloadAs(AbstractCustomArgument.class);
     }
 
     @Verifyica.AfterEach

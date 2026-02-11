@@ -26,14 +26,5 @@ public interface Named {
      *
      * @return the name
      */
-    default String name() {
-        return getName();
-    }
-
-    /**
-     * Get the name
-     *
-     * @return the name
-     */
     String getName();
 }

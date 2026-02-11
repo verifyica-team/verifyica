@@ -124,8 +124,8 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     @Override
     public TestMethodTestDescriptor test() {
         try {
-            invocationArguments.add(argumentContext.getTestArgument().getPayload());
-            invocationArguments.add(argumentContext.getTestArgument());
+            invocationArguments.add(argumentContext.getArgument().getPayload());
+            invocationArguments.add(argumentContext.getArgument());
             invocationArguments.add(argumentContext);
 
             engineExecutionListener.executionStarted(this);

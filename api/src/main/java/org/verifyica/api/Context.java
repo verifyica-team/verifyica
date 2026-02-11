@@ -26,24 +26,6 @@ public interface Context {
      *
      * @return the Configuration
      */
-    default Configuration configuration() {
-        return getConfiguration();
-    }
-
-    /**
-     * Get the Map
-     *
-     * @return the Map
-     */
-    default ExtendedMap<String, Object> map() {
-        return getMap();
-    }
-
-    /**
-     * Get the Configuration
-     *
-     * @return the Configuration
-     */
     Configuration getConfiguration();
 
     /**

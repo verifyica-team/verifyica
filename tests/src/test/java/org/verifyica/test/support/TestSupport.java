@@ -47,10 +47,10 @@ public class TestSupport {
         String argumentName = null;
         String argumentValue = null;
 
-        if (argumentContext.getTestArgument() != null) {
-            argumentName = argumentContext.getTestArgument().getName();
-            argumentValue = argumentContext.getTestArgument().getPayload() != null
-                    ? argumentContext.getTestArgument().getPayload().toString()
+        if (argumentContext.getArgument() != null) {
+            argumentName = argumentContext.getArgument().getName();
+            argumentValue = argumentContext.getArgument().getPayload() != null
+                    ? argumentContext.getArgument().getPayload().toString()
                     : null;
         }
 

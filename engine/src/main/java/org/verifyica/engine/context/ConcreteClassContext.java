@@ -100,7 +100,7 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
     }
 
     @Override
-    public <V> V getTestInstance(Class<V> type) {
+    public <V> V getTestInstanceAs(Class<V> type) {
         Object testInstance = testClassInstanceReference.get();
         if (testInstance == null) {
             throw new IllegalStateException("The class instance has not yet been instantiated");

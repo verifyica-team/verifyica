@@ -56,8 +56,8 @@ public class NestedTest {
 
             System.out.printf(
                     "beforeAll(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.BeforeEach
@@ -66,8 +66,8 @@ public class NestedTest {
 
             System.out.printf(
                     "beforeEach(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.Test
@@ -76,8 +76,8 @@ public class NestedTest {
 
             System.out.printf(
                     "test1(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.Test
@@ -86,8 +86,8 @@ public class NestedTest {
 
             System.out.printf(
                     "test2(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.Test
@@ -96,8 +96,8 @@ public class NestedTest {
 
             System.out.printf(
                     "test3(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.AfterEach
@@ -106,8 +106,8 @@ public class NestedTest {
 
             System.out.printf(
                     "afterEach(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.AfterAll
@@ -116,8 +116,8 @@ public class NestedTest {
 
             System.out.printf(
                     "afterAll(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.Conclude
@@ -155,8 +155,8 @@ public class NestedTest {
 
             System.out.printf(
                     "beforeAll(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.BeforeEach
@@ -165,8 +165,8 @@ public class NestedTest {
 
             System.out.printf(
                     "beforeEach(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.Test
@@ -175,8 +175,8 @@ public class NestedTest {
 
             System.out.printf(
                     "test1(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.Test
@@ -185,8 +185,8 @@ public class NestedTest {
 
             System.out.printf(
                     "test2(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.Test
@@ -195,8 +195,8 @@ public class NestedTest {
 
             System.out.printf(
                     "test3(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.AfterEach
@@ -205,8 +205,8 @@ public class NestedTest {
 
             System.out.printf(
                     "afterEach(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.AfterAll
@@ -215,8 +215,8 @@ public class NestedTest {
 
             System.out.printf(
                     "afterAll(index=[%d], name=[%s])%n",
-                    argumentContext.getTestArgumentIndex(),
-                    argumentContext.getTestArgument().getName());
+                    argumentContext.getArgumentIndex(),
+                    argumentContext.getArgument().getName());
         }
 
         @Verifyica.Conclude
@@ -249,8 +249,8 @@ public class NestedTest {
 
                 System.out.printf(
                         "test(index=[%d], name=[%s])%n",
-                        argumentContext.getTestArgumentIndex(),
-                        argumentContext.getTestArgument().getName());
+                        argumentContext.getArgumentIndex(),
+                        argumentContext.getArgument().getName());
             }
         }
     }

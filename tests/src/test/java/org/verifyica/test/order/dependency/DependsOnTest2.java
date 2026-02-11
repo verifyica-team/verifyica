@@ -36,7 +36,7 @@ public class DependsOnTest2 {
 
     @Verifyica.Prepare
     public void prepare(ClassContext classContext) {
-        classContext.map().put(LIST, new ArrayList<String>());
+        classContext.getMap().put(LIST, new ArrayList<String>());
     }
 
     @Verifyica.Test
@@ -44,10 +44,9 @@ public class DependsOnTest2 {
     public void gamma(ArgumentContext argumentContext) {
         System.out.printf(
                 "gamma(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        argumentContext.classContext().map().getAs(LIST, List.class).add("gamma");
+        argumentContext.getClassContext().getMap().getAs(LIST, List.class).add("gamma");
     }
 
     @Verifyica.Test
@@ -56,10 +55,9 @@ public class DependsOnTest2 {
     public void delta(ArgumentContext argumentContext) {
         System.out.printf(
                 "delta(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        argumentContext.classContext().map().getAs(LIST, List.class).add("delta");
+        argumentContext.getClassContext().getMap().getAs(LIST, List.class).add("delta");
     }
 
     @Verifyica.Test
@@ -68,10 +66,9 @@ public class DependsOnTest2 {
     public void beta(ArgumentContext argumentContext) {
         System.out.printf(
                 "beta(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        argumentContext.classContext().map().getAs(LIST, List.class).add("beta");
+        argumentContext.getClassContext().getMap().getAs(LIST, List.class).add("beta");
     }
 
     @Verifyica.Test
@@ -80,10 +77,9 @@ public class DependsOnTest2 {
     public void alpha(ArgumentContext argumentContext) {
         System.out.printf(
                 "alpha(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        argumentContext.classContext().map().getAs(LIST, List.class).add("alpha");
+        argumentContext.getClassContext().getMap().getAs(LIST, List.class).add("alpha");
     }
 
     @Verifyica.Conclude
@@ -94,7 +90,7 @@ public class DependsOnTest2 {
         expected.add("beta");
         expected.add("alpha");
 
-        List<String> actual = classContext.map().getAs(LIST);
+        List<String> actual = classContext.getMap().getAs(LIST);
 
         assertThat(actual).isEqualTo(expected);
     }

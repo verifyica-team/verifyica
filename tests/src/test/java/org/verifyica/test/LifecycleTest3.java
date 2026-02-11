@@ -62,7 +62,7 @@ public class LifecycleTest3 {
         assertThat(classContext).isNotNull();
         assertThat(classContext.getTestInstance()).isNotNull();
 
-        LifecycleTest3 lifecycleTest1 = classContext.getTestInstance(LifecycleTest3.class);
+        LifecycleTest3 lifecycleTest1 = classContext.getTestInstanceAs(LifecycleTest3.class);
 
         assertThat(lifecycleTest1).isNotNull();
         lifecycleTest1.string = "FOO";
@@ -72,16 +72,14 @@ public class LifecycleTest3 {
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) {
-        System.out.printf(
-                "  %s beforeAll()%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("  %s beforeAll()%n", argumentContext.getArgument().getPayload());
 
         actual.add("beforeAll");
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) {
-        System.out.printf(
-                "  %s beforeEach()%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("  %s beforeEach()%n", argumentContext.getArgument().getPayload());
 
         actual.add("beforeEach");
     }
@@ -89,7 +87,7 @@ public class LifecycleTest3 {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void test1(ArgumentContext argumentContext) {
-        System.out.printf("  %s test1()%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("  %s test1()%n", argumentContext.getArgument().getPayload());
 
         actual.add("test1");
     }
@@ -97,7 +95,7 @@ public class LifecycleTest3 {
     @Verifyica.Test
     @Verifyica.Order(2)
     public void test2(ArgumentContext argumentContext) {
-        System.out.printf("  %s test2()%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("  %s test2()%n", argumentContext.getArgument().getPayload());
 
         actual.add("test2");
     }
@@ -105,22 +103,21 @@ public class LifecycleTest3 {
     @Verifyica.Test
     @Verifyica.Order(3)
     public void test3(ArgumentContext argumentContext) {
-        System.out.printf("  %s test3()%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("  %s test3()%n", argumentContext.getArgument().getPayload());
 
         actual.add("test3");
     }
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) {
-        System.out.printf(
-                "  %s afterEach()%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("  %s afterEach()%n", argumentContext.getArgument().getPayload());
 
         actual.add("afterEach");
     }
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) {
-        System.out.printf("  %s afterAll()%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("  %s afterAll()%n", argumentContext.getArgument().getPayload());
 
         actual.add("afterAll");
     }
@@ -132,7 +129,7 @@ public class LifecycleTest3 {
         assertThat(classContext).isNotNull();
         assertThat(classContext.getTestInstance()).isNotNull();
 
-        LifecycleTest3 lifecycleTest1 = classContext.getTestInstance(LifecycleTest3.class);
+        LifecycleTest3 lifecycleTest1 = classContext.getTestInstanceAs(LifecycleTest3.class);
 
         assertThat(lifecycleTest1).isNotNull();
         assertThat(lifecycleTest1.string).isEqualTo("FOO");

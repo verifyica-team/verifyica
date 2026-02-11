@@ -46,78 +46,73 @@ public class SkipEvenArgumentsTest {
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) {
         // Skip even arguments
-        skipIfCondition(argumentContext.getTestArgument().getPayload(Integer.class) % 2 == 0);
+        skipIfCondition(argumentContext.getArgument().getPayloadAs(Integer.class) % 2 == 0);
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+        assertThat(argumentContext.getArgument().getPayloadAs(Integer.class) % 2)
                 .isOdd();
     }
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+        assertThat(argumentContext.getArgument().getPayloadAs(Integer.class) % 2)
                 .isOdd();
 
         LOGGER.info(
                 "test1(name[%s], payload[%s])",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test1");
+        storeState(argumentContext, argumentContext.getArgument().getPayload() + ".test1");
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+        assertThat(argumentContext.getArgument().getPayloadAs(Integer.class) % 2)
                 .isOdd();
 
         LOGGER.info(
                 "test2(name[%s], payload[%s])",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test2");
+        storeState(argumentContext, argumentContext.getArgument().getPayload() + ".test2");
     }
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+        assertThat(argumentContext.getArgument().getPayloadAs(Integer.class) % 2)
                 .isOdd();
 
         LOGGER.info(
                 "test3(name[%s], payload[%s])",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test3");
+        storeState(argumentContext, argumentContext.getArgument().getPayload() + ".test3");
     }
 
     @Verifyica.Test
     public void test4(ArgumentContext argumentContext) {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+        assertThat(argumentContext.getArgument().getPayloadAs(Integer.class) % 2)
                 .isOdd();
 
         LOGGER.info(
                 "test4(name[%s], payload[%s])",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test4");
+        storeState(argumentContext, argumentContext.getArgument().getPayload() + ".test4");
     }
 
     @Verifyica.Test
     public void test5(ArgumentContext argumentContext) {
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+        assertThat(argumentContext.getArgument().getPayloadAs(Integer.class) % 2)
                 .isOdd();
 
         LOGGER.info(
                 "test5(name[%s], payload[%s])",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test5");
+        storeState(argumentContext, argumentContext.getArgument().getPayload() + ".test5");
     }
 
     @Verifyica.Conclude

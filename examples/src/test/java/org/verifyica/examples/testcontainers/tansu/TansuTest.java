@@ -59,7 +59,7 @@ public class TansuTest {
     @Verifyica.BeforeAll
     public void initializeTestEnvironment(TansuTestEnvironment tansuTestEnvironment)
             throws ExecutionException, InterruptedException, IOException {
-        LOGGER.info("[%s] initialize test environment ...", tansuTestEnvironment.name());
+        LOGGER.info("[%s] initialize test environment ...", tansuTestEnvironment.getName());
 
         Network network = Network.newNetwork();
         network.getId();
@@ -69,7 +69,7 @@ public class TansuTest {
 
         assertThat(tansuTestEnvironment.isRunning()).isTrue();
 
-        LOGGER.info("bootstrap servers: %s", tansuTestEnvironment.bootstrapServers());
+        LOGGER.info("bootstrap servers: %s", tansuTestEnvironment.getBootstrapServers());
 
         tansuTestEnvironment.createTopic(TOPIC);
     }
@@ -77,10 +77,10 @@ public class TansuTest {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testProduce(TansuTestEnvironment tansuTestEnvironment) throws ExecutionException, InterruptedException {
-        LOGGER.info("[%s] testing testProduce() ...", tansuTestEnvironment.name());
+        LOGGER.info("[%s] testing testProduce() ...", tansuTestEnvironment.getName());
 
         String message = RandomUtil.alphaString(16);
-        LOGGER.info("[%s] producing message [%s] ...", tansuTestEnvironment.name(), message);
+        LOGGER.info("[%s] producing message [%s] ...", tansuTestEnvironment.getName(), message);
 
         messageThreadLocal.set(message);
 
@@ -89,14 +89,14 @@ public class TansuTest {
             producer.send(producerRecord).get();
         }
 
-        LOGGER.info("[%s] message [%s] produced", tansuTestEnvironment.name(), message);
+        LOGGER.info("[%s] message [%s] produced", tansuTestEnvironment.getName(), message);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testConsume1(TansuTestEnvironment tansuTestEnvironment) {
-        LOGGER.info("[%s] testing testConsume1() ...", tansuTestEnvironment.name());
-        LOGGER.info("[%s] consuming message ...", tansuTestEnvironment.name());
+        LOGGER.info("[%s] testing testConsume1() ...", tansuTestEnvironment.getName());
+        LOGGER.info("[%s] consuming message ...", tansuTestEnvironment.getName());
 
         String expectedMessage = messageThreadLocal.get();
         boolean messageMatched = false;
@@ -106,7 +106,7 @@ public class TansuTest {
 
             ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10_000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                LOGGER.info("[%s] consumed message [%s]", tansuTestEnvironment.name(), consumerRecord.value());
+                LOGGER.info("[%s] consumed message [%s]", tansuTestEnvironment.getName(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
                 messageMatched = true;
             }
@@ -118,8 +118,8 @@ public class TansuTest {
     @Verifyica.Test
     @Verifyica.Order(3)
     public void testConsume2(TansuTestEnvironment tansuTestEnvironment) {
-        LOGGER.info("[%s] testing testConsume2() ...", tansuTestEnvironment.name());
-        LOGGER.info("[%s] consuming message ...", tansuTestEnvironment.name());
+        LOGGER.info("[%s] testing testConsume2() ...", tansuTestEnvironment.getName());
+        LOGGER.info("[%s] consuming message ...", tansuTestEnvironment.getName());
 
         String expectedMessage = messageThreadLocal.get();
         boolean messageMatched = false;
@@ -129,7 +129,7 @@ public class TansuTest {
 
             ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(5_000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                LOGGER.info("[%s] consumed message [%s]", tansuTestEnvironment.name(), consumerRecord.value());
+                LOGGER.info("[%s] consumed message [%s]", tansuTestEnvironment.getName(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
                 messageMatched = true;
             }
@@ -140,7 +140,7 @@ public class TansuTest {
 
     @Verifyica.AfterAll
     public void destroyTestEnvironment(TansuTestEnvironment tansuTestEnvironment) throws Throwable {
-        LOGGER.info("[%s] destroy test environment ...", tansuTestEnvironment.name());
+        LOGGER.info("[%s] destroy test environment ...", tansuTestEnvironment.getName());
 
         new CleanupExecutor()
                 .addTask(tansuTestEnvironment::destroy)
@@ -159,7 +159,7 @@ public class TansuTest {
     private static KafkaProducer<String, String> createKafkaProducer(TansuTestEnvironment tansuTestEnvironment) {
         Properties properties = new Properties();
 
-        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, tansuTestEnvironment.bootstrapServers());
+        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, tansuTestEnvironment.getBootstrapServers());
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
@@ -175,7 +175,7 @@ public class TansuTest {
     private static KafkaConsumer<String, String> createKafkaConsumer(TansuTestEnvironment tansuTestEnvironment) {
         Properties properties = new Properties();
 
-        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, tansuTestEnvironment.bootstrapServers());
+        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, tansuTestEnvironment.getBootstrapServers());
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);

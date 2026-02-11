@@ -39,29 +39,29 @@ public class OrderTest9 {
 
     @Verifyica.Test
     public void testX(ArgumentContext argumentContext) {
-        System.out.printf("testX(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("testX(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.Test
     public void testY(ArgumentContext argumentContext) {
-        System.out.printf("testY(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("testY(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.Test
     @Verifyica.Order(Integer.MAX_VALUE)
     public void testA(ArgumentContext argumentContext) {
-        System.out.printf("testA(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("testA(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 }

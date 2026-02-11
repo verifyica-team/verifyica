@@ -64,7 +64,7 @@ public class SingleObjectTest2 {
     @Verifyica.Test
     @Verifyica.Order(3)
     public void testArgumentContext(ArgumentContext argumentContext) {
-        Argument<Integer> argument = argumentContext.getTestArgument(Integer.class);
+        Argument<Integer> argument = argumentContext.getArgumentAs(Integer.class);
         System.out.printf("testArgumentContext(name[%s], payload[%s])%n", argument.getName(), argument.getPayload());
     }
 

@@ -55,21 +55,21 @@ public class MapTest4 {
     @Verifyica.Test
     @Verifyica.Order(0)
     public void putIntoMaps(ArgumentContext argumentContext) {
-        System.out.printf("putIntoMaps(%s)%n", argumentContext.testArgument().payload());
+        System.out.printf("putIntoMaps(%s)%n", argumentContext.getArgument().getPayload());
 
-        String payload = argumentContext.testArgument().payload(String.class);
+        String payload = argumentContext.getArgument().getPayloadAs(String.class);
 
-        argumentContext.map().put(Key.ARGUMENT_CONTEXT_KEY.scopedName(), "argument." + payload);
+        argumentContext.getMap().put(Key.ARGUMENT_CONTEXT_KEY.scopedName(), "argument." + payload);
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
     public void getOutOfMaps(ArgumentContext argumentContext) {
-        System.out.printf("getOutOfMaps(%s)%n", argumentContext.testArgument().payload());
+        System.out.printf("getOutOfMaps(%s)%n", argumentContext.getArgument().getPayload());
 
-        String payload = argumentContext.testArgument().payload(String.class);
+        String payload = argumentContext.getArgument().getPayloadAs(String.class);
 
-        assertThat(argumentContext.map().get(Key.ARGUMENT_CONTEXT_KEY.scopedName()))
+        assertThat(argumentContext.getMap().get(Key.ARGUMENT_CONTEXT_KEY.scopedName()))
                 .isEqualTo("argument." + payload);
     }
 }

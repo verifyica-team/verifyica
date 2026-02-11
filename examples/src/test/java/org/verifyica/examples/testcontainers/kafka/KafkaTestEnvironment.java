@@ -122,7 +122,7 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
      *
      * @return the Kafka bootstrap servers
      */
-    public String bootstrapServers() {
+    public String getBootstrapServers() {
         return kafkaContainer.getBootstrapServers();
     }
 

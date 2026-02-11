@@ -68,7 +68,7 @@ public class NamedArgumentTest {
     @Verifyica.Test
     @Verifyica.Order(4)
     public void testArgumentContext(ArgumentContext argumentContext) {
-        Argument<CustomArgument> argument = argumentContext.getTestArgument(CustomArgument.class);
+        Argument<CustomArgument> argument = argumentContext.getArgumentAs(CustomArgument.class);
         System.out.printf("testArgumentContext(name[%s], payload[%s])%n", argument.getName(), argument.getPayload());
     }
 

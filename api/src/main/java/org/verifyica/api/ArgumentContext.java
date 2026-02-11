@@ -22,91 +22,6 @@ package org.verifyica.api;
 public interface ArgumentContext extends Context {
 
     /**
-     * Get the EngineContext
-     *
-     * <p>Equivalent to getClassContext().getEngineContext()
-     *
-     * @return the Engine Configuration
-     */
-    default EngineContext engineContext() {
-        return getEngineContext();
-    }
-
-    /**
-     * Get the ClassContext
-     *
-     * @return the ClassContext
-     */
-    default ClassContext classContext() {
-        return getClassContext();
-    }
-
-    /**
-     * Get the Argument index
-     *
-     * @return the Argument index
-     */
-    default int testArgumentIndex() {
-        return getTestArgumentIndex();
-    }
-
-    /**
-     * Get the Argument
-     *
-     * @return the Argument
-     */
-    default Argument<?> testArgument() {
-        return getTestArgument();
-    }
-
-    /**
-     * Get the Argument
-     *
-     * @param type type
-     * @return the Argument
-     * @param <V> type
-     */
-    default <V> Argument<V> testArgument(Class<V> type) {
-        return getTestArgument(type);
-    }
-
-    /**
-     * Get the Argument payload
-     *
-     * @return the Argument payload
-     * @param <V> type
-     * @deprecated Use {@link Argument#payload()}
-     */
-    @Deprecated
-    default <V> V testArgumentPayload() {
-        return getTestArgumentPayload();
-    }
-
-    /**
-     * Get the Argument
-     *
-     * @param type type
-     * @return the Argument
-     * @param <V> type
-     * @deprecated Use {@link Argument#payload(Class)}
-     */
-    @Deprecated
-    default <V> V testArgumentPayload(Class<V> type) {
-        return getTestArgumentPayload(type);
-    }
-
-    /**
-     * Get the EngineContext
-     *
-     * <p>Equivalent to getClassContext().getEngineContext()
-     *
-     * @return the Engine Configuration
-     */
-    default EngineContext getEngineContext() {
-        return getClassContext().getEngineContext();
-    }
-
-    /**
      * Get the ClassContext
      *
      * @return the ClassContext
@@ -118,42 +33,21 @@ public interface ArgumentContext extends Context {
      *
      * @return the Argument index
      */
-    int getTestArgumentIndex();
+    int getArgumentIndex();
 
     /**
      * Get the Argument
      *
      * @return the Argument
      */
-    Argument<?> getTestArgument();
+    Argument<?> getArgument();
 
     /**
-     * Get the Argument
+     * Get the Argument casting to the specified type
      *
-     * @param type type
+     * @param type the type to cast the Argument to
      * @return the Argument
      * @param <V> type
      */
-    <V> Argument<V> getTestArgument(Class<V> type);
-
-    /**
-     * Get the Argument payload
-     *
-     * @return the Argument payload
-     * @param <V> type
-     * @deprecated Use {@link Argument#getPayload()}
-     */
-    @Deprecated
-    <V> V getTestArgumentPayload();
-
-    /**
-     * Get the Argument payload
-     *
-     * @param type type
-     * @return the Argument payload
-     * @param <V> type
-     * @deprecated Use {@link Argument#getPayload(Class)}
-     */
-    @Deprecated
-    <V> V getTestArgumentPayload(Class<V> type);
+    <V> Argument<V> getArgumentAs(Class<V> type);
 }

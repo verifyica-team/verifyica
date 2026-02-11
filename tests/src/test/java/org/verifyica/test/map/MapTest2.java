@@ -38,7 +38,7 @@ public class MapTest2 {
     @Verifyica.Test
     @Verifyica.Order(0)
     public void putIntoMaps(ArgumentContext argumentContext) {
-        System.out.printf("putIntoMaps(%s)%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("putIntoMaps(%s)%n", argumentContext.getArgument().getPayload());
 
         argumentContext
                 .getClassContext()
@@ -52,8 +52,7 @@ public class MapTest2 {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void getOutOfMaps(ArgumentContext argumentContext) {
-        System.out.printf(
-                "getOutOfMaps(%s)%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("getOutOfMaps(%s)%n", argumentContext.getArgument().getPayload());
 
         assertThat(argumentContext
                         .getClassContext()

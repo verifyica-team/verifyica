@@ -31,11 +31,11 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
     @Verifyica.Test
     @Verifyica.Order(0)
     public void test1(ArgumentContext argumentContext) {
-        System.out.printf("test1(%s)%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("test1(%s)%n", argumentContext.getArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
         assertThat(argumentContext.getClassContext().getEngineContext()
                         == argumentContext.getClassContext().getEngineContext())
                 .isTrue();
@@ -59,11 +59,11 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
     @Verifyica.Test
     @Verifyica.Order(1)
     public void test2(ArgumentContext argumentContext) {
-        System.out.printf("test2(%s)%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("test2(%s)%n", argumentContext.getArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
         assertThat(argumentContext.getClassContext().getEngineContext()
                         == argumentContext.getClassContext().getEngineContext())
                 .isTrue();
@@ -87,11 +87,11 @@ public class ExampleInheritanceCassInterceptorTest implements ExampleInheritance
     @Verifyica.Test
     @Verifyica.Order(2)
     public void test3(ArgumentContext argumentContext) {
-        System.out.printf("test3(%s)%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("test3(%s)%n", argumentContext.getArgument().getPayload());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
         assertThat(argumentContext.getClassContext().getEngineContext()
                         == argumentContext.getClassContext().getEngineContext())
                 .isTrue();

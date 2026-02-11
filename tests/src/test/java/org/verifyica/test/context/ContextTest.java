@@ -69,7 +69,7 @@ public class ContextTest {
         assertArgumentContext(argumentContext);
         ;
 
-        System.out.printf("test1(%s)%n", argumentContext.getTestArgument().getName());
+        System.out.printf("test1(%s)%n", argumentContext.getArgument().getName());
 
         assertThat(argumentContext.getClassContext().getMap().get("FOO")).isEqualTo("BAR");
 
@@ -85,7 +85,7 @@ public class ContextTest {
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
-        System.out.printf("test2(%s)%n", argumentContext.getTestArgument().getName());
+        System.out.printf("test2(%s)%n", argumentContext.getArgument().getName());
 
         assertThat(argumentContext.getClassContext().getEngineContext()).isSameAs(ContextTest.engineContext);
 

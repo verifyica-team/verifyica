@@ -163,8 +163,8 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
         try {
             argumentContext = new ConcreteArgumentContext(classContext, argumentIndex, testArgument);
 
-            invocationArguments.add(argumentContext.getTestArgument().getPayload());
-            invocationArguments.add(argumentContext.getTestArgument());
+            invocationArguments.add(argumentContext.getArgument().getPayload());
+            invocationArguments.add(argumentContext.getArgument());
             invocationArguments.add(argumentContext);
 
             for (TestDescriptor testDescriptor : getChildren()) {

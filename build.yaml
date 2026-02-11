@@ -1,0 +1,8 @@
+pipeline:
+  name: Build Pipeline
+  jobs:
+    - name: Build Job
+      steps:
+        - name: Build Step
+          run: |
+            ./mvnw -B clean verify

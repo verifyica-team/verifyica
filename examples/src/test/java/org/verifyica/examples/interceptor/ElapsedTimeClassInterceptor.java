@@ -38,21 +38,21 @@ public class ElapsedTimeClassInterceptor implements ClassInterceptor {
 
     @Override
     public void prePrepare(ClassContext classContext) {
-        classContext.map().put(TIMESTAMP, System.nanoTime());
+        classContext.getMap().put(TIMESTAMP, System.nanoTime());
     }
 
     @Override
     public void preTest(ArgumentContext argumentContext, Method testMethod) {
-        argumentContext.map().put(TIMESTAMP, System.nanoTime());
+        argumentContext.getMap().put(TIMESTAMP, System.nanoTime());
     }
 
     @Override
     public void postTest(ArgumentContext argumentContext, Method testMethod, Throwable throwable) throws Throwable {
-        long elapsedTime = System.nanoTime() - argumentContext.map().removeAs(TIMESTAMP, Long.class);
+        long elapsedTime = System.nanoTime() - argumentContext.getMap().removeAs(TIMESTAMP, Long.class);
         LOGGER.info(
                 "test class [%s] test argument [%s] test method [%s] elapsed time [%f] ms",
-                argumentContext.classContext().testClass().getName(),
-                argumentContext.testArgument().name(),
+                argumentContext.getClassContext().getTestClass().getName(),
+                argumentContext.getArgument().getName(),
                 testMethod.getName(),
                 elapsedTime / 1_000_000.0);
 
@@ -61,9 +61,10 @@ public class ElapsedTimeClassInterceptor implements ClassInterceptor {
 
     @Override
     public void postConclude(ClassContext classContext, Throwable throwable) throws Throwable {
-        long elapsedTime = System.nanoTime() - classContext.map().removeAs(TIMESTAMP, Long.class);
+        long elapsedTime = System.nanoTime() - classContext.getMap().removeAs(TIMESTAMP, Long.class);
         LOGGER.info(
-                "test class [%s] elapsed time [%f] ms", classContext.testClass().getName(), elapsedTime / 1_000_000.0);
+                "test class [%s] elapsed time [%f] ms",
+                classContext.getTestClass().getName(), elapsedTime / 1_000_000.0);
 
         rethrow(throwable);
     }

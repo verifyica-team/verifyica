@@ -138,7 +138,7 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
      *
      * @return the Bufstream bootstrap servers
      */
-    public String bootstrapServers() {
+    public String getBootstrapServers() {
         return genericContainer.getHost() + ":" + genericContainer.getMappedPort(9092);
     }
 

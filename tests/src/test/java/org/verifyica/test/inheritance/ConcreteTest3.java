@@ -40,10 +40,10 @@ public class ConcreteTest3 extends AbstractTest2 {
     @Verifyica.Test
     @Verifyica.Order(0)
     public void test2(ArgumentContext argumentContext) {
-        System.out.printf("    ConcreteTest3 test2(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("    ConcreteTest3 test2(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 }

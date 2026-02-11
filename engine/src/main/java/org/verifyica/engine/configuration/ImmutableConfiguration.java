@@ -43,22 +43,12 @@ public class ImmutableConfiguration implements Configuration {
     }
 
     @Override
-    public Optional<Path> propertiesPath() {
+    public Optional<Path> getPropertiesPath() {
         return ofNullable(propertiesFilenamePath);
     }
 
     @Override
-    public Optional<Path> getPropertiesPath() {
-        return propertiesPath();
-    }
-
-    @Override
-    public Properties properties() {
-        return properties;
-    }
-
-    @Override
     public Properties getProperties() {
-        return properties();
+        return properties;
     }
 }

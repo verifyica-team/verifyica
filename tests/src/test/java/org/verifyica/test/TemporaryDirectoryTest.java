@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.TemporaryDirectory;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.util.TemporaryDirectory;
 
 public class TemporaryDirectoryTest {
 
@@ -48,11 +48,11 @@ public class TemporaryDirectoryTest {
     public void createTemporaryDirectory(ArgumentContext argumentContext) throws IOException {
         TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
 
-        argumentContext.map().put(TEMPORARY_DIRECTORY_KEY, temporaryDirectory);
+        argumentContext.getMap().put(TEMPORARY_DIRECTORY_KEY, temporaryDirectory);
 
         System.out.printf(
                 "argument [%s] temporary directory [%s]%n",
-                argumentContext.testArgument().payload(), temporaryDirectory);
+                argumentContext.getArgument().getPayload(), temporaryDirectory);
 
         assertThat(temporaryDirectory.toPath()).exists();
         assertThat(temporaryDirectory.toFile()).exists();
@@ -60,11 +60,11 @@ public class TemporaryDirectoryTest {
 
     @Verifyica.Test
     public void createTemporaryFile(ArgumentContext argumentContext) throws IOException {
-        TemporaryDirectory temporaryDirectory = argumentContext.map().getAs(TEMPORARY_DIRECTORY_KEY);
+        TemporaryDirectory temporaryDirectory = argumentContext.getMap().getAs(TEMPORARY_DIRECTORY_KEY);
 
         System.out.printf(
                 "argument [%s] temporary directory [%s]%n",
-                argumentContext.testArgument().payload(), temporaryDirectory);
+                argumentContext.getArgument().getPayload(), temporaryDirectory);
 
         assertThat(temporaryDirectory.toPath()).exists();
         assertThat(temporaryDirectory.toFile()).exists();
@@ -73,16 +73,16 @@ public class TemporaryDirectoryTest {
 
         System.out.printf(
                 "argument [%s] temporary file [%s]%n",
-                argumentContext.testArgument().payload(), temporaryFile);
+                argumentContext.getArgument().getPayload(), temporaryFile);
 
         assertThat(temporaryFile).exists();
 
-        argumentContext.map().put(TEMPORARY_FILE_KEY, temporaryFile);
+        argumentContext.getMap().put(TEMPORARY_FILE_KEY, temporaryFile);
     }
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) throws IOException {
-        File temporaryFile = argumentContext.map().removeAs(TEMPORARY_FILE_KEY);
+        File temporaryFile = argumentContext.getMap().removeAs(TEMPORARY_FILE_KEY);
 
         assertThat(temporaryFile).exists();
         assertThat(temporaryFile).canRead();
@@ -90,7 +90,7 @@ public class TemporaryDirectoryTest {
         assertThat(temporaryFile).isExecutable();
         assertThat(temporaryFile).isFile();
 
-        TemporaryDirectory temporaryDirectory = argumentContext.map().removeAs(TEMPORARY_DIRECTORY_KEY);
+        TemporaryDirectory temporaryDirectory = argumentContext.getMap().removeAs(TEMPORARY_DIRECTORY_KEY);
 
         assertThat(temporaryDirectory.toPath()).exists();
         assertThat(temporaryDirectory.toFile()).exists();
