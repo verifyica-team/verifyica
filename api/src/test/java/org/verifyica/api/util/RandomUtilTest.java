@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.api;
+package org.verifyica.api.util;
 
 import static org.assertj.core.api.Assertions.*;
 

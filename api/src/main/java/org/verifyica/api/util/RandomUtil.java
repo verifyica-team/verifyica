@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.api;
+package org.verifyica.api.util;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;

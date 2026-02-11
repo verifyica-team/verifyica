@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.RandomUtil;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.util.RandomUtil;
 
 public class ArgumentExecutorServiceSupplierTest {
 
