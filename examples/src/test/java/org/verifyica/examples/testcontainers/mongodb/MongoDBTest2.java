@@ -29,8 +29,8 @@ import java.util.stream.Stream;
 import org.bson.Document;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.util.CleanupExecutor;
 import org.verifyica.api.util.RandomUtil;
 import org.verifyica.examples.support.Logger;
 
@@ -130,17 +130,17 @@ public class MongoDBTest2 {
                 "[%s] destroy test environment ...",
                 argumentContext.getTestArgument().getName());
 
-        new CleanupPlan()
-                .addAction(() -> argumentContext
+        new CleanupExecutor()
+                .addTask(() -> argumentContext
                         .getTestArgument()
                         .getPayload(MongoDBTestEnvironment.class)
                         .destroy())
-                .addAction(() -> argumentContext
+                .addTask(() -> argumentContext
                         .getMap()
                         .removeAs(NETWORK, Network.class)
                         .close())
-                .addAction(() -> argumentContext.getMap().clear())
-                .verify();
+                .addTask(() -> argumentContext.getMap().clear())
+                .throwIfFailed();
     }
 
     /**

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.verifyica.api;
+package org.verifyica.api.util;
 
 /**
- * Interface to implement CleanupAction
+ * Interface to implement CleanupTask
  */
 @FunctionalInterface
-public interface CleanupAction {
+public interface CleanupTask {
 
     /**
-     * Run the cleanup action
+     * Run the cleanup task
      *
      * @throws Throwable if any error occurs
      */

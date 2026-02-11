@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.verifyica.api;
+package org.verifyica.api.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,39 +24,39 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Class to implement CleanupPlan
+ * Class to implement CleanupExecutor
  */
-public final class CleanupPlan {
+public final class CleanupExecutor {
 
-    private final List<CleanupAction> cleanupActions = new ArrayList<>();
+    private final List<CleanupTask> cleanupTasks = new ArrayList<>();
     private final List<Throwable> throwables = new ArrayList<>();
     private boolean hasRun = false;
 
     /**
-     * Adds a cleanup action to the plan
+     * Adds a cleanup task
      *
-     * @param cleanupAction the cleanup action to add
-     * @return this CleanupPlan
+     * @param cleanupTask the cleanup task to add
+     * @return this CleanupExecutor
      */
-    public CleanupPlan addAction(CleanupAction cleanupAction) {
-        if (cleanupAction == null) {
+    public CleanupExecutor addTask(CleanupTask cleanupTask) {
+        if (cleanupTask == null) {
             throw new IllegalArgumentException("cleanupAction is null");
         }
 
-        cleanupActions.add(cleanupAction);
+        cleanupTasks.add(cleanupTask);
 
         return this;
     }
 
     /**
-     * Adds a cleanup action to the plan that is executed only if the supplied value is present (non-null)
+     * Adds a cleanup task that is executed only if the supplied value is present (non-null)
      *
      * @param supplier      the supplier of the value
-     * @param cleanupAction the cleanup action to add
+     * @param cleanupAction the cleanup task to add
      * @param <T>           the type of the value
-     * @return this CleanupPlan
+     * @return this CleanupExecutor
      */
-    public <T> CleanupPlan addActionIfPresent(Supplier<? extends T> supplier, Consumer<? super T> cleanupAction) {
+    public <T> CleanupExecutor addTaskIfPresent(Supplier<? extends T> supplier, Consumer<? super T> cleanupAction) {
         if (supplier == null) {
             throw new IllegalArgumentException("supplier is null");
         }
@@ -64,39 +64,39 @@ public final class CleanupPlan {
             throw new IllegalArgumentException("cleanupAction is null");
         }
 
-        return addAction(() -> Optional.ofNullable(supplier.get()).ifPresent(cleanupAction));
+        return addTask(() -> Optional.ofNullable(supplier.get()).ifPresent(cleanupAction));
     }
 
     /**
-     * Adds multiple cleanup actions to the plan
+     * Adds multiple cleanup tasks
      *
-     * @param cleanupActions the cleanup actions to add
-     * @return this CleanupPlan
+     * @param cleanupActions the cleanup tasks to add
+     * @return this CleanupExecutor
      */
-    public CleanupPlan addCleanupActions(List<? extends CleanupAction> cleanupActions) {
+    public CleanupExecutor addCleanupTasks(List<? extends CleanupTask> cleanupActions) {
         if (cleanupActions == null) {
             throw new IllegalArgumentException("cleanupActions is null");
         }
 
-        for (CleanupAction cleanupAction : cleanupActions) {
-            addAction(cleanupAction);
+        for (CleanupTask cleanupTask : cleanupActions) {
+            addTask(cleanupTask);
         }
 
         return this;
     }
 
     /**
-     * Gets the list of added cleanup actions
+     * Gets the list of added cleanup tasks
      *
-     * @return the list of added cleanup actions
+     * @return the list of added cleanup tasks
      */
-    public List<CleanupAction> cleanupActions() {
-        return Collections.unmodifiableList(cleanupActions);
+    public List<CleanupTask> cleanupActions() {
+        return Collections.unmodifiableList(cleanupTasks);
     }
 
     /**
      * Gets the list of failures occurred during execution. A failure is represented by a Throwable.
-     * For any cleanup action that throws a Throwable during execution,
+     * For any cleanup task that throws a Throwable during execution,
      * the Throwable is collected in this list, else null is added.
      *
      * @return the list of failures
@@ -106,21 +106,21 @@ public final class CleanupPlan {
     }
 
     /**
-     * Runs all added cleanup actions in order, collecting any thrown throwables.
+     * Runs all added cleanup tasks in order, collecting any thrown throwables.
      *
-     * @return this CleanupPlan
+     * @return this CleanupExecutor
      */
-    public CleanupPlan run() {
+    public CleanupExecutor execute() {
         if (hasRun) {
-            throw new IllegalStateException("CleanupPlan has already been run");
+            throw new IllegalStateException("CleanupExecutor has already been run");
         }
 
         hasRun = true;
         throwables.clear();
 
-        for (CleanupAction cleanupAction : cleanupActions) {
+        for (CleanupTask cleanupTask : cleanupTasks) {
             try {
-                cleanupAction.run();
+                cleanupTask.run();
                 throwables.add(null);
             } catch (Throwable t) {
                 throwables.add(t);
@@ -144,9 +144,9 @@ public final class CleanupPlan {
      *
      * @throws Throwable the first throwable in the list of failures
      */
-    public void verify() throws Throwable {
+    public void throwIfFailed() throws Throwable {
         if (!hasRun) {
-            run();
+            execute();
         }
 
         Throwable firstThrowable = null;

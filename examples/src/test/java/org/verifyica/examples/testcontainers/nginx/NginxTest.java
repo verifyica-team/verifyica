@@ -25,8 +25,8 @@ import java.net.URI;
 import java.net.URLConnection;
 import java.util.stream.Stream;
 import org.testcontainers.containers.Network;
-import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.util.CleanupExecutor;
 import org.verifyica.examples.support.Logger;
 
 public class NginxTest {
@@ -69,11 +69,11 @@ public class NginxTest {
     public void destroyTestEnvironment(NginxTestEnvironment nginxTestEnvironment) throws Throwable {
         LOGGER.info("[%s] destroy test environment ...", nginxTestEnvironment.getName());
 
-        new CleanupPlan()
-                .addAction(nginxTestEnvironment::destroy)
-                .addActionIfPresent(networkThreadLocal::get, Network::close)
-                .addAction(networkThreadLocal::remove)
-                .verify();
+        new CleanupExecutor()
+                .addTask(nginxTestEnvironment::destroy)
+                .addTaskIfPresent(networkThreadLocal::get, Network::close)
+                .addTask(networkThreadLocal::remove)
+                .throwIfFailed();
     }
 
     private static String doGet(String url) throws Throwable {

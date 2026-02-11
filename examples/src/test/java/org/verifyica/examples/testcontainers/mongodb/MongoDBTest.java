@@ -28,8 +28,8 @@ import java.io.IOException;
 import java.util.stream.Stream;
 import org.bson.Document;
 import org.testcontainers.containers.Network;
-import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.util.CleanupExecutor;
 import org.verifyica.api.util.RandomUtil;
 import org.verifyica.examples.support.Logger;
 
@@ -107,11 +107,11 @@ public class MongoDBTest {
     public void destroyTestEnvironment(MongoDBTestEnvironment mongoDBTestEnvironment) throws Throwable {
         LOGGER.info("[%s] destroy test environment ...", mongoDBTestEnvironment.getName());
 
-        new CleanupPlan()
-                .addAction(mongoDBTestEnvironment::destroy)
-                .addActionIfPresent(networkThreadLocal::get, Network::close)
-                .addAction(nameThreadLocal::remove)
-                .addAction(networkThreadLocal::remove)
-                .verify();
+        new CleanupExecutor()
+                .addTask(mongoDBTestEnvironment::destroy)
+                .addTaskIfPresent(networkThreadLocal::get, Network::close)
+                .addTask(nameThreadLocal::remove)
+                .addTask(networkThreadLocal::remove)
+                .throwIfFailed();
     }
 }
