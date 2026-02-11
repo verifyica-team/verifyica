@@ -17,13 +17,13 @@
 package org.verifyica.api.util;
 
 /**
- * Interface to implement CleanupTask
+ * Interface to implement ThrowableTask
  */
 @FunctionalInterface
-public interface CleanupTask {
+public interface ThrowableTask {
 
     /**
-     * Run the cleanup task
+     * Run the throwable task
      *
      * @throws Throwable if any error occurs
      */

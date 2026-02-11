@@ -28,31 +28,31 @@ import java.util.function.Supplier;
  */
 public final class CleanupExecutor {
 
-    private final List<CleanupTask> cleanupTasks = new ArrayList<>();
+    private final List<ThrowableTask> throwableTasks = new ArrayList<>();
     private final List<Throwable> throwables = new ArrayList<>();
     private boolean hasRun = false;
 
     /**
-     * Adds a cleanup task
+     * Adds a throwable task
      *
-     * @param cleanupTask the cleanup task to add
+     * @param throwableTask the throwable task to add
      * @return this CleanupExecutor
      */
-    public CleanupExecutor addTask(CleanupTask cleanupTask) {
-        if (cleanupTask == null) {
+    public CleanupExecutor addTask(ThrowableTask throwableTask) {
+        if (throwableTask == null) {
             throw new IllegalArgumentException("cleanupAction is null");
         }
 
-        cleanupTasks.add(cleanupTask);
+        throwableTasks.add(throwableTask);
 
         return this;
     }
 
     /**
-     * Adds a cleanup task that is executed only if the supplied value is present (non-null)
+     * Adds a throwable task that is executed only if the supplied value is present (non-null)
      *
      * @param supplier      the supplier of the value
-     * @param cleanupAction the cleanup task to add
+     * @param cleanupAction the throwable task to add
      * @param <T>           the type of the value
      * @return this CleanupExecutor
      */
@@ -68,35 +68,35 @@ public final class CleanupExecutor {
     }
 
     /**
-     * Adds multiple cleanup tasks
+     * Adds multiple throwable tasks
      *
-     * @param cleanupActions the cleanup tasks to add
+     * @param cleanupActions the throwable tasks to add
      * @return this CleanupExecutor
      */
-    public CleanupExecutor addCleanupTasks(List<? extends CleanupTask> cleanupActions) {
+    public CleanupExecutor addTasks(List<? extends ThrowableTask> cleanupActions) {
         if (cleanupActions == null) {
             throw new IllegalArgumentException("cleanupActions is null");
         }
 
-        for (CleanupTask cleanupTask : cleanupActions) {
-            addTask(cleanupTask);
+        for (ThrowableTask throwableTask : cleanupActions) {
+            addTask(throwableTask);
         }
 
         return this;
     }
 
     /**
-     * Gets the list of added cleanup tasks
+     * Gets the list of added throwable tasks
      *
-     * @return the list of added cleanup tasks
+     * @return the list of added throwable tasks
      */
-    public List<CleanupTask> cleanupActions() {
-        return Collections.unmodifiableList(cleanupTasks);
+    public List<ThrowableTask> cleanupActions() {
+        return Collections.unmodifiableList(throwableTasks);
     }
 
     /**
      * Gets the list of failures occurred during execution. A failure is represented by a Throwable.
-     * For any cleanup task that throws a Throwable during execution,
+     * For any throwable task that throws a Throwable during execution,
      * the Throwable is collected in this list, else null is added.
      *
      * @return the list of failures
@@ -106,7 +106,7 @@ public final class CleanupExecutor {
     }
 
     /**
-     * Runs all added cleanup tasks in order, collecting any thrown throwables.
+     * Runs all added throwable tasks in order, collecting any thrown throwables.
      *
      * @return this CleanupExecutor
      */
@@ -118,9 +118,9 @@ public final class CleanupExecutor {
         hasRun = true;
         throwables.clear();
 
-        for (CleanupTask cleanupTask : cleanupTasks) {
+        for (ThrowableTask throwableTask : throwableTasks) {
             try {
-                cleanupTask.run();
+                throwableTask.run();
                 throwables.add(null);
             } catch (Throwable t) {
                 throwables.add(t);
