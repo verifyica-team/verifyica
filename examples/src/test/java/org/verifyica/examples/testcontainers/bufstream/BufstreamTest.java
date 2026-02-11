@@ -34,8 +34,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.testcontainers.containers.Network;
-import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.util.CleanupExecutor;
 import org.verifyica.api.util.RandomUtil;
 import org.verifyica.examples.support.Logger;
 
@@ -141,12 +141,12 @@ public class BufstreamTest {
     public void destroyTestEnvironment(BufstreamTestEnvironment bufstreamTestEnvironment) throws Throwable {
         LOGGER.info("[%s] destroy test environment ...", bufstreamTestEnvironment.name());
 
-        new CleanupPlan()
-                .addAction(bufstreamTestEnvironment::destroy)
-                .addActionIfPresent(networkThreadLocal::get, Network::close)
-                .addAction(networkThreadLocal::remove)
-                .addAction(messageThreadLocal::remove)
-                .verify();
+        new CleanupExecutor()
+                .addTask(bufstreamTestEnvironment::destroy)
+                .addTaskIfPresent(networkThreadLocal::get, Network::close)
+                .addTask(networkThreadLocal::remove)
+                .addTask(messageThreadLocal::remove)
+                .throwIfFailed();
     }
 
     /**

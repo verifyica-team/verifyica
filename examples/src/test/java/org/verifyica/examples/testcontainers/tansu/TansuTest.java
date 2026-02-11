@@ -34,8 +34,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.testcontainers.containers.Network;
-import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.util.CleanupExecutor;
 import org.verifyica.api.util.RandomUtil;
 import org.verifyica.examples.support.Logger;
 
@@ -142,12 +142,12 @@ public class TansuTest {
     public void destroyTestEnvironment(TansuTestEnvironment tansuTestEnvironment) throws Throwable {
         LOGGER.info("[%s] destroy test environment ...", tansuTestEnvironment.name());
 
-        new CleanupPlan()
-                .addAction(tansuTestEnvironment::destroy)
-                .addActionIfPresent(networkThreadLocal::get, Network::close)
-                .addAction(networkThreadLocal::remove)
-                .addAction(messageThreadLocal::remove)
-                .verify();
+        new CleanupExecutor()
+                .addTask(tansuTestEnvironment::destroy)
+                .addTaskIfPresent(networkThreadLocal::get, Network::close)
+                .addTask(networkThreadLocal::remove)
+                .addTask(messageThreadLocal::remove)
+                .throwIfFailed();
     }
 
     /**

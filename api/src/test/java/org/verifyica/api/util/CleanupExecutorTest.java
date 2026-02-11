@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.verifyica.api;
+package org.verifyica.api.util;
 
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,16 +29,16 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /**
- * Comprehensive test suite for CleanupPlan
+ * Comprehensive test suite for CleanupExecutor
  */
-@DisplayName("CleanupPlan")
-class CleanupPlanTest {
+@DisplayName("CleanupExecutor")
+class CleanupExecutorTest {
 
-    private CleanupPlan cleanupPlan;
+    private CleanupExecutor cleanupExecutor;
 
     @BeforeEach
     void setUp() {
-        cleanupPlan = new CleanupPlan();
+        cleanupExecutor = new CleanupExecutor();
     }
 
     @Nested
@@ -45,34 +46,34 @@ class CleanupPlanTest {
     class AddActionTests {
 
         @Test
-        @DisplayName("should add a single cleanup action successfully")
-        void shouldAddSingleCleanupAction() {
-            CleanupAction action = () -> {};
+        @DisplayName("should add a single cleanup task successfully")
+        void shouldAddSingleCleanupTask() {
+            CleanupTask action = () -> {};
 
-            CleanupPlan result = cleanupPlan.addAction(action);
+            CleanupExecutor result = cleanupExecutor.addTask(action);
 
-            assertThat(result).isSameAs(cleanupPlan);
-            assertThat(cleanupPlan.cleanupActions()).hasSize(1);
-            assertThat(cleanupPlan.cleanupActions()).containsExactly(action);
+            assertThat(result).isSameAs(cleanupExecutor);
+            assertThat(cleanupExecutor.cleanupActions()).hasSize(1);
+            assertThat(cleanupExecutor.cleanupActions()).containsExactly(action);
         }
 
         @Test
-        @DisplayName("should add multiple cleanup actions in order")
-        void shouldAddMultipleCleanupActionsInOrder() {
-            CleanupAction action1 = () -> {};
-            CleanupAction action2 = () -> {};
-            CleanupAction action3 = () -> {};
+        @DisplayName("should add multiple cleanup tasks in order")
+        void shouldAddMultipleCleanupTasksInOrder() {
+            CleanupTask action1 = () -> {};
+            CleanupTask action2 = () -> {};
+            CleanupTask action3 = () -> {};
 
-            cleanupPlan.addAction(action1).addAction(action2).addAction(action3);
+            cleanupExecutor.addTask(action1).addTask(action2).addTask(action3);
 
-            assertThat(cleanupPlan.cleanupActions()).hasSize(3);
-            assertThat(cleanupPlan.cleanupActions()).containsExactly(action1, action2, action3);
+            assertThat(cleanupExecutor.cleanupActions()).hasSize(3);
+            assertThat(cleanupExecutor.cleanupActions()).containsExactly(action1, action2, action3);
         }
 
         @Test
         @DisplayName("should throw IllegalArgumentException when action is null")
         void shouldThrowExceptionWhenActionIsNull() {
-            assertThatThrownBy(() -> cleanupPlan.addAction(null))
+            assertThatThrownBy(() -> cleanupExecutor.addTask(null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("cleanupAction is null");
         }
@@ -80,12 +81,12 @@ class CleanupPlanTest {
         @Test
         @DisplayName("should allow fluent chaining")
         void shouldAllowFluentChaining() {
-            CleanupAction action1 = () -> {};
-            CleanupAction action2 = () -> {};
+            CleanupTask action1 = () -> {};
+            CleanupTask action2 = () -> {};
 
-            CleanupPlan result = cleanupPlan.addAction(action1).addAction(action2);
+            CleanupExecutor result = cleanupExecutor.addTask(action1).addTask(action2);
 
-            assertThat(result).isSameAs(cleanupPlan);
+            assertThat(result).isSameAs(cleanupExecutor);
         }
     }
 
@@ -94,36 +95,36 @@ class CleanupPlanTest {
     class AddActionIfPresentTests {
 
         @Test
-        @DisplayName("should execute cleanup action when supplier returns non-null value")
-        void shouldExecuteCleanupActionWhenValuePresent() throws Throwable {
+        @DisplayName("should execute cleanup task when supplier returns non-null value")
+        void shouldExecuteCleanupTaskWhenValuePresent() throws Throwable {
             AtomicInteger counter = new AtomicInteger(0);
             String value = "test";
 
-            cleanupPlan.addActionIfPresent(() -> value, v -> counter.incrementAndGet());
-            cleanupPlan.run();
+            cleanupExecutor.addTaskIfPresent(() -> value, v -> counter.incrementAndGet());
+            cleanupExecutor.execute();
 
             assertThat(counter.get()).isEqualTo(1);
         }
 
         @Test
-        @DisplayName("should not execute cleanup action when supplier returns null")
-        void shouldNotExecuteCleanupActionWhenValueNull() throws Throwable {
+        @DisplayName("should not execute cleanup task when supplier returns null")
+        void shouldNotExecuteCleanupTaskWhenValueNull() throws Throwable {
             AtomicInteger counter = new AtomicInteger(0);
 
-            cleanupPlan.addActionIfPresent(() -> null, v -> counter.incrementAndGet());
-            cleanupPlan.run();
+            cleanupExecutor.addTaskIfPresent(() -> null, v -> counter.incrementAndGet());
+            cleanupExecutor.execute();
 
             assertThat(counter.get()).isEqualTo(0);
         }
 
         @Test
-        @DisplayName("should pass the supplied value to the cleanup action")
-        void shouldPassSuppliedValueToCleanupAction() throws Throwable {
+        @DisplayName("should pass the supplied value to the cleanup task")
+        void shouldPassSuppliedValueToCleanupTask() throws Throwable {
             List<String> capturedValues = new ArrayList<>();
             String expectedValue = "testValue";
 
-            cleanupPlan.addActionIfPresent(() -> expectedValue, capturedValues::add);
-            cleanupPlan.run();
+            cleanupExecutor.addTaskIfPresent(() -> expectedValue, capturedValues::add);
+            cleanupExecutor.execute();
 
             assertThat(capturedValues).containsExactly(expectedValue);
         }
@@ -131,55 +132,55 @@ class CleanupPlanTest {
         @Test
         @DisplayName("should throw IllegalArgumentException when supplier is null")
         void shouldThrowExceptionWhenSupplierIsNull() {
-            assertThatThrownBy(() -> cleanupPlan.addActionIfPresent(null, v -> {}))
+            assertThatThrownBy(() -> cleanupExecutor.addTaskIfPresent(null, v -> {}))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("supplier is null");
         }
 
         @Test
-        @DisplayName("should throw IllegalArgumentException when cleanup action is null")
-        void shouldThrowExceptionWhenCleanupActionIsNull() {
-            assertThatThrownBy(() -> cleanupPlan.addActionIfPresent(() -> "test", null))
+        @DisplayName("should throw IllegalArgumentException when cleanup task is null")
+        void shouldThrowExceptionWhenCleanupTaskIsNull() {
+            assertThatThrownBy(() -> cleanupExecutor.addTaskIfPresent(() -> "test", null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("cleanupAction is null");
         }
 
         @Test
-        @DisplayName("should return the CleanupPlan for fluent chaining")
-        void shouldReturnCleanupPlanForFluentChaining() {
-            CleanupPlan result = cleanupPlan.addActionIfPresent(() -> "test", v -> {});
+        @DisplayName("should return the CleanupExecutor for fluent chaining")
+        void shouldReturnCleanupExecutorForFluentChaining() {
+            CleanupExecutor result = cleanupExecutor.addTaskIfPresent(() -> "test", v -> {});
 
-            assertThat(result).isSameAs(cleanupPlan);
+            assertThat(result).isSameAs(cleanupExecutor);
         }
     }
 
     @Nested
-    @DisplayName("addCleanupActions()")
-    class AddCleanupActionsTests {
+    @DisplayName("addCleanupTasks()")
+    class AddCleanupTasksTests {
 
         @Test
-        @DisplayName("should add multiple cleanup actions from list")
-        void shouldAddMultipleCleanupActionsFromList() {
-            List<CleanupAction> actions = of(() -> {}, () -> {}, () -> {});
+        @DisplayName("should add multiple cleanup tasks from list")
+        void shouldAddMultipleCleanupTasksFromList() {
+            List<CleanupTask> actions = of(() -> {}, () -> {}, () -> {});
 
-            cleanupPlan.addCleanupActions(actions);
+            cleanupExecutor.addCleanupTasks(actions);
 
-            assertThat(cleanupPlan.cleanupActions()).hasSize(3);
-            assertThat(cleanupPlan.cleanupActions()).containsExactlyElementsOf(actions);
+            assertThat(cleanupExecutor.cleanupActions()).hasSize(3);
+            assertThat(cleanupExecutor.cleanupActions()).containsExactlyElementsOf(actions);
         }
 
         @Test
         @DisplayName("should add empty list without errors")
         void shouldAddEmptyListWithoutErrors() {
-            cleanupPlan.addCleanupActions(of());
+            cleanupExecutor.addCleanupTasks(of());
 
-            assertThat(cleanupPlan.cleanupActions()).isEmpty();
+            assertThat(cleanupExecutor.cleanupActions()).isEmpty();
         }
 
         @Test
         @DisplayName("should throw IllegalArgumentException when list is null")
         void shouldThrowExceptionWhenListIsNull() {
-            assertThatThrownBy(() -> cleanupPlan.addCleanupActions(null))
+            assertThatThrownBy(() -> cleanupExecutor.addCleanupTasks(null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("cleanupActions is null");
         }
@@ -187,34 +188,34 @@ class CleanupPlanTest {
         @Test
         @DisplayName("should throw IllegalArgumentException when list contains null action")
         void shouldThrowExceptionWhenListContainsNull() {
-            List<CleanupAction> actions = new ArrayList<>();
+            List<CleanupTask> actions = new ArrayList<>();
             actions.add(() -> {});
             actions.add(null);
 
-            assertThatThrownBy(() -> cleanupPlan.addCleanupActions(actions))
+            assertThatThrownBy(() -> cleanupExecutor.addCleanupTasks(actions))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("cleanupAction is null");
         }
 
         @Test
-        @DisplayName("should return the CleanupPlan for fluent chaining")
-        void shouldReturnCleanupPlanForFluentChaining() {
-            CleanupPlan result = cleanupPlan.addCleanupActions(of(() -> {}));
+        @DisplayName("should return the CleanupExecutor for fluent chaining")
+        void shouldReturnCleanupExecutorForFluentChaining() {
+            CleanupExecutor result = cleanupExecutor.addCleanupTasks(of(() -> {}));
 
-            assertThat(result).isSameAs(cleanupPlan);
+            assertThat(result).isSameAs(cleanupExecutor);
         }
     }
 
     @Nested
     @DisplayName("cleanupActions()")
-    class CleanupActionsTests {
+    class CleanupTasksTests {
 
         @Test
         @DisplayName("should return unmodifiable list")
         void shouldReturnUnmodifiableList() {
-            cleanupPlan.addAction(() -> {});
+            cleanupExecutor.addTask(() -> {});
 
-            List<CleanupAction> actions = cleanupPlan.cleanupActions();
+            List<CleanupTask> actions = cleanupExecutor.cleanupActions();
 
             assertThatThrownBy(() -> actions.add(() -> {})).isInstanceOf(UnsupportedOperationException.class);
         }
@@ -222,7 +223,7 @@ class CleanupPlanTest {
         @Test
         @DisplayName("should return empty list when no actions added")
         void shouldReturnEmptyListWhenNoActionsAdded() {
-            assertThat(cleanupPlan.cleanupActions()).isEmpty();
+            assertThat(cleanupExecutor.cleanupActions()).isEmpty();
         }
     }
 
@@ -233,41 +234,41 @@ class CleanupPlanTest {
         @Test
         @DisplayName("should return unmodifiable list")
         void shouldReturnUnmodifiableList() throws Throwable {
-            cleanupPlan.addAction(() -> {});
-            cleanupPlan.run();
+            cleanupExecutor.addTask(() -> {});
+            cleanupExecutor.execute();
 
-            List<Throwable> throwables = cleanupPlan.throwables();
+            List<Throwable> throwables = cleanupExecutor.throwables();
 
             assertThatThrownBy(() -> throwables.add(new RuntimeException()))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
         @Test
-        @DisplayName("should return empty list when plan has not run")
-        void shouldReturnEmptyListWhenPlanHasNotRun() {
-            assertThat(cleanupPlan.throwables()).isEmpty();
+        @DisplayName("should return empty list when cleanup executor has not run")
+        void shouldReturnEmptyListWhenCleanupExecutorHasNotRun() {
+            assertThat(cleanupExecutor.throwables()).isEmpty();
         }
 
         @Test
-        @DisplayName("should contain null for successful cleanup actions")
+        @DisplayName("should contain null for successful cleanup tasks")
         void shouldContainNullForSuccessfulActions() throws Throwable {
-            cleanupPlan.addAction(() -> {});
-            cleanupPlan.addAction(() -> {});
-            cleanupPlan.run();
+            cleanupExecutor.addTask(() -> {});
+            cleanupExecutor.addTask(() -> {});
+            cleanupExecutor.execute();
 
-            assertThat(cleanupPlan.throwables()).containsExactly(null, null);
+            assertThat(cleanupExecutor.throwables()).containsExactly(null, null);
         }
 
         @Test
-        @DisplayName("should contain throwable for failed cleanup actions")
+        @DisplayName("should contain throwable for failed cleanup tasks")
         void shouldContainThrowableForFailedActions() throws Throwable {
             RuntimeException exception = new RuntimeException("cleanup failed");
-            cleanupPlan.addAction(() -> {
+            cleanupExecutor.addTask(() -> {
                 throw exception;
             });
-            cleanupPlan.run();
+            cleanupExecutor.execute();
 
-            assertThat(cleanupPlan.throwables()).containsExactly(exception);
+            assertThat(cleanupExecutor.throwables()).containsExactly(exception);
         }
     }
 
@@ -276,28 +277,28 @@ class CleanupPlanTest {
     class RunTests {
 
         @Test
-        @DisplayName("should execute all cleanup actions in order")
-        void shouldExecuteAllCleanupActionsInOrder() throws Throwable {
+        @DisplayName("should execute all cleanup tasks in order")
+        void shouldExecuteAllCleanupTasksInOrder() throws Throwable {
             List<Integer> executionOrder = new ArrayList<>();
 
-            cleanupPlan
-                    .addAction(() -> executionOrder.add(1))
-                    .addAction(() -> executionOrder.add(2))
-                    .addAction(() -> executionOrder.add(3));
+            cleanupExecutor
+                    .addTask(() -> executionOrder.add(1))
+                    .addTask(() -> executionOrder.add(2))
+                    .addTask(() -> executionOrder.add(3));
 
-            cleanupPlan.run();
+            cleanupExecutor.execute();
 
             assertThat(executionOrder).containsExactly(1, 2, 3);
         }
 
         @Test
-        @DisplayName("should return the CleanupPlan for fluent chaining")
-        void shouldReturnCleanupPlanForFluentChaining() throws Throwable {
-            cleanupPlan.addAction(() -> {});
+        @DisplayName("should return the CleanupExecutor for fluent chaining")
+        void shouldReturnCleanupExecutorForFluentChaining() throws Throwable {
+            cleanupExecutor.addTask(() -> {});
 
-            CleanupPlan result = cleanupPlan.run();
+            CleanupExecutor result = cleanupExecutor.execute();
 
-            assertThat(result).isSameAs(cleanupPlan);
+            assertThat(result).isSameAs(cleanupExecutor);
         }
 
         @Test
@@ -306,18 +307,18 @@ class CleanupPlanTest {
             RuntimeException exception1 = new RuntimeException("error1");
             RuntimeException exception2 = new RuntimeException("error2");
 
-            cleanupPlan
-                    .addAction(() -> {
+            cleanupExecutor
+                    .addTask(() -> {
                         throw exception1;
                     })
-                    .addAction(() -> {})
-                    .addAction(() -> {
+                    .addTask(() -> {})
+                    .addTask(() -> {
                         throw exception2;
                     });
 
-            cleanupPlan.run();
+            cleanupExecutor.execute();
 
-            assertThat(cleanupPlan.throwables()).containsExactly(exception1, null, exception2);
+            assertThat(cleanupExecutor.throwables()).containsExactly(exception1, null, exception2);
         }
 
         @Test
@@ -325,17 +326,17 @@ class CleanupPlanTest {
         void shouldContinueExecutionWhenActionsThrowExceptions() throws Throwable {
             AtomicInteger counter = new AtomicInteger(0);
 
-            cleanupPlan
-                    .addAction(() -> {
+            cleanupExecutor
+                    .addTask(() -> {
                         throw new RuntimeException();
                     })
-                    .addAction(() -> counter.incrementAndGet())
-                    .addAction(() -> {
+                    .addTask(() -> counter.incrementAndGet())
+                    .addTask(() -> {
                         throw new RuntimeException();
                     })
-                    .addAction(() -> counter.incrementAndGet());
+                    .addTask(() -> counter.incrementAndGet());
 
-            cleanupPlan.run();
+            cleanupExecutor.execute();
 
             assertThat(counter.get()).isEqualTo(2);
         }
@@ -343,22 +344,22 @@ class CleanupPlanTest {
         @Test
         @DisplayName("should throw IllegalStateException when run multiple times")
         void shouldThrowExceptionWhenRunMultipleTimes() throws Throwable {
-            cleanupPlan.addAction(() -> {});
-            cleanupPlan.run();
+            cleanupExecutor.addTask(() -> {});
+            cleanupExecutor.execute();
 
-            assertThatThrownBy(() -> cleanupPlan.run())
+            assertThatThrownBy(() -> cleanupExecutor.execute())
                     .isInstanceOf(IllegalStateException.class)
-                    .hasMessage("CleanupPlan has already been run");
+                    .hasMessage("CleanupExecutor has already been run");
         }
 
         @Test
         @DisplayName("should clear throwables before execution")
         void shouldClearThrowablesBeforeExecution() throws Throwable {
-            cleanupPlan.addAction(() -> {});
-            cleanupPlan.run();
+            cleanupExecutor.addTask(() -> {});
+            cleanupExecutor.execute();
 
             // Verify throwables exist
-            assertThat(cleanupPlan.throwables()).hasSize(1);
+            assertThat(cleanupExecutor.throwables()).hasSize(1);
         }
 
         @Test
@@ -366,12 +367,12 @@ class CleanupPlanTest {
         void shouldHandleActionsWithCheckedExceptions() throws Throwable {
             Exception checkedException = new Exception("checked exception");
 
-            cleanupPlan.addAction(() -> {
+            cleanupExecutor.addTask(() -> {
                 throw checkedException;
             });
-            cleanupPlan.run();
+            cleanupExecutor.execute();
 
-            assertThat(cleanupPlan.throwables()).containsExactly(checkedException);
+            assertThat(cleanupExecutor.throwables()).containsExactly(checkedException);
         }
 
         @Test
@@ -379,20 +380,20 @@ class CleanupPlanTest {
         void shouldHandleActionsWithErrors() throws Throwable {
             Error error = new Error("error");
 
-            cleanupPlan.addAction(() -> {
+            cleanupExecutor.addTask(() -> {
                 throw error;
             });
-            cleanupPlan.run();
+            cleanupExecutor.execute();
 
-            assertThat(cleanupPlan.throwables()).containsExactly(error);
+            assertThat(cleanupExecutor.throwables()).containsExactly(error);
         }
 
         @Test
-        @DisplayName("should work with empty cleanup plan")
-        void shouldWorkWithEmptyCleanupPlan() throws Throwable {
-            cleanupPlan.run();
+        @DisplayName("should work with empty cleanup executor")
+        void shouldWorkWithEmptyCleanupExecutor() throws Throwable {
+            cleanupExecutor.execute();
 
-            assertThat(cleanupPlan.throwables()).isEmpty();
+            assertThat(cleanupExecutor.throwables()).isEmpty();
         }
     }
 
@@ -403,29 +404,29 @@ class CleanupPlanTest {
         @Test
         @DisplayName("should return false when no throwables exist")
         void shouldReturnFalseWhenNoThrowablesExist() throws Throwable {
-            cleanupPlan.addAction(() -> {});
-            cleanupPlan.run();
+            cleanupExecutor.addTask(() -> {});
+            cleanupExecutor.execute();
 
-            assertThat(cleanupPlan.hasThrowables()).isTrue(); // Contains null entries
+            assertThat(cleanupExecutor.hasThrowables()).isTrue(); // Contains null entries
         }
 
         @Test
         @DisplayName("should return true when throwables exist")
         void shouldReturnTrueWhenThrowablesExist() throws Throwable {
-            cleanupPlan.addAction(() -> {
+            cleanupExecutor.addTask(() -> {
                 throw new RuntimeException();
             });
-            cleanupPlan.run();
+            cleanupExecutor.execute();
 
-            assertThat(cleanupPlan.hasThrowables()).isTrue();
+            assertThat(cleanupExecutor.hasThrowables()).isTrue();
         }
 
         @Test
-        @DisplayName("should return false when plan has not run")
-        void shouldReturnFalseWhenPlanHasNotRun() {
-            cleanupPlan.addAction(() -> {});
+        @DisplayName("should return false when cleanup executor has not run")
+        void shouldReturnFalseWhenCleanupExecutorHasNotRun() {
+            cleanupExecutor.addTask(() -> {});
 
-            assertThat(cleanupPlan.hasThrowables()).isFalse();
+            assertThat(cleanupExecutor.hasThrowables()).isFalse();
         }
     }
 
@@ -436,18 +437,18 @@ class CleanupPlanTest {
         @Test
         @DisplayName("should not throw when all actions succeed")
         void shouldNotThrowWhenAllActionsSucceed() {
-            cleanupPlan.addAction(() -> {}).addAction(() -> {});
+            cleanupExecutor.addTask(() -> {}).addTask(() -> {});
 
-            assertThatCode(() -> cleanupPlan.verify()).doesNotThrowAnyException();
+            assertThatCode(() -> cleanupExecutor.throwIfFailed()).doesNotThrowAnyException();
         }
 
         @Test
-        @DisplayName("should automatically run the plan if not already run")
-        void shouldAutomaticallyRunPlanIfNotRun() {
+        @DisplayName("should automatically run the cleanup executor if not already run")
+        void shouldAutomaticallyRunCleanupExecutorIfNotRun() {
             AtomicInteger counter = new AtomicInteger(0);
-            cleanupPlan.addAction(() -> counter.incrementAndGet());
+            cleanupExecutor.addTask(() -> counter.incrementAndGet());
 
-            assertThatCode(() -> cleanupPlan.verify()).doesNotThrowAnyException();
+            assertThatCode(() -> cleanupExecutor.throwIfFailed()).doesNotThrowAnyException();
             assertThat(counter.get()).isEqualTo(1);
         }
 
@@ -455,11 +456,11 @@ class CleanupPlanTest {
         @DisplayName("should throw first throwable when single action fails")
         void shouldThrowFirstThrowableWhenSingleActionFails() {
             RuntimeException exception = new RuntimeException("cleanup failed");
-            cleanupPlan.addAction(() -> {
+            cleanupExecutor.addTask(() -> {
                 throw exception;
             });
 
-            assertThatThrownBy(() -> cleanupPlan.verify()).isSameAs(exception);
+            assertThatThrownBy(() -> cleanupExecutor.throwIfFailed()).isSameAs(exception);
         }
 
         @Test
@@ -469,19 +470,19 @@ class CleanupPlanTest {
             RuntimeException exception2 = new RuntimeException("error2");
             RuntimeException exception3 = new RuntimeException("error3");
 
-            cleanupPlan
-                    .addAction(() -> {
+            cleanupExecutor
+                    .addTask(() -> {
                         throw exception1;
                     })
-                    .addAction(() -> {})
-                    .addAction(() -> {
+                    .addTask(() -> {})
+                    .addTask(() -> {
                         throw exception2;
                     })
-                    .addAction(() -> {
+                    .addTask(() -> {
                         throw exception3;
                     });
 
-            assertThatThrownBy(() -> cleanupPlan.verify())
+            assertThatThrownBy(() -> cleanupExecutor.throwIfFailed())
                     .isSameAs(exception1)
                     .hasSuppressedException(exception2)
                     .hasSuppressedException(exception3);
@@ -491,40 +492,40 @@ class CleanupPlanTest {
         @DisplayName("should handle checked exceptions")
         void shouldHandleCheckedExceptions() {
             Exception checkedException = new Exception("checked exception");
-            cleanupPlan.addAction(() -> {
+            cleanupExecutor.addTask(() -> {
                 throw checkedException;
             });
 
-            assertThatThrownBy(() -> cleanupPlan.verify()).isSameAs(checkedException);
+            assertThatThrownBy(() -> cleanupExecutor.throwIfFailed()).isSameAs(checkedException);
         }
 
         @Test
         @DisplayName("should handle errors")
         void shouldHandleErrors() {
             Error error = new Error("error");
-            cleanupPlan.addAction(() -> {
+            cleanupExecutor.addTask(() -> {
                 throw error;
             });
 
-            assertThatThrownBy(() -> cleanupPlan.verify()).isSameAs(error);
+            assertThatThrownBy(() -> cleanupExecutor.throwIfFailed()).isSameAs(error);
         }
 
         @Test
         @DisplayName("should work when called after run()")
         void shouldWorkWhenCalledAfterRun() throws Throwable {
             RuntimeException exception = new RuntimeException("error");
-            cleanupPlan.addAction(() -> {
+            cleanupExecutor.addTask(() -> {
                 throw exception;
             });
-            cleanupPlan.run();
+            cleanupExecutor.execute();
 
-            assertThatThrownBy(() -> cleanupPlan.verify()).isSameAs(exception);
+            assertThatThrownBy(() -> cleanupExecutor.throwIfFailed()).isSameAs(exception);
         }
 
         @Test
-        @DisplayName("should not throw when plan is empty")
-        void shouldNotThrowWhenPlanIsEmpty() {
-            assertThatCode(() -> cleanupPlan.verify()).doesNotThrowAnyException();
+        @DisplayName("should not throw when cleanup executor is empty")
+        void shouldNotThrowWhenCleanupExecutorIsEmpty() {
+            assertThatCode(() -> cleanupExecutor.throwIfFailed()).doesNotThrowAnyException();
         }
 
         @Test
@@ -533,12 +534,12 @@ class CleanupPlanTest {
             RuntimeException exception = new RuntimeException("test");
             StackTraceElement[] originalStackTrace = exception.getStackTrace();
 
-            cleanupPlan.addAction(() -> {
+            cleanupExecutor.addTask(() -> {
                 throw exception;
             });
 
             try {
-                cleanupPlan.verify();
+                cleanupExecutor.throwIfFailed();
                 fail("Expected exception to be thrown");
             } catch (Throwable t) {
                 assertThat(t.getStackTrace()).isEqualTo(originalStackTrace);
@@ -556,17 +557,17 @@ class CleanupPlanTest {
             List<String> executionLog = new ArrayList<>();
             RuntimeException exception = new RuntimeException("cleanup error");
 
-            cleanupPlan
-                    .addAction(() -> executionLog.add("action1"))
-                    .addActionIfPresent(() -> "resource1", r -> executionLog.add("cleanup:" + r))
-                    .addAction(() -> {
+            cleanupExecutor
+                    .addTask(() -> executionLog.add("action1"))
+                    .addTaskIfPresent(() -> "resource1", r -> executionLog.add("cleanup:" + r))
+                    .addTask(() -> {
                         executionLog.add("action3");
                         throw exception;
                     })
-                    .addActionIfPresent(() -> null, r -> executionLog.add("should not execute"))
-                    .addAction(() -> executionLog.add("action5"));
+                    .addTaskIfPresent(() -> null, r -> executionLog.add("should not execute"))
+                    .addTask(() -> executionLog.add("action5"));
 
-            assertThatThrownBy(() -> cleanupPlan.verify()).isSameAs(exception);
+            assertThatThrownBy(() -> cleanupExecutor.throwIfFailed()).isSameAs(exception);
 
             assertThat(executionLog).containsExactly("action1", "cleanup:resource1", "action3", "action5");
         }
@@ -577,15 +578,15 @@ class CleanupPlanTest {
             List<String> executionLog = new ArrayList<>();
 
             try {
-                CleanupPlan plan = new CleanupPlan();
-                plan.addAction(() -> executionLog.add("close-resource1"));
-                plan.addAction(() -> executionLog.add("close-resource2"));
+                CleanupExecutor cleanupExecutor = new CleanupExecutor();
+                cleanupExecutor.addTask(() -> executionLog.add("close-resource1"));
+                cleanupExecutor.addTask(() -> executionLog.add("close-resource2"));
 
                 // Simulate some work
                 executionLog.add("work");
 
                 // Cleanup
-                plan.verify();
+                cleanupExecutor.throwIfFailed();
             } catch (Throwable t) {
                 fail("Should not throw");
             }
@@ -594,18 +595,18 @@ class CleanupPlanTest {
         }
 
         @Test
-        @DisplayName("should handle nested cleanup plans")
-        void shouldHandleNestedCleanupPlans() throws Throwable {
+        @DisplayName("should handle nested cleanup executors")
+        void shouldHandleNestedCleanupExecutors() throws Throwable {
             List<String> executionLog = new ArrayList<>();
-            CleanupPlan innerPlan = new CleanupPlan();
-            innerPlan.addAction(() -> executionLog.add("inner-cleanup"));
+            CleanupExecutor innerCleanupExecutor = new CleanupExecutor();
+            innerCleanupExecutor.addTask(() -> executionLog.add("inner-cleanup"));
 
-            cleanupPlan
-                    .addAction(() -> executionLog.add("outer-cleanup-1"))
-                    .addAction(() -> innerPlan.verify())
-                    .addAction(() -> executionLog.add("outer-cleanup-2"));
+            cleanupExecutor
+                    .addTask(() -> executionLog.add("outer-cleanup-1"))
+                    .addTask(innerCleanupExecutor::throwIfFailed)
+                    .addTask(() -> executionLog.add("outer-cleanup-2"));
 
-            cleanupPlan.verify();
+            cleanupExecutor.throwIfFailed();
 
             assertThat(executionLog).containsExactly("outer-cleanup-1", "inner-cleanup", "outer-cleanup-2");
         }
@@ -616,10 +617,10 @@ class CleanupPlanTest {
             AtomicInteger counter = new AtomicInteger(0);
 
             for (int i = 0; i < 100; i++) {
-                cleanupPlan.addAction(() -> counter.incrementAndGet());
+                cleanupExecutor.addTask(counter::incrementAndGet);
             }
 
-            assertThatCode(() -> cleanupPlan.verify()).doesNotThrowAnyException();
+            assertThatCode(() -> cleanupExecutor.throwIfFailed()).doesNotThrowAnyException();
             assertThat(counter.get()).isEqualTo(100);
         }
     }
@@ -629,10 +630,7 @@ class CleanupPlanTest {
      */
     @SafeVarargs
     private static <T> List<T> of(T... elements) {
-        List<T> list = new ArrayList<>();
-        for (T element : elements) {
-            list.add(element);
-        }
+        List<T> list = new ArrayList<>(Arrays.asList(elements));
         return Collections.unmodifiableList(list);
     }
 }

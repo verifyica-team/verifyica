@@ -35,8 +35,8 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.testcontainers.containers.Network;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.CleanupPlan;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.util.CleanupExecutor;
 import org.verifyica.api.util.RandomUtil;
 import org.verifyica.examples.support.Logger;
 
@@ -163,15 +163,15 @@ public class KafkaTest3 {
                 "[%s] destroy test environment ...",
                 argumentContext.testArgument().name());
 
-        new CleanupPlan()
-                .addAction(() -> argumentContext
+        new CleanupExecutor()
+                .addTask(() -> argumentContext
                         .testArgument()
                         .payload(KafkaTestEnvironment.class)
                         .destroy())
-                .addAction(() ->
+                .addTask(() ->
                         argumentContext.map().removeAs(NETWORK, Network.class).close())
-                .addAction(() -> argumentContext.map().clear())
-                .verify();
+                .addTask(() -> argumentContext.map().clear())
+                .throwIfFailed();
     }
 
     /**
