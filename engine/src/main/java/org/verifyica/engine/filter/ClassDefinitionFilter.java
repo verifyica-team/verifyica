@@ -16,6 +16,7 @@
 
 package org.verifyica.engine.filter;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,32 +48,45 @@ public class ClassDefinitionFilter {
 
         List<Filter> filters = FilterFactory.loadFilters();
 
+        // Separate filters by type
+        List<Filter> includeFilters = new ArrayList<>();
+        List<Filter> excludeFilters = new ArrayList<>();
+
+        for (Filter filter : filters) {
+            if (filter.getType() == Filter.Type.INCLUDE_CLASS || filter.getType() == Filter.Type.INCLUDE_TAGGED_CLASS) {
+                includeFilters.add(filter);
+            } else if (filter.getType() == Filter.Type.EXCLUDE_CLASS
+                    || filter.getType() == Filter.Type.EXCLUDE_TAGGED_CLASS) {
+                excludeFilters.add(filter);
+            }
+        }
+
         Set<ClassDefinition> workingClassDefinitionSet = new LinkedHashSet<>(classDefinitions);
 
-        classDefinitions.forEach(classDefinition -> {
-            for (Filter filter : filters) {
+        // If there are INCLUDE filters, start with empty set and only add matching classes
+        if (!includeFilters.isEmpty()) {
+            workingClassDefinitionSet.clear();
+            for (ClassDefinition classDefinition : classDefinitions) {
                 Class<?> testClass = classDefinition.getTestClass();
-                switch (filter.getType()) {
-                    case EXCLUDE_CLASS:
-                    case EXCLUDE_TAGGED_CLASS: {
-                        if (filter.matches(testClass)) {
-                            workingClassDefinitionSet.remove(classDefinition);
-                        }
-                        break;
-                    }
-                    case INCLUDE_CLASS:
-                    case INCLUDE_TAGGED_CLASS: {
-                        if (filter.matches(testClass)) {
-                            workingClassDefinitionSet.add(classDefinition);
-                        }
-                        break;
-                    }
-                    default: {
-                        // INTENTIONALLY EMPTY
+                for (Filter filter : includeFilters) {
+                    if (filter.matches(testClass)) {
+                        workingClassDefinitionSet.add(classDefinition);
+                        break; // Once matched by any include filter, add it
                     }
                 }
             }
-        });
+        }
+
+        // Apply EXCLUDE filters - remove matching classes
+        for (ClassDefinition classDefinition : new ArrayList<>(workingClassDefinitionSet)) {
+            Class<?> testClass = classDefinition.getTestClass();
+            for (Filter filter : excludeFilters) {
+                if (filter.matches(testClass)) {
+                    workingClassDefinitionSet.remove(classDefinition);
+                    break; // Once matched by any exclude filter, remove it
+                }
+            }
+        }
 
         classDefinitions.clear();
         classDefinitions.addAll(workingClassDefinitionSet);

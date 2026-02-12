@@ -185,7 +185,8 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
             }
         }
 
-        if (method.getParameterCount() == 0 && noParameters) {
+        // Invoke 0-parameter methods regardless of noParameters flag
+        if (method.getParameterCount() == 0) {
             method.invoke(instance);
             return;
         }

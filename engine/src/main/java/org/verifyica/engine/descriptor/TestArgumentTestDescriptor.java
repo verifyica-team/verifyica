@@ -313,6 +313,10 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
         } else if (throwable == null) {
             return State.TEST;
         } else {
+            // Add throwable from beforeAll to throwables list so test is marked as failed
+            if (!throwables.contains(throwable)) {
+                throwables.add(throwable);
+            }
             return State.SKIP;
         }
     }
@@ -396,6 +400,11 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
         } catch (Throwable t) {
             printStackTrace(t);
             throwables.add(t);
+        }
+
+        // Add throwable from afterAll to throwables list so test is marked as failed
+        if (throwable != null && !throwables.contains(throwable)) {
+            throwables.add(throwable);
         }
 
         return State.CLOSE;

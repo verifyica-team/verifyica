@@ -100,6 +100,7 @@ public class FilterFactory {
                             case EXCLUDE_TAGGED_CLASS: {
                                 String classTagRegex = (String) filterMap.get("classTagRegex");
                                 filters.add(ExcludeTaggedClassFilter.create(classTagRegex));
+                                break;
                             }
                             default: {
                                 throw new EngineConfigurationException(format("Invalid filter type [%s]", type));
