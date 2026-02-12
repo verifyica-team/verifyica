@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <K> key type
  * @param <V> value type
  */
-@SuppressWarnings("unchecked")
 public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
 
     /**
@@ -77,10 +76,15 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     /**
      * Returns the value to which the specified key is mapped cast to the assigned type, or null if this map contains no mapping for the key.
      *
+     * <p><strong>Warning:</strong> This method performs an unchecked cast. A {@link ClassCastException} will be thrown
+     * if the actual value type does not match the expected type T. Consider using {@link #getAs(Object, Class)} for safer type casting.</p>
+     *
      * @param key the key
-     * @return the value to which the specified key is mapped cast to the assigned type, or null if this map contains no mapping for the key
+     * @return the value to which the specified key is mapped cast to the assigned type, or null if this map contains no mapping for the key or if the value is null
      * @param <T> the assigned type
+     * @throws ClassCastException if the value cannot be cast to type T
      */
+    @SuppressWarnings("unchecked")
     public <T> T getAs(K key) {
         return (T) get(key);
     }
@@ -88,10 +92,14 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     /**
      * Returns the value to which the specified key is mapped cast to the requested type, or null if this map contains no mapping for the key.
      *
+     * <p>This method provides safer type casting than {@link #getAs(Object)} by using {@link Class#cast(Object)}.</p>
+     *
      * @param key the key
-     * @param type the requested type
-     * @return the value to which the specified key is mapped cast to the requested type, or null if this map contains no mapping for the key
+     * @param type the requested type (must not be null)
+     * @return the value to which the specified key is mapped cast to the requested type, or null if this map contains no mapping for the key or if the value is null
      * @param <T> the requested type
+     * @throws IllegalArgumentException if type is null
+     * @throws ClassCastException if the value cannot be cast to the requested type
      */
     public <T> T getAs(K key, Class<T> type) {
         if (type == null) {
@@ -104,10 +112,15 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     /**
      * Removes the mapping for a key from this map if it is present, casting to the assigned type.
      *
+     * <p><strong>Warning:</strong> This method performs an unchecked cast. A {@link ClassCastException} will be thrown
+     * if the actual value type does not match the expected type T. Consider using {@link #removeAs(Object, Class)} for safer type casting.</p>
+     *
      * @param key the key
-     * @return the previous value associated with key cast to the assigned type, or null if there was no mapping for key
+     * @return the previous value associated with key cast to the assigned type, or null if there was no mapping for key or if the value was null
      * @param <T> the assigned type
+     * @throws ClassCastException if the value cannot be cast to type T
      */
+    @SuppressWarnings("unchecked")
     public <T> T removeAs(K key) {
         return (T) remove(key);
     }
@@ -115,10 +128,14 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     /**
      * Removes the mapping for a key from this map if it is present, casting to the requested type.
      *
+     * <p>This method provides safer type casting than {@link #removeAs(Object)} by using {@link Class#cast(Object)}.</p>
+     *
      * @param key the key
-     * @param type the requested type
-     * @return the previous value associated with key cast to the requested type, or null if there was no mapping for key
+     * @param type the requested type (must not be null)
+     * @return the previous value associated with key cast to the requested type, or null if there was no mapping for key or if the value was null
      * @param <T> the assigned type
+     * @throws IllegalArgumentException if type is null
+     * @throws ClassCastException if the value cannot be cast to the requested type
      */
     public <T> T removeAs(K key, Class<T> type) {
         if (type == null) {

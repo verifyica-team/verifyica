@@ -33,7 +33,6 @@ import java.util.Set;
 /**
  * Class to implement TemporaryDirectory
  */
-@SuppressWarnings("PMD.EmptyCatchBlock")
 public class TemporaryDirectory implements AutoCloseable {
 
     private static final String DEFAULT_DIRECTORY_PREFIX = "verifyica-tmp-";
@@ -108,7 +107,7 @@ public class TemporaryDirectory implements AutoCloseable {
      *
      * @param posixFilePermissions the permissions to set for the new file
      * @return the new file
-     * @throws IOException If an I/O error occurs
+     * @throws IOException If an I/O error occurs or if file creation fails after maximum attempts
      */
     public File newFile(Set<PosixFilePermission> posixFilePermissions) throws IOException {
         if (posixFilePermissions == null) {
@@ -120,9 +119,15 @@ public class TemporaryDirectory implements AutoCloseable {
         }
 
         File file;
+        int maxAttempts = 1000;
+        int attempts = 0;
 
         do {
             file = new File(path.toFile(), getRandomId());
+            attempts++;
+            if (attempts >= maxAttempts) {
+                throw new IOException("Failed to create unique temporary file after " + maxAttempts + " attempts");
+            }
         } while (!file.createNewFile());
 
         Files.setPosixFilePermissions(file.toPath(), posixFilePermissions);
@@ -137,6 +142,7 @@ public class TemporaryDirectory implements AutoCloseable {
 
     @Override
     public boolean equals(Object object) {
+        if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         TemporaryDirectory that = (TemporaryDirectory) object;
         return Objects.equals(path, that.path);
@@ -163,6 +169,9 @@ public class TemporaryDirectory implements AutoCloseable {
 
             @Override
             public FileVisitResult postVisitDirectory(Path directory, IOException ioException) throws IOException {
+                if (ioException != null) {
+                    throw ioException;
+                }
                 Files.delete(directory);
                 return FileVisitResult.CONTINUE;
             }
@@ -212,12 +221,14 @@ public class TemporaryDirectory implements AutoCloseable {
      *
      * @param path path
      */
+    @SuppressWarnings("PMD.EmptyCatchBlock")
     private void registerShutdownHook(Path path) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 deleteRecursively(path);
             } catch (IOException e) {
-                // INTENTIONALLY EMPTY
+                // IOException during shutdown hook is intentionally swallowed as there's no way to properly handle it
+                // The JVM is shutting down and logging infrastructure may not be available
             }
         }));
     }

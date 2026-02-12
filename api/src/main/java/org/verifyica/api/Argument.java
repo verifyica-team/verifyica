@@ -180,6 +180,7 @@ public interface Argument<T> extends Named {
      *
      * @param value the value
      * @return an {@code Argument} containing the parsed value
+     * @throws NumberFormatException if the string is not a valid representation of a BigInteger
      */
     static Argument<BigInteger> ofBigInteger(String value) {
         return value == null ? of("BigInteger=/null/", null) : ofBigInteger(new BigInteger(value));
@@ -200,6 +201,7 @@ public interface Argument<T> extends Named {
      *
      * @param value the value
      * @return an {@code Argument} containing the parsed value
+     * @throws NumberFormatException if the string is not a valid representation of a BigDecimal
      */
     static Argument<BigDecimal> ofBigDecimal(String value) {
         return value == null ? of("BigDecimal=/null/", null) : ofBigDecimal(new BigDecimal(value));
