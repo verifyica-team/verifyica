@@ -55,7 +55,13 @@ public class InheritedArgumentTest {
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testDirectArgument(ConcreteCustomArgument argument) {
+    public void testDirectArgument1(ConcreteCustomArgument argument) {
+        System.out.printf("testDirectArgument(%s)%n", argument);
+    }
+
+    @Verifyica.Test
+    @Verifyica.Order(2)
+    public void testDirectArgument2(AbstractCustomArgument argument) {
         System.out.printf("testDirectArgument(%s)%n", argument);
     }
 
@@ -98,7 +104,7 @@ public class InheritedArgumentTest {
         }
     }
 
-    private abstract static class AbstractCustomArgument implements Named {
+    public abstract static class AbstractCustomArgument implements Named {
 
         private final int value;
 
