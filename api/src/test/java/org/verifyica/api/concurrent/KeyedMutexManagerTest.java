@@ -118,9 +118,9 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
-    public void testMultithreading() throws InterruptedException {
+    public void testConcurrentAccess() throws InterruptedException {
         int threadCount = 50;
-        String key = UUID.randomUUID().toString();
+        String key = "concurrentKey";
         AtomicInteger counter = new AtomicInteger();
 
         Thread[] threads = new Thread[threadCount];
