@@ -16,14 +16,12 @@
 
 package org.verifyica.test.argument;
 
-import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.Verifyica;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.verifyica.api.ArgumentContext;
+import org.verifyica.api.Verifyica;
 
 public class IterableArgumentsTest {
 
