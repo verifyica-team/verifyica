@@ -47,7 +47,7 @@ import org.verifyica.engine.support.TimestampSupport;
  * Class to implement a SummaryEngineExecutionListener2
  */
 @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.UnusedPrivateField", "PMD.EmptyCatchBlock"})
-public class SummaryEngineExecutionListener2 implements EngineExecutionListener {
+public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
     private static final String SUMMARY_BANNER = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
@@ -81,7 +81,7 @@ public class SummaryEngineExecutionListener2 implements EngineExecutionListener 
     /**
      * Constructor
      */
-    public SummaryEngineExecutionListener2() {
+    public SummaryEngineExecutionListener() {
         counterMap = Collections.synchronizedMap(new LinkedHashMap<>());
 
         new Counter("class.count", "Test Class Count").register(counterMap);
