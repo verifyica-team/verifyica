@@ -22,27 +22,27 @@ Verifyica is a JUnit Platform based TestEngine that provides argument-driven tes
 ## Architecture
 
 ```mermaid
-graph TD;
-    subgraph "API Module"
-        A[Annotations<br/>@Verifyica.*]
-        B[Argument API]
-        C[Context API]
-        D[Interceptor API]
-        E[Utilities]
+graph TD
+    subgraph API_Module
+        A["Annotations @Verifyica.*"]
+        B["Argument API"]
+        C["Context API"]
+        D["Interceptor API"]
+        E["Utilities"]
     end
-
-    subgraph "Engine Module"
-        F[VerifyicaTestEngine]
-        G[Test Discovery]
-        H[Execution Engine]
-        I[Configuration]
-        J[Filter System]
+    
+    subgraph Engine_Module
+        F["VerifyicaTestEngine"]
+        G["Test Discovery"]
+        H["Execution Engine"]
+        I["Configuration"]
+        J["Filter System"]
     end
-
-    subgraph "Maven Plugin"
-        K[VerifyicaMavenPlugin]
+    
+    subgraph Maven_Plugin
+        K["VerifyicaMavenPlugin"]
     end
-
+    
     A --> F
     B --> F
     C --> F
