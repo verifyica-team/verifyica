@@ -416,7 +416,18 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
      * @return the next state
      */
     private State doCloseArgument() {
-        if (testArgument instanceof AutoCloseable) {
+        Object payload = testArgument.getPayload();
+
+        if (payload instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) payload).close();
+            } catch (Throwable t) {
+                printStackTrace(t);
+                throwables.add(t);
+            }
+        }
+
+        if (testArgument instanceof AutoCloseable && testArgument != payload) {
             try {
                 ((AutoCloseable) testArgument).close();
             } catch (Throwable t) {
