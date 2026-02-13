@@ -67,6 +67,36 @@ pygmentsStyle = "tango"
     sidebar_cache_limit = 10
     sidebar_search_disable = false
 
+  [[menu.main]]
+    name = "Documentation"
+    weight = 10
+    url = "/docs/"
+    identifier = "documentation"
+
+    [[menu.main]]
+      parent = "documentation"
+      name = "Introduction"
+      weight = 10
+      url = "/docs/introduction/"
+
+    [[menu.main]]
+      parent = "documentation"
+      name = "Getting Started"
+      weight = 20
+      url = "/docs/getting-started/"
+    
+    [[menu.main]]
+      parent = "documentation"
+      name = "Advanced Topics"
+      weight = 30
+      url = "/docs/advanced-topics/"
+
+    [[menu.main]]
+      parent = "documentation"
+      name = "FAQ"
+      weight = 40
+      url = "/docs/faq/"
+
     [params.ui.feedback]
       enable = true
       yes = 'Glad to hear it! Please <a href="https://github.com/verifyica-team/verifyica/issues/new">tell us how we can improve</a>.'
