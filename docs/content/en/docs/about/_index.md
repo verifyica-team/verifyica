@@ -22,7 +22,7 @@ Verifyica is a JUnit Platform based TestEngine that provides argument-driven tes
 ## Architecture
 
 ```mermaid
-graph TD
+graph TD;
     subgraph "API Module"
         A[Annotations<br/>@Verifyica.*]
         B[Argument API]
