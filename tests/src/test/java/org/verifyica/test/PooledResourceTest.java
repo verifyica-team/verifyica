@@ -53,8 +53,7 @@ public class PooledResourceTest {
     public void test(ArgumentContext argumentContext) {
         TestContext context = (TestContext) argumentContext.getMap().get(KEY);
         if (context == null || context.getResource() == null) {
-            throw new IllegalStateException(
-                    "Missing TestContext/Resource in ArgumentContext map under key: " + KEY);
+            throw new IllegalStateException("Missing TestContext/Resource in ArgumentContext map under key: " + KEY);
         }
 
         context.getResource().use();
