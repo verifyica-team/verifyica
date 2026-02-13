@@ -170,7 +170,7 @@
                 <version>0.20.0-post</version>
                 <executions>
                     <execution>
-                        <phase>integration-test</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>test</goal>
                         </goals>
