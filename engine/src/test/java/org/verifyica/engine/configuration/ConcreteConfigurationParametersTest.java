@@ -207,8 +207,7 @@ class ConcreteConfigurationParametersTest {
 
             Optional<Boolean> result = params.getBoolean("nonexistent.key");
 
-            assertThat(result).isPresent();
-            assertThat(result.get()).isFalse();
+            assertThat(result).isEmpty();
         }
 
         @Test

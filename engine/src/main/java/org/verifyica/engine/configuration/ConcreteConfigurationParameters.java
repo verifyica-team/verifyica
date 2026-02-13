@@ -16,7 +16,6 @@
 
 package org.verifyica.engine.configuration;
 
-import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 
 import java.util.Optional;
@@ -49,7 +48,9 @@ public class ConcreteConfigurationParameters implements ConfigurationParameters 
     public Optional<String> get(String key) {
         Precondition.notNullOrBlank(key, "key is null", "key is blank");
 
-        return ofNullable(configuration.getProperties().getProperty(key.trim()));
+        String value = configuration.getProperties().getProperty(key.trim());
+
+        return value == null ? Optional.empty() : Optional.of(value.trim());
     }
 
     @Override
@@ -57,11 +58,8 @@ public class ConcreteConfigurationParameters implements ConfigurationParameters 
         Precondition.notNullOrBlank(key, "key is null", "key is blank");
 
         String value = configuration.getProperties().getProperty(key.trim());
-        if ("true".equals(value)) {
-            return of(Boolean.TRUE);
-        } else {
-            return of(Boolean.FALSE);
-        }
+
+        return value == null ? Optional.empty() : Optional.of(Boolean.parseBoolean(value.trim()));
     }
 
     @Override
