@@ -49,60 +49,60 @@ public class AutoCloseableCustomArgumentTest {
 
     @Verifyica.BeforeAll
     public void beforeAll(ArgumentContext argumentContext) {
-        System.out.printf("beforeAll(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("beforeAll(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) {
-        System.out.printf("beforeEach(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("beforeEach(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws InterruptedException {
-        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test1(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
 
         Thread.sleep(RandomUtil.nextLong(0, 1_000));
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws InterruptedException {
-        System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test2(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
 
         Thread.sleep(RandomUtil.nextLong(0, 1_000));
     }
 
     @Verifyica.AfterEach
     public void afterEach(ArgumentContext argumentContext) {
-        System.out.printf("afterEach(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("afterEach(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) {
-        System.out.printf("afterAll(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("afterAll(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.Conclude

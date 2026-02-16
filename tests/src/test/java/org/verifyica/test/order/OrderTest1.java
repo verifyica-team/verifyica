@@ -38,7 +38,7 @@ public class OrderTest1 implements AutoCloseable {
     public void test1(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
-        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test1(%s)%n", argumentContext.getArgument());
         actual.add("test1");
     }
 
@@ -47,7 +47,7 @@ public class OrderTest1 implements AutoCloseable {
     public void test2(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
-        System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test2(%s)%n", argumentContext.getArgument());
         actual.add("test2");
     }
 
@@ -56,7 +56,7 @@ public class OrderTest1 implements AutoCloseable {
     public void test3(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
-        System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test3(%s)%n", argumentContext.getArgument());
         actual.add("test3");
     }
 
@@ -64,7 +64,7 @@ public class OrderTest1 implements AutoCloseable {
     public void test4(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
-        System.out.printf("test4(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test4(%s)%n", argumentContext.getArgument());
         actual.add("test4");
     }
 

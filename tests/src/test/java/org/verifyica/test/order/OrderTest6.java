@@ -43,10 +43,9 @@ public class OrderTest6 {
     public void step1(ArgumentContext argumentContext) {
         System.out.printf(
                 "step1(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        if (argumentContext.getTestArgument().getPayload(String.class).equals(FAIL_ON_STEP_1)) {
+        if (argumentContext.getArgument().getPayloadAs(String.class).equals(FAIL_ON_STEP_1)) {
             throw new AssertionError("Forced");
         }
     }
@@ -56,10 +55,9 @@ public class OrderTest6 {
     public void step2(ArgumentContext argumentContext) {
         System.out.printf(
                 "step2(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        if (argumentContext.getTestArgument().getPayload(String.class).equals(FAIL_ON_STEP_2)) {
+        if (argumentContext.getArgument().getPayloadAs(String.class).equals(FAIL_ON_STEP_2)) {
             throw new AssertionError("Forced");
         }
     }
@@ -69,7 +67,6 @@ public class OrderTest6 {
     public void step3(ArgumentContext argumentContext) {
         System.out.printf(
                 "step3(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
     }
 }

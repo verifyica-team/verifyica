@@ -40,12 +40,11 @@ public class CollectionOfSameObjectsArgumentTest {
     public void test(ArgumentContext argumentContext) {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
-        assertThat(argumentContext.getTestArgument(String.class).getPayload()).startsWith("test");
+        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getArgumentAs(String.class).getPayload()).startsWith("test");
 
         System.out.printf(
                 "test(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
     }
 }

@@ -39,7 +39,14 @@ public class ImmutableProperties extends Properties {
      * @param properties properties
      */
     public ImmutableProperties(Properties properties) {
-        super(properties);
+        super();
+        // Copy all properties from source using the parent class method directly
+        // This must be done during construction before the object is fully initialized
+        if (properties != null) {
+            for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+                super.put(entry.getKey(), entry.getValue());
+            }
+        }
     }
 
     @Override

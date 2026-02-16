@@ -45,17 +45,17 @@ public class NginxTest2 {
     public void initializeTestEnvironment(ArgumentContext argumentContext) {
         LOGGER.info(
                 "[%s] initialize test environment ...",
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
 
         Network network = Network.newNetwork();
         network.getId();
 
         argumentContext.getMap().put(NETWORK, network);
-        argumentContext.getTestArgument().getPayload(NginxTestEnvironment.class).initialize(network);
+        argumentContext.getArgument().getPayloadAs(NginxTestEnvironment.class).initialize(network);
 
         assertThat(argumentContext
-                        .getTestArgument()
-                        .getPayload(NginxTestEnvironment.class)
+                        .getArgument()
+                        .getPayloadAs(NginxTestEnvironment.class)
                         .isRunning())
                 .isTrue();
     }
@@ -63,12 +63,11 @@ public class NginxTest2 {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testGet(ArgumentContext argumentContext) throws Throwable {
-        LOGGER.info(
-                "[%s] testing testGet() ...", argumentContext.getTestArgument().getName());
+        LOGGER.info("[%s] testing testGet() ...", argumentContext.getArgument().getName());
 
         int port = argumentContext
-                .getTestArgument()
-                .getPayload(NginxTestEnvironment.class)
+                .getArgument()
+                .getPayloadAs(NginxTestEnvironment.class)
                 .getNginxContainer()
                 .getMappedPort(80);
 
@@ -81,12 +80,12 @@ public class NginxTest2 {
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
         LOGGER.info(
                 "[%s] destroy test environment ...",
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
 
         new CleanupExecutor()
                 .addTask(() -> argumentContext
-                        .getTestArgument()
-                        .getPayload(NginxTestEnvironment.class)
+                        .getArgument()
+                        .getPayloadAs(NginxTestEnvironment.class)
                         .destroy())
                 .addTask(() -> argumentContext
                         .getMap()

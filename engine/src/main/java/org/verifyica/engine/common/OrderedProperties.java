@@ -84,14 +84,20 @@ public class OrderedProperties extends Properties {
     public synchronized void load(InputStream inputStream) throws IOException {
         super.load(inputStream);
         orderedMap.clear();
-        orderedMap.putAll(this);
+        // Copy from parent's entrySet, not from this.entrySet() which would return orderedMap
+        for (Map.Entry<Object, Object> entry : super.entrySet()) {
+            orderedMap.put(entry.getKey(), entry.getValue());
+        }
     }
 
     @Override
     public synchronized void load(Reader reader) throws IOException {
         super.load(reader);
         orderedMap.clear();
-        orderedMap.putAll(this);
+        // Copy from parent's entrySet, not from this.entrySet() which would return orderedMap
+        for (Map.Entry<Object, Object> entry : super.entrySet()) {
+            orderedMap.put(entry.getKey(), entry.getValue());
+        }
     }
 
     @Override

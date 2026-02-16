@@ -1,0 +1,24 @@
+{
+  "name": "verifyica-docs",
+  "version": "1.0.0",
+  "description": "Verifyica documentation site",
+  "main": "index.js",
+  "scripts": {
+    "build": "hugo --gc --minify",
+    "serve": "hugo server -D",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "verifyica",
+    "documentation",
+    "hugo",
+    "docsy"
+  ],
+  "author": "Verifyica project authors and contributors. All rights reserved.",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.24",
+    "postcss-cli": "^10.1.0"
+  }
+}

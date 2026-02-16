@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.LockManager;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.concurrent.KeyedMutexManager;
 
 public class TryLockTest {
 
@@ -43,29 +43,29 @@ public class TryLockTest {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) {
-        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test1(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws InterruptedException {
-        if (LockManager.tryLock(LOCK_KEY, 100, TimeUnit.MILLISECONDS)) {
+        if (KeyedMutexManager.tryLock(LOCK_KEY, 100, TimeUnit.MILLISECONDS)) {
             try {
-                System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
-                System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+                System.out.printf("test2(%s) locked%n", argumentContext.getArgument());
+                System.out.printf("test2(%s)%n", argumentContext.getArgument());
 
                 assertThat(argumentContext).isNotNull();
                 assertThat(argumentContext.getMap()).isNotNull();
-                assertThat(argumentContext.getTestArgument()).isNotNull();
+                assertThat(argumentContext.getArgument()).isNotNull();
 
                 Thread.sleep(1_000);
 
-                System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
+                System.out.printf("test2(%s) unlocked%n", argumentContext.getArgument());
             } finally {
-                LockManager.unlock(LOCK_KEY);
+                KeyedMutexManager.unlock(LOCK_KEY);
             }
         } else {
             System.out.println("Could not acquire lock");
@@ -74,20 +74,20 @@ public class TryLockTest {
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) throws InterruptedException {
-        if (LockManager.tryLock(LOCK_KEY, 100, TimeUnit.MILLISECONDS)) {
+        if (KeyedMutexManager.tryLock(LOCK_KEY, 100, TimeUnit.MILLISECONDS)) {
             try {
-                System.out.printf("test3(%s) locked%n", argumentContext.getTestArgument());
-                System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
+                System.out.printf("test3(%s) locked%n", argumentContext.getArgument());
+                System.out.printf("test3(%s)%n", argumentContext.getArgument());
 
                 assertThat(argumentContext).isNotNull();
                 assertThat(argumentContext.getMap()).isNotNull();
-                assertThat(argumentContext.getTestArgument()).isNotNull();
+                assertThat(argumentContext.getArgument()).isNotNull();
 
                 Thread.sleep(1_000);
 
-                System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
+                System.out.printf("test2(%s) unlocked%n", argumentContext.getArgument());
             } finally {
-                LockManager.unlock(LOCK_KEY);
+                KeyedMutexManager.unlock(LOCK_KEY);
             }
         } else {
             System.out.println("Could not acquire lock");
@@ -96,10 +96,10 @@ public class TryLockTest {
 
     @Verifyica.Test
     public void test4(ArgumentContext argumentContext) {
-        System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test3(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 }

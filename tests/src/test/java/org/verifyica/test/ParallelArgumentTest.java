@@ -52,36 +52,36 @@ public class ParallelArgumentTest {
     public void beforeAll(ArgumentContext argumentContext) {
         System.out.printf(
                 "beforeAll(index=[%d], name=[%s])%n",
-                argumentContext.getTestArgumentIndex(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgumentIndex(),
+                argumentContext.getArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(ArgumentContext argumentContext) {
         System.out.printf(
                 "beforeEach(index=[%d], name=[%s])%n",
-                argumentContext.getTestArgumentIndex(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgumentIndex(),
+                argumentContext.getArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) throws InterruptedException {
         System.out.printf(
                 "test1(index=[%d], name=[%s])%n",
-                argumentContext.getTestArgumentIndex(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgumentIndex(),
+                argumentContext.getArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
 
         Thread.sleep(RandomUtil.nextLong(0, 1_000));
     }
@@ -90,12 +90,12 @@ public class ParallelArgumentTest {
     public void test2(ArgumentContext argumentContext) throws InterruptedException {
         System.out.printf(
                 "test2(index=[%d], name=[%s])%n",
-                argumentContext.getTestArgumentIndex(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgumentIndex(),
+                argumentContext.getArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
 
         Thread.sleep(RandomUtil.nextLong(0, 1_000));
     }
@@ -104,24 +104,24 @@ public class ParallelArgumentTest {
     public void afterEach(ArgumentContext argumentContext) {
         System.out.printf(
                 "afterEach(index=[%d], name=[%s])%n",
-                argumentContext.getTestArgumentIndex(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgumentIndex(),
+                argumentContext.getArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.AfterAll
     public void afterAll(ArgumentContext argumentContext) {
         System.out.printf(
                 "afterAll(index=[%d], name=[%s])%n",
-                argumentContext.getTestArgumentIndex(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgumentIndex(),
+                argumentContext.getArgument().getName());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.Conclude

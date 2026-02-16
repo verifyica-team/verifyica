@@ -68,7 +68,7 @@ public class MongoDBTest {
         LOGGER.info("[%s] name [%s]", mongoDBTestEnvironment.getName(), name);
 
         MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.connectionString()))
+                .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.getConnectionString()))
                 .build();
 
         try (MongoClient mongoClient = MongoClients.create(settings)) {
@@ -87,7 +87,7 @@ public class MongoDBTest {
         LOGGER.info("[%s] testing testQuery() ...", mongoDBTestEnvironment.getName());
 
         MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.connectionString()))
+                .applyConnectionString(new ConnectionString(mongoDBTestEnvironment.getConnectionString()))
                 .build();
 
         String name = nameThreadLocal.get();

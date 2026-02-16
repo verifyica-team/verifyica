@@ -37,7 +37,7 @@ public class MapTest1 {
     @Verifyica.Test
     @Verifyica.Order(0)
     public void putIntoMaps(ArgumentContext argumentContext) {
-        System.out.printf("putIntoMaps(%s)%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("putIntoMaps(%s)%n", argumentContext.getArgument().getPayload());
 
         argumentContext.getClassContext().getEngineContext().getMap().put(ENGINE_CONTEXT_KEY, "engine");
         argumentContext.getClassContext().getMap().put(CLASS_CONTEXT_KEY, "class");
@@ -47,8 +47,7 @@ public class MapTest1 {
     @Verifyica.Test
     @Verifyica.Order(1)
     public void getOutOfMaps(ArgumentContext argumentContext) {
-        System.out.printf(
-                "getOutOfMaps(%s)%n", argumentContext.getTestArgument().getPayload());
+        System.out.printf("getOutOfMaps(%s)%n", argumentContext.getArgument().getPayload());
 
         assertThat(argumentContext.getClassContext().getEngineContext().getMap().get(ENGINE_CONTEXT_KEY))
                 .isEqualTo("engine");

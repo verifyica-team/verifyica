@@ -124,8 +124,8 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     @Override
     public TestMethodTestDescriptor test() {
         try {
-            invocationArguments.add(argumentContext.getTestArgument().getPayload());
-            invocationArguments.add(argumentContext.getTestArgument());
+            invocationArguments.add(argumentContext.getArgument().getPayload());
+            invocationArguments.add(argumentContext.getArgument());
             invocationArguments.add(argumentContext);
 
             engineExecutionListener.executionStarted(this);
@@ -246,6 +246,10 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
         } else if (throwable == null) {
             return State.TEST;
         } else {
+            // Add throwable from beforeEach to throwables list so test is marked as failed
+            if (!throwables.contains(throwable)) {
+                throwables.add(throwable);
+            }
             return State.AFTER_EACH;
         }
     }
@@ -290,6 +294,11 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
             throwables.add(t);
         }
 
+        // Add throwable from test method to throwables list so test is marked as failed
+        if (throwable != null && !throwables.contains(throwable)) {
+            throwables.add(throwable);
+        }
+
         return State.AFTER_EACH;
     }
 
@@ -331,6 +340,11 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
         } catch (Throwable t) {
             printStackTrace(t);
             throwables.add(t);
+        }
+
+        // Add throwable from afterEach to throwables list so test is marked as failed
+        if (throwable != null && !throwables.contains(throwable)) {
+            throwables.add(throwable);
         }
 
         return State.END;

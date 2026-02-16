@@ -63,7 +63,7 @@ import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.exception.TestClassDefinitionException;
 import org.verifyica.engine.listener.ChainedEngineExecutionListener;
 import org.verifyica.engine.listener.StatusEngineExecutionListener;
-import org.verifyica.engine.listener.SummaryEngineExecutionListener2;
+import org.verifyica.engine.listener.SummaryEngineExecutionListener;
 import org.verifyica.engine.listener.TracingEngineExecutionListener;
 import org.verifyica.engine.support.TimestampSupport;
 
@@ -356,7 +356,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         ChainedEngineExecutionListener chainedEngineExecutionListener = new ChainedEngineExecutionListener(
                 new TracingEngineExecutionListener(),
                 new StatusEngineExecutionListener(),
-                new SummaryEngineExecutionListener2());
+                new SummaryEngineExecutionListener());
 
         ExecutionRequest executionRequest = new ExecutionRequest(
                 testDescriptor,

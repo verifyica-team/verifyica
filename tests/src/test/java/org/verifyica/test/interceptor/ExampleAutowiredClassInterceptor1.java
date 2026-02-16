@@ -67,7 +67,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s preBeforeAll(%s %s)%n",
                 getClass().getName(),
                 argumentContext.getClassContext().getTestClass().getName(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s postBeforeAll(%s %s)%n",
                 getClass().getName(),
                 argumentContext.getClassContext().getTestClass().getName(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
         rethrow(throwable);
     }
 
@@ -86,7 +86,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s preBeforeEach(%s %s)%n",
                 getClass().getName(),
                 argumentContext.getClassContext().getTestClass().getName(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s postBeforeEach(%s %s)%n",
                 getClass().getName(),
                 argumentContext.getClassContext().getTestClass().getName(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
         rethrow(throwable);
     }
 
@@ -105,7 +105,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s preTest(%s %s %s)%n",
                 getClass().getName(),
                 argumentContext.getClassContext().getTestClass().getName(),
-                argumentContext.getTestArgument().getName(),
+                argumentContext.getArgument().getName(),
                 testMethod.getName());
     }
 
@@ -115,7 +115,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s postTest(%s %s %s)%n",
                 getClass().getName(),
                 argumentContext.getClassContext().getTestClass().getName(),
-                argumentContext.getTestArgument().getName(),
+                argumentContext.getArgument().getName(),
                 testMethod.getName());
         rethrow(throwable);
     }
@@ -126,7 +126,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s preAfterEach(%s %s)%n",
                 getClass().getName(),
                 argumentContext.getClassContext().getTestClass().getName(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
     }
 
     @Override
@@ -135,7 +135,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s postAfterEach(%s %s)%n",
                 getClass().getName(),
                 argumentContext.getClassContext().getTestClass().getName(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
         rethrow(throwable);
     }
 
@@ -145,7 +145,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s preAfterAll(%s %s)%n",
                 getClass().getName(),
                 argumentContext.getClassContext().getTestClass().getName(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
     }
 
     @Override
@@ -154,7 +154,7 @@ public class ExampleAutowiredClassInterceptor1 implements ClassInterceptor {
                 "%s postAfterAll(%s %s)%n",
                 getClass().getName(),
                 argumentContext.getClassContext().getTestClass().getName(),
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
         rethrow(throwable);
     }
 

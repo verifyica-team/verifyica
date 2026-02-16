@@ -58,7 +58,7 @@ public class KafkaTest {
 
     @Verifyica.BeforeAll
     public void initializeTestEnvironment(KafkaTestEnvironment kafkaTestEnvironment) {
-        LOGGER.info("[%s] initialize test environment ...", kafkaTestEnvironment.name());
+        LOGGER.info("[%s] initialize test environment ...", kafkaTestEnvironment.getName());
 
         Network network = Network.newNetwork();
         network.getId();
@@ -68,16 +68,16 @@ public class KafkaTest {
 
         assertThat(kafkaTestEnvironment.isRunning()).isTrue();
 
-        LOGGER.info("bootstrap servers: %s", kafkaTestEnvironment.bootstrapServers());
+        LOGGER.info("bootstrap servers: %s", kafkaTestEnvironment.getBootstrapServers());
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testProduce(KafkaTestEnvironment kafkaTestEnvironment) throws ExecutionException, InterruptedException {
-        LOGGER.info("[%s] testing testProduce() ...", kafkaTestEnvironment.name());
+        LOGGER.info("[%s] testing testProduce() ...", kafkaTestEnvironment.getName());
 
         String message = RandomUtil.alphaString(16);
-        LOGGER.info("[%s] producing message [%s] ...", kafkaTestEnvironment.name(), message);
+        LOGGER.info("[%s] producing message [%s] ...", kafkaTestEnvironment.getName(), message);
 
         messageThreadLocal.set(message);
 
@@ -86,14 +86,14 @@ public class KafkaTest {
             producer.send(producerRecord).get();
         }
 
-        LOGGER.info("[%s] message [%s] produced", kafkaTestEnvironment.name(), message);
+        LOGGER.info("[%s] message [%s] produced", kafkaTestEnvironment.getName(), message);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testConsume1(KafkaTestEnvironment kafkaTestEnvironment) {
-        LOGGER.info("[%s] testing testConsume1() ...", kafkaTestEnvironment.name());
-        LOGGER.info("[%s] consuming message ...", kafkaTestEnvironment.name());
+        LOGGER.info("[%s] testing testConsume1() ...", kafkaTestEnvironment.getName());
+        LOGGER.info("[%s] consuming message ...", kafkaTestEnvironment.getName());
 
         String expectedMessage = messageThreadLocal.get();
         boolean messageMatched = false;
@@ -103,7 +103,7 @@ public class KafkaTest {
 
             ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(10_000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                LOGGER.info("[%s] consumed message [%s]", kafkaTestEnvironment.name(), consumerRecord.value());
+                LOGGER.info("[%s] consumed message [%s]", kafkaTestEnvironment.getName(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
                 messageMatched = true;
             }
@@ -115,8 +115,8 @@ public class KafkaTest {
     @Verifyica.Test
     @Verifyica.Order(3)
     public void testConsume2(KafkaTestEnvironment kafkaTestEnvironment) {
-        LOGGER.info("[%s] testing testConsume2() ...", kafkaTestEnvironment.name());
-        LOGGER.info("[%s] consuming message ...", kafkaTestEnvironment.name());
+        LOGGER.info("[%s] testing testConsume2() ...", kafkaTestEnvironment.getName());
+        LOGGER.info("[%s] consuming message ...", kafkaTestEnvironment.getName());
 
         String expectedMessage = messageThreadLocal.get();
         boolean messageMatched = false;
@@ -126,7 +126,7 @@ public class KafkaTest {
 
             ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(5_000));
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                LOGGER.info("[%s] consumed message [%s]", kafkaTestEnvironment.name(), consumerRecord.value());
+                LOGGER.info("[%s] consumed message [%s]", kafkaTestEnvironment.getName(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
                 messageMatched = true;
             }
@@ -137,7 +137,7 @@ public class KafkaTest {
 
     @Verifyica.AfterAll
     public void destroyTestEnvironment(KafkaTestEnvironment kafkaTestEnvironment) throws Throwable {
-        LOGGER.info("[%s] destroy test environment ...", kafkaTestEnvironment.name());
+        LOGGER.info("[%s] destroy test environment ...", kafkaTestEnvironment.getName());
 
         new CleanupExecutor()
                 .addTask(kafkaTestEnvironment::destroy)
@@ -156,7 +156,7 @@ public class KafkaTest {
     private static KafkaProducer<String, String> createKafkaProducer(KafkaTestEnvironment kafkaTestEnvironment) {
         Properties properties = new Properties();
 
-        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaTestEnvironment.bootstrapServers());
+        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaTestEnvironment.getBootstrapServers());
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
@@ -172,7 +172,7 @@ public class KafkaTest {
     private static KafkaConsumer<String, String> createKafkaConsumer(KafkaTestEnvironment kafkaTestEnvironment) {
         Properties properties = new Properties();
 
-        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaTestEnvironment.bootstrapServers());
+        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaTestEnvironment.getBootstrapServers());
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);

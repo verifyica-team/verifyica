@@ -271,7 +271,7 @@ public class EngineDiscoveryRequestResolver {
                     } else {
                         String name;
                         if (o instanceof Named) {
-                            name = ((Named) o).name();
+                            name = ((Named) o).getName();
                         } else if (o != null && o.getClass().isEnum()) {
                             name = ((Enum<?>) o).name();
                         } else {
@@ -312,7 +312,7 @@ public class EngineDiscoveryRequestResolver {
                 } else {
                     String name;
                     if (o instanceof Named) {
-                        name = ((Named) o).name();
+                        name = ((Named) o).getName();
                     } else if (o != null && o.getClass().isEnum()) {
                         name = ((Enum<?>) o).name();
                     } else {
@@ -323,7 +323,7 @@ public class EngineDiscoveryRequestResolver {
                 index++;
             }
         } else if (object instanceof Named) {
-            testArguments.add(Argument.of(((Named) object).name(), object));
+            testArguments.add(Argument.of(((Named) object).getName(), object));
         } else {
             testArguments.add(Argument.of("argument[0]", object));
         }

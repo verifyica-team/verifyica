@@ -51,13 +51,14 @@ public class EphemeralExecutorService extends AbstractExecutorService {
 
         Thread thread = threadFactory.newThread(() -> {
             try {
-                runningThreads.add(Thread.currentThread());
                 runnable.run();
             } finally {
                 runningThreads.remove(Thread.currentThread());
             }
         });
         thread.setDaemon(true);
+        // Add thread to runningThreads BEFORE starting it to avoid race condition
+        runningThreads.add(thread);
         thread.start();
     }
 

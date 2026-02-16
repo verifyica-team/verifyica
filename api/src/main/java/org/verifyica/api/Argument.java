@@ -37,26 +37,7 @@ public interface Argument<T> extends Named {
      * @return the argument name
      */
     @Override
-    default String name() {
-        return getName();
-    }
-
-    /**
-     * Returns the name of this argument.
-     *
-     * @return the argument name
-     */
-    @Override
     String getName();
-
-    /**
-     * Returns the payload of this argument.
-     *
-     * @return the argument payload
-     */
-    default T payload() {
-        return getPayload();
-    }
 
     /**
      * Returns the payload of this argument.
@@ -74,20 +55,7 @@ public interface Argument<T> extends Named {
      * @throws IllegalArgumentException if {@code type} is {@code null}
      * @throws ClassCastException if the payload cannot be cast to {@code type}
      */
-    default <V> V payload(Class<V> type) {
-        return getPayload(type);
-    }
-
-    /**
-     * Returns the payload cast to the given type.
-     *
-     * @param type the expected payload type
-     * @param <V> the return type
-     * @return the payload cast to {@code type}
-     * @throws IllegalArgumentException if {@code type} is {@code null}
-     * @throws ClassCastException if the payload cannot be cast to {@code type}
-     */
-    default <V> V getPayload(Class<V> type) {
+    default <V> V getPayloadAs(Class<V> type) {
         notNull(type, "type is null");
         return type.cast(getPayload());
     }
@@ -212,6 +180,7 @@ public interface Argument<T> extends Named {
      *
      * @param value the value
      * @return an {@code Argument} containing the parsed value
+     * @throws NumberFormatException if the string is not a valid representation of a BigInteger
      */
     static Argument<BigInteger> ofBigInteger(String value) {
         return value == null ? of("BigInteger=/null/", null) : ofBigInteger(new BigInteger(value));
@@ -232,6 +201,7 @@ public interface Argument<T> extends Named {
      *
      * @param value the value
      * @return an {@code Argument} containing the parsed value
+     * @throws NumberFormatException if the string is not a valid representation of a BigDecimal
      */
     static Argument<BigDecimal> ofBigDecimal(String value) {
         return value == null ? of("BigDecimal=/null/", null) : ofBigDecimal(new BigDecimal(value));

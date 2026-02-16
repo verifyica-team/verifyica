@@ -23,7 +23,6 @@ import io.github.thunkware.vt.bridge.ThreadNameRunnable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,7 +45,6 @@ import org.verifyica.api.ClassInterceptor;
 import org.verifyica.api.EngineContext;
 import org.verifyica.api.Execution;
 import org.verifyica.api.Verifyica;
-import org.verifyica.engine.common.DirectExecutorService;
 import org.verifyica.engine.common.throttle.Throttle;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.context.ConcreteClassContext;
@@ -63,8 +61,6 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestClassTestDescriptor.class);
 
-    private static final ExecutorService DIRECT_EXECUTOR_SERVICE = new DirectExecutorService();
-
     private enum State {
         START,
         INSTANTIATE,
@@ -72,9 +68,9 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
         TEST,
         SKIP,
         CONCLUDE,
+        DESTROY,
         CLOSE,
         CLEAN_UP,
-        DESTROY,
         END
     }
 
@@ -310,8 +306,10 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
 
                 invocationArguments.add(object);
                 invocationArguments.add(classContext);
+            } catch (InvocationTargetException e) {
+                throwable = e.getCause();
             } catch (Throwable t) {
-                throwable = t.getCause();
+                throwable = t;
             }
         }
 
@@ -321,7 +319,16 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
                         engineContext, testClass, testInstanceAtomicReference.get(), throwable);
             }
         } catch (Throwable t) {
-            throwable = t;
+            // postInstantiate failing should fail the class
+            if (throwable == null) {
+                throwable = t;
+            } else {
+                throwable.addSuppressed(t);
+            }
+        }
+
+        if (throwable != null && !throwables.contains(throwable)) {
+            throwables.add(throwable);
         }
 
         return throwable == null ? State.PREPARE : State.CLEAN_UP;
@@ -365,9 +372,12 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
                 classInterceptor.postPrepare(classContext, throwable);
             }
         } catch (Throwable t) {
-            throwable = t;
+            if (throwable == null) {
+                throwable = t;
+            } else {
+                throwable.addSuppressed(t);
+            }
             printStackTrace(t);
-            throwables.add(t);
         }
 
         if (markedSkipped) {
@@ -375,6 +385,9 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
         } else if (throwable == null) {
             return State.TEST;
         } else {
+            if (!throwables.contains(throwable)) {
+                throwables.add(throwable);
+            }
             return State.SKIP;
         }
     }
@@ -393,11 +406,9 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
         // Single-threaded test argument execution
         if (testArgumentParallelism <= 1) {
             for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
-                DIRECT_EXECUTOR_SERVICE.submit(testableTestDescriptor::test);
+                testableTestDescriptor.test();
             }
-
-            ExecutorServiceSupport.waitForAllFutures(Collections.emptyList());
-
+            collectChildFailures(testableTestDescriptors);
             return State.CONCLUDE;
         }
 
@@ -406,14 +417,30 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
         for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
             String threadName = getNextThreadName(Thread.currentThread().getName());
             Runnable runnable = new ThreadNameRunnable(threadName, testableTestDescriptor::test);
-            // No try/catch since the test argument executor service uses CallerRunsPolicy executes r.run() on the
-            // submitting thread when saturated
             futures.add(testArgumentExecutorService.submit(runnable));
         }
 
         ExecutorServiceSupport.waitForAllFutures(futures);
 
+        collectChildFailures(testableTestDescriptors);
+
         return State.CONCLUDE;
+    }
+
+    private void collectChildFailures(List<TestableTestDescriptor> children) {
+        for (TestableTestDescriptor child : children) {
+            TestDescriptorStatus status = child.getTestDescriptorStatus();
+            if (status != null && status.isFailure()) {
+                Throwable t = status.getThrowable();
+                if (t != null && !throwables.contains(t)) {
+                    throwables.add(t);
+                } else if (t == null && throwables.isEmpty()) {
+                    // ensure the class is not reported as passed if a child failed without a throwable
+                    throwables.add(new AssertionError("Child test descriptor failed without throwable: " + child));
+                }
+                break; // fail-fast at class level; remove if you want to aggregate
+            }
+        }
     }
 
     /**
@@ -469,8 +496,16 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
                 classInterceptor.postConclude(classContext, throwable);
             }
         } catch (Throwable t) {
+            if (throwable == null) {
+                throwable = t;
+            } else {
+                throwable.addSuppressed(t);
+            }
             printStackTrace(t);
-            throwables.add(t);
+        }
+
+        if (throwable != null && !throwables.contains(throwable)) {
+            throwables.add(throwable);
         }
 
         return State.DESTROY;
@@ -500,16 +535,16 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
      * @return the next state
      */
     private State doCloseInstance() {
-        if (testInstanceAtomicReference.get() instanceof AutoCloseable) {
+        Object instance = testInstanceAtomicReference.getAndSet(null);
+
+        if (instance instanceof AutoCloseable) {
             try {
-                ((AutoCloseable) testInstanceAtomicReference.get()).close();
+                ((AutoCloseable) instance).close();
             } catch (Throwable t) {
                 printStackTrace(t);
                 throwables.add(t);
             }
         }
-
-        testInstanceAtomicReference.set(null);
 
         return State.CLEAN_UP;
     }
@@ -522,11 +557,12 @@ public class TestClassTestDescriptor extends TestableTestDescriptor {
     private State doCleanupClassContext() {
         Map<String, Object> map = classContext.getMap();
 
-        Set<Map.Entry<String, Object>> entrySet = map.entrySet();
-        for (Map.Entry<String, Object> entry : entrySet) {
-            if (entry.getValue() instanceof AutoCloseable) {
+        // Avoid CME if close() mutates the map
+        List<Object> values = new ArrayList<>(map.values());
+        for (Object value : values) {
+            if (value instanceof AutoCloseable) {
                 try {
-                    ((AutoCloseable) entry.getValue()).close();
+                    ((AutoCloseable) value).close();
                 } catch (Throwable t) {
                     printStackTrace(t);
                     throwables.add(t);

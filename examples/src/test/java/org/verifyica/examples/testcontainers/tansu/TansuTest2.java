@@ -62,60 +62,55 @@ public class TansuTest2 {
             throws ExecutionException, InterruptedException, IOException {
         LOGGER.info(
                 "[%s] initialize test environment ...",
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
 
         Network network = Network.newNetwork();
         network.getId();
 
         argumentContext.getMap().put(NETWORK, network);
-        argumentContext.getTestArgument().getPayload(TansuTestEnvironment.class).initialize(network);
+        argumentContext.getArgument().getPayloadAs(TansuTestEnvironment.class).initialize(network);
 
         assertThat(argumentContext
-                        .getTestArgument()
-                        .getPayload(TansuTestEnvironment.class)
+                        .getArgument()
+                        .getPayloadAs(TansuTestEnvironment.class)
                         .isRunning())
                 .isTrue();
 
         LOGGER.info(
                 "bootstrap servers: %s",
                 argumentContext
-                        .getTestArgument()
-                        .getPayload(TansuTestEnvironment.class)
-                        .bootstrapServers());
+                        .getArgument()
+                        .getPayloadAs(TansuTestEnvironment.class)
+                        .getBootstrapServers());
 
-        argumentContext.getTestArgument().getPayload(TansuTestEnvironment.class).createTopic(TOPIC);
+        argumentContext.getArgument().getPayloadAs(TansuTestEnvironment.class).createTopic(TOPIC);
     }
 
     @Verifyica.Test
     @Verifyica.Order(1)
     public void testProduce(ArgumentContext argumentContext) throws ExecutionException, InterruptedException {
         LOGGER.info(
-                "[%s] testing testProduce() ...",
-                argumentContext.getTestArgument().getName());
+                "[%s] testing testProduce() ...", argumentContext.getArgument().getName());
 
         String message = RandomUtil.alphaString(16);
         argumentContext.getMap().put(MESSAGE, message);
         LOGGER.info(
-                "[%s] producing message [%s] ...",
-                argumentContext.getTestArgument().getName(), message);
+                "[%s] producing message [%s] ...", argumentContext.getArgument().getName(), message);
 
         try (KafkaProducer<String, String> producer = createKafkaProducer(argumentContext)) {
             ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC, message);
             producer.send(producerRecord).get();
         }
 
-        LOGGER.info(
-                "[%s] message [%s] produced", argumentContext.getTestArgument().getName(), message);
+        LOGGER.info("[%s] message [%s] produced", argumentContext.getArgument().getName(), message);
     }
 
     @Verifyica.Test
     @Verifyica.Order(2)
     public void testConsume1(ArgumentContext argumentContext) {
         LOGGER.info(
-                "[%s] testing testConsume1() ...",
-                argumentContext.getTestArgument().getName());
-        LOGGER.info(
-                "[%s] consuming message ...", argumentContext.getTestArgument().getName());
+                "[%s] testing testConsume1() ...", argumentContext.getArgument().getName());
+        LOGGER.info("[%s] consuming message ...", argumentContext.getArgument().getName());
 
         String expectedMessage = argumentContext.getMap().getAs(MESSAGE);
         boolean messageMatched = false;
@@ -127,7 +122,7 @@ public class TansuTest2 {
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 LOGGER.info(
                         "[%s] consumed message [%s]",
-                        argumentContext.getTestArgument().getName(), consumerRecord.value());
+                        argumentContext.getArgument().getName(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
                 messageMatched = true;
             }
@@ -140,10 +135,8 @@ public class TansuTest2 {
     @Verifyica.Order(3)
     public void testConsume2(ArgumentContext argumentContext) {
         LOGGER.info(
-                "[%s] testing testConsume2() ...",
-                argumentContext.getTestArgument().getName());
-        LOGGER.info(
-                "[%s] consuming message ...", argumentContext.getTestArgument().getName());
+                "[%s] testing testConsume2() ...", argumentContext.getArgument().getName());
+        LOGGER.info("[%s] consuming message ...", argumentContext.getArgument().getName());
 
         String expectedMessage = argumentContext.getMap().getAs(MESSAGE);
         boolean messageMatched = false;
@@ -155,7 +148,7 @@ public class TansuTest2 {
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 LOGGER.info(
                         "[%s] consumed message [%s]",
-                        argumentContext.getTestArgument().getName(), consumerRecord.value());
+                        argumentContext.getArgument().getName(), consumerRecord.value());
                 assertThat(consumerRecord.value()).isEqualTo(expectedMessage);
                 messageMatched = true;
                 break;
@@ -169,12 +162,12 @@ public class TansuTest2 {
     public void destroyTestEnvironment(ArgumentContext argumentContext) throws Throwable {
         LOGGER.info(
                 "[%s] destroy test environment ...",
-                argumentContext.getTestArgument().getName());
+                argumentContext.getArgument().getName());
 
         new CleanupExecutor()
                 .addTask(() -> argumentContext
-                        .getTestArgument()
-                        .getPayload(TansuTestEnvironment.class)
+                        .getArgument()
+                        .getPayloadAs(TansuTestEnvironment.class)
                         .destroy())
                 .addTask(() -> argumentContext
                         .getMap()
@@ -196,9 +189,9 @@ public class TansuTest2 {
         properties.setProperty(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
                 argumentContext
-                        .getTestArgument()
-                        .getPayload(TansuTestEnvironment.class)
-                        .bootstrapServers());
+                        .getArgument()
+                        .getPayloadAs(TansuTestEnvironment.class)
+                        .getBootstrapServers());
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
@@ -217,9 +210,9 @@ public class TansuTest2 {
         properties.setProperty(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
                 argumentContext
-                        .getTestArgument()
-                        .getPayload(TansuTestEnvironment.class)
-                        .bootstrapServers());
+                        .getArgument()
+                        .getPayloadAs(TansuTestEnvironment.class)
+                        .getBootstrapServers());
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);

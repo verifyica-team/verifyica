@@ -85,7 +85,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
                         .withNetwork(network)
                         // alias is useful for other containers on the same Network,
                         // but host-JVM clients must use localhost:<boundPort>
-                        .withNetworkAliases("tansu-" + randomId(), "kafka")
+                        .withNetworkAliases("tansu-" + getRandomId(), "kafka")
                         .withExposedPorts(9092)
                         // bind fixed host port -> container port 9092
                         .withCreateContainerCmdModifier(
@@ -134,7 +134,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
      *
      * @return bootstrap servers
      */
-    public String bootstrapServers() {
+    public String getBootstrapServers() {
         // Use the same host/port that we advertised to avoid metadata/unreachable hangs
         return "localhost:" + hostKafkaPort;
     }
@@ -158,7 +158,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
      */
     public void createTopic(String topic) throws ExecutionException, InterruptedException {
         Properties p = new Properties();
-        p.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers());
+        p.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers());
 
         try (AdminClient admin = AdminClient.create(p)) {
             List<NewTopic> topics = new ArrayList<>();
@@ -230,7 +230,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
         }
     }
 
-    private static String randomId() {
+    private static String getRandomId() {
         int leftLimit = 97; // 'a'
         int rightLimit = 122; // 'z'
         int targetStringLength = 8;

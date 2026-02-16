@@ -26,10 +26,10 @@ public abstract class AbstractTest2 {
     @Verifyica.Test
     @Verifyica.Order(1)
     public final void test1(ArgumentContext argumentContext) {
-        System.out.printf("AbstractTest2 test1(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("AbstractTest2 test1(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 }

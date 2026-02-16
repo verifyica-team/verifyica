@@ -50,24 +50,23 @@ public class EnumArgumentsTest {
     @Verifyica.Order(2)
     public void testArgumentContext(ArgumentContext argumentContext) {
         assertThat(argumentContext).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
 
         System.out.printf(
                 "test(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
         switch (index) {
             case 0: {
-                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(EnumArgument.ZERO);
+                assertThat(argumentContext.getArgument().getPayload()).isEqualTo(EnumArgument.ZERO);
                 break;
             }
             case 1: {
-                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(EnumArgument.ONE);
+                assertThat(argumentContext.getArgument().getPayload()).isEqualTo(EnumArgument.ONE);
                 break;
             }
             case 2: {
-                assertThat(argumentContext.getTestArgument().getPayload()).isEqualTo(EnumArgument.TWO);
+                assertThat(argumentContext.getArgument().getPayload()).isEqualTo(EnumArgument.TWO);
                 break;
             }
             default: {

@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.verifyica.api.Argument;
 import org.verifyica.api.ArgumentContext;
-import org.verifyica.api.LockManager;
 import org.verifyica.api.Verifyica;
+import org.verifyica.api.concurrent.KeyedMutexManager;
 
 public class LockTest {
 
@@ -42,38 +42,38 @@ public class LockTest {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) {
-        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test1(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) throws InterruptedException {
-        LockManager.lock(LOCK_KEY);
+        KeyedMutexManager.lock(LOCK_KEY);
         try {
-            System.out.printf("test2(%s) locked%n", argumentContext.getTestArgument());
-            System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+            System.out.printf("test2(%s) locked%n", argumentContext.getArgument());
+            System.out.printf("test2(%s)%n", argumentContext.getArgument());
 
             assertThat(argumentContext).isNotNull();
             assertThat(argumentContext.getMap()).isNotNull();
-            assertThat(argumentContext.getTestArgument()).isNotNull();
+            assertThat(argumentContext.getArgument()).isNotNull();
 
             Thread.sleep(1_000);
 
-            System.out.printf("test2(%s) unlocked%n", argumentContext.getTestArgument());
+            System.out.printf("test2(%s) unlocked%n", argumentContext.getArgument());
         } finally {
-            LockManager.unlock(LOCK_KEY);
+            KeyedMutexManager.unlock(LOCK_KEY);
         }
     }
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) {
-        System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test3(%s)%n", argumentContext.getArgument());
 
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
+        assertThat(argumentContext.getArgument()).isNotNull();
     }
 }

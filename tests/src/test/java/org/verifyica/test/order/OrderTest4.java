@@ -31,8 +31,7 @@ public class OrderTest4 {
     public void step0(ArgumentContext argumentContext) {
         System.out.printf(
                 "step0(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
     }
 
     @Verifyica.Test
@@ -40,8 +39,7 @@ public class OrderTest4 {
     public void step2(ArgumentContext argumentContext) {
         System.out.printf(
                 "step2(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
     }
 
     @Verifyica.Test
@@ -49,8 +47,7 @@ public class OrderTest4 {
     public void step4(ArgumentContext argumentContext) {
         System.out.printf(
                 "step4(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
     }
 
     @Verifyica.Test
@@ -58,8 +55,7 @@ public class OrderTest4 {
     public void step1(ArgumentContext argumentContext) {
         System.out.printf(
                 "step1(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
     }
 
     @Verifyica.Test
@@ -67,8 +63,7 @@ public class OrderTest4 {
     public void step3(ArgumentContext argumentContext) {
         System.out.printf(
                 "step3(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
     }
 
     @Verifyica.Test
@@ -76,8 +71,7 @@ public class OrderTest4 {
     public void step5(ArgumentContext argumentContext) {
         System.out.printf(
                 "step5(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
     }
 
     @Verifyica.Test
@@ -85,7 +79,6 @@ public class OrderTest4 {
     public void random(ArgumentContext argumentContext) {
         System.out.printf(
                 "random(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
     }
 }

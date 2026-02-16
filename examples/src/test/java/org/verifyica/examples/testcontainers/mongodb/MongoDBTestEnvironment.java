@@ -102,7 +102,7 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
      *
      * @return the MongoDB connection string
      */
-    public String connectionString() {
+    public String getConnectionString() {
         return mongoDBContainer.getConnectionString();
     }
 

@@ -55,7 +55,13 @@ public class InheritedArgumentTest {
 
     @Verifyica.Test
     @Verifyica.Order(1)
-    public void testDirectArgument(ConcreteCustomArgument argument) {
+    public void testDirectArgument1(ConcreteCustomArgument argument) {
+        System.out.printf("testDirectArgument(%s)%n", argument);
+    }
+
+    @Verifyica.Test
+    @Verifyica.Order(2)
+    public void testDirectArgument2(AbstractCustomArgument argument) {
         System.out.printf("testDirectArgument(%s)%n", argument);
     }
 
@@ -68,11 +74,11 @@ public class InheritedArgumentTest {
     @Verifyica.Test
     @Verifyica.Order(4)
     public void testArgumentContext(ArgumentContext argumentContext) {
-        Argument<ConcreteCustomArgument> argument = argumentContext.getTestArgument(ConcreteCustomArgument.class);
+        Argument<ConcreteCustomArgument> argument = argumentContext.getArgumentAs(ConcreteCustomArgument.class);
         System.out.printf("testArgumentContext(name[%s], payload[%s])%n", argument.getName(), argument.getPayload());
 
-        argumentContext.getTestArgument(AbstractCustomArgument.class);
-        argumentContext.getTestArgument().getPayload(AbstractCustomArgument.class);
+        argumentContext.getArgumentAs(AbstractCustomArgument.class);
+        argumentContext.getArgument().getPayloadAs(AbstractCustomArgument.class);
     }
 
     @Verifyica.AfterEach
@@ -98,7 +104,7 @@ public class InheritedArgumentTest {
         }
     }
 
-    private abstract static class AbstractCustomArgument implements Named {
+    public abstract static class AbstractCustomArgument implements Named {
 
         private final int value;
 

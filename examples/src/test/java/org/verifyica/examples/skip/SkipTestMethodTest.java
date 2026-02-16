@@ -45,27 +45,25 @@ public class SkipTestMethodTest {
 
     @Verifyica.Test
     public void test1(ArgumentContext argumentContext) {
-        skipIfCondition(argumentContext.testArgument().payload(Integer.class) % 2 == 0);
+        skipIfCondition(argumentContext.getArgument().getPayloadAs(Integer.class) % 2 == 0);
 
-        assertThat(argumentContext.getTestArgument().getPayload(Integer.class) % 2)
+        assertThat(argumentContext.getArgument().getPayloadAs(Integer.class) % 2)
                 .isOdd();
 
         LOGGER.info(
                 "test1(name[%s], payload[%s])",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test1");
+        storeState(argumentContext, argumentContext.getArgument().getPayload() + ".test1");
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
         LOGGER.info(
                 "test2(name[%s], payload[%s])",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        storeState(argumentContext, argumentContext.getTestArgument().getPayload() + ".test2");
+        storeState(argumentContext, argumentContext.getArgument().getPayload() + ".test2");
     }
 
     @Verifyica.Conclude

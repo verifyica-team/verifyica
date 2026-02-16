@@ -82,17 +82,6 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     /**
-     * Class to hold the singleton instance
-     */
-    private static class SingletonHolder {
-
-        /**
-         * The singleton instance
-         */
-        private static final ConcreteConfiguration SINGLETON = new ConcreteConfiguration();
-    }
-
-    /**
      * Method to load configuration Properties
      */
     private Properties load() {
@@ -202,5 +191,16 @@ public class ConcreteConfiguration implements Configuration {
                     + message
                     + " ");
         }
+    }
+
+    /**
+     * Class to hold the singleton instance
+     */
+    private static class SingletonHolder {
+
+        /**
+         * The singleton instance
+         */
+        private static final ConcreteConfiguration SINGLETON = new ConcreteConfiguration();
     }
 }

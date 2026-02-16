@@ -163,8 +163,8 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
         try {
             argumentContext = new ConcreteArgumentContext(classContext, argumentIndex, testArgument);
 
-            invocationArguments.add(argumentContext.getTestArgument().getPayload());
-            invocationArguments.add(argumentContext.getTestArgument());
+            invocationArguments.add(argumentContext.getArgument().getPayload());
+            invocationArguments.add(argumentContext.getArgument());
             invocationArguments.add(argumentContext);
 
             for (TestDescriptor testDescriptor : getChildren()) {
@@ -313,6 +313,10 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
         } else if (throwable == null) {
             return State.TEST;
         } else {
+            // Add throwable from beforeAll to throwables list so test is marked as failed
+            if (!throwables.contains(throwable)) {
+                throwables.add(throwable);
+            }
             return State.SKIP;
         }
     }
@@ -398,6 +402,11 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
             throwables.add(t);
         }
 
+        // Add throwable from afterAll to throwables list so test is marked as failed
+        if (throwable != null && !throwables.contains(throwable)) {
+            throwables.add(throwable);
+        }
+
         return State.CLOSE;
     }
 
@@ -407,7 +416,18 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
      * @return the next state
      */
     private State doCloseArgument() {
-        if (testArgument instanceof AutoCloseable) {
+        Object payload = testArgument.getPayload();
+
+        if (payload instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) payload).close();
+            } catch (Throwable t) {
+                printStackTrace(t);
+                throwables.add(t);
+            }
+        }
+
+        if (testArgument instanceof AutoCloseable && testArgument != payload) {
             try {
                 ((AutoCloseable) testArgument).close();
             } catch (Throwable t) {

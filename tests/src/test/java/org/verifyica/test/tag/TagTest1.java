@@ -45,20 +45,20 @@ public class TagTest1 {
         assertThat(argumentContext.getClassContext().getTestClassTags()).isNotEmpty();
         assertThat(argumentContext.getClassContext().getTestClassTags()).contains("Tag1");
 
-        System.out.printf("test1(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test1(%s)%n", argumentContext.getArgument());
     }
 
     @Verifyica.Test
     public void test2(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
-        System.out.printf("test2(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test2(%s)%n", argumentContext.getArgument());
     }
 
     @Verifyica.Test
     public void test3(ArgumentContext argumentContext) {
         assertArgumentContext(argumentContext);
 
-        System.out.printf("test3(%s)%n", argumentContext.getTestArgument());
+        System.out.printf("test3(%s)%n", argumentContext.getArgument());
     }
 }

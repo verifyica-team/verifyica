@@ -33,10 +33,6 @@ public class AssertionSupport {
         assertThat(engineContext.getConfiguration()).isNotNull();
         assertThat(engineContext.getVersion()).isNotBlank();
         assertThat(engineContext.getMap()).isNotNull();
-
-        assertThat(engineContext.configuration()).isNotNull();
-        assertThat(engineContext.version()).isNotBlank();
-        assertThat(engineContext.map()).isNotNull();
     }
 
     public static void assertClassContext(ClassContext classContext) {
@@ -48,13 +44,6 @@ public class AssertionSupport {
         assertThat(classContext.getTestArgumentParallelism()).isGreaterThanOrEqualTo(1);
         assertThat(classContext.getTestClassDisplayName()).isNotBlank();
 
-        assertThat(classContext.configuration()).isNotNull();
-        assertThat(classContext.map()).isNotNull();
-        assertThat(classContext.testClass()).isNotNull();
-        assertThat(classContext.testInstance()).isNotNull();
-        assertThat(classContext.testArgumentParallelism()).isGreaterThanOrEqualTo(1);
-        assertThat(classContext.testClassDisplayName()).isNotBlank();
-
         assertEngineContext(classContext.getEngineContext());
     }
 
@@ -62,14 +51,8 @@ public class AssertionSupport {
         assertThat(argumentContext).isNotNull();
         assertThat(argumentContext.getConfiguration()).isNotNull();
         assertThat(argumentContext.getMap()).isNotNull();
-        assertThat(argumentContext.getTestArgument()).isNotNull();
-        assertThat(argumentContext.getTestArgument(Object.class)).isNotNull();
-
-        assertThat(argumentContext.configuration()).isNotNull();
-        assertThat(argumentContext.map()).isNotNull();
-        assertThat(argumentContext.testArgument()).isNotNull();
-        assertThat(argumentContext.testArgument(Object.class)).isNotNull();
-
+        assertThat(argumentContext.getArgument()).isNotNull();
+        assertThat(argumentContext.getArgumentAs(Object.class)).isNotNull();
         assertClassContext(argumentContext.getClassContext());
     }
 }

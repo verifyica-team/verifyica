@@ -36,7 +36,7 @@ public class DependsOnTest {
 
     @Verifyica.Prepare
     public void prepare(ClassContext classContext) {
-        classContext.map().put(LIST, new ArrayList<String>());
+        classContext.getMap().put(LIST, new ArrayList<String>());
     }
 
     @Verifyica.Test
@@ -44,10 +44,9 @@ public class DependsOnTest {
     public void test1(ArgumentContext argumentContext) {
         System.out.printf(
                 "test1(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        argumentContext.classContext().map().getAs(LIST, List.class).add("test1");
+        argumentContext.getClassContext().getMap().getAs(LIST, List.class).add("test1");
     }
 
     @Verifyica.Test
@@ -56,10 +55,9 @@ public class DependsOnTest {
     public void test2(ArgumentContext argumentContext) {
         System.out.printf(
                 "test2(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        argumentContext.classContext().map().getAs(LIST, List.class).add("test2");
+        argumentContext.getClassContext().getMap().getAs(LIST, List.class).add("test2");
     }
 
     @Verifyica.Test
@@ -67,10 +65,9 @@ public class DependsOnTest {
     public void test3(ArgumentContext argumentContext) {
         System.out.printf(
                 "test3(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        argumentContext.classContext().map().getAs(LIST, List.class).add("test3");
+        argumentContext.getClassContext().getMap().getAs(LIST, List.class).add("test3");
     }
 
     @Verifyica.Test
@@ -79,10 +76,9 @@ public class DependsOnTest {
     public void test4(ArgumentContext argumentContext) {
         System.out.printf(
                 "test4(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        argumentContext.classContext().map().getAs(LIST, List.class).add("test4");
+        argumentContext.getClassContext().getMap().getAs(LIST, List.class).add("test4");
     }
 
     @Verifyica.Test
@@ -92,10 +88,9 @@ public class DependsOnTest {
     public void test5(ArgumentContext argumentContext) {
         System.out.printf(
                 "test5(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        argumentContext.classContext().map().getAs(LIST, List.class).add("test5");
+        argumentContext.getClassContext().getMap().getAs(LIST, List.class).add("test5");
     }
 
     @Verifyica.Test
@@ -104,20 +99,18 @@ public class DependsOnTest {
     public void test6(ArgumentContext argumentContext) {
         System.out.printf(
                 "test6(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        argumentContext.classContext().map().getAs(LIST, List.class).add("test6");
+        argumentContext.getClassContext().getMap().getAs(LIST, List.class).add("test6");
     }
 
     @Verifyica.Test
     public void test7(ArgumentContext argumentContext) {
         System.out.printf(
                 "test7(name[%s], payload[%s])%n",
-                argumentContext.getTestArgument(),
-                argumentContext.getTestArgument().getPayload());
+                argumentContext.getArgument(), argumentContext.getArgument().getPayload());
 
-        argumentContext.classContext().map().getAs(LIST, List.class).add("test7");
+        argumentContext.getClassContext().getMap().getAs(LIST, List.class).add("test7");
     }
 
     @Verifyica.Conclude
@@ -131,7 +124,7 @@ public class DependsOnTest {
         expected.add("test5");
         expected.add("test7");
 
-        List<String> actual = classContext.map().getAs(LIST);
+        List<String> actual = classContext.getMap().getAs(LIST);
 
         assertThat(actual).isEqualTo(expected);
     }
