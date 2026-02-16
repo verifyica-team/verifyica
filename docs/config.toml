@@ -1,5 +1,5 @@
 baseURL = "/"
-title = "Verifyica Testing Framework"
+title = "Verifyica"
 description = "JUnit Platform based TestEngine for argument-driven testing with advanced lifecycle management, parallelism control, and dependency management"
 languageCode = "en-us"
 defaultContentLanguage = "en"
@@ -12,13 +12,6 @@ pygmentsUseClassic = false
 pygmentsStyle = "tango"
 # Enable SEO-friendly URLs
 enableInlineShortcodes = false
-
-[markup.goldmark.renderer]
-  unsafe = true
-
-[markup.highlight]
-  style = "tango"
-  codeFences = true
 
 [module]
   [[module.imports]]
@@ -184,14 +177,6 @@ enableInlineShortcodes = false
     weight = 30
     url = "https://github.com/verifyica-team/verifyica"
     pre = "<i class='fab fa-github'></i>"
-
-[params]
-  # Add social sharing image
-  images = ["images/site-logo.png"]
-
-[params.twitter]
-  card = "summary_large_image"
-  site = "@verifyica"
 
 [outputs]
   home = ["HTML"]

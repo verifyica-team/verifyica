@@ -17,22 +17,32 @@ A Verifyica test class is a plain Java class with annotated methods. Unlike JUni
 ```java
 package com.example.tests;
 
-import org.verifyica.api.Verifyica;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Arrays;
+import org.verifyica.api.Verifyica;
+import org.verifyica.api.ClassContext;
 
-public class BasicTest {
+public class MyFirstTest {
 
-    // Arguments are tested in parallel by default
-    @Verifyica.ArgumentSupplier
-    public static Object arguments() {
-        return Arrays.asList("arg1", "arg2", "arg3");
+  // Arguments are tested in parallel by default
+  @Verifyica.ArgumentSupplier
+  public static Object arguments() {
+    Collection<String> collection = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      collection.add("argument-" + i);
     }
+    return collection;
+  }
 
-    @Verifyica.Test
-    public void testMethod(String argument) {
-        // Test logic
-    }
+  /**
+   * The actual test.
+   */
+  @Verifyica.Test
+  public void testWithArgument(String argument) {
+    System.out.println("Testing with: " + argument);
+    assert argument != null;
+    assert argument.startsWith("argument-");
+  }
 }
 ```
 
@@ -132,54 +142,66 @@ Verifyica provides a complete lifecycle for each argument.
 ### Complete Lifecycle
 
 ```java
+package com.example.tests;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.verifyica.api.ClassContext;
+import org.verifyica.api.Verifyica;
+
 public class CompleteLifecycleTest {
 
+    @Verifyica.ArgumentSupplier(parallelism = 2)
+    public static Object arguments() {
+      Collection<String> collection = new ArrayList<>();
+      for (int i = 0; i < 10; i++) {
+        collection.add("string-" + i);
+      }
+      return collection;
+    }
+
     @Verifyica.Prepare
-    public void prepare() {
-        // Called once before processing any arguments
-        // Use for global setup (e.g., starting services)
+    public void prepare(ClassContext classContext) {
+        System.out.println("Prepare: Called once before all arguments");
     }
 
     @Verifyica.BeforeAll
     public void beforeAll(String argument) {
-        // Called once before all test methods for this argument
-        // Use for argument-specific setup (e.g., database connection)
+        System.out.println("BeforeAll: " + argument);
     }
 
     @Verifyica.BeforeEach
     public void beforeEach(String argument) {
-        // Called before each test method for this argument
-        // Use for test-specific setup (e.g., clean test data)
+        System.out.println("BeforeEach: " + argument);
     }
 
     @Verifyica.Test
     public void test1(String argument) {
-        // Test method 1
+        System.out.println("Test1: " + argument);
     }
 
     @Verifyica.Test
     public void test2(String argument) {
-        // Test method 2
+        System.out.println("Test2: " + argument);
     }
 
     @Verifyica.AfterEach
     public void afterEach(String argument) {
-        // Called after each test method for this argument
-        // Use for test-specific cleanup
+        System.out.println("AfterEach: " + argument);
     }
 
     @Verifyica.AfterAll
     public void afterAll(String argument) {
-        // Called once after all test methods for this argument
-        // Use for argument-specific cleanup (e.g., close connections)
+        System.out.println("AfterAll: " + argument);
     }
 
     @Verifyica.Conclude
-    public void conclude() {
-        // Called once after processing all arguments
-        // Use for global cleanup (e.g., stopping services)
+    public void conclude(ClassContext classContext) {
+        System.out.println("Conclude: Called once after all arguments");
     }
 }
+
 ```
 
 ### Lifecycle Execution Order

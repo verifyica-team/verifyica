@@ -163,9 +163,11 @@ package com.example.tests;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.verifyica.api.ClassContext;
 import org.verifyica.api.Verifyica;
 
-public class ParallelArgumentTest {
+public class CompleteLifecycleTest {
 
     @Verifyica.ArgumentSupplier(parallelism = 2)
     public static Object arguments() {
@@ -177,7 +179,7 @@ public class ParallelArgumentTest {
     }
 
     @Verifyica.Prepare
-    public void prepare() {
+    public void prepare(ClassContext classContext) {
         System.out.println("Prepare: Called once before all arguments");
     }
 
@@ -212,7 +214,7 @@ public class ParallelArgumentTest {
     }
 
     @Verifyica.Conclude
-    public void conclude() {
+    public void conclude(ClassContext classContext) {
         System.out.println("Conclude: Called once after all arguments");
     }
 }
