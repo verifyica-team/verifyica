@@ -14,178 +14,181 @@ pygmentsStyle = "tango"
 enableInlineShortcodes = false
 
 [module]
-  [[module.imports]]
-    path = "github.com/google/docsy"
-    disable = false
-  [[module.imports]]
-    path = "github.com/google/docsy/dependencies"
-    disable = false
+[[module.imports]]
+path = "github.com/google/docsy"
+disable = false
+[[module.imports]]
+path = "github.com/google/docsy/dependencies"
+disable = false
 
 [languages]
-  [languages.en]
-    languageName = "English"
-    weight = 1
-    contentDir = "content/en"
-    [languages.en.params]
-      title = "Verifyica"
-      description = "JUnit Platform based TestEngine for argument-driven testing"
+[languages.en]
+languageName = "English"
+weight = 1
+contentDir = "content/en"
+[languages.en.params]
+title = "Verifyica"
+description = "JUnit Platform based TestEngine for argument-driven testing"
 
 [markup]
-  [markup.goldmark]
-    [markup.goldmark.renderer]
-      unsafe = true
-  [markup.highlight]
-    style = "tango"
-  [markup.tableOfContents]
-    endLevel = 3
-    ordered = false
-    startLevel = 2
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true
+[markup.highlight]
+style = "tango"
+[markup.tableOfContents]
+endLevel = 3
+ordered = false
+startLevel = 2
 
 [params]
-  copyright = "Verifyica project authors and contributors. All rights reserved."
-  version = "1.0.0"
-  version_menu = "Releases"
-  archived_version = false
-  url_latest_version = "https://verifyica.org"
-  github_repo = "https://github.com/verifyica-team/verifyica"
-  github_project_repo = "https://github.com/verifyica-team/verifyica"
-  github_branch = "release-1.0.0"
+copyright = "Verifyica project authors and contributors. All rights reserved."
+version = "1.0.0"
+version_menu = "Releases"
+archived_version = false
+url_latest_version = "https://verifyica.org"
+github_repo = "https://github.com/verifyica-team/verifyica"
+github_project_repo = "https://github.com/verifyica-team/verifyica"
+github_branch = "release-1.0.0"
 
-  # Repository configuration for edit links
-  [params.github]
-    repo = "https://github.com/verifyica-team/verifyica"
-    branch = "release-1.0.0"
-    doc_subdir = "docs"
-    edit_button = true
-  gcs_engine_id = ""
-  offlineSearch = true
-  offlineSearchSummaryLength = 70
-  offlineSearchMaxResults = 10
-  prism_syntax_highlighting = false
+# Repository configuration for edit links
+[params.github]
+repo = "https://github.com/verifyica-team/verifyica"
+branch = "release-1.0.0"
+doc_subdir = "docs"
+edit_button = true
 
-  # Copy to clipboard and edit links
-  copyEnable = true
-  ui = true
+gcs_engine_id = ""
+offlineSearch = true
+offlineSearchSummaryLength = 70
+offlineSearchMaxResults = 10
+prism_syntax_highlighting = false
 
-  # SEO and meta improvements
-  twitter = "verifyica"
-  description = "JUnit Platform based TestEngine for argument-driven testing with advanced lifecycle management"
-  author = "Verifyica Team"
+# Copy to clipboard and edit links
+copyEnable = true
+ui = true
 
-  # Enable edit on GitHub links
-  editPage = true
+# SEO and meta improvements
+twitter = "verifyica"
+description = "JUnit Platform based TestEngine for argument-driven testing with advanced lifecycle management"
+author = "Verifyica Team"
 
-  # Add social sharing
-  [params.social]
-    twitter = "verifyica"
-    github = "verifyica-team"
+# Enable edit on GitHub links
+editPage = true
 
-  [params.mermaid]
-    enable = true
-    theme = "default"
+# Add social sharing
+[params.social]
+twitter = "verifyica"
+github = "verifyica-team"
 
-  [params.ui]
-    breadcrumb_disable = false
-    navbar_logo = false
-    navbar_translucent_over_cover_disable = false
-    sidebar_menu_compact = false
-    sidebar_menu_foldable = true
-    sidebar_cache_limit = 10
-    sidebar_search_disable = false
+[params.mermaid]
+enable = true
+theme = "default"
 
-    # Enable copy to clipboard for code blocks
-    copy_button = true
+[params.ui]
+breadcrumb_disable = false
+navbar_logo = false
+navbar_translucent_over_cover_disable = false
+sidebar_menu_compact = false
+sidebar_menu_foldable = true
+sidebar_cache_limit = 10
+sidebar_search_disable = false
 
-    # Enable edit on GitHub links
-    edit_button = true
+# Enable copy to clipboard for code blocks
+copy_button = true
 
-  [[menu.main]]
-    name = "Documentation"
-    weight = 10
-    url = "/docs/"
-    identifier = "documentation"
+# Enable edit on GitHub links
+edit_button = true
 
-    [[menu.main]]
-      parent = "documentation"
-      name = "Introduction"
-      weight = 10
-      url = "/docs/introduction/"
+[params.ui.feedback]
+enable = true
+yes = "Glad to hear it! Please <a href=\"https://github.com/verifyica-team/verifyica/issues/new\">tell us how we can improve</a>."
+no  = "Sorry to hear that. Please <a href=\"https://github.com/verifyica-team/verifyica/issues/new\">tell us how we can improve</a>."
 
-    [[menu.main]]
-      parent = "documentation"
-      name = "Getting Started"
-      weight = 20
-      url = "/docs/getting-started/"
-    
-    [[menu.main]]
-      parent = "documentation"
-      name = "Advanced Topics"
-      weight = 30
-      url = "/docs/advanced-topics/"
+[params.ui.readingtime]
+enable = false
 
-    [[menu.main]]
-      parent = "documentation"
-      name = "FAQ"
-      weight = 40
-      url = "/docs/faq/"
+[params.links]
+[[params.links.user]]
+name = "GitHub Discussions"
+url = "https://github.com/verifyica-team/verifyica/discussions"
+icon = "fab fa-github"
+desc = "Discussion and help from the community"
 
-    [params.ui.feedback]
-      enable = true
-      yes = 'Glad to hear it! Please <a href="https://github.com/verifyica-team/verifyica/issues/new">tell us how we can improve</a>.'
-      no = 'Sorry to hear that. Please <a href="https://github.com/verifyica-team/verifyica/issues/new">tell us how we can improve</a>.'
+[[params.links.user]]
+name = "GitHub Issues"
+url = "https://github.com/verifyica-team/verifyica/issues"
+icon = "fab fa-github"
+desc = "Report bugs or request features"
 
-    [params.ui.readingtime]
-      enable = false
+[[params.links.developer]]
+name = "GitHub"
+url = "https://github.com/verifyica-team/verifyica"
+icon = "fab fa-github"
+desc = "Development takes place here!"
 
-  [params.links]
-    [[params.links.user]]
-      name = "GitHub Discussions"
-      url = "https://github.com/verifyica-team/verifyica/discussions"
-      icon = "fab fa-github"
-      desc = "Discussion and help from the community"
-    [[params.links.user]]
-      name = "GitHub Issues"
-      url = "https://github.com/verifyica-team/verifyica/issues"
-      icon = "fab fa-github"
-      desc = "Report bugs or request features"
-    [[params.links.developer]]
-      name = "GitHub"
-      url = "https://github.com/verifyica-team/verifyica"
-      icon = "fab fa-github"
-      desc = "Development takes place here!"
-    [[params.links.developer]]
-      name = "Maven Central"
-      url = "https://central.sonatype.com/artifact/org.verifyica/verifyica-api"
-      icon = "fas fa-download"
-      desc = "Download releases"
+[[params.links.developer]]
+name = "Maven Central"
+url = "https://central.sonatype.com/artifact/org.verifyica/verifyica-api"
+icon = "fas fa-download"
+desc = "Download releases"
 
+# NOTE: Menu is defined ONCE (below) to avoid duplicate "Documentation" items.
 [menu]
-  [[menu.main]]
-    name = "Documentation"
-    weight = 10
-    url = "/docs/"
-  [[menu.main]]
-    name = "About"
-    weight = 20
-    url = "/docs/about/"
-  [[menu.main]]
-    name = "Reference"
-    weight = 25
-    url = "/docs/reference/"
-  [[menu.main]]
-    name = "GitHub"
-    weight = 30
-    url = "https://github.com/verifyica-team/verifyica"
-    pre = "<i class='fab fa-github'></i>"
+[[menu.main]]
+name = "Documentation"
+weight = 10
+identifier = "documentation"
+url = "/docs/"
+
+[[menu.main]]
+parent = "documentation"
+name = "Introduction"
+weight = 10
+url = "/docs/introduction/"
+
+[[menu.main]]
+parent = "documentation"
+name = "Getting Started"
+weight = 20
+url = "/docs/getting-started/"
+
+[[menu.main]]
+parent = "documentation"
+name = "Advanced Topics"
+weight = 30
+url = "/docs/advanced-topics/"
+
+[[menu.main]]
+parent = "documentation"
+name = "FAQ"
+weight = 40
+url = "/docs/faq/"
+
+[[menu.main]]
+name = "About"
+weight = 20
+url = "/docs/about/"
+
+[[menu.main]]
+name = "Reference"
+weight = 25
+url = "/docs/reference/"
+
+[[menu.main]]
+name = "GitHub"
+weight = 30
+url = "https://github.com/verifyica-team/verifyica"
+pre = "<i class='fab fa-github'></i>"
 
 [outputs]
-  home = ["HTML"]
-  page = ["HTML"]
-  section = ["HTML", "RSS", "print"]
+home = ["HTML"]
+page = ["HTML"]
+section = ["HTML", "RSS", "print"]
 
 [outputFormats.print]
-  baseName = "index"
-  isPlainText = false
-  mediaType = "text/html"
-  protocol = "https://"
-  permalinkable = false
+baseName = "index"
+isPlainText = false
+mediaType = "text/html"
+protocol = "https://"
+permalinkable = false
