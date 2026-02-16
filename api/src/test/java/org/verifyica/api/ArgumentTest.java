@@ -354,6 +354,155 @@ public class ArgumentTest {
     }
 
     @Test
+    public void testOfStringNull() {
+        Argument<?> argument = Argument.ofString(null);
+
+        assertThat(argument).isNotNull();
+        assertThat(argument.getName()).isEqualTo("String=/null/");
+        assertThat(argument.toString()).isEqualTo("String=/null/");
+        assertThat(argument.hasPayload()).isFalse();
+        assertThat(argument.getPayload()).isNull();
+    }
+
+    @Test
+    public void testOfStringEmpty() {
+        Argument<?> argument = Argument.ofString("");
+
+        assertThat(argument).isNotNull();
+        assertThat(argument.getName()).isEqualTo("String=/empty/");
+        assertThat(argument.toString()).isEqualTo("String=/empty/");
+        assertThat(argument.hasPayload()).isTrue();
+        assertThat(argument.getPayload()).isNotNull();
+        assertThat(argument.getPayload()).isEqualTo("");
+    }
+
+    @Test
+    public void testOfBigIntegerNull() {
+        Argument<?> argument = Argument.ofBigInteger((BigInteger) null);
+
+        assertThat(argument).isNotNull();
+        assertThat(argument.getName()).isEqualTo("BigInteger=/null/");
+        assertThat(argument.hasPayload()).isFalse();
+        assertThat(argument.getPayload()).isNull();
+    }
+
+    @Test
+    public void testOfBigIntegerStringNull() {
+        Argument<?> argument = Argument.ofBigInteger((String) null);
+
+        assertThat(argument).isNotNull();
+        assertThat(argument.getName()).isEqualTo("BigInteger=/null/");
+        assertThat(argument.hasPayload()).isFalse();
+        assertThat(argument.getPayload()).isNull();
+    }
+
+    @Test
+    public void testOfBigIntegerStringValid() {
+        Argument<?> argument = Argument.ofBigInteger("12345678901234567890");
+
+        assertThat(argument).isNotNull();
+        assertThat(argument.getName()).isEqualTo("12345678901234567890");
+        assertThat(argument.hasPayload()).isTrue();
+        assertThat(argument.getPayload()).isNotNull();
+        assertThat(argument.getPayload()).isInstanceOf(BigInteger.class);
+        assertThat(argument.getPayload()).isEqualTo(new BigInteger("12345678901234567890"));
+    }
+
+    @Test
+    public void testOfBigIntegerStringInvalidNumber() {
+        assertThatExceptionOfType(NumberFormatException.class).isThrownBy(() -> Argument.ofBigInteger("not-a-number"));
+    }
+
+    @Test
+    public void testOfBigDecimalNull() {
+        Argument<?> argument = Argument.ofBigDecimal((BigDecimal) null);
+
+        assertThat(argument).isNotNull();
+        assertThat(argument.getName()).isEqualTo("BigDecimal=/null/");
+        assertThat(argument.hasPayload()).isFalse();
+        assertThat(argument.getPayload()).isNull();
+    }
+
+    @Test
+    public void testOfBigDecimalStringNull() {
+        Argument<?> argument = Argument.ofBigDecimal((String) null);
+
+        assertThat(argument).isNotNull();
+        assertThat(argument.getName()).isEqualTo("BigDecimal=/null/");
+        assertThat(argument.hasPayload()).isFalse();
+        assertThat(argument.getPayload()).isNull();
+    }
+
+    @Test
+    public void testOfBigDecimalStringValid() {
+        Argument<?> argument = Argument.ofBigDecimal("12345.67890");
+
+        assertThat(argument).isNotNull();
+        assertThat(argument.getName()).isEqualTo("12345.67890");
+        assertThat(argument.hasPayload()).isTrue();
+        assertThat(argument.getPayload()).isNotNull();
+        assertThat(argument.getPayload()).isInstanceOf(BigDecimal.class);
+        assertThat(argument.getPayload()).isEqualTo(new BigDecimal("12345.67890"));
+    }
+
+    @Test
+    public void testOfBigDecimalStringInvalidNumber() {
+        assertThatExceptionOfType(NumberFormatException.class).isThrownBy(() -> Argument.ofBigDecimal("not-a-number"));
+    }
+
+    @Test
+    public void testOfPrimitiveWrapperTypes() {
+        // Boolean wrapper
+        Argument<Boolean> boolArg = Argument.ofBoolean(true);
+        assertThat(boolArg.getPayload()).isInstanceOf(Boolean.class);
+        assertThat(boolArg.getName()).isEqualTo("true");
+
+        // Byte wrapper
+        Argument<Byte> byteArg = Argument.ofByte((byte) 42);
+        assertThat(byteArg.getPayload()).isInstanceOf(Byte.class);
+        assertThat(byteArg.getName()).isEqualTo("42");
+
+        // Character wrapper
+        Argument<Character> charArg = Argument.ofChar('A');
+        assertThat(charArg.getPayload()).isInstanceOf(Character.class);
+        assertThat(charArg.getName()).isEqualTo("A");
+
+        // Short wrapper
+        Argument<Short> shortArg = Argument.ofShort((short) 1000);
+        assertThat(shortArg.getPayload()).isInstanceOf(Short.class);
+        assertThat(shortArg.getName()).isEqualTo("1000");
+
+        // Integer wrapper
+        Argument<Integer> intArg = Argument.ofInt(42);
+        assertThat(intArg.getPayload()).isInstanceOf(Integer.class);
+        assertThat(intArg.getName()).isEqualTo("42");
+
+        // Long wrapper
+        Argument<Long> longArg = Argument.ofLong(123456789L);
+        assertThat(longArg.getPayload()).isInstanceOf(Long.class);
+        assertThat(longArg.getName()).isEqualTo("123456789");
+
+        // Float wrapper
+        Argument<Float> floatArg = Argument.ofFloat(3.14f);
+        assertThat(floatArg.getPayload()).isInstanceOf(Float.class);
+        assertThat(floatArg.getName()).isEqualTo("3.14");
+
+        // Double wrapper
+        Argument<Double> doubleArg = Argument.ofDouble(3.14159);
+        assertThat(doubleArg.getPayload()).isInstanceOf(Double.class);
+        assertThat(doubleArg.getName()).isEqualTo("3.14159");
+    }
+
+    @Test
+    public void testPayloadTypeNullThrows() {
+        Argument<String> argument = Argument.of("test", "value");
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> argument.getPayloadAs(null))
+                .withMessage("type is null");
+    }
+
+    @Test
     public void testCasting() {
         Argument<?> argument = Argument.of("testObject1", new TestObject1());
 

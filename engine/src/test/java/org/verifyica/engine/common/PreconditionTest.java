@@ -21,33 +21,33 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
 @DisplayName("Precondition Tests")
-class PreconditionTest {
+public class PreconditionTest {
 
     @Nested
     @DisplayName("NotNull Tests")
-    class NotNullTests {
+    public class NotNullTests {
 
         @Test
         @DisplayName("Should not throw exception for non-null object")
-        void shouldNotThrowExceptionForNonNullObject() {
+        public void shouldNotThrowExceptionForNonNullObject() {
             assertThatCode(() -> Precondition.notNull("test", "message")).doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("Should not throw exception for non-null integer")
-        void shouldNotThrowExceptionForNonNullInteger() {
+        public void shouldNotThrowExceptionForNonNullInteger() {
             assertThatCode(() -> Precondition.notNull(123, "message")).doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("Should not throw exception for empty string")
-        void shouldNotThrowExceptionForEmptyString() {
+        public void shouldNotThrowExceptionForEmptyString() {
             assertThatCode(() -> Precondition.notNull("", "message")).doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("Should throw exception when object is null")
-        void shouldThrowExceptionWhenObjectIsNull() {
+        public void shouldThrowExceptionWhenObjectIsNull() {
             assertThatThrownBy(() -> Precondition.notNull(null, "Object is null"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Object is null");
@@ -55,7 +55,7 @@ class PreconditionTest {
 
         @Test
         @DisplayName("Should use provided message in exception")
-        void shouldUseProvidedMessageInException() {
+        public void shouldUseProvidedMessageInException() {
             String customMessage = "Custom error message";
 
             assertThatThrownBy(() -> Precondition.notNull(null, customMessage))
@@ -66,32 +66,32 @@ class PreconditionTest {
 
     @Nested
     @DisplayName("NotNullOrBlank Tests")
-    class NotNullOrBlankTests {
+    public class NotNullOrBlankTests {
 
         @Test
         @DisplayName("Should not throw exception for valid string")
-        void shouldNotThrowExceptionForValidString() {
+        public void shouldNotThrowExceptionForValidString() {
             assertThatCode(() -> Precondition.notNullOrBlank("test", "null message", "blank message"))
                     .doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("Should not throw exception for string with only non-whitespace")
-        void shouldNotThrowExceptionForStringWithOnlyNonWhitespace() {
+        public void shouldNotThrowExceptionForStringWithOnlyNonWhitespace() {
             assertThatCode(() -> Precondition.notNullOrBlank("abc", "null message", "blank message"))
                     .doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("Should not throw exception for string with leading/trailing whitespace")
-        void shouldNotThrowExceptionForStringWithLeadingTrailingWhitespace() {
+        public void shouldNotThrowExceptionForStringWithLeadingTrailingWhitespace() {
             assertThatCode(() -> Precondition.notNullOrBlank("  test  ", "null message", "blank message"))
                     .doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("Should throw exception with null message when string is null")
-        void shouldThrowExceptionWithNullMessageWhenStringIsNull() {
+        public void shouldThrowExceptionWithNullMessageWhenStringIsNull() {
             assertThatThrownBy(() -> Precondition.notNullOrBlank(null, "String is null", "String is blank"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("String is null");
@@ -99,7 +99,7 @@ class PreconditionTest {
 
         @Test
         @DisplayName("Should throw exception with blank message when string is empty")
-        void shouldThrowExceptionWithBlankMessageWhenStringIsEmpty() {
+        public void shouldThrowExceptionWithBlankMessageWhenStringIsEmpty() {
             assertThatThrownBy(() -> Precondition.notNullOrBlank("", "String is null", "String is blank"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("String is blank");
@@ -107,7 +107,7 @@ class PreconditionTest {
 
         @Test
         @DisplayName("Should throw exception with blank message when string contains only spaces")
-        void shouldThrowExceptionWithBlankMessageWhenStringContainsOnlySpaces() {
+        public void shouldThrowExceptionWithBlankMessageWhenStringContainsOnlySpaces() {
             assertThatThrownBy(() -> Precondition.notNullOrBlank("   ", "String is null", "String is blank"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("String is blank");
@@ -115,7 +115,7 @@ class PreconditionTest {
 
         @Test
         @DisplayName("Should throw exception with blank message when string contains only tabs")
-        void shouldThrowExceptionWithBlankMessageWhenStringContainsOnlyTabs() {
+        public void shouldThrowExceptionWithBlankMessageWhenStringContainsOnlyTabs() {
             assertThatThrownBy(() -> Precondition.notNullOrBlank("\t\t", "String is null", "String is blank"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("String is blank");
@@ -123,7 +123,7 @@ class PreconditionTest {
 
         @Test
         @DisplayName("Should throw exception with blank message when string contains only newlines")
-        void shouldThrowExceptionWithBlankMessageWhenStringContainsOnlyNewlines() {
+        public void shouldThrowExceptionWithBlankMessageWhenStringContainsOnlyNewlines() {
             assertThatThrownBy(() -> Precondition.notNullOrBlank("\n\n", "String is null", "String is blank"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("String is blank");
@@ -131,7 +131,7 @@ class PreconditionTest {
 
         @Test
         @DisplayName("Should throw exception with blank message when string contains mixed whitespace")
-        void shouldThrowExceptionWithBlankMessageWhenStringContainsMixedWhitespace() {
+        public void shouldThrowExceptionWithBlankMessageWhenStringContainsMixedWhitespace() {
             assertThatThrownBy(() -> Precondition.notNullOrBlank(" \t\n ", "String is null", "String is blank"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("String is blank");
@@ -140,25 +140,25 @@ class PreconditionTest {
 
     @Nested
     @DisplayName("IsTrue Tests")
-    class IsTrueTests {
+    public class IsTrueTests {
 
         @Test
         @DisplayName("Should not throw exception when condition is true")
-        void shouldNotThrowExceptionWhenConditionIsTrue() {
+        public void shouldNotThrowExceptionWhenConditionIsTrue() {
             assertThatCode(() -> Precondition.isTrue(true, "Condition is false"))
                     .doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("Should not throw exception for expression that evaluates to true")
-        void shouldNotThrowExceptionForExpressionThatEvaluatesToTrue() {
+        public void shouldNotThrowExceptionForExpressionThatEvaluatesToTrue() {
             assertThatCode(() -> Precondition.isTrue(5 > 3, "Condition is false"))
                     .doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("Should throw exception when condition is false")
-        void shouldThrowExceptionWhenConditionIsFalse() {
+        public void shouldThrowExceptionWhenConditionIsFalse() {
             assertThatThrownBy(() -> Precondition.isTrue(false, "Condition is false"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Condition is false");
@@ -166,7 +166,7 @@ class PreconditionTest {
 
         @Test
         @DisplayName("Should throw exception for expression that evaluates to false")
-        void shouldThrowExceptionForExpressionThatEvaluatesToFalse() {
+        public void shouldThrowExceptionForExpressionThatEvaluatesToFalse() {
             assertThatThrownBy(() -> Precondition.isTrue(5 < 3, "Value must be greater"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Value must be greater");
@@ -174,7 +174,7 @@ class PreconditionTest {
 
         @Test
         @DisplayName("Should use provided message in exception")
-        void shouldUseProvidedMessageInException() {
+        public void shouldUseProvidedMessageInException() {
             String customMessage = "Custom validation failed";
 
             assertThatThrownBy(() -> Precondition.isTrue(false, customMessage))
@@ -185,25 +185,25 @@ class PreconditionTest {
 
     @Nested
     @DisplayName("IsFalse Tests")
-    class IsFalseTests {
+    public class IsFalseTests {
 
         @Test
         @DisplayName("Should not throw exception when condition is false")
-        void shouldNotThrowExceptionWhenConditionIsFalse() {
+        public void shouldNotThrowExceptionWhenConditionIsFalse() {
             assertThatCode(() -> Precondition.isFalse(false, "Condition is true"))
                     .doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("Should not throw exception for expression that evaluates to false")
-        void shouldNotThrowExceptionForExpressionThatEvaluatesToFalse() {
+        public void shouldNotThrowExceptionForExpressionThatEvaluatesToFalse() {
             assertThatCode(() -> Precondition.isFalse(5 < 3, "Condition is true"))
                     .doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("Should throw exception when condition is true")
-        void shouldThrowExceptionWhenConditionIsTrue() {
+        public void shouldThrowExceptionWhenConditionIsTrue() {
             assertThatThrownBy(() -> Precondition.isFalse(true, "Condition is true"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Condition is true");
@@ -211,7 +211,7 @@ class PreconditionTest {
 
         @Test
         @DisplayName("Should throw exception for expression that evaluates to true")
-        void shouldThrowExceptionForExpressionThatEvaluatesToTrue() {
+        public void shouldThrowExceptionForExpressionThatEvaluatesToTrue() {
             assertThatThrownBy(() -> Precondition.isFalse(5 > 3, "Value must not be greater"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Value must not be greater");
@@ -219,7 +219,7 @@ class PreconditionTest {
 
         @Test
         @DisplayName("Should use provided message in exception")
-        void shouldUseProvidedMessageInException() {
+        public void shouldUseProvidedMessageInException() {
             String customMessage = "Custom validation failed";
 
             assertThatThrownBy(() -> Precondition.isFalse(true, customMessage))
@@ -230,11 +230,11 @@ class PreconditionTest {
 
     @Nested
     @DisplayName("Combined Usage Tests")
-    class CombinedUsageTests {
+    public class CombinedUsageTests {
 
         @Test
         @DisplayName("Should validate multiple preconditions in sequence")
-        void shouldValidateMultiplePreconditionsInSequence() {
+        public void shouldValidateMultiplePreconditionsInSequence() {
             String value = "test";
             int number = 5;
 
@@ -249,7 +249,7 @@ class PreconditionTest {
 
         @Test
         @DisplayName("Should fail on first violation")
-        void shouldFailOnFirstViolation() {
+        public void shouldFailOnFirstViolation() {
             assertThatThrownBy(() -> {
                         Precondition.notNull(null, "First check failed");
                         Precondition.isTrue(false, "Second check failed");

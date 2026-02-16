@@ -30,31 +30,31 @@ public class ExcludeTaggedClassFilterTest {
 
     @Nested
     @DisplayName("Factory Method Tests")
-    class FactoryMethodTests {
+    public class FactoryMethodTests {
 
         @Test
         @DisplayName("should create filter with valid regex")
-        void shouldCreateFilterWithValidRegex() {
+        public void shouldCreateFilterWithValidRegex() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create(".*test.*");
             assertThat(filter).isNotNull();
         }
 
         @Test
         @DisplayName("should throw exception for null regex")
-        void shouldThrowExceptionForNullRegex() {
+        public void shouldThrowExceptionForNullRegex() {
             assertThatThrownBy(() -> ExcludeTaggedClassFilter.create(null)).isInstanceOf(NullPointerException.class);
         }
 
         @Test
         @DisplayName("should throw exception for invalid regex")
-        void shouldThrowExceptionForInvalidRegex() {
+        public void shouldThrowExceptionForInvalidRegex() {
             assertThatThrownBy(() -> ExcludeTaggedClassFilter.create("[invalid"))
                     .isInstanceOf(PatternSyntaxException.class);
         }
 
         @Test
         @DisplayName("should create filter with empty string regex")
-        void shouldCreateFilterWithEmptyStringRegex() {
+        public void shouldCreateFilterWithEmptyStringRegex() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("");
             assertThat(filter).isNotNull();
         }
@@ -62,11 +62,11 @@ public class ExcludeTaggedClassFilterTest {
 
     @Nested
     @DisplayName("Type Tests")
-    class TypeTests {
+    public class TypeTests {
 
         @Test
         @DisplayName("should return EXCLUDE_TAGGED_CLASS type")
-        void shouldReturnExcludeTaggedClassType() {
+        public void shouldReturnExcludeTaggedClassType() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create(".*");
             assertThat(filter.getType()).isEqualTo(Filter.Type.EXCLUDE_TAGGED_CLASS);
         }
@@ -74,97 +74,97 @@ public class ExcludeTaggedClassFilterTest {
 
     @Nested
     @DisplayName("Matches Tests")
-    class MatchesTests {
+    public class MatchesTests {
 
         @Test
-        @DisplayName("should match class with single tag")
-        void shouldMatchClassWithSingleTag() {
+        @DisplayName("should match public class with single tag")
+        public void shouldMatchClassWithSingleTag() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("slow");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
         }
 
         @Test
-        @DisplayName("should match class with multiple tags")
-        void shouldMatchClassWithMultipleTags() {
+        @DisplayName("should match public class with multiple tags")
+        public void shouldMatchClassWithMultipleTags() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("flaky");
             assertThat(filter.matches(MultipleTagClass.class)).isTrue();
         }
 
         @Test
         @DisplayName("should not match untagged class")
-        void shouldNotMatchUntaggedClass() {
+        public void shouldNotMatchUntaggedClass() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("slow");
             assertThat(filter.matches(UntaggedClass.class)).isFalse();
         }
 
         @Test
-        @DisplayName("should match class with wildcard pattern")
-        void shouldMatchClassWithWildcardPattern() {
+        @DisplayName("should match public class with wildcard pattern")
+        public void shouldMatchClassWithWildcardPattern() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create(".*");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
             assertThat(filter.matches(MultipleTagClass.class)).isTrue();
         }
 
         @Test
-        @DisplayName("should match class with regex pattern")
-        void shouldMatchClassWithRegexPattern() {
+        @DisplayName("should match public class with regex pattern")
+        public void shouldMatchClassWithRegexPattern() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("slow|flaky");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
             assertThat(filter.matches(FlakyTagClass.class)).isTrue();
         }
 
         @Test
-        @DisplayName("should match class with partial tag match")
-        void shouldMatchClassWithPartialTagMatch() {
+        @DisplayName("should match public class with partial tag match")
+        public void shouldMatchClassWithPartialTagMatch() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create(".*manual.*");
             assertThat(filter.matches(ManualTestTagClass.class)).isTrue();
         }
 
         @Test
         @DisplayName("should not match when tag pattern does not match")
-        void shouldNotMatchWhenTagPatternDoesNotMatch() {
+        public void shouldNotMatchWhenTagPatternDoesNotMatch() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("database");
             assertThat(filter.matches(SingleTagClass.class)).isFalse();
         }
 
         @Test
         @DisplayName("should match any tag in multiple tags")
-        void shouldMatchAnyTagInMultipleTags() {
+        public void shouldMatchAnyTagInMultipleTags() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("flaky");
             assertThat(filter.matches(MultipleTagClass.class)).isTrue();
         }
 
         @Test
         @DisplayName("should handle case-sensitive tag matching")
-        void shouldHandleCaseSensitiveTagMatching() {
+        public void shouldHandleCaseSensitiveTagMatching() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("Slow");
             assertThat(filter.matches(SingleTagClass.class)).isFalse();
         }
 
         @Test
-        @DisplayName("should handle null class gracefully")
-        void shouldHandleNullClassGracefully() {
+        @DisplayName("should handle null public class gracefully")
+        public void shouldHandleNullClassGracefully() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create(".*");
             assertThatThrownBy(() -> filter.matches(null)).isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
-        @DisplayName("should match class with trimmed tag")
-        void shouldMatchClassWithTrimmedTag() {
+        @DisplayName("should match public class with trimmed tag")
+        public void shouldMatchClassWithTrimmedTag() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("trimmed");
             assertThat(filter.matches(TrimmedTagClass.class)).isTrue();
         }
 
         @Test
-        @DisplayName("should not match class with empty tag")
-        void shouldNotMatchClassWithEmptyTag() {
+        @DisplayName("should not match public class with empty tag")
+        public void shouldNotMatchClassWithEmptyTag() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create(".*");
             assertThat(filter.matches(EmptyTagClass.class)).isFalse();
         }
 
         @Test
         @DisplayName("should match with exact pattern")
-        void shouldMatchWithExactPattern() {
+        public void shouldMatchWithExactPattern() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("^slow$");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
             assertThat(filter.matches(SlowTestTagClass.class)).isFalse();
@@ -172,7 +172,7 @@ public class ExcludeTaggedClassFilterTest {
 
         @Test
         @DisplayName("should match multiple classes with same tag")
-        void shouldMatchMultipleClassesWithSameTag() {
+        public void shouldMatchMultipleClassesWithSameTag() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("slow");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
             assertThat(filter.matches(MultipleTagClass.class)).isTrue();
@@ -180,7 +180,7 @@ public class ExcludeTaggedClassFilterTest {
 
         @Test
         @DisplayName("should exclude integration tests")
-        void shouldExcludeIntegrationTests() {
+        public void shouldExcludeIntegrationTests() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create(".*integration.*");
             assertThat(filter.matches(IntegrationTagClass.class)).isTrue();
             assertThat(filter.matches(SingleTagClass.class)).isFalse();
@@ -189,32 +189,32 @@ public class ExcludeTaggedClassFilterTest {
 
     @Nested
     @DisplayName("Edge Cases")
-    class EdgeCaseTests {
+    public class EdgeCaseTests {
 
         @Test
         @DisplayName("should handle empty string pattern")
-        void shouldHandleEmptyStringPattern() {
+        public void shouldHandleEmptyStringPattern() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
         }
 
         @Test
         @DisplayName("should handle special regex characters in tag")
-        void shouldHandleSpecialRegexCharactersInTag() {
+        public void shouldHandleSpecialRegexCharactersInTag() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("\\$special.*");
             assertThat(filter.matches(SpecialCharTagClass.class)).isTrue();
         }
 
         @Test
         @DisplayName("should handle tag with numbers")
-        void shouldHandleTagWithNumbers() {
+        public void shouldHandleTagWithNumbers() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create(".*[0-9]+.*");
             assertThat(filter.matches(NumericTagClass.class)).isTrue();
         }
 
         @Test
         @DisplayName("should handle tag with hyphens")
-        void shouldHandleTagWithHyphens() {
+        public void shouldHandleTagWithHyphens() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create(".*-.*");
             assertThat(filter.matches(HyphenTagClass.class)).isTrue();
         }
@@ -222,11 +222,11 @@ public class ExcludeTaggedClassFilterTest {
 
     @Nested
     @DisplayName("Integration Tests")
-    class IntegrationTests {
+    public class IntegrationTests {
 
         @Test
         @DisplayName("should work with multiple filters")
-        void shouldWorkWithMultipleFilters() {
+        public void shouldWorkWithMultipleFilters() {
             ExcludeTaggedClassFilter filter1 = ExcludeTaggedClassFilter.create("slow");
             ExcludeTaggedClassFilter filter2 = ExcludeTaggedClassFilter.create("flaky");
 
@@ -238,7 +238,7 @@ public class ExcludeTaggedClassFilterTest {
 
         @Test
         @DisplayName("should be reusable across multiple matches")
-        void shouldBeReusableAcrossMultipleMatches() {
+        public void shouldBeReusableAcrossMultipleMatches() {
             ExcludeTaggedClassFilter filter = ExcludeTaggedClassFilter.create("slow");
 
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
@@ -248,7 +248,7 @@ public class ExcludeTaggedClassFilterTest {
 
         @Test
         @DisplayName("should work complementary to include filter")
-        void shouldWorkComplementaryToIncludeFilter() {
+        public void shouldWorkComplementaryToIncludeFilter() {
             ExcludeTaggedClassFilter excludeFilter = ExcludeTaggedClassFilter.create("slow");
             IncludeTaggedClassFilter includeFilter = IncludeTaggedClassFilter.create("fast");
 

@@ -28,15 +28,15 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.*;
 
 @DisplayName("OrderedProperties Tests")
-class OrderedPropertiesTest {
+public class OrderedPropertiesTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create empty properties")
-        void shouldCreateEmptyProperties() {
+        public void shouldCreateEmptyProperties() {
             OrderedProperties properties = new OrderedProperties();
 
             assertThat(properties).isEmpty();
@@ -44,7 +44,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should initialize with empty ordered map")
-        void shouldInitializeWithEmptyOrderedMap() {
+        public void shouldInitializeWithEmptyOrderedMap() {
             OrderedProperties properties = new OrderedProperties();
 
             assertThat(properties.keySet()).isEmpty();
@@ -53,11 +53,11 @@ class OrderedPropertiesTest {
 
     @Nested
     @DisplayName("Put and Get Tests")
-    class PutAndGetTests {
+    public class PutAndGetTests {
 
         @Test
         @DisplayName("Should store and retrieve string property")
-        void shouldStoreAndRetrieveStringProperty() {
+        public void shouldStoreAndRetrieveStringProperty() {
             OrderedProperties properties = new OrderedProperties();
 
             properties.put("key1", "value1");
@@ -67,7 +67,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should store multiple properties")
-        void shouldStoreMultipleProperties() {
+        public void shouldStoreMultipleProperties() {
             OrderedProperties properties = new OrderedProperties();
 
             properties.put("key1", "value1");
@@ -81,7 +81,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should replace existing property value")
-        void shouldReplaceExistingPropertyValue() {
+        public void shouldReplaceExistingPropertyValue() {
             OrderedProperties properties = new OrderedProperties();
 
             properties.put("key1", "value1");
@@ -92,7 +92,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should return previous value when replacing")
-        void shouldReturnPreviousValueWhenReplacing() {
+        public void shouldReturnPreviousValueWhenReplacing() {
             OrderedProperties properties = new OrderedProperties();
 
             properties.put("key1", "value1");
@@ -103,7 +103,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should return null for non-existent key")
-        void shouldReturnNullForNonExistentKey() {
+        public void shouldReturnNullForNonExistentKey() {
             OrderedProperties properties = new OrderedProperties();
 
             assertThat(properties.get("nonexistent")).isNull();
@@ -112,11 +112,11 @@ class OrderedPropertiesTest {
 
     @Nested
     @DisplayName("Ordering Tests")
-    class OrderingTests {
+    public class OrderingTests {
 
         @Test
         @DisplayName("Should maintain sorted order by keys")
-        void shouldMaintainSortedOrderByKeys() {
+        public void shouldMaintainSortedOrderByKeys() {
             OrderedProperties properties = new OrderedProperties();
 
             properties.put("z", "26");
@@ -131,7 +131,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should maintain order when iterating over keys")
-        void shouldMaintainOrderWhenIteratingOverKeys() {
+        public void shouldMaintainOrderWhenIteratingOverKeys() {
             OrderedProperties properties = new OrderedProperties();
 
             properties.put("3", "three");
@@ -149,7 +149,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should maintain order in entrySet")
-        void shouldMaintainOrderInEntrySet() {
+        public void shouldMaintainOrderInEntrySet() {
             OrderedProperties properties = new OrderedProperties();
 
             properties.put("c", "3");
@@ -164,7 +164,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should maintain order in values")
-        void shouldMaintainOrderInValues() {
+        public void shouldMaintainOrderInValues() {
             OrderedProperties properties = new OrderedProperties();
 
             properties.put("c", "value-c");
@@ -178,7 +178,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should maintain order with numeric string keys")
-        void shouldMaintainOrderWithNumericStringKeys() {
+        public void shouldMaintainOrderWithNumericStringKeys() {
             OrderedProperties properties = new OrderedProperties();
 
             properties.put("10", "ten");
@@ -194,11 +194,11 @@ class OrderedPropertiesTest {
 
     @Nested
     @DisplayName("Remove Tests")
-    class RemoveTests {
+    public class RemoveTests {
 
         @Test
         @DisplayName("Should remove existing property")
-        void shouldRemoveExistingProperty() {
+        public void shouldRemoveExistingProperty() {
             OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
@@ -210,7 +210,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should return removed value")
-        void shouldReturnRemovedValue() {
+        public void shouldReturnRemovedValue() {
             OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
@@ -221,7 +221,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should return null when removing non-existent key")
-        void shouldReturnNullWhenRemovingNonExistentKey() {
+        public void shouldReturnNullWhenRemovingNonExistentKey() {
             OrderedProperties properties = new OrderedProperties();
 
             Object removedValue = properties.remove("nonexistent");
@@ -231,7 +231,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should maintain order after removal")
-        void shouldMaintainOrderAfterRemoval() {
+        public void shouldMaintainOrderAfterRemoval() {
             OrderedProperties properties = new OrderedProperties();
             properties.put("a", "1");
             properties.put("b", "2");
@@ -246,11 +246,11 @@ class OrderedPropertiesTest {
 
     @Nested
     @DisplayName("Clear Tests")
-    class ClearTests {
+    public class ClearTests {
 
         @Test
         @DisplayName("Should clear all properties")
-        void shouldClearAllProperties() {
+        public void shouldClearAllProperties() {
             OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
             properties.put("key2", "value2");
@@ -262,7 +262,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should clear ordered map")
-        void shouldClearOrderedMap() {
+        public void shouldClearOrderedMap() {
             OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
@@ -273,7 +273,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should allow adding properties after clear")
-        void shouldAllowAddingPropertiesAfterClear() {
+        public void shouldAllowAddingPropertiesAfterClear() {
             OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
             properties.clear();
@@ -286,11 +286,11 @@ class OrderedPropertiesTest {
 
     @Nested
     @DisplayName("Load Tests")
-    class LoadTests {
+    public class LoadTests {
 
         @Test
         @DisplayName("Should load properties from InputStream")
-        void shouldLoadPropertiesFromInputStream() throws IOException {
+        public void shouldLoadPropertiesFromInputStream() throws IOException {
             String propertiesContent = "key1=value1\nkey2=value2\n";
             ByteArrayInputStream inputStream = new ByteArrayInputStream(propertiesContent.getBytes());
             OrderedProperties properties = new OrderedProperties();
@@ -303,7 +303,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should load properties from Reader")
-        void shouldLoadPropertiesFromReader() throws IOException {
+        public void shouldLoadPropertiesFromReader() throws IOException {
             String propertiesContent = "key1=value1\nkey2=value2\n";
             StringReader reader = new StringReader(propertiesContent);
             OrderedProperties properties = new OrderedProperties();
@@ -316,7 +316,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should maintain order after loading")
-        void shouldMaintainOrderAfterLoading() throws IOException {
+        public void shouldMaintainOrderAfterLoading() throws IOException {
             String propertiesContent = "z=26\na=1\nm=13\n";
             StringReader reader = new StringReader(propertiesContent);
             OrderedProperties properties = new OrderedProperties();
@@ -329,7 +329,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should replace existing properties when loading")
-        void shouldReplaceExistingPropertiesWhenLoading() throws IOException {
+        public void shouldReplaceExistingPropertiesWhenLoading() throws IOException {
             OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "oldValue");
 
@@ -344,11 +344,11 @@ class OrderedPropertiesTest {
 
     @Nested
     @DisplayName("Store Tests")
-    class StoreTests {
+    public class StoreTests {
 
         @Test
         @DisplayName("Should store properties to OutputStream")
-        void shouldStorePropertiesToOutputStream() throws IOException {
+        public void shouldStorePropertiesToOutputStream() throws IOException {
             OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
             properties.put("key2", "value2");
@@ -366,7 +366,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should store properties to Writer")
-        void shouldStorePropertiesToWriter() throws IOException {
+        public void shouldStorePropertiesToWriter() throws IOException {
             OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
             properties.put("key2", "value2");
@@ -384,7 +384,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should include comment in output")
-        void shouldIncludeCommentInOutput() throws IOException {
+        public void shouldIncludeCommentInOutput() throws IOException {
             OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
@@ -398,11 +398,11 @@ class OrderedPropertiesTest {
 
     @Nested
     @DisplayName("Thread Safety Tests")
-    class ThreadSafetyTests {
+    public class ThreadSafetyTests {
 
         @Test
         @DisplayName("Should be thread-safe for concurrent puts")
-        void shouldBeThreadSafeForConcurrentPuts() throws InterruptedException {
+        public void shouldBeThreadSafeForConcurrentPuts() throws InterruptedException {
             OrderedProperties properties = new OrderedProperties();
             int threadCount = 10;
             int operationsPerThread = 100;
@@ -427,7 +427,7 @@ class OrderedPropertiesTest {
 
         @Test
         @DisplayName("Should be thread-safe for concurrent reads")
-        void shouldBeThreadSafeForConcurrentReads() throws InterruptedException {
+        public void shouldBeThreadSafeForConcurrentReads() throws InterruptedException {
             OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
             properties.put("key2", "value2");

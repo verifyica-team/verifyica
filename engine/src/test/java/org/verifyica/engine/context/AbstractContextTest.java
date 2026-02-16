@@ -23,22 +23,22 @@ import org.verifyica.api.Configuration;
 import org.verifyica.api.ExtendedMap;
 
 @DisplayName("AbstractContext Tests")
-class AbstractContextTest {
+public class AbstractContextTest {
 
     private TestContext context;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         context = new TestContext();
     }
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should initialize with empty map")
-        void shouldInitializeWithEmptyMap() {
+        public void shouldInitializeWithEmptyMap() {
             ExtendedMap<String, Object> map = context.getMap();
 
             assertThat(map).isNotNull().isEmpty();
@@ -46,7 +46,7 @@ class AbstractContextTest {
 
         @Test
         @DisplayName("Should return same map instance on multiple calls")
-        void shouldReturnSameMapInstanceOnMultipleCalls() {
+        public void shouldReturnSameMapInstanceOnMultipleCalls() {
             ExtendedMap<String, Object> map1 = context.getMap();
             ExtendedMap<String, Object> map2 = context.getMap();
 
@@ -56,11 +56,11 @@ class AbstractContextTest {
 
     @Nested
     @DisplayName("Map Operations Tests")
-    class MapOperationsTests {
+    public class MapOperationsTests {
 
         @Test
         @DisplayName("Should store and retrieve values in map")
-        void shouldStoreAndRetrieveValuesInMap() {
+        public void shouldStoreAndRetrieveValuesInMap() {
             context.getMap().put("key1", "value1");
             context.getMap().put("key2", 123);
 
@@ -69,13 +69,13 @@ class AbstractContextTest {
 
         @Test
         @DisplayName("Should reject null values (ConcurrentHashMap doesn't support nulls)")
-        void shouldRejectNullValues() {
+        public void shouldRejectNullValues() {
             assertThatThrownBy(() -> context.getMap().put("nullKey", null)).isInstanceOf(NullPointerException.class);
         }
 
         @Test
         @DisplayName("Should support type-safe casting with getAs")
-        void shouldSupportTypeSafeCastingWithGetAs() {
+        public void shouldSupportTypeSafeCastingWithGetAs() {
             context.getMap().put("stringKey", "value");
             context.getMap().put("intKey", 42);
 
@@ -88,7 +88,7 @@ class AbstractContextTest {
 
         @Test
         @DisplayName("Should remove entries")
-        void shouldRemoveEntries() {
+        public void shouldRemoveEntries() {
             context.getMap().put("key", "value");
             context.getMap().remove("key");
 
@@ -97,7 +97,7 @@ class AbstractContextTest {
 
         @Test
         @DisplayName("Should clear all entries")
-        void shouldClearAllEntries() {
+        public void shouldClearAllEntries() {
             context.getMap().put("key1", "value1");
             context.getMap().put("key2", "value2");
 
@@ -109,11 +109,11 @@ class AbstractContextTest {
 
     @Nested
     @DisplayName("Thread Safety Tests")
-    class ThreadSafetyTests {
+    public class ThreadSafetyTests {
 
         @Test
         @DisplayName("Should be thread-safe for concurrent access")
-        void shouldBeThreadSafeForConcurrentAccess() throws InterruptedException {
+        public void shouldBeThreadSafeForConcurrentAccess() throws InterruptedException {
             int threadCount = 10;
             int operationsPerThread = 100;
             Thread[] threads = new Thread[threadCount];

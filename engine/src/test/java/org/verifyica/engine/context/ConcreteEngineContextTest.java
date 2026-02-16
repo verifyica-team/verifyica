@@ -23,24 +23,24 @@ import org.junit.jupiter.api.*;
 import org.verifyica.api.Configuration;
 
 @DisplayName("ConcreteEngineContext Tests")
-class ConcreteEngineContextTest {
+public class ConcreteEngineContextTest {
 
     private Configuration mockConfiguration;
     private ConcreteEngineContext context;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         mockConfiguration = mock(Configuration.class);
         context = new ConcreteEngineContext(mockConfiguration, "1.0.0");
     }
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create context with valid configuration and version")
-        void shouldCreateContextWithValidConfigurationAndVersion() {
+        public void shouldCreateContextWithValidConfigurationAndVersion() {
             ConcreteEngineContext newContext = new ConcreteEngineContext(mockConfiguration, "2.0.0");
 
             assertThat(newContext).isNotNull().satisfies(ctx -> {
@@ -52,13 +52,13 @@ class ConcreteEngineContextTest {
 
         @Test
         @DisplayName("Should wrap configuration in ImmutableConfiguration")
-        void shouldWrapConfigurationInImmutableConfiguration() {
+        public void shouldWrapConfigurationInImmutableConfiguration() {
             assertThat(context.getConfiguration()).isNotNull().isNotSameAs(mockConfiguration);
         }
 
         @Test
         @DisplayName("Should handle null version")
-        void shouldHandleNullVersion() {
+        public void shouldHandleNullVersion() {
             ConcreteEngineContext nullVersionContext = new ConcreteEngineContext(mockConfiguration, null);
 
             assertThat(nullVersionContext.getVersion()).isNull();
@@ -67,17 +67,17 @@ class ConcreteEngineContextTest {
 
     @Nested
     @DisplayName("Version Tests")
-    class VersionTests {
+    public class VersionTests {
 
         @Test
         @DisplayName("Should return correct version")
-        void shouldReturnCorrectVersion() {
+        public void shouldReturnCorrectVersion() {
             assertThat(context.getVersion()).isEqualTo("1.0.0");
         }
 
         @Test
         @DisplayName("Should support various version formats")
-        void shouldSupportVariousVersionFormats() {
+        public void shouldSupportVariousVersionFormats() {
             assertThat(new ConcreteEngineContext(mockConfiguration, "1.0.0").getVersion())
                     .isEqualTo("1.0.0");
             assertThat(new ConcreteEngineContext(mockConfiguration, "2.5.3-SNAPSHOT").getVersion())
@@ -89,11 +89,11 @@ class ConcreteEngineContextTest {
 
     @Nested
     @DisplayName("Configuration Tests")
-    class ConfigurationTests {
+    public class ConfigurationTests {
 
         @Test
         @DisplayName("Should return immutable configuration")
-        void shouldReturnImmutableConfiguration() {
+        public void shouldReturnImmutableConfiguration() {
             Configuration config = context.getConfiguration();
 
             assertThat(config).isNotNull().isNotSameAs(mockConfiguration);
@@ -101,7 +101,7 @@ class ConcreteEngineContextTest {
 
         @Test
         @DisplayName("Should return same configuration instance on multiple calls")
-        void shouldReturnSameConfigurationInstanceOnMultipleCalls() {
+        public void shouldReturnSameConfigurationInstanceOnMultipleCalls() {
             Configuration config1 = context.getConfiguration();
             Configuration config2 = context.getConfiguration();
 
@@ -111,17 +111,17 @@ class ConcreteEngineContextTest {
 
     @Nested
     @DisplayName("Equals and HashCode Tests")
-    class EqualsAndHashCodeTests {
+    public class EqualsAndHashCodeTests {
 
         @Test
         @DisplayName("Should be equal to itself")
-        void shouldBeEqualToItself() {
+        public void shouldBeEqualToItself() {
             assertThat(context).isEqualTo(context);
         }
 
         @Test
         @DisplayName("Should be equal to context with same version")
-        void shouldBeEqualToContextWithSameVersion() {
+        public void shouldBeEqualToContextWithSameVersion() {
             ConcreteEngineContext other = new ConcreteEngineContext(mockConfiguration, "1.0.0");
 
             // Note: equals() checks version, but configurations are wrapped separately
@@ -130,7 +130,7 @@ class ConcreteEngineContextTest {
 
         @Test
         @DisplayName("Should not be equal to context with different version")
-        void shouldNotBeEqualToContextWithDifferentVersion() {
+        public void shouldNotBeEqualToContextWithDifferentVersion() {
             ConcreteEngineContext other = new ConcreteEngineContext(mockConfiguration, "2.0.0");
 
             assertThat(context.getVersion()).isNotEqualTo(other.getVersion());
@@ -138,19 +138,19 @@ class ConcreteEngineContextTest {
 
         @Test
         @DisplayName("Should not be equal to null")
-        void shouldNotBeEqualToNull() {
+        public void shouldNotBeEqualToNull() {
             assertThat(context).isNotEqualTo(null);
         }
 
         @Test
         @DisplayName("Should not be equal to different class")
-        void shouldNotBeEqualToDifferentClass() {
+        public void shouldNotBeEqualToDifferentClass() {
             assertThat(context).isNotEqualTo("not a context");
         }
 
         @Test
         @DisplayName("Should have consistent hashCode")
-        void shouldHaveConsistentHashCode() {
+        public void shouldHaveConsistentHashCode() {
             int hashCode1 = context.hashCode();
             int hashCode2 = context.hashCode();
 
@@ -160,11 +160,11 @@ class ConcreteEngineContextTest {
 
     @Nested
     @DisplayName("ToString Tests")
-    class ToStringTests {
+    public class ToStringTests {
 
         @Test
         @DisplayName("Should include version in toString")
-        void shouldIncludeVersionInToString() {
+        public void shouldIncludeVersionInToString() {
             String toString = context.toString();
 
             assertThat(toString)
@@ -176,11 +176,11 @@ class ConcreteEngineContextTest {
 
     @Nested
     @DisplayName("Map Tests")
-    class MapTests {
+    public class MapTests {
 
         @Test
         @DisplayName("Should store and retrieve values in context map")
-        void shouldStoreAndRetrieveValuesInContextMap() {
+        public void shouldStoreAndRetrieveValuesInContextMap() {
             context.getMap().put("engineKey", "engineValue");
 
             assertThat(context.getMap()).containsEntry("engineKey", "engineValue");
@@ -188,7 +188,7 @@ class ConcreteEngineContextTest {
 
         @Test
         @DisplayName("Should support multiple concurrent map operations")
-        void shouldSupportMultipleConcurrentMapOperations() {
+        public void shouldSupportMultipleConcurrentMapOperations() {
             context.getMap().put("key1", "value1");
             context.getMap().put("key2", 123);
             context.getMap().put("key3", true);

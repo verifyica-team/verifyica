@@ -27,7 +27,7 @@ import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
 
 @DisplayName("ConcreteClassContext Tests")
-class ConcreteClassContextTest {
+public class ConcreteClassContextTest {
 
     private EngineContext mockEngineContext;
     private Configuration mockConfiguration;
@@ -36,7 +36,7 @@ class ConcreteClassContextTest {
     private Set<String> testTags;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         mockEngineContext = mock(EngineContext.class);
         mockConfiguration = mock(Configuration.class);
         when(mockEngineContext.getConfiguration()).thenReturn(mockConfiguration);
@@ -58,11 +58,11 @@ class ConcreteClassContextTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create context with valid parameters")
-        void shouldCreateContextWithValidParameters() {
+        public void shouldCreateContextWithValidParameters() {
             assertThat(context).isNotNull().satisfies(ctx -> {
                 assertThat(ctx.getEngineContext()).isEqualTo(mockEngineContext);
                 assertThat(ctx.getTestClass()).isEqualTo(ConcreteClassContextTest.class);
@@ -74,7 +74,7 @@ class ConcreteClassContextTest {
 
         @Test
         @DisplayName("Should handle empty tags set")
-        void shouldHandleEmptyTagsSet() {
+        public void shouldHandleEmptyTagsSet() {
             ConcreteClassContext emptyTagsContext = new ConcreteClassContext(
                     mockEngineContext, String.class, "Display Name", new HashSet<>(), 1, new AtomicReference<>());
 
@@ -83,7 +83,7 @@ class ConcreteClassContextTest {
 
         @Test
         @DisplayName("Should handle parallelism of 1")
-        void shouldHandleParallelismOfOne() {
+        public void shouldHandleParallelismOfOne() {
             ConcreteClassContext sequentialContext = new ConcreteClassContext(
                     mockEngineContext, String.class, "Display Name", new HashSet<>(), 1, new AtomicReference<>());
 
@@ -92,7 +92,7 @@ class ConcreteClassContextTest {
 
         @Test
         @DisplayName("Should handle high parallelism value")
-        void shouldHandleHighParallelismValue() {
+        public void shouldHandleHighParallelismValue() {
             ConcreteClassContext highParallelismContext = new ConcreteClassContext(
                     mockEngineContext,
                     String.class,
@@ -107,11 +107,11 @@ class ConcreteClassContextTest {
 
     @Nested
     @DisplayName("Configuration Tests")
-    class ConfigurationTests {
+    public class ConfigurationTests {
 
         @Test
         @DisplayName("Should return configuration from engine context")
-        void shouldReturnConfigurationFromEngineContext() {
+        public void shouldReturnConfigurationFromEngineContext() {
             Configuration config = context.getConfiguration();
 
             assertThat(config).isSameAs(mockConfiguration);
@@ -121,11 +121,11 @@ class ConcreteClassContextTest {
 
     @Nested
     @DisplayName("Test Instance Tests")
-    class TestInstanceTests {
+    public class TestInstanceTests {
 
         @Test
         @DisplayName("Should throw exception when instance not yet created")
-        void shouldThrowExceptionWhenInstanceNotYetCreated() {
+        public void shouldThrowExceptionWhenInstanceNotYetCreated() {
             assertThatThrownBy(() -> context.getTestInstance())
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("The class instance has not yet been instantiated");
@@ -133,7 +133,7 @@ class ConcreteClassContextTest {
 
         @Test
         @DisplayName("Should return test instance after it is set")
-        void shouldReturnTestInstanceAfterItIsSet() {
+        public void shouldReturnTestInstanceAfterItIsSet() {
             Object testInstance = new Object();
             testInstanceRef.set(testInstance);
 
@@ -144,7 +144,7 @@ class ConcreteClassContextTest {
 
         @Test
         @DisplayName("Should cast test instance to specific type")
-        void shouldCastTestInstanceToSpecificType() {
+        public void shouldCastTestInstanceToSpecificType() {
             String testInstance = "test instance";
             testInstanceRef.set(testInstance);
 
@@ -155,7 +155,7 @@ class ConcreteClassContextTest {
 
         @Test
         @DisplayName("Should throw exception when casting to wrong type")
-        void shouldThrowExceptionWhenCastingToWrongType() {
+        public void shouldThrowExceptionWhenCastingToWrongType() {
             testInstanceRef.set("string instance");
 
             assertThatThrownBy(() -> context.getTestInstanceAs(Integer.class)).isInstanceOf(ClassCastException.class);
@@ -163,7 +163,7 @@ class ConcreteClassContextTest {
 
         @Test
         @DisplayName("Should throw exception when getting typed instance before creation")
-        void shouldThrowExceptionWhenGettingTypedInstanceBeforeCreation() {
+        public void shouldThrowExceptionWhenGettingTypedInstanceBeforeCreation() {
             assertThatThrownBy(() -> context.getTestInstanceAs(String.class))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("The class instance has not yet been instantiated");
@@ -172,23 +172,23 @@ class ConcreteClassContextTest {
 
     @Nested
     @DisplayName("Test Class Tests")
-    class TestClassTests {
+    public class TestClassTests {
 
         @Test
         @DisplayName("Should return correct test class")
-        void shouldReturnCorrectTestClass() {
+        public void shouldReturnCorrectTestClass() {
             assertThat(context.getTestClass()).isEqualTo(ConcreteClassContextTest.class);
         }
 
         @Test
         @DisplayName("Should return correct display name")
-        void shouldReturnCorrectDisplayName() {
+        public void shouldReturnCorrectDisplayName() {
             assertThat(context.getTestClassDisplayName()).isEqualTo("Test Class Display Name");
         }
 
         @Test
         @DisplayName("Should return unmodifiable tags set")
-        void shouldReturnUnmodifiableTagsSet() {
+        public void shouldReturnUnmodifiableTagsSet() {
             Set<String> tags = context.getTestClassTags();
 
             assertThat(tags).containsExactlyInAnyOrder("tag1", "tag2");
@@ -197,40 +197,40 @@ class ConcreteClassContextTest {
 
     @Nested
     @DisplayName("Parallelism Tests")
-    class ParallelismTests {
+    public class ParallelismTests {
 
         @Test
         @DisplayName("Should return correct parallelism value")
-        void shouldReturnCorrectParallelismValue() {
+        public void shouldReturnCorrectParallelismValue() {
             assertThat(context.getTestArgumentParallelism()).isEqualTo(4);
         }
     }
 
     @Nested
     @DisplayName("Equals and HashCode Tests")
-    class EqualsAndHashCodeTests {
+    public class EqualsAndHashCodeTests {
 
         @Test
         @DisplayName("Should be equal to itself")
-        void shouldBeEqualToItself() {
+        public void shouldBeEqualToItself() {
             assertThat(context).isEqualTo(context);
         }
 
         @Test
         @DisplayName("Should not be equal to null")
-        void shouldNotBeEqualToNull() {
+        public void shouldNotBeEqualToNull() {
             assertThat(context).isNotEqualTo(null);
         }
 
         @Test
         @DisplayName("Should not be equal to different class")
-        void shouldNotBeEqualToDifferentClass() {
+        public void shouldNotBeEqualToDifferentClass() {
             assertThat(context).isNotEqualTo("not a context");
         }
 
         @Test
         @DisplayName("Should have consistent hashCode")
-        void shouldHaveConsistentHashCode() {
+        public void shouldHaveConsistentHashCode() {
             int hashCode1 = context.hashCode();
             int hashCode2 = context.hashCode();
 
@@ -240,11 +240,11 @@ class ConcreteClassContextTest {
 
     @Nested
     @DisplayName("ToString Tests")
-    class ToStringTests {
+    public class ToStringTests {
 
         @Test
-        @DisplayName("Should include class information in toString")
-        void shouldIncludeClassInformationInToString() {
+        @DisplayName("Should include public class information in toString")
+        public void shouldIncludeClassInformationInToString() {
             String toString = context.toString();
 
             assertThat(toString)
@@ -257,11 +257,11 @@ class ConcreteClassContextTest {
 
     @Nested
     @DisplayName("Map Tests")
-    class MapTests {
+    public class MapTests {
 
         @Test
         @DisplayName("Should store and retrieve class-level state")
-        void shouldStoreAndRetrieveClassLevelState() {
+        public void shouldStoreAndRetrieveClassLevelState() {
             context.getMap().put("classKey", "classValue");
 
             assertThat(context.getMap()).containsEntry("classKey", "classValue");

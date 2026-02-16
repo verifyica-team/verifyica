@@ -23,7 +23,7 @@ import java.io.PrintStream;
 import org.junit.jupiter.api.*;
 
 @DisplayName("StackTracePrinter Tests")
-class StackTracePrinterTest {
+public class StackTracePrinterTest {
 
     // Java 8 compatible String repeat helper
     private static String repeat(String str, int count) {
@@ -36,11 +36,11 @@ class StackTracePrinterTest {
 
     @Nested
     @DisplayName("PrintStackTrace Tests")
-    class PrintStackTraceTests {
+    public class PrintStackTraceTests {
 
         @Test
         @DisplayName("Should print stack trace to stream")
-        void shouldPrintStackTraceToStream() {
+        public void shouldPrintStackTraceToStream() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new RuntimeException("Test exception");
@@ -53,7 +53,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should print stack trace with ANSI color")
-        void shouldPrintStackTraceWithAnsiColor() {
+        public void shouldPrintStackTraceWithAnsiColor() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new RuntimeException("Test exception");
@@ -66,7 +66,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should handle exception with cause")
-        void shouldHandleExceptionWithCause() {
+        public void shouldHandleExceptionWithCause() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception cause = new IllegalArgumentException("Cause exception");
@@ -84,7 +84,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should handle exception with nested causes")
-        void shouldHandleExceptionWithNestedCauses() {
+        public void shouldHandleExceptionWithNestedCauses() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception rootCause = new IllegalStateException("Root cause");
@@ -105,7 +105,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should prune stack traces from engine classes")
-        void shouldPruneStackTracesFromEngineClasses() {
+        public void shouldPruneStackTracesFromEngineClasses() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
 
@@ -120,7 +120,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should be thread-safe for concurrent printing")
-        void shouldBeThreadSafeForConcurrentPrinting() throws InterruptedException {
+        public void shouldBeThreadSafeForConcurrentPrinting() throws InterruptedException {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             int threadCount = 10;
@@ -146,11 +146,11 @@ class StackTracePrinterTest {
 
     @Nested
     @DisplayName("Stack Trace Pruning Tests")
-    class StackTracePruningTests {
+    public class StackTracePruningTests {
 
         @Test
         @DisplayName("Should handle exception without stack trace")
-        void shouldHandleExceptionWithoutStackTrace() {
+        public void shouldHandleExceptionWithoutStackTrace() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new RuntimeException("Test exception") {
@@ -163,13 +163,13 @@ class StackTracePrinterTest {
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
             String output = outputStream.toString();
-            // Anonymous subclass won't have "RuntimeException" in the name, just check for the message
+            // Anonymous subpublic class won't have "RuntimeException" in the name, just check for the message
             assertThat(output).contains("Test exception");
         }
 
         @Test
         @DisplayName("Should handle exception with empty stack trace")
-        void shouldHandleExceptionWithEmptyStackTrace() {
+        public void shouldHandleExceptionWithEmptyStackTrace() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new RuntimeException("Test exception");
@@ -183,7 +183,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should trim stack trace at engine boundary")
-        void shouldTrimStackTraceAtEngineBoundary() {
+        public void shouldTrimStackTraceAtEngineBoundary() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
 
@@ -204,11 +204,11 @@ class StackTracePrinterTest {
 
     @Nested
     @DisplayName("Color Tests")
-    class ColorTests {
+    public class ColorTests {
 
         @Test
         @DisplayName("Should support different ANSI colors")
-        void shouldSupportDifferentAnsiColors() {
+        public void shouldSupportDifferentAnsiColors() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new RuntimeException("Test exception");
@@ -221,7 +221,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should handle ANSI color NONE")
-        void shouldHandleAnsiColorNone() {
+        public void shouldHandleAnsiColorNone() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new RuntimeException("Test exception");
@@ -234,7 +234,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should reset ANSI color after printing")
-        void shouldResetAnsiColorAfterPrinting() {
+        public void shouldResetAnsiColorAfterPrinting() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new RuntimeException("Test exception");
@@ -248,11 +248,11 @@ class StackTracePrinterTest {
 
     @Nested
     @DisplayName("Edge Cases Tests")
-    class EdgeCasesTests {
+    public class EdgeCasesTests {
 
         @Test
         @DisplayName("Should handle exception with null message")
-        void shouldHandleExceptionWithNullMessage() {
+        public void shouldHandleExceptionWithNullMessage() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new RuntimeException((String) null);
@@ -265,7 +265,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should handle exception with empty message")
-        void shouldHandleExceptionWithEmptyMessage() {
+        public void shouldHandleExceptionWithEmptyMessage() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new RuntimeException("");
@@ -278,7 +278,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should handle exception with very long message")
-        void shouldHandleExceptionWithVeryLongMessage() {
+        public void shouldHandleExceptionWithVeryLongMessage() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             String longMessage = repeat("A", 1000);
@@ -292,7 +292,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should handle exception with special characters in message")
-        void shouldHandleExceptionWithSpecialCharactersInMessage() {
+        public void shouldHandleExceptionWithSpecialCharactersInMessage() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new RuntimeException("Test \n\t\r exception with special chars: <>&\"'");
@@ -306,11 +306,11 @@ class StackTracePrinterTest {
 
     @Nested
     @DisplayName("Different Exception Types Tests")
-    class DifferentExceptionTypesTests {
+    public class DifferentExceptionTypesTests {
 
         @Test
         @DisplayName("Should handle RuntimeException")
-        void shouldHandleRuntimeException() {
+        public void shouldHandleRuntimeException() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new RuntimeException("Runtime exception");
@@ -323,7 +323,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should handle IllegalArgumentException")
-        void shouldHandleIllegalArgumentException() {
+        public void shouldHandleIllegalArgumentException() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new IllegalArgumentException("Invalid argument");
@@ -336,7 +336,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should handle NullPointerException")
-        void shouldHandleNullPointerException() {
+        public void shouldHandleNullPointerException() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new NullPointerException("Null pointer");
@@ -349,7 +349,7 @@ class StackTracePrinterTest {
 
         @Test
         @DisplayName("Should handle custom exception types")
-        void shouldHandleCustomExceptionTypes() {
+        public void shouldHandleCustomExceptionTypes() {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             Exception exception = new CustomException("Custom exception");

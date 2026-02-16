@@ -29,7 +29,7 @@ import org.junit.platform.engine.ConfigurationParameters;
 import org.verifyica.api.Configuration;
 
 @DisplayName("ConcreteConfigurationParameters Tests")
-class ConcreteConfigurationParametersTest {
+public class ConcreteConfigurationParametersTest {
 
     // Java 8 compatible String repeat helper
     private static String repeat(String str, int count) {
@@ -42,11 +42,11 @@ class ConcreteConfigurationParametersTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create instance with valid configuration")
-        void shouldCreateInstanceWithValidConfiguration() {
+        public void shouldCreateInstanceWithValidConfiguration() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -55,7 +55,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should throw exception when configuration is null")
-        void shouldThrowExceptionWhenConfigurationIsNull() {
+        public void shouldThrowExceptionWhenConfigurationIsNull() {
             assertThatThrownBy(() -> new ConcreteConfigurationParameters(null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("configuration is null");
@@ -63,7 +63,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should implement ConfigurationParameters interface")
-        void shouldImplementConfigurationParametersInterface() {
+        public void shouldImplementConfigurationParametersInterface() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -73,11 +73,11 @@ class ConcreteConfigurationParametersTest {
 
     @Nested
     @DisplayName("Get String Value Tests")
-    class GetStringValueTests {
+    public class GetStringValueTests {
 
         @Test
         @DisplayName("Should retrieve existing property value")
-        void shouldRetrieveExistingPropertyValue() {
+        public void shouldRetrieveExistingPropertyValue() {
             Properties props = new Properties();
             props.setProperty("test.key", "test.value");
 
@@ -92,7 +92,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return empty Optional for non-existent property")
-        void shouldReturnEmptyOptionalForNonExistentProperty() {
+        public void shouldReturnEmptyOptionalForNonExistentProperty() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -103,7 +103,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should trim key before lookup")
-        void shouldTrimKeyBeforeLookup() {
+        public void shouldTrimKeyBeforeLookup() {
             Properties props = new Properties();
             props.setProperty("test.key", "test.value");
 
@@ -118,7 +118,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should throw exception when key is null")
-        void shouldThrowExceptionWhenKeyIsNull() {
+        public void shouldThrowExceptionWhenKeyIsNull() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -129,7 +129,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should throw exception when key is blank")
-        void shouldThrowExceptionWhenKeyIsBlank() {
+        public void shouldThrowExceptionWhenKeyIsBlank() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -140,7 +140,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should throw exception when key is empty")
-        void shouldThrowExceptionWhenKeyIsEmpty() {
+        public void shouldThrowExceptionWhenKeyIsEmpty() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -152,11 +152,11 @@ class ConcreteConfigurationParametersTest {
 
     @Nested
     @DisplayName("Get Boolean Value Tests")
-    class GetBooleanValueTests {
+    public class GetBooleanValueTests {
 
         @Test
         @DisplayName("Should return true for string value 'true'")
-        void shouldReturnTrueForStringValueTrue() {
+        public void shouldReturnTrueForStringValueTrue() {
             Properties props = new Properties();
             props.setProperty("boolean.key", "true");
 
@@ -171,7 +171,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return false for string value 'false'")
-        void shouldReturnFalseForStringValueFalse() {
+        public void shouldReturnFalseForStringValueFalse() {
             Properties props = new Properties();
             props.setProperty("boolean.key", "false");
 
@@ -186,7 +186,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return false for non-true value")
-        void shouldReturnFalseForNonTrueValue() {
+        public void shouldReturnFalseForNonTrueValue() {
             Properties props = new Properties();
             props.setProperty("boolean.key", "yes");
 
@@ -201,7 +201,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return false for non-existent property")
-        void shouldReturnFalseForNonExistentProperty() {
+        public void shouldReturnFalseForNonExistentProperty() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -212,7 +212,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should trim key before boolean lookup")
-        void shouldTrimKeyBeforeBooleanLookup() {
+        public void shouldTrimKeyBeforeBooleanLookup() {
             Properties props = new Properties();
             props.setProperty("boolean.key", "true");
 
@@ -227,7 +227,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should throw exception when key is null for boolean")
-        void shouldThrowExceptionWhenKeyIsNullForBoolean() {
+        public void shouldThrowExceptionWhenKeyIsNullForBoolean() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -238,7 +238,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should throw exception when key is blank for boolean")
-        void shouldThrowExceptionWhenKeyIsBlankForBoolean() {
+        public void shouldThrowExceptionWhenKeyIsBlankForBoolean() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -249,7 +249,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return false for empty string value")
-        void shouldReturnFalseForEmptyStringValue() {
+        public void shouldReturnFalseForEmptyStringValue() {
             Properties props = new Properties();
             props.setProperty("boolean.key", "");
 
@@ -265,11 +265,11 @@ class ConcreteConfigurationParametersTest {
 
     @Nested
     @DisplayName("Get With Transformer Tests")
-    class GetWithTransformerTests {
+    public class GetWithTransformerTests {
 
         @Test
         @DisplayName("Should transform property value using function")
-        void shouldTransformPropertyValueUsingFunction() {
+        public void shouldTransformPropertyValueUsingFunction() {
             Properties props = new Properties();
             props.setProperty("number.key", "42");
 
@@ -284,7 +284,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return empty Optional when property not found")
-        void shouldReturnEmptyOptionalWhenPropertyNotFound() {
+        public void shouldReturnEmptyOptionalWhenPropertyNotFound() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -295,7 +295,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should apply custom transformation")
-        void shouldApplyCustomTransformation() {
+        public void shouldApplyCustomTransformation() {
             Properties props = new Properties();
             props.setProperty("text.key", "hello");
 
@@ -310,7 +310,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should handle transformation returning null")
-        void shouldHandleTransformationReturningNull() {
+        public void shouldHandleTransformationReturningNull() {
             Properties props = new Properties();
             props.setProperty("test.key", "value");
 
@@ -325,7 +325,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should trim key before transformer lookup")
-        void shouldTrimKeyBeforeTransformerLookup() {
+        public void shouldTrimKeyBeforeTransformerLookup() {
             Properties props = new Properties();
             props.setProperty("number.key", "100");
 
@@ -340,7 +340,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should throw exception when key is null for transformer")
-        void shouldThrowExceptionWhenKeyIsNullForTransformer() {
+        public void shouldThrowExceptionWhenKeyIsNullForTransformer() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -351,7 +351,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should throw exception when key is blank for transformer")
-        void shouldThrowExceptionWhenKeyIsBlankForTransformer() {
+        public void shouldThrowExceptionWhenKeyIsBlankForTransformer() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -362,7 +362,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should throw exception when transformer is null")
-        void shouldThrowExceptionWhenTransformerIsNull() {
+        public void shouldThrowExceptionWhenTransformerIsNull() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -373,7 +373,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should handle complex transformations")
-        void shouldHandleComplexTransformations() {
+        public void shouldHandleComplexTransformations() {
             Properties props = new Properties();
             props.setProperty("csv.key", "1,2,3,4,5");
 
@@ -392,11 +392,11 @@ class ConcreteConfigurationParametersTest {
 
     @Nested
     @DisplayName("Size Tests")
-    class SizeTests {
+    public class SizeTests {
 
         @Test
         @DisplayName("Should return zero for empty properties")
-        void shouldReturnZeroForEmptyProperties() {
+        public void shouldReturnZeroForEmptyProperties() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -407,7 +407,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return correct size for single property")
-        void shouldReturnCorrectSizeForSingleProperty() {
+        public void shouldReturnCorrectSizeForSingleProperty() {
             Properties props = new Properties();
             props.setProperty("key1", "value1");
 
@@ -421,7 +421,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return correct size for multiple properties")
-        void shouldReturnCorrectSizeForMultipleProperties() {
+        public void shouldReturnCorrectSizeForMultipleProperties() {
             Properties props = new Properties();
             props.setProperty("key1", "value1");
             props.setProperty("key2", "value2");
@@ -437,7 +437,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return consistent size across multiple calls")
-        void shouldReturnConsistentSizeAcrossMultipleCalls() {
+        public void shouldReturnConsistentSizeAcrossMultipleCalls() {
             Properties props = new Properties();
             props.setProperty("key1", "value1");
             props.setProperty("key2", "value2");
@@ -454,11 +454,11 @@ class ConcreteConfigurationParametersTest {
 
     @Nested
     @DisplayName("KeySet Tests")
-    class KeySetTests {
+    public class KeySetTests {
 
         @Test
         @DisplayName("Should return empty set for empty properties")
-        void shouldReturnEmptySetForEmptyProperties() {
+        public void shouldReturnEmptySetForEmptyProperties() {
             Configuration config = createTestConfiguration();
             ConcreteConfigurationParameters params = new ConcreteConfigurationParameters(config);
 
@@ -469,7 +469,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return all property names")
-        void shouldReturnAllPropertyNames() {
+        public void shouldReturnAllPropertyNames() {
             Properties props = new Properties();
             props.setProperty("key1", "value1");
             props.setProperty("key2", "value2");
@@ -486,7 +486,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return only string property names")
-        void shouldReturnOnlyStringPropertyNames() {
+        public void shouldReturnOnlyStringPropertyNames() {
             Properties props = new Properties();
             props.setProperty("string.key1", "value1");
             props.setProperty("string.key2", "value2");
@@ -501,7 +501,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should return consistent keySet across multiple calls")
-        void shouldReturnConsistentKeySetAcrossMultipleCalls() {
+        public void shouldReturnConsistentKeySetAcrossMultipleCalls() {
             Properties props = new Properties();
             props.setProperty("key1", "value1");
             props.setProperty("key2", "value2");
@@ -517,7 +517,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should match size with keySet size")
-        void shouldMatchSizeWithKeySetSize() {
+        public void shouldMatchSizeWithKeySetSize() {
             Properties props = new Properties();
             props.setProperty("key1", "value1");
             props.setProperty("key2", "value2");
@@ -532,11 +532,11 @@ class ConcreteConfigurationParametersTest {
 
     @Nested
     @DisplayName("Integration Tests")
-    class IntegrationTests {
+    public class IntegrationTests {
 
         @Test
         @DisplayName("Should work with complex configuration")
-        void shouldWorkWithComplexConfiguration() {
+        public void shouldWorkWithComplexConfiguration() {
             Properties props = new Properties();
             props.setProperty("verifyica.engine.thread.type", "virtual");
             props.setProperty("verifyica.engine.class.parallelism", "4");
@@ -561,7 +561,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should handle mixed property access patterns")
-        void shouldHandleMixedPropertyAccessPatterns() {
+        public void shouldHandleMixedPropertyAccessPatterns() {
             Properties props = new Properties();
             props.setProperty("string.prop", "value");
             props.setProperty("int.prop", "42");
@@ -580,11 +580,11 @@ class ConcreteConfigurationParametersTest {
 
     @Nested
     @DisplayName("Edge Case Tests")
-    class EdgeCaseTests {
+    public class EdgeCaseTests {
 
         @Test
         @DisplayName("Should handle properties with very long keys")
-        void shouldHandlePropertiesWithVeryLongKeys() {
+        public void shouldHandlePropertiesWithVeryLongKeys() {
             String longKey = repeat("very.long.key.", 20) + "property";
             Properties props = new Properties();
             props.setProperty(longKey, "value");
@@ -600,7 +600,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should handle properties with very long values")
-        void shouldHandlePropertiesWithVeryLongValues() {
+        public void shouldHandlePropertiesWithVeryLongValues() {
             String longValue = repeat("value", 1000);
             Properties props = new Properties();
             props.setProperty("key", longValue);
@@ -616,7 +616,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should handle properties with special characters")
-        void shouldHandlePropertiesWithSpecialCharacters() {
+        public void shouldHandlePropertiesWithSpecialCharacters() {
             Properties props = new Properties();
             props.setProperty("key.with.dots", "value1");
             props.setProperty("key-with-dashes", "value2");
@@ -632,7 +632,7 @@ class ConcreteConfigurationParametersTest {
 
         @Test
         @DisplayName("Should handle empty string values")
-        void shouldHandleEmptyStringValues() {
+        public void shouldHandleEmptyStringValues() {
             Properties props = new Properties();
             props.setProperty("empty.key", "");
 
@@ -648,11 +648,11 @@ class ConcreteConfigurationParametersTest {
 
     @Nested
     @DisplayName("Thread Safety Tests")
-    class ThreadSafetyTests {
+    public class ThreadSafetyTests {
 
         @Test
         @DisplayName("Should handle concurrent access safely")
-        void shouldHandleConcurrentAccessSafely() throws InterruptedException {
+        public void shouldHandleConcurrentAccessSafely() throws InterruptedException {
             Properties props = new Properties();
             props.setProperty("key1", "value1");
             props.setProperty("key2", "value2");

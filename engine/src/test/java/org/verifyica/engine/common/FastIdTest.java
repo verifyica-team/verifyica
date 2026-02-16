@@ -24,18 +24,18 @@ import java.util.regex.Pattern;
 import org.junit.jupiter.api.*;
 
 @DisplayName("FastId Tests")
-class FastIdTest {
+public class FastIdTest {
 
     private static final Pattern UUID_PATTERN =
             Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$");
 
     @Nested
     @DisplayName("Generation Tests")
-    class GenerationTests {
+    public class GenerationTests {
 
         @Test
         @DisplayName("Should generate valid UUID-style string")
-        void shouldGenerateValidUuidStyleString() {
+        public void shouldGenerateValidUuidStyleString() {
             FastId id = FastId.randomFastId();
 
             String idString = id.toString();
@@ -45,7 +45,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should generate version 4 UUID")
-        void shouldGenerateVersion4Uuid() {
+        public void shouldGenerateVersion4Uuid() {
             FastId id = FastId.randomFastId();
 
             String idString = id.toString();
@@ -55,7 +55,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should generate IETF variant UUID")
-        void shouldGenerateIetfVariantUuid() {
+        public void shouldGenerateIetfVariantUuid() {
             FastId id = FastId.randomFastId();
 
             String idString = id.toString();
@@ -66,7 +66,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should generate unique IDs")
-        void shouldGenerateUniqueIds() {
+        public void shouldGenerateUniqueIds() {
             FastId id1 = FastId.randomFastId();
             FastId id2 = FastId.randomFastId();
 
@@ -76,7 +76,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should generate many unique IDs")
-        void shouldGenerateManyUniqueIds() {
+        public void shouldGenerateManyUniqueIds() {
             int count = 10000;
             Set<String> ids = new HashSet<>();
 
@@ -90,11 +90,11 @@ class FastIdTest {
 
     @Nested
     @DisplayName("ToString Tests")
-    class ToStringTests {
+    public class ToStringTests {
 
         @Test
         @DisplayName("Should format with hyphens at correct positions")
-        void shouldFormatWithHyphensAtCorrectPositions() {
+        public void shouldFormatWithHyphensAtCorrectPositions() {
             FastId id = FastId.randomFastId();
 
             String idString = id.toString();
@@ -107,7 +107,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should return same string on multiple calls")
-        void shouldReturnSameStringOnMultipleCalls() {
+        public void shouldReturnSameStringOnMultipleCalls() {
             FastId id = FastId.randomFastId();
 
             String str1 = id.toString();
@@ -118,7 +118,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should contain only lowercase hex characters")
-        void shouldContainOnlyLowercaseHexCharacters() {
+        public void shouldContainOnlyLowercaseHexCharacters() {
             FastId id = FastId.randomFastId();
 
             String idString = id.toString().replace("-", "");
@@ -129,11 +129,11 @@ class FastIdTest {
 
     @Nested
     @DisplayName("Equals and HashCode Tests")
-    class EqualsAndHashCodeTests {
+    public class EqualsAndHashCodeTests {
 
         @Test
         @DisplayName("Should be equal to itself")
-        void shouldBeEqualToItself() {
+        public void shouldBeEqualToItself() {
             FastId id = FastId.randomFastId();
 
             assertThat(id).isEqualTo(id);
@@ -141,7 +141,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should not be equal to different ID")
-        void shouldNotBeEqualToDifferentId() {
+        public void shouldNotBeEqualToDifferentId() {
             FastId id1 = FastId.randomFastId();
             FastId id2 = FastId.randomFastId();
 
@@ -150,7 +150,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should not be equal to null")
-        void shouldNotBeEqualToNull() {
+        public void shouldNotBeEqualToNull() {
             FastId id = FastId.randomFastId();
 
             assertThat(id).isNotEqualTo(null);
@@ -158,7 +158,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should not be equal to different type")
-        void shouldNotBeEqualToDifferentType() {
+        public void shouldNotBeEqualToDifferentType() {
             FastId id = FastId.randomFastId();
 
             assertThat(id).isNotEqualTo(id.toString());
@@ -166,7 +166,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should have consistent hashCode")
-        void shouldHaveConsistentHashCode() {
+        public void shouldHaveConsistentHashCode() {
             FastId id = FastId.randomFastId();
 
             int hash1 = id.hashCode();
@@ -177,7 +177,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should have different hashCodes for different IDs")
-        void shouldHaveDifferentHashCodesForDifferentIds() {
+        public void shouldHaveDifferentHashCodesForDifferentIds() {
             int count = 1000;
             Set<Integer> hashCodes = new HashSet<>();
 
@@ -192,11 +192,11 @@ class FastIdTest {
 
     @Nested
     @DisplayName("Comparable Tests")
-    class ComparableTests {
+    public class ComparableTests {
 
         @Test
         @DisplayName("Should compare equal IDs as zero")
-        void shouldCompareEqualIdsAsZero() {
+        public void shouldCompareEqualIdsAsZero() {
             FastId id = FastId.randomFastId();
 
             assertThat(id.compareTo(id)).isZero();
@@ -204,7 +204,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should have consistent ordering")
-        void shouldHaveConsistentOrdering() {
+        public void shouldHaveConsistentOrdering() {
             FastId id1 = FastId.randomFastId();
             FastId id2 = FastId.randomFastId();
 
@@ -222,7 +222,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should maintain transitivity")
-        void shouldMaintainTransitivity() {
+        public void shouldMaintainTransitivity() {
             FastId id1 = FastId.randomFastId();
             FastId id2 = FastId.randomFastId();
             FastId id3 = FastId.randomFastId();
@@ -235,11 +235,11 @@ class FastIdTest {
 
     @Nested
     @DisplayName("Thread Safety Tests")
-    class ThreadSafetyTests {
+    public class ThreadSafetyTests {
 
         @Test
         @DisplayName("Should generate unique IDs from multiple threads")
-        void shouldGenerateUniqueIdsFromMultipleThreads() throws InterruptedException {
+        public void shouldGenerateUniqueIdsFromMultipleThreads() throws InterruptedException {
             int threadCount = 10;
             int idsPerThread = 1000;
             Set<String> allIds = new HashSet<>();
@@ -266,11 +266,11 @@ class FastIdTest {
 
     @Nested
     @DisplayName("Performance Tests")
-    class PerformanceTests {
+    public class PerformanceTests {
 
         @Test
         @DisplayName("Should generate IDs quickly")
-        void shouldGenerateIdsQuickly() {
+        public void shouldGenerateIdsQuickly() {
             int count = 100000;
             long startTime = System.currentTimeMillis();
 
@@ -286,7 +286,7 @@ class FastIdTest {
 
         @Test
         @DisplayName("Should convert to string quickly")
-        void shouldConvertToStringQuickly() {
+        public void shouldConvertToStringQuickly() {
             int count = 100000;
             FastId[] ids = new FastId[count];
             for (int i = 0; i < count; i++) {

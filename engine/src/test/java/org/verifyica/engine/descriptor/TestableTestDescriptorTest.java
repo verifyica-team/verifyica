@@ -41,15 +41,15 @@ import org.verifyica.engine.common.throttle.Throttle;
 import org.verifyica.engine.exception.TestClassDefinitionException;
 
 @DisplayName("TestableTestDescriptor Tests")
-class TestableTestDescriptorTest {
+public class TestableTestDescriptorTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create descriptor with uniqueId and displayName")
-        void shouldCreateDescriptorWithUniqueIdAndDisplayName() {
+        public void shouldCreateDescriptorWithUniqueIdAndDisplayName() {
             UniqueId uniqueId = UniqueId.root("test", "test-id");
             ConcreteTestableTestDescriptor descriptor = new ConcreteTestableTestDescriptor(uniqueId, "Test Display");
 
@@ -59,7 +59,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should have CONTAINER type by default")
-        void shouldHaveContainerTypeByDefault() {
+        public void shouldHaveContainerTypeByDefault() {
             UniqueId uniqueId = UniqueId.root("test", "test-id");
             ConcreteTestableTestDescriptor descriptor = new ConcreteTestableTestDescriptor(uniqueId, "Test");
 
@@ -69,11 +69,11 @@ class TestableTestDescriptorTest {
 
     @Nested
     @DisplayName("Status Tests")
-    class StatusTests {
+    public class StatusTests {
 
         @Test
         @DisplayName("Should return null status before test execution")
-        void shouldReturnNullStatusBeforeTestExecution() {
+        public void shouldReturnNullStatusBeforeTestExecution() {
             ConcreteTestableTestDescriptor descriptor =
                     new ConcreteTestableTestDescriptor(UniqueId.root("test", "id"), "Test");
 
@@ -82,7 +82,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should set and get test descriptor status")
-        void shouldSetAndGetTestDescriptorStatus() {
+        public void shouldSetAndGetTestDescriptorStatus() {
             ConcreteTestableTestDescriptor descriptor =
                     new ConcreteTestableTestDescriptor(UniqueId.root("test", "id"), "Test");
             TestDescriptorStatus status = TestDescriptorStatus.passed();
@@ -95,11 +95,11 @@ class TestableTestDescriptorTest {
 
     @Nested
     @DisplayName("Invoke Method Tests")
-    class InvokeMethodTests {
+    public class InvokeMethodTests {
 
         @Test
         @DisplayName("Should invoke method with matching Configuration parameter")
-        void shouldInvokeMethodWithMatchingConfigurationParameter() throws Exception {
+        public void shouldInvokeMethodWithMatchingConfigurationParameter() throws Exception {
             TestClass testInstance = new TestClass();
             Method method = TestClass.class.getDeclaredMethod("methodWithConfiguration", Configuration.class);
             Configuration config = mock(Configuration.class);
@@ -112,7 +112,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke method with matching ClassContext parameter")
-        void shouldInvokeMethodWithMatchingClassContextParameter() throws Exception {
+        public void shouldInvokeMethodWithMatchingClassContextParameter() throws Exception {
             TestClass testInstance = new TestClass();
             Method method = TestClass.class.getDeclaredMethod("methodWithClassContext", ClassContext.class);
             ClassContext context = mock(ClassContext.class);
@@ -125,7 +125,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke method with matching ArgumentContext parameter")
-        void shouldInvokeMethodWithMatchingArgumentContextParameter() throws Exception {
+        public void shouldInvokeMethodWithMatchingArgumentContextParameter() throws Exception {
             TestClass testInstance = new TestClass();
             Method method = TestClass.class.getDeclaredMethod("methodWithArgumentContext", ArgumentContext.class);
             ArgumentContext context = mock(ArgumentContext.class);
@@ -138,7 +138,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke no-arg method when noParameters is true")
-        void shouldInvokeNoArgMethodWhenNoParametersIsTrue() throws Exception {
+        public void shouldInvokeNoArgMethodWhenNoParametersIsTrue() throws Exception {
             TestClass testInstance = new TestClass();
             Method method = TestClass.class.getDeclaredMethod("noArgMethod");
             List<Object> arguments = Collections.emptyList();
@@ -150,7 +150,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should throw TestClassDefinitionException when no matching parameter type")
-        void shouldThrowTestClassDefinitionExceptionWhenNoMatchingParameterType() throws Exception {
+        public void shouldThrowTestClassDefinitionExceptionWhenNoMatchingParameterType() throws Exception {
             TestClass testInstance = new TestClass();
             Method method = TestClass.class.getDeclaredMethod("methodWithConfiguration", Configuration.class);
             List<Object> arguments = Arrays.asList(new Object(), "wrong type");
@@ -162,7 +162,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke zero-parameter methods regardless of noParameters flag")
-        void shouldInvokeZeroParameterMethodsRegardlessOfNoParametersFlag() throws Exception {
+        public void shouldInvokeZeroParameterMethodsRegardlessOfNoParametersFlag() throws Exception {
             TestClass testInstance = new TestClass();
             Method method = TestClass.class.getDeclaredMethod("noArgMethod");
             List<Object> arguments = Collections.emptyList();
@@ -174,7 +174,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should find first matching parameter type in list")
-        void shouldFindFirstMatchingParameterTypeInList() throws Exception {
+        public void shouldFindFirstMatchingParameterTypeInList() throws Exception {
             TestClass testInstance = new TestClass();
             Method method = TestClass.class.getDeclaredMethod("methodWithConfiguration", Configuration.class);
             Configuration config = mock(Configuration.class);
@@ -191,7 +191,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should propagate InvocationTargetException")
-        void shouldPropagateInvocationTargetException() throws Exception {
+        public void shouldPropagateInvocationTargetException() throws Exception {
             TestClass testInstance = new TestClass();
             Method method = TestClass.class.getDeclaredMethod("methodThatThrows", Configuration.class);
             Configuration config = mock(Configuration.class);
@@ -207,11 +207,11 @@ class TestableTestDescriptorTest {
 
     @Nested
     @DisplayName("Throttle Creation Tests")
-    class ThrottleCreationTests {
+    public class ThrottleCreationTests {
 
         @Test
         @DisplayName("Should create RandomSleepThrottle with single value")
-        void shouldCreateRandomSleepThrottleWithSingleValue() {
+        public void shouldCreateRandomSleepThrottleWithSingleValue() {
             Configuration config = mock(Configuration.class);
             Properties properties = new Properties();
             properties.setProperty("test.throttle", "100");
@@ -226,7 +226,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should create RandomSleepThrottle with two values")
-        void shouldCreateRandomSleepThrottleWithTwoValues() {
+        public void shouldCreateRandomSleepThrottleWithTwoValues() {
             Configuration config = mock(Configuration.class);
             Properties properties = new Properties();
             properties.setProperty("test.throttle", "100,200");
@@ -241,7 +241,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should create RandomSleepThrottle with space-separated values")
-        void shouldCreateRandomSleepThrottleWithSpaceSeparatedValues() {
+        public void shouldCreateRandomSleepThrottleWithSpaceSeparatedValues() {
             Configuration config = mock(Configuration.class);
             Properties properties = new Properties();
             properties.setProperty("test.throttle", "100 200");
@@ -256,7 +256,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should create RandomSleepThrottle with 0,0 for invalid token count")
-        void shouldCreateRandomSleepThrottleWithZerosForInvalidTokenCount() {
+        public void shouldCreateRandomSleepThrottleWithZerosForInvalidTokenCount() {
             Configuration config = mock(Configuration.class);
             Properties properties = new Properties();
             properties.setProperty("test.throttle", "100,200,300");
@@ -271,7 +271,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should create NoopThrottle when property is null")
-        void shouldCreateNoopThrottleWhenPropertyIsNull() {
+        public void shouldCreateNoopThrottleWhenPropertyIsNull() {
             Configuration config = mock(Configuration.class);
             Properties properties = new Properties();
             when(config.getProperties()).thenReturn(properties);
@@ -285,7 +285,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should create NoopThrottle when property is empty")
-        void shouldCreateNoopThrottleWhenPropertyIsEmpty() {
+        public void shouldCreateNoopThrottleWhenPropertyIsEmpty() {
             Configuration config = mock(Configuration.class);
             Properties properties = new Properties();
             properties.setProperty("test.throttle", "");
@@ -300,7 +300,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should create NoopThrottle when property is whitespace")
-        void shouldCreateNoopThrottleWhenPropertyIsWhitespace() {
+        public void shouldCreateNoopThrottleWhenPropertyIsWhitespace() {
             Configuration config = mock(Configuration.class);
             Properties properties = new Properties();
             properties.setProperty("test.throttle", "   ");
@@ -315,7 +315,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Should create NoopThrottle when parsing fails")
-        void shouldCreateNoopThrottleWhenParsingFails() {
+        public void shouldCreateNoopThrottleWhenParsingFails() {
             Configuration config = mock(Configuration.class);
             Properties properties = new Properties();
             properties.setProperty("test.throttle", "invalid,notanumber");
@@ -331,11 +331,11 @@ class TestableTestDescriptorTest {
 
     @Nested
     @DisplayName("PrintStackTrace Tests")
-    class PrintStackTraceTests {
+    public class PrintStackTraceTests {
 
         @Test
         @DisplayName("Should print stack trace to System.err")
-        void shouldPrintStackTraceToSystemErr() {
+        public void shouldPrintStackTraceToSystemErr() {
             ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
             PrintStream originalErr = System.err;
 
@@ -355,7 +355,7 @@ class TestableTestDescriptorTest {
         // @Test
         // @DisplayName("Should include stack trace elements")
         // TODO fix this test
-        void shouldIncludeStackTraceElements() {
+        public void shouldIncludeStackTraceElements() {
             ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
             PrintStream originalErr = System.err;
 
@@ -375,64 +375,64 @@ class TestableTestDescriptorTest {
 
     @Nested
     @DisplayName("Static Field Constants Tests")
-    class StaticFieldConstantsTests {
+    public class StaticFieldConstantsTests {
 
         @Test
         @DisplayName("Should have correct ENGINE_EXECUTION_LISTENER constant")
-        void shouldHaveCorrectEngineExecutionListenerConstant() {
+        public void shouldHaveCorrectEngineExecutionListenerConstant() {
             assertThat(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER).isEqualTo("engineExecutionListener");
         }
 
         @Test
         @DisplayName("Should have correct CLASS_INTERCEPTORS constant")
-        void shouldHaveCorrectClassInterceptorsConstant() {
+        public void shouldHaveCorrectClassInterceptorsConstant() {
             assertThat(TestableTestDescriptor.CLASS_INTERCEPTORS).isEqualTo("classInterceptors");
         }
 
         @Test
         @DisplayName("Should have correct CLASS_INTERCEPTORS_REVERSED constant")
-        void shouldHaveCorrectClassInterceptorsReversedConstant() {
+        public void shouldHaveCorrectClassInterceptorsReversedConstant() {
             assertThat(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED).isEqualTo("classInterceptorsReversed");
         }
 
         @Test
         @DisplayName("Should have correct TEST_ARGUMENT_EXECUTOR_SERVICE constant")
-        void shouldHaveCorrectTestArgumentExecutorServiceConstant() {
+        public void shouldHaveCorrectTestArgumentExecutorServiceConstant() {
             assertThat(TestableTestDescriptor.TEST_ARGUMENT_EXECUTOR_SERVICE).isEqualTo("argumentExecutorService");
         }
 
         @Test
         @DisplayName("Should have correct ARGUMENT_EXECUTOR_POOL constant")
-        void shouldHaveCorrectArgumentExecutorPoolConstant() {
+        public void shouldHaveCorrectArgumentExecutorPoolConstant() {
             assertThat(TestableTestDescriptor.ARGUMENT_EXECUTOR_POOL).isEqualTo("argumentExecutorPool");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_CONTEXT constant")
-        void shouldHaveCorrectEngineContextConstant() {
+        public void shouldHaveCorrectEngineContextConstant() {
             assertThat(TestableTestDescriptor.ENGINE_CONTEXT).isEqualTo("engineContext");
         }
 
         @Test
         @DisplayName("Should have correct CLASS_CONTEXT constant")
-        void shouldHaveCorrectClassContextConstant() {
+        public void shouldHaveCorrectClassContextConstant() {
             assertThat(TestableTestDescriptor.CLASS_CONTEXT).isEqualTo("classContext");
         }
 
         @Test
         @DisplayName("Should have correct ARGUMENT_CONTEXT constant")
-        void shouldHaveCorrectArgumentContextConstant() {
+        public void shouldHaveCorrectArgumentContextConstant() {
             assertThat(TestableTestDescriptor.ARGUMENT_CONTEXT).isEqualTo("argumentContext");
         }
     }
 
     @Nested
     @DisplayName("Predicate and Mapper Tests")
-    class PredicateAndMapperTests {
+    public class PredicateAndMapperTests {
 
         @Test
         @DisplayName("TESTABLE_TEST_DESCRIPTOR_FILTER should accept TestableTestDescriptor")
-        void testableTestDescriptorFilterShouldAcceptTestableTestDescriptor() {
+        public void testableTestDescriptorFilterShouldAcceptTestableTestDescriptor() {
             TestDescriptor descriptor = new ConcreteTestableTestDescriptor(UniqueId.root("test", "id"), "Test");
 
             boolean result = TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_FILTER.test(descriptor);
@@ -442,7 +442,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("TESTABLE_TEST_DESCRIPTOR_FILTER should reject non-TestableTestDescriptor")
-        void testableTestDescriptorFilterShouldRejectNonTestableTestDescriptor() {
+        public void testableTestDescriptorFilterShouldRejectNonTestableTestDescriptor() {
             TestDescriptor descriptor = mock(TestDescriptor.class);
 
             boolean result = TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_FILTER.test(descriptor);
@@ -452,7 +452,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("TESTABLE_TEST_DESCRIPTOR_MAPPER should map TestDescriptor to TestableTestDescriptor")
-        void testableTestDescriptorMapperShouldMapTestDescriptorToTestableTestDescriptor() {
+        public void testableTestDescriptorMapperShouldMapTestDescriptorToTestableTestDescriptor() {
             ConcreteTestableTestDescriptor original =
                     new ConcreteTestableTestDescriptor(UniqueId.root("test", "id"), "Test");
 
@@ -463,7 +463,7 @@ class TestableTestDescriptorTest {
 
         @Test
         @DisplayName("Filter and mapper should work together in stream")
-        void filterAndMapperShouldWorkTogetherInStream() {
+        public void filterAndMapperShouldWorkTogetherInStream() {
             ConcreteTestableTestDescriptor testable1 =
                     new ConcreteTestableTestDescriptor(UniqueId.root("test", "id1"), "Test1");
             ConcreteTestableTestDescriptor testable2 =
@@ -483,6 +483,7 @@ class TestableTestDescriptorTest {
 
     // Concrete implementation for testing
     private static class ConcreteTestableTestDescriptor extends TestableTestDescriptor {
+
         public ConcreteTestableTestDescriptor(UniqueId uniqueId, String displayName) {
             super(uniqueId, displayName);
         }
@@ -509,6 +510,7 @@ class TestableTestDescriptorTest {
     // Test helper class
     @SuppressWarnings("unused")
     private static class TestClass {
+
         Configuration configReceived;
         ClassContext classContextReceived;
         ArgumentContext argumentContextReceived;

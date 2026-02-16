@@ -26,15 +26,15 @@ import java.util.concurrent.*;
 import org.junit.jupiter.api.*;
 
 @DisplayName("HeadOfQueueRejectedExecutionHandler Tests")
-class HeadOfQueueRejectedExecutionHandlerTest {
+public class HeadOfQueueRejectedExecutionHandlerTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create handler")
-        void shouldCreateHandler() {
+        public void shouldCreateHandler() {
             HeadOfQueueRejectedExecutionHandler handler = new HeadOfQueueRejectedExecutionHandler();
 
             assertThat(handler).isNotNull();
@@ -43,11 +43,11 @@ class HeadOfQueueRejectedExecutionHandlerTest {
 
     @Nested
     @DisplayName("RejectedExecution Tests")
-    class RejectedExecutionTests {
+    public class RejectedExecutionTests {
 
         @Test
         @DisplayName("Should execute rejected task when queue is empty")
-        void shouldExecuteRejectedTaskWhenQueueIsEmpty() throws InterruptedException {
+        public void shouldExecuteRejectedTaskWhenQueueIsEmpty() throws InterruptedException {
             ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<>(1), new HeadOfQueueRejectedExecutionHandler());
 
@@ -78,7 +78,7 @@ class HeadOfQueueRejectedExecutionHandlerTest {
 
         @Test
         @DisplayName("Should remove and execute head of queue when queue not empty")
-        void shouldRemoveAndExecuteHeadOfQueueWhenQueueNotEmpty() throws InterruptedException {
+        public void shouldRemoveAndExecuteHeadOfQueueWhenQueueNotEmpty() throws InterruptedException {
             ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<>(2), new HeadOfQueueRejectedExecutionHandler());
 
@@ -115,7 +115,7 @@ class HeadOfQueueRejectedExecutionHandlerTest {
 
         @Test
         @DisplayName("Should handle null runnable from queue")
-        void shouldHandleNullRunnableFromQueue() {
+        public void shouldHandleNullRunnableFromQueue() {
             BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
             ThreadPoolExecutor executor =
                     new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, queue, new HeadOfQueueRejectedExecutionHandler());
@@ -134,11 +134,11 @@ class HeadOfQueueRejectedExecutionHandlerTest {
 
     @Nested
     @DisplayName("Integration Tests")
-    class IntegrationTests {
+    public class IntegrationTests {
 
         @Test
         @DisplayName("Should maintain FIFO order for non-rejected tasks")
-        void shouldMaintainFifoOrderForNonRejectedTasks() throws InterruptedException {
+        public void shouldMaintainFifoOrderForNonRejectedTasks() throws InterruptedException {
             ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1,
                     1,
@@ -169,7 +169,7 @@ class HeadOfQueueRejectedExecutionHandlerTest {
 
         @Test
         @DisplayName("Should handle multiple rejections")
-        void shouldHandleMultipleRejections() throws InterruptedException {
+        public void shouldHandleMultipleRejections() throws InterruptedException {
             ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<>(1), new HeadOfQueueRejectedExecutionHandler());
 
@@ -201,7 +201,7 @@ class HeadOfQueueRejectedExecutionHandlerTest {
 
         @Test
         @DisplayName("Should work with zero capacity queue")
-        void shouldWorkWithZeroCapacityQueue() throws InterruptedException {
+        public void shouldWorkWithZeroCapacityQueue() throws InterruptedException {
             ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new SynchronousQueue<>(), new HeadOfQueueRejectedExecutionHandler());
 
@@ -230,11 +230,11 @@ class HeadOfQueueRejectedExecutionHandlerTest {
 
     @Nested
     @DisplayName("Behavior Tests")
-    class BehaviorTests {
+    public class BehaviorTests {
 
         @Test
         @DisplayName("Should execute oldest task first when rejecting")
-        void shouldExecuteOldestTaskFirstWhenRejecting() throws InterruptedException {
+        public void shouldExecuteOldestTaskFirstWhenRejecting() throws InterruptedException {
             ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<>(2), new HeadOfQueueRejectedExecutionHandler());
 
@@ -273,7 +273,7 @@ class HeadOfQueueRejectedExecutionHandlerTest {
 
         @Test
         @DisplayName("Should execute rejected task on calling thread")
-        void shouldExecuteRejectedTaskOnCallingThread() throws InterruptedException {
+        public void shouldExecuteRejectedTaskOnCallingThread() throws InterruptedException {
             ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new SynchronousQueue<>(), new HeadOfQueueRejectedExecutionHandler());
 
@@ -303,11 +303,11 @@ class HeadOfQueueRejectedExecutionHandlerTest {
 
     @Nested
     @DisplayName("Exception Handling Tests")
-    class ExceptionHandlingTests {
+    public class ExceptionHandlingTests {
 
         @Test
         @DisplayName("Should propagate exception from rejected task")
-        void shouldPropagateExceptionFromRejectedTask() throws InterruptedException {
+        public void shouldPropagateExceptionFromRejectedTask() throws InterruptedException {
             ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new SynchronousQueue<>(), new HeadOfQueueRejectedExecutionHandler());
 

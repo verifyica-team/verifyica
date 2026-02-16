@@ -42,12 +42,12 @@ public class ClassDefinitionFilterTest {
     private Path tempDirectory;
 
     @BeforeEach
-    void setUp() throws IOException {
+    public void setUp() throws IOException {
         tempDirectory = Files.createTempDirectory("class-definition-filter-test");
     }
 
     @AfterEach
-    void tearDown() throws IOException {
+    public void tearDown() throws IOException {
         if (tempDirectory != null && Files.exists(tempDirectory)) {
             Files.walk(tempDirectory).sorted((a, b) -> b.compareTo(a)).forEach(path -> {
                 try {
@@ -62,11 +62,11 @@ public class ClassDefinitionFilterTest {
 
     @Nested
     @DisplayName("Filter Method Tests")
-    class FilterMethodTests {
+    public class FilterMethodTests {
 
         @Test
         @DisplayName("should not modify list when no filters configured")
-        void shouldNotModifyListWhenNoFiltersConfigured() {
+        public void shouldNotModifyListWhenNoFiltersConfigured() {
             List<ClassDefinition> classDefinitions = new ArrayList<>();
             classDefinitions.add(createClassDefinition(TestClass1.class));
             classDefinitions.add(createClassDefinition(TestClass2.class));
@@ -78,7 +78,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should handle empty list")
-        void shouldHandleEmptyList() {
+        public void shouldHandleEmptyList() {
             List<ClassDefinition> classDefinitions = new ArrayList<>();
 
             ClassDefinitionFilter.filter(classDefinitions);
@@ -88,7 +88,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should exclude classes matching ExcludeClass filter")
-        void shouldExcludeClassesMatchingExcludeClassFilter() throws IOException {
+        public void shouldExcludeClassesMatchingExcludeClassFilter() throws IOException {
             String yaml = "- type: ExcludeClass\n" + "  enabled: true\n" + "  classRegex: \".*Abstract.*\"\n";
 
             setupFilterFile(yaml);
@@ -108,7 +108,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should include only classes matching IncludeClass filter")
-        void shouldIncludeOnlyClassesMatchingIncludeClassFilter() throws IOException {
+        public void shouldIncludeOnlyClassesMatchingIncludeClassFilter() throws IOException {
             String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \".*TestClass1\"\n";
 
             setupFilterFile(yaml);
@@ -126,7 +126,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should exclude classes matching ExcludeTaggedClass filter")
-        void shouldExcludeClassesMatchingExcludeTaggedClassFilter() throws IOException {
+        public void shouldExcludeClassesMatchingExcludeTaggedClassFilter() throws IOException {
             String yaml = "- type: ExcludeTaggedClass\n" + "  enabled: true\n" + "  classTagRegex: \"slow\"\n";
 
             setupFilterFile(yaml);
@@ -146,7 +146,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should include only classes matching IncludeTaggedClass filter")
-        void shouldIncludeOnlyClassesMatchingIncludeTaggedClassFilter() throws IOException {
+        public void shouldIncludeOnlyClassesMatchingIncludeTaggedClassFilter() throws IOException {
             String yaml = "- type: IncludeTaggedClass\n" + "  enabled: true\n" + "  classTagRegex: \"fast\"\n";
 
             setupFilterFile(yaml);
@@ -164,7 +164,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should apply multiple filters")
-        void shouldApplyMultipleFilters() throws IOException {
+        public void shouldApplyMultipleFilters() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Test.*\"\n"
@@ -188,7 +188,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should remove all when exclude filter matches all")
-        void shouldRemoveAllWhenExcludeFilterMatchesAll() throws IOException {
+        public void shouldRemoveAllWhenExcludeFilterMatchesAll() throws IOException {
             String yaml = "- type: ExcludeClass\n" + "  enabled: true\n" + "  classRegex: \".*\"\n";
 
             setupFilterFile(yaml);
@@ -204,7 +204,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should keep all when include filter matches all")
-        void shouldKeepAllWhenIncludeFilterMatchesAll() throws IOException {
+        public void shouldKeepAllWhenIncludeFilterMatchesAll() throws IOException {
             String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \".*\"\n";
 
             setupFilterFile(yaml);
@@ -221,11 +221,11 @@ public class ClassDefinitionFilterTest {
 
     @Nested
     @DisplayName("Filter Combination Tests")
-    class FilterCombinationTests {
+    public class FilterCombinationTests {
 
         @Test
-        @DisplayName("should apply include and exclude class filters together")
-        void shouldApplyIncludeAndExcludeClassFiltersTogether() throws IOException {
+        @DisplayName("should apply include and exclude public class filters together")
+        public void shouldApplyIncludeAndExcludeClassFiltersTogether() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Test.*\"\n"
@@ -249,7 +249,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should apply include and exclude tagged filters together")
-        void shouldApplyIncludeAndExcludeTaggedFiltersTogether() throws IOException {
+        public void shouldApplyIncludeAndExcludeTaggedFiltersTogether() throws IOException {
             String yaml = "- type: IncludeTaggedClass\n"
                     + "  enabled: true\n"
                     + "  classTagRegex: \".*test.*\"\n"
@@ -273,7 +273,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should apply all four filter types together")
-        void shouldApplyAllFourFilterTypesTogether() throws IOException {
+        public void shouldApplyAllFourFilterTypesTogether() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Test.*\"\n"
@@ -305,11 +305,11 @@ public class ClassDefinitionFilterTest {
 
     @Nested
     @DisplayName("Edge Cases")
-    class EdgeCaseTests {
+    public class EdgeCaseTests {
 
         @Test
-        @DisplayName("should handle duplicate class definitions")
-        void shouldHandleDuplicateClassDefinitions() throws IOException {
+        @DisplayName("should handle duplicate public class definitions")
+        public void shouldHandleDuplicateClassDefinitions() throws IOException {
             String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \"\\\\$.*Test.*\"\n";
 
             setupFilterFile(yaml);
@@ -328,7 +328,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should maintain insertion order")
-        void shouldMaintainInsertionOrder() throws IOException {
+        public void shouldMaintainInsertionOrder() throws IOException {
             String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \"\\\\$.*Test.*\"\n";
 
             setupFilterFile(yaml);
@@ -347,7 +347,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should handle disabled filters")
-        void shouldHandleDisabledFilters() throws IOException {
+        public void shouldHandleDisabledFilters() throws IOException {
             String yaml = "- type: ExcludeClass\n" + "  enabled: false\n" + "  classRegex: \".*\"\n";
 
             setupFilterFile(yaml);
@@ -364,11 +364,11 @@ public class ClassDefinitionFilterTest {
 
     @Nested
     @DisplayName("Integration Tests")
-    class IntegrationTests {
+    public class IntegrationTests {
 
         @Test
         @DisplayName("should filter real test scenario")
-        void shouldFilterRealTestScenario() throws IOException {
+        public void shouldFilterRealTestScenario() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Test.*\"\n"
@@ -399,7 +399,7 @@ public class ClassDefinitionFilterTest {
 
         @Test
         @DisplayName("should work with consecutive filter calls")
-        void shouldWorkWithConsecutiveFilterCalls() throws IOException {
+        public void shouldWorkWithConsecutiveFilterCalls() throws IOException {
             String yaml = "- type: ExcludeClass\n" + "  enabled: true\n" + "  classRegex: \".*Abstract.*\"\n";
 
             setupFilterFile(yaml);

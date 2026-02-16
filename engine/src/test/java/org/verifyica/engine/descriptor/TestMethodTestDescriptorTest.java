@@ -34,7 +34,7 @@ import org.verifyica.api.*;
 import org.verifyica.engine.inject.Injector;
 
 @DisplayName("TestMethodTestDescriptor Tests")
-class TestMethodTestDescriptorTest {
+public class TestMethodTestDescriptorTest {
 
     private EngineExecutionListener mockListener;
     private ArgumentContext mockArgumentContext;
@@ -48,7 +48,7 @@ class TestMethodTestDescriptorTest {
 
     @BeforeEach
     @SuppressWarnings("unchecked")
-    void setUp() {
+    public void setUp() {
         mockListener = mock(EngineExecutionListener.class);
         mockArgumentContext = mock(ArgumentContext.class);
         mockClassContext = mock(ClassContext.class);
@@ -66,11 +66,11 @@ class TestMethodTestDescriptorTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create descriptor with all parameters")
-        void shouldCreateDescriptorWithAllParameters() throws Exception {
+        public void shouldCreateDescriptorWithAllParameters() throws Exception {
             UniqueId uniqueId = UniqueId.root("test", "method-id");
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             List<Method> beforeEachMethods = Collections.emptyList();
@@ -88,7 +88,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should have TEST type")
-        void shouldHaveTestType() throws Exception {
+        public void shouldHaveTestType() throws Exception {
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             TestMethodTestDescriptor descriptor = new TestMethodTestDescriptor(
                     UniqueId.root("test", "id"), "Test", Collections.emptyList(), testMethod, Collections.emptyList());
@@ -99,11 +99,11 @@ class TestMethodTestDescriptorTest {
 
     @Nested
     @DisplayName("Source Tests")
-    class SourceTests {
+    public class SourceTests {
 
         @Test
         @DisplayName("Should return MethodSource")
-        void shouldReturnMethodSource() throws Exception {
+        public void shouldReturnMethodSource() throws Exception {
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             TestMethodTestDescriptor descriptor = new TestMethodTestDescriptor(
                     UniqueId.root("test", "id"), "Test", Collections.emptyList(), testMethod, Collections.emptyList());
@@ -119,11 +119,11 @@ class TestMethodTestDescriptorTest {
 
     @Nested
     @DisplayName("Test Method Tests")
-    class TestMethodTests {
+    public class TestMethodTests {
 
         @Test
         @DisplayName("Should return test method")
-        void shouldReturnTestMethod() throws Exception {
+        public void shouldReturnTestMethod() throws Exception {
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             TestMethodTestDescriptor descriptor = new TestMethodTestDescriptor(
                     UniqueId.root("test", "id"), "Test", Collections.emptyList(), testMethod, Collections.emptyList());
@@ -134,11 +134,11 @@ class TestMethodTestDescriptorTest {
 
     @Nested
     @DisplayName("Test Execution Tests")
-    class TestExecutionTests {
+    public class TestExecutionTests {
 
         @Test
         @DisplayName("Should execute successful test")
-        void shouldExecuteSuccessfulTest() throws Exception {
+        public void shouldExecuteSuccessfulTest() throws Exception {
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             TestMethodTestDescriptor descriptor = new TestMethodTestDescriptor(
                     UniqueId.root("test", "id"), "Test", Collections.emptyList(), testMethod, Collections.emptyList());
@@ -159,7 +159,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should execute beforeEach methods")
-        void shouldExecuteBeforeEachMethods() throws Exception {
+        public void shouldExecuteBeforeEachMethods() throws Exception {
             Method beforeEach = TestMethodClass.class.getDeclaredMethod("beforeEachMethod");
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             List<Method> beforeEachMethods = Collections.singletonList(beforeEach);
@@ -180,7 +180,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should execute afterEach methods")
-        void shouldExecuteAfterEachMethods() throws Exception {
+        public void shouldExecuteAfterEachMethods() throws Exception {
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             Method afterEach = TestMethodClass.class.getDeclaredMethod("afterEachMethod");
             List<Method> afterEachMethods = Collections.singletonList(afterEach);
@@ -201,7 +201,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should handle test method failure")
-        void shouldHandleTestMethodFailure() throws Exception {
+        public void shouldHandleTestMethodFailure() throws Exception {
             Method testMethod = TestMethodClass.class.getDeclaredMethod("failingTestMethod");
             TestMethodTestDescriptor descriptor = new TestMethodTestDescriptor(
                     UniqueId.root("test", "id"), "Test", Collections.emptyList(), testMethod, Collections.emptyList());
@@ -223,7 +223,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should handle ExecutionSkippedException in test method")
-        void shouldHandleExecutionSkippedExceptionInTestMethod() throws Exception {
+        public void shouldHandleExecutionSkippedExceptionInTestMethod() throws Exception {
             Method testMethod = TestMethodClass.class.getDeclaredMethod("skippedTestMethod");
             TestMethodTestDescriptor descriptor = new TestMethodTestDescriptor(
                     UniqueId.root("test", "id"), "Test", Collections.emptyList(), testMethod, Collections.emptyList());
@@ -244,7 +244,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should handle ExecutionSkippedException in beforeEach")
-        void shouldHandleExecutionSkippedExceptionInBeforeEach() throws Exception {
+        public void shouldHandleExecutionSkippedExceptionInBeforeEach() throws Exception {
             Method beforeEach = TestMethodClass.class.getDeclaredMethod("skippedBeforeEachMethod");
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             List<Method> beforeEachMethods = Collections.singletonList(beforeEach);
@@ -268,7 +268,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should ignore ExecutionSkippedException in afterEach")
-        void shouldIgnoreExecutionSkippedExceptionInAfterEach() throws Exception {
+        public void shouldIgnoreExecutionSkippedExceptionInAfterEach() throws Exception {
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             Method afterEach = TestMethodClass.class.getDeclaredMethod("skippedAfterEachMethod");
             List<Method> afterEachMethods = Collections.singletonList(afterEach);
@@ -292,7 +292,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should handle exception in beforeEach")
-        void shouldHandleExceptionInBeforeEach() throws Exception {
+        public void shouldHandleExceptionInBeforeEach() throws Exception {
             Method beforeEach = TestMethodClass.class.getDeclaredMethod("failingBeforeEachMethod");
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             List<Method> beforeEachMethods = Collections.singletonList(beforeEach);
@@ -316,7 +316,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should handle exception in afterEach")
-        void shouldHandleExceptionInAfterEach() throws Exception {
+        public void shouldHandleExceptionInAfterEach() throws Exception {
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             Method afterEach = TestMethodClass.class.getDeclaredMethod("failingAfterEachMethod");
             List<Method> afterEachMethods = Collections.singletonList(afterEach);
@@ -341,11 +341,11 @@ class TestMethodTestDescriptorTest {
 
     @Nested
     @DisplayName("Skip Tests")
-    class SkipTests {
+    public class SkipTests {
 
         @Test
         @DisplayName("Should skip test and notify listener")
-        void shouldSkipTestAndNotifyListener() throws Exception {
+        public void shouldSkipTestAndNotifyListener() throws Exception {
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             TestMethodTestDescriptor descriptor = new TestMethodTestDescriptor(
                     UniqueId.root("test", "id"), "Test", Collections.emptyList(), testMethod, Collections.emptyList());
@@ -364,11 +364,11 @@ class TestMethodTestDescriptorTest {
 
     @Nested
     @DisplayName("Interceptor Integration Tests")
-    class InterceptorIntegrationTests {
+    public class InterceptorIntegrationTests {
 
         @Test
         @DisplayName("Should invoke preBeforeEach interceptor")
-        void shouldInvokePreBeforeEachInterceptor() throws Throwable {
+        public void shouldInvokePreBeforeEachInterceptor() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
 
@@ -388,7 +388,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke postBeforeEach interceptor")
-        void shouldInvokePostBeforeEachInterceptor() throws Throwable {
+        public void shouldInvokePostBeforeEachInterceptor() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
 
@@ -410,7 +410,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke preTest interceptor")
-        void shouldInvokePreTestInterceptor() throws Throwable {
+        public void shouldInvokePreTestInterceptor() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
 
@@ -430,7 +430,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke postTest interceptor")
-        void shouldInvokePostTestInterceptor() throws Throwable {
+        public void shouldInvokePostTestInterceptor() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
 
@@ -452,7 +452,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke preAfterEach interceptor")
-        void shouldInvokePreAfterEachInterceptor() throws Throwable {
+        public void shouldInvokePreAfterEachInterceptor() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
 
@@ -472,7 +472,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke postAfterEach interceptor")
-        void shouldInvokePostAfterEachInterceptor() throws Throwable {
+        public void shouldInvokePostAfterEachInterceptor() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
 
@@ -494,7 +494,7 @@ class TestMethodTestDescriptorTest {
 
         @Test
         @DisplayName("Should pass throwable to postBeforeEach on failure")
-        void shouldPassThrowableToPostBeforeEachOnFailure() throws Throwable {
+        public void shouldPassThrowableToPostBeforeEachOnFailure() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
             Method beforeEach = TestMethodClass.class.getDeclaredMethod("failingBeforeEachMethod");
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
@@ -522,11 +522,11 @@ class TestMethodTestDescriptorTest {
 
     @Nested
     @DisplayName("State Machine Tests")
-    class StateMachineTests {
+    public class StateMachineTests {
 
         @Test
         @DisplayName("Should follow state machine START to BEFORE_EACH to TEST to AFTER_EACH to END")
-        void shouldFollowStateMachineStartToBeforeEachToTestToAfterEachToEnd() throws Exception {
+        public void shouldFollowStateMachineStartToBeforeEachToTestToAfterEachToEnd() throws Exception {
             Method testMethod = TestMethodClass.class.getDeclaredMethod("testMethod");
             TestMethodTestDescriptor descriptor = new TestMethodTestDescriptor(
                     UniqueId.root("test", "id"), "Test", Collections.emptyList(), testMethod, Collections.emptyList());

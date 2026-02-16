@@ -26,15 +26,15 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.*;
 
 @DisplayName("VirtualThreadFactory Tests")
-class VirtualThreadFactoryTest {
+public class VirtualThreadFactoryTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create thread factory")
-        void shouldCreateThreadFactory() {
+        public void shouldCreateThreadFactory() {
             VirtualThreadFactory factory = new VirtualThreadFactory();
 
             assertThat(factory).isNotNull();
@@ -43,11 +43,11 @@ class VirtualThreadFactoryTest {
 
     @Nested
     @DisplayName("NewThread Tests")
-    class NewThreadTests {
+    public class NewThreadTests {
 
         @Test
         @DisplayName("Should create thread")
-        void shouldCreateThread() {
+        public void shouldCreateThread() {
             VirtualThreadFactory factory = new VirtualThreadFactory();
 
             Thread thread = factory.newThread(() -> {});
@@ -57,7 +57,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should create virtual thread when supported")
-        void shouldCreateVirtualThreadWhenSupported() {
+        public void shouldCreateVirtualThreadWhenSupported() {
             VirtualThreadFactory factory = new VirtualThreadFactory();
 
             Thread thread = factory.newThread(() -> {});
@@ -71,7 +71,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should create platform thread when virtual threads not supported")
-        void shouldCreatePlatformThreadWhenVirtualThreadsNotSupported() {
+        public void shouldCreatePlatformThreadWhenVirtualThreadsNotSupported() {
             VirtualThreadFactory factory = new VirtualThreadFactory();
 
             Thread thread = factory.newThread(() -> {});
@@ -81,7 +81,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should create thread with provided runnable")
-        void shouldCreateThreadWithProvidedRunnable() throws InterruptedException {
+        public void shouldCreateThreadWithProvidedRunnable() throws InterruptedException {
             VirtualThreadFactory factory = new VirtualThreadFactory();
             CountDownLatch latch = new CountDownLatch(1);
 
@@ -95,7 +95,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should create thread in NEW state")
-        void shouldCreateThreadInNewState() {
+        public void shouldCreateThreadInNewState() {
             VirtualThreadFactory factory = new VirtualThreadFactory();
 
             Thread thread = factory.newThread(() -> {});
@@ -105,7 +105,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should create multiple distinct threads")
-        void shouldCreateMultipleDistinctThreads() {
+        public void shouldCreateMultipleDistinctThreads() {
             VirtualThreadFactory factory = new VirtualThreadFactory();
 
             Thread thread1 = factory.newThread(() -> {});
@@ -118,7 +118,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should create threads with different IDs")
-        void shouldCreateThreadsWithDifferentIds() {
+        public void shouldCreateThreadsWithDifferentIds() {
             VirtualThreadFactory factory = new VirtualThreadFactory();
             Set<Long> threadIds = new HashSet<>();
 
@@ -132,7 +132,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should create thread that can execute runnable")
-        void shouldCreateThreadThatCanExecuteRunnable() throws InterruptedException {
+        public void shouldCreateThreadThatCanExecuteRunnable() throws InterruptedException {
             VirtualThreadFactory factory = new VirtualThreadFactory();
             StringBuilder result = new StringBuilder();
             CountDownLatch latch = new CountDownLatch(1);
@@ -150,7 +150,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should handle null runnable gracefully")
-        void shouldHandleNullRunnableGracefully() {
+        public void shouldHandleNullRunnableGracefully() {
             VirtualThreadFactory factory = new VirtualThreadFactory();
 
             assertThatThrownBy(() -> factory.newThread(null)).isInstanceOf(NullPointerException.class);
@@ -159,11 +159,11 @@ class VirtualThreadFactoryTest {
 
     @Nested
     @DisplayName("Thread Characteristics Tests")
-    class ThreadCharacteristicsTests {
+    public class ThreadCharacteristicsTests {
 
         @Test
         @DisplayName("Should create thread that can be started")
-        void shouldCreateThreadThatCanBeStarted() throws InterruptedException {
+        public void shouldCreateThreadThatCanBeStarted() throws InterruptedException {
             VirtualThreadFactory factory = new VirtualThreadFactory();
             CountDownLatch latch = new CountDownLatch(1);
 
@@ -176,7 +176,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should create unstarted thread")
-        void shouldCreateUnstartedThread() {
+        public void shouldCreateUnstartedThread() {
             VirtualThreadFactory factory = new VirtualThreadFactory();
 
             Thread thread = factory.newThread(() -> {});
@@ -187,11 +187,11 @@ class VirtualThreadFactoryTest {
 
     @Nested
     @DisplayName("Concurrent Usage Tests")
-    class ConcurrentUsageTests {
+    public class ConcurrentUsageTests {
 
         @Test
         @DisplayName("Should be thread-safe for concurrent thread creation")
-        void shouldBeThreadSafeForConcurrentThreadCreation() throws InterruptedException {
+        public void shouldBeThreadSafeForConcurrentThreadCreation() throws InterruptedException {
             VirtualThreadFactory factory = new VirtualThreadFactory();
             int factoryThreadCount = 10;
             int threadsPerFactoryThread = 10;
@@ -220,11 +220,11 @@ class VirtualThreadFactoryTest {
 
     @Nested
     @DisplayName("Integration Tests")
-    class IntegrationTests {
+    public class IntegrationTests {
 
         @Test
         @DisplayName("Should create threads that can run concurrently")
-        void shouldCreateThreadsThatCanRunConcurrently() throws InterruptedException {
+        public void shouldCreateThreadsThatCanRunConcurrently() throws InterruptedException {
             VirtualThreadFactory factory = new VirtualThreadFactory();
             int threadCount = 5;
             CountDownLatch startLatch = new CountDownLatch(threadCount);
@@ -253,7 +253,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should create threads with independent execution")
-        void shouldCreateThreadsWithIndependentExecution() throws InterruptedException {
+        public void shouldCreateThreadsWithIndependentExecution() throws InterruptedException {
             VirtualThreadFactory factory = new VirtualThreadFactory();
             int[] results = new int[3];
             CountDownLatch latch = new CountDownLatch(3);
@@ -282,7 +282,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should create many threads efficiently when virtual threads available")
-        void shouldCreateManyThreadsEfficientlyWhenVirtualThreadsAvailable() throws InterruptedException {
+        public void shouldCreateManyThreadsEfficientlyWhenVirtualThreadsAvailable() throws InterruptedException {
             VirtualThreadFactory factory = new VirtualThreadFactory();
             int threadCount = 1000;
             CountDownLatch latch = new CountDownLatch(threadCount);
@@ -315,11 +315,11 @@ class VirtualThreadFactoryTest {
 
     @Nested
     @DisplayName("Virtual Thread Support Tests")
-    class VirtualThreadSupportTests {
+    public class VirtualThreadSupportTests {
 
         @Test
         @DisplayName("Should detect virtual thread support")
-        void shouldDetectVirtualThreadSupport() {
+        public void shouldDetectVirtualThreadSupport() {
             boolean hasVirtualThreads = ThreadTool.hasVirtualThreads();
 
             // This test just verifies the API is available
@@ -329,7 +329,7 @@ class VirtualThreadFactoryTest {
 
         @Test
         @DisplayName("Should create consistent thread type")
-        void shouldCreateConsistentThreadType() {
+        public void shouldCreateConsistentThreadType() {
             VirtualThreadFactory factory = new VirtualThreadFactory();
             boolean hasVirtualThreads = ThreadTool.hasVirtualThreads();
 

@@ -27,7 +27,7 @@ import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.ImmutableProperties;
 
 @DisplayName("ImmutableConfiguration Tests")
-class ImmutableConfigurationTest {
+public class ImmutableConfigurationTest {
 
     // Java 8 compatible String repeat helper
     private static String repeat(String str, int count) {
@@ -40,11 +40,11 @@ class ImmutableConfigurationTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create immutable configuration from configuration")
-        void shouldCreateImmutableConfigurationFromConfiguration() {
+        public void shouldCreateImmutableConfigurationFromConfiguration() {
             Configuration source = createTestConfiguration("/path/to/config.properties");
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -53,7 +53,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should create immutable configuration with null path")
-        void shouldCreateImmutableConfigurationWithNullPath() {
+        public void shouldCreateImmutableConfigurationWithNullPath() {
             Configuration source = createTestConfiguration(null);
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -63,7 +63,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should create immutable configuration with empty properties")
-        void shouldCreateImmutableConfigurationWithEmptyProperties() {
+        public void shouldCreateImmutableConfigurationWithEmptyProperties() {
             Configuration source = createTestConfigurationWithProperties(null, new Properties());
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -73,7 +73,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should copy properties from source configuration")
-        void shouldCopyPropertiesFromSourceConfiguration() {
+        public void shouldCopyPropertiesFromSourceConfiguration() {
             Properties sourceProps = new Properties();
             sourceProps.setProperty("key1", "value1");
             sourceProps.setProperty("key2", "value2");
@@ -88,11 +88,11 @@ class ImmutableConfigurationTest {
 
     @Nested
     @DisplayName("Properties Path Delegation Tests")
-    class PropertiesPathDelegationTests {
+    public class PropertiesPathDelegationTests {
 
         @Test
         @DisplayName("Should return empty Optional when path is null")
-        void shouldReturnEmptyOptionalWhenPathIsNull() {
+        public void shouldReturnEmptyOptionalWhenPathIsNull() {
             Configuration source = createTestConfiguration(null);
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -103,7 +103,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should return Optional with path when path exists")
-        void shouldReturnOptionalWithPathWhenPathExists() {
+        public void shouldReturnOptionalWithPathWhenPathExists() {
             String pathString = "/test/path/verifyica.properties";
             Configuration source = createTestConfiguration(pathString);
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
@@ -116,7 +116,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should maintain path consistency across multiple calls")
-        void shouldMaintainPathConsistencyAcrossMultipleCalls() {
+        public void shouldMaintainPathConsistencyAcrossMultipleCalls() {
             Configuration source = createTestConfiguration("/test/config.properties");
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -132,11 +132,11 @@ class ImmutableConfigurationTest {
 
     @Nested
     @DisplayName("Properties Immutability Tests")
-    class PropertiesImmutabilityTests {
+    public class PropertiesImmutabilityTests {
 
         @Test
         @DisplayName("Should return ImmutableProperties instance")
-        void shouldReturnImmutablePropertiesInstance() {
+        public void shouldReturnImmutablePropertiesInstance() {
             Configuration source = createTestConfiguration("/test/config.properties");
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -147,7 +147,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should throw exception when trying to modify properties")
-        void shouldThrowExceptionWhenTryingToModifyProperties() {
+        public void shouldThrowExceptionWhenTryingToModifyProperties() {
             Configuration source = createTestConfiguration("/test/config.properties");
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -160,7 +160,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should throw exception on put operation")
-        void shouldThrowExceptionOnPutOperation() {
+        public void shouldThrowExceptionOnPutOperation() {
             Configuration source = createTestConfiguration("/test/config.properties");
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -173,7 +173,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should throw exception on remove operation")
-        void shouldThrowExceptionOnRemoveOperation() {
+        public void shouldThrowExceptionOnRemoveOperation() {
             Properties sourceProps = new Properties();
             sourceProps.setProperty("key1", "value1");
 
@@ -189,7 +189,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should throw exception on clear operation")
-        void shouldThrowExceptionOnClearOperation() {
+        public void shouldThrowExceptionOnClearOperation() {
             Configuration source = createTestConfiguration("/test/config.properties");
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -203,11 +203,11 @@ class ImmutableConfigurationTest {
 
     @Nested
     @DisplayName("Source Independence Tests")
-    class SourceIndependenceTests {
+    public class SourceIndependenceTests {
 
         @Test
         @DisplayName("Should not be affected by changes to source properties")
-        void shouldNotBeAffectedByChangesToSourceProperties() {
+        public void shouldNotBeAffectedByChangesToSourceProperties() {
             Properties sourceProps = new Properties();
             sourceProps.setProperty("key1", "value1");
 
@@ -222,7 +222,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should preserve initial property values")
-        void shouldPreserveInitialPropertyValues() {
+        public void shouldPreserveInitialPropertyValues() {
             Properties sourceProps = new Properties();
             sourceProps.setProperty("key1", "originalValue");
 
@@ -236,7 +236,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should not reflect source property removal")
-        void shouldNotReflectSourcePropertyRemoval() {
+        public void shouldNotReflectSourcePropertyRemoval() {
             Properties sourceProps = new Properties();
             sourceProps.setProperty("key1", "value1");
             sourceProps.setProperty("key2", "value2");
@@ -252,11 +252,11 @@ class ImmutableConfigurationTest {
 
     @Nested
     @DisplayName("Properties Access Tests")
-    class PropertiesAccessTests {
+    public class PropertiesAccessTests {
 
         @Test
         @DisplayName("Should read property values correctly")
-        void shouldReadPropertyValuesCorrectly() {
+        public void shouldReadPropertyValuesCorrectly() {
             Properties sourceProps = new Properties();
             sourceProps.setProperty("key1", "value1");
             sourceProps.setProperty("key2", "value2");
@@ -270,7 +270,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should return null for non-existent property")
-        void shouldReturnNullForNonExistentProperty() {
+        public void shouldReturnNullForNonExistentProperty() {
             Configuration source = createTestConfiguration("/test/config.properties");
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -279,7 +279,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should return same properties instance on multiple calls")
-        void shouldReturnSamePropertiesInstanceOnMultipleCalls() {
+        public void shouldReturnSamePropertiesInstanceOnMultipleCalls() {
             Configuration source = createTestConfiguration("/test/config.properties");
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -291,7 +291,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should handle empty property values")
-        void shouldHandleEmptyPropertyValues() {
+        public void shouldHandleEmptyPropertyValues() {
             Properties sourceProps = new Properties();
             sourceProps.setProperty("emptyKey", "");
 
@@ -304,11 +304,11 @@ class ImmutableConfigurationTest {
 
     @Nested
     @DisplayName("Multiple Properties Tests")
-    class MultiplePropertiesTests {
+    public class MultiplePropertiesTests {
 
         @Test
         @DisplayName("Should preserve all properties from source")
-        void shouldPreserveAllPropertiesFromSource() {
+        public void shouldPreserveAllPropertiesFromSource() {
             Properties sourceProps = new Properties();
             sourceProps.setProperty("key1", "value1");
             sourceProps.setProperty("key2", "value2");
@@ -325,7 +325,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should contain correct number of properties")
-        void shouldContainCorrectNumberOfProperties() {
+        public void shouldContainCorrectNumberOfProperties() {
             Properties sourceProps = new Properties();
             for (int i = 1; i <= 10; i++) {
                 sourceProps.setProperty("key" + i, "value" + i);
@@ -339,7 +339,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should handle properties with special characters in keys")
-        void shouldHandlePropertiesWithSpecialCharactersInKeys() {
+        public void shouldHandlePropertiesWithSpecialCharactersInKeys() {
             Properties sourceProps = new Properties();
             sourceProps.setProperty("key.with.dots", "value1");
             sourceProps.setProperty("key-with-dashes", "value2");
@@ -357,11 +357,11 @@ class ImmutableConfigurationTest {
 
     @Nested
     @DisplayName("Configuration Interface Compliance Tests")
-    class ConfigurationInterfaceComplianceTests {
+    public class ConfigurationInterfaceComplianceTests {
 
         @Test
         @DisplayName("Should implement Configuration interface")
-        void shouldImplementConfigurationInterface() {
+        public void shouldImplementConfigurationInterface() {
             Configuration source = createTestConfiguration("/test/config.properties");
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -370,7 +370,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should provide getPropertiesPath method")
-        void shouldProvideGetPropertiesPathMethod() {
+        public void shouldProvideGetPropertiesPathMethod() {
             Configuration source = createTestConfiguration("/test/config.properties");
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -379,7 +379,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should provide getProperties method")
-        void shouldProvideGetPropertiesMethod() {
+        public void shouldProvideGetPropertiesMethod() {
             Configuration source = createTestConfiguration("/test/config.properties");
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
 
@@ -389,11 +389,11 @@ class ImmutableConfigurationTest {
 
     @Nested
     @DisplayName("Edge Case Tests")
-    class EdgeCaseTests {
+    public class EdgeCaseTests {
 
         @Test
         @DisplayName("Should handle configuration with very long path")
-        void shouldHandleConfigurationWithVeryLongPath() {
+        public void shouldHandleConfigurationWithVeryLongPath() {
             String longPath = repeat("/very/long/path/", 20) + "verifyica.properties";
             Configuration source = createTestConfiguration(longPath);
             ImmutableConfiguration immutable = new ImmutableConfiguration(source);
@@ -406,7 +406,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should handle properties with very long values")
-        void shouldHandlePropertiesWithVeryLongValues() {
+        public void shouldHandlePropertiesWithVeryLongValues() {
             Properties sourceProps = new Properties();
             String longValue = repeat("value", 1000);
             sourceProps.setProperty("longKey", longValue);
@@ -419,7 +419,7 @@ class ImmutableConfigurationTest {
 
         @Test
         @DisplayName("Should handle properties with whitespace in values")
-        void shouldHandlePropertiesWithWhitespaceInValues() {
+        public void shouldHandlePropertiesWithWhitespaceInValues() {
             Properties sourceProps = new Properties();
             sourceProps.setProperty("key1", "  value with spaces  ");
             sourceProps.setProperty("key2", "\tvalue with tabs\t");
@@ -434,11 +434,11 @@ class ImmutableConfigurationTest {
 
     @Nested
     @DisplayName("Thread Safety Tests")
-    class ThreadSafetyTests {
+    public class ThreadSafetyTests {
 
         @Test
         @DisplayName("Should be safe for concurrent reads")
-        void shouldBeSafeForConcurrentReads() throws InterruptedException {
+        public void shouldBeSafeForConcurrentReads() throws InterruptedException {
             Properties sourceProps = new Properties();
             sourceProps.setProperty("key1", "value1");
             sourceProps.setProperty("key2", "value2");
