@@ -16,10 +16,14 @@
 
 package org.verifyica.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.verifyica.api.Execution.skipIfCondition;
 import static org.verifyica.api.Execution.skipIfNotCondition;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.Test;
 
 public class ExecutionTest {
@@ -63,5 +67,145 @@ public class ExecutionTest {
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> skipIfCondition(null, "skipped"));
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> skipIfNotCondition(null));
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> skipIfNotCondition(null, "skipped"));
+    }
+
+    @Test
+    public void testSkipIfConditionWithMessage() {
+        String customMessage = "Custom skip message";
+
+        assertThatThrownBy(() -> skipIfCondition(true, customMessage))
+                .isInstanceOf(Execution.ExecutionSkippedException.class)
+                .hasMessage(customMessage);
+    }
+
+    @Test
+    public void testSkipIfNotConditionWithMessage() {
+        String customMessage = "Custom skip message";
+
+        assertThatThrownBy(() -> skipIfNotCondition(false, customMessage))
+                .isInstanceOf(Execution.ExecutionSkippedException.class)
+                .hasMessage(customMessage);
+    }
+
+    @Test
+    public void testSkipIfConditionWithEmptyMessage() {
+        // Empty message should result in exception with null message
+        assertThatThrownBy(() -> skipIfCondition(true, ""))
+                .isInstanceOf(Execution.ExecutionSkippedException.class)
+                .hasMessage(null);
+    }
+
+    @Test
+    public void testSkipIfConditionWithBlankMessage() {
+        // Blank message should result in exception with null message
+        assertThatThrownBy(() -> skipIfCondition(true, "   "))
+                .isInstanceOf(Execution.ExecutionSkippedException.class)
+                .hasMessage(null);
+    }
+
+    @Test
+    public void testSkipIfNotConditionWithEmptyMessage() {
+        assertThatThrownBy(() -> skipIfNotCondition(false, ""))
+                .isInstanceOf(Execution.ExecutionSkippedException.class)
+                .hasMessage(null);
+    }
+
+    @Test
+    public void testSkipIfNotConditionWithBlankMessage() {
+        assertThatThrownBy(() -> skipIfNotCondition(false, "   "))
+                .isInstanceOf(Execution.ExecutionSkippedException.class)
+                .hasMessage(null);
+    }
+
+    @Test
+    public void testExecutionSkippedExceptionConstructors() {
+        // Default constructor
+        Execution.ExecutionSkippedException exception1 = new Execution.ExecutionSkippedException();
+        assertThat(exception1.getMessage()).isNull();
+
+        // Message constructor
+        String message = "Test message";
+        Execution.ExecutionSkippedException exception2 = new Execution.ExecutionSkippedException(message);
+        assertThat(exception2.getMessage()).isEqualTo(message);
+    }
+
+    @Test
+    public void testSkipIfConditionSupplierNullThrows() {
+        assertThatThrownBy(() -> skipIfCondition(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("supplier is null");
+    }
+
+    @Test
+    public void testSkipIfNotConditionSupplierNullThrows() {
+        assertThatThrownBy(() -> skipIfNotCondition(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("supplier is null");
+    }
+
+    @Test
+    public void testSkipIfConditionSupplierWithMessageNullThrows() {
+        assertThatThrownBy(() -> skipIfCondition(null, "message"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("supplier is null");
+    }
+
+    @Test
+    public void testSkipIfNotConditionSupplierWithMessageNullThrows() {
+        assertThatThrownBy(() -> skipIfNotCondition(null, "message"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("supplier is null");
+    }
+
+    @Test
+    public void testSkipIfConditionSupplierEvaluatesLazily() {
+        AtomicBoolean supplierCalled = new AtomicBoolean(false);
+        BooleanSupplier supplier = () -> {
+            supplierCalled.set(true);
+            return false; // Don't skip
+        };
+
+        // When condition is false, supplier should be called
+        skipIfCondition(supplier);
+        assertThat(supplierCalled).isTrue();
+
+        // Reset
+        supplierCalled.set(false);
+
+        // When condition is true, supplier should be called
+        BooleanSupplier skippingSupplier = () -> {
+            supplierCalled.set(true);
+            return true; // Will skip
+        };
+
+        assertThatThrownBy(() -> skipIfCondition(skippingSupplier))
+                .isInstanceOf(Execution.ExecutionSkippedException.class);
+        assertThat(supplierCalled).isTrue();
+    }
+
+    @Test
+    public void testSkipIfNotConditionSupplierEvaluatesLazily() {
+        AtomicBoolean supplierCalled = new AtomicBoolean(false);
+        BooleanSupplier supplier = () -> {
+            supplierCalled.set(true);
+            return true; // Don't skip
+        };
+
+        // When condition is true, supplier should be called
+        skipIfNotCondition(supplier);
+        assertThat(supplierCalled).isTrue();
+
+        // Reset
+        supplierCalled.set(false);
+
+        // When condition is false, supplier should be called
+        BooleanSupplier skippingSupplier = () -> {
+            supplierCalled.set(true);
+            return false; // Will skip
+        };
+
+        assertThatThrownBy(() -> skipIfNotCondition(skippingSupplier))
+                .isInstanceOf(Execution.ExecutionSkippedException.class);
+        assertThat(supplierCalled).isTrue();
     }
 }

@@ -30,7 +30,7 @@ import org.verifyica.api.*;
 import org.verifyica.engine.inject.Injector;
 
 @DisplayName("TestArgumentTestDescriptor Tests")
-class TestArgumentTestDescriptorTest {
+public class TestArgumentTestDescriptorTest {
 
     private EngineExecutionListener mockListener;
     private ArgumentContext mockArgumentContext;
@@ -44,7 +44,7 @@ class TestArgumentTestDescriptorTest {
 
     @BeforeEach
     @SuppressWarnings("unchecked")
-    void setUp() {
+    public void setUp() {
         mockListener = mock(EngineExecutionListener.class);
         mockArgumentContext = mock(ArgumentContext.class);
         mockClassContext = mock(ClassContext.class);
@@ -62,11 +62,11 @@ class TestArgumentTestDescriptorTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create descriptor with all parameters")
-        void shouldCreateDescriptorWithAllParameters() {
+        public void shouldCreateDescriptorWithAllParameters() {
             UniqueId uniqueId = UniqueId.root("test", "argument-id");
             List<Method> beforeAllMethods = new ArrayList<>();
             List<Method> afterAllMethods = new ArrayList<>();
@@ -83,7 +83,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should handle different argument indices")
-        void shouldHandleDifferentArgumentIndices() {
+        public void shouldHandleDifferentArgumentIndices() {
             TestArgumentTestDescriptor descriptor1 = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id1"),
                     "Arg 0",
@@ -107,11 +107,11 @@ class TestArgumentTestDescriptorTest {
 
     @Nested
     @DisplayName("Test Argument Tests")
-    class TestArgumentTests {
+    public class TestArgumentTests {
 
         @Test
         @DisplayName("Should return test argument")
-        void shouldReturnTestArgument() {
+        public void shouldReturnTestArgument() {
             TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
@@ -125,7 +125,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should handle different argument types")
-        void shouldHandleDifferentArgumentTypes() {
+        public void shouldHandleDifferentArgumentTypes() {
             Argument<String> stringArg = Argument.of("string-arg", "string");
             Argument<Integer> intArg = Argument.of("int-arg", 42);
             Argument<List<String>> listArg = Argument.of("list-arg", Arrays.asList("a", "b", "c"));
@@ -152,11 +152,11 @@ class TestArgumentTestDescriptorTest {
 
     @Nested
     @DisplayName("Test Execution Tests")
-    class TestExecutionTests {
+    public class TestExecutionTests {
 
         @Test
         @DisplayName("Should execute successful test lifecycle")
-        void shouldExecuteSuccessfulTestLifecycle() {
+        public void shouldExecuteSuccessfulTestLifecycle() {
             TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
@@ -181,7 +181,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should execute beforeAll methods")
-        void shouldExecuteBeforeAllMethods() throws Exception {
+        public void shouldExecuteBeforeAllMethods() throws Exception {
             Method beforeAll = TestArgumentClass.class.getDeclaredMethod("beforeAllMethod");
             List<Method> beforeAllMethods = Collections.singletonList(beforeAll);
 
@@ -201,7 +201,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should execute afterAll methods")
-        void shouldExecuteAfterAllMethods() throws Exception {
+        public void shouldExecuteAfterAllMethods() throws Exception {
             Method afterAll = TestArgumentClass.class.getDeclaredMethod("afterAllMethod");
             List<Method> afterAllMethods = Collections.singletonList(afterAll);
 
@@ -221,7 +221,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should handle ExecutionSkippedException in beforeAll")
-        void shouldHandleExecutionSkippedExceptionInBeforeAll() throws Exception {
+        public void shouldHandleExecutionSkippedExceptionInBeforeAll() throws Exception {
             Method beforeAll = TestArgumentClass.class.getDeclaredMethod("skippedBeforeAllMethod");
             List<Method> beforeAllMethods = Collections.singletonList(beforeAll);
 
@@ -244,7 +244,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should ignore ExecutionSkippedException in afterAll")
-        void shouldIgnoreExecutionSkippedExceptionInAfterAll() throws Exception {
+        public void shouldIgnoreExecutionSkippedExceptionInAfterAll() throws Exception {
             Method afterAll = TestArgumentClass.class.getDeclaredMethod("skippedAfterAllMethod");
             List<Method> afterAllMethods = Collections.singletonList(afterAll);
 
@@ -267,7 +267,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should handle exception in beforeAll")
-        void shouldHandleExceptionInBeforeAll() throws Exception {
+        public void shouldHandleExceptionInBeforeAll() throws Exception {
             Method beforeAll = TestArgumentClass.class.getDeclaredMethod("failingBeforeAllMethod");
             List<Method> beforeAllMethods = Collections.singletonList(beforeAll);
 
@@ -290,7 +290,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should handle exception in afterAll")
-        void shouldHandleExceptionInAfterAll() throws Exception {
+        public void shouldHandleExceptionInAfterAll() throws Exception {
             Method afterAll = TestArgumentClass.class.getDeclaredMethod("failingAfterAllMethod");
             List<Method> afterAllMethods = Collections.singletonList(afterAll);
 
@@ -314,11 +314,11 @@ class TestArgumentTestDescriptorTest {
 
     @Nested
     @DisplayName("Skip Tests")
-    class SkipTests {
+    public class SkipTests {
 
         @Test
         @DisplayName("Should skip test and notify listener")
-        void shouldSkipTestAndNotifyListener() {
+        public void shouldSkipTestAndNotifyListener() {
             TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
@@ -343,7 +343,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should skip children when parent is skipped")
-        void shouldSkipChildrenWhenParentIsSkipped() throws Exception {
+        public void shouldSkipChildrenWhenParentIsSkipped() throws Exception {
             TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "parent-id"),
                     "Parent",
@@ -375,11 +375,11 @@ class TestArgumentTestDescriptorTest {
 
     @Nested
     @DisplayName("Child Test Execution Tests")
-    class ChildTestExecutionTests {
+    public class ChildTestExecutionTests {
 
         @Test
         @DisplayName("Should execute all child tests when no failures")
-        void shouldExecuteAllChildTestsWhenNoFailures() throws Exception {
+        public void shouldExecuteAllChildTestsWhenNoFailures() throws Exception {
             TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "parent-id"),
                     "Parent",
@@ -435,7 +435,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should skip remaining tests after first failure")
-        void shouldSkipRemainingTestsAfterFirstFailure() throws Exception {
+        public void shouldSkipRemainingTestsAfterFirstFailure() throws Exception {
             TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "parent-id"),
                     "Parent",
@@ -495,7 +495,7 @@ class TestArgumentTestDescriptorTest {
         // @Test
         // @DisplayName("Should continue after skipped test")
         // TODO fix test
-        void shouldContinueAfterSkippedTest() throws Exception {
+        public void shouldContinueAfterSkippedTest() throws Exception {
             TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "parent-id"),
                     "Parent",
@@ -557,11 +557,11 @@ class TestArgumentTestDescriptorTest {
 
     @Nested
     @DisplayName("Interceptor Integration Tests")
-    class InterceptorIntegrationTests {
+    public class InterceptorIntegrationTests {
 
         @Test
         @DisplayName("Should invoke preBeforeAll interceptor")
-        void shouldInvokePreBeforeAllInterceptor() throws Throwable {
+        public void shouldInvokePreBeforeAllInterceptor() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
 
             TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
@@ -585,7 +585,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke postBeforeAll interceptor")
-        void shouldInvokePostBeforeAllInterceptor() throws Throwable {
+        public void shouldInvokePostBeforeAllInterceptor() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
 
             TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
@@ -611,7 +611,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke preAfterAll interceptor")
-        void shouldInvokePreAfterAllInterceptor() throws Throwable {
+        public void shouldInvokePreAfterAllInterceptor() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
 
             TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
@@ -635,7 +635,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should invoke postAfterAll interceptor")
-        void shouldInvokePostAfterAllInterceptor() throws Throwable {
+        public void shouldInvokePostAfterAllInterceptor() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
 
             TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
@@ -661,7 +661,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should pass throwable to postBeforeAll on failure")
-        void shouldPassThrowableToPostBeforeAllOnFailure() throws Throwable {
+        public void shouldPassThrowableToPostBeforeAllOnFailure() throws Throwable {
             ClassInterceptor interceptor = mock(ClassInterceptor.class);
             Method beforeAll = TestArgumentClass.class.getDeclaredMethod("failingBeforeAllMethod");
 
@@ -689,11 +689,11 @@ class TestArgumentTestDescriptorTest {
 
     @Nested
     @DisplayName("AutoCloseable Tests")
-    class AutoCloseableTests {
+    public class AutoCloseableTests {
 
         @Test
         @DisplayName("Should close AutoCloseable argument")
-        void shouldCloseAutoCloseableArgument() {
+        public void shouldCloseAutoCloseableArgument() {
             AutoCloseableArgument closeableArg = new AutoCloseableArgument();
             Argument<AutoCloseableArgument> argument = Argument.of("closeable-arg", closeableArg);
 
@@ -712,7 +712,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should not fail when argument is not AutoCloseable")
-        void shouldNotFailWhenArgumentIsNotAutoCloseable() {
+        public void shouldNotFailWhenArgumentIsNotAutoCloseable() {
             Argument<String> argument = Argument.of("string-arg", "not-closeable");
 
             TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
@@ -732,11 +732,11 @@ class TestArgumentTestDescriptorTest {
 
     @Nested
     @DisplayName("State Machine Tests")
-    class StateMachineTests {
+    public class StateMachineTests {
 
         @Test
         @DisplayName("Should follow state machine START to BEFORE_ALL to TEST to AFTER_ALL to CLOSE to CLEAN_UP to END")
-        void shouldFollowStateMachineStartToBeforeAllToTestToAfterAllToCloseToCleanUpToEnd() {
+        public void shouldFollowStateMachineStartToBeforeAllToTestToAfterAllToCloseToCleanUpToEnd() {
             TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
@@ -759,7 +759,7 @@ class TestArgumentTestDescriptorTest {
 
         @Test
         @DisplayName("Should transition to SKIP on beforeAll failure")
-        void shouldTransitionToSkipOnBeforeAllFailure() throws Exception {
+        public void shouldTransitionToSkipOnBeforeAllFailure() throws Exception {
             Method beforeAll = TestArgumentClass.class.getDeclaredMethod("failingBeforeAllMethod");
 
             TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
@@ -785,11 +785,11 @@ class TestArgumentTestDescriptorTest {
 
     @Nested
     @DisplayName("Argument Context Cleanup Tests")
-    class ArgumentContextCleanupTests {
+    public class ArgumentContextCleanupTests {
 
         @Test
         @DisplayName("Should clean up argument context map")
-        void shouldCleanUpArgumentContextMap() {
+        public void shouldCleanUpArgumentContextMap() {
             TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
@@ -812,6 +812,7 @@ class TestArgumentTestDescriptorTest {
     // Test helper classes
     @SuppressWarnings("unused")
     public static class TestArgumentClass {
+
         public void beforeAllMethod() {}
 
         public void afterAllMethod() {}
@@ -840,6 +841,7 @@ class TestArgumentTestDescriptorTest {
     }
 
     public static class AutoCloseableArgument implements AutoCloseable {
+
         public boolean closed = false;
 
         @Override

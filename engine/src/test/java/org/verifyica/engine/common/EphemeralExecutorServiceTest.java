@@ -26,15 +26,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.*;
 
 @DisplayName("EphemeralExecutorService Tests")
-class EphemeralExecutorServiceTest {
+public class EphemeralExecutorServiceTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create executor with thread factory")
-        void shouldCreateExecutorWithThreadFactory() {
+        public void shouldCreateExecutorWithThreadFactory() {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
 
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
@@ -45,11 +45,11 @@ class EphemeralExecutorServiceTest {
 
     @Nested
     @DisplayName("Execute Tests")
-    class ExecuteTests {
+    public class ExecuteTests {
 
         @Test
         @DisplayName("Should execute runnable in new thread")
-        void shouldExecuteRunnableInNewThread() throws InterruptedException {
+        public void shouldExecuteRunnableInNewThread() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
             Thread callingThread = Thread.currentThread();
@@ -68,7 +68,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should execute multiple runnables concurrently")
-        void shouldExecuteMultipleRunnablesConcurrently() throws InterruptedException {
+        public void shouldExecuteMultipleRunnablesConcurrently() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
             int taskCount = 5;
@@ -89,7 +89,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should create daemon threads")
-        void shouldCreateDaemonThreads() throws InterruptedException {
+        public void shouldCreateDaemonThreads() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
             AtomicBoolean isDaemon = new AtomicBoolean(false);
@@ -107,7 +107,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should throw exception when executing after shutdown")
-        void shouldThrowExceptionWhenExecutingAfterShutdown() {
+        public void shouldThrowExceptionWhenExecutingAfterShutdown() {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
@@ -120,7 +120,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should track running threads")
-        void shouldTrackRunningThreads() throws InterruptedException {
+        public void shouldTrackRunningThreads() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
             CountDownLatch startLatch = new CountDownLatch(3);
@@ -147,11 +147,11 @@ class EphemeralExecutorServiceTest {
 
     @Nested
     @DisplayName("Shutdown Tests")
-    class ShutdownTests {
+    public class ShutdownTests {
 
         @Test
         @DisplayName("Should change state to shutdown")
-        void shouldChangeStateToShutdown() {
+        public void shouldChangeStateToShutdown() {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
@@ -162,7 +162,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should allow running tasks to complete")
-        void shouldAllowRunningTasksToComplete() throws InterruptedException {
+        public void shouldAllowRunningTasksToComplete() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
             AtomicBoolean completed = new AtomicBoolean(false);
@@ -187,7 +187,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should be idempotent")
-        void shouldBeIdempotent() {
+        public void shouldBeIdempotent() {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
@@ -200,11 +200,11 @@ class EphemeralExecutorServiceTest {
 
     @Nested
     @DisplayName("ShutdownNow Tests")
-    class ShutdownNowTests {
+    public class ShutdownNowTests {
 
         @Test
         @DisplayName("Should change state to shutdown")
-        void shouldChangeStateToShutdown() {
+        public void shouldChangeStateToShutdown() {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
@@ -215,7 +215,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should interrupt running threads")
-        void shouldInterruptRunningThreads() throws InterruptedException {
+        public void shouldInterruptRunningThreads() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
             AtomicBoolean interrupted = new AtomicBoolean(false);
@@ -240,7 +240,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should return empty list")
-        void shouldReturnEmptyList() {
+        public void shouldReturnEmptyList() {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
@@ -252,11 +252,11 @@ class EphemeralExecutorServiceTest {
 
     @Nested
     @DisplayName("IsTerminated Tests")
-    class IsTerminatedTests {
+    public class IsTerminatedTests {
 
         @Test
         @DisplayName("Should be false initially")
-        void shouldBeFalseInitially() {
+        public void shouldBeFalseInitially() {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
@@ -265,7 +265,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should be true when shutdown with no running threads")
-        void shouldBeTrueWhenShutdownWithNoRunningThreads() {
+        public void shouldBeTrueWhenShutdownWithNoRunningThreads() {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
@@ -276,7 +276,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should be false when shutdown with running threads")
-        void shouldBeFalseWhenShutdownWithRunningThreads() throws InterruptedException {
+        public void shouldBeFalseWhenShutdownWithRunningThreads() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
             CountDownLatch startLatch = new CountDownLatch(1);
@@ -301,7 +301,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should become true after all threads complete")
-        void shouldBecomeTrueAfterAllThreadsComplete() throws InterruptedException {
+        public void shouldBecomeTrueAfterAllThreadsComplete() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
             CountDownLatch latch = new CountDownLatch(1);
@@ -325,11 +325,11 @@ class EphemeralExecutorServiceTest {
 
     @Nested
     @DisplayName("AwaitTermination Tests")
-    class AwaitTerminationTests {
+    public class AwaitTerminationTests {
 
         @Test
         @DisplayName("Should return true when no tasks running")
-        void shouldReturnTrueWhenNoTasksRunning() throws InterruptedException {
+        public void shouldReturnTrueWhenNoTasksRunning() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
@@ -341,7 +341,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should wait for tasks to complete")
-        void shouldWaitForTasksToComplete() throws InterruptedException {
+        public void shouldWaitForTasksToComplete() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
             CountDownLatch latch = new CountDownLatch(1);
@@ -364,7 +364,7 @@ class EphemeralExecutorServiceTest {
 
         @Test
         @DisplayName("Should return false when timeout expires")
-        void shouldReturnFalseWhenTimeoutExpires() throws InterruptedException {
+        public void shouldReturnFalseWhenTimeoutExpires() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
             CountDownLatch latch = new CountDownLatch(1);
@@ -388,11 +388,11 @@ class EphemeralExecutorServiceTest {
 
     @Nested
     @DisplayName("Thread Factory Tests")
-    class ThreadFactoryTests {
+    public class ThreadFactoryTests {
 
         @Test
         @DisplayName("Should use provided thread factory")
-        void shouldUseProvidedThreadFactory() throws InterruptedException {
+        public void shouldUseProvidedThreadFactory() throws InterruptedException {
             AtomicBoolean factoryUsed = new AtomicBoolean(false);
             PlatformThreadFactory threadFactory = new PlatformThreadFactory() {
                 @Override
@@ -415,11 +415,11 @@ class EphemeralExecutorServiceTest {
 
     @Nested
     @DisplayName("Stress Tests")
-    class StressTests {
+    public class StressTests {
 
         @Test
         @DisplayName("Should handle many concurrent tasks")
-        void shouldHandleManyConcurrentTasks() throws InterruptedException {
+        public void shouldHandleManyConcurrentTasks() throws InterruptedException {
             PlatformThreadFactory threadFactory = new PlatformThreadFactory();
             EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
             int taskCount = 100;

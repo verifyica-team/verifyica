@@ -17,6 +17,7 @@
 package org.verifyica.api.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
@@ -89,6 +91,154 @@ public class TemporaryDirectoryTest {
         assertThat(temporaryFile.canWrite()).isFalse();
 
         assertThat(getLinuxPermissionString(temporaryFile)).isEqualTo(permissions);
+    }
+
+    @Test
+    public void testClose() throws IOException {
+        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        Path path = temporaryDirectory.toPath();
+
+        assertThat(path).exists();
+
+        temporaryDirectory.close();
+
+        assertThat(path).doesNotExist();
+    }
+
+    @Test
+    public void testDelete() throws IOException {
+        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        Path path = temporaryDirectory.toPath();
+
+        assertThat(path).exists();
+
+        temporaryDirectory.delete();
+
+        assertThat(path).doesNotExist();
+    }
+
+    @Test
+    public void testDeleteWithContents() throws IOException {
+        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        Path path = temporaryDirectory.toPath();
+
+        // Create nested directory structure
+        File file1 = temporaryDirectory.newFile();
+        File file2 = temporaryDirectory.newFile();
+
+        // Create subdirectory with file
+        Path subDir = path.resolve("subdir");
+        Files.createDirectory(subDir);
+        Files.createFile(subDir.resolve("nestedFile.txt"));
+
+        assertThat(path).exists();
+        assertThat(file1).exists();
+        assertThat(file2).exists();
+        assertThat(subDir).exists();
+
+        temporaryDirectory.delete();
+
+        assertThat(path).doesNotExist();
+        assertThat(file1).doesNotExist();
+        assertThat(file2).doesNotExist();
+        assertThat(subDir).doesNotExist();
+    }
+
+    @Test
+    public void testEqualsAndHashCode() throws IOException {
+        TemporaryDirectory tempDir1 = TemporaryDirectory.newDirectory();
+        TemporaryDirectory tempDir2 = TemporaryDirectory.newDirectory();
+
+        try {
+            // Same object
+            assertThat(tempDir1).isEqualTo(tempDir1);
+
+            // Different objects with different paths
+            assertThat(tempDir1).isNotEqualTo(tempDir2);
+            assertThat(tempDir1.hashCode()).isNotEqualTo(tempDir2.hashCode());
+
+            // Null check
+            assertThat(tempDir1).isNotEqualTo(null);
+
+            // Different type
+            assertThat(tempDir1).isNotEqualTo("not a directory");
+
+            // Different path
+            TemporaryDirectory tempDir3 = TemporaryDirectory.newDirectory();
+            try {
+                assertThat(tempDir1.toPath()).isNotEqualTo(tempDir3.toPath());
+                assertThat(tempDir1).isNotEqualTo(tempDir3);
+            } finally {
+                tempDir3.delete();
+            }
+        } finally {
+            tempDir1.delete();
+            tempDir2.delete();
+        }
+    }
+
+    @Test
+    public void testToStringReturnsPath() throws IOException {
+        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        try {
+            assertThat(temporaryDirectory.toString())
+                    .isEqualTo(temporaryDirectory.toPath().toString());
+        } finally {
+            temporaryDirectory.delete();
+        }
+    }
+
+    @Test
+    public void testNewDirectoryWithNullPermissions() {
+        assertThatThrownBy(() -> TemporaryDirectory.newDirectory(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("posixFilePermissions is null");
+    }
+
+    @Test
+    public void testNewDirectoryWithEmptyPermissions() {
+        assertThatThrownBy(() -> TemporaryDirectory.newDirectory(new HashSet<>()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("posixFilePermissions is empty");
+    }
+
+    @Test
+    public void testNewFileWithNullPermissions() throws IOException {
+        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        try {
+            assertThatThrownBy(() -> temporaryDirectory.newFile(null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("posixFilePermissions is null");
+        } finally {
+            temporaryDirectory.delete();
+        }
+    }
+
+    @Test
+    public void testNewFileWithEmptyPermissions() throws IOException {
+        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        try {
+            assertThatThrownBy(() -> temporaryDirectory.newFile(new HashSet<>()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("posixFilePermissions is empty");
+        } finally {
+            temporaryDirectory.delete();
+        }
+    }
+
+    @Test
+    public void testNewFileWithDefaultPermissions() throws IOException {
+        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        try {
+            File file = temporaryDirectory.newFile();
+
+            assertThat(file).exists();
+            assertThat(file).isFile();
+            assertThat(file.canRead()).isTrue();
+            assertThat(file.canWrite()).isTrue();
+        } finally {
+            temporaryDirectory.delete();
+        }
     }
 
     private static String getLinuxPermissionString(File file) throws IOException {

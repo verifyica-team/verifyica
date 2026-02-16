@@ -17,6 +17,7 @@
 package org.verifyica.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.junit.jupiter.api.Test;
 
@@ -72,6 +73,89 @@ public class ExtendedMapTest {
         assertThat(((SuperClass) value).getValue()).isEqualTo("bar");
 
         assertThat(extendedMap).isEmpty();
+    }
+
+    @Test
+    public void testGetAsWithNullType() {
+        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        extendedMap.put("foo", "bar");
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> extendedMap.getAs("foo", null))
+                .withMessage("type is null");
+    }
+
+    @Test
+    public void testRemoveAsWithNullType() {
+        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        extendedMap.put("foo", "bar");
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> extendedMap.removeAs("foo", null))
+                .withMessage("type is null");
+    }
+
+    @Test
+    public void testGetAsNonExistentKey() {
+        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+
+        Object result = extendedMap.getAs("nonexistent");
+        assertThat(result).isNull();
+        assertThat(extendedMap.getAs("nonexistent", String.class)).isNull();
+    }
+
+    @Test
+    public void testRemoveAsNonExistentKey() {
+        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+
+        Object result = extendedMap.removeAs("nonexistent");
+        assertThat(result).isNull();
+        assertThat(extendedMap.removeAs("nonexistent", String.class)).isNull();
+    }
+
+    @Test
+    public void testGetAsWrongType() {
+        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        extendedMap.put("foo", 123);
+
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> extendedMap.getAs("foo", String.class));
+    }
+
+    @Test
+    public void testRemoveAsWrongType() {
+        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        extendedMap.put("foo", 123);
+
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> extendedMap.removeAs("foo", String.class));
+    }
+
+    @Test
+    public void testConstructors() {
+        // Default constructor
+        ExtendedMap<String, Object> map1 = new ExtendedMap<>();
+        assertThat(map1).isEmpty();
+
+        // Initial capacity constructor
+        ExtendedMap<String, Object> map2 = new ExtendedMap<>(16);
+        assertThat(map2).isEmpty();
+
+        // Load factor constructor
+        ExtendedMap<String, Object> map3 = new ExtendedMap<>(16, 0.75f);
+        assertThat(map3).isEmpty();
+
+        // Concurrency level constructor
+        ExtendedMap<String, Object> map4 = new ExtendedMap<>(16, 0.75f, 4);
+        assertThat(map4).isEmpty();
+
+        // Copy constructor
+        ExtendedMap<String, Object> source = new ExtendedMap<>();
+        source.put("key1", "value1");
+        source.put("key2", 123);
+
+        ExtendedMap<String, Object> copy = new ExtendedMap<>(source);
+        assertThat(copy).hasSize(2);
+        assertThat(copy.get("key1")).isEqualTo("value1");
+        assertThat(copy.get("key2")).isEqualTo(123);
     }
 
     public static class SubClass {

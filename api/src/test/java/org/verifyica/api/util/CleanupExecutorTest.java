@@ -32,22 +32,22 @@ import org.junit.jupiter.api.Test;
  * Comprehensive test suite for CleanupExecutor
  */
 @DisplayName("CleanupExecutor")
-class CleanupExecutorTest {
+public class CleanupExecutorTest {
 
     private CleanupExecutor cleanupExecutor;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         cleanupExecutor = new CleanupExecutor();
     }
 
     @Nested
     @DisplayName("addAction()")
-    class AddActionTests {
+    public class AddActionTests {
 
         @Test
         @DisplayName("should add a single throwable task successfully")
-        void shouldAddSingleThrowableTask() {
+        public void shouldAddSingleThrowableTask() {
             ThrowableTask action = () -> {};
 
             CleanupExecutor result = cleanupExecutor.addTask(action);
@@ -59,7 +59,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should add multiple throwable tasks in order")
-        void shouldAddMultipleThrowableTasksInOrder() {
+        public void shouldAddMultipleThrowableTasksInOrder() {
             ThrowableTask action1 = () -> {};
             ThrowableTask action2 = () -> {};
             ThrowableTask action3 = () -> {};
@@ -72,7 +72,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should throw IllegalArgumentException when action is null")
-        void shouldThrowExceptionWhenActionIsNull() {
+        public void shouldThrowExceptionWhenActionIsNull() {
             assertThatThrownBy(() -> cleanupExecutor.addTask(null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("cleanupAction is null");
@@ -80,7 +80,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should allow fluent chaining")
-        void shouldAllowFluentChaining() {
+        public void shouldAllowFluentChaining() {
             ThrowableTask action1 = () -> {};
             ThrowableTask action2 = () -> {};
 
@@ -92,11 +92,11 @@ class CleanupExecutorTest {
 
     @Nested
     @DisplayName("addActionIfPresent()")
-    class AddActionIfPresentTests {
+    public class AddActionIfPresentTests {
 
         @Test
         @DisplayName("should execute throwable task when supplier returns non-null value")
-        void shouldExecuteThrowableTaskWhenValuePresent() throws Throwable {
+        public void shouldExecuteThrowableTaskWhenValuePresent() throws Throwable {
             AtomicInteger counter = new AtomicInteger(0);
             String value = "test";
 
@@ -108,7 +108,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should not execute throwable task when supplier returns null")
-        void shouldNotExecuteThrowableTaskWhenValueNull() throws Throwable {
+        public void shouldNotExecuteThrowableTaskWhenValueNull() throws Throwable {
             AtomicInteger counter = new AtomicInteger(0);
 
             cleanupExecutor.addTaskIfPresent(() -> null, v -> counter.incrementAndGet());
@@ -119,7 +119,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should pass the supplied value to the throwable task")
-        void shouldPassSuppliedValueToThrowableTask() throws Throwable {
+        public void shouldPassSuppliedValueToThrowableTask() throws Throwable {
             List<String> capturedValues = new ArrayList<>();
             String expectedValue = "testValue";
 
@@ -131,7 +131,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should throw IllegalArgumentException when supplier is null")
-        void shouldThrowExceptionWhenSupplierIsNull() {
+        public void shouldThrowExceptionWhenSupplierIsNull() {
             assertThatThrownBy(() -> cleanupExecutor.addTaskIfPresent(null, v -> {}))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("supplier is null");
@@ -139,7 +139,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should throw IllegalArgumentException when throwable task is null")
-        void shouldThrowExceptionWhenThrowableTaskIsNull() {
+        public void shouldThrowExceptionWhenThrowableTaskIsNull() {
             assertThatThrownBy(() -> cleanupExecutor.addTaskIfPresent(() -> "test", null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("cleanupAction is null");
@@ -147,7 +147,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should return the CleanupExecutor for fluent chaining")
-        void shouldReturnCleanupExecutorForFluentChaining() {
+        public void shouldReturnCleanupExecutorForFluentChaining() {
             CleanupExecutor result = cleanupExecutor.addTaskIfPresent(() -> "test", v -> {});
 
             assertThat(result).isSameAs(cleanupExecutor);
@@ -156,11 +156,11 @@ class CleanupExecutorTest {
 
     @Nested
     @DisplayName("addThrowableTasks()")
-    class AddThrowableTasksTests {
+    public class AddThrowableTasksTests {
 
         @Test
         @DisplayName("should add multiple throwable tasks from list")
-        void shouldAddMultipleThrowableTasksFromList() {
+        public void shouldAddMultipleThrowableTasksFromList() {
             List<ThrowableTask> actions = of(() -> {}, () -> {}, () -> {});
 
             cleanupExecutor.addTasks(actions);
@@ -171,7 +171,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should add empty list without errors")
-        void shouldAddEmptyListWithoutErrors() {
+        public void shouldAddEmptyListWithoutErrors() {
             cleanupExecutor.addTasks(of());
 
             assertThat(cleanupExecutor.cleanupActions()).isEmpty();
@@ -179,7 +179,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should throw IllegalArgumentException when list is null")
-        void shouldThrowExceptionWhenListIsNull() {
+        public void shouldThrowExceptionWhenListIsNull() {
             assertThatThrownBy(() -> cleanupExecutor.addTasks(null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("cleanupActions is null");
@@ -187,7 +187,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should throw IllegalArgumentException when list contains null action")
-        void shouldThrowExceptionWhenListContainsNull() {
+        public void shouldThrowExceptionWhenListContainsNull() {
             List<ThrowableTask> actions = new ArrayList<>();
             actions.add(() -> {});
             actions.add(null);
@@ -199,7 +199,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should return the CleanupExecutor for fluent chaining")
-        void shouldReturnCleanupExecutorForFluentChaining() {
+        public void shouldReturnCleanupExecutorForFluentChaining() {
             CleanupExecutor result = cleanupExecutor.addTasks(of(() -> {}));
 
             assertThat(result).isSameAs(cleanupExecutor);
@@ -208,11 +208,11 @@ class CleanupExecutorTest {
 
     @Nested
     @DisplayName("cleanupActions()")
-    class ThrowableTasksTests {
+    public class ThrowableTasksTests {
 
         @Test
         @DisplayName("should return unmodifiable list")
-        void shouldReturnUnmodifiableList() {
+        public void shouldReturnUnmodifiableList() {
             cleanupExecutor.addTask(() -> {});
 
             List<ThrowableTask> actions = cleanupExecutor.cleanupActions();
@@ -222,18 +222,18 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should return empty list when no actions added")
-        void shouldReturnEmptyListWhenNoActionsAdded() {
+        public void shouldReturnEmptyListWhenNoActionsAdded() {
             assertThat(cleanupExecutor.cleanupActions()).isEmpty();
         }
     }
 
     @Nested
     @DisplayName("throwables()")
-    class ThrowablesTests {
+    public class ThrowablesTests {
 
         @Test
         @DisplayName("should return unmodifiable list")
-        void shouldReturnUnmodifiableList() throws Throwable {
+        public void shouldReturnUnmodifiableList() throws Throwable {
             cleanupExecutor.addTask(() -> {});
             cleanupExecutor.execute();
 
@@ -245,13 +245,13 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should return empty list when cleanup executor has not run")
-        void shouldReturnEmptyListWhenCleanupExecutorHasNotRun() {
+        public void shouldReturnEmptyListWhenCleanupExecutorHasNotRun() {
             assertThat(cleanupExecutor.throwables()).isEmpty();
         }
 
         @Test
         @DisplayName("should contain null for successful throwable tasks")
-        void shouldContainNullForSuccessfulActions() throws Throwable {
+        public void shouldContainNullForSuccessfulActions() throws Throwable {
             cleanupExecutor.addTask(() -> {});
             cleanupExecutor.addTask(() -> {});
             cleanupExecutor.execute();
@@ -261,7 +261,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should contain throwable for failed throwable tasks")
-        void shouldContainThrowableForFailedActions() throws Throwable {
+        public void shouldContainThrowableForFailedActions() throws Throwable {
             RuntimeException exception = new RuntimeException("cleanup failed");
             cleanupExecutor.addTask(() -> {
                 throw exception;
@@ -274,11 +274,11 @@ class CleanupExecutorTest {
 
     @Nested
     @DisplayName("run()")
-    class RunTests {
+    public class RunTests {
 
         @Test
         @DisplayName("should execute all throwable tasks in order")
-        void shouldExecuteAllThrowableTasksInOrder() throws Throwable {
+        public void shouldExecuteAllThrowableTasksInOrder() throws Throwable {
             List<Integer> executionOrder = new ArrayList<>();
 
             cleanupExecutor
@@ -293,7 +293,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should return the CleanupExecutor for fluent chaining")
-        void shouldReturnCleanupExecutorForFluentChaining() throws Throwable {
+        public void shouldReturnCleanupExecutorForFluentChaining() throws Throwable {
             cleanupExecutor.addTask(() -> {});
 
             CleanupExecutor result = cleanupExecutor.execute();
@@ -303,7 +303,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should collect throwables from failed actions")
-        void shouldCollectThrowablesFromFailedActions() throws Throwable {
+        public void shouldCollectThrowablesFromFailedActions() throws Throwable {
             RuntimeException exception1 = new RuntimeException("error1");
             RuntimeException exception2 = new RuntimeException("error2");
 
@@ -323,7 +323,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should continue execution even when actions throw exceptions")
-        void shouldContinueExecutionWhenActionsThrowExceptions() throws Throwable {
+        public void shouldContinueExecutionWhenActionsThrowExceptions() throws Throwable {
             AtomicInteger counter = new AtomicInteger(0);
 
             cleanupExecutor
@@ -343,7 +343,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should throw IllegalStateException when run multiple times")
-        void shouldThrowExceptionWhenRunMultipleTimes() throws Throwable {
+        public void shouldThrowExceptionWhenRunMultipleTimes() throws Throwable {
             cleanupExecutor.addTask(() -> {});
             cleanupExecutor.execute();
 
@@ -354,7 +354,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should clear throwables before execution")
-        void shouldClearThrowablesBeforeExecution() throws Throwable {
+        public void shouldClearThrowablesBeforeExecution() throws Throwable {
             cleanupExecutor.addTask(() -> {});
             cleanupExecutor.execute();
 
@@ -364,7 +364,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should handle actions that throw checked exceptions")
-        void shouldHandleActionsWithCheckedExceptions() throws Throwable {
+        public void shouldHandleActionsWithCheckedExceptions() throws Throwable {
             Exception checkedException = new Exception("checked exception");
 
             cleanupExecutor.addTask(() -> {
@@ -377,7 +377,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should handle actions that throw errors")
-        void shouldHandleActionsWithErrors() throws Throwable {
+        public void shouldHandleActionsWithErrors() throws Throwable {
             Error error = new Error("error");
 
             cleanupExecutor.addTask(() -> {
@@ -390,7 +390,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should work with empty cleanup executor")
-        void shouldWorkWithEmptyCleanupExecutor() throws Throwable {
+        public void shouldWorkWithEmptyCleanupExecutor() throws Throwable {
             cleanupExecutor.execute();
 
             assertThat(cleanupExecutor.throwables()).isEmpty();
@@ -399,11 +399,11 @@ class CleanupExecutorTest {
 
     @Nested
     @DisplayName("hasThrowables()")
-    class HasThrowablesTests {
+    public class HasThrowablesTests {
 
         @Test
         @DisplayName("should return false when no throwables exist")
-        void shouldReturnFalseWhenNoThrowablesExist() throws Throwable {
+        public void shouldReturnFalseWhenNoThrowablesExist() throws Throwable {
             cleanupExecutor.addTask(() -> {});
             cleanupExecutor.execute();
 
@@ -412,7 +412,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should return true when throwables exist")
-        void shouldReturnTrueWhenThrowablesExist() throws Throwable {
+        public void shouldReturnTrueWhenThrowablesExist() throws Throwable {
             cleanupExecutor.addTask(() -> {
                 throw new RuntimeException();
             });
@@ -423,7 +423,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should return false when cleanup executor has not run")
-        void shouldReturnFalseWhenCleanupExecutorHasNotRun() {
+        public void shouldReturnFalseWhenCleanupExecutorHasNotRun() {
             cleanupExecutor.addTask(() -> {});
 
             assertThat(cleanupExecutor.hasThrowables()).isFalse();
@@ -432,11 +432,11 @@ class CleanupExecutorTest {
 
     @Nested
     @DisplayName("verify()")
-    class VerifyTests {
+    public class VerifyTests {
 
         @Test
         @DisplayName("should not throw when all actions succeed")
-        void shouldNotThrowWhenAllActionsSucceed() {
+        public void shouldNotThrowWhenAllActionsSucceed() {
             cleanupExecutor.addTask(() -> {}).addTask(() -> {});
 
             assertThatCode(() -> cleanupExecutor.throwIfFailed()).doesNotThrowAnyException();
@@ -444,7 +444,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should automatically run the cleanup executor if not already run")
-        void shouldAutomaticallyRunCleanupExecutorIfNotRun() {
+        public void shouldAutomaticallyRunCleanupExecutorIfNotRun() {
             AtomicInteger counter = new AtomicInteger(0);
             cleanupExecutor.addTask(counter::incrementAndGet);
 
@@ -454,7 +454,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should throw first throwable when single action fails")
-        void shouldThrowFirstThrowableWhenSingleActionFails() {
+        public void shouldThrowFirstThrowableWhenSingleActionFails() {
             RuntimeException exception = new RuntimeException("cleanup failed");
             cleanupExecutor.addTask(() -> {
                 throw exception;
@@ -465,7 +465,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should throw first throwable and add subsequent throwables as suppressed")
-        void shouldAddSubsequentThrowablesAsSuppressed() {
+        public void shouldAddSubsequentThrowablesAsSuppressed() {
             RuntimeException exception1 = new RuntimeException("error1");
             RuntimeException exception2 = new RuntimeException("error2");
             RuntimeException exception3 = new RuntimeException("error3");
@@ -490,7 +490,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should handle checked exceptions")
-        void shouldHandleCheckedExceptions() {
+        public void shouldHandleCheckedExceptions() {
             Exception checkedException = new Exception("checked exception");
             cleanupExecutor.addTask(() -> {
                 throw checkedException;
@@ -501,7 +501,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should handle errors")
-        void shouldHandleErrors() {
+        public void shouldHandleErrors() {
             Error error = new Error("error");
             cleanupExecutor.addTask(() -> {
                 throw error;
@@ -512,7 +512,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should work when called after run()")
-        void shouldWorkWhenCalledAfterRun() throws Throwable {
+        public void shouldWorkWhenCalledAfterRun() throws Throwable {
             RuntimeException exception = new RuntimeException("error");
             cleanupExecutor.addTask(() -> {
                 throw exception;
@@ -524,13 +524,13 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should not throw when cleanup executor is empty")
-        void shouldNotThrowWhenCleanupExecutorIsEmpty() {
+        public void shouldNotThrowWhenCleanupExecutorIsEmpty() {
             assertThatCode(() -> cleanupExecutor.throwIfFailed()).doesNotThrowAnyException();
         }
 
         @Test
         @DisplayName("should preserve exception stack traces")
-        void shouldPreserveExceptionStackTraces() {
+        public void shouldPreserveExceptionStackTraces() {
             RuntimeException exception = new RuntimeException("test");
             StackTraceElement[] originalStackTrace = exception.getStackTrace();
 
@@ -549,11 +549,11 @@ class CleanupExecutorTest {
 
     @Nested
     @DisplayName("Integration Tests")
-    class IntegrationTests {
+    public class IntegrationTests {
 
         @Test
         @DisplayName("should handle complex cleanup scenario with mixed results")
-        void shouldHandleComplexCleanupScenario() {
+        public void shouldHandleComplexCleanupScenario() {
             List<String> executionLog = new ArrayList<>();
             RuntimeException exception = new RuntimeException("cleanup error");
 
@@ -574,7 +574,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should support try-with-resources pattern simulation")
-        void shouldSupportTryWithResourcesPattern() {
+        public void shouldSupportTryWithResourcesPattern() {
             List<String> executionLog = new ArrayList<>();
 
             try {
@@ -596,7 +596,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should handle nested cleanup executors")
-        void shouldHandleNestedCleanupExecutors() throws Throwable {
+        public void shouldHandleNestedCleanupExecutors() throws Throwable {
             List<String> executionLog = new ArrayList<>();
             CleanupExecutor innerCleanupExecutor = new CleanupExecutor();
             innerCleanupExecutor.addTask(() -> executionLog.add("inner-cleanup"));
@@ -613,7 +613,7 @@ class CleanupExecutorTest {
 
         @Test
         @DisplayName("should maintain thread safety for single-threaded execution")
-        void shouldMaintainThreadSafetyForSingleThreadedExecution() {
+        public void shouldMaintainThreadSafetyForSingleThreadedExecution() {
             AtomicInteger counter = new AtomicInteger(0);
 
             for (int i = 0; i < 100; i++) {

@@ -30,31 +30,31 @@ public class IncludeTaggedClassFilterTest {
 
     @Nested
     @DisplayName("Factory Method Tests")
-    class FactoryMethodTests {
+    public class FactoryMethodTests {
 
         @Test
         @DisplayName("should create filter with valid regex")
-        void shouldCreateFilterWithValidRegex() {
+        public void shouldCreateFilterWithValidRegex() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create(".*test.*");
             assertThat(filter).isNotNull();
         }
 
         @Test
         @DisplayName("should throw exception for null regex")
-        void shouldThrowExceptionForNullRegex() {
+        public void shouldThrowExceptionForNullRegex() {
             assertThatThrownBy(() -> IncludeTaggedClassFilter.create(null)).isInstanceOf(NullPointerException.class);
         }
 
         @Test
         @DisplayName("should throw exception for invalid regex")
-        void shouldThrowExceptionForInvalidRegex() {
+        public void shouldThrowExceptionForInvalidRegex() {
             assertThatThrownBy(() -> IncludeTaggedClassFilter.create("[invalid"))
                     .isInstanceOf(PatternSyntaxException.class);
         }
 
         @Test
         @DisplayName("should create filter with empty string regex")
-        void shouldCreateFilterWithEmptyStringRegex() {
+        public void shouldCreateFilterWithEmptyStringRegex() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("");
             assertThat(filter).isNotNull();
         }
@@ -62,11 +62,11 @@ public class IncludeTaggedClassFilterTest {
 
     @Nested
     @DisplayName("Type Tests")
-    class TypeTests {
+    public class TypeTests {
 
         @Test
         @DisplayName("should return INCLUDE_TAGGED_CLASS type")
-        void shouldReturnIncludeTaggedClassType() {
+        public void shouldReturnIncludeTaggedClassType() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create(".*");
             assertThat(filter.getType()).isEqualTo(Filter.Type.INCLUDE_TAGGED_CLASS);
         }
@@ -74,97 +74,97 @@ public class IncludeTaggedClassFilterTest {
 
     @Nested
     @DisplayName("Matches Tests")
-    class MatchesTests {
+    public class MatchesTests {
 
         @Test
-        @DisplayName("should match class with single tag")
-        void shouldMatchClassWithSingleTag() {
+        @DisplayName("should match public class with single tag")
+        public void shouldMatchClassWithSingleTag() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("fast");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
         }
 
         @Test
-        @DisplayName("should match class with multiple tags")
-        void shouldMatchClassWithMultipleTags() {
+        @DisplayName("should match public class with multiple tags")
+        public void shouldMatchClassWithMultipleTags() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("integration");
             assertThat(filter.matches(MultipleTagClass.class)).isTrue();
         }
 
         @Test
         @DisplayName("should not match untagged class")
-        void shouldNotMatchUntaggedClass() {
+        public void shouldNotMatchUntaggedClass() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("fast");
             assertThat(filter.matches(UntaggedClass.class)).isFalse();
         }
 
         @Test
-        @DisplayName("should match class with wildcard pattern")
-        void shouldMatchClassWithWildcardPattern() {
+        @DisplayName("should match public class with wildcard pattern")
+        public void shouldMatchClassWithWildcardPattern() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create(".*");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
             assertThat(filter.matches(MultipleTagClass.class)).isTrue();
         }
 
         @Test
-        @DisplayName("should match class with regex pattern")
-        void shouldMatchClassWithRegexPattern() {
+        @DisplayName("should match public class with regex pattern")
+        public void shouldMatchClassWithRegexPattern() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("fast|slow");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
             assertThat(filter.matches(SlowTagClass.class)).isTrue();
         }
 
         @Test
-        @DisplayName("should match class with partial tag match")
-        void shouldMatchClassWithPartialTagMatch() {
+        @DisplayName("should match public class with partial tag match")
+        public void shouldMatchClassWithPartialTagMatch() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create(".*test.*");
             assertThat(filter.matches(IntegrationTestTagClass.class)).isTrue();
         }
 
         @Test
         @DisplayName("should not match when tag pattern does not match")
-        void shouldNotMatchWhenTagPatternDoesNotMatch() {
+        public void shouldNotMatchWhenTagPatternDoesNotMatch() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("database");
             assertThat(filter.matches(SingleTagClass.class)).isFalse();
         }
 
         @Test
         @DisplayName("should match any tag in multiple tags")
-        void shouldMatchAnyTagInMultipleTags() {
+        public void shouldMatchAnyTagInMultipleTags() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("integration");
             assertThat(filter.matches(MultipleTagClass.class)).isTrue();
         }
 
         @Test
         @DisplayName("should handle case-sensitive tag matching")
-        void shouldHandleCaseSensitiveTagMatching() {
+        public void shouldHandleCaseSensitiveTagMatching() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("Fast");
             assertThat(filter.matches(SingleTagClass.class)).isFalse();
         }
 
         @Test
-        @DisplayName("should handle null class gracefully")
-        void shouldHandleNullClassGracefully() {
+        @DisplayName("should handle null public class gracefully")
+        public void shouldHandleNullClassGracefully() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create(".*");
             assertThatThrownBy(() -> filter.matches(null)).isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
-        @DisplayName("should match class with trimmed tag")
-        void shouldMatchClassWithTrimmedTag() {
+        @DisplayName("should match public class with trimmed tag")
+        public void shouldMatchClassWithTrimmedTag() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("trimmed");
             assertThat(filter.matches(TrimmedTagClass.class)).isTrue();
         }
 
         @Test
-        @DisplayName("should not match class with empty tag")
-        void shouldNotMatchClassWithEmptyTag() {
+        @DisplayName("should not match public class with empty tag")
+        public void shouldNotMatchClassWithEmptyTag() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create(".*");
             assertThat(filter.matches(EmptyTagClass.class)).isFalse();
         }
 
         @Test
         @DisplayName("should match with prefix pattern")
-        void shouldMatchWithPrefixPattern() {
+        public void shouldMatchWithPrefixPattern() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("^fast$");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
             assertThat(filter.matches(FastTestTagClass.class)).isFalse();
@@ -172,7 +172,7 @@ public class IncludeTaggedClassFilterTest {
 
         @Test
         @DisplayName("should match multiple classes with same tag")
-        void shouldMatchMultipleClassesWithSameTag() {
+        public void shouldMatchMultipleClassesWithSameTag() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("fast");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
             assertThat(filter.matches(MultipleTagClass.class)).isTrue();
@@ -181,25 +181,25 @@ public class IncludeTaggedClassFilterTest {
 
     @Nested
     @DisplayName("Edge Cases")
-    class EdgeCaseTests {
+    public class EdgeCaseTests {
 
         @Test
         @DisplayName("should handle empty string pattern")
-        void shouldHandleEmptyStringPattern() {
+        public void shouldHandleEmptyStringPattern() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("");
             assertThat(filter.matches(SingleTagClass.class)).isTrue();
         }
 
         @Test
         @DisplayName("should handle special regex characters in tag")
-        void shouldHandleSpecialRegexCharactersInTag() {
+        public void shouldHandleSpecialRegexCharactersInTag() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("\\$special.*");
             assertThat(filter.matches(SpecialCharTagClass.class)).isTrue();
         }
 
         @Test
         @DisplayName("should handle tag with numbers")
-        void shouldHandleTagWithNumbers() {
+        public void shouldHandleTagWithNumbers() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create(".*[0-9]+.*");
             assertThat(filter.matches(NumericTagClass.class)).isTrue();
         }
@@ -207,11 +207,11 @@ public class IncludeTaggedClassFilterTest {
 
     @Nested
     @DisplayName("Integration Tests")
-    class IntegrationTests {
+    public class IntegrationTests {
 
         @Test
         @DisplayName("should work with multiple filters")
-        void shouldWorkWithMultipleFilters() {
+        public void shouldWorkWithMultipleFilters() {
             IncludeTaggedClassFilter filter1 = IncludeTaggedClassFilter.create("fast");
             IncludeTaggedClassFilter filter2 = IncludeTaggedClassFilter.create("integration");
 
@@ -223,7 +223,7 @@ public class IncludeTaggedClassFilterTest {
 
         @Test
         @DisplayName("should be reusable across multiple matches")
-        void shouldBeReusableAcrossMultipleMatches() {
+        public void shouldBeReusableAcrossMultipleMatches() {
             IncludeTaggedClassFilter filter = IncludeTaggedClassFilter.create("fast");
 
             assertThat(filter.matches(SingleTagClass.class)).isTrue();

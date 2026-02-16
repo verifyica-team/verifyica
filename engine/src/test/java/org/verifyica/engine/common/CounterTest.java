@@ -23,15 +23,15 @@ import java.util.Map;
 import org.junit.jupiter.api.*;
 
 @DisplayName("Counter Tests")
-class CounterTest {
+public class CounterTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create counter with valid name and description")
-        void shouldCreateCounterWithValidNameAndDescription() {
+        public void shouldCreateCounterWithValidNameAndDescription() {
             Counter counter = new Counter("test-counter", "Test counter description");
 
             assertThat(counter.name()).isEqualTo("test-counter");
@@ -41,7 +41,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should throw exception when name is null")
-        void shouldThrowExceptionWhenNameIsNull() {
+        public void shouldThrowExceptionWhenNameIsNull() {
             assertThatThrownBy(() -> new Counter(null, "description"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("name is null");
@@ -49,7 +49,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should throw exception when name is blank")
-        void shouldThrowExceptionWhenNameIsBlank() {
+        public void shouldThrowExceptionWhenNameIsBlank() {
             assertThatThrownBy(() -> new Counter("   ", "description"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("name is blank");
@@ -57,7 +57,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should throw exception when name is empty")
-        void shouldThrowExceptionWhenNameIsEmpty() {
+        public void shouldThrowExceptionWhenNameIsEmpty() {
             assertThatThrownBy(() -> new Counter("", "description"))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("name is blank");
@@ -65,7 +65,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should throw exception when description is null")
-        void shouldThrowExceptionWhenDescriptionIsNull() {
+        public void shouldThrowExceptionWhenDescriptionIsNull() {
             assertThatThrownBy(() -> new Counter("name", null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("description is null");
@@ -73,7 +73,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should throw exception when description is blank")
-        void shouldThrowExceptionWhenDescriptionIsBlank() {
+        public void shouldThrowExceptionWhenDescriptionIsBlank() {
             assertThatThrownBy(() -> new Counter("name", "   "))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("description is blank");
@@ -81,7 +81,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should throw exception when description is empty")
-        void shouldThrowExceptionWhenDescriptionIsEmpty() {
+        public void shouldThrowExceptionWhenDescriptionIsEmpty() {
             assertThatThrownBy(() -> new Counter("name", ""))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("description is blank");
@@ -90,11 +90,11 @@ class CounterTest {
 
     @Nested
     @DisplayName("Increment Tests")
-    class IncrementTests {
+    public class IncrementTests {
 
         @Test
         @DisplayName("Should increment counter by 1")
-        void shouldIncrementCounterByOne() {
+        public void shouldIncrementCounterByOne() {
             Counter counter = new Counter("test", "description");
 
             counter.increment();
@@ -104,7 +104,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should increment counter multiple times")
-        void shouldIncrementCounterMultipleTimes() {
+        public void shouldIncrementCounterMultipleTimes() {
             Counter counter = new Counter("test", "description");
 
             counter.increment();
@@ -116,7 +116,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should increment counter by specific value")
-        void shouldIncrementCounterBySpecificValue() {
+        public void shouldIncrementCounterBySpecificValue() {
             Counter counter = new Counter("test", "description");
 
             counter.increment(5);
@@ -126,7 +126,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should increment counter by zero")
-        void shouldIncrementCounterByZero() {
+        public void shouldIncrementCounterByZero() {
             Counter counter = new Counter("test", "description");
 
             counter.increment(0);
@@ -136,7 +136,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should increment counter by large value")
-        void shouldIncrementCounterByLargeValue() {
+        public void shouldIncrementCounterByLargeValue() {
             Counter counter = new Counter("test", "description");
 
             counter.increment(Long.MAX_VALUE / 2);
@@ -147,7 +147,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should throw exception when increment value is negative")
-        void shouldThrowExceptionWhenIncrementValueIsNegative() {
+        public void shouldThrowExceptionWhenIncrementValueIsNegative() {
             Counter counter = new Counter("test", "description");
 
             assertThatThrownBy(() -> counter.increment(-1))
@@ -158,11 +158,11 @@ class CounterTest {
 
     @Nested
     @DisplayName("Thread Safety Tests")
-    class ThreadSafetyTests {
+    public class ThreadSafetyTests {
 
         @Test
         @DisplayName("Should be thread-safe for concurrent increments")
-        void shouldBeThreadSafeForConcurrentIncrements() throws InterruptedException {
+        public void shouldBeThreadSafeForConcurrentIncrements() throws InterruptedException {
             Counter counter = new Counter("test", "description");
             int threadCount = 10;
             int incrementsPerThread = 1000;
@@ -186,7 +186,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should be thread-safe for concurrent increments with values")
-        void shouldBeThreadSafeForConcurrentIncrementsWithValues() throws InterruptedException {
+        public void shouldBeThreadSafeForConcurrentIncrementsWithValues() throws InterruptedException {
             Counter counter = new Counter("test", "description");
             int threadCount = 10;
             int incrementsPerThread = 100;
@@ -212,11 +212,11 @@ class CounterTest {
 
     @Nested
     @DisplayName("Equals and HashCode Tests")
-    class EqualsAndHashCodeTests {
+    public class EqualsAndHashCodeTests {
 
         @Test
         @DisplayName("Should be equal when name and description match")
-        void shouldBeEqualWhenNameAndDescriptionMatch() {
+        public void shouldBeEqualWhenNameAndDescriptionMatch() {
             Counter counter1 = new Counter("test", "description");
             Counter counter2 = new Counter("test", "description");
 
@@ -225,7 +225,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should not be equal when name differs")
-        void shouldNotBeEqualWhenNameDiffers() {
+        public void shouldNotBeEqualWhenNameDiffers() {
             Counter counter1 = new Counter("test1", "description");
             Counter counter2 = new Counter("test2", "description");
 
@@ -234,7 +234,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should not be equal when description differs")
-        void shouldNotBeEqualWhenDescriptionDiffers() {
+        public void shouldNotBeEqualWhenDescriptionDiffers() {
             Counter counter1 = new Counter("test", "description1");
             Counter counter2 = new Counter("test", "description2");
 
@@ -243,7 +243,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should not be equal to null")
-        void shouldNotBeEqualToNull() {
+        public void shouldNotBeEqualToNull() {
             Counter counter = new Counter("test", "description");
 
             assertThat(counter).isNotEqualTo(null);
@@ -251,7 +251,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should not be equal to different type")
-        void shouldNotBeEqualToDifferentType() {
+        public void shouldNotBeEqualToDifferentType() {
             Counter counter = new Counter("test", "description");
 
             assertThat(counter).isNotEqualTo("test");
@@ -259,7 +259,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should have same hashCode when equal")
-        void shouldHaveSameHashCodeWhenEqual() {
+        public void shouldHaveSameHashCodeWhenEqual() {
             Counter counter1 = new Counter("test", "description");
             Counter counter2 = new Counter("test", "description");
 
@@ -268,7 +268,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should be equal regardless of count")
-        void shouldBeEqualRegardlessOfCount() {
+        public void shouldBeEqualRegardlessOfCount() {
             Counter counter1 = new Counter("test", "description");
             Counter counter2 = new Counter("test", "description");
 
@@ -281,11 +281,11 @@ class CounterTest {
 
     @Nested
     @DisplayName("ToString Tests")
-    class ToStringTests {
+    public class ToStringTests {
 
         @Test
         @DisplayName("Should contain name, description and count in string representation")
-        void shouldContainNameDescriptionAndCountInStringRepresentation() {
+        public void shouldContainNameDescriptionAndCountInStringRepresentation() {
             Counter counter = new Counter("test-counter", "Test description");
             counter.increment(5);
 
@@ -299,7 +299,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should show zero count initially")
-        void shouldShowZeroCountInitially() {
+        public void shouldShowZeroCountInitially() {
             Counter counter = new Counter("test", "description");
 
             String result = counter.toString();
@@ -310,11 +310,11 @@ class CounterTest {
 
     @Nested
     @DisplayName("Register Tests")
-    class RegisterTests {
+    public class RegisterTests {
 
         @Test
         @DisplayName("Should register counter in map")
-        void shouldRegisterCounterInMap() {
+        public void shouldRegisterCounterInMap() {
             Counter counter = new Counter("test", "description");
             Map<String, Counter> map = new HashMap<>();
 
@@ -325,7 +325,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should throw exception when map is null")
-        void shouldThrowExceptionWhenMapIsNull() {
+        public void shouldThrowExceptionWhenMapIsNull() {
             Counter counter = new Counter("test", "description");
 
             assertThatThrownBy(() -> counter.register(null))
@@ -335,7 +335,7 @@ class CounterTest {
 
         @Test
         @DisplayName("Should replace existing counter with same name")
-        void shouldReplaceExistingCounterWithSameName() {
+        public void shouldReplaceExistingCounterWithSameName() {
             Counter counter1 = new Counter("test", "description1");
             Counter counter2 = new Counter("test", "description2");
             Map<String, Counter> map = new HashMap<>();

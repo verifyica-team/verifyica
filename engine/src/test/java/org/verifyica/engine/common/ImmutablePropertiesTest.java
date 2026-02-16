@@ -26,15 +26,15 @@ import java.util.*;
 import org.junit.jupiter.api.*;
 
 @DisplayName("ImmutableProperties Tests")
-class ImmutablePropertiesTest {
+public class ImmutablePropertiesTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create immutable properties from existing properties")
-        void shouldCreateImmutablePropertiesFromExistingProperties() {
+        public void shouldCreateImmutablePropertiesFromExistingProperties() {
             Properties source = new Properties();
             source.put("key1", "value1");
             source.put("key2", "value2");
@@ -47,7 +47,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should create immutable properties from empty properties")
-        void shouldCreateImmutablePropertiesFromEmptyProperties() {
+        public void shouldCreateImmutablePropertiesFromEmptyProperties() {
             Properties source = new Properties();
 
             ImmutableProperties immutable = new ImmutableProperties(source);
@@ -57,7 +57,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should not be affected by changes to source properties")
-        void shouldNotBeAffectedByChangesToSourceProperties() {
+        public void shouldNotBeAffectedByChangesToSourceProperties() {
             Properties source = new Properties();
             source.put("key1", "value1");
 
@@ -71,11 +71,11 @@ class ImmutablePropertiesTest {
 
     @Nested
     @DisplayName("Get Tests")
-    class GetTests {
+    public class GetTests {
 
         @Test
         @DisplayName("Should get property value")
-        void shouldGetPropertyValue() {
+        public void shouldGetPropertyValue() {
             Properties source = new Properties();
             source.put("key1", "value1");
             ImmutableProperties immutable = new ImmutableProperties(source);
@@ -85,7 +85,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should return null for non-existent key")
-        void shouldReturnNullForNonExistentKey() {
+        public void shouldReturnNullForNonExistentKey() {
             Properties source = new Properties();
             ImmutableProperties immutable = new ImmutableProperties(source);
 
@@ -94,7 +94,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should get property using getProperty")
-        void shouldGetPropertyUsingGetProperty() {
+        public void shouldGetPropertyUsingGetProperty() {
             Properties source = new Properties();
             source.setProperty("key1", "value1");
             ImmutableProperties immutable = new ImmutableProperties(source);
@@ -105,11 +105,11 @@ class ImmutablePropertiesTest {
 
     @Nested
     @DisplayName("Immutability Tests")
-    class ImmutabilityTests {
+    public class ImmutabilityTests {
 
         @Test
         @DisplayName("Should throw exception on put")
-        void shouldThrowExceptionOnPut() {
+        public void shouldThrowExceptionOnPut() {
             Properties source = new Properties();
             ImmutableProperties immutable = new ImmutableProperties(source);
 
@@ -120,7 +120,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should throw exception on setProperty")
-        void shouldThrowExceptionOnSetProperty() {
+        public void shouldThrowExceptionOnSetProperty() {
             Properties source = new Properties();
             ImmutableProperties immutable = new ImmutableProperties(source);
 
@@ -131,7 +131,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should throw exception on remove")
-        void shouldThrowExceptionOnRemove() {
+        public void shouldThrowExceptionOnRemove() {
             Properties source = new Properties();
             source.put("key1", "value1");
             ImmutableProperties immutable = new ImmutableProperties(source);
@@ -143,7 +143,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should throw exception on clear")
-        void shouldThrowExceptionOnClear() {
+        public void shouldThrowExceptionOnClear() {
             Properties source = new Properties();
             source.put("key1", "value1");
             ImmutableProperties immutable = new ImmutableProperties(source);
@@ -155,7 +155,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should throw exception on putAll")
-        void shouldThrowExceptionOnPutAll() {
+        public void shouldThrowExceptionOnPutAll() {
             Properties source = new Properties();
             ImmutableProperties immutable = new ImmutableProperties(source);
             Map<String, String> map = new HashMap<>();
@@ -168,7 +168,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should throw exception on load from InputStream")
-        void shouldThrowExceptionOnLoadFromInputStream() {
+        public void shouldThrowExceptionOnLoadFromInputStream() {
             Properties source = new Properties();
             ImmutableProperties immutable = new ImmutableProperties(source);
             ByteArrayInputStream inputStream = new ByteArrayInputStream("key=value".getBytes());
@@ -180,7 +180,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should throw exception on load from Reader")
-        void shouldThrowExceptionOnLoadFromReader() {
+        public void shouldThrowExceptionOnLoadFromReader() {
             Properties source = new Properties();
             ImmutableProperties immutable = new ImmutableProperties(source);
             StringReader reader = new StringReader("key=value");
@@ -192,7 +192,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should throw exception on store to OutputStream")
-        void shouldThrowExceptionOnStoreToOutputStream() {
+        public void shouldThrowExceptionOnStoreToOutputStream() {
             Properties source = new Properties();
             ImmutableProperties immutable = new ImmutableProperties(source);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -204,7 +204,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should throw exception on store to Writer")
-        void shouldThrowExceptionOnStoreToWriter() {
+        public void shouldThrowExceptionOnStoreToWriter() {
             Properties source = new Properties();
             ImmutableProperties immutable = new ImmutableProperties(source);
             StringWriter writer = new StringWriter();
@@ -217,11 +217,11 @@ class ImmutablePropertiesTest {
 
     @Nested
     @DisplayName("Collection Views Tests")
-    class CollectionViewsTests {
+    public class CollectionViewsTests {
 
         @Test
         @DisplayName("Should return unmodifiable entrySet")
-        void shouldReturnUnmodifiableEntrySet() {
+        public void shouldReturnUnmodifiableEntrySet() {
             Properties source = new Properties();
             source.put("key1", "value1");
             ImmutableProperties immutable = new ImmutableProperties(source);
@@ -234,7 +234,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should return unmodifiable stringPropertyNames")
-        void shouldReturnUnmodifiableStringPropertyNames() {
+        public void shouldReturnUnmodifiableStringPropertyNames() {
             Properties source = new Properties();
             source.setProperty("key1", "value1");
             ImmutableProperties immutable = new ImmutableProperties(source);
@@ -247,7 +247,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should return propertyNames enumeration")
-        void shouldReturnPropertyNamesEnumeration() {
+        public void shouldReturnPropertyNamesEnumeration() {
             Properties source = new Properties();
             source.put("key1", "value1");
             source.put("key2", "value2");
@@ -262,7 +262,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should return elements enumeration")
-        void shouldReturnElementsEnumeration() {
+        public void shouldReturnElementsEnumeration() {
             Properties source = new Properties();
             source.put("key1", "value1");
             source.put("key2", "value2");
@@ -277,11 +277,11 @@ class ImmutablePropertiesTest {
 
     @Nested
     @DisplayName("Multiple Properties Tests")
-    class MultiplePropertiesTests {
+    public class MultiplePropertiesTests {
 
         @Test
         @DisplayName("Should contain all properties from source")
-        void shouldContainAllPropertiesFromSource() {
+        public void shouldContainAllPropertiesFromSource() {
             Properties source = new Properties();
             source.put("key1", "value1");
             source.put("key2", "value2");
@@ -297,7 +297,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should iterate over all properties")
-        void shouldIterateOverAllProperties() {
+        public void shouldIterateOverAllProperties() {
             Properties source = new Properties();
             source.put("key1", "value1");
             source.put("key2", "value2");
@@ -317,11 +317,11 @@ class ImmutablePropertiesTest {
 
     @Nested
     @DisplayName("Thread Safety Tests")
-    class ThreadSafetyTests {
+    public class ThreadSafetyTests {
 
         @Test
         @DisplayName("Should be safe for concurrent reads")
-        void shouldBeSafeForConcurrentReads() throws InterruptedException {
+        public void shouldBeSafeForConcurrentReads() throws InterruptedException {
             Properties source = new Properties();
             source.put("key1", "value1");
             source.put("key2", "value2");
@@ -350,11 +350,11 @@ class ImmutablePropertiesTest {
 
     @Nested
     @DisplayName("Special Cases Tests")
-    class SpecialCasesTests {
+    public class SpecialCasesTests {
 
         @Test
         @DisplayName("Should reject null values (Properties backed by Hashtable doesn't support nulls)")
-        void shouldRejectNullValues() {
+        public void shouldRejectNullValues() {
             Properties source = new Properties();
 
             assertThatThrownBy(() -> source.put("key", null)).isInstanceOf(NullPointerException.class);
@@ -362,7 +362,7 @@ class ImmutablePropertiesTest {
 
         @Test
         @DisplayName("Should handle properties with empty string values")
-        void shouldHandlePropertiesWithEmptyStringValues() {
+        public void shouldHandlePropertiesWithEmptyStringValues() {
             Properties source = new Properties();
             source.put("key1", "");
 

@@ -192,7 +192,7 @@ public class AnsiColoredStringTest {
 
     /*
     @Test
-    public void debug() {
+    public  void debug() {
         boolean resetAnsiColor = false;
 
         try {

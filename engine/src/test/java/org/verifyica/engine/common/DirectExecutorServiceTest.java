@@ -25,15 +25,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.*;
 
 @DisplayName("DirectExecutorService Tests")
-class DirectExecutorServiceTest {
+public class DirectExecutorServiceTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create executor service in running state")
-        void shouldCreateExecutorServiceInRunningState() {
+        public void shouldCreateExecutorServiceInRunningState() {
             DirectExecutorService executor = new DirectExecutorService();
 
             assertThat(executor.isShutdown()).isFalse();
@@ -43,11 +43,11 @@ class DirectExecutorServiceTest {
 
     @Nested
     @DisplayName("Execute Tests")
-    class ExecuteTests {
+    public class ExecuteTests {
 
         @Test
         @DisplayName("Should execute runnable immediately")
-        void shouldExecuteRunnableImmediately() {
+        public void shouldExecuteRunnableImmediately() {
             DirectExecutorService executor = new DirectExecutorService();
             AtomicBoolean executed = new AtomicBoolean(false);
 
@@ -58,7 +58,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should execute runnable on calling thread")
-        void shouldExecuteRunnableOnCallingThread() {
+        public void shouldExecuteRunnableOnCallingThread() {
             DirectExecutorService executor = new DirectExecutorService();
             Thread callingThread = Thread.currentThread();
             AtomicBoolean sameThread = new AtomicBoolean(false);
@@ -70,7 +70,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should execute multiple runnables sequentially")
-        void shouldExecuteMultipleRunnablesSequentially() {
+        public void shouldExecuteMultipleRunnablesSequentially() {
             DirectExecutorService executor = new DirectExecutorService();
             AtomicInteger counter = new AtomicInteger(0);
 
@@ -83,7 +83,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should execute runnables in order")
-        void shouldExecuteRunnablesInOrder() {
+        public void shouldExecuteRunnablesInOrder() {
             DirectExecutorService executor = new DirectExecutorService();
             StringBuilder result = new StringBuilder();
 
@@ -96,7 +96,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should not execute after shutdown")
-        void shouldNotExecuteAfterShutdown() {
+        public void shouldNotExecuteAfterShutdown() {
             DirectExecutorService executor = new DirectExecutorService();
             AtomicBoolean executed = new AtomicBoolean(false);
 
@@ -108,7 +108,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should propagate exceptions from runnable")
-        void shouldPropagateExceptionsFromRunnable() {
+        public void shouldPropagateExceptionsFromRunnable() {
             DirectExecutorService executor = new DirectExecutorService();
 
             assertThatThrownBy(() -> executor.execute(() -> {
@@ -121,11 +121,11 @@ class DirectExecutorServiceTest {
 
     @Nested
     @DisplayName("Shutdown Tests")
-    class ShutdownTests {
+    public class ShutdownTests {
 
         @Test
         @DisplayName("Should change state to shutdown")
-        void shouldChangeStateToShutdown() {
+        public void shouldChangeStateToShutdown() {
             DirectExecutorService executor = new DirectExecutorService();
 
             executor.shutdown();
@@ -135,7 +135,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should change state to terminated")
-        void shouldChangeStateToTerminated() {
+        public void shouldChangeStateToTerminated() {
             DirectExecutorService executor = new DirectExecutorService();
 
             executor.shutdown();
@@ -145,7 +145,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should be idempotent")
-        void shouldBeIdempotent() {
+        public void shouldBeIdempotent() {
             DirectExecutorService executor = new DirectExecutorService();
 
             executor.shutdown();
@@ -157,11 +157,11 @@ class DirectExecutorServiceTest {
 
     @Nested
     @DisplayName("ShutdownNow Tests")
-    class ShutdownNowTests {
+    public class ShutdownNowTests {
 
         @Test
         @DisplayName("Should change state to shutdown")
-        void shouldChangeStateToShutdown() {
+        public void shouldChangeStateToShutdown() {
             DirectExecutorService executor = new DirectExecutorService();
 
             executor.shutdownNow();
@@ -171,7 +171,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should change state to terminated")
-        void shouldChangeStateToTerminated() {
+        public void shouldChangeStateToTerminated() {
             DirectExecutorService executor = new DirectExecutorService();
 
             executor.shutdownNow();
@@ -181,7 +181,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should return empty list")
-        void shouldReturnEmptyList() {
+        public void shouldReturnEmptyList() {
             DirectExecutorService executor = new DirectExecutorService();
 
             List<Runnable> remaining = executor.shutdownNow();
@@ -191,7 +191,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should be idempotent")
-        void shouldBeIdempotent() {
+        public void shouldBeIdempotent() {
             DirectExecutorService executor = new DirectExecutorService();
 
             List<Runnable> first = executor.shutdownNow();
@@ -205,11 +205,11 @@ class DirectExecutorServiceTest {
 
     @Nested
     @DisplayName("AwaitTermination Tests")
-    class AwaitTerminationTests {
+    public class AwaitTerminationTests {
 
         @Test
         @DisplayName("Should return true immediately after shutdown")
-        void shouldReturnTrueImmediatelyAfterShutdown() throws InterruptedException {
+        public void shouldReturnTrueImmediatelyAfterShutdown() throws InterruptedException {
             DirectExecutorService executor = new DirectExecutorService();
             executor.shutdown();
 
@@ -220,7 +220,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should return false when not shutdown")
-        void shouldReturnFalseWhenNotShutdown() throws InterruptedException {
+        public void shouldReturnFalseWhenNotShutdown() throws InterruptedException {
             DirectExecutorService executor = new DirectExecutorService();
 
             boolean terminated = executor.awaitTermination(1, TimeUnit.MILLISECONDS);
@@ -230,7 +230,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should return immediately when already shutdown")
-        void shouldReturnImmediatelyWhenAlreadyShutdown() throws InterruptedException {
+        public void shouldReturnImmediatelyWhenAlreadyShutdown() throws InterruptedException {
             DirectExecutorService executor = new DirectExecutorService();
             executor.shutdown();
 
@@ -245,11 +245,11 @@ class DirectExecutorServiceTest {
 
     @Nested
     @DisplayName("State Tests")
-    class StateTests {
+    public class StateTests {
 
         @Test
         @DisplayName("Should not be shutdown initially")
-        void shouldNotBeShutdownInitially() {
+        public void shouldNotBeShutdownInitially() {
             DirectExecutorService executor = new DirectExecutorService();
 
             assertThat(executor.isShutdown()).isFalse();
@@ -257,7 +257,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should not be terminated initially")
-        void shouldNotBeTerminatedInitially() {
+        public void shouldNotBeTerminatedInitially() {
             DirectExecutorService executor = new DirectExecutorService();
 
             assertThat(executor.isTerminated()).isFalse();
@@ -265,7 +265,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should be both shutdown and terminated after shutdown")
-        void shouldBeBothShutdownAndTerminatedAfterShutdown() {
+        public void shouldBeBothShutdownAndTerminatedAfterShutdown() {
             DirectExecutorService executor = new DirectExecutorService();
 
             executor.shutdown();
@@ -277,11 +277,11 @@ class DirectExecutorServiceTest {
 
     @Nested
     @DisplayName("Integration Tests")
-    class IntegrationTests {
+    public class IntegrationTests {
 
         @Test
         @DisplayName("Should execute tasks before shutdown but not after")
-        void shouldExecuteTasksBeforeShutdownButNotAfter() {
+        public void shouldExecuteTasksBeforeShutdownButNotAfter() {
             DirectExecutorService executor = new DirectExecutorService();
             AtomicInteger counter = new AtomicInteger(0);
 
@@ -297,7 +297,7 @@ class DirectExecutorServiceTest {
 
         @Test
         @DisplayName("Should handle rapid execute and shutdown")
-        void shouldHandleRapidExecuteAndShutdown() {
+        public void shouldHandleRapidExecuteAndShutdown() {
             DirectExecutorService executor = new DirectExecutorService();
             AtomicInteger counter = new AtomicInteger(0);
 
@@ -314,11 +314,11 @@ class DirectExecutorServiceTest {
 
     @Nested
     @DisplayName("Thread Safety Tests")
-    class ThreadSafetyTests {
+    public class ThreadSafetyTests {
 
         @Test
         @DisplayName("Should handle concurrent shutdown calls")
-        void shouldHandleConcurrentShutdownCalls() throws InterruptedException {
+        public void shouldHandleConcurrentShutdownCalls() throws InterruptedException {
             DirectExecutorService executor = new DirectExecutorService();
             int threadCount = 10;
             Thread[] threads = new Thread[threadCount];

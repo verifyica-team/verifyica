@@ -21,15 +21,15 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
 @DisplayName("TestDescriptorStatus Tests")
-class TestDescriptorStatusTest {
+public class TestDescriptorStatusTest {
 
     @Nested
     @DisplayName("Factory Method Tests")
-    class FactoryMethodTests {
+    public class FactoryMethodTests {
 
         @Test
         @DisplayName("Should create passed status with singleton")
-        void shouldCreatePassedStatusWithSingleton() {
+        public void shouldCreatePassedStatusWithSingleton() {
             TestDescriptorStatus status1 = TestDescriptorStatus.passed();
             TestDescriptorStatus status2 = TestDescriptorStatus.passed();
 
@@ -46,7 +46,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should create skipped status with singleton")
-        void shouldCreateSkippedStatusWithSingleton() {
+        public void shouldCreateSkippedStatusWithSingleton() {
             TestDescriptorStatus status1 = TestDescriptorStatus.skipped();
             TestDescriptorStatus status2 = TestDescriptorStatus.skipped();
 
@@ -64,7 +64,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should create skipped status with throwable")
-        void shouldCreateSkippedStatusWithThrowable() {
+        public void shouldCreateSkippedStatusWithThrowable() {
             Throwable throwable = new RuntimeException("Test skip reason");
             TestDescriptorStatus status = TestDescriptorStatus.skipped(throwable);
 
@@ -80,7 +80,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should create failed status with throwable")
-        void shouldCreateFailedStatusWithThrowable() {
+        public void shouldCreateFailedStatusWithThrowable() {
             Throwable throwable = new AssertionError("Test failure");
             TestDescriptorStatus status = TestDescriptorStatus.failed(throwable);
 
@@ -96,7 +96,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should create different instances for skipped with throwable")
-        void shouldCreateDifferentInstancesForSkippedWithThrowable() {
+        public void shouldCreateDifferentInstancesForSkippedWithThrowable() {
             Throwable throwable1 = new RuntimeException("Reason 1");
             Throwable throwable2 = new RuntimeException("Reason 2");
 
@@ -110,7 +110,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should create different instances for failed status")
-        void shouldCreateDifferentInstancesForFailedStatus() {
+        public void shouldCreateDifferentInstancesForFailedStatus() {
             Throwable throwable1 = new AssertionError("Failure 1");
             Throwable throwable2 = new AssertionError("Failure 2");
 
@@ -125,11 +125,11 @@ class TestDescriptorStatusTest {
 
     @Nested
     @DisplayName("Type Tests")
-    class TypeTests {
+    public class TypeTests {
 
         @Test
         @DisplayName("Should return correct type for passed status")
-        void shouldReturnCorrectTypeForPassedStatus() {
+        public void shouldReturnCorrectTypeForPassedStatus() {
             TestDescriptorStatus status = TestDescriptorStatus.passed();
 
             assertThat(status.getType()).isEqualTo(TestDescriptorStatus.Type.PASSED);
@@ -137,7 +137,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should return correct type for skipped status")
-        void shouldReturnCorrectTypeForSkippedStatus() {
+        public void shouldReturnCorrectTypeForSkippedStatus() {
             TestDescriptorStatus status = TestDescriptorStatus.skipped();
 
             assertThat(status.getType()).isEqualTo(TestDescriptorStatus.Type.SKIPPED);
@@ -145,7 +145,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should return correct type for failed status")
-        void shouldReturnCorrectTypeForFailedStatus() {
+        public void shouldReturnCorrectTypeForFailedStatus() {
             Throwable throwable = new RuntimeException("Test failure");
             TestDescriptorStatus status = TestDescriptorStatus.failed(throwable);
 
@@ -154,7 +154,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should have three type enum values")
-        void shouldHaveThreeTypeEnumValues() {
+        public void shouldHaveThreeTypeEnumValues() {
             TestDescriptorStatus.Type[] types = TestDescriptorStatus.Type.values();
 
             assertThat(types)
@@ -168,11 +168,11 @@ class TestDescriptorStatusTest {
 
     @Nested
     @DisplayName("Predicate Tests")
-    class PredicateTests {
+    public class PredicateTests {
 
         @Test
         @DisplayName("Should return true for isSuccess on passed status")
-        void shouldReturnTrueForIsSuccessOnPassedStatus() {
+        public void shouldReturnTrueForIsSuccessOnPassedStatus() {
             TestDescriptorStatus status = TestDescriptorStatus.passed();
 
             assertThat(status.isSuccess()).isTrue();
@@ -182,7 +182,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should return true for isFailure on failed status")
-        void shouldReturnTrueForIsFailureOnFailedStatus() {
+        public void shouldReturnTrueForIsFailureOnFailedStatus() {
             TestDescriptorStatus status = TestDescriptorStatus.failed(new RuntimeException());
 
             assertThat(status.isSuccess()).isFalse();
@@ -192,7 +192,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should return true for isSkipped on skipped status")
-        void shouldReturnTrueForIsSkippedOnSkippedStatus() {
+        public void shouldReturnTrueForIsSkippedOnSkippedStatus() {
             TestDescriptorStatus status = TestDescriptorStatus.skipped();
 
             assertThat(status.isSuccess()).isFalse();
@@ -202,7 +202,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should return false for isSkippedWithThrowable when no throwable")
-        void shouldReturnFalseForIsSkippedWithThrowableWhenNoThrowable() {
+        public void shouldReturnFalseForIsSkippedWithThrowableWhenNoThrowable() {
             TestDescriptorStatus status = TestDescriptorStatus.skipped();
 
             assertThat(status.isSkippedWithThrowable()).isFalse();
@@ -210,7 +210,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should return true for isSkippedWithThrowable when throwable present")
-        void shouldReturnTrueForIsSkippedWithThrowableWhenThrowablePresent() {
+        public void shouldReturnTrueForIsSkippedWithThrowableWhenThrowablePresent() {
             TestDescriptorStatus status = TestDescriptorStatus.skipped(new RuntimeException("Skip reason"));
 
             assertThat(status.isSkippedWithThrowable()).isTrue();
@@ -218,7 +218,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should return false for isSkippedWithThrowable on passed status")
-        void shouldReturnFalseForIsSkippedWithThrowableOnPassedStatus() {
+        public void shouldReturnFalseForIsSkippedWithThrowableOnPassedStatus() {
             TestDescriptorStatus status = TestDescriptorStatus.passed();
 
             assertThat(status.isSkippedWithThrowable()).isFalse();
@@ -226,7 +226,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should return false for isSkippedWithThrowable on failed status")
-        void shouldReturnFalseForIsSkippedWithThrowableOnFailedStatus() {
+        public void shouldReturnFalseForIsSkippedWithThrowableOnFailedStatus() {
             TestDescriptorStatus status = TestDescriptorStatus.failed(new RuntimeException());
 
             assertThat(status.isSkippedWithThrowable()).isFalse();
@@ -235,11 +235,11 @@ class TestDescriptorStatusTest {
 
     @Nested
     @DisplayName("Throwable Tests")
-    class ThrowableTests {
+    public class ThrowableTests {
 
         @Test
         @DisplayName("Should return null throwable for passed status")
-        void shouldReturnNullThrowableForPassedStatus() {
+        public void shouldReturnNullThrowableForPassedStatus() {
             TestDescriptorStatus status = TestDescriptorStatus.passed();
 
             assertThat(status.getThrowable()).isNull();
@@ -247,7 +247,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should return null throwable for skipped status without throwable")
-        void shouldReturnNullThrowableForSkippedStatusWithoutThrowable() {
+        public void shouldReturnNullThrowableForSkippedStatusWithoutThrowable() {
             TestDescriptorStatus status = TestDescriptorStatus.skipped();
 
             assertThat(status.getThrowable()).isNull();
@@ -255,7 +255,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should return throwable for skipped status with throwable")
-        void shouldReturnThrowableForSkippedStatusWithThrowable() {
+        public void shouldReturnThrowableForSkippedStatusWithThrowable() {
             Throwable throwable = new RuntimeException("Skip reason");
             TestDescriptorStatus status = TestDescriptorStatus.skipped(throwable);
 
@@ -264,7 +264,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should return throwable for failed status")
-        void shouldReturnThrowableForFailedStatus() {
+        public void shouldReturnThrowableForFailedStatus() {
             Throwable throwable = new AssertionError("Test failed");
             TestDescriptorStatus status = TestDescriptorStatus.failed(throwable);
 
@@ -273,7 +273,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should preserve throwable message and stack trace")
-        void shouldPreserveThrowableMessageAndStackTrace() {
+        public void shouldPreserveThrowableMessageAndStackTrace() {
             Throwable throwable = new RuntimeException("Original message");
             TestDescriptorStatus status = TestDescriptorStatus.failed(throwable);
 
@@ -285,11 +285,11 @@ class TestDescriptorStatusTest {
 
     @Nested
     @DisplayName("Equals and HashCode Tests")
-    class EqualsAndHashCodeTests {
+    public class EqualsAndHashCodeTests {
 
         @Test
         @DisplayName("Should be equal to itself")
-        void shouldBeEqualToItself() {
+        public void shouldBeEqualToItself() {
             TestDescriptorStatus status = TestDescriptorStatus.passed();
 
             assertThat(status).isEqualTo(status);
@@ -297,7 +297,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should be equal to passed singleton")
-        void shouldBeEqualToPassedSingleton() {
+        public void shouldBeEqualToPassedSingleton() {
             TestDescriptorStatus status1 = TestDescriptorStatus.passed();
             TestDescriptorStatus status2 = TestDescriptorStatus.passed();
 
@@ -307,7 +307,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should be equal to skipped singleton")
-        void shouldBeEqualToSkippedSingleton() {
+        public void shouldBeEqualToSkippedSingleton() {
             TestDescriptorStatus status1 = TestDescriptorStatus.skipped();
             TestDescriptorStatus status2 = TestDescriptorStatus.skipped();
 
@@ -317,7 +317,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should not be equal to null")
-        void shouldNotBeEqualToNull() {
+        public void shouldNotBeEqualToNull() {
             TestDescriptorStatus status = TestDescriptorStatus.passed();
 
             assertThat(status).isNotEqualTo(null);
@@ -325,7 +325,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should not be equal to different class")
-        void shouldNotBeEqualToDifferentClass() {
+        public void shouldNotBeEqualToDifferentClass() {
             TestDescriptorStatus status = TestDescriptorStatus.passed();
 
             assertThat(status).isNotEqualTo("not a status");
@@ -333,7 +333,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should not be equal when types differ")
-        void shouldNotBeEqualWhenTypesDiffer() {
+        public void shouldNotBeEqualWhenTypesDiffer() {
             TestDescriptorStatus passed = TestDescriptorStatus.passed();
             TestDescriptorStatus skipped = TestDescriptorStatus.skipped();
 
@@ -342,7 +342,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should not be equal when throwables differ")
-        void shouldNotBeEqualWhenThrowablesDiffer() {
+        public void shouldNotBeEqualWhenThrowablesDiffer() {
             Throwable throwable1 = new RuntimeException("Error 1");
             Throwable throwable2 = new RuntimeException("Error 2");
 
@@ -354,7 +354,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should be equal when same throwable")
-        void shouldBeEqualWhenSameThrowable() {
+        public void shouldBeEqualWhenSameThrowable() {
             Throwable throwable = new RuntimeException("Same error");
 
             TestDescriptorStatus status1 = TestDescriptorStatus.failed(throwable);
@@ -366,7 +366,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should have consistent hashCode")
-        void shouldHaveConsistentHashCode() {
+        public void shouldHaveConsistentHashCode() {
             TestDescriptorStatus status = TestDescriptorStatus.passed();
 
             int hashCode1 = status.hashCode();
@@ -377,7 +377,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should have consistent hashCode with throwable")
-        void shouldHaveConsistentHashCodeWithThrowable() {
+        public void shouldHaveConsistentHashCodeWithThrowable() {
             Throwable throwable = new RuntimeException("Error");
             TestDescriptorStatus status = TestDescriptorStatus.failed(throwable);
 
@@ -390,11 +390,11 @@ class TestDescriptorStatusTest {
 
     @Nested
     @DisplayName("ToString Tests")
-    class ToStringTests {
+    public class ToStringTests {
 
         @Test
         @DisplayName("Should contain type in toString for passed")
-        void shouldContainTypeInToStringForPassed() {
+        public void shouldContainTypeInToStringForPassed() {
             TestDescriptorStatus status = TestDescriptorStatus.passed();
 
             assertThat(status.toString()).contains("type=PASSED").contains("throwable=null");
@@ -402,7 +402,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should contain type in toString for skipped")
-        void shouldContainTypeInToStringForSkipped() {
+        public void shouldContainTypeInToStringForSkipped() {
             TestDescriptorStatus status = TestDescriptorStatus.skipped();
 
             assertThat(status.toString()).contains("type=SKIPPED").contains("throwable=null");
@@ -410,7 +410,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should contain type and throwable in toString for failed")
-        void shouldContainTypeAndThrowableInToStringForFailed() {
+        public void shouldContainTypeAndThrowableInToStringForFailed() {
             Throwable throwable = new RuntimeException("Test error");
             TestDescriptorStatus status = TestDescriptorStatus.failed(throwable);
 
@@ -422,7 +422,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should contain throwable info for skipped with throwable")
-        void shouldContainThrowableInfoForSkippedWithThrowable() {
+        public void shouldContainThrowableInfoForSkippedWithThrowable() {
             Throwable throwable = new RuntimeException("Skip reason");
             TestDescriptorStatus status = TestDescriptorStatus.skipped(throwable);
 
@@ -434,7 +434,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should contain InvocationResult in toString")
-        void shouldContainInvocationResultInToString() {
+        public void shouldContainInvocationResultInToString() {
             TestDescriptorStatus status = TestDescriptorStatus.passed();
 
             assertThat(status.toString()).contains("InvocationResult");
@@ -443,11 +443,11 @@ class TestDescriptorStatusTest {
 
     @Nested
     @DisplayName("Edge Case Tests")
-    class EdgeCaseTests {
+    public class EdgeCaseTests {
 
         @Test
         @DisplayName("Should handle null message in throwable")
-        void shouldHandleNullMessageInThrowable() {
+        public void shouldHandleNullMessageInThrowable() {
             Throwable throwable = new RuntimeException();
             TestDescriptorStatus status = TestDescriptorStatus.failed(throwable);
 
@@ -457,7 +457,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should handle nested throwable causes")
-        void shouldHandleNestedThrowableCauses() {
+        public void shouldHandleNestedThrowableCauses() {
             Throwable cause = new IllegalArgumentException("Root cause");
             Throwable throwable = new RuntimeException("Wrapper", cause);
             TestDescriptorStatus status = TestDescriptorStatus.failed(throwable);
@@ -467,7 +467,7 @@ class TestDescriptorStatusTest {
 
         @Test
         @DisplayName("Should handle different exception types")
-        void shouldHandleDifferentExceptionTypes() {
+        public void shouldHandleDifferentExceptionTypes() {
             Throwable runtime = new RuntimeException("Runtime");
             Throwable assertion = new AssertionError("Assertion");
             Throwable illegal = new IllegalStateException("Illegal");

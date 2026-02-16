@@ -30,15 +30,15 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
 @DisplayName("ConcreteConfiguration Tests")
-class ConcreteConfigurationTest {
+public class ConcreteConfigurationTest {
 
     @Nested
     @DisplayName("Singleton Pattern Tests")
-    class SingletonPatternTests {
+    public class SingletonPatternTests {
 
         @Test
         @DisplayName("Should return singleton instance")
-        void shouldReturnSingletonInstance() {
+        public void shouldReturnSingletonInstance() {
             ConcreteConfiguration instance1 = ConcreteConfiguration.getInstance();
             ConcreteConfiguration instance2 = ConcreteConfiguration.getInstance();
 
@@ -49,7 +49,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should return same instance across multiple calls")
-        void shouldReturnSameInstanceAcrossMultipleCalls() {
+        public void shouldReturnSameInstanceAcrossMultipleCalls() {
             ConcreteConfiguration instance1 = ConcreteConfiguration.getInstance();
             ConcreteConfiguration instance2 = ConcreteConfiguration.getInstance();
             ConcreteConfiguration instance3 = ConcreteConfiguration.getInstance();
@@ -59,7 +59,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should have properties object initialized")
-        void shouldHavePropertiesObjectInitialized() {
+        public void shouldHavePropertiesObjectInitialized() {
             ConcreteConfiguration instance = ConcreteConfiguration.getInstance();
 
             assertThat(instance.getProperties()).isNotNull();
@@ -68,11 +68,11 @@ class ConcreteConfigurationTest {
 
     @Nested
     @DisplayName("Property Path Tests")
-    class PropertyPathTests {
+    public class PropertyPathTests {
 
         @Test
         @DisplayName("Should return empty Optional when no properties file found")
-        void shouldReturnEmptyOptionalWhenNoPropertiesFileFound() {
+        public void shouldReturnEmptyOptionalWhenNoPropertiesFileFound() {
             ConcreteConfiguration instance = ConcreteConfiguration.getInstance();
             Optional<Path> propertiesPath = instance.getPropertiesPath();
 
@@ -81,7 +81,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should return path wrapped in Optional when properties file exists")
-        void shouldReturnPathWrappedInOptionalWhenPropertiesFileExists() {
+        public void shouldReturnPathWrappedInOptionalWhenPropertiesFileExists() {
             ConcreteConfiguration instance = ConcreteConfiguration.getInstance();
             Optional<Path> propertiesPath = instance.getPropertiesPath();
 
@@ -94,11 +94,11 @@ class ConcreteConfigurationTest {
 
     @Nested
     @DisplayName("Properties Loading Tests")
-    class PropertiesLoadingTests {
+    public class PropertiesLoadingTests {
 
         @Test
         @DisplayName("Should return non-null properties")
-        void shouldReturnNonNullProperties() {
+        public void shouldReturnNonNullProperties() {
             ConcreteConfiguration instance = ConcreteConfiguration.getInstance();
             Properties properties = instance.getProperties();
 
@@ -107,7 +107,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should return empty properties when no file found")
-        void shouldReturnEmptyPropertiesWhenNoFileFound() {
+        public void shouldReturnEmptyPropertiesWhenNoFileFound() {
             ConcreteConfiguration instance = ConcreteConfiguration.getInstance();
             Properties properties = instance.getProperties();
 
@@ -116,7 +116,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Properties should be instance of Properties")
-        void propertiesShouldBeInstanceOfProperties() {
+        public void propertiesShouldBeInstanceOfProperties() {
             ConcreteConfiguration instance = ConcreteConfiguration.getInstance();
 
             assertThat(instance.getProperties()).isInstanceOf(Properties.class);
@@ -125,14 +125,14 @@ class ConcreteConfigurationTest {
 
     @Nested
     @DisplayName("System Property Override Tests")
-    class SystemPropertyOverrideTests {
+    public class SystemPropertyOverrideTests {
 
         @TempDir
         Path tempDir;
 
         @Test
         @DisplayName("Should load properties from system property location")
-        void shouldLoadPropertiesFromSystemPropertyLocation() throws IOException {
+        public void shouldLoadPropertiesFromSystemPropertyLocation() throws IOException {
             Path propertiesFile = tempDir.resolve("custom-verifyica.properties");
             String content = "test.property=test.value\n" + "another.property=another.value\n";
             Files.write(propertiesFile, content.getBytes(StandardCharsets.UTF_8));
@@ -157,7 +157,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should handle non-existent system property file gracefully")
-        void shouldHandleNonExistentSystemPropertyFileGracefully() {
+        public void shouldHandleNonExistentSystemPropertyFileGracefully() {
             String originalProperty = System.getProperty("verifyica.properties");
             try {
                 System.setProperty("verifyica.properties", "/non/existent/path/verifyica.properties");
@@ -180,14 +180,14 @@ class ConcreteConfigurationTest {
 
     @Nested
     @DisplayName("File Discovery Tests")
-    class FileDiscoveryTests {
+    public class FileDiscoveryTests {
 
         @TempDir
         Path tempDir;
 
         @Test
         @DisplayName("Should find properties file in current directory")
-        void shouldFindPropertiesFileInCurrentDirectory() throws IOException {
+        public void shouldFindPropertiesFileInCurrentDirectory() throws IOException {
             Path propertiesFile = tempDir.resolve("verifyica.properties");
             String content = "test.key=test.value\n";
             Files.write(propertiesFile, content.getBytes(StandardCharsets.UTF_8));
@@ -201,7 +201,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should search parent directories for properties file")
-        void shouldSearchParentDirectoriesForPropertiesFile() throws IOException {
+        public void shouldSearchParentDirectoriesForPropertiesFile() throws IOException {
             Path parentDir = tempDir.resolve("parent");
             Path childDir = parentDir.resolve("child");
             Files.createDirectories(childDir);
@@ -216,7 +216,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should stop searching at root directory")
-        void shouldStopSearchingAtRootDirectory() {
+        public void shouldStopSearchingAtRootDirectory() {
             Path root = Paths.get("/").toAbsolutePath().normalize();
 
             assertThat(root.getParent()).isNull();
@@ -225,14 +225,14 @@ class ConcreteConfigurationTest {
 
     @Nested
     @DisplayName("Properties Content Tests")
-    class PropertiesContentTests {
+    public class PropertiesContentTests {
 
         @TempDir
         Path tempDir;
 
         @Test
         @DisplayName("Should load properties with correct key-value pairs")
-        void shouldLoadPropertiesWithCorrectKeyValuePairs() throws IOException {
+        public void shouldLoadPropertiesWithCorrectKeyValuePairs() throws IOException {
             Path propertiesFile = tempDir.resolve("test-verifyica.properties");
             String content = "key1=value1\n" + "key2=value2\n" + "key3=value3\n";
             Files.write(propertiesFile, content.getBytes(StandardCharsets.UTF_8));
@@ -248,7 +248,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should handle empty properties file")
-        void shouldHandleEmptyPropertiesFile() throws IOException {
+        public void shouldHandleEmptyPropertiesFile() throws IOException {
             Path propertiesFile = tempDir.resolve("empty-verifyica.properties");
             Files.write(propertiesFile, "".getBytes(StandardCharsets.UTF_8));
 
@@ -260,7 +260,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should handle properties with comments")
-        void shouldHandlePropertiesWithComments() throws IOException {
+        public void shouldHandlePropertiesWithComments() throws IOException {
             Path propertiesFile = tempDir.resolve("commented-verifyica.properties");
             String content = "# This is a comment\n" + "key1=value1\n" + "! Another comment\n" + "key2=value2\n";
             Files.write(propertiesFile, content.getBytes(StandardCharsets.UTF_8));
@@ -275,7 +275,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should handle properties with special characters")
-        void shouldHandlePropertiesWithSpecialCharacters() throws IOException {
+        public void shouldHandlePropertiesWithSpecialCharacters() throws IOException {
             Path propertiesFile = tempDir.resolve("special-verifyica.properties");
             String content = "key.with.dots=value\n" + "key-with-dashes=value\n" + "key_with_underscores=value\n";
             Files.write(propertiesFile, content.getBytes(StandardCharsets.UTF_8));
@@ -291,7 +291,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should handle properties with whitespace")
-        void shouldHandlePropertiesWithWhitespace() throws IOException {
+        public void shouldHandlePropertiesWithWhitespace() throws IOException {
             Path propertiesFile = tempDir.resolve("whitespace-verifyica.properties");
             String content = "key1 = value1\n" + "  key2=value2  \n" + "key3 = value with spaces\n";
             Files.write(propertiesFile, content.getBytes(StandardCharsets.UTF_8));
@@ -305,14 +305,14 @@ class ConcreteConfigurationTest {
 
     @Nested
     @DisplayName("UTF-8 Encoding Tests")
-    class UTF8EncodingTests {
+    public class UTF8EncodingTests {
 
         @TempDir
         Path tempDir;
 
         @Test
         @DisplayName("Should load properties with UTF-8 encoding")
-        void shouldLoadPropertiesWithUTF8Encoding() throws IOException {
+        public void shouldLoadPropertiesWithUTF8Encoding() throws IOException {
             Path propertiesFile = tempDir.resolve("utf8-verifyica.properties");
             String content = "unicode.property=\u00E9\u00E7\u00E0\n";
             Files.write(propertiesFile, content.getBytes(StandardCharsets.UTF_8));
@@ -325,7 +325,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should handle empty lines in properties file")
-        void shouldHandleEmptyLinesInPropertiesFile() throws IOException {
+        public void shouldHandleEmptyLinesInPropertiesFile() throws IOException {
             Path propertiesFile = tempDir.resolve("empty-lines-verifyica.properties");
             String content = "key1=value1\n" + "\n" + "key2=value2\n" + "\n" + "\n" + "key3=value3\n";
             Files.write(propertiesFile, content.getBytes(StandardCharsets.UTF_8));
@@ -339,11 +339,11 @@ class ConcreteConfigurationTest {
 
     @Nested
     @DisplayName("Error Handling Tests")
-    class ErrorHandlingTests {
+    public class ErrorHandlingTests {
 
         @Test
         @DisplayName("Should handle IOException when file cannot be read")
-        void shouldHandleIOExceptionWhenFileCannotBeRead() {
+        public void shouldHandleIOExceptionWhenFileCannotBeRead() {
             Path nonReadableFile = Paths.get("/root/restricted/verifyica.properties");
 
             assertThat(nonReadableFile.toFile().canRead()).isFalse();
@@ -351,7 +351,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should handle malformed properties file gracefully")
-        void shouldHandleMalformedPropertiesFileGracefully() throws IOException {
+        public void shouldHandleMalformedPropertiesFileGracefully() throws IOException {
             Path tempFile = Files.createTempFile("malformed", ".properties");
             try {
                 Files.write(tempFile, "malformed\\line".getBytes(StandardCharsets.UTF_8));
@@ -368,11 +368,11 @@ class ConcreteConfigurationTest {
 
     @Nested
     @DisplayName("Thread Safety Tests")
-    class ThreadSafetyTests {
+    public class ThreadSafetyTests {
 
         @Test
         @DisplayName("Should return same singleton instance from multiple threads")
-        void shouldReturnSameSingletonInstanceFromMultipleThreads() throws InterruptedException {
+        public void shouldReturnSameSingletonInstanceFromMultipleThreads() throws InterruptedException {
             int threadCount = 10;
             Thread[] threads = new Thread[threadCount];
             ConcreteConfiguration[] instances = new ConcreteConfiguration[threadCount];
@@ -398,11 +398,11 @@ class ConcreteConfigurationTest {
 
     @Nested
     @DisplayName("Configuration State Tests")
-    class ConfigurationStateTests {
+    public class ConfigurationStateTests {
 
         @Test
         @DisplayName("Should maintain consistent properties reference")
-        void shouldMaintainConsistentPropertiesReference() {
+        public void shouldMaintainConsistentPropertiesReference() {
             ConcreteConfiguration instance = ConcreteConfiguration.getInstance();
             Properties properties1 = instance.getProperties();
             Properties properties2 = instance.getProperties();
@@ -412,7 +412,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should maintain consistent properties path reference")
-        void shouldMaintainConsistentPropertiesPathReference() {
+        public void shouldMaintainConsistentPropertiesPathReference() {
             ConcreteConfiguration instance = ConcreteConfiguration.getInstance();
             Optional<Path> path1 = instance.getPropertiesPath();
             Optional<Path> path2 = instance.getPropertiesPath();
@@ -427,14 +427,14 @@ class ConcreteConfigurationTest {
 
     @Nested
     @DisplayName("File System Integration Tests")
-    class FileSystemIntegrationTests {
+    public class FileSystemIntegrationTests {
 
         @TempDir
         Path tempDir;
 
         @Test
         @DisplayName("Should handle absolute file path")
-        void shouldHandleAbsoluteFilePath() throws IOException {
+        public void shouldHandleAbsoluteFilePath() throws IOException {
             Path propertiesFile = tempDir.resolve("verifyica.properties");
             Files.write(propertiesFile, "test=value".getBytes(StandardCharsets.UTF_8));
 
@@ -446,7 +446,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should handle normalized file path")
-        void shouldHandleNormalizedFilePath() throws IOException {
+        public void shouldHandleNormalizedFilePath() throws IOException {
             Path propertiesFile = tempDir.resolve("verifyica.properties");
             Files.write(propertiesFile, "test=value".getBytes(StandardCharsets.UTF_8));
 
@@ -457,7 +457,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should handle file existence check")
-        void shouldHandleFileExistenceCheck() throws IOException {
+        public void shouldHandleFileExistenceCheck() throws IOException {
             Path propertiesFile = tempDir.resolve("verifyica.properties");
 
             assertThat(propertiesFile.toFile().exists()).isFalse();
@@ -469,7 +469,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should verify file is regular file")
-        void shouldVerifyFileIsRegularFile() throws IOException {
+        public void shouldVerifyFileIsRegularFile() throws IOException {
             Path propertiesFile = tempDir.resolve("verifyica.properties");
             Files.write(propertiesFile, "test=value".getBytes(StandardCharsets.UTF_8));
 
@@ -479,7 +479,7 @@ class ConcreteConfigurationTest {
 
         @Test
         @DisplayName("Should verify file is readable")
-        void shouldVerifyFileIsReadable() throws IOException {
+        public void shouldVerifyFileIsReadable() throws IOException {
             Path propertiesFile = tempDir.resolve("verifyica.properties");
             Files.write(propertiesFile, "test=value".getBytes(StandardCharsets.UTF_8));
 

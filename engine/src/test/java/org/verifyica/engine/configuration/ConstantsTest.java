@@ -23,28 +23,28 @@ import java.lang.reflect.Modifier;
 import org.junit.jupiter.api.*;
 
 @DisplayName("Constants Tests")
-class ConstantsTest {
+public class ConstantsTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should have private constructor")
-        void shouldHavePrivateConstructor() throws Exception {
+        public void shouldHavePrivateConstructor() throws Exception {
             Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
             assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
         }
 
         @Test
-        @DisplayName("Should have final class modifier")
-        void shouldHaveFinalClassModifier() {
+        @DisplayName("Should have final public class modifier")
+        public void shouldHaveFinalClassModifier() {
             assertThat(Modifier.isFinal(Constants.class.getModifiers())).isTrue();
         }
 
         @Test
         @DisplayName("Private constructor should be accessible via reflection")
-        void privateConstructorShouldBeAccessibleViaReflection() throws Exception {
+        public void privateConstructorShouldBeAccessibleViaReflection() throws Exception {
             Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
             constructor.setAccessible(true);
             Constants instance = constructor.newInstance();
@@ -54,66 +54,66 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Basic Constant Value Tests")
-    class BasicConstantValueTests {
+    public class BasicConstantValueTests {
 
         @Test
         @DisplayName("Should have correct TRUE constant")
-        void shouldHaveCorrectTrueConstant() {
+        public void shouldHaveCorrectTrueConstant() {
             assertThat(Constants.TRUE).isEqualTo("true");
         }
 
         @Test
         @DisplayName("Should have correct FALSE constant")
-        void shouldHaveCorrectFalseConstant() {
+        public void shouldHaveCorrectFalseConstant() {
             assertThat(Constants.FALSE).isEqualTo("false");
         }
 
         @Test
         @DisplayName("Should have correct VIRTUAL constant")
-        void shouldHaveCorrectVirtualConstant() {
+        public void shouldHaveCorrectVirtualConstant() {
             assertThat(Constants.VIRTUAL).isEqualTo("virtual");
         }
 
         @Test
         @DisplayName("Should have correct PLATFORM constant")
-        void shouldHaveCorrectPlatformConstant() {
+        public void shouldHaveCorrectPlatformConstant() {
             assertThat(Constants.PLATFORM).isEqualTo("platform");
         }
 
         @Test
         @DisplayName("Should have correct PLATFORM_EPHEMERAL constant")
-        void shouldHaveCorrectPlatformEphemeralConstant() {
+        public void shouldHaveCorrectPlatformEphemeralConstant() {
             assertThat(Constants.PLATFORM_EPHEMERAL).isEqualTo("platform-ephemeral");
         }
     }
 
     @Nested
     @DisplayName("Prefix Hierarchy Tests")
-    class PrefixHierarchyTests {
+    public class PrefixHierarchyTests {
 
         @Test
         @DisplayName("Should have correct PREFIX constant")
-        void shouldHaveCorrectPrefixConstant() {
+        public void shouldHaveCorrectPrefixConstant() {
             assertThat(Constants.PREFIX).isEqualTo("verifyica");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE constant")
-        void shouldHaveCorrectEngineConstant() {
+        public void shouldHaveCorrectEngineConstant() {
             assertThat(Constants.ENGINE).isEqualTo("verifyica.engine");
             assertThat(Constants.ENGINE).isEqualTo(Constants.PREFIX + ".engine");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_THREAD constant")
-        void shouldHaveCorrectEngineThreadConstant() {
+        public void shouldHaveCorrectEngineThreadConstant() {
             assertThat(Constants.ENGINE_THREAD).isEqualTo("verifyica.engine.thread");
             assertThat(Constants.ENGINE_THREAD).isEqualTo(Constants.ENGINE + ".thread");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_THREAD_TYPE constant")
-        void shouldHaveCorrectEngineThreadTypeConstant() {
+        public void shouldHaveCorrectEngineThreadTypeConstant() {
             assertThat(Constants.ENGINE_THREAD_TYPE).isEqualTo("verifyica.engine.thread.type");
             assertThat(Constants.ENGINE_THREAD_TYPE).isEqualTo(Constants.ENGINE_THREAD + ".type");
         }
@@ -121,18 +121,18 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Logger Configuration Constants Tests")
-    class LoggerConfigurationConstantsTests {
+    public class LoggerConfigurationConstantsTests {
 
         @Test
         @DisplayName("Should have correct ENGINE_LOGGER_REGEX constant")
-        void shouldHaveCorrectEngineLoggerRegexConstant() {
+        public void shouldHaveCorrectEngineLoggerRegexConstant() {
             assertThat(Constants.ENGINE_LOGGER_REGEX).isEqualTo("verifyica.engine.logger.regex");
             assertThat(Constants.ENGINE_LOGGER_REGEX).isEqualTo(Constants.ENGINE + ".logger.regex");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_LOGGER_LEVEL constant")
-        void shouldHaveCorrectEngineLoggerLevelConstant() {
+        public void shouldHaveCorrectEngineLoggerLevelConstant() {
             assertThat(Constants.ENGINE_LOGGER_LEVEL).isEqualTo("verifyica.engine.logger.level");
             assertThat(Constants.ENGINE_LOGGER_LEVEL).isEqualTo(Constants.ENGINE + ".logger.level");
         }
@@ -140,25 +140,25 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Autowired Configuration Constants Tests")
-    class AutowiredConfigurationConstantsTests {
+    public class AutowiredConfigurationConstantsTests {
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED constant")
-        void shouldHaveCorrectEngineAutowiredConstant() {
+        public void shouldHaveCorrectEngineAutowiredConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED).isEqualTo("verifyica.engine.autowired");
             assertThat(Constants.ENGINE_AUTOWIRED).isEqualTo(Constants.ENGINE + ".autowired");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_PRUNE_STACK_TRACE constant")
-        void shouldHaveCorrectEnginePruneStackTraceConstant() {
+        public void shouldHaveCorrectEnginePruneStackTraceConstant() {
             assertThat(Constants.ENGINE_PRUNE_STACK_TRACE).isEqualTo("verifyica.engine.prune.stacktraces");
             assertThat(Constants.ENGINE_PRUNE_STACK_TRACE).isEqualTo(Constants.ENGINE + ".prune.stacktraces");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_ENGINE constant")
-        void shouldHaveCorrectEngineAutowiredEngineConstant() {
+        public void shouldHaveCorrectEngineAutowiredEngineConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE).isEqualTo("verifyica.engine.autowired.engine");
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE).isEqualTo(Constants.ENGINE_AUTOWIRED + ".engine");
         }
@@ -166,11 +166,11 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Engine Interceptors Configuration Constants Tests")
-    class EngineInterceptorsConfigurationConstantsTests {
+    public class EngineInterceptorsConfigurationConstantsTests {
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS constant")
-        void shouldHaveCorrectEngineAutowiredEngineInterceptorsConstant() {
+        public void shouldHaveCorrectEngineAutowiredEngineInterceptorsConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS)
                     .isEqualTo("verifyica.engine.autowired.engine.interceptors");
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS)
@@ -179,7 +179,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE constant")
-        void shouldHaveCorrectEngineAutowiredEngineInterceptorsIncludeConstant() {
+        public void shouldHaveCorrectEngineAutowiredEngineInterceptorsIncludeConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE)
                     .isEqualTo("verifyica.engine.autowired.engine.interceptors.include");
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE)
@@ -188,7 +188,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX constant")
-        void shouldHaveCorrectEngineAutowiredEngineInterceptorsIncludeRegexConstant() {
+        public void shouldHaveCorrectEngineAutowiredEngineInterceptorsIncludeRegexConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX)
                     .isEqualTo("verifyica.engine.autowired.engine.interceptors.include.regex");
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX)
@@ -197,7 +197,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE constant")
-        void shouldHaveCorrectEngineAutowiredEngineInterceptorsExcludeConstant() {
+        public void shouldHaveCorrectEngineAutowiredEngineInterceptorsExcludeConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE)
                     .isEqualTo("verifyica.engine.autowired.engine.interceptors.exclude");
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE)
@@ -206,7 +206,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX constant")
-        void shouldHaveCorrectEngineAutowiredEngineInterceptorsExcludeRegexConstant() {
+        public void shouldHaveCorrectEngineAutowiredEngineInterceptorsExcludeRegexConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX)
                     .isEqualTo("verifyica.engine.autowired.engine.interceptors.exclude.regex");
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX)
@@ -216,32 +216,32 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Class Configuration Constants Tests")
-    class ClassConfigurationConstantsTests {
+    public class ClassConfigurationConstantsTests {
 
         @Test
         @DisplayName("Should have correct ENGINE_CLASS constant")
-        void shouldHaveCorrectEngineClassConstant() {
+        public void shouldHaveCorrectEngineClassConstant() {
             assertThat(Constants.ENGINE_CLASS).isEqualTo("verifyica.engine.class");
             assertThat(Constants.ENGINE_CLASS).isEqualTo(Constants.ENGINE + ".class");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_CLASS constant")
-        void shouldHaveCorrectEngineAutowiredClassConstant() {
+        public void shouldHaveCorrectEngineAutowiredClassConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS).isEqualTo("verifyica.engine.autowired.class");
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS).isEqualTo(Constants.ENGINE_AUTOWIRED + ".class");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_CLASS_PARALLELISM constant")
-        void shouldHaveCorrectEngineClassParallelismConstant() {
+        public void shouldHaveCorrectEngineClassParallelismConstant() {
             assertThat(Constants.ENGINE_CLASS_PARALLELISM).isEqualTo("verifyica.engine.class.parallelism");
             assertThat(Constants.ENGINE_CLASS_PARALLELISM).isEqualTo(Constants.ENGINE_CLASS + ".parallelism");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_CLASS_STATE_MACHINE_THROTTLE constant")
-        void shouldHaveCorrectEngineClassStateMachineThrottleConstant() {
+        public void shouldHaveCorrectEngineClassStateMachineThrottleConstant() {
             assertThat(Constants.ENGINE_CLASS_STATE_MACHINE_THROTTLE)
                     .isEqualTo("verifyica.engine.class.state.machine.throttle");
             assertThat(Constants.ENGINE_CLASS_STATE_MACHINE_THROTTLE)
@@ -251,11 +251,11 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Class Interceptors Configuration Constants Tests")
-    class ClassInterceptorsConfigurationConstantsTests {
+    public class ClassInterceptorsConfigurationConstantsTests {
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_CLASS_INTERCEPTORS constant")
-        void shouldHaveCorrectEngineAutowiredClassInterceptorsConstant() {
+        public void shouldHaveCorrectEngineAutowiredClassInterceptorsConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS)
                     .isEqualTo("verifyica.engine.autowired.class.interceptors");
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS)
@@ -264,7 +264,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE constant")
-        void shouldHaveCorrectEngineAutowiredClassInterceptorsIncludeConstant() {
+        public void shouldHaveCorrectEngineAutowiredClassInterceptorsIncludeConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE)
                     .isEqualTo("verifyica.engine.autowired.class.interceptors.include");
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE)
@@ -273,7 +273,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX constant")
-        void shouldHaveCorrectEngineAutowiredClassInterceptorsIncludeRegexConstant() {
+        public void shouldHaveCorrectEngineAutowiredClassInterceptorsIncludeRegexConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX)
                     .isEqualTo("verifyica.engine.autowired.class.interceptors.include.regex");
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX)
@@ -282,7 +282,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE constant")
-        void shouldHaveCorrectEngineAutowiredClassInterceptorsExcludeConstant() {
+        public void shouldHaveCorrectEngineAutowiredClassInterceptorsExcludeConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE)
                     .isEqualTo("verifyica.engine.autowired.class.interceptors.exclude");
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE)
@@ -291,7 +291,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("Should have correct ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX constant")
-        void shouldHaveCorrectEngineAutowiredClassInterceptorsExcludeRegexConstant() {
+        public void shouldHaveCorrectEngineAutowiredClassInterceptorsExcludeRegexConstant() {
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX)
                     .isEqualTo("verifyica.engine.autowired.class.interceptors.exclude.regex");
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX)
@@ -301,25 +301,25 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Filter Configuration Constants Tests")
-    class FilterConfigurationConstantsTests {
+    public class FilterConfigurationConstantsTests {
 
         @Test
         @DisplayName("Should have correct ENGINE_FILTER constant")
-        void shouldHaveCorrectEngineFilterConstant() {
+        public void shouldHaveCorrectEngineFilterConstant() {
             assertThat(Constants.ENGINE_FILTER).isEqualTo("verifyica.engine.filter");
             assertThat(Constants.ENGINE_FILTER).isEqualTo(Constants.ENGINE + ".filter");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_FILTER_DEFINITIONS constant")
-        void shouldHaveCorrectEngineFilterDefinitionsConstant() {
+        public void shouldHaveCorrectEngineFilterDefinitionsConstant() {
             assertThat(Constants.ENGINE_FILTER_DEFINITIONS).isEqualTo("verifyica.engine.filter.definitions");
             assertThat(Constants.ENGINE_FILTER_DEFINITIONS).isEqualTo(Constants.ENGINE_FILTER + ".definitions");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_FILTER_DEFINITIONS_FILENAME constant")
-        void shouldHaveCorrectEngineFilterDefinitionsFilenameConstant() {
+        public void shouldHaveCorrectEngineFilterDefinitionsFilenameConstant() {
             assertThat(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME)
                     .isEqualTo("verifyica.engine.filter.definitions.filename");
             assertThat(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME)
@@ -329,25 +329,25 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Argument Configuration Constants Tests")
-    class ArgumentConfigurationConstantsTests {
+    public class ArgumentConfigurationConstantsTests {
 
         @Test
         @DisplayName("Should have correct ENGINE_ARGUMENT constant")
-        void shouldHaveCorrectEngineArgumentConstant() {
+        public void shouldHaveCorrectEngineArgumentConstant() {
             assertThat(Constants.ENGINE_ARGUMENT).isEqualTo("verifyica.engine.argument");
             assertThat(Constants.ENGINE_ARGUMENT).isEqualTo(Constants.ENGINE + ".argument");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_ARGUMENT_PARALLELISM constant")
-        void shouldHaveCorrectEngineArgumentParallelismConstant() {
+        public void shouldHaveCorrectEngineArgumentParallelismConstant() {
             assertThat(Constants.ENGINE_ARGUMENT_PARALLELISM).isEqualTo("verifyica.engine.argument.parallelism");
             assertThat(Constants.ENGINE_ARGUMENT_PARALLELISM).isEqualTo(Constants.ENGINE_ARGUMENT + ".parallelism");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_ARGUMENT_STATE_MACHINE_THROTTLE constant")
-        void shouldHaveCorrectEngineArgumentStateMachineThrottleConstant() {
+        public void shouldHaveCorrectEngineArgumentStateMachineThrottleConstant() {
             assertThat(Constants.ENGINE_ARGUMENT_STATE_MACHINE_THROTTLE)
                     .isEqualTo("verifyica.engine.argument.state.machine.throttle");
             assertThat(Constants.ENGINE_ARGUMENT_STATE_MACHINE_THROTTLE)
@@ -357,18 +357,18 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Test Configuration Constants Tests")
-    class TestConfigurationConstantsTests {
+    public class TestConfigurationConstantsTests {
 
         @Test
         @DisplayName("Should have correct ENGINE_TEST constant")
-        void shouldHaveCorrectEngineTestConstant() {
+        public void shouldHaveCorrectEngineTestConstant() {
             assertThat(Constants.ENGINE_TEST).isEqualTo("verifyica.engine.test");
             assertThat(Constants.ENGINE_TEST).isEqualTo(Constants.ENGINE + ".test");
         }
 
         @Test
         @DisplayName("Should have correct ENGINE_TEST_STATE_MACHINE_THROTTLE constant")
-        void shouldHaveCorrectEngineTestStateMachineThrottleConstant() {
+        public void shouldHaveCorrectEngineTestStateMachineThrottleConstant() {
             assertThat(Constants.ENGINE_TEST_STATE_MACHINE_THROTTLE)
                     .isEqualTo("verifyica.engine.test.state.machine.throttle");
             assertThat(Constants.ENGINE_TEST_STATE_MACHINE_THROTTLE)
@@ -378,46 +378,46 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Maven Plugin Configuration Constants Tests")
-    class MavenPluginConfigurationConstantsTests {
+    public class MavenPluginConfigurationConstantsTests {
 
         @Test
         @DisplayName("Should have correct MAVEN_PLUGIN constant")
-        void shouldHaveCorrectMavenPluginConstant() {
+        public void shouldHaveCorrectMavenPluginConstant() {
             assertThat(Constants.MAVEN_PLUGIN).isEqualTo("verifyica.maven.plugin");
             assertThat(Constants.MAVEN_PLUGIN).isEqualTo(Constants.PREFIX + ".maven.plugin");
         }
 
         @Test
         @DisplayName("Should have correct MAVEN_PLUGIN_MODE constant")
-        void shouldHaveCorrectMavenPluginModeConstant() {
+        public void shouldHaveCorrectMavenPluginModeConstant() {
             assertThat(Constants.MAVEN_PLUGIN_MODE).isEqualTo("verifyica.maven.plugin.mode");
             assertThat(Constants.MAVEN_PLUGIN_MODE).isEqualTo(Constants.MAVEN_PLUGIN + ".mode");
         }
 
         @Test
         @DisplayName("Should have correct MAVEN_PLUGIN_VERSION constant")
-        void shouldHaveCorrectMavenPluginVersionConstant() {
+        public void shouldHaveCorrectMavenPluginVersionConstant() {
             assertThat(Constants.MAVEN_PLUGIN_VERSION).isEqualTo("verifyica.maven.plugin.version");
             assertThat(Constants.MAVEN_PLUGIN_VERSION).isEqualTo(Constants.MAVEN_PLUGIN + ".version");
         }
 
         @Test
         @DisplayName("Should have correct MAVEN_PLUGIN_LOG constant")
-        void shouldHaveCorrectMavenPluginLogConstant() {
+        public void shouldHaveCorrectMavenPluginLogConstant() {
             assertThat(Constants.MAVEN_PLUGIN_LOG).isEqualTo("verifyica.maven.plugin.log");
             assertThat(Constants.MAVEN_PLUGIN_LOG).isEqualTo(Constants.MAVEN_PLUGIN + ".log");
         }
 
         @Test
         @DisplayName("Should have correct MAVEN_PLUGIN_LOG_TESTS constant")
-        void shouldHaveCorrectMavenPluginLogTestsConstant() {
+        public void shouldHaveCorrectMavenPluginLogTestsConstant() {
             assertThat(Constants.MAVEN_PLUGIN_LOG_TESTS).isEqualTo("verifyica.maven.plugin.log.tests");
             assertThat(Constants.MAVEN_PLUGIN_LOG_TESTS).isEqualTo(Constants.MAVEN_PLUGIN_LOG + ".tests");
         }
 
         @Test
         @DisplayName("Should have correct MAVEN_PLUGIN_LOG_TIMING_UNITS constant")
-        void shouldHaveCorrectMavenPluginLogTimingUnitsConstant() {
+        public void shouldHaveCorrectMavenPluginLogTimingUnitsConstant() {
             assertThat(Constants.MAVEN_PLUGIN_LOG_TIMING_UNITS).isEqualTo("verifyica.maven.plugin.log.units");
             assertThat(Constants.MAVEN_PLUGIN_LOG_TIMING_UNITS).isEqualTo(Constants.MAVEN_PLUGIN_LOG + ".units");
         }
@@ -425,11 +425,11 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Constant Prefix Pattern Tests")
-    class ConstantPrefixPatternTests {
+    public class ConstantPrefixPatternTests {
 
         @Test
         @DisplayName("All engine constants should start with ENGINE prefix")
-        void allEngineConstantsShouldStartWithEnginePrefix() {
+        public void allEngineConstantsShouldStartWithEnginePrefix() {
             assertThat(Constants.ENGINE_THREAD).startsWith(Constants.ENGINE);
             assertThat(Constants.ENGINE_LOGGER_REGEX).startsWith(Constants.ENGINE);
             assertThat(Constants.ENGINE_AUTOWIRED).startsWith(Constants.ENGINE);
@@ -441,7 +441,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("All maven plugin constants should start with MAVEN_PLUGIN prefix")
-        void allMavenPluginConstantsShouldStartWithMavenPluginPrefix() {
+        public void allMavenPluginConstantsShouldStartWithMavenPluginPrefix() {
             assertThat(Constants.MAVEN_PLUGIN_MODE).startsWith(Constants.MAVEN_PLUGIN);
             assertThat(Constants.MAVEN_PLUGIN_VERSION).startsWith(Constants.MAVEN_PLUGIN);
             assertThat(Constants.MAVEN_PLUGIN_LOG).startsWith(Constants.MAVEN_PLUGIN);
@@ -449,7 +449,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("All autowired engine interceptors constants should have proper hierarchy")
-        void allAutowiredEngineInterceptorsConstantsShouldHaveProperHierarchy() {
+        public void allAutowiredEngineInterceptorsConstantsShouldHaveProperHierarchy() {
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE)
                     .startsWith(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS);
             assertThat(Constants.ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE)
@@ -461,8 +461,8 @@ class ConstantsTest {
         }
 
         @Test
-        @DisplayName("All autowired class interceptors constants should have proper hierarchy")
-        void allAutowiredClassInterceptorsConstantsShouldHaveProperHierarchy() {
+        @DisplayName("All autowired public class interceptors constants should have proper hierarchy")
+        public void allAutowiredClassInterceptorsConstantsShouldHaveProperHierarchy() {
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE)
                     .startsWith(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS);
             assertThat(Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE)
@@ -476,11 +476,11 @@ class ConstantsTest {
 
     @Nested
     @DisplayName("Constant Immutability Tests")
-    class ConstantImmutabilityTests {
+    public class ConstantImmutabilityTests {
 
         @Test
         @DisplayName("All string constants should be non-null")
-        void allStringConstantsShouldBeNonNull() {
+        public void allStringConstantsShouldBeNonNull() {
             assertThat(Constants.TRUE).isNotNull();
             assertThat(Constants.FALSE).isNotNull();
             assertThat(Constants.VIRTUAL).isNotNull();
@@ -492,7 +492,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("All constants should be final")
-        void allConstantsShouldBeFinal() throws Exception {
+        public void allConstantsShouldBeFinal() throws Exception {
             assertThat(Modifier.isFinal(Constants.class.getDeclaredField("TRUE").getModifiers()))
                     .isTrue();
             assertThat(Modifier.isFinal(
@@ -508,7 +508,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("All constants should be public")
-        void allConstantsShouldBePublic() throws Exception {
+        public void allConstantsShouldBePublic() throws Exception {
             assertThat(Modifier.isPublic(
                             Constants.class.getDeclaredField("TRUE").getModifiers()))
                     .isTrue();
@@ -525,7 +525,7 @@ class ConstantsTest {
 
         @Test
         @DisplayName("All constants should be static")
-        void allConstantsShouldBeStatic() throws Exception {
+        public void allConstantsShouldBeStatic() throws Exception {
             assertThat(Modifier.isStatic(
                             Constants.class.getDeclaredField("TRUE").getModifiers()))
                     .isTrue();

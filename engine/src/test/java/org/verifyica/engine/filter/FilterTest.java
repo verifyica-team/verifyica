@@ -27,52 +27,52 @@ public class FilterTest {
 
     @Nested
     @DisplayName("Type Enum Tests")
-    class TypeEnumTests {
+    public class TypeEnumTests {
 
         @Test
         @DisplayName("should have UNKNOWN type")
-        void shouldHaveUnknownType() {
+        public void shouldHaveUnknownType() {
             assertThat(Filter.Type.UNKNOWN).isNotNull();
             assertThat(Filter.Type.UNKNOWN.name()).isEqualTo("UNKNOWN");
         }
 
         @Test
         @DisplayName("should have INCLUDE_CLASS type")
-        void shouldHaveIncludeClassType() {
+        public void shouldHaveIncludeClassType() {
             assertThat(Filter.Type.INCLUDE_CLASS).isNotNull();
             assertThat(Filter.Type.INCLUDE_CLASS.name()).isEqualTo("INCLUDE_CLASS");
         }
 
         @Test
         @DisplayName("should have EXCLUDE_CLASS type")
-        void shouldHaveExcludeClassType() {
+        public void shouldHaveExcludeClassType() {
             assertThat(Filter.Type.EXCLUDE_CLASS).isNotNull();
             assertThat(Filter.Type.EXCLUDE_CLASS.name()).isEqualTo("EXCLUDE_CLASS");
         }
 
         @Test
         @DisplayName("should have INCLUDE_TAGGED_CLASS type")
-        void shouldHaveIncludeTaggedClassType() {
+        public void shouldHaveIncludeTaggedClassType() {
             assertThat(Filter.Type.INCLUDE_TAGGED_CLASS).isNotNull();
             assertThat(Filter.Type.INCLUDE_TAGGED_CLASS.name()).isEqualTo("INCLUDE_TAGGED_CLASS");
         }
 
         @Test
         @DisplayName("should have EXCLUDE_TAGGED_CLASS type")
-        void shouldHaveExcludeTaggedClassType() {
+        public void shouldHaveExcludeTaggedClassType() {
             assertThat(Filter.Type.EXCLUDE_TAGGED_CLASS).isNotNull();
             assertThat(Filter.Type.EXCLUDE_TAGGED_CLASS.name()).isEqualTo("EXCLUDE_TAGGED_CLASS");
         }
 
         @Test
         @DisplayName("should have exactly 5 types")
-        void shouldHaveExactlyFiveTypes() {
+        public void shouldHaveExactlyFiveTypes() {
             assertThat(Filter.Type.values()).hasSize(5);
         }
 
         @Test
         @DisplayName("should support valueOf")
-        void shouldSupportValueOf() {
+        public void shouldSupportValueOf() {
             assertThat(Filter.Type.valueOf("UNKNOWN")).isEqualTo(Filter.Type.UNKNOWN);
             assertThat(Filter.Type.valueOf("INCLUDE_CLASS")).isEqualTo(Filter.Type.INCLUDE_CLASS);
             assertThat(Filter.Type.valueOf("EXCLUDE_CLASS")).isEqualTo(Filter.Type.EXCLUDE_CLASS);
@@ -82,7 +82,7 @@ public class FilterTest {
 
         @Test
         @DisplayName("should have proper ordinal values")
-        void shouldHaveProperOrdinalValues() {
+        public void shouldHaveProperOrdinalValues() {
             assertThat(Filter.Type.UNKNOWN.ordinal()).isEqualTo(0);
             assertThat(Filter.Type.INCLUDE_CLASS.ordinal()).isEqualTo(1);
             assertThat(Filter.Type.EXCLUDE_CLASS.ordinal()).isEqualTo(2);
@@ -93,32 +93,32 @@ public class FilterTest {
 
     @Nested
     @DisplayName("Filter Contract Tests")
-    class FilterContractTests {
+    public class FilterContractTests {
 
         @Test
         @DisplayName("should return correct type for IncludeClassFilter")
-        void shouldReturnCorrectTypeForIncludeClassFilter() {
+        public void shouldReturnCorrectTypeForIncludeClassFilter() {
             Filter filter = IncludeClassFilter.create(".*");
             assertThat(filter.getType()).isEqualTo(Filter.Type.INCLUDE_CLASS);
         }
 
         @Test
         @DisplayName("should return correct type for ExcludeClassFilter")
-        void shouldReturnCorrectTypeForExcludeClassFilter() {
+        public void shouldReturnCorrectTypeForExcludeClassFilter() {
             Filter filter = ExcludeClassFilter.create(".*");
             assertThat(filter.getType()).isEqualTo(Filter.Type.EXCLUDE_CLASS);
         }
 
         @Test
         @DisplayName("should return correct type for IncludeTaggedClassFilter")
-        void shouldReturnCorrectTypeForIncludeTaggedClassFilter() {
+        public void shouldReturnCorrectTypeForIncludeTaggedClassFilter() {
             Filter filter = IncludeTaggedClassFilter.create(".*");
             assertThat(filter.getType()).isEqualTo(Filter.Type.INCLUDE_TAGGED_CLASS);
         }
 
         @Test
         @DisplayName("should return correct type for ExcludeTaggedClassFilter")
-        void shouldReturnCorrectTypeForExcludeTaggedClassFilter() {
+        public void shouldReturnCorrectTypeForExcludeTaggedClassFilter() {
             Filter filter = ExcludeTaggedClassFilter.create(".*");
             assertThat(filter.getType()).isEqualTo(Filter.Type.EXCLUDE_TAGGED_CLASS);
         }
@@ -126,11 +126,11 @@ public class FilterTest {
 
     @Nested
     @DisplayName("Enum Comparison Tests")
-    class EnumComparisonTests {
+    public class EnumComparisonTests {
 
         @Test
         @DisplayName("should support equality comparison")
-        void shouldSupportEqualityComparison() {
+        public void shouldSupportEqualityComparison() {
             assertThat(Filter.Type.UNKNOWN).isEqualTo(Filter.Type.UNKNOWN);
             assertThat(Filter.Type.INCLUDE_CLASS).isEqualTo(Filter.Type.INCLUDE_CLASS);
             assertThat(Filter.Type.UNKNOWN).isNotEqualTo(Filter.Type.INCLUDE_CLASS);
@@ -138,7 +138,7 @@ public class FilterTest {
 
         @Test
         @DisplayName("should support identity comparison")
-        void shouldSupportIdentityComparison() {
+        public void shouldSupportIdentityComparison() {
             assertThat(Filter.Type.UNKNOWN == Filter.Type.UNKNOWN).isTrue();
             assertThat(Filter.Type.INCLUDE_CLASS == Filter.Type.INCLUDE_CLASS).isTrue();
             assertThat(Filter.Type.UNKNOWN == Filter.Type.INCLUDE_CLASS).isFalse();
@@ -146,7 +146,7 @@ public class FilterTest {
 
         @Test
         @DisplayName("should support switch statements")
-        void shouldSupportSwitchStatements() {
+        public void shouldSupportSwitchStatements() {
             Filter.Type type = Filter.Type.INCLUDE_CLASS;
             String result;
             switch (type) {

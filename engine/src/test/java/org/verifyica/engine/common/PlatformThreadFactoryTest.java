@@ -26,15 +26,15 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.*;
 
 @DisplayName("PlatformThreadFactory Tests")
-class PlatformThreadFactoryTest {
+public class PlatformThreadFactoryTest {
 
     @Nested
     @DisplayName("Constructor Tests")
-    class ConstructorTests {
+    public class ConstructorTests {
 
         @Test
         @DisplayName("Should create thread factory")
-        void shouldCreateThreadFactory() {
+        public void shouldCreateThreadFactory() {
             PlatformThreadFactory factory = new PlatformThreadFactory();
 
             assertThat(factory).isNotNull();
@@ -43,11 +43,11 @@ class PlatformThreadFactoryTest {
 
     @Nested
     @DisplayName("NewThread Tests")
-    class NewThreadTests {
+    public class NewThreadTests {
 
         @Test
         @DisplayName("Should create platform thread")
-        void shouldCreatePlatformThread() {
+        public void shouldCreatePlatformThread() {
             PlatformThreadFactory factory = new PlatformThreadFactory();
 
             Thread thread = factory.newThread(() -> {});
@@ -57,7 +57,7 @@ class PlatformThreadFactoryTest {
 
         @Test
         @DisplayName("Should create thread with provided runnable")
-        void shouldCreateThreadWithProvidedRunnable() throws InterruptedException {
+        public void shouldCreateThreadWithProvidedRunnable() throws InterruptedException {
             PlatformThreadFactory factory = new PlatformThreadFactory();
             CountDownLatch latch = new CountDownLatch(1);
 
@@ -71,7 +71,7 @@ class PlatformThreadFactoryTest {
 
         @Test
         @DisplayName("Should create thread in NEW state")
-        void shouldCreateThreadInNewState() {
+        public void shouldCreateThreadInNewState() {
             PlatformThreadFactory factory = new PlatformThreadFactory();
 
             Thread thread = factory.newThread(() -> {});
@@ -81,7 +81,7 @@ class PlatformThreadFactoryTest {
 
         @Test
         @DisplayName("Should create multiple distinct threads")
-        void shouldCreateMultipleDistinctThreads() {
+        public void shouldCreateMultipleDistinctThreads() {
             PlatformThreadFactory factory = new PlatformThreadFactory();
 
             Thread thread1 = factory.newThread(() -> {});
@@ -94,7 +94,7 @@ class PlatformThreadFactoryTest {
 
         @Test
         @DisplayName("Should create threads with different IDs")
-        void shouldCreateThreadsWithDifferentIds() {
+        public void shouldCreateThreadsWithDifferentIds() {
             PlatformThreadFactory factory = new PlatformThreadFactory();
             Set<Long> threadIds = new HashSet<>();
 
@@ -108,7 +108,7 @@ class PlatformThreadFactoryTest {
 
         @Test
         @DisplayName("Should create thread that can execute runnable")
-        void shouldCreateThreadThatCanExecuteRunnable() throws InterruptedException {
+        public void shouldCreateThreadThatCanExecuteRunnable() throws InterruptedException {
             PlatformThreadFactory factory = new PlatformThreadFactory();
             StringBuilder result = new StringBuilder();
             CountDownLatch latch = new CountDownLatch(1);
@@ -126,7 +126,7 @@ class PlatformThreadFactoryTest {
 
         @Test
         @DisplayName("Should handle null runnable gracefully")
-        void shouldHandleNullRunnableGracefully() {
+        public void shouldHandleNullRunnableGracefully() {
             PlatformThreadFactory factory = new PlatformThreadFactory();
 
             assertThatCode(() -> factory.newThread(null)).doesNotThrowAnyException();
@@ -135,11 +135,11 @@ class PlatformThreadFactoryTest {
 
     @Nested
     @DisplayName("Thread Characteristics Tests")
-    class ThreadCharacteristicsTests {
+    public class ThreadCharacteristicsTests {
 
         @Test
         @DisplayName("Should create platform thread not virtual thread")
-        void shouldCreatePlatformThreadNotVirtualThread() {
+        public void shouldCreatePlatformThreadNotVirtualThread() {
             PlatformThreadFactory factory = new PlatformThreadFactory();
 
             Thread thread = factory.newThread(() -> {});
@@ -149,7 +149,7 @@ class PlatformThreadFactoryTest {
 
         @Test
         @DisplayName("Should create thread that can be started")
-        void shouldCreateThreadThatCanBeStarted() throws InterruptedException {
+        public void shouldCreateThreadThatCanBeStarted() throws InterruptedException {
             PlatformThreadFactory factory = new PlatformThreadFactory();
             CountDownLatch latch = new CountDownLatch(1);
 
@@ -162,7 +162,7 @@ class PlatformThreadFactoryTest {
 
         @Test
         @DisplayName("Should create thread with default priority")
-        void shouldCreateThreadWithDefaultPriority() {
+        public void shouldCreateThreadWithDefaultPriority() {
             PlatformThreadFactory factory = new PlatformThreadFactory();
 
             Thread thread = factory.newThread(() -> {});
@@ -172,7 +172,7 @@ class PlatformThreadFactoryTest {
 
         @Test
         @DisplayName("Should create thread that is not daemon by default")
-        void shouldCreateThreadThatIsNotDaemonByDefault() {
+        public void shouldCreateThreadThatIsNotDaemonByDefault() {
             PlatformThreadFactory factory = new PlatformThreadFactory();
 
             Thread thread = factory.newThread(() -> {});
@@ -183,11 +183,11 @@ class PlatformThreadFactoryTest {
 
     @Nested
     @DisplayName("Concurrent Usage Tests")
-    class ConcurrentUsageTests {
+    public class ConcurrentUsageTests {
 
         @Test
         @DisplayName("Should be thread-safe for concurrent thread creation")
-        void shouldBeThreadSafeForConcurrentThreadCreation() throws InterruptedException {
+        public void shouldBeThreadSafeForConcurrentThreadCreation() throws InterruptedException {
             PlatformThreadFactory factory = new PlatformThreadFactory();
             int factoryThreadCount = 10;
             int threadsPerFactoryThread = 10;
@@ -216,11 +216,11 @@ class PlatformThreadFactoryTest {
 
     @Nested
     @DisplayName("Integration Tests")
-    class IntegrationTests {
+    public class IntegrationTests {
 
         @Test
         @DisplayName("Should create threads that can run concurrently")
-        void shouldCreateThreadsThatCanRunConcurrently() throws InterruptedException {
+        public void shouldCreateThreadsThatCanRunConcurrently() throws InterruptedException {
             PlatformThreadFactory factory = new PlatformThreadFactory();
             int threadCount = 5;
             CountDownLatch startLatch = new CountDownLatch(threadCount);
@@ -249,7 +249,7 @@ class PlatformThreadFactoryTest {
 
         @Test
         @DisplayName("Should create threads with independent execution")
-        void shouldCreateThreadsWithIndependentExecution() throws InterruptedException {
+        public void shouldCreateThreadsWithIndependentExecution() throws InterruptedException {
             PlatformThreadFactory factory = new PlatformThreadFactory();
             int[] results = new int[3];
             CountDownLatch latch = new CountDownLatch(3);

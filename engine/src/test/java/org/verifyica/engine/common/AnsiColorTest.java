@@ -21,33 +21,33 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
 @DisplayName("AnsiColor Tests")
-class AnsiColorTest {
+public class AnsiColorTest {
 
     private boolean originalSupport;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         originalSupport = AnsiColor.isSupported();
     }
 
     @AfterEach
-    void tearDown() {
+    public void tearDown() {
         AnsiColor.setSupported(originalSupport);
     }
 
     @Nested
     @DisplayName("Color Constants Tests")
-    class ColorConstantsTests {
+    public class ColorConstantsTests {
 
         @Test
         @DisplayName("Should have NONE constant")
-        void shouldHaveNoneConstant() {
+        public void shouldHaveNoneConstant() {
             assertThat(AnsiColor.NONE).isNotNull();
         }
 
         @Test
         @DisplayName("Should have regular color constants")
-        void shouldHaveRegularColorConstants() {
+        public void shouldHaveRegularColorConstants() {
             assertThat(AnsiColor.TEXT_BLACK).isNotNull();
             assertThat(AnsiColor.TEXT_RED).isNotNull();
             assertThat(AnsiColor.TEXT_GREEN).isNotNull();
@@ -60,7 +60,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should have bold color constants")
-        void shouldHaveBoldColorConstants() {
+        public void shouldHaveBoldColorConstants() {
             assertThat(AnsiColor.TEXT_BLACK_BOLD).isNotNull();
             assertThat(AnsiColor.TEXT_RED_BOLD).isNotNull();
             assertThat(AnsiColor.TEXT_GREEN_BOLD).isNotNull();
@@ -73,7 +73,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should have underlined color constants")
-        void shouldHaveUnderlinedColorConstants() {
+        public void shouldHaveUnderlinedColorConstants() {
             assertThat(AnsiColor.TEXT_BLACK_UNDERLINED).isNotNull();
             assertThat(AnsiColor.TEXT_RED_UNDERLINED).isNotNull();
             assertThat(AnsiColor.TEXT_GREEN_UNDERLINED).isNotNull();
@@ -86,7 +86,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should have bright color constants")
-        void shouldHaveBrightColorConstants() {
+        public void shouldHaveBrightColorConstants() {
             assertThat(AnsiColor.TEXT_BLACK_BRIGHT).isNotNull();
             assertThat(AnsiColor.TEXT_RED_BRIGHT).isNotNull();
             assertThat(AnsiColor.TEXT_GREEN_BRIGHT).isNotNull();
@@ -99,7 +99,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should have bold bright color constants")
-        void shouldHaveBoldBrightColorConstants() {
+        public void shouldHaveBoldBrightColorConstants() {
             assertThat(AnsiColor.TEXT_BLACK_BOLD_BRIGHT).isNotNull();
             assertThat(AnsiColor.TEXT_RED_BOLD_BRIGHT).isNotNull();
             assertThat(AnsiColor.TEXT_GREEN_BOLD_BRIGHT).isNotNull();
@@ -112,7 +112,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should have background color constants")
-        void shouldHaveBackgroundColorConstants() {
+        public void shouldHaveBackgroundColorConstants() {
             assertThat(AnsiColor.BACKGROUND_BLACK).isNotNull();
             assertThat(AnsiColor.BACKGROUND_RED).isNotNull();
             assertThat(AnsiColor.BACKGROUND_GREEN).isNotNull();
@@ -125,7 +125,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should have bright background color constants")
-        void shouldHaveBrightBackgroundColorConstants() {
+        public void shouldHaveBrightBackgroundColorConstants() {
             assertThat(AnsiColor.BACKGROUND_BLACK_BRIGHT).isNotNull();
             assertThat(AnsiColor.BACKGROUND_RED_BRIGHT).isNotNull();
             assertThat(AnsiColor.BACKGROUND_GREEN_BRIGHT).isNotNull();
@@ -139,11 +139,11 @@ class AnsiColorTest {
 
     @Nested
     @DisplayName("Wrap Tests")
-    class WrapTests {
+    public class WrapTests {
 
         @Test
         @DisplayName("Should wrap string with color when supported")
-        void shouldWrapStringWithColorWhenSupported() {
+        public void shouldWrapStringWithColorWhenSupported() {
             AnsiColor.setSupported(true);
 
             String result = AnsiColor.TEXT_RED.wrap("test");
@@ -153,7 +153,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should return plain string when not supported")
-        void shouldReturnPlainStringWhenNotSupported() {
+        public void shouldReturnPlainStringWhenNotSupported() {
             AnsiColor.setSupported(false);
 
             String result = AnsiColor.TEXT_RED.wrap("test");
@@ -163,7 +163,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should wrap integer with color")
-        void shouldWrapIntegerWithColor() {
+        public void shouldWrapIntegerWithColor() {
             AnsiColor.setSupported(true);
 
             String result = AnsiColor.TEXT_GREEN.wrap(123);
@@ -173,7 +173,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should wrap null object")
-        void shouldWrapNullObject() {
+        public void shouldWrapNullObject() {
             AnsiColor.setSupported(false);
 
             String result = AnsiColor.TEXT_BLUE.wrap(null);
@@ -183,7 +183,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should wrap empty string")
-        void shouldWrapEmptyString() {
+        public void shouldWrapEmptyString() {
             AnsiColor.setSupported(false);
 
             String result = AnsiColor.TEXT_CYAN.wrap("");
@@ -193,7 +193,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should wrap string with special characters")
-        void shouldWrapStringWithSpecialCharacters() {
+        public void shouldWrapStringWithSpecialCharacters() {
             AnsiColor.setSupported(false);
 
             String result = AnsiColor.TEXT_YELLOW.wrap("test\n\t<>&");
@@ -204,11 +204,11 @@ class AnsiColorTest {
 
     @Nested
     @DisplayName("ToString Tests")
-    class ToStringTests {
+    public class ToStringTests {
 
         @Test
         @DisplayName("Should return escape sequence when supported")
-        void shouldReturnEscapeSequenceWhenSupported() {
+        public void shouldReturnEscapeSequenceWhenSupported() {
             AnsiColor.setSupported(true);
 
             String result = AnsiColor.TEXT_RED.toString();
@@ -218,7 +218,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should return empty string when not supported")
-        void shouldReturnEmptyStringWhenNotSupported() {
+        public void shouldReturnEmptyStringWhenNotSupported() {
             AnsiColor.setSupported(false);
 
             String result = AnsiColor.TEXT_RED.toString();
@@ -228,7 +228,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should return consistent value on multiple calls")
-        void shouldReturnConsistentValueOnMultipleCalls() {
+        public void shouldReturnConsistentValueOnMultipleCalls() {
             String result1 = AnsiColor.TEXT_GREEN.toString();
             String result2 = AnsiColor.TEXT_GREEN.toString();
 
@@ -238,35 +238,35 @@ class AnsiColorTest {
 
     @Nested
     @DisplayName("Equals and HashCode Tests")
-    class EqualsAndHashCodeTests {
+    public class EqualsAndHashCodeTests {
 
         @Test
         @DisplayName("Should be equal to itself")
-        void shouldBeEqualToItself() {
+        public void shouldBeEqualToItself() {
             assertThat(AnsiColor.TEXT_RED).isEqualTo(AnsiColor.TEXT_RED);
         }
 
         @Test
         @DisplayName("Should not be equal to different color")
-        void shouldNotBeEqualToDifferentColor() {
+        public void shouldNotBeEqualToDifferentColor() {
             assertThat(AnsiColor.TEXT_RED).isNotEqualTo(AnsiColor.TEXT_GREEN);
         }
 
         @Test
         @DisplayName("Should not be equal to null")
-        void shouldNotBeEqualToNull() {
+        public void shouldNotBeEqualToNull() {
             assertThat(AnsiColor.TEXT_RED).isNotEqualTo(null);
         }
 
         @Test
         @DisplayName("Should not be equal to different type")
-        void shouldNotBeEqualToDifferentType() {
+        public void shouldNotBeEqualToDifferentType() {
             assertThat(AnsiColor.TEXT_RED).isNotEqualTo("red");
         }
 
         @Test
         @DisplayName("Should have consistent hashCode")
-        void shouldHaveConsistentHashCode() {
+        public void shouldHaveConsistentHashCode() {
             int hash1 = AnsiColor.TEXT_BLUE.hashCode();
             int hash2 = AnsiColor.TEXT_BLUE.hashCode();
 
@@ -275,7 +275,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should have same hashCode for equal colors")
-        void shouldHaveSameHashCodeForEqualColors() {
+        public void shouldHaveSameHashCodeForEqualColors() {
             AnsiColor color1 = AnsiColor.ofSequence("\033[0;31m");
             AnsiColor color2 = AnsiColor.ofSequence("\033[0;31m");
 
@@ -285,11 +285,11 @@ class AnsiColorTest {
 
     @Nested
     @DisplayName("StripAnsiEscapeSequences Tests")
-    class StripAnsiEscapeSequencesTests {
+    public class StripAnsiEscapeSequencesTests {
 
         @Test
         @DisplayName("Should strip ANSI escape sequences from string")
-        void shouldStripAnsiEscapeSequencesFromString() {
+        public void shouldStripAnsiEscapeSequencesFromString() {
             String input = "\033[0;31mRed Text\033[0m";
 
             String result = AnsiColor.stripAnsiEscapeSequences(input);
@@ -299,7 +299,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should return same string when no ANSI codes")
-        void shouldReturnSameStringWhenNoAnsiCodes() {
+        public void shouldReturnSameStringWhenNoAnsiCodes() {
             String input = "Plain text";
 
             String result = AnsiColor.stripAnsiEscapeSequences(input);
@@ -309,7 +309,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should handle null input")
-        void shouldHandleNullInput() {
+        public void shouldHandleNullInput() {
             String result = AnsiColor.stripAnsiEscapeSequences(null);
 
             assertThat(result).isNull();
@@ -317,7 +317,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should handle empty string")
-        void shouldHandleEmptyString() {
+        public void shouldHandleEmptyString() {
             String result = AnsiColor.stripAnsiEscapeSequences("");
 
             assertThat(result).isEmpty();
@@ -325,7 +325,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should strip multiple ANSI codes")
-        void shouldStripMultipleAnsiCodes() {
+        public void shouldStripMultipleAnsiCodes() {
             String input = "\033[0;31mRed\033[0m \033[0;32mGreen\033[0m";
 
             String result = AnsiColor.stripAnsiEscapeSequences(input);
@@ -335,7 +335,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should strip complex ANSI codes")
-        void shouldStripComplexAnsiCodes() {
+        public void shouldStripComplexAnsiCodes() {
             String input = "\033[1;38;5;196mBold Red\033[0m";
 
             String result = AnsiColor.stripAnsiEscapeSequences(input);
@@ -346,11 +346,11 @@ class AnsiColorTest {
 
     @Nested
     @DisplayName("IsSupported Tests")
-    class IsSupportedTests {
+    public class IsSupportedTests {
 
         @Test
         @DisplayName("Should return support status")
-        void shouldReturnSupportStatus() {
+        public void shouldReturnSupportStatus() {
             boolean supported = AnsiColor.isSupported();
 
             assertThat(supported).isIn(true, false);
@@ -358,7 +358,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should reflect set value")
-        void shouldReflectSetValue() {
+        public void shouldReflectSetValue() {
             AnsiColor.setSupported(true);
 
             assertThat(AnsiColor.isSupported()).isTrue();
@@ -371,11 +371,11 @@ class AnsiColorTest {
 
     @Nested
     @DisplayName("SetSupported Tests")
-    class SetSupportedTests {
+    public class SetSupportedTests {
 
         @Test
         @DisplayName("Should enable ANSI color support")
-        void shouldEnableAnsiColorSupport() {
+        public void shouldEnableAnsiColorSupport() {
             AnsiColor.setSupported(true);
 
             assertThat(AnsiColor.isSupported()).isTrue();
@@ -383,7 +383,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should disable ANSI color support")
-        void shouldDisableAnsiColorSupport() {
+        public void shouldDisableAnsiColorSupport() {
             AnsiColor.setSupported(false);
 
             assertThat(AnsiColor.isSupported()).isFalse();
@@ -391,7 +391,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should affect wrap behavior")
-        void shouldAffectWrapBehavior() {
+        public void shouldAffectWrapBehavior() {
             AnsiColor.setSupported(false);
             String noColor = AnsiColor.TEXT_RED.wrap("test");
 
@@ -404,7 +404,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should affect toString behavior")
-        void shouldAffectToStringBehavior() {
+        public void shouldAffectToStringBehavior() {
             AnsiColor.setSupported(false);
             String noColor = AnsiColor.TEXT_GREEN.toString();
 
@@ -418,11 +418,11 @@ class AnsiColorTest {
 
     @Nested
     @DisplayName("OfSequence Tests")
-    class OfSequenceTests {
+    public class OfSequenceTests {
 
         @Test
         @DisplayName("Should create color from escape sequence")
-        void shouldCreateColorFromEscapeSequence() {
+        public void shouldCreateColorFromEscapeSequence() {
             AnsiColor color = AnsiColor.ofSequence("\033[0;31m");
 
             assertThat(color).isNotNull();
@@ -430,7 +430,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should throw exception for null sequence")
-        void shouldThrowExceptionForNullSequence() {
+        public void shouldThrowExceptionForNullSequence() {
             assertThatThrownBy(() -> AnsiColor.ofSequence(null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("escapeSequence is null");
@@ -438,7 +438,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should throw exception for blank sequence")
-        void shouldThrowExceptionForBlankSequence() {
+        public void shouldThrowExceptionForBlankSequence() {
             assertThatThrownBy(() -> AnsiColor.ofSequence("   "))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("escapeSequence is blank");
@@ -446,7 +446,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should throw exception for empty sequence")
-        void shouldThrowExceptionForEmptySequence() {
+        public void shouldThrowExceptionForEmptySequence() {
             assertThatThrownBy(() -> AnsiColor.ofSequence(""))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("escapeSequence is blank");
@@ -454,7 +454,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should create color that wraps text")
-        void shouldCreateColorThatWrapsText() {
+        public void shouldCreateColorThatWrapsText() {
             AnsiColor.setSupported(false);
             AnsiColor color = AnsiColor.ofSequence("\033[0;35m");
 
@@ -465,7 +465,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should create colors with different sequences")
-        void shouldCreateColorsWithDifferentSequences() {
+        public void shouldCreateColorsWithDifferentSequences() {
             AnsiColor color1 = AnsiColor.ofSequence("\033[0;31m");
             AnsiColor color2 = AnsiColor.ofSequence("\033[0;32m");
 
@@ -474,7 +474,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should create equal colors with same sequence")
-        void shouldCreateEqualColorsWithSameSequence() {
+        public void shouldCreateEqualColorsWithSameSequence() {
             AnsiColor color1 = AnsiColor.ofSequence("\033[0;31m");
             AnsiColor color2 = AnsiColor.ofSequence("\033[0;31m");
 
@@ -484,11 +484,11 @@ class AnsiColorTest {
 
     @Nested
     @DisplayName("Integration Tests")
-    class IntegrationTests {
+    public class IntegrationTests {
 
         @Test
         @DisplayName("Should wrap and strip ANSI codes")
-        void shouldWrapAndStripAnsiCodes() {
+        public void shouldWrapAndStripAnsiCodes() {
             AnsiColor.setSupported(true);
             String wrapped = AnsiColor.TEXT_RED.wrap("test");
             String stripped = AnsiColor.stripAnsiEscapeSequences(wrapped);
@@ -498,7 +498,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should handle multiple colors in sequence")
-        void shouldHandleMultipleColorsInSequence() {
+        public void shouldHandleMultipleColorsInSequence() {
             AnsiColor.setSupported(false);
 
             String result = AnsiColor.TEXT_RED.wrap("red") + " "
@@ -510,7 +510,7 @@ class AnsiColorTest {
 
         @Test
         @DisplayName("Should work with different color styles")
-        void shouldWorkWithDifferentColorStyles() {
+        public void shouldWorkWithDifferentColorStyles() {
             AnsiColor.setSupported(false);
 
             String regular = AnsiColor.TEXT_RED.wrap("regular");
