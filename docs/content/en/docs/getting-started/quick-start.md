@@ -3,7 +3,9 @@ title: "Quick Start"
 linkTitle: "Quick Start"
 weight: 2
 description: >
-  Write and run your first Verifyica test in 5 minutes
+  Write and run your first Verifyica test in 5 minutes. Beginner-friendly guide for Java developers.
+date: 2026-02-15
+lastmod: 2026-02-15
 ---
 
 This guide will walk you through creating and running your first Verifyica test.

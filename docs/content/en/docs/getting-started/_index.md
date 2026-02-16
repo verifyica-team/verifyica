@@ -4,6 +4,8 @@ linkTitle: "Getting Started"
 weight: 1
 description: >
   Get up and running with Verifyica in minutes
+date: 2026-02-15
+lastmod: 2026-02-15
 ---
 
 This section will help you get started with Verifyica, from installation to writing your first test.

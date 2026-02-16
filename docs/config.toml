@@ -1,6 +1,6 @@
 baseURL = "/"
-title = "Verifyica"
-description = "JUnit Platform based TestEngine for argument-driven testing with advanced lifecycle management"
+title = "Verifyica Testing Framework"
+description = "JUnit Platform based TestEngine for argument-driven testing with advanced lifecycle management, parallelism control, and dependency management"
 languageCode = "en-us"
 defaultContentLanguage = "en"
 defaultContentLanguageInSubdir = false
@@ -10,6 +10,15 @@ pygmentsCodeFences = true
 pygmentsUseClasses = false
 pygmentsUseClassic = false
 pygmentsStyle = "tango"
+# Enable SEO-friendly URLs
+enableInlineShortcodes = false
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[markup.highlight]
+  style = "tango"
+  codeFences = true
 
 [module]
   [[module.imports]]
@@ -47,12 +56,36 @@ pygmentsStyle = "tango"
   url_latest_version = "https://verifyica.org"
   github_repo = "https://github.com/verifyica-team/verifyica"
   github_project_repo = "https://github.com/verifyica-team/verifyica"
-  github_branch = "release"
+  github_branch = "release-1.0.0"
+
+  # Repository configuration for edit links
+  [params.github]
+    repo = "https://github.com/verifyica-team/verifyica"
+    branch = "release-1.0.0"
+    doc_subdir = "docs"
+    edit_button = true
   gcs_engine_id = ""
   offlineSearch = true
   offlineSearchSummaryLength = 70
   offlineSearchMaxResults = 10
   prism_syntax_highlighting = false
+
+  # Copy to clipboard and edit links
+  copyEnable = true
+  ui = true
+
+  # SEO and meta improvements
+  twitter = "verifyica"
+  description = "JUnit Platform based TestEngine for argument-driven testing with advanced lifecycle management"
+  author = "Verifyica Team"
+
+  # Enable edit on GitHub links
+  editPage = true
+
+  # Add social sharing
+  [params.social]
+    twitter = "verifyica"
+    github = "verifyica-team"
 
   [params.mermaid]
     enable = true
@@ -66,6 +99,12 @@ pygmentsStyle = "tango"
     sidebar_menu_foldable = true
     sidebar_cache_limit = 10
     sidebar_search_disable = false
+
+    # Enable copy to clipboard for code blocks
+    copy_button = true
+
+    # Enable edit on GitHub links
+    edit_button = true
 
   [[menu.main]]
     name = "Documentation"
@@ -137,10 +176,22 @@ pygmentsStyle = "tango"
     weight = 20
     url = "/docs/about/"
   [[menu.main]]
+    name = "Reference"
+    weight = 25
+    url = "/docs/reference/"
+  [[menu.main]]
     name = "GitHub"
     weight = 30
     url = "https://github.com/verifyica-team/verifyica"
     pre = "<i class='fab fa-github'></i>"
+
+[params]
+  # Add social sharing image
+  images = ["images/site-logo.png"]
+
+[params.twitter]
+  card = "summary_large_image"
+  site = "@verifyica"
 
 [outputs]
   home = ["HTML"]

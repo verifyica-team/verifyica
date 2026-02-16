@@ -13,8 +13,15 @@ This section provides practical examples of Verifyica usage patterns.
 - [**Simple Tests**](simple-tests/) - Basic sequential and parallel tests
 - [**Parallel Tests**](parallel-tests/) - Parallelism patterns
 - [**Interceptor Examples**](interceptor-examples/) - ClassInterceptor usage
-- [**Dependency Examples**](dependency-examples/) - Test dependency chains
 - [**TestContainers Examples**](testcontainers-examples/) - Container integration
+
+## Advanced Patterns
+
+For more advanced patterns, see the [Advanced Topics](../advanced/) section:
+
+- [Test Dependencies](../advanced/dependencies/) - Test dependency chains with `@DependsOn`
+- [Execution Ordering](../advanced/ordering/) - Controlling test order with `@Order`
+- [Test Tagging](../advanced/tagging/) - Organizing tests with `@Tag`
 
 ## Example Code Repository
 

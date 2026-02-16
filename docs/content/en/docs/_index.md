@@ -4,6 +4,8 @@ linkTitle: "Documentation"
 weight: 10
 type: docs
 outputs: ["HTML"]
+date: 2026-02-15
+lastmod: 2026-02-15
 ---
 
 Welcome to the Verifyica documentation! Verifyica is a JUnit Platform based TestEngine that provides argument-driven testing with advanced lifecycle management.
@@ -134,3 +136,9 @@ Verifyica extends the JUnit Platform to provide powerful parameterized testing c
 - **Questions?** Ask in [GitHub Discussions](https://github.com/verifyica-team/verifyica/discussions)
 - **Found a bug?** Report in [GitHub Issues](https://github.com/verifyica-team/verifyica/issues)
 - **Contributing?** See the [Contributing Guide](https://github.com/verifyica-team/verifyica/blob/main/CONTRIBUTING.md)
+
+### Reference Materials
+
+- [**Glossary**](./reference/glossary/) - Definitions of Verifyica terminology
+- [**API Reference**](./api-reference/) - Complete API documentation
+- [**Properties Reference**](./configuration/properties/) - Configuration options

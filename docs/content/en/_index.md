@@ -1,6 +1,8 @@
 ---
 title: "Verifyica"
 linkTitle: "Home"
+date: 2026-02-15
+lastmod: 2026-02-15
 ---
 
 {{< blocks/cover title="Verifyica" image_anchor="top" height="full" >}}
