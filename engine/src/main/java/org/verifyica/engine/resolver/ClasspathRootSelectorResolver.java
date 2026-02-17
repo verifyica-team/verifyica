@@ -19,11 +19,13 @@ package org.verifyica.engine.resolver;
 import static org.junit.platform.engine.Filter.composeFilters;
 
 import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.discovery.ClassNameFilter;
@@ -37,64 +39,116 @@ import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.OrderSupport;
 
 /**
- * Class to implement ClasspathRootSelectorResolver
+ * Resolves {@link ClasspathRootSelector} instances into Verifyica test classes and methods.
+ *
+ * <p>For each selected classpath root, this resolver:</p>
+ * <ol>
+ *   <li>Finds all classes reachable from the root that match {@link ResolverPredicates#TEST_CLASS}.</li>
+ *   <li>Applies JUnit Platform {@link ClassNameFilter} and {@link PackageNameFilter} constraints.</li>
+ *   <li>For remaining classes, discovers methods matching {@link ResolverPredicates#TEST_METHOD} using a
+ *       bottom-up hierarchy scan and applies Verifyica ordering.</li>
+ *   <li>Populates {@code classMethodSet} with the discovered ordered methods.</li>
+ * </ol>
+ *
+ * <h3>Optimizations</h3>
+ * <ul>
+ *   <li>Builds filter predicates once per {@link #resolve} call (not once per selector).</li>
+ *   <li>Deduplicates repeated classpath roots to avoid rescanning the same root multiple times.</li>
+ *   <li>Caches ordered test method lists per class within a single {@link #resolve} invocation to avoid
+ *       redundant reflection scans when the same class is encountered via multiple roots.</li>
+ *   <li>Uses simple loops instead of lambda/collector allocations.</li>
+ * </ul>
+ *
+ * <p>This class is Java 8 compatible.</p>
  */
 public class ClasspathRootSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathRootSelectorResolver.class);
 
     /**
-     * Constructor
+     * Creates a new resolver instance.
      */
     public ClasspathRootSelectorResolver() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Method to resolve ClassPathSelectors
+     * Resolves {@link ClasspathRootSelector} selectors from the supplied discovery request.
      *
-     * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param classMethodSet classMethodSet
+     * <p>Discovered test methods are added to {@code classMethodSet}. If a class already exists in the map,
+     * methods are merged into the existing set.</p>
+     *
+     * @param engineDiscoveryRequest the discovery request
+     * @param classMethodSet output map of test class → discovered test methods (mutated)
      */
     public void resolve(EngineDiscoveryRequest engineDiscoveryRequest, Map<Class<?>, Set<Method>> classMethodSet) {
         LOGGER.trace("resolve()");
 
         Stopwatch stopwatch = new Stopwatch();
 
-        AtomicInteger classpathRootSelectorCount = new AtomicInteger();
+        // Compose filters once per resolve call.
+        Predicate<String> classNamePredicate = composeFilters(
+                        engineDiscoveryRequest.getFiltersByType(ClassNameFilter.class))
+                .toPredicate();
 
-        engineDiscoveryRequest.getSelectorsByType(ClasspathRootSelector.class).forEach(classpathRootSelector -> {
-            classpathRootSelectorCount.incrementAndGet();
+        @SuppressWarnings("unchecked")
+        List<PackageNameFilter> packageNameFilters =
+                (List<PackageNameFilter>) engineDiscoveryRequest.getFiltersByType(PackageNameFilter.class);
 
-            LOGGER.trace("classpathRoot [%s]", classpathRootSelector.getClasspathRoot());
+        Predicate<String> packageNamePredicate =
+                composeFilters(packageNameFilters).toPredicate();
 
-            List<Class<?>> testClasses = ClassSupport.findAllClasses(
-                    classpathRootSelector.getClasspathRoot(), ResolverPredicates.TEST_CLASS);
+        List<ClasspathRootSelector> selectors = engineDiscoveryRequest.getSelectorsByType(ClasspathRootSelector.class);
+        int selectorCount = selectors.size();
 
-            List<ClassNameFilter> classNameFilters = engineDiscoveryRequest.getFiltersByType(ClassNameFilter.class);
+        // Deduplicate identical roots.
+        Set<URI> processedRoots = new HashSet<URI>(Math.max(16, selectorCount * 2));
 
-            Predicate<String> classNamePredicate =
-                    composeFilters(classNameFilters).toPredicate();
+        // Cache discovered ordered methods per class for this resolve call.
+        Map<Class<?>, List<Method>> methodsCache =
+                new HashMap<Class<?>, List<Method>>(Math.max(16, selectorCount * 16));
 
-            List<? extends PackageNameFilter> packageNameFilters =
-                    engineDiscoveryRequest.getFiltersByType(PackageNameFilter.class);
+        int processedCount = 0;
 
-            Predicate<String> packageNamePredicate =
-                    composeFilters(packageNameFilters).toPredicate();
+        for (ClasspathRootSelector selector : selectors) {
+            URI root = selector.getClasspathRoot();
+            LOGGER.trace("classpathRoot [%s]", root);
 
-            testClasses.forEach(testClass -> {
-                if (classNamePredicate.test(testClass.getName())
-                        && packageNamePredicate.test(testClass.getPackage().getName())) {
-                    classMethodSet
-                            .computeIfAbsent(testClass, set -> new LinkedHashSet<>())
-                            .addAll(OrderSupport.orderMethods(ClassSupport.findMethods(
-                                    testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP)));
+            if (!processedRoots.add(root)) {
+                continue;
+            }
+            processedCount++;
+
+            List<Class<?>> testClasses = ClassSupport.findAllClasses(root, ResolverPredicates.TEST_CLASS);
+
+            for (Class<?> testClass : testClasses) {
+                // Defensive: Package can be null for some edge cases (e.g., default package).
+                Package pkg = testClass.getPackage();
+                String pkgName = (pkg != null) ? pkg.getName() : "";
+
+                if (!classNamePredicate.test(testClass.getName()) || !packageNamePredicate.test(pkgName)) {
+                    continue;
                 }
-            });
-        });
+
+                List<Method> orderedMethods = methodsCache.get(testClass);
+                if (orderedMethods == null) {
+                    orderedMethods = OrderSupport.orderMethods(ClassSupport.findMethods(
+                            testClass, ResolverPredicates.TEST_METHOD, HierarchyTraversalMode.BOTTOM_UP));
+                    methodsCache.put(testClass, orderedMethods);
+                }
+
+                Set<Method> methodSet = classMethodSet.get(testClass);
+                if (methodSet == null) {
+                    methodSet = new LinkedHashSet<Method>();
+                    classMethodSet.put(testClass, methodSet);
+                }
+
+                methodSet.addAll(orderedMethods);
+            }
+        }
 
         LOGGER.trace(
-                "resolve() classpathRootSelectors [%d] elapsedTime [%d] ms",
-                classpathRootSelectorCount.get(), stopwatch.elapsed().toMillis());
+                "resolve() classpathRootSelectors [%d] processedClasspathRoots [%d] elapsedTime [%d] ms",
+                selectorCount, processedCount, stopwatch.elapsed().toMillis());
     }
 }

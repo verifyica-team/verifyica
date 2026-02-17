@@ -20,6 +20,7 @@ import static java.lang.String.format;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -29,8 +30,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.EngineDiscoveryRequest;
@@ -52,7 +51,6 @@ import org.verifyica.api.Named;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.api.ClassDefinition;
 import org.verifyica.engine.api.MethodDefinition;
-import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.common.Stopwatch;
 import org.verifyica.engine.descriptor.TestArgumentTestDescriptor;
 import org.verifyica.engine.descriptor.TestClassTestDescriptor;
@@ -69,66 +67,88 @@ import org.verifyica.engine.support.OrderSupport;
 import org.verifyica.engine.support.TagSupport;
 
 /**
- * Class to implement EngineDiscoveryRequestResolver
+ * Resolves an {@link EngineDiscoveryRequest} into a Verifyica engine descriptor hierarchy.
+ *
+ * <p>This resolver performs four primary steps:</p>
+ *
+ * <ol>
+ *   <li>Collect discovered test classes and test methods from the JUnit Platform selectors.</li>
+ *   <li>Resolve Verifyica test arguments via a required {@link Verifyica.ArgumentSupplier} method on each test class.</li>
+ *   <li>Build intermediate {@link ClassDefinition} models (ordering, display names, tags, arguments, parallelism).</li>
+ *   <li>Build {@link TestDescriptor} children for class → argument → method, and prune disabled test methods.</li>
+ * </ol>
+ *
+ * <h3>Performance notes</h3>
+ *
+ * <p>Lifecycle methods (e.g. {@link Verifyica.BeforeEach}) are discovered via reflection. To avoid repeatedly
+ * scanning the class hierarchy for every argument and every method, lifecycle methods are resolved once per
+ * test class and cached during descriptor construction.</p>
+ *
+ * <p>This class is Java 8 compatible.</p>
  */
 public class EngineDiscoveryRequestResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EngineDiscoveryRequestResolver.class);
 
-    private static final List<Class<? extends DiscoverySelector>> DISCOVERY_SELECTORS_CLASSES;
-
-    static {
-        DISCOVERY_SELECTORS_CLASSES = new ArrayList<>();
-        DISCOVERY_SELECTORS_CLASSES.add(FileSelector.class);
-        DISCOVERY_SELECTORS_CLASSES.add(DirectorySelector.class);
-        DISCOVERY_SELECTORS_CLASSES.add(IterationSelector.class);
-        DISCOVERY_SELECTORS_CLASSES.add(ClasspathResourceSelector.class);
-        DISCOVERY_SELECTORS_CLASSES.add(ModuleSelector.class);
-        DISCOVERY_SELECTORS_CLASSES.add(UriSelector.class);
-        DISCOVERY_SELECTORS_CLASSES.add(ClasspathRootSelector.class);
-        DISCOVERY_SELECTORS_CLASSES.add(PackageSelector.class);
-        DISCOVERY_SELECTORS_CLASSES.add(ClassSelector.class);
-        DISCOVERY_SELECTORS_CLASSES.add(MethodSelector.class);
-        DISCOVERY_SELECTORS_CLASSES.add(UniqueIdSelector.class);
-    }
+    /**
+     * Selector types supported by this resolver.
+     *
+     * <p>These are used only for trace logging and do not affect selection semantics; the actual selection work
+     * is delegated to the selector resolver classes.</p>
+     */
+    private static final List<Class<? extends DiscoverySelector>> DISCOVERY_SELECTORS_CLASSES =
+            Collections.unmodifiableList(Arrays.asList(
+                    FileSelector.class,
+                    DirectorySelector.class,
+                    IterationSelector.class,
+                    ClasspathResourceSelector.class,
+                    ModuleSelector.class,
+                    UriSelector.class,
+                    ClasspathRootSelector.class,
+                    PackageSelector.class,
+                    ClassSelector.class,
+                    MethodSelector.class,
+                    UniqueIdSelector.class));
 
     /**
-     * Constructor
+     * Creates a new resolver instance.
      */
     public EngineDiscoveryRequestResolver() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Method to resolve the engine discovery request, building an engine descriptor
+     * Resolves selectors from the provided {@link EngineDiscoveryRequest} and populates the supplied root
+     * {@link TestDescriptor} with Verifyica children.
      *
-     * @param engineDiscoveryRequest engineDiscoveryRequest
-     * @param testDescriptor testDescriptor
+     * <p>This method is the entry point used during discovery. It constructs a descriptor tree of:</p>
+     *
+     * <ul>
+     *   <li>{@link TestClassTestDescriptor} per test class</li>
+     *   <li>{@link TestArgumentTestDescriptor} per resolved argument for the class</li>
+     *   <li>{@link TestMethodTestDescriptor} per test method, under each argument</li>
+     * </ul>
+     *
+     * <p>Any test method annotated with {@link Verifyica.Disabled} is removed from the descriptor tree after
+     * construction.</p>
+     *
+     * @param engineDiscoveryRequest the JUnit Platform discovery request
+     * @param testDescriptor the root descriptor to attach children to
+     * @throws EngineException if an error occurs during discovery/resolution
      */
     public void resolveSelectors(EngineDiscoveryRequest engineDiscoveryRequest, TestDescriptor testDescriptor) {
         LOGGER.trace("resolveSelectors()");
 
         Stopwatch stopwatch = new Stopwatch();
 
-        Map<Class<?>, Set<Method>> testClassMethodSet = new HashMap<>(32);
-        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new HashMap<>(32);
-        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new HashMap<>(32);
+        Map<Class<?>, Set<Method>> testClassMethodSet = new HashMap<Class<?>, Set<Method>>(32);
+        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new HashMap<Class<?>, List<Argument<?>>>(32);
+        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new HashMap<Class<?>, Set<Integer>>(32);
 
         try {
-            List<DiscoverySelector> discoverySelectors = new ArrayList<>(16);
+            traceSelectors(engineDiscoveryRequest);
 
-            if (LOGGER.isTraceEnabled()) {
-                for (Class<? extends DiscoverySelector> discoverySelectorClass : DISCOVERY_SELECTORS_CLASSES) {
-                    discoverySelectors.addAll(engineDiscoveryRequest.getSelectorsByType(discoverySelectorClass));
-                }
-
-                discoverySelectors.forEach(discoverySelector -> LOGGER.trace(
-                        "discoverySelector [%s]",
-                        discoverySelector.toIdentifier().isPresent()
-                                ? discoverySelector.toIdentifier().get()
-                                : "null"));
-            }
-
+            // Collect test classes/methods and (optionally) argument indices.
             new ClasspathRootSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodSet);
             new PackageSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodSet);
             new ClassSelectorResolver().resolve(engineDiscoveryRequest, testClassMethodSet);
@@ -138,61 +158,11 @@ public class EngineDiscoveryRequestResolver {
 
             resolveTestArguments(testClassMethodSet, testClassArgumentMap, testClassArgumentIndexMap);
 
-            List<ClassDefinition> classDefinitions = new ArrayList<>(testClassMethodSet.size());
-
-            Set<Class<?>> orderedKeySet = OrderSupport.orderClasses(new LinkedHashSet<>(testClassMethodSet.keySet()));
-
-            orderedKeySet.forEach(testClass -> {
-                List<Argument<?>> testArguments = testClassArgumentMap.get(testClass);
-
-                Set<Method> testMethods = OrderSupport.orderMethods(testClassMethodSet.get(testClass));
-
-                int testArgumentParallelism = getTestArgumentParallelism(testClass);
-
-                // Sanity check
-                /*
-                List<Method> orderedTestMethods = new ArrayList<>(testMethods);
-                List<Method> expectedOrderedTestMethods = OrderSupport.orderMethods(new ArrayList<>(testMethods));
-                for (int i = 0; i < testMethods.size(); i++) {
-                    if (!orderedTestMethods.get(i).equals(expectedOrderedTestMethods.get(i))) {
-                        System.err.printf(
-                                "BUG test methods should be ordered at this stage. Please report the issue along with test code to reproduce the issue.%n");
-                        System.exit(-1);
-                    }
-                }
-                */
-
-                String testClassDisplayName = DisplayNameSupport.getDisplayName(testClass);
-
-                Set<String> testClassTags = TagSupport.getTags(testClass);
-
-                List<MethodDefinition> testMethodDefinitions = new ArrayList<>();
-
-                testMethods.forEach(testMethod -> {
-                    /*
-                    if (testMethod.isAnnotationPresent(Verifyica.Step.class)
-                            && testMethod.isAnnotationPresent(Verifyica.Order.class)) {
-                        throw new TestClassDefinitionException(format(
-                                "Test class [%s] test method [%s] is annotated with both \"@Verify.Step\" and \"@Verifyica.Order\"",
-                                testClass.getName(), testMethod.getName()));
-                    }
-                    */
-
-                    String methodDisplayName = DisplayNameSupport.getDisplayName(testMethod);
-                    testMethodDefinitions.add(new ConcreteMethodDefinition(testMethod, methodDisplayName));
-                });
-
-                classDefinitions.add(new ConcreteClassDefinition(
-                        testClass,
-                        testClassDisplayName,
-                        testClassTags,
-                        testMethodDefinitions,
-                        testArguments,
-                        testArgumentParallelism));
-            });
+            List<ClassDefinition> classDefinitions = buildClassDefinitions(testClassMethodSet, testClassArgumentMap);
 
             pruneClassDefinitions(classDefinitions);
             ClassDefinitionFilter.filter(classDefinitions);
+
             buildEngineDescriptor(classDefinitions, testDescriptor);
             pruneDisabledTestMethods(testDescriptor);
         } catch (EngineException e) {
@@ -208,11 +178,80 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
-     * Method to resolve test class test arguments
+     * Emits trace logging for all selectors present in the request.
      *
-     * @param testClassMethodSet testClassMethodSet
-     * @param testClassArgumentMap testClassArgumentMap
-     * @throws Throwable Throwable
+     * <p>This method is intentionally allocation-light (does not build intermediate lists beyond what the
+     * request API returns). Selector identifiers are logged using their {@code toString()} representation.</p>
+     *
+     * @param engineDiscoveryRequest the discovery request
+     */
+    private static void traceSelectors(EngineDiscoveryRequest engineDiscoveryRequest) {
+        if (!LOGGER.isTraceEnabled()) {
+            return;
+        }
+
+        for (Class<? extends DiscoverySelector> selectorClass : DISCOVERY_SELECTORS_CLASSES) {
+            List<? extends DiscoverySelector> selectors = engineDiscoveryRequest.getSelectorsByType(selectorClass);
+            for (DiscoverySelector selector : selectors) {
+                String id = selector.toIdentifier().map(Object::toString).orElse("null");
+                LOGGER.trace("discoverySelector [%s]", id);
+            }
+        }
+    }
+
+    /**
+     * Builds {@link ClassDefinition} instances from the discovered test classes and methods.
+     *
+     * <p>This method applies Verifyica ordering rules for classes and methods, resolves display names and tags,
+     * and determines argument parallelism from {@link Verifyica.ArgumentSupplier#parallelism()}.</p>
+     *
+     * @param testClassMethodSet mapping of test class → discovered test methods
+     * @param testClassArgumentMap mapping of test class → resolved arguments
+     * @return ordered list of {@link ClassDefinition}
+     */
+    private static List<ClassDefinition> buildClassDefinitions(
+            Map<Class<?>, Set<Method>> testClassMethodSet, Map<Class<?>, List<Argument<?>>> testClassArgumentMap) {
+        Set<Class<?>> orderedClasses =
+                OrderSupport.orderClasses(new LinkedHashSet<Class<?>>(testClassMethodSet.keySet()));
+
+        List<ClassDefinition> classDefinitions = new ArrayList<ClassDefinition>(orderedClasses.size());
+
+        for (Class<?> testClass : orderedClasses) {
+            List<Argument<?>> testArguments = testClassArgumentMap.get(testClass);
+            Set<Method> testMethods = OrderSupport.orderMethods(testClassMethodSet.get(testClass));
+            int testArgumentParallelism = getTestArgumentParallelism(testClass);
+
+            String testClassDisplayName = DisplayNameSupport.getDisplayName(testClass);
+            Set<String> testClassTags = TagSupport.getTags(testClass);
+
+            List<MethodDefinition> testMethodDefinitions = new ArrayList<MethodDefinition>(testMethods.size());
+            for (Method testMethod : testMethods) {
+                String methodDisplayName = DisplayNameSupport.getDisplayName(testMethod);
+                testMethodDefinitions.add(new ConcreteMethodDefinition(testMethod, methodDisplayName));
+            }
+
+            classDefinitions.add(new ConcreteClassDefinition(
+                    testClass,
+                    testClassDisplayName,
+                    testClassTags,
+                    testMethodDefinitions,
+                    testArguments,
+                    testArgumentParallelism));
+        }
+
+        return classDefinitions;
+    }
+
+    /**
+     * Resolves argument lists for each discovered test class.
+     *
+     * <p>If the discovery request selected specific argument indices (via {@link UniqueIdSelectorResolver}),
+     * this method filters the full argument list down to only those indices.</p>
+     *
+     * @param testClassMethodSet mapping of test class → discovered test methods
+     * @param testClassArgumentMap output map to populate with resolved (and possibly filtered) arguments
+     * @param argumentIndexMap optional mapping of test class → selected argument indices
+     * @throws Throwable if the argument supplier invocation fails or returns an unsupported value
      */
     private static void resolveTestArguments(
             Map<Class<?>, Set<Method>> testClassMethodSet,
@@ -224,19 +263,21 @@ public class EngineDiscoveryRequestResolver {
         Stopwatch stopwatch = new Stopwatch();
 
         for (Class<?> testClass : testClassMethodSet.keySet()) {
-            List<Argument<?>> testArguments = getTestArguments(testClass);
-            Set<Integer> testArgumentIndices = argumentIndexMap.get(testClass);
-            if (testArgumentIndices != null) {
-                List<Argument<?>> specificTestArguments = new ArrayList<>();
-                for (int i = 0; i < testArguments.size(); i++) {
-                    if (testArgumentIndices.contains(i)) {
-                        specificTestArguments.add(testArguments.get(i));
-                    }
-                }
-                testClassArgumentMap.put(testClass, specificTestArguments);
-            } else {
-                testClassArgumentMap.put(testClass, testArguments);
+            List<Argument<?>> allArguments = getTestArguments(testClass);
+            Set<Integer> indices = argumentIndexMap.get(testClass);
+
+            if (indices == null || indices.isEmpty()) {
+                testClassArgumentMap.put(testClass, allArguments);
+                continue;
             }
+
+            List<Argument<?>> specific = new ArrayList<Argument<?>>(Math.min(allArguments.size(), indices.size()));
+            for (int i = 0; i < allArguments.size(); i++) {
+                if (indices.contains(i)) {
+                    specific.add(allArguments.get(i));
+                }
+            }
+            testClassArgumentMap.put(testClass, specific);
         }
 
         LOGGER.trace(
@@ -245,100 +286,191 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
-     * Method to get test class test arguments
+     * Invokes the {@link Verifyica.ArgumentSupplier} method for the given test class and converts the
+     * returned value into a list of {@link Argument} instances.
      *
-     * @param testClass testClass
-     * @return a List of arguments
-     * @throws Throwable Throwable
+     * <p>The supplier return type is flexible and may be one of:</p>
+     *
+     * <ul>
+     *   <li>{@link Argument} (single argument)</li>
+     *   <li>{@link Named} (single value named via {@link Named#getName()})</li>
+     *   <li>{@code Object[]} (each element becomes an argument)</li>
+     *   <li>{@link Stream}, {@link Iterable}, {@link Iterator}, or {@link Enumeration} (each element becomes an argument)</li>
+     *   <li>Any other object (treated as a single unnamed argument)</li>
+     * </ul>
+     *
+     * <p>Elements that are not already {@link Argument} are wrapped with {@link Argument#of(String, Object)}.
+     * Names are derived in the following order:</p>
+     *
+     * <ol>
+     *   <li>{@link Named#getName()} if the element implements {@link Named}</li>
+     *   <li>{@link Enum#name()} if the element is an enum constant</li>
+     *   <li>{@code argument[i]} fallback using the element index</li>
+     * </ol>
+     *
+     * @param testClass the test class
+     * @return a list of arguments (possibly empty)
+     * @throws Throwable if invocation fails or the supplier returns an unsupported array type
      */
     private static List<Argument<?>> getTestArguments(Class<?> testClass) throws Throwable {
         LOGGER.trace("getTestArguments() testClass [%s]", testClass.getName());
 
         Stopwatch stopwatch = new Stopwatch();
+        List<Argument<?>> testArguments = new ArrayList<Argument<?>>();
 
-        List<Argument<?>> testArguments = new ArrayList<>();
+        Method supplier = getArgumentSupplierMethod(testClass);
+        Object supplied = supplier.invoke(null);
 
-        Object object = getArgumentSupplierMethod(testClass).invoke(null, (Object[]) null);
-        if (object == null) {
+        if (supplied == null) {
+            LOGGER.trace(
+                    "getTestArguments() elapsedTime [%d] ms",
+                    stopwatch.elapsed().toMillis());
             return testArguments;
-        } else if (object.getClass().isArray()) {
-            Object[] objects = (Object[]) object;
-            if (objects.length > 0) {
-                int index = 0;
-                for (Object o : objects) {
-                    if (o instanceof Argument<?>) {
-                        testArguments.add((Argument<?>) o);
-                    } else {
-                        String name;
-                        if (o instanceof Named) {
-                            name = ((Named) o).getName();
-                        } else if (o != null && o.getClass().isEnum()) {
-                            name = ((Enum<?>) o).name();
-                        } else {
-                            name = "argument[" + index + "]";
-                        }
-                        testArguments.add(Argument.of(name, o));
-                    }
-                    index++;
-                }
-            } else {
-                return testArguments;
-            }
-        } else if (object instanceof Argument<?>) {
-            testArguments.add((Argument<?>) object);
-            return testArguments;
-        } else if (object instanceof Stream
-                || object instanceof Iterable
-                || object instanceof Iterator
-                || object instanceof Enumeration) {
-            Iterator<?> iterator;
-            if (object instanceof Enumeration) {
-                iterator = Collections.list((Enumeration<?>) object).iterator();
-            } else if (object instanceof Iterator) {
-                iterator = (Iterator<?>) object;
-            } else if (object instanceof Stream) {
-                Stream<?> stream = (Stream<?>) object;
-                iterator = stream.iterator();
-            } else {
-                Iterable<?> iterable = (Iterable<?>) object;
-                iterator = iterable.iterator();
-            }
-
-            long index = 0;
-            while (iterator.hasNext()) {
-                Object o = iterator.next();
-                if (o instanceof Argument<?>) {
-                    testArguments.add((Argument<?>) o);
-                } else {
-                    String name;
-                    if (o instanceof Named) {
-                        name = ((Named) o).getName();
-                    } else if (o != null && o.getClass().isEnum()) {
-                        name = ((Enum<?>) o).name();
-                    } else {
-                        name = "argument[" + index + "]";
-                    }
-                    testArguments.add(Argument.of(name, o));
-                }
-                index++;
-            }
-        } else if (object instanceof Named) {
-            testArguments.add(Argument.of(((Named) object).getName(), object));
-        } else {
-            testArguments.add(Argument.of("argument[0]", object));
         }
+
+        if (supplied instanceof Argument<?>) {
+            testArguments.add((Argument<?>) supplied);
+            LOGGER.trace(
+                    "getTestArguments() elapsedTime [%d] ms",
+                    stopwatch.elapsed().toMillis());
+            return testArguments;
+        }
+
+        if (supplied instanceof Named) {
+            testArguments.add(Argument.of(((Named) supplied).getName(), supplied));
+            LOGGER.trace(
+                    "getTestArguments() elapsedTime [%d] ms",
+                    stopwatch.elapsed().toMillis());
+            return testArguments;
+        }
+
+        // Arrays (Object[] only; primitive arrays are not supported by design)
+        if (supplied.getClass().isArray()) {
+            if (!(supplied instanceof Object[])) {
+                throw new TestClassDefinitionException(format(
+                        "Test class [%s] argument supplier returned a primitive array type [%s] which is not supported",
+                        testClass.getName(), supplied.getClass().getName()));
+            }
+
+            Object[] objects = (Object[]) supplied;
+            for (int i = 0; i < objects.length; i++) {
+                testArguments.add(toArgument(objects[i], i));
+            }
+
+            LOGGER.trace(
+                    "getTestArguments() elapsedTime [%d] ms",
+                    stopwatch.elapsed().toMillis());
+            return testArguments;
+        }
+
+        // Stream / Iterable / Iterator / Enumeration
+        if (supplied instanceof Stream) {
+            @SuppressWarnings("unchecked")
+            Stream<Object> stream = (Stream<Object>) supplied;
+            try {
+                Iterator<Object> it = stream.iterator();
+                long idx = 0;
+                while (it.hasNext()) {
+                    testArguments.add(toArgument(it.next(), idx++));
+                }
+            } finally {
+                // Stream is AutoCloseable
+                stream.close();
+            }
+
+            LOGGER.trace(
+                    "getTestArguments() elapsedTime [%d] ms",
+                    stopwatch.elapsed().toMillis());
+            return testArguments;
+        }
+
+        Iterator<?> iterator = toIterator(supplied);
+        if (iterator != null) {
+            long idx = 0;
+            while (iterator.hasNext()) {
+                testArguments.add(toArgument(iterator.next(), idx++));
+            }
+
+            LOGGER.trace(
+                    "getTestArguments() elapsedTime [%d] ms",
+                    stopwatch.elapsed().toMillis());
+            return testArguments;
+        }
+
+        // Fallback: single unnamed value
+        testArguments.add(Argument.of("argument[0]", supplied));
 
         LOGGER.trace(
                 "getTestArguments() elapsedTime [%d] ms", stopwatch.elapsed().toMillis());
-
         return testArguments;
     }
 
     /**
-     * Method to get a class argument supplier method
+     * Converts supported container-like supplier results into an {@link Iterator}.
      *
-     * @param testClass testClass
-     * @return the argument supplier method
+     * <p>Supported types:</p>
+     * <ul>
+     *   <li>{@link Enumeration} (converted via {@link Collections#list(Enumeration)})</li>
+     *   <li>{@link Iterator}</li>
+     *   <li>{@link Iterable}</li>
+     * </ul>
+     *
+     * @param supplied the supplier result object
+     * @return an iterator if the object is supported; otherwise {@code null}
+     */
+    private static Iterator<?> toIterator(Object supplied) {
+        if (supplied instanceof Enumeration) {
+            return Collections.list((Enumeration<?>) supplied).iterator();
+        }
+
+        if (supplied instanceof Iterator) {
+            return (Iterator<?>) supplied;
+        }
+
+        if (supplied instanceof Iterable) {
+            return ((Iterable<?>) supplied).iterator();
+        }
+
+        return null;
+    }
+
+    /**
+     * Wraps an arbitrary object as an {@link Argument} when needed.
+     *
+     * <p>If {@code o} is already an {@link Argument}, it is returned unchanged. Otherwise a name is derived
+     * and {@link Argument#of(String, Object)} is used.</p>
+     *
+     * @param object the value to convert
+     * @param index the argument index (used for fallback naming)
+     * @return an {@link Argument} instance
+     */
+    private static Argument<?> toArgument(Object object, long index) {
+        if (object instanceof Argument<?>) {
+            return (Argument<?>) object;
+        }
+
+        String name;
+        if (object instanceof Named) {
+            name = ((Named) object).getName();
+        } else if (object != null && object.getClass().isEnum()) {
+            name = ((Enum<?>) object).name();
+        } else {
+            name = "argument[" + index + "]";
+        }
+
+        return Argument.of(name, object);
+    }
+
+    /**
+     * Finds the single {@link Verifyica.ArgumentSupplier} method for the given test class.
+     *
+     * <p>The search is performed bottom-up in the hierarchy to favor subclass declarations. Only one supplier
+     * method may be declared per class in the hierarchy. If none is found, a {@link TestClassDefinitionException}
+     * is thrown.</p>
+     *
+     * @param testClass the test class
+     * @return the discovered argument supplier method
+     * @throws TestClassDefinitionException if none is found or multiple are declared in the same class
      */
     private static Method getArgumentSupplierMethod(Class<?> testClass) {
         LOGGER.trace("getArgumentSupplierMethod() testClass [%s]", testClass.getName());
@@ -346,149 +478,126 @@ public class EngineDiscoveryRequestResolver {
         List<Method> methods = ClassSupport.findMethods(
                 testClass, ResolverPredicates.ARGUMENT_SUPPLIER_METHOD, HierarchyTraversalMode.BOTTOM_UP);
 
-        validateSingleMethodPerClass(Verifyica.ArgumentSupplier.class, methods);
+        if (methods.isEmpty()) {
+            throw new TestClassDefinitionException(format(
+                    "Test class [%s] is missing a static method annotated with [@Verifyica.%s]",
+                    testClass.getName(), Verifyica.ArgumentSupplier.class.getSimpleName()));
+        }
 
+        validateSingleMethodPerClass(Verifyica.ArgumentSupplier.class, methods);
         return methods.get(0);
     }
 
     /**
-     * Method to prune ClassDefinitions for test classes without arguments or test methods
+     * Removes {@link ClassDefinition} entries that cannot produce runnable tests.
      *
-     * @param classDefinitions classDefinitions
+     * <p>Currently a class is removed if it has no resolved arguments or no resolved test methods.</p>
+     *
+     * @param classDefinitions the list of class definitions to prune (mutated in place)
      */
     private static void pruneClassDefinitions(List<ClassDefinition> classDefinitions) {
         LOGGER.trace("pruneClassDefinitions()");
 
-        classDefinitions.removeIf(
-                classDefinition -> classDefinition.getArguments().isEmpty()
-                        || classDefinition.getTestMethodDefinitions().isEmpty());
+        classDefinitions.removeIf(cd ->
+                cd.getArguments().isEmpty() || cd.getTestMethodDefinitions().isEmpty());
     }
 
     /**
-     * Method to prune TestMethodTestDescriptors that are disabled
+     * Removes {@link TestMethodTestDescriptor} nodes that represent disabled test methods.
      *
-     * @param testDescriptor testDescriptor
+     * <p>This is performed after building the tree to keep descriptor construction straightforward.</p>
+     *
+     * @param testDescriptor the root descriptor
      */
     private static void pruneDisabledTestMethods(TestDescriptor testDescriptor) {
-        List<TestDescriptor> prunedTestDescriptors = testDescriptor.getDescendants().stream()
-                .filter((Predicate<TestDescriptor>)
-                        testDescriptor1 -> testDescriptor1 instanceof TestMethodTestDescriptor
-                                && ((TestMethodTestDescriptor) testDescriptor1)
-                                        .getTestMethod()
-                                        .isAnnotationPresent(Verifyica.Disabled.class))
-                .collect(Collectors.toList());
+        LOGGER.trace("pruneDisabledTestMethods()");
 
-        for (TestDescriptor prunedTestDescriptor : prunedTestDescriptors) {
-            prunedTestDescriptor.removeFromHierarchy();
+        // Avoid building a separate stream/collector list; remove in a single pass.
+        List<TestDescriptor> descendants = new ArrayList<TestDescriptor>(testDescriptor.getDescendants());
+        for (TestDescriptor d : descendants) {
+            if (d instanceof TestMethodTestDescriptor) {
+                Method m = ((TestMethodTestDescriptor) d).getTestMethod();
+                if (m.isAnnotationPresent(Verifyica.Disabled.class)) {
+                    d.removeFromHierarchy();
+                }
+            }
         }
     }
 
     /**
-     * Method to build the EngineDescriptor
+     * Constructs the Verifyica descriptor hierarchy beneath the provided root descriptor.
      *
-     * @param classDefinitions classDefinitions
-     * @param testDescriptor testDescriptor
+     * <p>For each {@link ClassDefinition}:</p>
+     * <ul>
+     *   <li>Creates a {@link TestClassTestDescriptor} under {@code testDescriptor}</li>
+     *   <li>Creates a {@link TestArgumentTestDescriptor} per argument under the class descriptor</li>
+     *   <li>Creates a {@link TestMethodTestDescriptor} per test method under each argument descriptor</li>
+     * </ul>
+     *
+     * <p>Lifecycle methods are resolved once per class and reused across all arguments and methods.</p>
+     *
+     * @param classDefinitions ordered class definitions
+     * @param testDescriptor the root descriptor to attach children to
      */
     private static void buildEngineDescriptor(List<ClassDefinition> classDefinitions, TestDescriptor testDescriptor) {
         LOGGER.trace("buildEngineDescriptor()");
 
         Stopwatch stopwatch = new Stopwatch();
 
+        // Cache lifecycle method resolution per test class; this avoids repeated hierarchy scanning.
+        Map<Class<?>, LifecycleMethods> lifecycleCache =
+                new HashMap<Class<?>, LifecycleMethods>(Math.max(16, classDefinitions.size() * 2));
+
         for (ClassDefinition classDefinition : classDefinitions) {
             Class<?> testClass = classDefinition.getTestClass();
+            UniqueId classUniqueId = testDescriptor.getUniqueId().append("class", testClass.getName());
 
-            UniqueId classTestDescriptorUniqueId = testDescriptor.getUniqueId().append("class", testClass.getName());
+            LifecycleMethods lifecycle = lifecycleCache.get(testClass);
+            if (lifecycle == null) {
+                lifecycle = new LifecycleMethods(testClass);
+                lifecycleCache.put(testClass, lifecycle);
+            }
 
-            List<Method> prepareMethods = ClassSupport.findMethods(
-                    testClass, ResolverPredicates.PREPARE_METHOD, HierarchyTraversalMode.TOP_DOWN);
-
-            validateSingleMethodPerClass(Verifyica.Prepare.class, prepareMethods);
-
-            List<Method> concludeMethods = ClassSupport.findMethods(
-                    testClass, ResolverPredicates.CONCLUDE_METHOD, HierarchyTraversalMode.BOTTOM_UP);
-
-            validateSingleMethodPerClass(Verifyica.Conclude.class, concludeMethods);
-
-            TestClassTestDescriptor testClassTestDescriptor = new TestClassTestDescriptor(
-                    classTestDescriptorUniqueId,
+            TestClassTestDescriptor testClassDescriptor = new TestClassTestDescriptor(
+                    classUniqueId,
                     classDefinition.getDisplayName(),
                     classDefinition.getTags(),
                     testClass,
                     classDefinition.getArgumentParallelism(),
-                    prepareMethods,
-                    concludeMethods);
+                    lifecycle.prepare,
+                    lifecycle.conclude);
 
-            testDescriptor.addChild(testClassTestDescriptor);
+            testDescriptor.addChild(testClassDescriptor);
 
-            int testArgumentIndex = 0;
+            int argumentIndex = 0;
             for (Argument<?> testArgument : classDefinition.getArguments()) {
-                UniqueId argumentTestDescriptorUniqueId =
-                        classTestDescriptorUniqueId.append("argument", String.valueOf(testArgumentIndex));
+                UniqueId argumentUniqueId = classUniqueId.append("argument", String.valueOf(argumentIndex));
 
-                List<Method> beforeAllMethods = ClassSupport.findMethods(
-                        testClass, ResolverPredicates.BEFORE_ALL_METHOD, HierarchyTraversalMode.TOP_DOWN);
-
-                validateSingleMethodPerClass(Verifyica.BeforeAll.class, beforeAllMethods);
-
-                List<Method> afterAllMethods = ClassSupport.findMethods(
-                        testClass, ResolverPredicates.AFTER_ALL_METHOD, HierarchyTraversalMode.BOTTOM_UP);
-
-                validateSingleMethodPerClass(Verifyica.AfterAll.class, afterAllMethods);
-
-                TestArgumentTestDescriptor testArgumentTestDescriptor = new TestArgumentTestDescriptor(
-                        argumentTestDescriptorUniqueId,
+                TestArgumentTestDescriptor testArgumentDescriptor = new TestArgumentTestDescriptor(
+                        argumentUniqueId,
                         testArgument.getName(),
-                        testArgumentIndex,
+                        argumentIndex,
                         testArgument,
-                        beforeAllMethods,
-                        afterAllMethods);
+                        lifecycle.beforeAll,
+                        lifecycle.afterAll);
 
-                testClassTestDescriptor.addChild(testArgumentTestDescriptor);
+                testClassDescriptor.addChild(testArgumentDescriptor);
 
                 for (MethodDefinition testMethodDefinition : classDefinition.getTestMethodDefinitions()) {
                     Method testMethod = testMethodDefinition.getMethod();
+                    UniqueId methodUniqueId = argumentUniqueId.append("method", testMethod.getName());
 
-                    /*
-                    Matcher matcher = null;
-
-                    Verifyica.Condition conditionAnnotation = testMethod.getAnnotation(Verifyica.Condition.class);
-                    if (conditionAnnotation != null) {
-                        try {
-                            matcher =
-                                    Pattern.compile(conditionAnnotation.regex()).matcher("");
-                        } catch (PatternSyntaxException e) {
-                            throw new TestClassDefinitionException(format(
-                                    "Test class [%s] test method [%s] @Verifyica.Condition contains an invalid regex [%s]",
-                                    testClass.getName(), testMethod.getName(), conditionAnnotation.regex()));
-                        }
-                    }
-                    */
-
-                    UniqueId testMethodDescriptorUniqueId =
-                            argumentTestDescriptorUniqueId.append("method", testMethod.getName());
-
-                    List<Method> beforeEachMethods = ClassSupport.findMethods(
-                            testClass, ResolverPredicates.BEFORE_EACH_METHOD, HierarchyTraversalMode.TOP_DOWN);
-
-                    validateSingleMethodPerClass(Verifyica.BeforeEach.class, beforeEachMethods);
-
-                    List<Method> afterEachMethods = ClassSupport.findMethods(
-                            testClass, ResolverPredicates.AFTER_EACH_METHOD, HierarchyTraversalMode.BOTTOM_UP);
-
-                    validateSingleMethodPerClass(Verifyica.AfterEach.class, afterEachMethods);
-
-                    TestMethodTestDescriptor testMethodTestDescriptor = new TestMethodTestDescriptor(
-                            testMethodDescriptorUniqueId,
+                    TestMethodTestDescriptor testMethodDescriptor = new TestMethodTestDescriptor(
+                            methodUniqueId,
                             testMethodDefinition.getDisplayName(),
-                            beforeEachMethods,
-                            // matcher,
-                            testMethodDefinition.getMethod(),
-                            afterEachMethods);
+                            lifecycle.beforeEach,
+                            testMethod,
+                            lifecycle.afterEach);
 
-                    testArgumentTestDescriptor.addChild(testMethodTestDescriptor);
+                    testArgumentDescriptor.addChild(testMethodDescriptor);
                 }
 
-                testArgumentIndex++;
+                argumentIndex++;
             }
         }
 
@@ -498,48 +607,133 @@ public class EngineDiscoveryRequestResolver {
     }
 
     /**
-     * Method to validate only a single method per declared class is annotation with the given
-     * annotation
+     * Finds lifecycle methods using {@link ClassSupport#findMethods(Class, java.util.function.Predicate, HierarchyTraversalMode)}
+     * and validates that only one method per declaring class matches the lifecycle annotation.
      *
-     * @param annotationClass annotationClass
-     * @param methods methods
+     * @param testClass the test class
+     * @param predicate predicate used to identify matching methods
+     * @param mode hierarchy traversal mode
+     * @param annotationClass the lifecycle annotation type (for error messages)
+     * @return the discovered methods (possibly empty)
+     * @throws TestClassDefinitionException if a declaring class contains multiple matching methods
+     */
+    private static List<Method> findAndValidate(
+            Class<?> testClass,
+            java.util.function.Predicate<Method> predicate,
+            HierarchyTraversalMode mode,
+            Class<?> annotationClass) {
+        List<Method> methods = ClassSupport.findMethods(testClass, predicate, mode);
+        validateSingleMethodPerClass(annotationClass, methods);
+        return methods;
+    }
+
+    /**
+     * Validates that for each declaring class in the returned method list, there is at most one method
+     * annotated with the corresponding Verifyica annotation.
+     *
+     * <p>For example, a class hierarchy may contain multiple {@code @Verifyica.BeforeEach} methods as long as
+     * they are declared in different classes in the hierarchy. However, any single class may declare at most
+     * one such method.</p>
+     *
+     * @param annotationClass the Verifyica annotation class (used for error messages)
+     * @param methods the discovered methods (may be {@code null} or empty)
+     * @throws TestClassDefinitionException if multiple methods are declared in the same class
      */
     private static void validateSingleMethodPerClass(Class<?> annotationClass, List<Method> methods) {
-        Precondition.notNull(annotationClass, "annotationClass is null");
+        if (methods == null || methods.isEmpty()) {
+            return;
+        }
 
-        if (methods != null) {
-            Set<Class<?>> classes = new HashSet<>();
+        Set<Class<?>> declaringClasses = new HashSet<Class<?>>((int) (methods.size() / 0.75f) + 1);
 
-            methods.forEach(method -> {
-                if (classes.contains(method.getDeclaringClass())) {
-                    String annotationDisplayName = "@Verifyica." + annotationClass.getSimpleName();
-                    throw new TestClassDefinitionException(format(
-                            "Test class [%s] contains more than one method" + " annotated with [%s]",
-                            method.getDeclaringClass().getName(), annotationDisplayName));
-                }
-
-                classes.add(method.getDeclaringClass());
-            });
+        for (Method method : methods) {
+            Class<?> declaringClass = method.getDeclaringClass();
+            if (!declaringClasses.add(declaringClass)) {
+                String annotationDisplayName = "@Verifyica." + annotationClass.getSimpleName();
+                throw new TestClassDefinitionException(format(
+                        "Class [%s] declares more than one method annotated with [%s]",
+                        declaringClass.getName(), annotationDisplayName));
+            }
         }
     }
 
     /**
-     * Method to get test class parallelism
+     * Determines the argument-parallelism for a test class.
      *
-     * @param testClass testClass
-     * @return test class parallelism
+     * <p>This value is read from {@link Verifyica.ArgumentSupplier#parallelism()} on the resolved supplier
+     * method and is clamped to a minimum of {@code 1}.</p>
+     *
+     * @param testClass the test class
+     * @return the argument parallelism (minimum 1)
      */
     private static int getTestArgumentParallelism(Class<?> testClass) {
         LOGGER.trace("getTestArgumentParallelism() testClass [%s]", testClass.getName());
 
         Method argumentSupplierMethod = getArgumentSupplierMethod(testClass);
-
         Verifyica.ArgumentSupplier annotation = argumentSupplierMethod.getAnnotation(Verifyica.ArgumentSupplier.class);
 
         int parallelism = Math.max(annotation.parallelism(), 1);
 
         LOGGER.trace("testClass [%s] parallelism [%d]", testClass.getName(), parallelism);
-
         return parallelism;
+    }
+
+    /**
+     * Holder for lifecycle method lists for a single test class.
+     *
+     * <p>Each list may contain methods declared across a class hierarchy. Validation ensures that for any
+     * given declaring class, at most one method carries a specific lifecycle annotation.</p>
+     */
+    private static final class LifecycleMethods {
+
+        final List<Method> prepare;
+        final List<Method> conclude;
+        final List<Method> beforeAll;
+        final List<Method> afterAll;
+        final List<Method> beforeEach;
+        final List<Method> afterEach;
+
+        /**
+         * Resolves and validates lifecycle methods for {@code testClass}.
+         *
+         * @param testClass the test class
+         */
+        LifecycleMethods(Class<?> testClass) {
+            this.prepare = findAndValidate(
+                    testClass,
+                    ResolverPredicates.PREPARE_METHOD,
+                    HierarchyTraversalMode.TOP_DOWN,
+                    Verifyica.Prepare.class);
+
+            this.conclude = findAndValidate(
+                    testClass,
+                    ResolverPredicates.CONCLUDE_METHOD,
+                    HierarchyTraversalMode.BOTTOM_UP,
+                    Verifyica.Conclude.class);
+
+            this.beforeAll = findAndValidate(
+                    testClass,
+                    ResolverPredicates.BEFORE_ALL_METHOD,
+                    HierarchyTraversalMode.TOP_DOWN,
+                    Verifyica.BeforeAll.class);
+
+            this.afterAll = findAndValidate(
+                    testClass,
+                    ResolverPredicates.AFTER_ALL_METHOD,
+                    HierarchyTraversalMode.BOTTOM_UP,
+                    Verifyica.AfterAll.class);
+
+            this.beforeEach = findAndValidate(
+                    testClass,
+                    ResolverPredicates.BEFORE_EACH_METHOD,
+                    HierarchyTraversalMode.TOP_DOWN,
+                    Verifyica.BeforeEach.class);
+
+            this.afterEach = findAndValidate(
+                    testClass,
+                    ResolverPredicates.AFTER_EACH_METHOD,
+                    HierarchyTraversalMode.BOTTOM_UP,
+                    Verifyica.AfterEach.class);
+        }
     }
 }
