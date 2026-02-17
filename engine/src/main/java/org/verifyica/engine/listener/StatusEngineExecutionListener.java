@@ -137,28 +137,29 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 try {
                     DescriptorInfo info = getDescriptorInfo(testDescriptor);
 
-                    StringBuilder sb = stringBuilderThreadLocal.get();
-                    sb.setLength(0);
+                    StringBuilder stringBuilder = stringBuilderThreadLocal.get();
+                    stringBuilder.setLength(0);
 
-                    sb.append(INFO)
+                    stringBuilder
+                            .append(INFO)
                             .append(' ')
                             .append(Thread.currentThread().getName())
                             .append(" | ")
                             .append(TEST);
 
                     if (info.testArgumentDisplayName != null) {
-                        sb.append(" | ").append(info.testArgumentDisplayName);
+                        stringBuilder.append(" | ").append(info.testArgumentDisplayName);
                     }
 
-                    sb.append(" | ").append(info.testClassDisplayName);
+                    stringBuilder.append(" | ").append(info.testClassDisplayName);
 
                     if (info.testMethodDisplayName != null) {
-                        sb.append(" | ").append(info.testMethodDisplayName);
+                        stringBuilder.append(" | ").append(info.testMethodDisplayName);
                     }
 
-                    sb.append(NONE_STRING);
+                    stringBuilder.append(NONE_STRING);
 
-                    System.out.println(sb.toString());
+                    System.out.println(stringBuilder.toString());
                 } catch (Throwable t) {
                     StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                 }
@@ -174,31 +175,33 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
             try {
                 DescriptorInfo info = getDescriptorInfo(testDescriptor);
 
-                StringBuilder sb = stringBuilderThreadLocal.get();
-                sb.setLength(0);
+                StringBuilder stringBuilder = stringBuilderThreadLocal.get();
+                stringBuilder.setLength(0);
 
-                sb.append(INFO)
+                stringBuilder
+                        .append(INFO)
                         .append(' ')
                         .append(Thread.currentThread().getName())
                         .append(" | ");
 
-                sb.append(SKIP);
+                stringBuilder.append(SKIP);
 
                 if (info.testArgumentDisplayName != null) {
-                    sb.append(" | ").append(info.testArgumentDisplayName);
+                    stringBuilder.append(" | ").append(info.testArgumentDisplayName);
                 }
 
-                sb.append(" | ").append(info.testClassDisplayName);
+                stringBuilder.append(" | ").append(info.testClassDisplayName);
 
                 if (info.testMethodDisplayName != null) {
-                    sb.append(" | ").append(info.testMethodDisplayName);
+                    stringBuilder.append(" | ").append(info.testMethodDisplayName);
                 }
 
-                sb.append(' ')
+                stringBuilder
+                        .append(' ')
                         .append(TimestampSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits))
                         .append(NONE_STRING);
 
-                System.out.println(sb.toString());
+                System.out.println(stringBuilder.toString());
             } catch (Throwable t) {
                 StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }
@@ -213,10 +216,11 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
             try {
                 DescriptorInfo info = getDescriptorInfo(testDescriptor);
 
-                StringBuilder sb = stringBuilderThreadLocal.get();
-                sb.setLength(0);
+                StringBuilder stringBuilder = stringBuilderThreadLocal.get();
+                stringBuilder.setLength(0);
 
-                sb.append(INFO)
+                stringBuilder
+                        .append(INFO)
                         .append(' ')
                         .append(Thread.currentThread().getName())
                         .append(" | ")
@@ -228,39 +232,40 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
                 switch (status) {
                     case SUCCESSFUL: {
-                        sb.append(PASS);
+                        stringBuilder.append(PASS);
                         break;
                     }
                     case FAILED: {
-                        sb.append(FAIL);
+                        stringBuilder.append(FAIL);
                         break;
                     }
                     case ABORTED: {
-                        sb.append(SKIP);
+                        stringBuilder.append(SKIP);
                         break;
                     }
                     default: {
-                        sb.append(AnsiColor.TEXT_CYAN_BOLD.wrap("????"));
+                        stringBuilder.append(AnsiColor.TEXT_CYAN_BOLD.wrap("????"));
                     }
                 }
 
-                sb.append(NONE_STRING);
+                stringBuilder.append(NONE_STRING);
 
                 if (info.testArgumentDisplayName != null) {
-                    sb.append(" | ").append(info.testArgumentDisplayName);
+                    stringBuilder.append(" | ").append(info.testArgumentDisplayName);
                 }
 
-                sb.append(" | ").append(info.testClassDisplayName);
+                stringBuilder.append(" | ").append(info.testClassDisplayName);
 
                 if (info.testMethodDisplayName != null) {
-                    sb.append(" | ").append(info.testMethodDisplayName);
+                    stringBuilder.append(" | ").append(info.testMethodDisplayName);
                 }
 
-                sb.append(' ')
+                stringBuilder
+                        .append(' ')
                         .append(TimestampSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits))
                         .append(NONE_STRING);
 
-                System.out.println(sb.toString());
+                System.out.println(stringBuilder.toString());
             } catch (Throwable t) {
                 StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }
