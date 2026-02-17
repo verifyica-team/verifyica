@@ -32,6 +32,7 @@ import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 import org.verifyica.engine.descriptor.TestArgumentTestDescriptor;
 import org.verifyica.engine.descriptor.TestClassTestDescriptor;
+import org.verifyica.engine.descriptor.TestDescriptorStatus;
 import org.verifyica.engine.descriptor.TestMethodTestDescriptor;
 import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.logger.Logger;
@@ -78,13 +79,13 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
             .append("SKIP")
             .append(AnsiColor.NONE)
             .build();
-    
+
     private static final String NONE_STRING = AnsiColor.NONE.toString();
 
     private final boolean consoleLogTests;
     private final String consoleLogTimingUnits;
     private final Map<TestDescriptor, Stopwatch> stopwatches;
-    
+
     private final ThreadLocal<StringBuilder> stringBuilderThreadLocal;
     private final ThreadLocal<Map<TestDescriptor, DescriptorInfo>> descriptorInfoCache;
 
@@ -107,11 +108,11 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 "configuration property [%s] = [%s]", Constants.MAVEN_PLUGIN_LOG_TIMING_UNITS, consoleLogTimingUnits);
 
         stopwatches = new ConcurrentHashMap<>();
-        
+
         stringBuilderThreadLocal = ThreadLocal.withInitial(() -> new StringBuilder(256));
         descriptorInfoCache = ThreadLocal.withInitial(() -> new ConcurrentHashMap<>());
     }
-    
+
     /**
      * Helper class to cache descriptor information
      */
@@ -119,7 +120,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
         final String testClassDisplayName;
         final String testArgumentDisplayName;
         final String testMethodDisplayName;
-        
+
         DescriptorInfo(String testClassDisplayName, String testArgumentDisplayName, String testMethodDisplayName) {
             this.testClassDisplayName = testClassDisplayName;
             this.testArgumentDisplayName = testArgumentDisplayName;
@@ -135,15 +136,15 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
             if (consoleLogTests) {
                 try {
                     DescriptorInfo info = getDescriptorInfo(testDescriptor);
-                    
+
                     StringBuilder sb = stringBuilderThreadLocal.get();
                     sb.setLength(0);
-                    
+
                     sb.append(INFO)
-                      .append(' ')
-                      .append(Thread.currentThread().getName())
-                      .append(" | ")
-                      .append(TEST);
+                            .append(' ')
+                            .append(Thread.currentThread().getName())
+                            .append(" | ")
+                            .append(TEST);
 
                     if (info.testArgumentDisplayName != null) {
                         sb.append(" | ").append(info.testArgumentDisplayName);
@@ -172,14 +173,14 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
             try {
                 DescriptorInfo info = getDescriptorInfo(testDescriptor);
-                
+
                 StringBuilder sb = stringBuilderThreadLocal.get();
                 sb.setLength(0);
-                
+
                 sb.append(INFO)
-                  .append(' ')
-                  .append(Thread.currentThread().getName())
-                  .append(" | ");
+                        .append(' ')
+                        .append(Thread.currentThread().getName())
+                        .append(" | ");
 
                 sb.append(SKIP);
 
@@ -194,8 +195,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 }
 
                 sb.append(' ')
-                  .append(TimestampSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits))
-                  .append(NONE_STRING);
+                        .append(TimestampSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits))
+                        .append(NONE_STRING);
 
                 System.out.println(sb.toString());
             } catch (Throwable t) {
@@ -211,15 +212,15 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
             try {
                 DescriptorInfo info = getDescriptorInfo(testDescriptor);
-                
+
                 StringBuilder sb = stringBuilderThreadLocal.get();
                 sb.setLength(0);
-                
+
                 sb.append(INFO)
-                  .append(' ')
-                  .append(Thread.currentThread().getName())
-                  .append(" | ")
-                  .append(AnsiColor.TEXT_WHITE_BRIGHT.toString());
+                        .append(' ')
+                        .append(Thread.currentThread().getName())
+                        .append(" | ")
+                        .append(AnsiColor.TEXT_WHITE_BRIGHT.toString());
 
                 TestExecutionResult.Status status = getDescendantFailureCount(testDescriptor) > 0
                         ? TestExecutionResult.Status.FAILED
@@ -256,8 +257,8 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
                 }
 
                 sb.append(' ')
-                  .append(TimestampSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits))
-                  .append(NONE_STRING);
+                        .append(TimestampSupport.toTimingUnit(elapsedTime.toNanos(), consoleLogTimingUnits))
+                        .append(NONE_STRING);
 
                 System.out.println(sb.toString());
             } catch (Throwable t) {
@@ -275,12 +276,12 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     private DescriptorInfo getDescriptorInfo(TestDescriptor testDescriptor) {
         Map<TestDescriptor, DescriptorInfo> cache = descriptorInfoCache.get();
         DescriptorInfo info = cache.get(testDescriptor);
-        
+
         if (info == null) {
             String testClassDisplayName = null;
             String testArgumentDisplayName = null;
             String testMethodDisplayName = null;
-            
+
             TestClassTestDescriptor classDescriptor = findClassTestDescriptor(testDescriptor);
             if (classDescriptor != null) {
                 testClassDisplayName = classDescriptor.getDisplayName();
@@ -288,18 +289,19 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
             TestArgumentTestDescriptor testArgumentTestDescriptor = findArgumentTestDescriptor(testDescriptor);
             if (testArgumentTestDescriptor != null) {
-                testArgumentDisplayName = testArgumentTestDescriptor.getTestArgument().getName();
+                testArgumentDisplayName =
+                        testArgumentTestDescriptor.getTestArgument().getName();
             }
 
             TestMethodTestDescriptor testMethodTestDescriptor = findTestMethodTestDescriptor(testDescriptor);
             if (testMethodTestDescriptor != null) {
                 testMethodDisplayName = testMethodTestDescriptor.getDisplayName() + "()";
             }
-            
+
             info = new DescriptorInfo(testClassDisplayName, testArgumentDisplayName, testMethodDisplayName);
             cache.put(testDescriptor, info);
         }
-        
+
         return info;
     }
 
