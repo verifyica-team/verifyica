@@ -194,7 +194,7 @@ public class EngineDiscoveryRequestResolver {
             pruneClassDefinitions(classDefinitions);
             ClassDefinitionFilter.filter(classDefinitions);
             buildEngineDescriptor(classDefinitions, testDescriptor);
-            prunedDisabledTestMethods(testDescriptor);
+            pruneDisabledTestMethods(testDescriptor);
         } catch (EngineException e) {
             throw e;
         } catch (Throwable t) {
@@ -369,7 +369,7 @@ public class EngineDiscoveryRequestResolver {
      *
      * @param testDescriptor testDescriptor
      */
-    private static void prunedDisabledTestMethods(TestDescriptor testDescriptor) {
+    private static void pruneDisabledTestMethods(TestDescriptor testDescriptor) {
         List<TestDescriptor> prunedTestDescriptors = testDescriptor.getDescendants().stream()
                 .filter((Predicate<TestDescriptor>)
                         testDescriptor1 -> testDescriptor1 instanceof TestMethodTestDescriptor
@@ -475,7 +475,7 @@ public class EngineDiscoveryRequestResolver {
                     List<Method> afterEachMethods = ClassSupport.findMethods(
                             testClass, ResolverPredicates.AFTER_EACH_METHOD, HierarchyTraversalMode.BOTTOM_UP);
 
-                    validateSingleMethodPerClass(Verifyica.AfterEach.class, beforeEachMethods);
+                    validateSingleMethodPerClass(Verifyica.AfterEach.class, afterEachMethods);
 
                     TestMethodTestDescriptor testMethodTestDescriptor = new TestMethodTestDescriptor(
                             testMethodDescriptorUniqueId,
