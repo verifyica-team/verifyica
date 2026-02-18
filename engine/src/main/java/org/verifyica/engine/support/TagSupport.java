@@ -48,8 +48,11 @@ public class TagSupport {
         Verifyica.Tag annotation = clazz.getAnnotation(Verifyica.Tag.class);
         if (annotation != null) {
             String tag = annotation.value();
-            if (tag != null && !tag.trim().isEmpty()) {
-                tags.add(tag.trim());
+            if (tag != null) {
+                String trimmed = tag.trim();
+                if (!trimmed.isEmpty()) {
+                    tags.add(trimmed);
+                }
             }
         }
 
@@ -59,8 +62,11 @@ public class TagSupport {
             if (tagAnnotations != null) {
                 for (Verifyica.Tag tagAnnotation : tagAnnotations) {
                     String tag = tagAnnotation.value();
-                    if (tag != null && !tag.trim().isEmpty()) {
-                        tags.add(tag.trim());
+                    if (tag != null) {
+                        String trimmed = tag.trim();
+                        if (!trimmed.isEmpty()) {
+                            tags.add(trimmed);
+                        }
                     }
                 }
             }
@@ -83,8 +89,11 @@ public class TagSupport {
         Verifyica.Tag annotation = method.getAnnotation(Verifyica.Tag.class);
         if (annotation != null) {
             String tag = annotation.value();
-            if (tag != null && !tag.trim().isEmpty()) {
-                tags.add(tag.trim());
+            if (tag != null) {
+                String trimmed = tag.trim();
+                if (!trimmed.isEmpty()) {
+                    tags.add(trimmed);
+                }
             }
         }
 
@@ -94,8 +103,11 @@ public class TagSupport {
             if (tagAnnotations != null) {
                 for (Verifyica.Tag tagAnnotation : tagAnnotations) {
                     String tag = tagAnnotation.value();
-                    if (tag != null && !tag.trim().isEmpty()) {
-                        tags.add(tag.trim());
+                    if (tag != null) {
+                        String trimmed = tag.trim();
+                        if (!trimmed.isEmpty()) {
+                            tags.add(trimmed);
+                        }
                     }
                 }
             }

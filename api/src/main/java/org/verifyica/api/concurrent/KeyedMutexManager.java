@@ -51,9 +51,7 @@ public class KeyedMutexManager {
      * @return true if the lock was free or locked by the current Thread, otherwise false
      */
     public static boolean tryLock(String key) {
-        notBlank(key, "key is null", "key is blank");
-
-        String trimmedKey = key.trim();
+        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
         MutexReference mutexReference;
         boolean isReentrant = false;
 
@@ -101,10 +99,9 @@ public class KeyedMutexManager {
      * @throws InterruptedException InterruptedException
      */
     public static boolean tryLock(String key, long timeout, TimeUnit timeUnit) throws InterruptedException {
-        notBlank(key, "key is null", "key is blank");
         notNull(timeUnit, "timeUnit is null");
 
-        String trimmedKey = key.trim();
+        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
         MutexReference mutexReference;
         boolean isReentrant = false;
 
@@ -148,9 +145,7 @@ public class KeyedMutexManager {
      * @param key key
      */
     public static void lock(String key) {
-        notBlank(key, "key is null", "key is blank");
-
-        String trimmedKey = key.trim();
+        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
         MutexReference mutexReference;
         boolean isReentrant = false;
 
@@ -180,9 +175,7 @@ public class KeyedMutexManager {
      * @param key key
      */
     public static void unlock(String key) {
-        notBlank(key, "key is null", "key is blank");
-
-        String trimmedKey = key.trim();
+        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
         MutexReference mutexReference;
         int holdCountBeforeUnlock;
 
@@ -225,9 +218,7 @@ public class KeyedMutexManager {
      * @return true if the key is locked, otherwise false
      */
     public static boolean isLocked(String key) {
-        notBlank(key, "key is null", "key is blank");
-
-        String trimmedKey = key.trim();
+        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
 
         LOCK.lock();
         try {
@@ -268,20 +259,23 @@ public class KeyedMutexManager {
 
     /**
      * Validate a String is not null and not blank, throwing an IllegalArgumentException
-     * if it is null or blank
+     * if it is null or blank. Returns the trimmed string.
      *
      * @param string string
      * @param nullMessage nullMessage
      * @param blankMessage blankMessage
+     * @return the trimmed string
      */
-    private static void notBlank(String string, String nullMessage, String blankMessage) {
+    private static String trimAndValidate(String string, String nullMessage, String blankMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }
 
-        if (string.trim().isEmpty()) {
+        String trimmed = string.trim();
+        if (trimmed.isEmpty()) {
             throw new IllegalArgumentException(blankMessage);
         }
+        return trimmed;
     }
 
     /**

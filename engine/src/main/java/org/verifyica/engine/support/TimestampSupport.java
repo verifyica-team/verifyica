@@ -78,83 +78,73 @@ public final class TimestampSupport {
         Precondition.notNull(format, "format is null");
 
         long nanosecondsPositive = nanoseconds > 0 ? nanoseconds : -nanoseconds;
-        long millisecondsDuration = (long) ((double) nanosecondsPositive / 1e+6d);
+        long millisecondsDuration = nanosecondsPositive / 1_000_000L;
         long hours = TimeUnit.MILLISECONDS.toHours(millisecondsDuration);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(millisecondsDuration) - (hours * 60);
         long seconds = TimeUnit.MILLISECONDS.toSeconds(millisecondsDuration) - ((hours * 60 * 60) + (minutes * 60));
         long milliseconds =
                 millisecondsDuration - ((hours * 60 * 60 * 1_000) + (minutes * 60 * 1_000) + (seconds * 1_000));
 
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append(hours);
-
         boolean useShortFormat = format == Format.SHORT;
+        StringBuilder stringBuilder = new StringBuilder(64);
+        boolean needsSeparator = false;
 
-        if (useShortFormat) {
-            stringBuilder.append(" h");
-        } else {
-            stringBuilder.append(" hour");
-            if (hours != 1) {
-                stringBuilder.append("s");
+        // Append hours if non-zero
+        if (hours != 0) {
+            stringBuilder.append(hours);
+            if (useShortFormat) {
+                stringBuilder.append(" h");
+            } else {
+                stringBuilder.append(" hour");
+                if (hours != 1) {
+                    stringBuilder.append("s");
+                }
             }
+            needsSeparator = true;
         }
 
-        stringBuilder.append(", ");
-        stringBuilder.append(minutes);
-
-        if (useShortFormat) {
-            stringBuilder.append(" m");
-        } else {
-            stringBuilder.append(" minute");
-            if (minutes != 1) {
-                stringBuilder.append("s");
+        // Append minutes if non-zero or if hours were appended
+        if (minutes != 0 || needsSeparator) {
+            if (needsSeparator) {
+                stringBuilder.append(", ");
             }
+            stringBuilder.append(minutes);
+            if (useShortFormat) {
+                stringBuilder.append(" m");
+            } else {
+                stringBuilder.append(" minute");
+                if (minutes != 1) {
+                    stringBuilder.append("s");
+                }
+            }
+            needsSeparator = true;
         }
 
-        stringBuilder.append(", ");
-        stringBuilder.append(seconds);
-
-        if (useShortFormat) {
-            stringBuilder.append(" s");
-        } else {
-            stringBuilder.append(" second");
-            if (seconds != 1) {
-                stringBuilder.append("s");
+        // Append seconds if non-zero or if minutes/hours were appended
+        if (seconds != 0 || needsSeparator) {
+            if (needsSeparator) {
+                stringBuilder.append(", ");
             }
+            stringBuilder.append(seconds);
+            if (useShortFormat) {
+                stringBuilder.append(" s");
+            } else {
+                stringBuilder.append(" second");
+                if (seconds != 1) {
+                    stringBuilder.append("s");
+                }
+            }
+            needsSeparator = true;
         }
 
-        stringBuilder.append(", ");
+        // Always append milliseconds
+        if (needsSeparator) {
+            stringBuilder.append(", ");
+        }
         stringBuilder.append(milliseconds);
         stringBuilder.append(" ms");
 
-        String result = stringBuilder.toString();
-
-        if (result.startsWith("0 h, ")) {
-            result = result.substring("0 h, ".length());
-        }
-
-        if (result.startsWith("0 hours, ")) {
-            result = result.substring("0 hours, ".length());
-        }
-
-        if (result.startsWith("0 m, ")) {
-            result = result.substring("0 m, ".length());
-        }
-
-        if (result.startsWith("0 minutes, ")) {
-            result = result.substring("0 minutes, ".length());
-        }
-
-        if (result.startsWith("0 s, ")) {
-            result = result.substring("0 s, ".length());
-        }
-
-        if (result.startsWith("0 seconds, ")) {
-            result = result.substring("0 seconds, ".length());
-        }
-
-        return result;
+        return stringBuilder.toString();
     }
 
     /**
@@ -184,39 +174,46 @@ public final class TimestampSupport {
      * @return a String representing the converted nanoseconds value
      */
     public static String toTimingUnit(long nanoseconds, String timingUnit) {
-        String workingUnit = timingUnit == null || timingUnit.trim().equalsIgnoreCase("")
-                ? "milliseconds"
-                : timingUnit.trim().toLowerCase(Locale.ENGLISH);
+        if (timingUnit == null) {
+            return nanoseconds / 1_000_000L + " ms";
+        }
+
+        String trimmed = timingUnit.trim();
+        if (trimmed.isEmpty()) {
+            return nanoseconds / 1_000_000L + " ms";
+        }
+
+        String workingUnit = trimmed.toLowerCase(Locale.ENGLISH);
 
         switch (workingUnit) {
             case "nanoseconds": {
                 return nanoseconds + " ns";
             }
             case "microseconds": {
-                return (nanoseconds / 1e+3) + " μs";
+                return nanoseconds / 1_000L + " \u03bcs";
             }
             case "seconds": {
-                return (nanoseconds / 1e+9) + " s";
+                return nanoseconds / 1_000_000_000L + " s";
             }
             case "minutes": {
-                return (nanoseconds / 1e+12) + " m";
+                return nanoseconds / 60_000_000_000L + " m";
             }
             case "adaptive": {
-                if (nanoseconds >= 1e+12) {
-                    return (nanoseconds / 1e+12) + " m";
-                } else if (nanoseconds >= 1e+9) {
-                    return (nanoseconds / 1e+9) + " s";
-                } else if (nanoseconds >= 1e+6) {
-                    return (nanoseconds / 1e+6) + " ms";
-                } else if (nanoseconds >= 1e+3) {
-                    return (nanoseconds / 1e+3) + " μs";
+                if (nanoseconds >= 1_000_000_000_000L) {
+                    return nanoseconds / 60_000_000_000L + " m";
+                } else if (nanoseconds >= 1_000_000_000L) {
+                    return nanoseconds / 1_000_000_000L + " s";
+                } else if (nanoseconds >= 1_000_000L) {
+                    return nanoseconds / 1_000_000L + " ms";
+                } else if (nanoseconds >= 1_000L) {
+                    return nanoseconds / 1_000L + " \u03bcs";
                 } else {
                     return nanoseconds + " ns";
                 }
             }
             case "milliseconds":
             default: {
-                return (nanoseconds / 1e+6) + " ms";
+                return nanoseconds / 1_000_000L + " ms";
             }
         }
     }

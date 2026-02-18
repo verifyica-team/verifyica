@@ -17,6 +17,7 @@
 package org.verifyica.engine.filter;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -78,11 +79,13 @@ public class ClassDefinitionFilter {
         }
 
         // Apply EXCLUDE filters - remove matching classes
-        for (ClassDefinition classDefinition : new ArrayList<>(workingClassDefinitionSet)) {
+        Iterator<ClassDefinition> iterator = workingClassDefinitionSet.iterator();
+        while (iterator.hasNext()) {
+            ClassDefinition classDefinition = iterator.next();
             Class<?> testClass = classDefinition.getTestClass();
             for (Filter filter : excludeFilters) {
                 if (filter.matches(testClass)) {
-                    workingClassDefinitionSet.remove(classDefinition);
+                    iterator.remove();
                     break; // Once matched by any exclude filter, remove it
                 }
             }

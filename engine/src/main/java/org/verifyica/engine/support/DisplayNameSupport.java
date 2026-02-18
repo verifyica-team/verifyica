@@ -46,8 +46,11 @@ public class DisplayNameSupport {
         Verifyica.DisplayName annotation = clazz.getAnnotation(Verifyica.DisplayName.class);
         if (annotation != null) {
             String name = annotation.value();
-            if (name != null && !name.trim().isEmpty()) {
-                displayName = name.trim();
+            if (name != null) {
+                String trimmed = name.trim();
+                if (!trimmed.isEmpty()) {
+                    displayName = trimmed;
+                }
             }
         }
 
@@ -68,8 +71,11 @@ public class DisplayNameSupport {
         Verifyica.DisplayName annotation = method.getAnnotation(Verifyica.DisplayName.class);
         if (annotation != null) {
             String name = annotation.value();
-            if (name != null && !name.trim().isEmpty()) {
-                displayName = name.trim();
+            if (name != null) {
+                String trimmed = name.trim();
+                if (!trimmed.isEmpty()) {
+                    displayName = trimmed;
+                }
             }
         }
 
