@@ -17,12 +17,11 @@
 package org.verifyica.engine.common;
 
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Class to implement a Stopwatch
+ * Stopwatch.
  *
  * <p>This class provides a simple way to measure elapsed time, supporting
  * multiple start/stop cycles with accumulated duration. All operations are
@@ -46,7 +45,7 @@ public final class Stopwatch {
     private long accumulatedNanos;
 
     /**
-     * Start time of current running segment (nanoseconds), valid only when running
+     * Start time of current running segment (nanoseconds), valid only when running.
      */
     private long startNanoTime;
 
@@ -56,9 +55,9 @@ public final class Stopwatch {
     private boolean running;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * <p>The Stopwatch starts automatically.
+     * <p>The stopwatch starts automatically.
      */
     public Stopwatch() {
         this.readWriteLock = new ReentrantReadWriteLock(true);
@@ -110,8 +109,7 @@ public final class Stopwatch {
         readWriteLock.writeLock().lock();
         try {
             if (running) {
-                long now = System.nanoTime();
-                accumulatedNanos += (now - startNanoTime);
+                accumulatedNanos += (System.nanoTime() - startNanoTime);
                 running = false;
             }
             return this;
@@ -129,11 +127,8 @@ public final class Stopwatch {
     public Duration elapsed() {
         readWriteLock.readLock().lock();
         try {
-            long total = accumulatedNanos;
-            if (running) {
-                total += (System.nanoTime() - startNanoTime);
-            }
-            return Duration.ofNanos(total);
+            final long totalNanos = running ? accumulatedNanos + System.nanoTime() - startNanoTime : accumulatedNanos;
+            return Duration.ofNanos(totalNanos);
         } finally {
             readWriteLock.readLock().unlock();
         }
@@ -164,18 +159,16 @@ public final class Stopwatch {
 
     @Override
     public String toString() {
-        return String.valueOf(elapsed().toNanos());
+        return Long.toString(elapsed().toNanos());
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Stopwatch)) return false;
-        Stopwatch stopwatch = (Stopwatch) o;
-        return Objects.equals(fastId, stopwatch.fastId);
+        return (this == o) || (o instanceof Stopwatch && fastId.equals(((Stopwatch) o).fastId));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(fastId);
+        return fastId.hashCode();
     }
 }
