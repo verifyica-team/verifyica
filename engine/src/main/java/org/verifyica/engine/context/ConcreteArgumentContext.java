@@ -43,8 +43,11 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
      * @param argument argument
      */
     public ConcreteArgumentContext(ClassContext classContext, int argumentIndex, Argument<?> argument) {
-        this.classContext = classContext;
+        Precondition.notNull(classContext, "classContext is null");
+        Precondition.notNull(argument, "argument is null");
+
         this.argumentIndex = argumentIndex;
+        this.classContext = classContext;
         this.argument = argument;
     }
 

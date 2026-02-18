@@ -19,6 +19,7 @@ package org.verifyica.engine.context;
 import java.util.Objects;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
+import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.configuration.ImmutableConfiguration;
 
 /**
@@ -36,6 +37,9 @@ public class ConcreteEngineContext extends AbstractContext implements EngineCont
      * @param version version
      */
     public ConcreteEngineContext(Configuration configuration, String version) {
+        Precondition.notNull(configuration, "configuration is null");
+        Precondition.notNull(version, "version is null");
+
         this.configuration = new ImmutableConfiguration(configuration);
         this.version = version;
     }
