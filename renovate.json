@@ -19,6 +19,14 @@
     {
       "matchManagers": ["maven"],
       "groupName": "Maven dependencies"
+    },
+    {
+      "matchPackagePatterns": [
+        "^org\\.junit\\..*",
+        "^junit:junit$"
+      ],
+      "allowedVersions": "<6.0.0",
+      "groupName": "JUnit 5.x pinned"
     }
   ]
 }
