@@ -135,7 +135,7 @@ public class ConcreteArgumentContextTest {
         @DisplayName("Should throw exception when casting to incompatible type")
         public void shouldThrowExceptionWhenCastingToIncompatibleType() {
             assertThatThrownBy(() -> context.getArgumentAs(Integer.class))
-                    .isInstanceOf(ClassCastException.class)
+                    .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("Cannot cast Argument<")
                     .hasMessageContaining("java.lang.String")
                     .hasMessageContaining("java.lang.Integer");

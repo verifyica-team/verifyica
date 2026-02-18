@@ -77,7 +77,7 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
         } else if (type.isAssignableFrom(argument.getPayload().getClass())) {
             return (Argument<V>) argument;
         } else {
-            throw new ClassCastException(format(
+            throw new IllegalArgumentException(format(
                     "Cannot cast Argument<%s> to Argument<%s>",
                     argument.getPayload().getClass().getName(), type.getName()));
         }
