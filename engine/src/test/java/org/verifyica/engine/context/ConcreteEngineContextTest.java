@@ -59,9 +59,8 @@ public class ConcreteEngineContextTest {
         @Test
         @DisplayName("Should handle null version")
         public void shouldHandleNullVersion() {
-            ConcreteEngineContext nullVersionContext = new ConcreteEngineContext(mockConfiguration, null);
-
-            assertThat(nullVersionContext.getVersion()).isNull();
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                    .isThrownBy(() -> new ConcreteEngineContext(mockConfiguration, null));
         }
     }
 

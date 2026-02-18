@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.verifyica.api.ClassContext;
 import org.verifyica.api.Configuration;
 import org.verifyica.api.EngineContext;
+import org.verifyica.engine.common.Precondition;
 
 /**
  * Class to implement ConcreteClassContext
@@ -52,11 +53,21 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
             Set<String> testClassTags,
             int testArgumentParallelism,
             AtomicReference<Object> testClassInstanceReference) {
+        Precondition.notNull(engineContext, "engineContext is null");
+        Precondition.notNull(testClass, "testClass is null");
+        Precondition.notNull(testClassDisplayName, "testClassDisplayName is null");
+        Precondition.notNull(testClassTags, "testClassTags is null");
+        Precondition.notNull(testClassInstanceReference, "testClassInstanceReference is null");
+
+        if (testArgumentParallelism < 0) {
+            throw new IllegalArgumentException("testArgumentParallelism must be non-negative");
+        }
+
+        this.testArgumentParallelism = testArgumentParallelism;
         this.engineContext = engineContext;
         this.testClass = testClass;
         this.testClassDisplayName = testClassDisplayName;
         this.testClassTags = testClassTags;
-        this.testArgumentParallelism = testArgumentParallelism;
         this.testClassInstanceReference = testClassInstanceReference;
     }
 
