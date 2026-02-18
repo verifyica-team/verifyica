@@ -349,7 +349,7 @@ public class CleanupExecutorTest {
 
             assertThatThrownBy(() -> cleanupExecutor.execute())
                     .isInstanceOf(IllegalStateException.class)
-                    .hasMessage("CleanupExecutor has already been run");
+                    .hasMessage("CleanupExecutor has already run");
         }
 
         @Test

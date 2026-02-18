@@ -112,7 +112,7 @@ public final class CleanupExecutor {
      */
     public CleanupExecutor execute() {
         if (hasRun) {
-            throw new IllegalStateException("CleanupExecutor has already been run");
+            throw new IllegalStateException("CleanupExecutor has already run");
         }
 
         hasRun = true;
