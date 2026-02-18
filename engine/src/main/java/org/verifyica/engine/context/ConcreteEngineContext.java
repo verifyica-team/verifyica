@@ -56,7 +56,7 @@ public class ConcreteEngineContext extends AbstractContext implements EngineCont
 
     @Override
     public String toString() {
-        return "ConcreteEngineContext{" + "version='" + version + '\'' + '}';
+        return "ConcreteEngineContext{version='" + version + "'}";
     }
 
     @Override

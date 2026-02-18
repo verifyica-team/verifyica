@@ -18,7 +18,6 @@ package org.verifyica.engine.support;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.verifyica.engine.common.Precondition;
@@ -71,14 +70,18 @@ public class ObjectSupport {
     public static String toString(List<Method> methods) {
         Precondition.notNull(methods, "methods is null");
 
-        StringBuilder stringBuilder = new StringBuilder();
+        int size = methods.size();
+        if (size == 0) {
+            return "";
+        }
+        if (size == 1) {
+            return methods.get(0).getName();
+        }
 
-        Iterator<Method> iterator = methods.iterator();
-        while (iterator.hasNext()) {
-            stringBuilder.append(iterator.next().getName());
-            if (iterator.hasNext()) {
-                stringBuilder.append(", ");
-            }
+        StringBuilder stringBuilder = new StringBuilder(size * 16);
+        stringBuilder.append(methods.get(0).getName());
+        for (int i = 1; i < size; i++) {
+            stringBuilder.append(", ").append(methods.get(i).getName());
         }
 
         return stringBuilder.toString();

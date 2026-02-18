@@ -259,8 +259,9 @@ public class AnsiColoredString {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AnsiColoredString that = (AnsiColoredString) o;
-        return Objects.equals(stringBuilder.toString(), that.stringBuilder.toString())
-                && Objects.equals(lastAnsiColor, that.lastAnsiColor);
+        return stringBuilder.length() == that.stringBuilder.length()
+                && Objects.equals(lastAnsiColor, that.lastAnsiColor)
+                && Objects.equals(stringBuilder.toString(), that.stringBuilder.toString());
     }
 
     @Override

@@ -32,6 +32,7 @@ import java.util.Set;
 public class ImmutableProperties extends Properties {
 
     private static final long serialVersionUID = 1L;
+    private Set<Map.Entry<Object, Object>> unmodifiableEntrySet;
 
     /**
      * Constructor
@@ -101,7 +102,10 @@ public class ImmutableProperties extends Properties {
 
     @Override
     public synchronized Set<Map.Entry<Object, Object>> entrySet() {
-        return Collections.unmodifiableSet(super.entrySet());
+        if (unmodifiableEntrySet == null) {
+            unmodifiableEntrySet = Collections.unmodifiableSet(super.entrySet());
+        }
+        return unmodifiableEntrySet;
     }
 
     @Override

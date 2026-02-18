@@ -128,6 +128,6 @@ public class ConcreteClassDefinition implements ClassDefinition {
 
     @Override
     public int hashCode() {
-        return Objects.hash(testClass, testMethodDefinitions, arguments);
+        return Objects.hash(testClass, displayName, testMethodDefinitions, arguments);
     }
 }
