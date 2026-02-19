@@ -16,13 +16,10 @@
 
 package org.verifyica.engine.logger;
 
-import static java.lang.String.format;
-
 import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.verifyica.api.Configuration;
@@ -31,7 +28,11 @@ import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 
 /**
- * Class to implement Logger
+ * Thread-safe logger with lightweight level checks and efficient message assembly.
+ *
+ * <p>This implementation avoids per-call allocations where practical (e.g., via a
+ * {@link ThreadLocal} {@link StringBuilder}), uses a volatile level for fast reads,
+ * and caches the configured regex {@link Pattern} to avoid recompilation for each logger.
  */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class Logger {
@@ -39,259 +40,302 @@ public class Logger {
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
 
+    // Cache integer thresholds once.
+    private static final int TRACE_INT = Level.TRACE.toInt();
+    private static final int DEBUG_INT = Level.DEBUG.toInt();
+    private static final int INFO_INT = Level.INFO.toInt();
+    private static final int WARN_INT = Level.WARN.toInt();
+    private static final int ERROR_INT = Level.ERROR.toInt();
+
+    // Reuse a StringBuilder per thread to reduce allocations under heavy logging.
+    private static final ThreadLocal<StringBuilder> TL_BUILDER = ThreadLocal.withInitial(() -> new StringBuilder(256));
+
+    // Config cache (best-effort). If config changes at runtime, we refresh when values differ.
+    private static volatile String cachedRegex;
+    private static volatile Pattern cachedPattern;
+    private static volatile String cachedLevelText;
+    private static volatile Level cachedDecodedLevel;
+
     private final String name;
-    private final AtomicReference<Level> level;
+
+    /** Cached integer value of {@link Level} fast comparisons. */
+    private volatile int levelInt;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param name name
+     * @param name logger name
      */
-    Logger(String name) {
+    Logger(final String name) {
         this.name = name;
-        this.level = new AtomicReference<>(Level.INFO);
+        this.levelInt = resolveInitialLevel(name).toInt();
+    }
 
-        Configuration configuration = ConcreteConfiguration.getInstance();
+    private static Level resolveInitialLevel(final String loggerName) {
+        final Configuration configuration = ConcreteConfiguration.getInstance();
 
-        String loggerLevel =
+        final String levelText =
                 configuration.getProperties().getProperty(Constants.ENGINE_LOGGER_LEVEL, Level.INFO.toString());
 
-        String regex = configuration.getProperties().getProperty(Constants.ENGINE_LOGGER_REGEX, ".*");
+        final String regex = configuration.getProperties().getProperty(Constants.ENGINE_LOGGER_REGEX, ".*");
 
         try {
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(name);
-            if (matcher.find()) {
-                level.set(Level.decode(loggerLevel));
+            Pattern pattern = cachedPattern;
+            if (pattern == null || cachedRegex == null || !cachedRegex.equals(regex)) {
+                pattern = Pattern.compile(regex);
+                cachedRegex = regex;
+                cachedPattern = pattern;
             }
+
+            Level decoded = cachedDecodedLevel;
+            if (decoded == null || cachedLevelText == null || !cachedLevelText.equals(levelText)) {
+                decoded = Level.decode(levelText);
+                cachedLevelText = levelText;
+                cachedDecodedLevel = decoded;
+            }
+
+            final Matcher matcher = pattern.matcher(loggerName);
+            return matcher.find() ? decoded : Level.INFO;
         } catch (Throwable t) {
-            // INTENTIONALLY EMPTY
+            // Intentionally empty (config errors should not break logging)
+            return Level.INFO;
         }
     }
 
     /**
-     * Method to return if TRACE logging is enabled
+     * Returns whether TRACE logging is enabled.
      *
-     * @return the return value
+     * @return true if TRACE is enabled
      */
     public boolean isTraceEnabled() {
-        return level.get().toInt() >= Level.TRACE.toInt();
+        return levelInt >= TRACE_INT;
     }
 
     /**
-     * Method to return if DEBUG logging is enabled
+     * Returns whether DEBUG logging is enabled.
      *
-     * @return the return value
+     * @return true if DEBUG is enabled
      */
     public boolean isDebugEnabled() {
-        return level.get().toInt() >= Level.DEBUG.toInt();
+        return levelInt >= DEBUG_INT;
     }
 
     /**
-     * Method to return if INFO logging is enabled
+     * Returns whether INFO logging is enabled.
      *
-     * @return the return value
+     * @return true if INFO is enabled
      */
     public boolean isInfoEnabled() {
-        return level.get().toInt() >= Level.INFO.toInt();
+        return levelInt >= INFO_INT;
     }
 
     /**
-     * Method to return if WARNING logging is enabled
+     * Returns whether WARN logging is enabled.
      *
-     * @return the return value
+     * @return true if WARN is enabled
      */
     public boolean isWarnEnabled() {
-        return level.get().toInt() >= Level.WARN.toInt();
+        return levelInt >= WARN_INT;
     }
 
     /**
-     * Method to return if ERROR logging is enabled
+     * Returns whether ERROR logging is enabled.
      *
-     * @return the return value
+     * @return true if ERROR is enabled
      */
     public boolean isErrorEnabled() {
-        return level.get().toInt() >= Level.ERROR.toInt();
+        return levelInt >= ERROR_INT;
     }
 
     /**
-     * Method to dynamically change the logging level
+     * Dynamically changes the logging level.
      *
-     * @param level level
+     * @param level new level
      */
-    public void setLevel(Level level) {
+    public void setLevel(final Level level) {
         Precondition.notNull(level, "level is null");
 
-        this.level.set(level);
+        this.levelInt = level.toInt();
     }
 
     /**
-     * Method to return if a specific Level is enabled
+     * Returns whether a specific level is enabled.
      *
-     * @param level level
-     * @return the return value
+     * @param level level to test
+     * @return true if enabled
      */
-    public boolean isEnabled(Level level) {
+    public boolean isEnabled(final Level level) {
         Precondition.notNull(level, "level is null");
 
-        return this.level.get().toInt() >= level.toInt();
+        return levelInt >= level.toInt();
     }
 
     /**
-     * Method to log a TRACE message
+     * Logs a TRACE message.
      *
      * @param message message
      */
-    public void trace(String message) {
+    public void trace(final String message) {
         if (isTraceEnabled()) {
-            log(System.out, Level.TRACE, "%s", message);
+            logMessage(System.out, Level.TRACE, message);
         }
     }
 
     /**
-     * Method to log a TRACE message
+     * Logs a TRACE message.
      *
      * @param format format
-     * @param objects objects
+     * @param objects arguments
      */
-    public void trace(String format, Object... objects) {
+    public void trace(final String format, final Object... objects) {
         Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isTraceEnabled()) {
-            log(System.out, Level.TRACE, format, objects);
+            logFormat(System.out, Level.TRACE, format, objects);
         }
     }
 
     /**
-     * Method to log a DEBUG message
+     * Logs a DEBUG message.
      *
      * @param message message
      */
-    public void debug(String message) {
+    public void debug(final String message) {
         if (isDebugEnabled()) {
-            log(System.out, Level.DEBUG, "%s", message);
+            logMessage(System.out, Level.DEBUG, message);
         }
     }
 
     /**
-     * Method to log a DEBUG message
+     * Logs a DEBUG message.
      *
      * @param format format
-     * @param objects objects
+     * @param objects arguments
      */
-    public void debug(String format, Object... objects) {
+    public void debug(final String format, final Object... objects) {
         Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isDebugEnabled()) {
-            log(System.out, Level.DEBUG, format, objects);
+            logFormat(System.out, Level.DEBUG, format, objects);
         }
     }
 
     /**
-     * Method to log an INFO message
+     * Logs an INFO message.
      *
      * @param message message
      */
-    public void info(String message) {
+    public void info(final String message) {
         if (isInfoEnabled()) {
-            log(System.out, Level.INFO, "%s", message);
+            logMessage(System.out, Level.INFO, message);
         }
     }
 
     /**
-     * Method to log an INFO message
+     * Logs an INFO message.
      *
      * @param format format
-     * @param objects objects
+     * @param objects arguments
      */
-    public void info(String format, Object... objects) {
+    public void info(final String format, final Object... objects) {
         Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isInfoEnabled()) {
-            log(System.out, Level.INFO, format, objects);
+            logFormat(System.out, Level.INFO, format, objects);
         }
     }
 
     /**
-     * Method to log a WARN message
+     * Logs a WARN message.
      *
      * @param message message
      */
-    public void warn(String message) {
+    public void warn(final String message) {
         if (isWarnEnabled()) {
-            log(System.out, Level.WARN, "%s", message);
+            logMessage(System.out, Level.WARN, message);
         }
     }
 
     /**
-     * Method to log an WARN message
+     * Logs a WARN message.
      *
      * @param format format
-     * @param objects objects
+     * @param objects arguments
      */
-    public void warn(String format, Object... objects) {
+    public void warn(final String format, final Object... objects) {
         Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isWarnEnabled()) {
-            log(System.out, Level.WARN, format, objects);
+            logFormat(System.out, Level.WARN, format, objects);
         }
     }
 
     /**
-     * Method to log an ERROR message
+     * Logs an ERROR message.
      *
      * @param message message
      */
-    public void error(String message) {
+    public void error(final String message) {
         if (isErrorEnabled()) {
-            log(System.err, Level.ERROR, "%s", message);
+            logMessage(System.err, Level.ERROR, message);
         }
     }
 
     /**
-     * Method to log an ERROR message
+     * Logs an ERROR message.
      *
      * @param format format
-     * @param objects objects
+     * @param objects arguments
      */
-    public void error(String format, Object... objects) {
+    public void error(final String format, final Object... objects) {
         Precondition.notNullOrBlank(format, "format is null", "format is blank");
 
         if (isErrorEnabled()) {
-            log(System.err, Level.ERROR, format, objects);
+            logFormat(System.err, Level.ERROR, format, objects);
         }
     }
 
     /**
-     * Method to flush
+     * Flushes both {@code System.out} and {@code System.err}.
      */
     public void flush() {
         System.err.flush();
         System.out.flush();
     }
 
-    /**
-     * Method to log a message
-     *
-     * @param printStream printStream
-     * @param level level
-     * @param format format
-     * @param objects objects
-     */
-    private void log(PrintStream printStream, Level level, String format, Object... objects) {
-        StringBuilder stringBuilder = new StringBuilder(256);
+    private void logMessage(final PrintStream printStream, final Level level, final String message) {
+        // Preserve legacy behavior: if caller passes null, StringBuilder.append(null) prints "null".
+        final StringBuilder sb = TL_BUILDER.get();
+        sb.setLength(0);
 
-        stringBuilder
-                .append(LocalDateTime.now().format(DATE_TIME_FORMATTER))
+        sb.append(LocalDateTime.now().format(DATE_TIME_FORMATTER))
                 .append(" | ")
-                .append(level.toString())
+                .append(level)
                 .append(" | ")
                 .append(Thread.currentThread().getName())
                 .append(" | ")
                 .append(name)
                 .append(" | ")
-                .append(format(format, objects));
+                .append(message);
 
-        printStream.println(stringBuilder);
+        printStream.println(sb);
+    }
+
+    private void logFormat(
+            final PrintStream printStream, final Level level, final String format, final Object... objects) {
+        final StringBuilder sb = TL_BUILDER.get();
+        sb.setLength(0);
+
+        sb.append(LocalDateTime.now().format(DATE_TIME_FORMATTER))
+                .append(" | ")
+                .append(level)
+                .append(" | ")
+                .append(Thread.currentThread().getName())
+                .append(" | ")
+                .append(name)
+                .append(" | ")
+                .append(String.format(format, objects));
+
+        printStream.println(sb);
     }
 }
