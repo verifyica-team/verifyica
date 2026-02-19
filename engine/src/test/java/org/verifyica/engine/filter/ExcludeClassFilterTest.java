@@ -255,6 +255,7 @@ public class ExcludeClassFilterTest {
     }
 
     private static class NestedContainer {
+
         private static class NestedClass {
             // INTENTIONALLY EMPTY
         }

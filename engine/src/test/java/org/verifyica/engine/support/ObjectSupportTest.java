@@ -134,6 +134,7 @@ public class ObjectSupportTest {
     // Test classes
 
     public static class TestClass {
+
         public TestClass() {
             // Default constructor
         }
@@ -148,6 +149,7 @@ public class ObjectSupportTest {
     }
 
     public static class ClassWithoutDefaultConstructor {
+
         public ClassWithoutDefaultConstructor(String arg) {
             // INTENTIONALLY EMPTY
         }

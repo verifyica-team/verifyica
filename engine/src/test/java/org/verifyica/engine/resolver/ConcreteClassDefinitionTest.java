@@ -180,6 +180,7 @@ public class ConcreteClassDefinitionTest {
 
     // Test class
     public static class TestClass {
+
         public void testMethod() {
             // INTENTIONALLY EMPTY
         }

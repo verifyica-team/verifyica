@@ -166,7 +166,7 @@ public class ResolverPredicatesTest {
     // Test classes
 
     public static class ValidClass {
-        
+
         @Verifyica.ClassInterceptorSupplier
         public static Object classInterceptorSupplier() {
             return null;
