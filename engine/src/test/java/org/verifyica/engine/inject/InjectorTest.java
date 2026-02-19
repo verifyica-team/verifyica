@@ -148,6 +148,7 @@ public class InjectorTest {
 
     // Test target classes
     public static class TestTarget {
+
         @Inject
         @Named("testField")
         public String testField;
@@ -166,6 +167,7 @@ public class InjectorTest {
     }
 
     public static class BaseTestTarget {
+
         @Inject
         @Named("inheritedField")
         public String inheritedField;
@@ -176,18 +178,21 @@ public class InjectorTest {
     }
 
     public static class AnnotatedTestTarget {
+
         @Inject
         @CustomInject
         public String customField;
     }
 
     public static class StaticTestTarget {
+
         @Inject
         @CustomInject
         public static String staticField;
     }
 
     public static class PrivateFieldTarget {
+
         @Inject
         @Named("privateField")
         private String privateField;

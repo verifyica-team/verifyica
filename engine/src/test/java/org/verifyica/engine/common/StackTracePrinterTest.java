@@ -476,6 +476,7 @@ public class StackTracePrinterTest {
 
     // Custom exception for testing
     private static class CustomException extends Exception {
+
         public CustomException(String message) {
             super(message);
         }

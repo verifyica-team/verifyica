@@ -547,6 +547,7 @@ public class TestMethodTestDescriptorTest {
     // Test helper class
     @SuppressWarnings("unused")
     public static class TestMethodClass {
+
         public void beforeEachMethod() {
             // INTENTIONALLY EMPTY
         }

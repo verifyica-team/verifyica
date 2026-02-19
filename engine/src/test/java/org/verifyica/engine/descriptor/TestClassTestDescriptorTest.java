@@ -615,12 +615,14 @@ public class TestClassTestDescriptorTest {
 
     // Test helper classes
     public static class SimpleTestClass {
+
         public SimpleTestClass() {
             // INTENTIONALLY EMPTY
         }
     }
 
     public static class TestClassWithMethods {
+
         public TestClassWithMethods() {
             // INTENTIONALLY EMPTY
         }
@@ -635,12 +637,14 @@ public class TestClassTestDescriptorTest {
     }
 
     public static class TestClassThatThrows {
+
         public TestClassThatThrows() {
             throw new RuntimeException("Constructor failed");
         }
     }
 
     public static class AutoCloseableTestClass implements AutoCloseable {
+
         public boolean closed = false;
 
         @Override

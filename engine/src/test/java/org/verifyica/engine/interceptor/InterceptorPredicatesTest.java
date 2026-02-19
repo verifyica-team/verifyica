@@ -130,6 +130,7 @@ public class InterceptorPredicatesTest {
     // Valid engine interceptor
     @Verifyica.Autowired
     public static class ValidEngineInterceptor implements EngineInterceptor {
+
         @Override
         public void initialize(org.verifyica.api.EngineContext engineContext) {
             // INTENTIONALLY EMPTY
@@ -144,6 +145,7 @@ public class InterceptorPredicatesTest {
     // Non-public engine interceptor
     @Verifyica.Autowired
     static class NonPublicEngineInterceptor implements EngineInterceptor {
+
         @Override
         public void initialize(org.verifyica.api.EngineContext engineContext) {
             // INTENTIONALLY EMPTY
@@ -171,6 +173,7 @@ public class InterceptorPredicatesTest {
     @Verifyica.Autowired
     @Verifyica.Disabled
     public static class DisabledEngineInterceptor implements EngineInterceptor {
+
         @Override
         public void initialize(org.verifyica.api.EngineContext engineContext) {
             // INTENTIONALLY EMPTY
@@ -184,6 +187,7 @@ public class InterceptorPredicatesTest {
 
     // Non-autowired engine interceptor
     public static class NonAutowiredEngineInterceptor implements EngineInterceptor {
+
         @Override
         public void initialize(org.verifyica.api.EngineContext engineContext) {
             // INTENTIONALLY EMPTY
@@ -198,6 +202,7 @@ public class InterceptorPredicatesTest {
     // Engine interceptor without default constructor
     @Verifyica.Autowired
     public static class NoDefaultConstructorEngineInterceptor implements EngineInterceptor {
+
         public NoDefaultConstructorEngineInterceptor(String arg) {
             // INTENTIONALLY EMPTY
         }
@@ -216,6 +221,7 @@ public class InterceptorPredicatesTest {
     // Valid class interceptor
     @Verifyica.Autowired
     public static class ValidClassInterceptor implements ClassInterceptor {
+
         @Override
         public void initialize(org.verifyica.api.EngineContext engineContext) {
             // INTENTIONALLY EMPTY
@@ -230,6 +236,7 @@ public class InterceptorPredicatesTest {
     // Non-public class interceptor
     @Verifyica.Autowired
     static class NonPublicClassInterceptor implements ClassInterceptor {
+
         @Override
         public void initialize(org.verifyica.api.EngineContext engineContext) {
             // INTENTIONALLY EMPTY
@@ -257,6 +264,7 @@ public class InterceptorPredicatesTest {
     @Verifyica.Autowired
     @Verifyica.Disabled
     public static class DisabledClassInterceptor implements ClassInterceptor {
+
         @Override
         public void initialize(org.verifyica.api.EngineContext engineContext) {
             // INTENTIONALLY EMPTY
