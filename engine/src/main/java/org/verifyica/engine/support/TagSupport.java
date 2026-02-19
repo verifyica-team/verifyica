@@ -18,7 +18,9 @@ package org.verifyica.engine.support;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Precondition;
 
@@ -26,6 +28,11 @@ import org.verifyica.engine.common.Precondition;
  * Class to implement TagSupport
  */
 public class TagSupport {
+
+    // Caches for tags to avoid repeated annotation lookups.
+    // Using WeakHashMap to avoid classloader leaks.
+    private static final Map<Class<?>, Set<String>> CLASS_TAGS_CACHE = new WeakHashMap<>();
+    private static final Map<Method, Set<String>> METHOD_TAGS_CACHE = new WeakHashMap<>();
 
     /**
      * Constructor
@@ -37,46 +44,58 @@ public class TagSupport {
     /**
      * Method to get a Set of tags for a Class
      *
+     * <p>Performance note: Results are cached per class to avoid repeated annotation lookups.</p>
+     *
      * @param clazz clazz
      * @return a Set of tags
      */
     public static Set<String> getTags(Class<?> clazz) {
         Precondition.notNull(clazz, "clazz is null");
 
-        Set<String> tags = new HashSet<>();
+        synchronized (CLASS_TAGS_CACHE) {
+            Set<String> cached = CLASS_TAGS_CACHE.get(clazz);
+            if (cached != null) {
+                return cached;
+            }
 
-        Verifyica.Tag annotation = clazz.getAnnotation(Verifyica.Tag.class);
-        if (annotation != null) {
-            String tag = annotation.value();
-            if (tag != null) {
-                String trimmed = tag.trim();
-                if (!trimmed.isEmpty()) {
-                    tags.add(trimmed);
+            Set<String> tags = new HashSet<>();
+
+            Verifyica.Tag annotation = clazz.getAnnotation(Verifyica.Tag.class);
+            if (annotation != null) {
+                String tag = annotation.value();
+                if (tag != null) {
+                    String trimmed = tag.trim();
+                    if (!trimmed.isEmpty()) {
+                        tags.add(trimmed);
+                    }
                 }
             }
-        }
 
-        Verifyica.Tags tagsAnnotation = clazz.getAnnotation(Verifyica.Tags.class);
-        if (tagsAnnotation != null) {
-            Verifyica.Tag[] tagAnnotations = tagsAnnotation.value();
-            if (tagAnnotations != null) {
-                for (Verifyica.Tag tagAnnotation : tagAnnotations) {
-                    String tag = tagAnnotation.value();
-                    if (tag != null) {
-                        String trimmed = tag.trim();
-                        if (!trimmed.isEmpty()) {
-                            tags.add(trimmed);
+            Verifyica.Tags tagsAnnotation = clazz.getAnnotation(Verifyica.Tags.class);
+            if (tagsAnnotation != null) {
+                Verifyica.Tag[] tagAnnotations = tagsAnnotation.value();
+                if (tagAnnotations != null) {
+                    for (Verifyica.Tag tagAnnotation : tagAnnotations) {
+                        String tag = tagAnnotation.value();
+                        if (tag != null) {
+                            String trimmed = tag.trim();
+                            if (!trimmed.isEmpty()) {
+                                tags.add(trimmed);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        return tags;
+            CLASS_TAGS_CACHE.put(clazz, tags);
+            return tags;
+        }
     }
 
     /**
      * Method to get a Set of tags for a Method
+     *
+     * <p>Performance note: Results are cached per method to avoid repeated annotation lookups.</p>
      *
      * @param method method
      * @return a Set of tags
@@ -84,35 +103,43 @@ public class TagSupport {
     public static Set<String> getTags(Method method) {
         Precondition.notNull(method, "method is null");
 
-        Set<String> tags = new HashSet<>();
+        synchronized (METHOD_TAGS_CACHE) {
+            Set<String> cached = METHOD_TAGS_CACHE.get(method);
+            if (cached != null) {
+                return cached;
+            }
 
-        Verifyica.Tag annotation = method.getAnnotation(Verifyica.Tag.class);
-        if (annotation != null) {
-            String tag = annotation.value();
-            if (tag != null) {
-                String trimmed = tag.trim();
-                if (!trimmed.isEmpty()) {
-                    tags.add(trimmed);
+            Set<String> tags = new HashSet<>();
+
+            Verifyica.Tag annotation = method.getAnnotation(Verifyica.Tag.class);
+            if (annotation != null) {
+                String tag = annotation.value();
+                if (tag != null) {
+                    String trimmed = tag.trim();
+                    if (!trimmed.isEmpty()) {
+                        tags.add(trimmed);
+                    }
                 }
             }
-        }
 
-        Verifyica.Tags tagsAnnotation = method.getAnnotation(Verifyica.Tags.class);
-        if (tagsAnnotation != null) {
-            Verifyica.Tag[] tagAnnotations = tagsAnnotation.value();
-            if (tagAnnotations != null) {
-                for (Verifyica.Tag tagAnnotation : tagAnnotations) {
-                    String tag = tagAnnotation.value();
-                    if (tag != null) {
-                        String trimmed = tag.trim();
-                        if (!trimmed.isEmpty()) {
-                            tags.add(trimmed);
+            Verifyica.Tags tagsAnnotation = method.getAnnotation(Verifyica.Tags.class);
+            if (tagsAnnotation != null) {
+                Verifyica.Tag[] tagAnnotations = tagsAnnotation.value();
+                if (tagAnnotations != null) {
+                    for (Verifyica.Tag tagAnnotation : tagAnnotations) {
+                        String tag = tagAnnotation.value();
+                        if (tag != null) {
+                            String trimmed = tag.trim();
+                            if (!trimmed.isEmpty()) {
+                                tags.add(trimmed);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        return tags;
+            METHOD_TAGS_CACHE.put(method, tags);
+            return tags;
+        }
     }
 }

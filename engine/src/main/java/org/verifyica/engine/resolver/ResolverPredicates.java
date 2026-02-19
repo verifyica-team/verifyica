@@ -18,6 +18,8 @@ package org.verifyica.engine.resolver;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.function.Predicate;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.support.ClassSupport;
@@ -27,6 +29,11 @@ import org.verifyica.engine.support.HierarchyTraversalMode;
  * Class to implement ResolverPredicates
  */
 public class ResolverPredicates {
+
+    // Cache for TEST_CLASS predicate results to avoid repeated reflection scans.
+    // Using WeakHashMap to avoid classloader leaks - classes are only cached while
+    // they are reachable elsewhere.
+    private static final Map<Class<?>, Boolean> TEST_CLASS_CACHE = new WeakHashMap<>();
 
     /**
      * Predicate to filter class interceptor supplier methods
@@ -65,17 +72,49 @@ public class ResolverPredicates {
     };
 
     /**
-     * Predicate to filter test classes
+     * Predicate to filter test classes.
+     *
+     * <p>Performance note: Results are cached per class to avoid repeated expensive reflection scans
+     * during classpath scanning. The cache uses weak references to avoid classloader leaks.</p>
      */
     public static final Predicate<Class<?>> TEST_CLASS = clazz -> {
-        int modifiers = clazz.getModifiers();
-        return !Modifier.isAbstract(modifiers)
-                && !clazz.isAnnotationPresent(Verifyica.Disabled.class)
-                && hasDefaultConstructor(clazz)
-                && !ClassSupport.findMethods(clazz, ARGUMENT_SUPPLIER_METHOD, HierarchyTraversalMode.BOTTOM_UP)
-                        .isEmpty()
-                && !ClassSupport.findMethods(clazz, TEST_METHOD, HierarchyTraversalMode.TOP_DOWN)
-                        .isEmpty();
+        synchronized (TEST_CLASS_CACHE) {
+            Boolean result = TEST_CLASS_CACHE.get(clazz);
+            if (result != null) {
+                return result;
+            }
+
+            int modifiers = clazz.getModifiers();
+            if (Modifier.isAbstract(modifiers)) {
+                TEST_CLASS_CACHE.put(clazz, Boolean.FALSE);
+                return false;
+            }
+
+            if (clazz.isAnnotationPresent(Verifyica.Disabled.class)) {
+                TEST_CLASS_CACHE.put(clazz, Boolean.FALSE);
+                return false;
+            }
+
+            if (!hasDefaultConstructor(clazz)) {
+                TEST_CLASS_CACHE.put(clazz, Boolean.FALSE);
+                return false;
+            }
+
+            // Check for argument supplier first (usually fewer methods to scan)
+            if (ClassSupport.findMethods(clazz, ARGUMENT_SUPPLIER_METHOD, HierarchyTraversalMode.BOTTOM_UP)
+                    .isEmpty()) {
+                TEST_CLASS_CACHE.put(clazz, Boolean.FALSE);
+                return false;
+            }
+
+            // Finally check for test methods
+            boolean isTestClass = !ClassSupport.findMethods(clazz, TEST_METHOD, HierarchyTraversalMode.TOP_DOWN)
+                    .isEmpty();
+
+            TEST_CLASS_CACHE.put(clazz, isTestClass);
+
+            return isTestClass;
+        }
     };
 
     /**

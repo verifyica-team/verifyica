@@ -110,6 +110,13 @@ public class EngineDiscoveryRequestResolver {
                     MethodSelector.class,
                     UniqueIdSelector.class));
 
+    // Cache for ArgumentSupplier annotations to avoid repeated reflection scans
+    // during a single discovery request. This is safe because annotations are immutable.
+    // Using a static WeakHashMap to avoid classloader leaks while still providing
+    // caching benefits across multiple resolver instances within the same classloader.
+    private static final Map<Class<?>, Verifyica.ArgumentSupplier> ARGUMENT_SUPPLIER_CACHE =
+            new java.util.WeakHashMap<>();
+
     /**
      * Creates a new resolver instance.
      */
@@ -663,14 +670,20 @@ public class EngineDiscoveryRequestResolver {
      * <p>This value is read from {@link Verifyica.ArgumentSupplier#parallelism()} on the resolved supplier
      * method and is clamped to a minimum of {@code 1}.</p>
      *
+     * <p>Performance note: Uses a class-level cache to avoid repeated reflection scans for the same class.</p>
+     *
      * @param testClass the test class
      * @return the argument parallelism (minimum 1)
      */
     private static int getTestArgumentParallelism(Class<?> testClass) {
         LOGGER.trace("getTestArgumentParallelism() testClass [%s]", testClass.getName());
 
-        Method argumentSupplierMethod = getArgumentSupplierMethod(testClass);
-        Verifyica.ArgumentSupplier annotation = argumentSupplierMethod.getAnnotation(Verifyica.ArgumentSupplier.class);
+        Verifyica.ArgumentSupplier annotation = ARGUMENT_SUPPLIER_CACHE.get(testClass);
+        if (annotation == null) {
+            Method argumentSupplierMethod = getArgumentSupplierMethod(testClass);
+            annotation = argumentSupplierMethod.getAnnotation(Verifyica.ArgumentSupplier.class);
+            ARGUMENT_SUPPLIER_CACHE.put(testClass, annotation);
+        }
 
         int parallelism = Math.max(annotation.parallelism(), 1);
 
