@@ -63,13 +63,16 @@ public final class LoggerFactory {
      * @return a Logger
      */
     public static Logger getLogger(String name) {
-        Logger logger = null;
-
-        if (name != null && !name.trim().isEmpty()) {
-            logger = SingletonHolder.SINGLETON.getOrCreateLogger(name.trim());
+        if (name == null) {
+            return ROOT_LOGGER;
         }
 
-        return logger != null ? logger : ROOT_LOGGER;
+        final String trimmed = name.trim();
+        if (trimmed.isEmpty()) {
+            return ROOT_LOGGER;
+        }
+
+        return SingletonHolder.SINGLETON.getOrCreateLogger(trimmed);
     }
 
     /**
