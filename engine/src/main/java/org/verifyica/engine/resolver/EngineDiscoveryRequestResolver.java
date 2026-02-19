@@ -78,7 +78,7 @@ import org.verifyica.engine.support.TagSupport;
  *   <li>Build {@link TestDescriptor} children for class → argument → method, and prune disabled test methods.</li>
  * </ol>
  *
- * <h3>Performance notes</h3>
+ * Performance notes
  *
  * <p>Lifecycle methods (e.g. {@link Verifyica.BeforeEach}) are discovered via reflection. To avoid repeatedly
  * scanning the class hierarchy for every argument and every method, lifecycle methods are resolved once per

@@ -73,6 +73,8 @@ public final class FastId implements Comparable<FastId> {
     }
 
     /**
+     * Returns the most significant 64 bits.
+     *
      * @return the most significant 64 bits
      */
     public long getMostSignificantBits() {
@@ -80,6 +82,8 @@ public final class FastId implements Comparable<FastId> {
     }
 
     /**
+     * Returns the least significant 64 bits.
+     *
      * @return the least significant 64 bits
      */
     public long getLeastSignificantBits() {

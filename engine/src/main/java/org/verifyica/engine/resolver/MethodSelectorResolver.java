@@ -38,14 +38,14 @@ import org.verifyica.engine.support.OrderSupport;
  * applies method ordering rules. The legacy behavior of this resolver is to include:</p>
  *
  * <ul>
- *   <li>All Verifyica test methods in the class, ordered according to {@link OrderSupport#orderMethods(java.util.Collection)},</li>
+ *   <li>All Verifyica test methods in the class, ordered according to {@link OrderSupport#orderMethods(List)} ,</li>
  *   <li>but only up to (and including) the specifically selected method.</li>
  * </ul>
  *
  * <p>This behavior allows a method selection to implicitly include earlier-ordered test methods (for example,
  * when tests are expected to be executed in a defined order).</p>
  *
- * <h3>Optimizations</h3>
+ * Optimizations
  * <ul>
  *   <li>Uses simple loops (no lambda allocations, no {@code AtomicInteger}).</li>
  *   <li>Caches ordered test method lists per class within a single {@link #resolve} call to avoid repeated

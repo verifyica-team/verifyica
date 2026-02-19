@@ -50,7 +50,7 @@ import org.verifyica.engine.support.OrderSupport;
  *   <li>Populates {@code classMethodSet} with the discovered ordered methods.</li>
  * </ol>
  *
- * <h3>Optimizations</h3>
+ * Optimizations
  * <ul>
  *   <li>Builds filter predicates once per {@link #resolve} call (not once per selector).</li>
  *   <li>Deduplicates repeated classpath roots to avoid rescanning the same root multiple times.</li>

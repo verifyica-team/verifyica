@@ -51,7 +51,7 @@ import org.verifyica.engine.support.OrderSupport;
  *   <li>{@code argumentIndexMap}: mapping from test class → selected argument indices</li>
  * </ul>
  *
- * <h3>Compatibility</h3>
+ * Compatibility
  *
  * <p>Verifyica has historically used multiple segment type conventions. This implementation supports both:</p>
  * <ul>
@@ -168,7 +168,7 @@ public class UniqueIdSelectorResolver {
      *
      * <p>Methods are discovered using {@link ResolverPredicates#TEST_METHOD} and
      * {@link HierarchyTraversalMode#BOTTOM_UP}. When {@code order} is {@code true}, methods are ordered via
-     * {@link OrderSupport#orderMethods(java.util.Collection)} before being added.</p>
+     * {@link OrderSupport#orderMethods(Set)} (java.util.Collection)} before being added.</p>
      *
      * @param testClass the test class
      * @param classMethodSet output map of test class → method set
