@@ -182,6 +182,7 @@ new CleanupExecutor()
 ```
 
 **Benefits:**
+
 - **LIFO Order:** Resources cleaned up in reverse order (last added, first cleaned)
 - **Exception Handling:** Continues cleanup even if one task fails
 - **Conditional Cleanup:** `addTaskIfPresent` only adds task if value exists

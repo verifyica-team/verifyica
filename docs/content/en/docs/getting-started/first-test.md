@@ -49,6 +49,7 @@ public class MyFirstTest {
 ### Required Elements
 
 A minimal Verifyica test requires:
+
 1. **One `@ArgumentSupplier` method** - Provides test arguments
 2. **At least one `@Test` method** - Contains test logic
 
@@ -66,6 +67,7 @@ public static Object arguments() {
 ```
 
 Requirements:
+
 - Must be `static`
 - Must be `public`
 - Return type must be one of:
@@ -117,6 +119,7 @@ public static Collection<Argument<String>> arguments() {
 ```
 
 The `Argument<T>` interface provides:
+
 - Named arguments (first parameter is the display name)
 - Type safety
 - Better test reporting
@@ -245,10 +248,12 @@ public void test(String argument) {
 ```
 
 Methods without the current argument as a parameter:
+
 - `@Prepare` - No argument (called before argument processing)
 - `@Conclude` - No argument (called after all arguments)
 
 Methods that can optionally receive the argument:
+
 - `@BeforeAll`, `@BeforeEach`, `@Test`, `@AfterEach`, `@AfterAll`
 
 ## Writing Test Methods
@@ -424,6 +429,7 @@ public class DatabaseTest {
 ```
 
 This test:
+
 - Runs against 3 different database configurations
 - Executes 2 arguments in parallel
 - Has 2 test methods that run for each configuration

@@ -75,6 +75,7 @@ graph TD
 ## Why Verifyica?
 
 Traditional parameterized testing frameworks often lack:
+
 - Proper lifecycle management per parameter
 - Support for complex argument types
 - Fine-grained parallelism control
@@ -85,6 +86,7 @@ Verifyica addresses these limitations while maintaining compatibility with the J
 ## Contributing
 
 Contributions are welcome! See the [GitHub repository](https://github.com/verifyica-team/verifyica) for:
+
 - Filing issues
 - Submitting pull requests
 - Joining discussions
@@ -98,6 +100,7 @@ Contributions are welcome! See the [GitHub repository](https://github.com/verify
 ## Versioning
 
 Verifyica follows semantic versioning (MAJOR.MINOR.PATCH):
+
 - **MAJOR:** Breaking API changes
 - **MINOR:** New features, backward compatible
 - **PATCH:** Bug fixes, backward compatible

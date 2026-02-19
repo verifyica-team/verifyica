@@ -136,6 +136,7 @@ public static Stream<Integer> arguments() {
 ```
 
 Streams are useful for:
+
 - Large datasets that don't fit in memory
 - Lazy evaluation of arguments
 - Dynamic argument generation
@@ -430,6 +431,7 @@ public static Collection<Integer> arguments() {
 ```
 
 For large datasets, consider:
+
 - Using filters to run subsets
 - Splitting into multiple test classes
 - Using `parallelism` to speed up execution

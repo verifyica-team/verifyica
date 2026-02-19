@@ -82,12 +82,14 @@ For TestClass1:
 ### When to Use
 
 **Good candidates for high parallelism:**
+
 - Independent test arguments
 - I/O-bound tests (database, network, file operations)
 - Tests with significant wait times
 - Container-based tests
 
 **Keep parallelism low (1-2) when:**
+
 - Tests share mutable state
 - Tests use limited resources (ports, database connections)
 - Tests are CPU-intensive
@@ -198,6 +200,7 @@ verifyica.engine.argument.parallelism=100
 ```
 
 **Benefits:**
+
 - Extremely lightweight (1000s of virtual threads possible)
 - Ideal for I/O-bound operations
 - Minimal memory footprint
@@ -225,6 +228,7 @@ verifyica.engine.argument.parallelism=4
 ```
 
 **Benefits:**
+
 - Compatible with all Java versions
 - Predictable behavior
 - Better for CPU-bound operations
@@ -238,6 +242,7 @@ verifyica.engine.thread.type=platform-ephemeral
 ```
 
 **Benefits:**
+
 - Isolates ThreadLocal state between arguments
 - Prevents ThreadLocal memory leaks
 - Useful for tests that use ThreadLocal
@@ -382,10 +387,12 @@ public class PerformanceInterceptor implements ClassInterceptor {
 ### Tests Fail Only When Parallel
 
 **Symptoms:**
+
 - Tests pass with `parallelism=1`
 - Tests fail with `parallelism>1`
 
 **Causes:**
+
 1. Shared mutable state
 2. Race conditions
 3. Resource contention
@@ -409,6 +416,7 @@ private synchronized void updateSharedState() {
 ### Tests Are Slower with Parallelism
 
 **Causes:**
+
 1. Too much parallelism (thread overhead)
 2. Resource contention (database, CPU)
 3. Shared locks or bottlenecks
@@ -426,6 +434,7 @@ verifyica.engine.thread.type=platform
 ### Deadlocks or Hangs
 
 **Causes:**
+
 1. Circular dependencies
 2. Resource exhaustion
 3. Improper locking
@@ -457,6 +466,7 @@ public static Collection<Argument<Container>> arguments() {
 ```
 
 With parallelism:
+
 - Sequential: 90 seconds (30s × 3)
 - Parallel (3): 30 seconds (3 containers start simultaneously)
 
@@ -471,6 +481,7 @@ public static Collection<String> arguments() {
 ```
 
 With `parallelism=10` and virtual threads:
+
 - Sequential: 1000 seconds (10s × 100)
 - Parallel (10): 100 seconds (10 at a time)
 

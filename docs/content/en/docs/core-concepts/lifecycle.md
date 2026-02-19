@@ -63,6 +63,7 @@ public void prepare() {
 ```
 
 **When to use:**
+
 - Starting external services (databases, web servers)
 - Loading shared configuration
 - Initializing expensive resources used by all arguments
@@ -102,6 +103,7 @@ public void beforeAll(String argument) {
 ```
 
 **When to use:**
+
 - Creating database connections for this argument
 - Setting up argument-specific resources
 - Initializing state shared across test methods for this argument
@@ -135,6 +137,7 @@ public void beforeEach(String argument) {
 ```
 
 **When to use:**
+
 - Resetting shared state between tests
 - Clearing caches or temporary data
 - Creating test-specific resources
@@ -193,6 +196,7 @@ public void afterEach(String argument) {
 ```
 
 **When to use:**
+
 - Cleaning up test-specific resources
 - Removing temporary files or data
 - Resetting mocks or stubs
@@ -221,6 +225,7 @@ public void afterAll(String argument) {
 ```
 
 **When to use:**
+
 - Closing database connections
 - Releasing argument-specific resources
 - Saving test reports or metrics
@@ -249,6 +254,7 @@ public void conclude() {
 ```
 
 **When to use:**
+
 - Stopping external services
 - Generating aggregate test reports
 - Cleaning up shared resources

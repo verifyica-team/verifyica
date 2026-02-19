@@ -11,6 +11,7 @@ The `CleanupExecutor` utility helps manage cleanup tasks that must execute in re
 ## Overview
 
 `CleanupExecutor` is a specialized utility that:
+
 - Executes cleanup tasks in reverse order (LIFO - Last In, First Out)
 - Continues executing all cleanup tasks even if some fail
 - Collects all exceptions that occur during cleanup

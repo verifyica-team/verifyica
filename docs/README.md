@@ -101,6 +101,7 @@ graph TD
 ### Main Configuration
 
 Edit `config.toml` to configure:
+
 - Site metadata
 - Navigation menus
 - Theme settings
@@ -159,6 +160,7 @@ jobs:
 ### Other Platforms
 
 The site can be deployed to:
+
 - **Netlify**: Connect your Git repository and set build command to `cd docs && hugo --gc --minify`
 - **Vercel**: Similar to Netlify
 - **Any static host**: Upload the `public/` directory contents

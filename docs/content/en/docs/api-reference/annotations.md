@@ -45,6 +45,7 @@ public static Collection<String> arguments() { }
 ```
 
 **Parameters:**
+
 - `parallelism` - Number of arguments to execute in parallel (default: 1)
 
 **Return types:** Collection, Array, Stream, or Argument<T> instances
