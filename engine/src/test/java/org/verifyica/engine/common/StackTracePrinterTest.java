@@ -109,13 +109,29 @@ public class StackTracePrinterTest {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
 
-            // Create exception from user code (not engine)
-            Exception exception = createExceptionFromUserCode();
+            // Create exception with a mix of user and engine stack frames
+            Exception exception = new RuntimeException("User code exception");
+            StackTraceElement[] stackTrace = new StackTraceElement[] {
+                new StackTraceElement("com.example.UserTest", "testMethod", "UserTest.java", 25),
+                new StackTraceElement(
+                        "org.verifyica.engine.internal.TestExecutor", "execute", "TestExecutor.java", 100),
+                new StackTraceElement("java.lang.reflect.Method", "invoke", "Method.java", 498)
+            };
+            exception.setStackTrace(stackTrace);
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
             String output = outputStream.toString();
+            // Verify exception type and message
             assertThat(output).contains("RuntimeException").contains("User code exception");
+            // Verify user code is present
+            assertThat(output).contains("com.example.UserTest").contains("testMethod");
+            // Verify engine classes are pruned
+            assertThat(output).doesNotContain("org.verifyica.engine.internal.TestExecutor");
+            // Verify frames after engine are also pruned
+            assertThat(output).doesNotContain("java.lang.reflect.Method");
+            // Verify "... X more" indicator
+            assertThat(output).contains("... 2 more");
         }
 
         @Test
@@ -198,7 +214,15 @@ public class StackTracePrinterTest {
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
             String output = outputStream.toString();
+            // Verify exception type and message are present
             assertThat(output).contains("RuntimeException").contains("Test exception");
+            // Verify user code is present
+            assertThat(output).contains("UserClass").contains("userMethod");
+            // Verify engine class and beyond are NOT present (pruned)
+            assertThat(output).doesNotContain("org.verifyica.engine.SomeClass");
+            assertThat(output).doesNotContain("FrameworkClass");
+            // Verify "... X more" indicator is present
+            assertThat(output).contains("... 2 more");
         }
     }
 
@@ -358,6 +382,90 @@ public class StackTracePrinterTest {
 
             String output = outputStream.toString();
             assertThat(output).contains("CustomException").contains("Custom exception");
+        }
+    }
+
+    @Nested
+    @DisplayName("Null Parameter Validation Tests")
+    public class NullParameterValidationTests {
+
+        @Test
+        @DisplayName("Should throw NullPointerException when throwable is null")
+        public void shouldThrowNullPointerExceptionWhenThrowableIsNull() {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PrintStream printStream = new PrintStream(outputStream);
+
+            assertThatThrownBy(() -> StackTracePrinter.printStackTrace(null, AnsiColor.NONE, printStream))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("throwable is null");
+        }
+
+        @Test
+        @DisplayName("Should throw NullPointerException when ansiColor is null")
+        public void shouldThrowNullPointerExceptionWhenAnsiColorIsNull() {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PrintStream printStream = new PrintStream(outputStream);
+            Exception exception = new RuntimeException("Test");
+
+            assertThatThrownBy(() -> StackTracePrinter.printStackTrace(exception, null, printStream))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("ansiColor is null");
+        }
+
+        @Test
+        @DisplayName("Should throw NullPointerException when printStream is null")
+        public void shouldThrowNullPointerExceptionWhenPrintStreamIsNull() {
+            Exception exception = new RuntimeException("Test");
+
+            assertThatThrownBy(() -> StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("printStream is null");
+        }
+    }
+
+    @Nested
+    @DisplayName("Immutability Tests")
+    public class ImmutabilityTests {
+
+        @Test
+        @DisplayName("Should not modify original exception stack trace")
+        public void shouldNotModifyOriginalExceptionStackTrace() {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PrintStream printStream = new PrintStream(outputStream);
+
+            // Create exception with known stack trace
+            Exception exception = new RuntimeException("Test exception");
+            StackTraceElement[] originalStackTrace = exception.getStackTrace();
+            int originalLength = originalStackTrace.length;
+
+            // Print the stack trace (which may prune)
+            StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
+
+            // Verify original exception is unchanged
+            StackTraceElement[] stackTraceAfterPrint = exception.getStackTrace();
+            assertThat(stackTraceAfterPrint).hasSize(originalLength);
+            assertThat(stackTraceAfterPrint).isEqualTo(originalStackTrace);
+        }
+
+        @Test
+        @DisplayName("Should not modify cause stack traces")
+        public void shouldNotModifyCauseStackTraces() {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PrintStream printStream = new PrintStream(outputStream);
+
+            Exception rootCause = new IllegalStateException("Root cause");
+            Exception middleCause = new IllegalArgumentException("Middle cause", rootCause);
+            Exception topException = new RuntimeException("Top exception", middleCause);
+
+            StackTraceElement[] originalRootTrace = rootCause.getStackTrace();
+            StackTraceElement[] originalMiddleTrace = middleCause.getStackTrace();
+            StackTraceElement[] originalTopTrace = topException.getStackTrace();
+
+            StackTracePrinter.printStackTrace(topException, AnsiColor.NONE, printStream);
+
+            assertThat(rootCause.getStackTrace()).isEqualTo(originalRootTrace);
+            assertThat(middleCause.getStackTrace()).isEqualTo(originalMiddleTrace);
+            assertThat(topException.getStackTrace()).isEqualTo(originalTopTrace);
         }
     }
 

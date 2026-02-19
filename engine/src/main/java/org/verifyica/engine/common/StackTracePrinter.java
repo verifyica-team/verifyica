@@ -16,10 +16,9 @@
 
 package org.verifyica.engine.common;
 
-import static java.util.Optional.ofNullable;
-
 import java.io.PrintStream;
-import java.util.Arrays;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 
@@ -28,15 +27,23 @@ import org.verifyica.engine.configuration.Constants;
  */
 public class StackTracePrinter {
 
-    private static boolean pruneStackTraces = true;
+    private static final String ENGINE_PACKAGE = "org.verifyica.engine.";
+    private static final boolean PRUNE_STACK_TRACES = initializePruneStackTraces();
 
-    static {
-        ofNullable(ConcreteConfiguration.getInstance().getProperties().getProperty(Constants.ENGINE_PRUNE_STACK_TRACE))
-                .ifPresent(value -> {
-                    if (Constants.FALSE.equals(value)) {
-                        pruneStackTraces = false;
-                    }
-                });
+    /**
+     * Method to initialize the PRUNE_STACK_TRACES constant
+     *
+     * @return true if stack traces should be pruned
+     */
+    private static boolean initializePruneStackTraces() {
+        try {
+            String value =
+                    ConcreteConfiguration.getInstance().getProperties().getProperty(Constants.ENGINE_PRUNE_STACK_TRACE);
+            return !Constants.FALSE.equals(value);
+        } catch (Exception e) {
+            // Use default (true) if configuration fails
+            return true;
+        }
     }
 
     /**
@@ -54,49 +61,96 @@ public class StackTracePrinter {
      * @param printStream printStream
      */
     public static void printStackTrace(Throwable throwable, AnsiColor ansiColor, PrintStream printStream) {
-        if (pruneStackTraces) {
-            pruneStackTrace(throwable);
+        if (throwable == null) {
+            throw new IllegalArgumentException("throwable is null");
         }
 
-        synchronized (printStream) {
-            printStream.print(ansiColor);
-            throwable.printStackTrace(printStream);
-            printStream.print(AnsiColor.NONE);
+        if (ansiColor == null) {
+            throw new IllegalArgumentException("ansiColor is null");
         }
+
+        if (printStream == null) {
+            throw new IllegalArgumentException("printStream is null");
+        }
+
+        String stackTraceString = buildStackTraceString(throwable);
+
+        printStream.print(ansiColor);
+        printStream.print(stackTraceString);
+        printStream.print(AnsiColor.NONE);
     }
 
     /**
-     * Method to prune a StackTrace
+     * Method to build a stack trace string, optionally pruning engine frames
      *
      * @param throwable throwable
+     * @return the stack trace as a string
      */
-    private static void pruneStackTrace(Throwable throwable) {
-        Throwable cause = throwable;
-        while (cause != null) {
-            trimStackTrace(cause);
-            cause = cause.getCause();
+    private static String buildStackTraceString(Throwable throwable) {
+        if (throwable == null) {
+            return "";
         }
+
+        if (!PRUNE_STACK_TRACES) {
+            StringWriter sw = new StringWriter(2048);
+            PrintWriter pw = new PrintWriter(sw);
+            throwable.printStackTrace(pw);
+            pw.flush(); // keeps analyzers happy
+            return sw.toString();
+        }
+
+        final String nl = System.lineSeparator();
+        StringBuilder result = new StringBuilder(2048);
+
+        java.util.IdentityHashMap<Throwable, Boolean> seen = new java.util.IdentityHashMap<>();
+        Throwable current = throwable;
+
+        while (current != null && seen.put(current, Boolean.TRUE) == null) {
+            if (current != throwable) {
+                result.append("Caused by: ");
+            }
+
+            result.append(current.getClass().getName());
+            String msg = current.getMessage();
+            if (msg != null) {
+                result.append(": ").append(msg);
+            }
+            result.append(nl);
+
+            StackTraceElement[] stackTrace = current.getStackTrace();
+            int length = calculatePrunedLength(stackTrace);
+
+            for (int i = 0; i < length; i++) {
+                result.append("\tat ").append(stackTrace[i]).append(nl);
+            }
+
+            if (length < stackTrace.length) {
+                result.append("\t... ")
+                        .append(stackTrace.length - length)
+                        .append(" more")
+                        .append(nl);
+            }
+
+            current = current.getCause();
+        }
+
+        if (current != null) {
+            result.append("[Cyclic cause chain detected]").append(nl);
+        }
+
+        return result.toString();
     }
 
     /**
-     * Method to trim a StackTrace
-     * @param throwable throwable
-     */
-    private static void trimStackTrace(Throwable throwable) {
-        StackTraceElement[] stackTrace = throwable.getStackTrace();
-        throwable.setStackTrace(Arrays.copyOf(stackTrace, length(stackTrace)));
-    }
-
-    /**
-     * Method to determine StackTrace elements to copy
+     * Method to determine how many stack trace elements to keep
      *
      * @param stackTrace stackTrace
-     * @return the number of StackTrace elements to copy
+     * @return the number of StackTrace elements to keep
      */
-    private static int length(StackTraceElement[] stackTrace) {
+    private static int calculatePrunedLength(StackTraceElement[] stackTrace) {
         for (int i = 0; i < stackTrace.length; i++) {
-            StackTraceElement element = stackTrace[i];
-            if (element.getClassName().startsWith("org.verifyica.engine.")) {
+            String className = stackTrace[i].getClassName();
+            if (className != null && className.startsWith(ENGINE_PACKAGE)) {
                 return i;
             }
         }

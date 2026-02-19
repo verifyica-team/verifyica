@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -114,8 +115,8 @@ public class EphemeralExecutorServiceTest {
             executor.shutdown();
 
             assertThatThrownBy(() -> executor.execute(() -> {}))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessage("Executor service is shut down");
+                    .isInstanceOf(RejectedExecutionException.class)
+                    .hasMessage("Executor has been shut down");
         }
 
         @Test
