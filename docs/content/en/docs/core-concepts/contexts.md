@@ -17,6 +17,7 @@ EngineContext (Engine level)
 ```
 
 Each context provides access to:
+
 - Its parent context
 - Configuration and properties
 - Test execution metadata
@@ -257,6 +258,7 @@ public void test(ArgumentContext argumentContext) {
 ```
 
 **Important Rules:**
+
 - ✅ **@Prepare/@Conclude**: No params OR ClassContext only
 - ✅ **@BeforeAll/@AfterAll/@BeforeEach/@AfterEach/@Test**: Unwrapped argument OR ArgumentContext
 - ❌ **NEVER** use EngineContext (not supported)

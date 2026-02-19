@@ -29,6 +29,7 @@ Verifyica extends the JUnit Platform to provide powerful parameterized testing c
 [Explore Getting Started →](getting-started/)
 
 **Key Topics:**
+
 - Installation and setup
 - Quick start guide
 - Writing your first test
@@ -43,6 +44,7 @@ Verifyica extends the JUnit Platform to provide powerful parameterized testing c
 [Explore Core Concepts →](core-concepts/)
 
 **Key Topics:**
+
 - Arguments and argument suppliers
 - Test lifecycle phases
 - Context objects (EngineContext, ClassContext, ArgumentContext)
@@ -58,6 +60,7 @@ Verifyica extends the JUnit Platform to provide powerful parameterized testing c
 [Explore Configuration →](configuration/)
 
 **Key Topics:**
+
 - verifyica.properties reference
 - YAML filters for test selection
 - Parallelism configuration
@@ -72,6 +75,7 @@ Verifyica extends the JUnit Platform to provide powerful parameterized testing c
 [Explore API Reference →](api-reference/)
 
 **Key Topics:**
+
 - @Verifyica annotations
 - Argument<T> API
 - Context interfaces
@@ -86,6 +90,7 @@ Verifyica extends the JUnit Platform to provide powerful parameterized testing c
 [Explore Advanced Topics →](advanced/)
 
 **Key Topics:**
+
 - Test dependencies with @DependsOn
 - Execution ordering with @Order
 - Test organization with @Tag
@@ -100,6 +105,7 @@ Verifyica extends the JUnit Platform to provide powerful parameterized testing c
 [Explore Examples →](examples/)
 
 **Key Topics:**
+
 - Simple test examples
 - Parallel execution patterns
 - TestContainers integration
@@ -114,6 +120,7 @@ Verifyica extends the JUnit Platform to provide powerful parameterized testing c
 [Explore Troubleshooting →](troubleshooting/)
 
 **Key Topics:**
+
 - Common issues and solutions
 - FAQ
 - Debugging tips

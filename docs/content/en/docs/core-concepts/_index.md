@@ -43,12 +43,14 @@ Learn more: [Execution Model →](execution-model/)
 ## Why These Concepts Matter
 
 Traditional parameterized testing frameworks often:
+
 - Lack proper lifecycle management per parameter
 - Don't support complex argument types well
 - Have limited parallelism control
 - Provide no interception or extension points
 
 Verifyica addresses all these limitations through its core concepts, enabling you to:
+
 - Write cleaner, more maintainable tests
 - Test complex scenarios with minimal code
 - Control execution parallelism at multiple levels

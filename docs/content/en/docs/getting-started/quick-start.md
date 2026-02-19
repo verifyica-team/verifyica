@@ -70,6 +70,7 @@ public static Object arguments() {
 ```
 
 The `@ArgumentSupplier` method provides the test arguments. This method:
+
 - Must be `static`
 - Returns a `Collection`, array, `Stream`, or `Argument<T>` instances
 - Is called once before test execution begins
@@ -86,6 +87,7 @@ public void testWithArgument(String argument) {
 ```
 
 The `@Test` method:
+
 - Executes once **for each argument** (5 times in this example)
 - Receives the current argument as a parameter
 - Contains your test logic
@@ -118,6 +120,7 @@ mvn test
 ### Using Your IDE
 
 Run the test class directly from your IDE by:
+
 - Right-clicking the class and selecting "Run"
 - Clicking the green arrow next to the class name
 
@@ -235,6 +238,7 @@ For each argument, the lifecycle is:
 3. `@Conclude` (once for all arguments)
 
 With 10 arguments and 2 test methods, this test will execute:
+
 - 1 Prepare
 - 10 BeforeAll
 - 20 BeforeEach (10 arguments × 2 tests)

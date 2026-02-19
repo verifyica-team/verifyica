@@ -215,26 +215,31 @@ void postAfterEach(ArgumentContext argumentContext, Method method, Throwable thr
 ## Use Cases
 
 **Logging and Monitoring**
+
 - Track test execution timing
 - Log test start/end events
 - Monitor resource usage
 
 **Resource Management**
+
 - Setup shared resources before tests
 - Cleanup resources after tests
 - Connection pooling
 
 **Test Context Management**
+
 - Store test metadata in context maps
 - Share state across lifecycle phases
 - Track test execution state
 
 **Error Handling**
+
 - Capture and log exceptions
 - Retry failed tests
 - Skip dependent tests on failure
 
 **Metrics Collection**
+
 - Measure test duration
 - Count test executions
 - Track success/failure rates
@@ -264,18 +269,22 @@ com.example.AnotherInterceptor
 ## Best Practices
 
 **Selective Interception**
+
 - Use `predicate()` to filter which classes the interceptor applies to
 - Avoid intercepting every test unnecessarily
 
 **Error Propagation**
+
 - Always call `rethrow(throwable)` in `post*` methods to propagate test failures
 - Don't swallow exceptions unintentionally
 
 **Minimal Overhead**
+
 - Keep interceptor logic lightweight
 - Avoid expensive operations in hot paths
 
 **Thread Safety**
+
 - Interceptors may be called concurrently with parallel execution
 - Use thread-safe data structures if maintaining state
 

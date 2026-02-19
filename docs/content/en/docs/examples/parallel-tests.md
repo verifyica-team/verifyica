@@ -188,9 +188,11 @@ This allows all arguments to execute concurrently (subject to available threads)
 ## Performance Comparison
 
 **Sequential (parallelism = 1)**
+
 - 10 arguments × 3 tests × 1 second = 30 seconds total
 
 **Parallel (parallelism = 5)**
+
 - 10 arguments ÷ 5 concurrent = 2 batches
 - 2 batches × 3 tests × 1 second = 6 seconds total
 - **5x faster**

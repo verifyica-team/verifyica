@@ -41,6 +41,7 @@ verifyica.engine.logger.level=DEBUG
 ```
 
 Run tests and provide:
+
 - Verifyica version
 - Java version
 - Test code (minimal reproduction)

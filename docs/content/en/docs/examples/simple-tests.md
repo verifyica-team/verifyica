@@ -100,16 +100,19 @@ For 10 arguments, the execution flow is:
 ### Key Features
 
 **Sequential Processing**
+
 - Arguments are processed one at a time
 - No parallelism (default behavior)
 - Predictable execution order
 
 **Unwrapped Arguments**
+
 - Test methods receive `String argument` directly
 - No need for `ArgumentContext` wrapper
 - Simpler method signatures
 
 **Complete Lifecycle**
+
 - All 7 lifecycle phases demonstrated
 - Prepare and Conclude run once per test class
 - BeforeAll/AfterAll run once per argument

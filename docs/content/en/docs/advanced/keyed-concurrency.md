@@ -11,6 +11,7 @@ Verifyica provides keyed concurrency utilities for fine-grained synchronization 
 ## Overview
 
 Keyed concurrency utilities allow you to synchronize on specific keys rather than globally:
+
 - **KeyedMutexManager** - Mutual exclusion per key
 - **KeyedLatchManager** - Count-down latches per key
 - **KeyedSemaphoreManager** - Semaphores per key
