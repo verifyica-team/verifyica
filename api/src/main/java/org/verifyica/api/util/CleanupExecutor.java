@@ -33,6 +33,13 @@ public final class CleanupExecutor {
     private boolean hasRun = false;
 
     /**
+     * Creates a new instance of CleanupExecutor
+     */
+    public CleanupExecutor() {
+        // INTENTIONALLY EMPTY
+    }
+
+    /**
      * Adds a throwable task
      *
      * @param throwableTask the throwable task to add

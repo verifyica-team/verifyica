@@ -42,7 +42,7 @@ import org.verifyica.engine.support.OrderSupport;
  *   <li>Adds the discovered methods to {@code classMethodSet}.</li>
  * </ol>
  *
- * <h3>Optimizations</h3>
+ * Optimizations
  * <ul>
  *   <li>Uses simple loops (no {@code AtomicInteger} / lambda allocations).</li>
  *   <li>Deduplicates repeated package selectors to avoid rescanning identical packages.</li>

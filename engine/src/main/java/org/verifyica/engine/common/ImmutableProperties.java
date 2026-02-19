@@ -32,6 +32,10 @@ import java.util.Set;
 public class ImmutableProperties extends Properties {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Unmodifiable entry set
+     */
     private Set<Map.Entry<Object, Object>> unmodifiableEntrySet;
 
     /**

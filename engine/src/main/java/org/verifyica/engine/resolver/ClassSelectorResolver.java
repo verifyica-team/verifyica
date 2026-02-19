@@ -50,7 +50,7 @@ import org.verifyica.engine.support.OrderSupport;
  *   <li>Merged into the provided {@code classMethodSet} map (class → set of methods).</li>
  * </ul>
  *
- * <h3>Optimizations</h3>
+ * Optimizations
  * <ul>
  *   <li>Uses simple loops (no lambda allocations, no {@code AtomicInteger}).</li>
  *   <li>Traverses class + inner classes iteratively to avoid deep recursion.</li>
