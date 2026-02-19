@@ -49,6 +49,7 @@ public class MyFirstTest {
 ### Required Elements
 
 A minimal Verifyica test requires:
+
 1. **One `@ArgumentSupplier` method** - Provides test arguments
 2. **At least one `@Test` method** - Contains test logic
 

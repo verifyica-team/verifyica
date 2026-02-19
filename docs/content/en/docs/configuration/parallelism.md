@@ -392,6 +392,7 @@ public class PerformanceInterceptor implements ClassInterceptor {
 - Tests fail with `parallelism>1`
 
 **Causes:**
+
 1. Shared mutable state
 2. Race conditions
 3. Resource contention
@@ -415,6 +416,7 @@ private synchronized void updateSharedState() {
 ### Tests Are Slower with Parallelism
 
 **Causes:**
+
 1. Too much parallelism (thread overhead)
 2. Resource contention (database, CPU)
 3. Shared locks or bottlenecks
@@ -432,6 +434,7 @@ verifyica.engine.thread.type=platform
 ### Deadlocks or Hangs
 
 **Causes:**
+
 1. Circular dependencies
 2. Resource exhaustion
 3. Improper locking

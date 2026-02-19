@@ -42,6 +42,7 @@ Verifyica uses the JUnit Platform test discovery mechanism to find test classes.
 ### Discovery Rules
 
 A class is discovered as a Verifyica test if it:
+
 1. Contains at least one `@Verifyica.ArgumentSupplier` method
 2. Contains at least one `@Verifyica.Test` method
 3. Is not abstract
