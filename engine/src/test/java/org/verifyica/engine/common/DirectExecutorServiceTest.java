@@ -19,6 +19,7 @@ package org.verifyica.engine.common;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -95,15 +96,15 @@ public class DirectExecutorServiceTest {
         }
 
         @Test
-        @DisplayName("Should not execute after shutdown")
-        public void shouldNotExecuteAfterShutdown() {
+        @DisplayName("Should throw RejectedExecutionException after shutdown")
+        public void shouldThrowRejectedExecutionExceptionAfterShutdown() {
             DirectExecutorService executor = new DirectExecutorService();
-            AtomicBoolean executed = new AtomicBoolean(false);
 
             executor.shutdown();
-            executor.execute(() -> executed.set(true));
 
-            assertThat(executed).isFalse();
+            assertThatThrownBy(() -> executor.execute(() -> {}))
+                    .isInstanceOf(RejectedExecutionException.class)
+                    .hasMessage("Executor has been shut down");
         }
 
         @Test
@@ -280,8 +281,8 @@ public class DirectExecutorServiceTest {
     public class IntegrationTests {
 
         @Test
-        @DisplayName("Should execute tasks before shutdown but not after")
-        public void shouldExecuteTasksBeforeShutdownButNotAfter() {
+        @DisplayName("Should execute tasks before shutdown but reject after")
+        public void shouldExecuteTasksBeforeShutdownButRejectAfter() {
             DirectExecutorService executor = new DirectExecutorService();
             AtomicInteger counter = new AtomicInteger(0);
 
@@ -290,7 +291,9 @@ public class DirectExecutorServiceTest {
 
             executor.shutdown();
 
-            executor.execute(() -> counter.incrementAndGet());
+            assertThatThrownBy(() -> executor.execute(() -> counter.incrementAndGet()))
+                    .isInstanceOf(RejectedExecutionException.class)
+                    .hasMessage("Executor has been shut down");
 
             assertThat(counter.get()).isEqualTo(2);
         }

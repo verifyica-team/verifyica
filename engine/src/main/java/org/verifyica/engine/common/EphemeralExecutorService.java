@@ -16,22 +16,24 @@
 
 package org.verifyica.engine.common;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Class to implement NewPlatformThreadExecutorService
+ * Class to implement EphemeralExecutorService
  */
 public class EphemeralExecutorService extends AbstractExecutorService {
 
     private final ThreadFactory threadFactory;
     private final Set<Thread> runningThreads;
-    private volatile boolean isShutdown;
+    private final AtomicBoolean isShutdown;
 
     /**
      * Constructor
@@ -39,53 +41,79 @@ public class EphemeralExecutorService extends AbstractExecutorService {
      * @param threadFactory threadFactory
      */
     public EphemeralExecutorService(ThreadFactory threadFactory) {
+        if (threadFactory == null) {
+            throw new IllegalArgumentException("threadFactory is null");
+        }
         this.threadFactory = threadFactory;
         this.runningThreads = ConcurrentHashMap.newKeySet();
+        this.isShutdown = new AtomicBoolean(false);
     }
 
     @Override
     public void execute(Runnable runnable) {
-        if (isShutdown) {
-            throw new IllegalStateException("Executor service is shut down");
+        if (runnable == null) {
+            throw new IllegalArgumentException("runnable is null");
         }
 
+        if (isShutdown.get()) {
+            throw new RejectedExecutionException("Executor has been shut down");
+        }
+
+        AtomicBoolean started = new AtomicBoolean(false);
         Thread thread = threadFactory.newThread(() -> {
             try {
                 runnable.run();
             } finally {
-                runningThreads.remove(Thread.currentThread());
+                if (started.get()) {
+                    runningThreads.remove(Thread.currentThread());
+                }
             }
         });
+
+        if (thread == null) {
+            throw new IllegalStateException("thread is null");
+        }
+
         thread.setDaemon(true);
+
         // Add thread to runningThreads BEFORE starting it to avoid race condition
         runningThreads.add(thread);
-        thread.start();
+        started.set(true);
+
+        try {
+            thread.start();
+        } catch (Throwable t) {
+            // Clean up if thread fails to start
+            runningThreads.remove(thread);
+            started.set(false);
+            throw new RejectedExecutionException("Failed to start thread", t);
+        }
     }
 
     @Override
     public void shutdown() {
-        isShutdown = true;
+        isShutdown.set(true);
     }
 
     @Override
     public List<Runnable> shutdownNow() {
-        isShutdown = true;
+        isShutdown.set(true);
 
         for (Thread thread : runningThreads) {
             thread.interrupt();
         }
 
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     @Override
     public boolean isShutdown() {
-        return isShutdown;
+        return isShutdown.get();
     }
 
     @Override
     public boolean isTerminated() {
-        return isShutdown && runningThreads.isEmpty();
+        return isShutdown.get() && runningThreads.isEmpty();
     }
 
     @Override
@@ -93,13 +121,20 @@ public class EphemeralExecutorService extends AbstractExecutorService {
         long deadline = System.nanoTime() + unit.toNanos(timeout);
 
         while (!isTerminated()) {
-            long remainingTime = deadline - System.nanoTime();
-            if (remainingTime <= 0) {
+            long remainingNanos = deadline - System.nanoTime();
+            if (remainingNanos <= 0) {
                 return false;
             }
 
-            long sleepTimeMillis = Math.min(TimeUnit.NANOSECONDS.toMillis(remainingTime), 1_000);
-            Thread.sleep(sleepTimeMillis);
+            // Use shorter sleep intervals for better responsiveness
+            // Cap at 10ms to balance CPU usage and responsiveness
+            long sleepMillis = Math.min(TimeUnit.NANOSECONDS.toMillis(remainingNanos), 10L);
+            if (sleepMillis <= 0) {
+                // Less than 1ms remaining, spin briefly
+                Thread.sleep(1);
+            } else {
+                Thread.sleep(sleepMillis);
+            }
         }
 
         return true;

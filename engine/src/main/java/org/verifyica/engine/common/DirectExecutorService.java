@@ -16,19 +16,21 @@
 
 package org.verifyica.engine.common;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Class to implement DirectExecutorService
  */
 public class DirectExecutorService extends AbstractExecutorService {
 
-    private static final List<Runnable> EMPTY_LIST = new ArrayList<>();
+    private static final List<Runnable> EMPTY_LIST = Collections.emptyList();
 
-    private volatile boolean isShutdown = false;
+    private final AtomicBoolean isShutdown = new AtomicBoolean(false);
 
     /**
      * Constructor
@@ -39,34 +41,49 @@ public class DirectExecutorService extends AbstractExecutorService {
 
     @Override
     public void shutdown() {
-        isShutdown = true;
+        isShutdown.set(true);
     }
 
     @Override
     public List<Runnable> shutdownNow() {
-        isShutdown = true;
+        isShutdown.set(true);
         return EMPTY_LIST;
     }
 
     @Override
     public boolean isShutdown() {
-        return isShutdown;
+        return isShutdown.get();
     }
 
     @Override
     public boolean isTerminated() {
-        return isShutdown;
+        return isShutdown.get();
     }
 
     @Override
-    public boolean awaitTermination(long timeout, TimeUnit timeUnit) {
-        return isShutdown;
+    public boolean awaitTermination(long timeout, TimeUnit timeUnit) throws InterruptedException {
+        if (!isShutdown.get()) {
+            long nanos = timeUnit.toNanos(timeout);
+            long deadline = System.nanoTime() + nanos;
+            while (!isShutdown.get()) {
+                if (nanos <= 0) {
+                    return false;
+                }
+                Thread.sleep(Math.min(nanos / 1_000_000L, 10L));
+                nanos = deadline - System.nanoTime();
+            }
+        }
+        return true;
     }
 
     @Override
     public void execute(Runnable runnable) {
-        if (!isShutdown) {
-            runnable.run();
+        if (runnable == null) {
+            throw new IllegalArgumentException("Runnable is null");
         }
+        if (isShutdown.get()) {
+            throw new RejectedExecutionException("Executor has been shut down");
+        }
+        runnable.run();
     }
 }
