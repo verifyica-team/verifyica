@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Precondition;
@@ -35,6 +36,10 @@ import org.verifyica.engine.exception.TestClassDefinitionException;
  * Class to implement OrderSupport
  */
 public class OrderSupport {
+
+    // Cache for method tags to avoid repeated annotation lookups.
+    // Using WeakHashMap to avoid classloader leaks.
+    private static final Map<Method, String> METHOD_TAG_CACHE = new WeakHashMap<>();
 
     /**
      * Constructor
@@ -46,6 +51,9 @@ public class OrderSupport {
     /**
      * Method to order a List of Classes by display name then Order annotation
      *
+     * <p>Performance note: Order annotation values are pre-cached before sorting to avoid
+     * repeated annotation lookups during comparison operations.</p>
+     *
      * @param classes classes
      * @return an order List of classes
      */
@@ -54,20 +62,24 @@ public class OrderSupport {
 
         classes.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
 
-        classes.sort((c1, c2) -> {
-            Verifyica.Order o1 = c1.getAnnotation(Verifyica.Order.class);
-            Verifyica.Order o2 = c2.getAnnotation(Verifyica.Order.class);
+        // Pre-cache order values to avoid repeated annotation lookups during sorting
+        Map<Class<?>, Integer> orderCache = new HashMap<>(classes.size());
+        for (Class<?> clazz : classes) {
+            Verifyica.Order annotation = clazz.getAnnotation(Verifyica.Order.class);
+            orderCache.put(clazz, annotation != null ? annotation.value() : null);
+        }
 
-            if (o1 == null && o2 == null) {
+        classes.sort((c1, c2) -> {
+            Integer orderValue1 = orderCache.get(c1);
+            Integer orderValue2 = orderCache.get(c2);
+
+            if (orderValue1 == null && orderValue2 == null) {
                 return 0;
-            } else if (o1 == null) {
+            } else if (orderValue1 == null) {
                 return 1;
-            } else if (o2 == null) {
+            } else if (orderValue2 == null) {
                 return -1;
             }
-
-            int orderValue1 = o1.value();
-            int orderValue2 = o2.value();
 
             if (orderValue1 == 0 && orderValue2 == 0) {
                 return 0;
@@ -124,6 +136,9 @@ public class OrderSupport {
      *
      * <p>orders the List in place
      *
+     * <p>Performance note: Order annotation values are pre-cached before sorting to avoid
+     * repeated annotation lookups during comparison operations.</p>
+     *
      * @param methods methods
      * @return an ordered List of Methods
      */
@@ -132,20 +147,24 @@ public class OrderSupport {
 
         methods.sort(Comparator.comparing(DisplayNameSupport::getDisplayName));
 
-        methods.sort((m1, m2) -> {
-            Verifyica.Order o1 = m1.getAnnotation(Verifyica.Order.class);
-            Verifyica.Order o2 = m2.getAnnotation(Verifyica.Order.class);
+        // Pre-cache order values to avoid repeated annotation lookups during sorting
+        Map<Method, Integer> orderCache = new HashMap<>(methods.size());
+        for (Method method : methods) {
+            Verifyica.Order annotation = method.getAnnotation(Verifyica.Order.class);
+            orderCache.put(method, annotation != null ? annotation.value() : null);
+        }
 
-            if (o1 == null && o2 == null) {
+        methods.sort((m1, m2) -> {
+            Integer orderValue1 = orderCache.get(m1);
+            Integer orderValue2 = orderCache.get(m2);
+
+            if (orderValue1 == null && orderValue2 == null) {
                 return 0;
-            } else if (o1 == null) {
+            } else if (orderValue1 == null) {
                 return 1;
-            } else if (o2 == null) {
+            } else if (orderValue2 == null) {
                 return -1;
             }
-
-            int orderValue1 = o1.value();
-            int orderValue2 = o2.value();
 
             if (orderValue1 == 0 && orderValue2 == 0) {
                 return 0;
@@ -334,9 +353,20 @@ public class OrderSupport {
     /**
      * Gets the tag associated with a method, which is used for dependency matching.
      * If no tag annotation is present, returns the method name.
+     *
+     * <p>Performance note: Results are cached per method to avoid repeated annotation lookups.</p>
      */
     private static String getMethodTag(Method method) {
-        Verifyica.Tag tagAnnotation = method.getAnnotation(Verifyica.Tag.class);
-        return tagAnnotation != null ? tagAnnotation.value() : method.getName();
+        synchronized (METHOD_TAG_CACHE) {
+            String cached = METHOD_TAG_CACHE.get(method);
+            if (cached != null) {
+                return cached;
+            }
+
+            Verifyica.Tag tagAnnotation = method.getAnnotation(Verifyica.Tag.class);
+            String tag = tagAnnotation != null ? tagAnnotation.value() : method.getName();
+            METHOD_TAG_CACHE.put(method, tag);
+            return tag;
+        }
     }
 }

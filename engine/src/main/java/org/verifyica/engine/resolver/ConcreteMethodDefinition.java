@@ -58,7 +58,13 @@ public class ConcreteMethodDefinition implements MethodDefinition {
 
     @Override
     public String toString() {
-        return "ConcreteMethodDefinition{" + "method=" + method + ", displayName='" + displayName + '\'' + '}';
+        StringBuilder sb = new StringBuilder(128);
+        sb.append("ConcreteMethodDefinition{method=")
+                .append(method)
+                .append(", displayName='")
+                .append(displayName)
+                .append("'}");
+        return sb.toString();
     }
 
     @Override

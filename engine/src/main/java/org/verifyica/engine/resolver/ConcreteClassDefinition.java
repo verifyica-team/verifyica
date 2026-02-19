@@ -101,18 +101,19 @@ public class ConcreteClassDefinition implements ClassDefinition {
 
     @Override
     public String toString() {
-        return "ConcreteClassDefinition{"
-                + "testClass="
-                + testClass
-                + ", displayName="
-                + displayName
-                + ", argumentParallelism="
-                + argumentParallelism
-                + ", testMethodDefinitions="
-                + testMethodDefinitions
-                + ", testArguments="
-                + arguments
-                + '}';
+        StringBuilder sb = new StringBuilder(256);
+        sb.append("ConcreteClassDefinition{testClass=")
+                .append(testClass)
+                .append(", displayName=")
+                .append(displayName)
+                .append(", argumentParallelism=")
+                .append(argumentParallelism)
+                .append(", testMethodDefinitions=")
+                .append(testMethodDefinitions)
+                .append(", testArguments=")
+                .append(arguments)
+                .append('}');
+        return sb.toString();
     }
 
     @Override

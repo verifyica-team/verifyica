@@ -65,6 +65,9 @@ public class UniqueIdSelectorResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UniqueIdSelectorResolver.class);
 
+    // Cache the legacy segment type string to avoid repeated Class.getName() calls
+    private static final String TEST_CLASS_TEST_DESCRIPTOR_CLASS_NAME = TestClassTestDescriptor.class.getName();
+
     /**
      * Creates a new resolver instance.
      */
@@ -143,7 +146,7 @@ public class UniqueIdSelectorResolver {
      */
     private static boolean isClassSegment(UniqueId.Segment segment) {
         String type = segment.getType();
-        return "class".equals(type) || TestClassTestDescriptor.class.getName().equals(type);
+        return "class".equals(type) || TEST_CLASS_TEST_DESCRIPTOR_CLASS_NAME.equals(type);
     }
 
     /**

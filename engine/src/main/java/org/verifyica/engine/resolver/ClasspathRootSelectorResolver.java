@@ -92,8 +92,7 @@ public class ClasspathRootSelectorResolver {
                 .toPredicate();
 
         @SuppressWarnings("unchecked")
-        List<PackageNameFilter> packageNameFilters =
-                (List<PackageNameFilter>) engineDiscoveryRequest.getFiltersByType(PackageNameFilter.class);
+        List<PackageNameFilter> packageNameFilters = engineDiscoveryRequest.getFiltersByType(PackageNameFilter.class);
 
         Predicate<String> packageNamePredicate =
                 composeFilters(packageNameFilters).toPredicate();
@@ -137,11 +136,7 @@ public class ClasspathRootSelectorResolver {
                     methodsCache.put(testClass, orderedMethods);
                 }
 
-                Set<Method> methodSet = classMethodSet.get(testClass);
-                if (methodSet == null) {
-                    methodSet = new LinkedHashSet<Method>();
-                    classMethodSet.put(testClass, methodSet);
-                }
+                Set<Method> methodSet = classMethodSet.computeIfAbsent(testClass, k -> new LinkedHashSet<Method>());
 
                 methodSet.addAll(orderedMethods);
             }
