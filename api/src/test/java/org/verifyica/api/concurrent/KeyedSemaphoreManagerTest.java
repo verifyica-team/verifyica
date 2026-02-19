@@ -22,11 +22,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("KeyedSemaphoreManager Tests")
 public class KeyedSemaphoreManagerTest {
 
     @Test
+    @DisplayName("Should create semaphore with given permits")
     public void testCreateSemaphore() {
         String key = "testSemaphore";
 
@@ -42,6 +45,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should create semaphore with fairness")
     public void testCreateSemaphoreWithFairness() {
         String key = "fairSemaphore";
 
@@ -55,6 +59,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when creating duplicate semaphore")
     public void testCreateDuplicateSemaphore() {
         String key = "duplicateSemaphore";
 
@@ -69,6 +74,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should get existing semaphore")
     public void testGetSemaphore() {
         String key = "getSemaphoreKey";
 
@@ -82,11 +88,13 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should return null for non-existent semaphore")
     public void testGetNonExistentSemaphore() {
         assertThat(KeyedSemaphoreManager.getSemaphore("nonExistent")).isNull();
     }
 
     @Test
+    @DisplayName("Should acquire and release permits")
     public void testAcquireAndRelease() throws InterruptedException {
         String key = "acquireReleaseKey";
 
@@ -110,6 +118,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should acquire multiple permits")
     public void testAcquireMultiple() throws InterruptedException {
         String key = "acquireMultipleKey";
 
@@ -127,6 +136,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should try to acquire permit")
     public void testTryAcquire() {
         String key = "tryAcquireKey";
 
@@ -146,6 +156,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should try to acquire permit with timeout")
     public void testTryAcquireWithTimeout() throws InterruptedException {
         String key = "tryAcquireTimeoutKey";
 
@@ -164,6 +175,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should drain all permits")
     public void testDrainPermits() {
         String key = "drainKey";
 
@@ -179,6 +191,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should handle concurrent access")
     public void testConcurrentAccess() throws InterruptedException {
         String key = "concurrentKey";
         int maxConcurrent = 3;
@@ -222,6 +235,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should remove semaphore")
     public void testRemoveSemaphore() {
         String key = "removeKey";
 
@@ -237,12 +251,14 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should return null when removing non-existent semaphore")
     public void testRemoveNonExistentSemaphore() {
         Semaphore removed = KeyedSemaphoreManager.removeSemaphore("nonExistent");
         assertThat(removed).isNull();
     }
 
     @Test
+    @DisplayName("Should check if semaphore exists")
     public void testHasSemaphore() {
         String key = "hasSemaphoreKey";
 
@@ -256,6 +272,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should trim key when accessing semaphore")
     public void testKeyTrimming() {
         String key = "trimKey";
 
@@ -271,6 +288,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for null key")
     public void testNullKey() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> KeyedSemaphoreManager.createSemaphore(null, 1))
@@ -278,6 +296,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for blank key")
     public void testBlankKey() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> KeyedSemaphoreManager.createSemaphore("   ", 1))
@@ -285,6 +304,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for negative permits")
     public void testNegativePermits() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> KeyedSemaphoreManager.createSemaphore("key", -1))
@@ -292,6 +312,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should create semaphore with zero permits")
     public void testZeroPermits() {
         String key = "zeroPermitsKey";
 
@@ -308,6 +329,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for operations on non-existent semaphore")
     public void testOperationsOnNonExistentSemaphore() {
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(() -> KeyedSemaphoreManager.acquire("nonExistent"))
@@ -323,6 +345,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should handle multiple keys")
     public void testMultipleKeys() {
         String key1 = "semaphore1";
         String key2 = "semaphore2";
@@ -347,6 +370,7 @@ public class KeyedSemaphoreManagerTest {
     }
 
     @Test
+    @DisplayName("Should increase permits on release")
     public void testReleaseIncreasesPermits() {
         String key = "releaseKey";
 

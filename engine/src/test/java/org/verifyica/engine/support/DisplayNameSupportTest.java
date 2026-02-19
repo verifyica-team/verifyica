@@ -18,17 +18,21 @@ package org.verifyica.engine.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.verifyica.api.Verifyica;
 
+@DisplayName("DisplayNameSupport Tests")
 public class DisplayNameSupportTest {
 
     @Test
+    @DisplayName("Should return class name when no @DisplayName annotation is present")
     public void testDefaultDisplayName() {
         assertThat(DisplayNameSupport.getDisplayName(TestClass1.class)).isEqualTo(TestClass1.class.getName());
     }
 
     @Test
+    @DisplayName("Should return custom display name when @DisplayName annotation is present")
     public void testDisplayNameAnnotation() {
         assertThat(DisplayNameSupport.getDisplayName(TestClass2.class)).isEqualTo("CustomDisplayName");
     }

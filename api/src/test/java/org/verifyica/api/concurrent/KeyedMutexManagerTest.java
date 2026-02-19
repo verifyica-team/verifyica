@@ -26,11 +26,14 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("KeyedMutexManager Tests")
 public class KeyedMutexManagerTest {
 
     @Test
+    @DisplayName("Should perform lock and unlock sequence")
     public void testLockUnlockSequence() {
         String key = "testKey";
 
@@ -52,6 +55,7 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when unlocking without lock")
     public void testUnlockWithoutLock() {
         assertThatExceptionOfType(IllegalMonitorStateException.class)
                 .isThrownBy(() -> KeyedMutexManager.unlock("noSuchKey"));
@@ -60,6 +64,7 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
+    @DisplayName("Should support reentrant locking")
     public void testReentrantLocking() {
         String key = "reentrantKey";
 
@@ -88,6 +93,7 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
+    @DisplayName("Should try to acquire lock")
     public void testTryLock() {
         String key = "tryLockKey";
 
@@ -105,6 +111,7 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
+    @DisplayName("Should try to acquire lock with timeout")
     public void testTryLockWithTimeout() throws InterruptedException {
         String key = "tryLockTimeoutKey";
 
@@ -117,6 +124,7 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
+    @DisplayName("Should handle concurrent access")
     public void testConcurrentAccess() throws InterruptedException {
         int threadCount = 50;
         String key = "concurrentKey";
@@ -163,6 +171,7 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
+    @DisplayName("Should prevent different threads from unlocking")
     public void testDifferentThreadsCannotUnlock() throws InterruptedException {
         String key = "differentThreadKey";
         CountDownLatch latch = new CountDownLatch(1);
@@ -194,6 +203,7 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
+    @DisplayName("Should trim key when accessing mutex")
     public void testKeyTrimming() {
         String key = "trimKey";
 
@@ -212,6 +222,7 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for null key")
     public void testNullKey() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> KeyedMutexManager.lock(null))
@@ -219,6 +230,7 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for blank key")
     public void testBlankKey() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> KeyedMutexManager.lock("   "))
@@ -226,6 +238,7 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
+    @DisplayName("Should handle multiple keys")
     public void testMultipleKeys() {
         String key1 = "key1";
         String key2 = "key2";
@@ -251,6 +264,7 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
+    @DisplayName("Should fail tryLock when mutex is held")
     public void testTryLockFailure() throws InterruptedException {
         String key = "contendedKey";
         CountDownLatch threadStarted = new CountDownLatch(1);

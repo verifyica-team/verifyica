@@ -22,11 +22,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("KeyedLatchManager Tests")
 public class KeyedLatchManagerTest {
 
     @Test
+    @DisplayName("Should create latch with given count")
     public void testCreateLatch() {
         String key = "testLatch";
 
@@ -42,6 +45,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when creating duplicate latch")
     public void testCreateDuplicateLatch() {
         String key = "duplicateLatch";
 
@@ -56,6 +60,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should get existing latch")
     public void testGetLatch() {
         String key = "getLatchKey";
 
@@ -69,11 +74,13 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should return null for non-existent latch")
     public void testGetNonExistentLatch() {
         assertThat(KeyedLatchManager.getLatch("nonExistent")).isNull();
     }
 
     @Test
+    @DisplayName("Should count down latch")
     public void testCountDown() {
         String key = "countDownKey";
 
@@ -94,6 +101,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should await latch")
     public void testAwait() throws InterruptedException {
         String key = "awaitKey";
         AtomicBoolean threadCompleted = new AtomicBoolean(false);
@@ -126,6 +134,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should await latch with timeout")
     public void testAwaitWithTimeout() throws InterruptedException {
         String key = "awaitTimeoutKey";
 
@@ -146,6 +155,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should handle concurrent access")
     public void testConcurrentAccess() throws InterruptedException {
         String key = "concurrentKey";
         int threadCount = 5;
@@ -190,6 +200,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should remove latch")
     public void testRemoveLatch() {
         String key = "removeKey";
 
@@ -205,12 +216,14 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should return null when removing non-existent latch")
     public void testRemoveNonExistentLatch() {
         CountDownLatch removed = KeyedLatchManager.removeLatch("nonExistent");
         assertThat(removed).isNull();
     }
 
     @Test
+    @DisplayName("Should check if latch exists")
     public void testHasLatch() {
         String key = "hasLatchKey";
 
@@ -224,6 +237,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should trim key when accessing latch")
     public void testKeyTrimming() {
         String key = "trimKey";
 
@@ -239,6 +253,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for null key")
     public void testNullKey() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> KeyedLatchManager.createLatch(null, 1))
@@ -246,6 +261,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for blank key")
     public void testBlankKey() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> KeyedLatchManager.createLatch("   ", 1))
@@ -253,6 +269,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for negative count")
     public void testNegativeCount() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> KeyedLatchManager.createLatch("key", -1))
@@ -260,6 +277,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should create latch with zero count")
     public void testZeroCount() {
         String key = "zeroCountKey";
 
@@ -280,6 +298,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for operations on non-existent latch")
     public void testOperationsOnNonExistentLatch() {
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(() -> KeyedLatchManager.countDown("nonExistent"))
@@ -295,6 +314,7 @@ public class KeyedLatchManagerTest {
     }
 
     @Test
+    @DisplayName("Should handle multiple keys")
     public void testMultipleKeys() {
         String key1 = "latch1";
         String key2 = "latch2";

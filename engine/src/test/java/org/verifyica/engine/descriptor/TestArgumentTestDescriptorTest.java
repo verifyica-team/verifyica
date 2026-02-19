@@ -813,11 +813,17 @@ public class TestArgumentTestDescriptorTest {
     @SuppressWarnings("unused")
     public static class TestArgumentClass {
 
-        public void beforeAllMethod() {}
+        public void beforeAllMethod() {
+            // INTENTIONALLY EMPTY
+        }
 
-        public void afterAllMethod() {}
+        public void afterAllMethod() {
+            // INTENTIONALLY EMPTY
+        }
 
-        public void testMethod() {}
+        public void testMethod() {
+            // INTENTIONALLY EMPTY
+        }
 
         public void failingTestMethod() {
             throw new RuntimeException("Test failed");

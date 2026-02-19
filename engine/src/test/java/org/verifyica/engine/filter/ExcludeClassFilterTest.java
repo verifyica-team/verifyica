@@ -32,26 +32,26 @@ public class ExcludeClassFilterTest {
     public class FactoryMethodTests {
 
         @Test
-        @DisplayName("should create filter with valid regex")
+        @DisplayName("Should create filter with valid regex")
         public void shouldCreateFilterWithValidRegex() {
             ExcludeClassFilter filter = ExcludeClassFilter.create(".*Test");
             assertThat(filter).isNotNull();
         }
 
         @Test
-        @DisplayName("should throw exception for null regex")
+        @DisplayName("Should throw exception for null regex")
         public void shouldThrowExceptionForNullRegex() {
             assertThatThrownBy(() -> ExcludeClassFilter.create(null)).isInstanceOf(NullPointerException.class);
         }
 
         @Test
-        @DisplayName("should throw exception for invalid regex")
+        @DisplayName("Should throw exception for invalid regex")
         public void shouldThrowExceptionForInvalidRegex() {
             assertThatThrownBy(() -> ExcludeClassFilter.create("[invalid")).isInstanceOf(PatternSyntaxException.class);
         }
 
         @Test
-        @DisplayName("should create filter with empty string regex")
+        @DisplayName("Should create filter with empty string regex")
         public void shouldCreateFilterWithEmptyStringRegex() {
             ExcludeClassFilter filter = ExcludeClassFilter.create("");
             assertThat(filter).isNotNull();
@@ -63,7 +63,7 @@ public class ExcludeClassFilterTest {
     public class TypeTests {
 
         @Test
-        @DisplayName("should return EXCLUDE_CLASS type")
+        @DisplayName("Should return EXCLUDE_CLASS type")
         public void shouldReturnExcludeClassType() {
             ExcludeClassFilter filter = ExcludeClassFilter.create(".*");
             assertThat(filter.getType()).isEqualTo(Filter.Type.EXCLUDE_CLASS);
@@ -75,7 +75,7 @@ public class ExcludeClassFilterTest {
     public class MatchesTests {
 
         @Test
-        @DisplayName("should match public class with simple name pattern")
+        @DisplayName("Should match class with simple name pattern")
         public void shouldMatchClassWithSimpleNamePattern() {
             // Use pattern that matches after '$' to target inner public class simple names only
             ExcludeClassFilter filter = ExcludeClassFilter.create("\\$.*Test.*Class");
@@ -85,7 +85,7 @@ public class ExcludeClassFilterTest {
         }
 
         @Test
-        @DisplayName("should match public class with full package pattern")
+        @DisplayName("Should match class with full package pattern")
         public void shouldMatchClassWithFullPackagePattern() {
             ExcludeClassFilter filter = ExcludeClassFilter.create("org\\.verifyica\\.engine\\.filter\\..*");
             assertThat(filter.matches(TestClass.class)).isTrue();
@@ -93,7 +93,7 @@ public class ExcludeClassFilterTest {
         }
 
         @Test
-        @DisplayName("should match public class with wildcard pattern")
+        @DisplayName("Should match class with wildcard pattern")
         public void shouldMatchClassWithWildcardPattern() {
             ExcludeClassFilter filter = ExcludeClassFilter.create(".*");
             assertThat(filter.matches(TestClass.class)).isTrue();
@@ -102,7 +102,7 @@ public class ExcludeClassFilterTest {
         }
 
         @Test
-        @DisplayName("should match public class with suffix pattern")
+        @DisplayName("Should match class with suffix pattern")
         public void shouldMatchClassWithSuffixPattern() {
             ExcludeClassFilter filter = ExcludeClassFilter.create(".*Test$");
             assertThat(filter.matches(MyTest.class)).isTrue();
@@ -110,7 +110,7 @@ public class ExcludeClassFilterTest {
         }
 
         @Test
-        @DisplayName("should match public class with prefix pattern")
+        @DisplayName("Should match class with prefix pattern")
         public void shouldMatchClassWithPrefixPattern() {
             ExcludeClassFilter filter = ExcludeClassFilter.create("^org\\.verifyica\\..*");
             assertThat(filter.matches(TestClass.class)).isTrue();
@@ -118,14 +118,14 @@ public class ExcludeClassFilterTest {
         }
 
         @Test
-        @DisplayName("should not match public class when pattern does not match")
+        @DisplayName("Should not match class when pattern does not match")
         public void shouldNotMatchClassWhenPatternDoesNotMatch() {
             ExcludeClassFilter filter = ExcludeClassFilter.create("^com\\.example\\..*");
             assertThat(filter.matches(TestClass.class)).isFalse();
         }
 
         @Test
-        @DisplayName("should match public class with case-sensitive pattern")
+        @DisplayName("Should match class with case-sensitive pattern")
         public void shouldMatchClassWithCaseSensitivePattern() {
             ExcludeClassFilter filter = ExcludeClassFilter.create(".*TestClass");
             assertThat(filter.matches(MyTestClass.class)).isTrue();
@@ -133,7 +133,7 @@ public class ExcludeClassFilterTest {
         }
 
         @Test
-        @DisplayName("should match public class with OR pattern")
+        @DisplayName("Should match class with OR pattern")
         public void shouldMatchClassWithOrPattern() {
             // Pattern targets inner public class simple names after '$' to apublic void outer public class name
             ExcludeClassFilter filter = ExcludeClassFilter.create("\\$(TestClass|MyIT|SampleClass)$");
@@ -144,28 +144,28 @@ public class ExcludeClassFilterTest {
         }
 
         @Test
-        @DisplayName("should handle null public class gracefully")
+        @DisplayName("Should handle null class gracefully")
         public void shouldHandleNullClassGracefully() {
             ExcludeClassFilter filter = ExcludeClassFilter.create(".*");
             assertThatThrownBy(() -> filter.matches(null)).isInstanceOf(NullPointerException.class);
         }
 
         @Test
-        @DisplayName("should match nested class")
+        @DisplayName("Should match nested class")
         public void shouldMatchNestedClass() {
             ExcludeClassFilter filter = ExcludeClassFilter.create(".*\\$Nested.*");
             assertThat(filter.matches(NestedContainer.NestedClass.class)).isTrue();
         }
 
         @Test
-        @DisplayName("should match with empty pattern")
+        @DisplayName("Should match with empty pattern")
         public void shouldMatchWithEmptyPattern() {
             ExcludeClassFilter filter = ExcludeClassFilter.create("");
             assertThat(filter.matches(TestClass.class)).isTrue();
         }
 
         @Test
-        @DisplayName("should match with character public class pattern")
+        @DisplayName("Should match with character class pattern")
         public void shouldMatchWithCharacterClassPattern() {
             // Pattern matches inner public class with capital letter followed by "Test" in simple name
             ExcludeClassFilter filter = ExcludeClassFilter.create("\\$My.*Test.*");
@@ -173,7 +173,7 @@ public class ExcludeClassFilterTest {
         }
 
         @Test
-        @DisplayName("should exclude abstract classes")
+        @DisplayName("Should exclude abstract classes")
         public void shouldExcludeAbstractClasses() {
             ExcludeClassFilter filter = ExcludeClassFilter.create(".*Abstract.*");
             assertThat(filter.matches(AbstractTestClass.class)).isTrue();
@@ -186,7 +186,7 @@ public class ExcludeClassFilterTest {
     public class IntegrationTests {
 
         @Test
-        @DisplayName("should work with multiple filters")
+        @DisplayName("Should work with multiple filters")
         public void shouldWorkWithMultipleFilters() {
             // Use patterns that target inner public class simple names to apublic void outer public class name
             ExcludeClassFilter filter1 = ExcludeClassFilter.create("\\$.*TestClass$");
@@ -199,7 +199,7 @@ public class ExcludeClassFilterTest {
         }
 
         @Test
-        @DisplayName("should be reusable across multiple matches")
+        @DisplayName("Should be reusable across multiple matches")
         public void shouldBeReusableAcrossMultipleMatches() {
             ExcludeClassFilter filter = ExcludeClassFilter.create(".*Test.*");
 
@@ -209,7 +209,7 @@ public class ExcludeClassFilterTest {
         }
 
         @Test
-        @DisplayName("should work complementary to include filter")
+        @DisplayName("Should work complementary to include filter")
         public void shouldWorkComplementaryToIncludeFilter() {
             ExcludeClassFilter excludeFilter = ExcludeClassFilter.create(".*Abstract.*");
             IncludeClassFilter includeFilter = IncludeClassFilter.create(".*Test.*");

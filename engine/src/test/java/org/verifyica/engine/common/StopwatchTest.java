@@ -19,11 +19,14 @@ package org.verifyica.engine.common;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("Stopwatch Tests")
 public class StopwatchTest {
 
     @Test
+    @DisplayName("Should track elapsed time and support stop and reset operations")
     public void test() {
         Stopwatch stopwatch = new Stopwatch();
 

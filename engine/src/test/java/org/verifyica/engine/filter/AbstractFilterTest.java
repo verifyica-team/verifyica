@@ -33,7 +33,7 @@ public class AbstractFilterTest {
     public class ConstructorTests {
 
         @Test
-        @DisplayName("should create filter with valid regex pattern")
+        @DisplayName("Should create filter with valid regex pattern")
         public void shouldCreateFilterWithValidRegexPattern() {
             TestFilter filter = new TestFilter(".*Test.*");
             assertThat(filter.getClassNamePattern()).isNotNull();
@@ -41,7 +41,7 @@ public class AbstractFilterTest {
         }
 
         @Test
-        @DisplayName("should create filter with simple string pattern")
+        @DisplayName("Should create filter with simple string pattern")
         public void shouldCreateFilterWithSimpleStringPattern() {
             TestFilter filter = new TestFilter("MyTest");
             assertThat(filter.getClassNamePattern()).isNotNull();
@@ -49,7 +49,7 @@ public class AbstractFilterTest {
         }
 
         @Test
-        @DisplayName("should create filter with complex regex pattern")
+        @DisplayName("Should create filter with complex regex pattern")
         public void shouldCreateFilterWithComplexRegexPattern() {
             TestFilter filter = new TestFilter("^org\\.verifyica\\.(.*Test|.*IT)$");
             assertThat(filter.getClassNamePattern()).isNotNull();
@@ -57,7 +57,7 @@ public class AbstractFilterTest {
         }
 
         @Test
-        @DisplayName("should create filter with wildcard pattern")
+        @DisplayName("Should create filter with wildcard pattern")
         public void shouldCreateFilterWithWildcardPattern() {
             TestFilter filter = new TestFilter(".*");
             assertThat(filter.getClassNamePattern()).isNotNull();
@@ -65,19 +65,19 @@ public class AbstractFilterTest {
         }
 
         @Test
-        @DisplayName("should throw exception for null regex pattern")
+        @DisplayName("Should throw exception for null regex pattern")
         public void shouldThrowExceptionForNullRegexPattern() {
             assertThatThrownBy(() -> new TestFilter(null)).isInstanceOf(NullPointerException.class);
         }
 
         @Test
-        @DisplayName("should throw exception for invalid regex pattern")
+        @DisplayName("Should throw exception for invalid regex pattern")
         public void shouldThrowExceptionForInvalidRegexPattern() {
             assertThatThrownBy(() -> new TestFilter("[invalid")).isInstanceOf(PatternSyntaxException.class);
         }
 
         @Test
-        @DisplayName("should create filter with empty string pattern")
+        @DisplayName("Should create filter with empty string pattern")
         public void shouldCreateFilterWithEmptyStringPattern() {
             TestFilter filter = new TestFilter("");
             assertThat(filter.getClassNamePattern()).isNotNull();
@@ -85,7 +85,7 @@ public class AbstractFilterTest {
         }
 
         @Test
-        @DisplayName("should create filter with special characters")
+        @DisplayName("Should create filter with special characters")
         public void shouldCreateFilterWithSpecialCharacters() {
             TestFilter filter = new TestFilter("\\$.*Test\\$$");
             assertThat(filter.getClassNamePattern()).isNotNull();
@@ -98,7 +98,7 @@ public class AbstractFilterTest {
     public class PatternAccessTests {
 
         @Test
-        @DisplayName("should return same pattern instance on multiple calls")
+        @DisplayName("Should return same pattern instance on multiple calls")
         public void shouldReturnSamePatternInstanceOnMultipleCalls() {
             TestFilter filter = new TestFilter(".*Test.*");
             Pattern pattern1 = filter.getClassNamePattern();
@@ -107,7 +107,7 @@ public class AbstractFilterTest {
         }
 
         @Test
-        @DisplayName("should return immutable pattern")
+        @DisplayName("Should return immutable pattern")
         public void shouldReturnImmutablePattern() {
             TestFilter filter = new TestFilter(".*Test.*");
             Pattern pattern = filter.getClassNamePattern();
@@ -121,14 +121,14 @@ public class AbstractFilterTest {
     public class EdgeCaseTests {
 
         @Test
-        @DisplayName("should handle pattern with line breaks")
+        @DisplayName("Should handle pattern with line breaks")
         public void shouldHandlePatternWithLineBreaks() {
             TestFilter filter = new TestFilter("Test(?s).*");
             assertThat(filter.getClassNamePattern()).isNotNull();
         }
 
         @Test
-        @DisplayName("should handle pattern with unicode characters")
+        @DisplayName("Should handle pattern with unicode characters")
         public void shouldHandlePatternWithUnicodeCharacters() {
             TestFilter filter = new TestFilter(".*\\u00E9.*");
             assertThat(filter.getClassNamePattern()).isNotNull();
@@ -136,7 +136,7 @@ public class AbstractFilterTest {
         }
 
         @Test
-        @DisplayName("should handle case-sensitive patterns")
+        @DisplayName("Should handle case-sensitive patterns")
         public void shouldHandleCaseSensitivePatterns() {
             TestFilter filter = new TestFilter("Test");
             Pattern pattern = filter.getClassNamePattern();
@@ -145,7 +145,7 @@ public class AbstractFilterTest {
         }
 
         @Test
-        @DisplayName("should handle pattern with word boundaries")
+        @DisplayName("Should handle pattern with word boundaries")
         public void shouldHandlePatternWithWordBoundaries() {
             TestFilter filter = new TestFilter("\\bTest\\b");
             assertThat(filter.getClassNamePattern()).isNotNull();
