@@ -19,11 +19,14 @@ package org.verifyica.engine.common;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.UUID;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("AnsiColoredString Tests")
 public class AnsiColoredStringTest {
 
     @Test
+    @DisplayName("Should create empty builder")
     public void testEmptyBuilder() {
         AnsiColoredString ansiColoredString = new AnsiColoredString().append(AnsiColor.NONE);
 
@@ -38,6 +41,7 @@ public class AnsiColoredStringTest {
     }
 
     @Test
+    @DisplayName("Should handle no color before append")
     public void testNoColorBeforeAppend() {
         String displayString = UUID.randomUUID().toString();
 
@@ -52,6 +56,7 @@ public class AnsiColoredStringTest {
     }
 
     @Test
+    @DisplayName("Should handle no color after append")
     public void testNoColorAfterAppend() {
         String displayString = UUID.randomUUID().toString();
 
@@ -67,6 +72,7 @@ public class AnsiColoredStringTest {
     }
 
     @Test
+    @DisplayName("Should reuse color")
     public void testReuseColor() {
         String displayString = UUID.randomUUID().toString();
 
@@ -84,6 +90,7 @@ public class AnsiColoredStringTest {
     }
 
     @Test
+    @DisplayName("Should append color")
     public void testAppendColor() {
         String displayString = UUID.randomUUID().toString();
 
@@ -101,6 +108,7 @@ public class AnsiColoredStringTest {
     }
 
     @Test
+    @DisplayName("Should build and convert to string")
     public void testBuildAndToString() {
         String displayString = UUID.randomUUID().toString();
 
@@ -130,6 +138,7 @@ public class AnsiColoredStringTest {
     }
 
     @Test
+    @DisplayName("Should use builder constructor with color")
     public void testBuilderConstructorWithColor() {
         String displayString = UUID.randomUUID().toString();
 
@@ -159,6 +168,7 @@ public class AnsiColoredStringTest {
     }
 
     @Test
+    @DisplayName("Should handle duplicate last color")
     public void testDuplicateLastColor() {
         String displayString = UUID.randomUUID().toString();
 

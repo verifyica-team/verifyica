@@ -23,11 +23,14 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("SemaphoreRunnable Tests")
 public class SemaphoreRunnableTest {
 
     @Test
+    @DisplayName("Should enforce semaphore permits across multiple threads")
     public void test() throws InterruptedException {
         AtomicReference<String> failed = new AtomicReference<>();
         AtomicInteger counter = new AtomicInteger();

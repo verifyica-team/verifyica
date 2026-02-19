@@ -27,11 +27,14 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.HashSet;
 import java.util.Set;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("TemporaryDirectory Tests")
 public class TemporaryDirectoryTest {
 
     @Test
+    @DisplayName("Should create temporary directory and file")
     public void testCreateTemporaryDirectoryAndFile() throws IOException, InterruptedException {
         String permissions = "rwx------";
 
@@ -55,6 +58,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Test
+    @DisplayName("Should create temporary directory and file with custom permissions")
     public void testCreateTemporaryDirectoryAndFileWithPermissions() throws IOException, InterruptedException {
         String permissions = "rwxr-xr-x";
 
@@ -94,6 +98,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Test
+    @DisplayName("Should close and delete temporary directory")
     public void testClose() throws IOException {
         TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
         Path path = temporaryDirectory.toPath();
@@ -106,6 +111,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Test
+    @DisplayName("Should delete temporary directory")
     public void testDelete() throws IOException {
         TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
         Path path = temporaryDirectory.toPath();
@@ -118,6 +124,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Test
+    @DisplayName("Should delete temporary directory with contents")
     public void testDeleteWithContents() throws IOException {
         TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
         Path path = temporaryDirectory.toPath();
@@ -145,6 +152,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Test
+    @DisplayName("Should implement equals and hashCode correctly")
     public void testEqualsAndHashCode() throws IOException {
         TemporaryDirectory tempDir1 = TemporaryDirectory.newDirectory();
         TemporaryDirectory tempDir2 = TemporaryDirectory.newDirectory();
@@ -178,6 +186,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Test
+    @DisplayName("Should return path string from toString()")
     public void testToStringReturnsPath() throws IOException {
         TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
         try {
@@ -189,6 +198,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for null permissions when creating directory")
     public void testNewDirectoryWithNullPermissions() {
         assertThatThrownBy(() -> TemporaryDirectory.newDirectory(null))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -196,6 +206,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for empty permissions when creating directory")
     public void testNewDirectoryWithEmptyPermissions() {
         assertThatThrownBy(() -> TemporaryDirectory.newDirectory(new HashSet<>()))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -203,6 +214,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for null permissions when creating file")
     public void testNewFileWithNullPermissions() throws IOException {
         TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
         try {
@@ -215,6 +227,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for empty permissions when creating file")
     public void testNewFileWithEmptyPermissions() throws IOException {
         TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
         try {
@@ -227,6 +240,7 @@ public class TemporaryDirectoryTest {
     }
 
     @Test
+    @DisplayName("Should create file with default permissions")
     public void testNewFileWithDefaultPermissions() throws IOException {
         TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
         try {

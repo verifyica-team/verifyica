@@ -21,12 +21,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.verifyica.api.Verifyica;
 
+@DisplayName("OrderSupport Tests")
 public class OrderSupportTest {
 
     @Test
+    @DisplayName("Should order classes with default order")
     public void testDefaultOrder() {
         List<Class<?>> classes = new ArrayList<>();
         classes.add(TestClass1.class);
@@ -45,6 +48,7 @@ public class OrderSupportTest {
     }
 
     @Test
+    @DisplayName("Should order classes with explicit order")
     public void testOrder() {
         List<Class<?>> classes = new ArrayList<>();
         classes.add(TestClass1.class);
@@ -65,6 +69,7 @@ public class OrderSupportTest {
     }
 
     @Test
+    @DisplayName("Should order classes with duplicate order values")
     public void testDuplicateOrder() {
         List<Class<?>> classes = new ArrayList<>();
         classes.add(TestClass1.class);

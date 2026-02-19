@@ -62,7 +62,7 @@ public class FilterFactoryTest {
     public class LoadFiltersTests {
 
         @Test
-        @DisplayName("should return empty list when no filter file configured")
+        @DisplayName("Should return empty list when no filter file configured")
         public void shouldReturnEmptyListWhenNoFilterFileConfigured() {
             List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).isNotNull();
@@ -70,7 +70,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should return empty list when filter filename is empty")
+        @DisplayName("Should return empty list when filter filename is empty")
         public void shouldReturnEmptyListWhenFilterFilenameIsEmpty() {
             ConcreteConfiguration.getInstance()
                     .getProperties()
@@ -82,7 +82,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should return empty list when filter filename is whitespace")
+        @DisplayName("Should return empty list when filter filename is whitespace")
         public void shouldReturnEmptyListWhenFilterFilenameIsWhitespace() {
             ConcreteConfiguration.getInstance()
                     .getProperties()
@@ -94,7 +94,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should load IncludeClass filter")
+        @DisplayName("Should load IncludeClass filter")
         public void shouldLoadIncludeClassFilter() throws IOException {
             String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \".*Test\"\n";
 
@@ -110,7 +110,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should load ExcludeClass filter")
+        @DisplayName("Should load ExcludeClass filter")
         public void shouldLoadExcludeClassFilter() throws IOException {
             String yaml = "- type: ExcludeClass\n" + "  enabled: true\n" + "  classRegex: \".*Abstract.*\"\n";
 
@@ -126,7 +126,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should load IncludeTaggedClass filter")
+        @DisplayName("Should load IncludeTaggedClass filter")
         public void shouldLoadIncludeTaggedClassFilter() throws IOException {
             String yaml = "- type: IncludeTaggedClass\n" + "  enabled: true\n" + "  classTagRegex: \"fast\"\n";
 
@@ -142,7 +142,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should load ExcludeTaggedClass filter")
+        @DisplayName("Should load ExcludeTaggedClass filter")
         public void shouldLoadExcludeTaggedClassFilter() throws IOException {
             String yaml = "- type: ExcludeTaggedClass\n" + "  enabled: true\n" + "  classTagRegex: \"slow\"\n";
 
@@ -158,7 +158,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should load multiple filters")
+        @DisplayName("Should load multiple filters")
         public void shouldLoadMultipleFilters() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
@@ -183,7 +183,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should skip disabled filters")
+        @DisplayName("Should skip disabled filters")
         public void shouldSkipDisabledFilters() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
@@ -207,7 +207,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should skip filters without enabled field")
+        @DisplayName("Should skip filters without enabled field")
         public void shouldSkipFiltersWithoutEnabledField() throws IOException {
             String yaml = "- type: IncludeClass\n" + "  classRegex: \".*Test\"\n";
 
@@ -221,7 +221,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should return empty list for empty YAML file")
+        @DisplayName("Should return empty list for empty YAML file")
         public void shouldReturnEmptyListForEmptyYamlFile() throws IOException {
             String yaml = "";
 
@@ -239,7 +239,7 @@ public class FilterFactoryTest {
     public class ErrorHandlingTests {
 
         @Test
-        @DisplayName("should throw exception for non-existent file")
+        @DisplayName("Should throw exception for non-existent file")
         public void shouldThrowExceptionForNonExistentFile() {
             ConcreteConfiguration.getInstance()
                     .getProperties()
@@ -251,7 +251,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should throw exception for invalid YAML")
+        @DisplayName("Should throw exception for invalid YAML")
         public void shouldThrowExceptionForInvalidYaml() throws IOException {
             String yaml = "invalid: yaml: content: [unclosed";
 
@@ -266,7 +266,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should throw exception for unknown filter type")
+        @DisplayName("Should throw exception for unknown filter type")
         public void shouldThrowExceptionForUnknownFilterType() throws IOException {
             String yaml = "- type: UnknownFilter\n" + "  enabled: true\n" + "  classRegex: \".*Test\"\n";
 
@@ -281,7 +281,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should throw exception for invalid regex in filter")
+        @DisplayName("Should throw exception for invalid regex in filter")
         public void shouldThrowExceptionForInvalidRegexInFilter() throws IOException {
             String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \"[invalid\"\n";
 
@@ -299,7 +299,7 @@ public class FilterFactoryTest {
     public class EdgeCaseTests {
 
         @Test
-        @DisplayName("should handle complex regex patterns")
+        @DisplayName("Should handle complex regex patterns")
         public void shouldHandleComplexRegexPatterns() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
@@ -315,7 +315,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should handle YAML with comments")
+        @DisplayName("Should handle YAML with comments")
         public void shouldHandleYamlWithComments() throws IOException {
             String yaml = "# This is a comment\n"
                     + "- type: IncludeClass\n"
@@ -332,7 +332,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should handle filters with special characters in regex")
+        @DisplayName("Should handle filters with special characters in regex")
         public void shouldHandleFiltersWithSpecialCharactersInRegex() throws IOException {
             String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \".*\\\\$Inner.*\"\n";
 
@@ -346,7 +346,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should handle empty regex")
+        @DisplayName("Should handle empty regex")
         public void shouldHandleEmptyRegex() throws IOException {
             String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \"\"\n";
 
@@ -365,7 +365,7 @@ public class FilterFactoryTest {
     public class IntegrationTests {
 
         @Test
-        @DisplayName("should load all filter types in one file")
+        @DisplayName("Should load all filter types in one file")
         public void shouldLoadAllFilterTypesInOneFile() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
@@ -394,7 +394,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should preserve filter order")
+        @DisplayName("Should preserve filter order")
         public void shouldPreserveFilterOrder() throws IOException {
             String yaml = "- type: ExcludeClass\n"
                     + "  enabled: true\n"
@@ -419,7 +419,7 @@ public class FilterFactoryTest {
         }
 
         @Test
-        @DisplayName("should be reusable across multiple calls")
+        @DisplayName("Should be reusable across multiple calls")
         public void shouldBeReusableAcrossMultipleCalls() throws IOException {
             String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \".*Test\"\n";
 

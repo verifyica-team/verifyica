@@ -21,18 +21,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.verifyica.api.Verifyica;
 
+@DisplayName("TagSupport Tests")
 public class TagSupportTest {
 
     @Test
+    @DisplayName("Should return empty set for class without tags")
     public void testNoClassTags() {
         assertThat(TagSupport.getTags(TestClass1.class)).isNotNull();
         assertThat(TagSupport.getTags(TestClass1.class)).isEmpty();
     }
 
     @Test
+    @DisplayName("Should return tags for class with multiple tags")
     public void testClassTags() {
         Set<String> tags = TagSupport.getTags(TestClass2.class);
 
@@ -46,6 +50,7 @@ public class TagSupportTest {
     }
 
     @Test
+    @DisplayName("Should trim whitespace from tags")
     public void testClassTagTrimming() {
         Set<String> tags = TagSupport.getTags(TestClass3.class);
 
@@ -58,6 +63,7 @@ public class TagSupportTest {
     }
 
     @Test
+    @DisplayName("Should return empty set for empty tag")
     public void testClassEmptyTag() {
         Set<String> tags = TagSupport.getTags(TestClass4.class);
 

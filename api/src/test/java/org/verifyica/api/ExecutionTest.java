@@ -24,11 +24,14 @@ import static org.verifyica.api.Execution.skipIfNotCondition;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("Execution Tests")
 public class ExecutionTest {
 
     @Test
+    @DisplayName("Should skip execution based on condition")
     public void testSkipIfCondition() {
         assertThatExceptionOfType(Execution.ExecutionSkippedException.class).isThrownBy(() -> skipIfCondition(true));
         assertThatExceptionOfType(Execution.ExecutionSkippedException.class)
@@ -45,6 +48,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should skip execution based on negated condition")
     public void testSkipIfNotCondition() {
         assertThatExceptionOfType(Execution.ExecutionSkippedException.class)
                 .isThrownBy(() -> skipIfNotCondition(false));
@@ -62,6 +66,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should validate arguments and throw IllegalArgumentException")
     public void testIllegalArguments() {
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> skipIfCondition(null));
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> skipIfCondition(null, "skipped"));
@@ -70,6 +75,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should skip with custom message")
     public void testSkipIfConditionWithMessage() {
         String customMessage = "Custom skip message";
 
@@ -79,6 +85,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should skip with negated condition and custom message")
     public void testSkipIfNotConditionWithMessage() {
         String customMessage = "Custom skip message";
 
@@ -88,6 +95,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should handle empty message for skipIfCondition")
     public void testSkipIfConditionWithEmptyMessage() {
         // Empty message should result in exception with null message
         assertThatThrownBy(() -> skipIfCondition(true, ""))
@@ -96,6 +104,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should handle blank message for skipIfCondition")
     public void testSkipIfConditionWithBlankMessage() {
         // Blank message should result in exception with null message
         assertThatThrownBy(() -> skipIfCondition(true, "   "))
@@ -104,6 +113,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should handle empty message for skipIfNotCondition")
     public void testSkipIfNotConditionWithEmptyMessage() {
         assertThatThrownBy(() -> skipIfNotCondition(false, ""))
                 .isInstanceOf(Execution.ExecutionSkippedException.class)
@@ -111,6 +121,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should handle blank message for skipIfNotCondition")
     public void testSkipIfNotConditionWithBlankMessage() {
         assertThatThrownBy(() -> skipIfNotCondition(false, "   "))
                 .isInstanceOf(Execution.ExecutionSkippedException.class)
@@ -118,6 +129,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should create ExecutionSkippedException with various constructors")
     public void testExecutionSkippedExceptionConstructors() {
         // Default constructor
         Execution.ExecutionSkippedException exception1 = new Execution.ExecutionSkippedException();
@@ -130,6 +142,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when supplier is null for skipIfCondition")
     public void testSkipIfConditionSupplierNullThrows() {
         assertThatThrownBy(() -> skipIfCondition(null))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -137,6 +150,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when supplier is null for skipIfNotCondition")
     public void testSkipIfNotConditionSupplierNullThrows() {
         assertThatThrownBy(() -> skipIfNotCondition(null))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -144,6 +158,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when supplier with message is null for skipIfCondition")
     public void testSkipIfConditionSupplierWithMessageNullThrows() {
         assertThatThrownBy(() -> skipIfCondition(null, "message"))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -151,6 +166,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when supplier with message is null for skipIfNotCondition")
     public void testSkipIfNotConditionSupplierWithMessageNullThrows() {
         assertThatThrownBy(() -> skipIfNotCondition(null, "message"))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -158,6 +174,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should evaluate skipIfCondition supplier lazily")
     public void testSkipIfConditionSupplierEvaluatesLazily() {
         AtomicBoolean supplierCalled = new AtomicBoolean(false);
         BooleanSupplier supplier = () -> {
@@ -184,6 +201,7 @@ public class ExecutionTest {
     }
 
     @Test
+    @DisplayName("Should evaluate skipIfNotCondition supplier lazily")
     public void testSkipIfNotConditionSupplierEvaluatesLazily() {
         AtomicBoolean supplierCalled = new AtomicBoolean(false);
         BooleanSupplier supplier = () -> {

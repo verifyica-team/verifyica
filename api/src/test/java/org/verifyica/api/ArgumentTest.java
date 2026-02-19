@@ -21,11 +21,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("Argument Tests")
 public class ArgumentTest {
 
     @Test
+    @DisplayName("Should create argument with name and payload")
     public void testOf1() {
         String name = "foo";
         String payload = "bar";
@@ -44,6 +47,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with trimmed name")
     public void testOf2() {
         String name = " foo ";
         String payload = "bar";
@@ -62,6 +66,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should reject invalid names")
     public void testOfBadNames() {
         String[] names =
                 new String[] {null, "", " ", " \t ", "\t", "\r", "\n", "\r\n", "\t\r\n", " \t", " \t\r", " \t\r\n"};
@@ -72,6 +77,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with null payload")
     public void testOfNullPayload() {
         String name = "foo";
 
@@ -85,6 +91,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should return singleton empty argument")
     public void testEmpty() {
         Argument<?> argument1 = Argument.EMPTY;
 
@@ -106,6 +113,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with boolean payload")
     public void testOfBoolean() {
         String name = "foo";
         boolean value = true;
@@ -125,6 +133,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with byte payload")
     public void testOfByte() {
         String name = "foo";
         byte value = 1;
@@ -144,6 +153,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with char payload")
     public void testOfChar() {
         String name = "foo";
         char value = 'x';
@@ -163,6 +173,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with short payload")
     public void testOfShort() {
         String name = "foo";
         short value = 1;
@@ -182,6 +193,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with int payload")
     public void testOfInt() {
         String name = "foo";
         int value = 1;
@@ -201,6 +213,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with long payload")
     public void testOfLong() {
         String name = "foo";
         long value = 1;
@@ -220,6 +233,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with float payload")
     public void testOfFloat() {
         String name = "foo";
         float value = 1.0f;
@@ -239,6 +253,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with double payload")
     public void testOfDouble() {
         String name = "foo";
         double value = 1.0;
@@ -258,6 +273,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with BigInteger payload using of()")
     public void testOfBigInteger1() {
         String name = "foo";
         String value = "1";
@@ -278,6 +294,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with BigInteger payload using ofBigInteger()")
     public void testOfBigInteger2() {
         String value = "1";
         BigInteger bigIntegerValue = new BigInteger(value);
@@ -297,6 +314,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with BigDecimal payload using of()")
     public void testOfBigDecimal1() {
         String name = "foo";
         String value = "1.0";
@@ -317,6 +335,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with BigDecimal payload using ofBigDecimal()")
     public void testOfBigDecimal2() {
         String value = "1.0";
         BigDecimal bigDecimalValue = new BigDecimal(value);
@@ -336,6 +355,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with String payload using ofString()")
     public void testOfString() {
         String nameAndValue = "foo";
         Argument<?> argument = Argument.ofString(nameAndValue);
@@ -354,6 +374,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with null string using ofString()")
     public void testOfStringNull() {
         Argument<?> argument = Argument.ofString(null);
 
@@ -365,6 +386,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with empty string using ofString()")
     public void testOfStringEmpty() {
         Argument<?> argument = Argument.ofString("");
 
@@ -377,6 +399,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with null BigInteger")
     public void testOfBigIntegerNull() {
         Argument<?> argument = Argument.ofBigInteger((BigInteger) null);
 
@@ -387,6 +410,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with null BigInteger string")
     public void testOfBigIntegerStringNull() {
         Argument<?> argument = Argument.ofBigInteger((String) null);
 
@@ -397,6 +421,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with valid BigInteger string")
     public void testOfBigIntegerStringValid() {
         Argument<?> argument = Argument.ofBigInteger("12345678901234567890");
 
@@ -409,11 +434,13 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for invalid BigInteger string")
     public void testOfBigIntegerStringInvalidNumber() {
         assertThatExceptionOfType(NumberFormatException.class).isThrownBy(() -> Argument.ofBigInteger("not-a-number"));
     }
 
     @Test
+    @DisplayName("Should create argument with null BigDecimal")
     public void testOfBigDecimalNull() {
         Argument<?> argument = Argument.ofBigDecimal((BigDecimal) null);
 
@@ -424,6 +451,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with null BigDecimal string")
     public void testOfBigDecimalStringNull() {
         Argument<?> argument = Argument.ofBigDecimal((String) null);
 
@@ -434,6 +462,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should create argument with valid BigDecimal string")
     public void testOfBigDecimalStringValid() {
         Argument<?> argument = Argument.ofBigDecimal("12345.67890");
 
@@ -446,11 +475,13 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should throw exception for invalid BigDecimal string")
     public void testOfBigDecimalStringInvalidNumber() {
         assertThatExceptionOfType(NumberFormatException.class).isThrownBy(() -> Argument.ofBigDecimal("not-a-number"));
     }
 
     @Test
+    @DisplayName("Should create arguments for all primitive wrapper types")
     public void testOfPrimitiveWrapperTypes() {
         // Boolean wrapper
         Argument<Boolean> boolArg = Argument.ofBoolean(true);
@@ -494,6 +525,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when payload type is null")
     public void testPayloadTypeNullThrows() {
         Argument<String> argument = Argument.of("test", "value");
 
@@ -503,6 +535,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should support type casting of payload")
     public void testCasting() {
         Argument<?> argument = Argument.of("testObject1", new TestObject1());
 
@@ -516,6 +549,7 @@ public class ArgumentTest {
     }
 
     @Test
+    @DisplayName("Should support inheritance casting of payload")
     public void testInheritanceCasting() {
         Object object = new TestObject2();
         Argument<?> argument = Argument.of("testObject1", object);

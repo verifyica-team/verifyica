@@ -19,11 +19,14 @@ package org.verifyica.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("ExtendedMap Tests")
 public class ExtendedMapTest {
 
     @Test
+    @DisplayName("Should perform common ExtendedMap operations")
     public void testCommon() {
         ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
 
@@ -46,6 +49,7 @@ public class ExtendedMapTest {
     }
 
     @Test
+    @DisplayName("Should handle inheritance in ExtendedMap")
     public void testInheritance() {
         ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
 
@@ -76,6 +80,7 @@ public class ExtendedMapTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when getAs type is null")
     public void testGetAsWithNullType() {
         ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
         extendedMap.put("foo", "bar");
@@ -86,6 +91,7 @@ public class ExtendedMapTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when removeAs type is null")
     public void testRemoveAsWithNullType() {
         ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
         extendedMap.put("foo", "bar");
@@ -96,6 +102,7 @@ public class ExtendedMapTest {
     }
 
     @Test
+    @DisplayName("Should return null for non-existent key in getAs")
     public void testGetAsNonExistentKey() {
         ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
 
@@ -105,6 +112,7 @@ public class ExtendedMapTest {
     }
 
     @Test
+    @DisplayName("Should return null for non-existent key in removeAs")
     public void testRemoveAsNonExistentKey() {
         ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
 
@@ -114,6 +122,7 @@ public class ExtendedMapTest {
     }
 
     @Test
+    @DisplayName("Should throw ClassCastException for wrong type in getAs")
     public void testGetAsWrongType() {
         ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
         extendedMap.put("foo", 123);
@@ -122,6 +131,7 @@ public class ExtendedMapTest {
     }
 
     @Test
+    @DisplayName("Should throw ClassCastException for wrong type in removeAs")
     public void testRemoveAsWrongType() {
         ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
         extendedMap.put("foo", 123);
@@ -130,6 +140,7 @@ public class ExtendedMapTest {
     }
 
     @Test
+    @DisplayName("Should create ExtendedMap with various constructors")
     public void testConstructors() {
         // Default constructor
         ExtendedMap<String, Object> map1 = new ExtendedMap<>();

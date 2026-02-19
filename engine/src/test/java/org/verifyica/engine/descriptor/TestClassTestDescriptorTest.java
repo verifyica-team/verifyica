@@ -615,15 +615,23 @@ public class TestClassTestDescriptorTest {
 
     // Test helper classes
     public static class SimpleTestClass {
-        public SimpleTestClass() {}
+        public SimpleTestClass() {
+            // INTENTIONALLY EMPTY
+        }
     }
 
     public static class TestClassWithMethods {
-        public TestClassWithMethods() {}
+        public TestClassWithMethods() {
+            // INTENTIONALLY EMPTY
+        }
 
-        public void prepare() {}
+        public void prepare() {
+            // INTENTIONALLY EMPTY
+        }
 
-        public void conclude() {}
+        public void conclude() {
+            // INTENTIONALLY EMPTY
+        }
     }
 
     public static class TestClassThatThrows {

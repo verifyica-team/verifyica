@@ -547,11 +547,17 @@ public class TestMethodTestDescriptorTest {
     // Test helper class
     @SuppressWarnings("unused")
     public static class TestMethodClass {
-        public void beforeEachMethod() {}
+        public void beforeEachMethod() {
+            // INTENTIONALLY EMPTY
+        }
 
-        public void testMethod() {}
+        public void testMethod() {
+            // INTENTIONALLY EMPTY
+        }
 
-        public void afterEachMethod() {}
+        public void afterEachMethod() {
+            // INTENTIONALLY EMPTY
+        }
 
         public void failingTestMethod() {
             throw new RuntimeException("Test failed");
