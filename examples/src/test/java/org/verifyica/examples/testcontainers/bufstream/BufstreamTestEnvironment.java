@@ -101,6 +101,7 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
                         .withCreateContainerCmdModifier(
                                 createContainerCmd -> bindHostPorts(createContainerCmd, kafkaPort, adminPort))
                         .withLogConsumer(new ContainerLogConsumer(getClass().getName(), dockerImageName))
+                        .withStartupAttempts(3)
                         .waitingFor(Wait.forHttp("/-/status").forPort(9089).forStatusCode(200))
                         .withStartupTimeout(Duration.ofSeconds(30));
 

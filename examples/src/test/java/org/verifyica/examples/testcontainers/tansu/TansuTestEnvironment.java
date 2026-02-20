@@ -97,6 +97,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
                         // CRITICAL: advertise host-reachable endpoint for the Java client running on the host
                         .withEnv("ADVERTISED_LISTENER_URL", "tcp://localhost:" + kafkaPort)
                         .withLogConsumer(new ContainerLogConsumer(getClass().getName(), dockerImageName))
+                        .withStartupAttempts(3)
                         // simplest reliable readiness check
                         .waitingFor(Wait.forListeningPort())
                         .withStartupTimeout(Duration.ofSeconds(60));

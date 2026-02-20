@@ -77,9 +77,9 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
         kafkaContainer = new KafkaContainer(
                         DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"))
                 .withNetwork(network)
-                .withStartupTimeout(Duration.ofSeconds(30))
+                .withStartupAttempts(3)
                 .withLogConsumer(new ContainerLogConsumer(getClass().getName(), dockerImageName))
-                .waitingFor(Wait.forLogMessage(".*Kafka Server started.*", 1));
+                .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
 
         /*
          * Workaround for Kafka 3.9.0 issue with listeners

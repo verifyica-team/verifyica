@@ -75,6 +75,7 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
 
         mongoDBContainer = new MongoDBContainer(DockerImageName.parse(dockerImageName))
                 .withNetwork(network)
+                .withStartupAttempts(3)
                 .withLogConsumer(new ContainerLogConsumer(getClass().getName(), dockerImageName))
                 .withStartupTimeout(Duration.ofSeconds(30));
 
