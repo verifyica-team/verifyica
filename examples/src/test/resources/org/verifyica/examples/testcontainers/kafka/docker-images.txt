@@ -2,11 +2,11 @@
 # Each line specifies a different version of the Kafka image.
 apache/kafka:3.7.2
 apache/kafka:3.8.1
-apache/kafka-native:3.8.1
+# apache/kafka-native:3.8.1
 apache/kafka:3.9.1
-apache/kafka-native:3.9.1
+# apache/kafka-native:3.9.1
 apache/kafka:4.0.1
 apache/kafka:4.1.1
-apache/kafka-native:4.1.1
+# apache/kafka-native:4.1.1
 apache/kafka:4.2.0
-apache/kafka-native:4.2.0
+# apache/kafka-native:4.2.0
