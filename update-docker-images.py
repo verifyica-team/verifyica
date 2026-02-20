@@ -221,7 +221,6 @@ def main() -> int:
 
             if args.add_tracks:
                 out_lines.append(new_line)
-                appended_any = True
                 changed = True
 
     if args.in_place and changed and not args.dry_run:
