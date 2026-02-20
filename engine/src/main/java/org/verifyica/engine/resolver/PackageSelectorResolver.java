@@ -81,10 +81,10 @@ public class PackageSelectorResolver {
         int selectorCount = selectors.size();
 
         // Avoid rescanning the same package multiple times.
-        Set<String> processedPackages = new HashSet<String>(Math.max(16, selectorCount * 2));
+        Set<String> processedPackages = new HashSet<>(Math.max(16, selectorCount * 2));
 
         // Cache discovered test methods per class within this resolve call.
-        Map<Class<?>, List<Method>> methodsCache = new HashMap<Class<?>, List<Method>>(Math.max(16, selectorCount * 8));
+        Map<Class<?>, List<Method>> methodsCache = new HashMap<>(Math.max(16, selectorCount * 8));
 
         for (PackageSelector selector : selectors) {
             String packageName = selector.getPackageName();
@@ -111,7 +111,7 @@ public class PackageSelectorResolver {
 
                 Set<Method> methods = classMethodSet.get(testClass);
                 if (methods == null) {
-                    methods = new LinkedHashSet<Method>();
+                    methods = new LinkedHashSet<>();
                     classMethodSet.put(testClass, methods);
                 }
 

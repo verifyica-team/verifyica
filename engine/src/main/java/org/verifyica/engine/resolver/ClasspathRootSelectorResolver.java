@@ -101,11 +101,10 @@ public class ClasspathRootSelectorResolver {
         int selectorCount = selectors.size();
 
         // Deduplicate identical roots.
-        Set<URI> processedRoots = new HashSet<URI>(Math.max(16, selectorCount * 2));
+        Set<URI> processedRoots = new HashSet<>(Math.max(16, selectorCount * 2));
 
         // Cache discovered ordered methods per class for this resolve call.
-        Map<Class<?>, List<Method>> methodsCache =
-                new HashMap<Class<?>, List<Method>>(Math.max(16, selectorCount * 16));
+        Map<Class<?>, List<Method>> methodsCache = new HashMap<>(Math.max(16, selectorCount * 16));
 
         int processedCount = 0;
 
@@ -136,7 +135,7 @@ public class ClasspathRootSelectorResolver {
                     methodsCache.put(testClass, orderedMethods);
                 }
 
-                Set<Method> methodSet = classMethodSet.computeIfAbsent(testClass, k -> new LinkedHashSet<Method>());
+                Set<Method> methodSet = classMethodSet.computeIfAbsent(testClass, k -> new LinkedHashSet<>());
 
                 methodSet.addAll(orderedMethods);
             }

@@ -90,11 +90,10 @@ public class ClassSelectorResolver {
         int selectorCount = selectors.size();
 
         // Ensures we only process each class once per resolve call.
-        Set<Class<?>> visited = new HashSet<Class<?>>(Math.max(16, selectorCount * 8));
+        Set<Class<?>> visited = new HashSet<>(Math.max(16, selectorCount * 8));
 
         // Cache ordered methods per class for this resolve call.
-        Map<Class<?>, List<Method>> methodsCache =
-                new HashMap<Class<?>, List<Method>>(Math.max(16, selectorCount * 16));
+        Map<Class<?>, List<Method>> methodsCache = new HashMap<>(Math.max(16, selectorCount * 16));
 
         for (ClassSelector selector : selectors) {
             Class<?> root = selector.getJavaClass();
@@ -151,7 +150,7 @@ public class ClassSelectorResolver {
 
             Set<Method> methodSet = classMethodSet.get(clazz);
             if (methodSet == null) {
-                methodSet = new LinkedHashSet<Method>();
+                methodSet = new LinkedHashSet<>();
                 classMethodSet.put(clazz, methodSet);
             }
 
