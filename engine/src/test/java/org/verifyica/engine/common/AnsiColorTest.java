@@ -522,4 +522,198 @@ public class AnsiColorTest {
             assertThat(bright).isEqualTo("bright");
         }
     }
+
+    @Nested
+    @DisplayName("Additional Edge Case Tests")
+    public class AdditionalEdgeCaseTests {
+
+        @Test
+        @DisplayName("Should wrap null object when supported")
+        public void shouldWrapNullObjectWhenSupported() {
+            AnsiColor.setSupported(true);
+
+            String result = AnsiColor.TEXT_BLUE.wrap(null);
+
+            assertThat(result).contains("null");
+        }
+
+        @Test
+        @DisplayName("Should wrap object with custom toString")
+        public void shouldWrapObjectWithCustomToString() {
+            AnsiColor.setSupported(false);
+            Object customObject = new Object() {
+                @Override
+                public String toString() {
+                    return "custom";
+                }
+            };
+
+            String result = AnsiColor.TEXT_GREEN.wrap(customObject);
+
+            assertThat(result).isEqualTo("custom");
+        }
+
+        @Test
+        @DisplayName("Should strip ANSI codes from string with only ANSI codes")
+        public void shouldStripAnsiCodesFromStringWithOnlyAnsiCodes() {
+            String input = "\033[0;31m\033[0m";
+
+            String result = AnsiColor.stripAnsiEscapeSequences(input);
+
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Should handle string with embedded ANSI codes")
+        public void shouldHandleStringWithEmbeddedAnsiCodes() {
+            String input = "Hello\033[0;31mWorld\033[0m!";
+
+            String result = AnsiColor.stripAnsiEscapeSequences(input);
+
+            assertThat(result).isEqualTo("HelloWorld!");
+        }
+
+        @Test
+        @DisplayName("Should create equal colors with same sequence and verify equals contract")
+        public void shouldCreateEqualColorsWithSameSequenceAndVerifyEqualsContract() {
+            AnsiColor color1 = AnsiColor.ofSequence("\033[0;31m");
+            AnsiColor color2 = AnsiColor.ofSequence("\033[0;31m");
+
+            assertThat(color1).isEqualTo(color2);
+            assertThat(color2).isEqualTo(color1);
+            assertThat(color1).hasSameHashCodeAs(color2);
+        }
+
+        @Test
+        @DisplayName("Should verify equals is symmetric")
+        public void shouldVerifyEqualsIsSymmetric() {
+            AnsiColor color1 = AnsiColor.ofSequence("\033[0;35m");
+            AnsiColor color2 = AnsiColor.ofSequence("\033[0;35m");
+
+            assertThat(color1.equals(color2)).isEqualTo(color2.equals(color1));
+        }
+
+        @Test
+        @DisplayName("Should verify equals is transitive")
+        public void shouldVerifyEqualsIsTransitive() {
+            AnsiColor color1 = AnsiColor.ofSequence("\033[0;35m");
+            AnsiColor color2 = AnsiColor.ofSequence("\033[0;35m");
+            AnsiColor color3 = AnsiColor.ofSequence("\033[0;35m");
+
+            assertThat(color1.equals(color2)).isTrue();
+            assertThat(color2.equals(color3)).isTrue();
+            assertThat(color1.equals(color3)).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should verify equals is consistent")
+        public void shouldVerifyEqualsIsConsistent() {
+            AnsiColor color1 = AnsiColor.TEXT_RED;
+            AnsiColor color2 = AnsiColor.TEXT_RED;
+
+            boolean first = color1.equals(color2);
+            boolean second = color1.equals(color2);
+
+            assertThat(first).isEqualTo(second);
+        }
+
+        @Test
+        @DisplayName("Should handle wrap with empty string when supported")
+        public void shouldHandleWrapWithEmptyStringWhenSupported() {
+            AnsiColor.setSupported(true);
+
+            String result = AnsiColor.TEXT_CYAN.wrap("");
+
+            assertThat(result).isNotEmpty();
+            assertThat(AnsiColor.stripAnsiEscapeSequences(result)).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Should handle wrap with whitespace string")
+        public void shouldHandleWrapWithWhitespaceString() {
+            AnsiColor.setSupported(false);
+
+            String result = AnsiColor.TEXT_YELLOW.wrap("   ");
+
+            assertThat(result).isEqualTo("   ");
+        }
+
+        @Test
+        @DisplayName("Should handle stripAnsiEscapeSequences with consecutive ANSI codes")
+        public void shouldHandleStripAnsiEscapeSequencesWithConsecutiveAnsiCodes() {
+            String input = "\033[0;31m\033[1m\033[0mtext";
+
+            String result = AnsiColor.stripAnsiEscapeSequences(input);
+
+            assertThat(result).isEqualTo("text");
+        }
+
+        @Test
+        @DisplayName("Should handle stripAnsiEscapeSequences with 256 color codes")
+        public void shouldHandleStripAnsiEscapeSequencesWith256ColorCodes() {
+            String input = "\033[38;5;196mRed256\033[0m";
+
+            String result = AnsiColor.stripAnsiEscapeSequences(input);
+
+            assertThat(result).isEqualTo("Red256");
+        }
+
+        @Test
+        @DisplayName("Should handle stripAnsiEscapeSequences with RGB color codes")
+        public void shouldHandleStripAnsiEscapeSequencesWithRgbColorCodes() {
+            String input = "\033[38;2;255;0;0mRGB Red\033[0m";
+
+            String result = AnsiColor.stripAnsiEscapeSequences(input);
+
+            assertThat(result).isEqualTo("RGB Red");
+        }
+
+        @Test
+        @DisplayName("Should handle ofSequence with tab character as blank")
+        public void shouldHandleOfSequenceWithTabCharacterAsBlank() {
+            assertThatThrownBy(() -> AnsiColor.ofSequence("\t"))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("escapeSequence is blank");
+        }
+
+        @Test
+        @DisplayName("Should handle ofSequence with newline character as blank")
+        public void shouldHandleOfSequenceWithNewlineCharacterAsBlank() {
+            assertThatThrownBy(() -> AnsiColor.ofSequence("\n"))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("escapeSequence is blank");
+        }
+
+        @Test
+        @DisplayName("Should wrap all predefined color constants")
+        public void shouldWrapAllPredefinedColorConstants() {
+            AnsiColor.setSupported(false);
+
+            assertThat(AnsiColor.NONE.wrap("test")).isEqualTo("test");
+            assertThat(AnsiColor.TEXT_BLACK.wrap("test")).isEqualTo("test");
+            assertThat(AnsiColor.TEXT_RED.wrap("test")).isEqualTo("test");
+            assertThat(AnsiColor.TEXT_GREEN.wrap("test")).isEqualTo("test");
+            assertThat(AnsiColor.TEXT_YELLOW.wrap("test")).isEqualTo("test");
+            assertThat(AnsiColor.TEXT_BLUE.wrap("test")).isEqualTo("test");
+            assertThat(AnsiColor.TEXT_PURPLE.wrap("test")).isEqualTo("test");
+            assertThat(AnsiColor.TEXT_CYAN.wrap("test")).isEqualTo("test");
+            assertThat(AnsiColor.TEXT_WHITE.wrap("test")).isEqualTo("test");
+        }
+
+        @Test
+        @DisplayName("Should handle multiple setSupported calls")
+        public void shouldHandleMultipleSetSupportedCalls() {
+            AnsiColor.setSupported(true);
+            assertThat(AnsiColor.isSupported()).isTrue();
+
+            AnsiColor.setSupported(false);
+            assertThat(AnsiColor.isSupported()).isFalse();
+
+            AnsiColor.setSupported(true);
+            assertThat(AnsiColor.isSupported()).isTrue();
+
+            AnsiColor.setSupported(false);
+            assertThat(AnsiColor.isSupported()).isFalse();
+        }
+    }
 }

@@ -35,17 +35,17 @@ public class Counter {
      * @param name the name of the counter
      * @param description the description of the counter
      */
-    public Counter(String name, String description) {
+    public Counter(final String name, final String description) {
         Precondition.notNullOrBlank(name, "name is null", "name is blank");
         Precondition.notNullOrBlank(description, "description is null", "description is blank");
 
         this.name = name;
         this.description = description;
-        this.count = new AtomicLong(0);
+        this.count = new AtomicLong();
     }
 
     /**
-     * Method to get the name of the counter
+     * Returns the name of the counter.
      *
      * @return the name of the counter
      */
@@ -54,7 +54,7 @@ public class Counter {
     }
 
     /**
-     * Method to get the description of the counter
+     * Returns the description of the counter.
      *
      * @return the description of the counter
      */
@@ -63,7 +63,7 @@ public class Counter {
     }
 
     /**
-     * Method to get the current count
+     * Returns the current count.
      *
      * @return the current count
      */
@@ -72,18 +72,18 @@ public class Counter {
     }
 
     /**
-     * Method to increment the counter by 1
+     * Increments the counter by 1.
      */
     public void increment() {
         count.incrementAndGet();
     }
 
     /**
-     * Method to increment the counter by a specified value. The value must be greater than or equal to 0.
+     * Increments the counter by a specified value. The value must be greater than or equal to 0.
      *
      * @param value the value to increment by
      */
-    public void increment(long value) {
+    public void increment(final long value) {
         Precondition.isTrue(value >= 0, "value must be >= 0");
 
         count.addAndGet(value);
@@ -91,16 +91,24 @@ public class Counter {
 
     @Override
     public String toString() {
-        return "Counter {" + "name='"
-                + name + '\'' + ", description='"
-                + description + '\'' + ", count="
-                + count.get() + " }";
+        return new StringBuilder()
+                .append("Counter {")
+                .append("name='")
+                .append(name)
+                .append('\'')
+                .append(", description='")
+                .append(description)
+                .append('\'')
+                .append(", count=")
+                .append(count.get())
+                .append(" }")
+                .toString();
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Counter)) return false;
-        Counter counter = (Counter) o;
+        final Counter counter = (Counter) o;
         return Objects.equals(name, counter.name) && Objects.equals(description, counter.description);
     }
 
@@ -110,11 +118,11 @@ public class Counter {
     }
 
     /**
-     * Method to register the counter in a map.
+     * Registers the counter in a map.
      *
      * @param map the map to register the counter in
      */
-    public void register(Map<String, Counter> map) {
+    public void register(final Map<String, Counter> map) {
         Precondition.notNull(map, "map is null");
 
         map.put(name, this);

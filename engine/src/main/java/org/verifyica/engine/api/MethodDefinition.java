@@ -19,26 +19,26 @@ package org.verifyica.engine.api;
 import java.lang.reflect.Method;
 
 /**
- * Interface to implement MethodDefinition
+ * Interface representing a method definition.
  */
 public interface MethodDefinition {
 
     /**
-     * Get the test method
+     * Returns the test method.
      *
      * @return the test method
      */
     Method getMethod();
 
     /**
-     * Set the test method display name
+     * Sets the test method display name.
      *
-     * @param displayName displayName
+     * @param displayName the display name
      */
     void setDisplayName(String displayName);
 
     /**
-     * Get the test method display name
+     * Returns the test method display name.
      *
      * @return the test method display name
      */

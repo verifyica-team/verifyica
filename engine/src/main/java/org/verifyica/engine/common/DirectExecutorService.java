@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Class to implement DirectExecutorService
+ * An {@link AbstractExecutorService} implementation that executes tasks directly in the calling thread.
  */
 public class DirectExecutorService extends AbstractExecutorService {
 
@@ -33,7 +33,7 @@ public class DirectExecutorService extends AbstractExecutorService {
     private final AtomicBoolean isShutdown = new AtomicBoolean(false);
 
     /**
-     * Constructor
+     * Constructs a new {@code DirectExecutorService}.
      */
     public DirectExecutorService() {
         // INTENTIONALLY EMPTY
@@ -78,9 +78,7 @@ public class DirectExecutorService extends AbstractExecutorService {
 
     @Override
     public void execute(Runnable runnable) {
-        if (runnable == null) {
-            throw new IllegalArgumentException("Runnable is null");
-        }
+        Precondition.notNull(runnable, "runnable is null");
         if (isShutdown.get()) {
             throw new RejectedExecutionException("Executor has been shut down");
         }

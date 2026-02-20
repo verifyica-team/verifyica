@@ -56,6 +56,14 @@ public class ImmutablePropertiesTest {
         }
 
         @Test
+        @DisplayName("Should create immutable properties from null properties")
+        public void shouldCreateImmutablePropertiesFromNullProperties() {
+            ImmutableProperties immutable = new ImmutableProperties(null);
+
+            assertThat(immutable).isEmpty();
+        }
+
+        @Test
         @DisplayName("Should not be affected by changes to source properties")
         public void shouldNotBeAffectedByChangesToSourceProperties() {
             Properties source = new Properties();
@@ -273,6 +281,44 @@ public class ImmutablePropertiesTest {
 
             assertThat(values).hasSize(2).contains("value1", "value2");
         }
+
+        @Test
+        @DisplayName("Should return keys enumeration")
+        public void shouldReturnKeysEnumeration() {
+            Properties source = new Properties();
+            source.put("key1", "value1");
+            source.put("key2", "value2");
+            ImmutableProperties immutable = new ImmutableProperties(source);
+
+            Enumeration<Object> keys = immutable.keys();
+            List<Object> keyList = Collections.list(keys);
+
+            assertThat(keyList).hasSize(2).contains("key1", "key2");
+        }
+
+        @Test
+        @DisplayName("Should return keySet with correct keys")
+        public void shouldReturnKeySetWithCorrectKeys() {
+            Properties source = new Properties();
+            source.put("key1", "value1");
+            ImmutableProperties immutable = new ImmutableProperties(source);
+
+            Set<Object> keySet = immutable.keySet();
+
+            assertThat(keySet).hasSize(1).contains("key1");
+        }
+
+        @Test
+        @DisplayName("Should return values collection with correct values")
+        public void shouldReturnValuesCollectionWithCorrectValues() {
+            Properties source = new Properties();
+            source.put("key1", "value1");
+            ImmutableProperties immutable = new ImmutableProperties(source);
+
+            Collection<Object> values = immutable.values();
+
+            assertThat(values).hasSize(1).contains("value1");
+        }
     }
 
     @Nested
@@ -369,6 +415,93 @@ public class ImmutablePropertiesTest {
             ImmutableProperties immutable = new ImmutableProperties(source);
 
             assertThat(immutable.get("key1")).isEqualTo("");
+        }
+    }
+
+    @Nested
+    @DisplayName("Size and Empty Tests")
+    public class SizeAndEmptyTests {
+
+        @Test
+        @DisplayName("Should return correct size")
+        public void shouldReturnCorrectSize() {
+            Properties source = new Properties();
+            source.put("key1", "value1");
+            source.put("key2", "value2");
+            ImmutableProperties immutable = new ImmutableProperties(source);
+
+            assertThat(immutable.size()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("Should return zero size for empty properties")
+        public void shouldReturnZeroSizeForEmptyProperties() {
+            ImmutableProperties immutable = new ImmutableProperties(new Properties());
+
+            assertThat(immutable.size()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("Should return isEmpty false when properties has entries")
+        public void shouldReturnIsEmptyFalseWhenPropertiesHasEntries() {
+            Properties source = new Properties();
+            source.put("key1", "value1");
+            ImmutableProperties immutable = new ImmutableProperties(source);
+
+            assertThat(immutable.isEmpty()).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should return isEmpty true when properties is empty")
+        public void shouldReturnIsEmptyTrueWhenPropertiesIsEmpty() {
+            ImmutableProperties immutable = new ImmutableProperties(new Properties());
+
+            assertThat(immutable.isEmpty()).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("Contains Tests")
+    public class ContainsTests {
+
+        @Test
+        @DisplayName("Should return true when contains key")
+        public void shouldReturnTrueWhenContainsKey() {
+            Properties source = new Properties();
+            source.put("key1", "value1");
+            ImmutableProperties immutable = new ImmutableProperties(source);
+
+            assertThat(immutable.containsKey("key1")).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should return false when does not contain key")
+        public void shouldReturnFalseWhenDoesNotContainKey() {
+            Properties source = new Properties();
+            source.put("key1", "value1");
+            ImmutableProperties immutable = new ImmutableProperties(source);
+
+            assertThat(immutable.containsKey("nonexistent")).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should return true when contains value")
+        public void shouldReturnTrueWhenContainsValue() {
+            Properties source = new Properties();
+            source.put("key1", "value1");
+            ImmutableProperties immutable = new ImmutableProperties(source);
+
+            assertThat(immutable.containsValue("value1")).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should return false when does not contain value")
+        public void shouldReturnFalseWhenDoesNotContainValue() {
+            Properties source = new Properties();
+            source.put("key1", "value1");
+            ImmutableProperties immutable = new ImmutableProperties(source);
+
+            assertThat(immutable.containsValue("nonexistent")).isFalse();
         }
     }
 }

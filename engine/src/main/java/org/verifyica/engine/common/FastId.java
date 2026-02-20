@@ -123,9 +123,7 @@ public final class FastId implements Comparable<FastId> {
 
     @Override
     public int compareTo(FastId other) {
-        if (other == null) {
-            throw new IllegalArgumentException("other is null");
-        }
+        Precondition.notNull(other, "other is null");
 
         int cmp = (msb < other.msb) ? -1 : (msb > other.msb) ? 1 : 0;
         if (cmp != 0) {

@@ -90,7 +90,7 @@ import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.ListSupport;
 
 /**
- * Class to implement VerifyicaEngine
+ * Implements the Verifyica test engine.
  */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class VerifyicaTestEngine implements TestEngine {
@@ -180,7 +180,7 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to get the version
+     * Returns the version.
      *
      * @return the version
      */
@@ -267,7 +267,7 @@ public class VerifyicaTestEngine implements TestEngine {
                 configureTestClassArgumentExecutorServices(
                         testableTestDescriptors, testClassArgumentExecutorServiceMap);
 
-                List<Future<?>> futures = new ArrayList<>();
+                List<Future<?>> futures = new ArrayList<>(testableTestDescriptors.size());
 
                 for (TestableTestDescriptor testableTestDescriptor : testableTestDescriptors) {
                     Class<?> testClass = ((TestClassTestDescriptor) testableTestDescriptor).getTestClass();
@@ -357,7 +357,7 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to return the version
+     * Returns the version.
      *
      * @return the version
      */
@@ -378,8 +378,9 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to configure EngineExecutionListeners
+     * Configures the EngineExecutionListeners.
      *
+     * @param executionRequest the execution request
      * @return an EngineExecutionListener
      */
     private static EngineExecutionListener configureEngineExecutionListeners(ExecutionRequest executionRequest) {
@@ -394,7 +395,7 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to return whether the code is running via the Verifyica Maven plugin
+     * Returns whether the code is running via the Verifyica Maven plugin.
      *
      * @return true if running via the Verifyica Maven plugin, otherwise false
      */
@@ -407,7 +408,7 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to return whether the code is running via the Maven Surefire plugin
+     * Returns whether the code is running via the Maven Surefire plugin.
      *
      * @return true if running via the Maven Surefire plugin, otherwise false
      */
@@ -427,19 +428,19 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method trace log a test descriptor tree
+     * Trace logs a test descriptor tree.
      *
-     * @param testDescriptor testDescriptor
+     * @param testDescriptor the test descriptor
      */
     private static void traceEngineDescriptor(TestDescriptor testDescriptor) {
         traceTestDescriptor(testDescriptor, 0);
     }
 
     /**
-     * Method to recursively trace log a test descriptor tree
+     * Recursively trace logs a test descriptor tree.
      *
-     * @param testDescriptor testDescriptor
-     * @param level level
+     * @param testDescriptor the test descriptor
+     * @param level the indentation level
      */
     private static void traceTestDescriptor(TestDescriptor testDescriptor, int level) {
         LOGGER.trace(String.join(" ", Collections.nCopies(level, " ")) + testDescriptor);
@@ -449,9 +450,9 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to create a test class ExecutorService
+     * Creates a test class ExecutorService.
      *
-     * @param configuration configuration
+     * @param configuration the configuration
      * @return a test class ExecutorService
      */
     private static ExecutorService createTestClassExecutorService(Configuration configuration) {
@@ -493,9 +494,9 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to create a test argument ExecutorService
+     * Creates a test argument ExecutorService.
      *
-     * @param configuration configuration
+     * @param configuration the configuration
      * @return a test argument ExecutorService
      */
     private static ExecutorService createTestArgumentExecutorService(Configuration configuration) {
@@ -538,9 +539,9 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to create a ThreadFactory
+     * Creates a ThreadFactory.
      *
-     * @param configuration configuration
+     * @param configuration the configuration
      * @return a ThreadFactory
      */
     private static ThreadFactory createThreadFactory(Configuration configuration) {
@@ -562,9 +563,10 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to get the engine test class parallelism configuration value
+     * Returns the engine test class parallelism configuration value.
      *
-     * @return the engine parallelism value
+     * @param configuration the configuration
+     * @return the engine test class parallelism value
      */
     private static int getEngineTestClassParallelism(Configuration configuration) {
         LOGGER.trace("getEngineTestClassParallelism()");
@@ -595,8 +597,9 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to get the engine test argument parallelism configuration value
+     * Returns the engine test argument parallelism configuration value.
      *
+     * @param configuration the configuration
      * @return the engine test argument parallelism value
      */
     private static int getEngineTestArgumentParallelism(Configuration configuration) {
@@ -641,12 +644,12 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to configure test class argument executor services
+     * Configures test class argument executor services.
      *
-     * @param testableTestDescriptors testableTestDescriptors
-     * @param testClassArgumentExecutorServiceMap testClassArgumentExecutorServiceMap
-     * @throws IllegalAccessException IllegalAccessException
-     * @throws InvocationTargetException InvocationTargetException
+     * @param testableTestDescriptors the testable test descriptors
+     * @param testClassArgumentExecutorServiceMap the test class argument executor service map
+     * @throws IllegalAccessException if the method is not accessible
+     * @throws InvocationTargetException if the method invocation fails
      */
     private static void configureTestClassArgumentExecutorServices(
             List<TestableTestDescriptor> testableTestDescriptors,
@@ -697,9 +700,9 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Method to clean up test class argument executor services
+     * Cleans up test class argument executor services.
      *
-     * @param testClassArgumentExecutorServiceMap testClassArgumentExecutorServiceMap
+     * @param testClassArgumentExecutorServiceMap the test class argument executor service map
      */
     private void cleanupTestClassExecutorServices(Map<Class<?>, ExecutorService> testClassArgumentExecutorServiceMap) {
         LOGGER.trace("cleanupTestClassExecutorServices()");

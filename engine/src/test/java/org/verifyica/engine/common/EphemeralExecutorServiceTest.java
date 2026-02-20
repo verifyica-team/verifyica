@@ -42,6 +42,14 @@ public class EphemeralExecutorServiceTest {
 
             assertThat(executor.isShutdown()).isFalse();
         }
+
+        @Test
+        @DisplayName("Should throw exception when thread factory is null")
+        public void shouldThrowExceptionWhenThreadFactoryIsNull() {
+            assertThatThrownBy(() -> new EphemeralExecutorService(null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("threadFactory is null");
+        }
     }
 
     @Nested
@@ -117,6 +125,57 @@ public class EphemeralExecutorServiceTest {
             assertThatThrownBy(() -> executor.execute(() -> {}))
                     .isInstanceOf(RejectedExecutionException.class)
                     .hasMessage("Executor has been shut down");
+        }
+
+        @Test
+        @DisplayName("Should throw exception when runnable is null")
+        public void shouldThrowExceptionWhenRunnableIsNull() {
+            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+
+            assertThatThrownBy(() -> executor.execute(null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("runnable is null");
+        }
+
+        @Test
+        @DisplayName("Should throw exception when thread factory returns null")
+        public void shouldThrowExceptionWhenThreadFactoryReturnsNull() {
+            PlatformThreadFactory threadFactory = new PlatformThreadFactory() {
+                @Override
+                public Thread newThread(Runnable r) {
+                    return null;
+                }
+            };
+
+            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+
+            assertThatThrownBy(() -> executor.execute(() -> {}))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("thread is null");
+        }
+
+        @Test
+        @DisplayName("Should throw RejectedExecutionException when thread fails to start")
+        public void shouldThrowRejectedExecutionExceptionWhenThreadFailsToStart() {
+            PlatformThreadFactory threadFactory = new PlatformThreadFactory() {
+                @Override
+                public Thread newThread(Runnable r) {
+                    return new Thread(r) {
+                        @Override
+                        public synchronized void start() {
+                            throw new OutOfMemoryError("Unable to create native thread");
+                        }
+                    };
+                }
+            };
+
+            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+
+            assertThatThrownBy(() -> executor.execute(() -> {}))
+                    .isInstanceOf(RejectedExecutionException.class)
+                    .hasMessageContaining("Failed to start thread")
+                    .hasCauseInstanceOf(OutOfMemoryError.class);
         }
 
         @Test
@@ -248,6 +307,56 @@ public class EphemeralExecutorServiceTest {
             List<Runnable> remaining = executor.shutdownNow();
 
             assertThat(remaining).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Should be idempotent")
+        public void shouldBeIdempotent() {
+            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+
+            executor.shutdownNow();
+            executor.shutdownNow();
+
+            assertThat(executor.isShutdown()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should interrupt all running threads when called multiple times")
+        public void shouldInterruptAllRunningThreadsWhenCalledMultipleTimes() throws InterruptedException {
+            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            AtomicBoolean interrupted1 = new AtomicBoolean(false);
+            AtomicBoolean interrupted2 = new AtomicBoolean(false);
+            CountDownLatch startLatch = new CountDownLatch(2);
+
+            executor.execute(() -> {
+                startLatch.countDown();
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    interrupted1.set(true);
+                    Thread.currentThread().interrupt();
+                }
+            });
+
+            executor.execute(() -> {
+                startLatch.countDown();
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    interrupted2.set(true);
+                    Thread.currentThread().interrupt();
+                }
+            });
+
+            startLatch.await(1, TimeUnit.SECONDS);
+            executor.shutdownNow();
+            executor.shutdownNow();
+            Thread.sleep(100);
+
+            assertThat(interrupted1).isTrue();
+            assertThat(interrupted2).isTrue();
         }
     }
 
@@ -383,6 +492,63 @@ public class EphemeralExecutorServiceTest {
 
             assertThat(terminated).isFalse();
 
+            latch.countDown();
+        }
+
+        @Test
+        @DisplayName("Should handle very short timeout")
+        public void shouldHandleVeryShortTimeout() throws InterruptedException {
+            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            CountDownLatch latch = new CountDownLatch(1);
+
+            executor.execute(() -> {
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+
+            executor.shutdown();
+            // Use a very short timeout to test the spin loop path
+            boolean terminated = executor.awaitTermination(1, TimeUnit.NANOSECONDS);
+
+            assertThat(terminated).isFalse();
+
+            latch.countDown();
+        }
+
+        @Test
+        @DisplayName("Should respond to interruption")
+        public void shouldRespondToInterruption() throws InterruptedException {
+            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            CountDownLatch latch = new CountDownLatch(1);
+
+            executor.execute(() -> {
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+
+            executor.shutdown();
+
+            Thread testThread = new Thread(() -> {
+                try {
+                    executor.awaitTermination(10, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    // Expected
+                }
+            });
+
+            testThread.start();
+            testThread.interrupt();
+            testThread.join(1000);
+
+            assertThat(testThread.isAlive()).isFalse();
             latch.countDown();
         }
     }
