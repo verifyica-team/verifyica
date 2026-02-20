@@ -194,7 +194,6 @@ def main() -> int:
             changed = True
 
     # Discover new tracks and optionally append
-    appended_any = False
     for key, tracks in existing_tracks.items():
         _, namespace, repo = key
         all_tags = tag_cache.get(key, [])
