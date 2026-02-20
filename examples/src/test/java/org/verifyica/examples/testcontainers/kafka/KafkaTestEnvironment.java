@@ -20,7 +20,11 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ListTopicsOptions;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.kafka.KafkaContainer;
@@ -70,12 +74,12 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
      * Method to initialize the KafkaTestEnvironment using a specific network
      *
      * @param network the network
+     * @throws Exception if initialization of the KafkaTestEnvironment fails
      */
-    public void initialize(Network network) {
-        // info("initialize test environment [%s] ...", dockerImageName);
+    public void initialize(Network network) throws Exception {
+        final DockerImageName image = DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka");
 
-        kafkaContainer = new KafkaContainer(
-                        DockerImageName.parse(dockerImageName).asCompatibleSubstituteFor("apache/kafka"))
+        kafkaContainer = new KafkaContainer(image)
                 .withNetwork(network)
                 .withStartupAttempts(3)
                 .withLogConsumer(new ContainerLogConsumer(getClass().getName(), dockerImageName))
@@ -91,21 +95,79 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
             kafkaContainer.withEnv("KAFKA_LISTENERS", "PLAINTEXT://:9092,BROKER://:9093,CONTROLLER://:9094");
         }
 
-        /*
-         * Workaround for Kafka native image startup timeout issue
-         */
-        if (dockerImageName.contains("native")) {
-            kafkaContainer.withStartupTimeout(Duration.ofSeconds(120));
-        }
-
         try {
             kafkaContainer.start();
+
+            // Hard readiness gate: Kafka responds to AdminClient metadata calls.
+            awaitKafkaReady(kafkaContainer.getBootstrapServers(), Duration.ofMinutes(2));
         } catch (Exception e) {
-            kafkaContainer.stop();
+            // On flake, logs are the difference between guessing and knowing.
+            try {
+                System.err.println("Kafka container logs (startup failure):\n" + kafkaContainer.getLogs());
+            } catch (Exception ignored) {
+                // ignore log retrieval issues
+            }
+            try {
+                kafkaContainer.stop();
+            } catch (Exception ignored) {
+                // ignore cleanup issues
+            }
             throw e;
         }
+    }
 
-        // info("test environment [%s] initialized", dockerImageName);
+    /**
+     * Awaits for Kafka readiness by polling AdminClient metadata calls until success or timeout
+     *
+     * @param bootstrapServers the bootstrap servers
+     * @param timeout          the timeout duration
+     * @throws Exception if Kafka does not become ready within the timeout
+     */
+    private static void awaitKafkaReady(String bootstrapServers, Duration timeout) throws Exception {
+        long deadlineNanos = System.nanoTime() + timeout.toNanos();
+
+        Properties properties = new Properties();
+        properties.put("bootstrap.servers", bootstrapServers);
+        properties.put("request.timeout.ms", "5000");
+        properties.put("default.api.timeout.ms", "5000");
+
+        ListTopicsOptions listTopicsOptions =
+                new ListTopicsOptions().timeoutMs(5000).listInternal(true);
+
+        Exception exception = null;
+
+        try (AdminClient adminClient = AdminClient.create(properties)) {
+            while (System.nanoTime() < deadlineNanos) {
+                try {
+                    // describeCluster() proves the broker can answer metadata.
+                    adminClient.describeCluster().nodes().get(5, TimeUnit.SECONDS);
+
+                    // listTopics() tends to flush out “not fully ready” states in some setups.
+                    adminClient.listTopics(listTopicsOptions).names().get(5, TimeUnit.SECONDS);
+
+                    return; // READY
+                } catch (Exception e) {
+                    exception = e;
+
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw ie;
+                    }
+                }
+            }
+        }
+
+        // If we timed out, throw a meaningful error including the last observed failure.
+        if (exception != null) {
+            throw new IllegalStateException(
+                    "Kafka did not become ready within " + timeout + " (bootstrap.servers=" + bootstrapServers + ")",
+                    exception);
+        }
+
+        throw new IllegalStateException(
+                "Kafka did not become ready within " + timeout + " (bootstrap.servers=" + bootstrapServers + ")");
     }
 
     /**
