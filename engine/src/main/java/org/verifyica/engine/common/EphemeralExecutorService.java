@@ -27,7 +27,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Class to implement EphemeralExecutorService
+ * An ephemeral executor service that creates a new thread for each task.
+ * Threads are created on-demand and are not reused.
  */
 public class EphemeralExecutorService extends AbstractExecutorService {
 
@@ -36,14 +37,13 @@ public class EphemeralExecutorService extends AbstractExecutorService {
     private final AtomicBoolean isShutdown;
 
     /**
-     * Constructor
+     * Constructs an EphemeralExecutorService with the given thread factory.
      *
-     * @param threadFactory threadFactory
+     * @param threadFactory the thread factory to use for creating threads
+     * @throws IllegalArgumentException if threadFactory is null
      */
     public EphemeralExecutorService(ThreadFactory threadFactory) {
-        if (threadFactory == null) {
-            throw new IllegalArgumentException("threadFactory is null");
-        }
+        Precondition.notNull(threadFactory, "threadFactory is null");
         this.threadFactory = threadFactory;
         this.runningThreads = ConcurrentHashMap.newKeySet();
         this.isShutdown = new AtomicBoolean(false);
@@ -51,9 +51,7 @@ public class EphemeralExecutorService extends AbstractExecutorService {
 
     @Override
     public void execute(Runnable runnable) {
-        if (runnable == null) {
-            throw new IllegalArgumentException("runnable is null");
-        }
+        Precondition.notNull(runnable, "runnable is null");
 
         if (isShutdown.get()) {
             throw new RejectedExecutionException("Executor has been shut down");

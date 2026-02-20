@@ -17,7 +17,7 @@
 package org.verifyica.engine.common;
 
 /**
- * Class to implement Precondition
+ * Utility class for precondition validation.
  */
 public class Precondition {
 
@@ -29,10 +29,10 @@ public class Precondition {
     }
 
     /**
-     * Method to validate an Object is not null, throwing an IllegalArgumentException if it is null
+     * Validates an Object is not null, throwing an IllegalArgumentException if it is null.
      *
-     * @param object object
-     * @param message message
+     * @param object the object to validate
+     * @param message the exception message
      */
     public static void notNull(Object object, String message) {
         if (object == null) {
@@ -41,12 +41,12 @@ public class Precondition {
     }
 
     /**
-     * Method to validate a String is not null and not blank, throwing an IllegalArgumentException
-     * if it is null or blank
+     * Validates a String is not null and not blank, throwing an IllegalArgumentException
+     * if it is null or blank.
      *
-     * @param string string
-     * @param nullMessage nullMessage
-     * @param blankMessage blankMessage
+     * @param string the string to validate
+     * @param nullMessage the exception message if the string is null
+     * @param blankMessage the exception message if the string is blank
      */
     public static void notNullOrBlank(String string, String nullMessage, String blankMessage) {
         if (string == null) {
@@ -59,9 +59,9 @@ public class Precondition {
     }
 
     /**
-     * Method to check if a String is blank (empty or contains only whitespace)
+     * Checks if a String is blank (empty or contains only whitespace).
      *
-     * @param string string
+     * @param string the string to check
      * @return true if the string is blank, false otherwise
      */
     private static boolean isBlank(String string) {
@@ -78,10 +78,10 @@ public class Precondition {
     }
 
     /**
-     * Method to validate a condition is true, throwing an IllegalArgumentException if it is false
+     * Validates a condition is true, throwing an IllegalArgumentException if it is false.
      *
-     * @param condition condition
-     * @param message message
+     * @param condition the condition to validate
+     * @param message the exception message
      */
     public static void isTrue(boolean condition, String message) {
         if (!condition) {
@@ -90,10 +90,10 @@ public class Precondition {
     }
 
     /**
-     * Method to validate a condition is false, throwing an IllegalArgumentException if it is true
+     * Validates a condition is false, throwing an IllegalArgumentException if it is true.
      *
-     * @param condition condition
-     * @param message message
+     * @param condition the condition to validate
+     * @param message the exception message
      */
     public static void isFalse(boolean condition, String message) {
         if (condition) {

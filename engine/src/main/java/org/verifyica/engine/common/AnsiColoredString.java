@@ -19,7 +19,7 @@ package org.verifyica.engine.common;
 import java.util.Objects;
 
 /**
- * Class to implement AnsiColoredString
+ * Class to build ANSI colored strings.
  */
 public class AnsiColoredString {
 
@@ -27,27 +27,27 @@ public class AnsiColoredString {
     private AnsiColor lastAnsiColor;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public AnsiColoredString() {
         this((AnsiColor) null);
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string string
+     * @param string the initial string to append
      */
     public AnsiColoredString(String string) {
-        stringBuilder = new StringBuilder();
+        stringBuilder = new StringBuilder(string.length());
         stringBuilder.append(string);
         lastAnsiColor = null;
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param ansiColor ansiColor
+     * @param ansiColor the initial ANSI color to append
      */
     public AnsiColoredString(AnsiColor ansiColor) {
         stringBuilder = new StringBuilder();
@@ -59,9 +59,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append a boolean
+     * Appends a boolean value.
      *
-     * @param b boolean
+     * @param b the boolean value to append
      * @return this
      */
     public AnsiColoredString append(boolean b) {
@@ -70,9 +70,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append a boolean
+     * Appends a short value.
      *
-     * @param s short
+     * @param s the short value to append
      * @return this
      */
     public AnsiColoredString append(short s) {
@@ -81,9 +81,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append a character
+     * Appends a character.
      *
-     * @param c character
+     * @param c the character to append
      * @return this
      */
     public AnsiColoredString append(char c) {
@@ -92,9 +92,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append a character array
+     * Appends a character array.
      *
-     * @param chars character array
+     * @param chars the character array to append
      * @return this
      */
     public AnsiColoredString append(char[] chars) {
@@ -103,11 +103,11 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append a character array
+     * Appends a portion of a character array.
      *
-     * @param chars character array
-     * @param offset offset
-     * @param length length
+     * @param chars the character array to append from
+     * @param offset the starting offset in the array
+     * @param length the number of characters to append
      * @return this
      */
     public AnsiColoredString append(char[] chars, int offset, int length) {
@@ -116,9 +116,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append an int
+     * Appends an integer value.
      *
-     * @param i int
+     * @param i the integer value to append
      * @return this
      */
     public AnsiColoredString append(int i) {
@@ -127,9 +127,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append a long
+     * Appends a long value.
      *
-     * @param l long
+     * @param l the long value to append
      * @return this
      */
     public AnsiColoredString append(long l) {
@@ -138,9 +138,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append a float
+     * Appends a float value.
      *
-     * @param f float
+     * @param f the float value to append
      * @return this
      */
     public AnsiColoredString append(float f) {
@@ -149,9 +149,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append a double
+     * Appends a double value.
      *
-     * @param d double
+     * @param d the double value to append
      * @return this
      */
     public AnsiColoredString append(double d) {
@@ -160,9 +160,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append a String
+     * Appends a string.
      *
-     * @param s String
+     * @param s the string to append
      * @return this
      */
     public AnsiColoredString append(String s) {
@@ -171,9 +171,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append an Object
+     * Appends an object.
      *
-     * @param o object
+     * @param o the object to append
      * @return this
      */
     public AnsiColoredString append(Object o) {
@@ -182,9 +182,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append a StringBuffer
+     * Appends a StringBuffer.
      *
-     * @param sb StringBuffer
+     * @param sb the StringBuffer to append
      * @return this
      */
     public AnsiColoredString append(StringBuffer sb) {
@@ -193,9 +193,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append a CharSequence
+     * Appends a CharSequence.
      *
-     * @param cs CharSequence
+     * @param cs the CharSequence to append
      * @return this
      */
     public AnsiColoredString append(CharSequence cs) {
@@ -204,9 +204,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to append an AnsiColor
+     * Appends an ANSI color.
      *
-     * @param ansiColor ansiColor
+     * @param ansiColor the ANSI color to append
      * @return this
      */
     public AnsiColoredString append(AnsiColor ansiColor) {
@@ -223,27 +223,27 @@ public class AnsiColoredString {
     }
 
     /**
-     * Method to get the length
+     * Returns the length of the string.
      *
-     * @return the length
+     * @return the length of the string
      */
     public int length() {
         return stringBuilder.length();
     }
 
     /**
-     * Method to return if Ansi colors are supported
+     * Returns whether ANSI colors are supported.
      *
-     * @return true if Ansi colors are supported, otherwise false
+     * @return true if ANSI colors are supported, otherwise false
      */
     public boolean isAnsiColorSupported() {
         return AnsiColor.isSupported();
     }
 
     /**
-     * Method to build the Builder
+     * Builds and returns the colored string.
      *
-     * @return a String
+     * @return the colored string
      */
     public String build() {
         return stringBuilder.toString();
@@ -261,11 +261,11 @@ public class AnsiColoredString {
         AnsiColoredString that = (AnsiColoredString) o;
         return stringBuilder.length() == that.stringBuilder.length()
                 && Objects.equals(lastAnsiColor, that.lastAnsiColor)
-                && Objects.equals(stringBuilder.toString(), that.stringBuilder.toString());
+                && stringBuilder.toString().equals(that.stringBuilder.toString());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(stringBuilder, lastAnsiColor);
+        return Objects.hash(stringBuilder.toString(), lastAnsiColor);
     }
 }

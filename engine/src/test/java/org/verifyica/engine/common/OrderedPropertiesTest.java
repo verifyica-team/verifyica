@@ -397,6 +397,206 @@ public class OrderedPropertiesTest {
     }
 
     @Nested
+    @DisplayName("Elements Tests")
+    public class ElementsTests {
+
+        @Test
+        @DisplayName("Should return empty enumeration for empty properties")
+        public void shouldReturnEmptyEnumerationForEmptyProperties() {
+            OrderedProperties properties = new OrderedProperties();
+
+            Enumeration<Object> elements = properties.elements();
+
+            assertThat(elements.hasMoreElements()).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should return values in sorted order")
+        public void shouldReturnValuesInSortedOrder() {
+            OrderedProperties properties = new OrderedProperties();
+            properties.put("c", "value-c");
+            properties.put("a", "value-a");
+            properties.put("b", "value-b");
+
+            List<Object> values = new ArrayList<>();
+            Enumeration<Object> enumeration = properties.elements();
+            while (enumeration.hasMoreElements()) {
+                values.add(enumeration.nextElement());
+            }
+
+            assertThat(values).containsExactly("value-a", "value-b", "value-c");
+        }
+
+        @Test
+        @DisplayName("Should return values after removal")
+        public void shouldReturnValuesAfterRemoval() {
+            OrderedProperties properties = new OrderedProperties();
+            properties.put("a", "value-a");
+            properties.put("b", "value-b");
+            properties.put("c", "value-c");
+
+            properties.remove("b");
+
+            List<Object> values = new ArrayList<>();
+            Enumeration<Object> enumeration = properties.elements();
+            while (enumeration.hasMoreElements()) {
+                values.add(enumeration.nextElement());
+            }
+
+            assertThat(values).containsExactly("value-a", "value-c");
+        }
+    }
+
+    @Nested
+    @DisplayName("Inherited Methods Tests")
+    public class InheritedMethodsTests {
+
+        @Test
+        @DisplayName("Should return correct size")
+        public void shouldReturnCorrectSize() {
+            OrderedProperties properties = new OrderedProperties();
+
+            assertThat(properties.size()).isEqualTo(0);
+
+            properties.put("key1", "value1");
+            assertThat(properties.size()).isEqualTo(1);
+
+            properties.put("key2", "value2");
+            assertThat(properties.size()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("Should return correct isEmpty state")
+        public void shouldReturnCorrectIsEmptyState() {
+            OrderedProperties properties = new OrderedProperties();
+
+            assertThat(properties.isEmpty()).isTrue();
+
+            properties.put("key1", "value1");
+            assertThat(properties.isEmpty()).isFalse();
+
+            properties.remove("key1");
+            assertThat(properties.isEmpty()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should check containsKey correctly")
+        public void shouldCheckContainsKeyCorrectly() {
+            OrderedProperties properties = new OrderedProperties();
+            properties.put("key1", "value1");
+
+            assertThat(properties.containsKey("key1")).isTrue();
+            assertThat(properties.containsKey("nonexistent")).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should check containsValue correctly")
+        public void shouldCheckContainsValueCorrectly() {
+            OrderedProperties properties = new OrderedProperties();
+            properties.put("key1", "value1");
+
+            assertThat(properties.containsValue("value1")).isTrue();
+            assertThat(properties.containsValue("nonexistent")).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should return null when putting new key")
+        public void shouldReturnNullWhenPuttingNewKey() {
+            OrderedProperties properties = new OrderedProperties();
+
+            Object result = properties.put("key1", "value1");
+
+            assertThat(result).isNull();
+        }
+
+        @Test
+        @DisplayName("Should use getProperty for string values")
+        public void shouldUseGetPropertyForStringValues() {
+            OrderedProperties properties = new OrderedProperties();
+            properties.put("key1", "value1");
+
+            assertThat(properties.getProperty("key1")).isEqualTo("value1");
+            assertThat(properties.getProperty("nonexistent")).isNull();
+        }
+
+        @Test
+        @DisplayName("Should use getProperty with default value")
+        public void shouldUseGetPropertyWithDefaultValue() {
+            OrderedProperties properties = new OrderedProperties();
+            properties.put("key1", "value1");
+
+            assertThat(properties.getProperty("key1", "default")).isEqualTo("value1");
+            assertThat(properties.getProperty("nonexistent", "default")).isEqualTo("default");
+        }
+    }
+
+    @Nested
+    @DisplayName("Null Handling Tests")
+    public class NullHandlingTests {
+
+        @Test
+        @DisplayName("Should return null for get with non-existent key")
+        public void shouldReturnNullForGetWithNonExistentKey() {
+            OrderedProperties properties = new OrderedProperties();
+
+            assertThat(properties.get("nonexistent")).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("Edge Case Tests")
+    public class EdgeCaseTests {
+
+        @Test
+        @DisplayName("Should handle empty load from InputStream")
+        public void shouldHandleEmptyLoadFromInputStream() throws IOException {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[0]);
+            OrderedProperties properties = new OrderedProperties();
+
+            properties.load(inputStream);
+
+            assertThat(properties).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Should handle empty load from Reader")
+        public void shouldHandleEmptyLoadFromReader() throws IOException {
+            StringReader reader = new StringReader("");
+            OrderedProperties properties = new OrderedProperties();
+
+            properties.load(reader);
+
+            assertThat(properties).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Should handle single property")
+        public void shouldHandleSingleProperty() {
+            OrderedProperties properties = new OrderedProperties();
+
+            properties.put("onlyKey", "onlyValue");
+
+            assertThat(properties.size()).isEqualTo(1);
+            assertThat(properties.get("onlyKey")).isEqualTo("onlyValue");
+            assertThat(new ArrayList<>(properties.keySet())).containsExactly("onlyKey");
+        }
+
+        @Test
+        @DisplayName("Should handle special characters in keys and values")
+        public void shouldHandleSpecialCharactersInKeysAndValues() {
+            OrderedProperties properties = new OrderedProperties();
+
+            properties.put("key with spaces", "value with spaces");
+            properties.put("key=with=equals", "value=with=equals");
+            properties.put("key:with:colons", "value:with:colons");
+
+            assertThat(properties.get("key with spaces")).isEqualTo("value with spaces");
+            assertThat(properties.get("key=with=equals")).isEqualTo("value=with=equals");
+            assertThat(properties.get("key:with:colons")).isEqualTo("value:with:colons");
+        }
+    }
+
+    @Nested
     @DisplayName("Thread Safety Tests")
     public class ThreadSafetyTests {
 

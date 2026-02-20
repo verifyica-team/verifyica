@@ -21,54 +21,54 @@ import java.util.Set;
 import org.verifyica.api.Argument;
 
 /**
- * Class to implement ClassDefinition
+ * Interface to provide a class definition.
  */
 public interface ClassDefinition {
 
     /**
-     * Get the test class
+     * Returns the test class.
      *
      * @return the test class
      */
     Class<?> getTestClass();
 
     /**
-     * Set the test class display name
+     * Sets the test class display name.
      *
-     * @param displayName displayName
+     * @param displayName the display name
      */
     void setDisplayName(String displayName);
 
     /**
-     * Get the test class display name
+     * Returns the test class display name.
      *
      * @return the test class display name
      */
     String getDisplayName();
 
     /**
-     * Get the Set of test class tags
+     * Returns the Set of test class tags.
      *
      * @return a Set of test class tags
      */
     Set<String> getTags();
 
     /**
-     * Get the set test method definition set
+     * Returns the test method definition set.
      *
-     * @return a set test method definition set
+     * @return a test method definition set
      */
     Set<MethodDefinition> getTestMethodDefinitions();
 
     /**
-     * Get the test argument list
+     * Returns the test argument list.
      *
      * @return the test argument list
      */
     List<Argument<?>> getArguments();
 
     /**
-     * Get the test argument parallelism
+     * Returns the test argument parallelism.
      *
      * @return the test argument parallelism
      */

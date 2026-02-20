@@ -118,6 +118,27 @@ public class DirectExecutorServiceTest {
                     .isInstanceOf(RuntimeException.class)
                     .hasMessage("Test exception");
         }
+
+        @Test
+        @DisplayName("Should throw IllegalArgumentException when runnable is null")
+        public void shouldThrowIllegalArgumentExceptionWhenRunnableIsNull() {
+            DirectExecutorService executor = new DirectExecutorService();
+
+            assertThatThrownBy(() -> executor.execute(null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("runnable is null");
+        }
+
+        @Test
+        @DisplayName("Should throw IllegalArgumentException for null runnable after shutdown")
+        public void shouldThrowIllegalArgumentExceptionForNullRunnableAfterShutdown() {
+            DirectExecutorService executor = new DirectExecutorService();
+            executor.shutdown();
+
+            assertThatThrownBy(() -> executor.execute(null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("runnable is null");
+        }
     }
 
     @Nested
@@ -202,6 +223,18 @@ public class DirectExecutorServiceTest {
             assertThat(second).isEmpty();
             assertThat(executor.isShutdown()).isTrue();
         }
+
+        @Test
+        @DisplayName("Should work after shutdown")
+        public void shouldWorkAfterShutdown() {
+            DirectExecutorService executor = new DirectExecutorService();
+
+            executor.shutdown();
+            List<Runnable> remaining = executor.shutdownNow();
+
+            assertThat(remaining).isEmpty();
+            assertThat(executor.isShutdown()).isTrue();
+        }
     }
 
     @Nested
@@ -241,6 +274,55 @@ public class DirectExecutorServiceTest {
 
             assertThat(terminated).isTrue();
             assertThat(duration).isLessThan(100);
+        }
+
+        @Test
+        @DisplayName("Should return false with zero timeout when not shutdown")
+        public void shouldReturnFalseWithZeroTimeoutWhenNotShutdown() throws InterruptedException {
+            DirectExecutorService executor = new DirectExecutorService();
+
+            boolean terminated = executor.awaitTermination(0, TimeUnit.MILLISECONDS);
+
+            assertThat(terminated).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should return true with zero timeout when already shutdown")
+        public void shouldReturnTrueWithZeroTimeoutWhenAlreadyShutdown() throws InterruptedException {
+            DirectExecutorService executor = new DirectExecutorService();
+            executor.shutdown();
+
+            boolean terminated = executor.awaitTermination(0, TimeUnit.MILLISECONDS);
+
+            assertThat(terminated).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should return false with negative timeout when not shutdown")
+        public void shouldReturnFalseWithNegativeTimeoutWhenNotShutdown() throws InterruptedException {
+            DirectExecutorService executor = new DirectExecutorService();
+
+            boolean terminated = executor.awaitTermination(-1, TimeUnit.MILLISECONDS);
+
+            assertThat(terminated).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should throw InterruptedException when thread is interrupted")
+        public void shouldThrowInterruptedExceptionWhenThreadIsInterrupted() {
+            DirectExecutorService executor = new DirectExecutorService();
+
+            Thread testThread = new Thread(() -> {
+                try {
+                    executor.awaitTermination(10, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    // Expected
+                }
+            });
+            testThread.start();
+            testThread.interrupt();
+
+            assertThat(testThread.isInterrupted()).isTrue();
         }
     }
 

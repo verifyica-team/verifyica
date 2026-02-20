@@ -21,25 +21,10 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
- * Class to implement ANSIColor
+ * Implements ANSI color escape sequences.
  */
 @SuppressWarnings("unused")
 public class AnsiColor {
-
-    /**
-     * Constant
-     */
-    private static final String PREFIX = "verifyica.test.engine";
-
-    /**
-     * Constant
-     */
-    private static final String MAVEN_PLUGIN_MODE = PREFIX + ".maven.plugin.mode";
-
-    /**
-     * Constant
-     */
-    private static final String MAVEN_PLUGIN_BATCH = PREFIX + ".maven.plugin.batch";
 
     /**
      * Constant
@@ -400,18 +385,25 @@ public class AnsiColor {
     }
 
     /**
-     * Method to wrap an Object's string representation (toString()) with an ANSI color escape
-     * sequence
+     * Wraps an Object's string representation (toString()) with an ANSI color escape
+     * sequence.
      *
      * @param object object
      * @return the return value
      */
     public String wrap(Object object) {
-        return ANSI_COLOR_SUPPORTED ? escapeSequence + object + NONE : String.valueOf(object);
+        if (ANSI_COLOR_SUPPORTED) {
+            return new StringBuilder()
+                    .append(escapeSequence)
+                    .append(object)
+                    .append(NONE.escapeSequence)
+                    .toString();
+        }
+        return String.valueOf(object);
     }
 
     /**
-     * Method to get the ANSI color escape sequence String
+     * Returns the ANSI color escape sequence String.
      *
      * @return if ANSI color is supported, the ANSI color escape sequence, else an empty string
      */
@@ -434,7 +426,7 @@ public class AnsiColor {
     }
 
     /**
-     * Method to strip ANSI escape sequences
+     * Strips ANSI escape sequences.
      *
      * @param string string
      * @return a String stripped of ANSI escape sequences
@@ -444,7 +436,7 @@ public class AnsiColor {
     }
 
     /**
-     * Method to indicate whether ANSI color escape sequences are supported
+     * Returns whether ANSI color escape sequences are supported.
      *
      * @return true if ANSI color escape sequences are supported, otherwise false
      */
@@ -453,7 +445,7 @@ public class AnsiColor {
     }
 
     /**
-     * Method to set/force ANSI color escape sequences to be supported
+     * Sets/forces ANSI color escape sequences to be supported.
      *
      * @param ansiColorSupported ansiColorSupported
      */
@@ -462,7 +454,7 @@ public class AnsiColor {
     }
 
     /**
-     * Method to get an ANSI color for a custom ANSI color escape sequence
+     * Returns an ANSI color for a custom ANSI color escape sequence.
      *
      * @param escapeSequence escapeSequence
      * @return an AnsiColor

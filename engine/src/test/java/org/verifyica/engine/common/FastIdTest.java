@@ -191,6 +191,105 @@ public class FastIdTest {
     }
 
     @Nested
+    @DisplayName("From Factory Tests")
+    public class FromFactoryTests {
+
+        @Test
+        @DisplayName("Should create FastId from raw bits")
+        public void shouldCreateFastIdFromRawBits() {
+            long msb = 0x123456789ABCDEF0L;
+            long lsb = 0x0FEDCBA987654321L;
+
+            FastId id = FastId.from(msb, lsb);
+
+            assertThat(id.getMostSignificantBits()).isEqualTo(msb);
+            assertThat(id.getLeastSignificantBits()).isEqualTo(lsb);
+        }
+
+        @Test
+        @DisplayName("Should create FastId with zero bits")
+        public void shouldCreateFastIdWithZeroBits() {
+            FastId id = FastId.from(0L, 0L);
+
+            assertThat(id.getMostSignificantBits()).isEqualTo(0L);
+            assertThat(id.getLeastSignificantBits()).isEqualTo(0L);
+            assertThat(id.toString()).isEqualTo("00000000-0000-0000-0000-000000000000");
+        }
+
+        @Test
+        @DisplayName("Should create FastId with maximum bits")
+        public void shouldCreateFastIdWithMaximumBits() {
+            FastId id = FastId.from(-1L, -1L);
+
+            assertThat(id.getMostSignificantBits()).isEqualTo(-1L);
+            assertThat(id.getLeastSignificantBits()).isEqualTo(-1L);
+            assertThat(id.toString()).isEqualTo("ffffffff-ffff-ffff-ffff-ffffffffffff");
+        }
+
+        @Test
+        @DisplayName("Should create equal FastIds from same bits")
+        public void shouldCreateEqualFastIdsFromSameBits() {
+            long msb = 0x123456789ABCDEF0L;
+            long lsb = 0x0FEDCBA987654321L;
+
+            FastId id1 = FastId.from(msb, lsb);
+            FastId id2 = FastId.from(msb, lsb);
+
+            assertThat(id1).isEqualTo(id2);
+            assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
+        }
+
+        @Test
+        @DisplayName("Should create different FastIds from different bits")
+        public void shouldCreateDifferentFastIdsFromDifferentBits() {
+            FastId id1 = FastId.from(0x123456789ABCDEF0L, 0L);
+            FastId id2 = FastId.from(0x0FEDCBA987654321L, 0L);
+
+            assertThat(id1).isNotEqualTo(id2);
+        }
+    }
+
+    @Nested
+    @DisplayName("Getters Tests")
+    public class GettersTests {
+
+        @Test
+        @DisplayName("Should return correct most significant bits")
+        public void shouldReturnCorrectMostSignificantBits() {
+            long msb = 0x123456789ABCDEF0L;
+            long lsb = 0x0FEDCBA987654321L;
+
+            FastId id = FastId.from(msb, lsb);
+
+            assertThat(id.getMostSignificantBits()).isEqualTo(msb);
+        }
+
+        @Test
+        @DisplayName("Should return correct least significant bits")
+        public void shouldReturnCorrectLeastSignificantBits() {
+            long msb = 0x123456789ABCDEF0L;
+            long lsb = 0x0FEDCBA987654321L;
+
+            FastId id = FastId.from(msb, lsb);
+
+            assertThat(id.getLeastSignificantBits()).isEqualTo(lsb);
+        }
+
+        @Test
+        @DisplayName("Should return bits consistent with toString")
+        public void shouldReturnBitsConsistentWithToString() {
+            FastId id = FastId.from(0x12345678L, 0x9ABCDEF0L);
+
+            String str = id.toString();
+            String expectedMsb = str.substring(0, 8) + str.substring(9, 13) + str.substring(14, 18);
+            String expectedLsb = str.substring(19, 23) + str.substring(24);
+
+            assertThat(Long.parseUnsignedLong(expectedMsb, 16)).isEqualTo(id.getMostSignificantBits());
+            assertThat(Long.parseUnsignedLong(expectedLsb, 16)).isEqualTo(id.getLeastSignificantBits());
+        }
+    }
+
+    @Nested
     @DisplayName("Comparable Tests")
     public class ComparableTests {
 
@@ -200,6 +299,16 @@ public class FastIdTest {
             FastId id = FastId.randomFastId();
 
             assertThat(id.compareTo(id)).isZero();
+        }
+
+        @Test
+        @DisplayName("Should throw when comparing to null")
+        public void shouldThrowWhenComparingToNull() {
+            FastId id = FastId.randomFastId();
+
+            assertThatThrownBy(() -> id.compareTo(null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("other is null");
         }
 
         @Test
@@ -230,6 +339,37 @@ public class FastIdTest {
             if (id1.compareTo(id2) <= 0 && id2.compareTo(id3) <= 0) {
                 assertThat(id1.compareTo(id3)).isLessThanOrEqualTo(0);
             }
+        }
+
+        @Test
+        @DisplayName("Should compare correctly when msb differs")
+        public void shouldCompareCorrectlyWhenMsbDiffers() {
+            FastId id1 = FastId.from(0x1000000000000000L, 0L);
+            FastId id2 = FastId.from(0x2000000000000000L, 0L);
+
+            assertThat(id1.compareTo(id2)).isNegative();
+            assertThat(id2.compareTo(id1)).isPositive();
+        }
+
+        @Test
+        @DisplayName("Should compare correctly when msb same but lsb differs")
+        public void shouldCompareCorrectlyWhenMsbSameButLsbDiffers() {
+            FastId id1 = FastId.from(0x123456789ABCDEF0L, 0x1000000000000000L);
+            FastId id2 = FastId.from(0x123456789ABCDEF0L, 0x2000000000000000L);
+
+            assertThat(id1.compareTo(id2)).isNegative();
+            assertThat(id2.compareTo(id1)).isPositive();
+        }
+
+        @Test
+        @DisplayName("Should compare correctly with negative values")
+        public void shouldCompareCorrectlyWithNegativeValues() {
+            // Note: FastId uses signed long comparison, so -1L < 0L
+            FastId id1 = FastId.from(-1L, 0L); // All bits set in MSB (signed: -1)
+            FastId id2 = FastId.from(0L, 0L); // All bits clear in MSB (signed: 0)
+
+            assertThat(id1.compareTo(id2)).isNegative();
+            assertThat(id2.compareTo(id1)).isPositive();
         }
     }
 

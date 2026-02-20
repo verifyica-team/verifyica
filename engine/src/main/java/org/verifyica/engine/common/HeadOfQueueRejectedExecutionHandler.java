@@ -20,12 +20,13 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * Class to implement HeadOfQueueRejectedExecutionHandler
+ * Implements a RejectedExecutionHandler that executes the oldest task in the queue
+ * when a new task is rejected, then submits the new task.
  */
 public class HeadOfQueueRejectedExecutionHandler implements RejectedExecutionHandler {
 
     /**
-     * Constructor
+     * Constructor.
      */
     public HeadOfQueueRejectedExecutionHandler() {
         // INTENTIONALLY EMPTY
@@ -33,6 +34,9 @@ public class HeadOfQueueRejectedExecutionHandler implements RejectedExecutionHan
 
     @Override
     public void rejectedExecution(Runnable runnable, ThreadPoolExecutor threadPoolExecutor) {
+        Precondition.notNull(runnable, "runnable is null");
+        Precondition.notNull(threadPoolExecutor, "threadPoolExecutor is null");
+
         Runnable oldestRunnable = threadPoolExecutor.getQueue().poll();
         if (oldestRunnable != null) {
             oldestRunnable.run();

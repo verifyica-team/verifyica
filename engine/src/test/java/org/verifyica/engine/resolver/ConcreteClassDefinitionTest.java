@@ -168,6 +168,148 @@ public class ConcreteClassDefinitionTest {
         assertThat(definition1.hashCode()).isEqualTo(definition2.hashCode());
     }
 
+    @Test
+    @DisplayName("Should return different hashCode for different objects")
+    public void shouldReturnDifferentHashCodeForDifferentObjects() {
+        ConcreteClassDefinition definition1 = createDefaultDefinition();
+        ConcreteClassDefinition definition2 = new ConcreteClassDefinition(
+                String.class, "Different", Collections.emptySet(), Collections.emptyList(), Collections.emptyList(), 1);
+
+        assertThat(definition1.hashCode()).isNotEqualTo(definition2.hashCode());
+    }
+
+    @Test
+    @DisplayName("Should return unmodifiable test method definitions set")
+    public void shouldReturnUnmodifiableTestMethodDefinitionsSet() {
+        ConcreteClassDefinition definition = createDefaultDefinition();
+
+        Set<MethodDefinition> methodDefinitions = definition.getTestMethodDefinitions();
+
+        assertThat(methodDefinitions).isNotNull();
+        assertThat(methodDefinitions).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should return arguments list")
+    public void shouldReturnArgumentsList() {
+        ConcreteClassDefinition definition = createDefaultDefinition();
+
+        List<Argument<?>> arguments = definition.getArguments();
+
+        assertThat(arguments).isNotNull();
+        assertThat(arguments).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should return tags set")
+    public void shouldReturnTagsSet() {
+        Set<String> tags = new LinkedHashSet<>(Arrays.asList("tag1", "tag2", "tag3"));
+        ConcreteClassDefinition definition = new ConcreteClassDefinition(
+                TestClass.class, "Test", tags, Collections.emptyList(), Collections.emptyList(), 1);
+
+        Set<String> returnedTags = definition.getTags();
+
+        assertThat(returnedTags).isEqualTo(tags);
+    }
+
+    @Test
+    @DisplayName("Should handle empty tags")
+    public void shouldHandleEmptyTags() {
+        ConcreteClassDefinition definition = new ConcreteClassDefinition(
+                TestClass.class, "Test", Collections.emptySet(), Collections.emptyList(), Collections.emptyList(), 1);
+
+        Set<String> tags = definition.getTags();
+
+        assertThat(tags).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should handle zero argument parallelism")
+    public void shouldHandleZeroArgumentParallelism() {
+        ConcreteClassDefinition definition = new ConcreteClassDefinition(
+                TestClass.class, "Test", Collections.emptySet(), Collections.emptyList(), Collections.emptyList(), 0);
+
+        assertThat(definition.getArgumentParallelism()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("Should handle negative argument parallelism")
+    public void shouldHandleNegativeArgumentParallelism() {
+        ConcreteClassDefinition definition = new ConcreteClassDefinition(
+                TestClass.class, "Test", Collections.emptySet(), Collections.emptyList(), Collections.emptyList(), -1);
+
+        assertThat(definition.getArgumentParallelism()).isEqualTo(-1);
+    }
+
+    @Test
+    @DisplayName("Should not be equal when test class differs")
+    public void shouldNotBeEqualWhenTestClassDiffers() {
+        ConcreteClassDefinition definition1 = createDefaultDefinition();
+        ConcreteClassDefinition definition2 = new ConcreteClassDefinition(
+                String.class,
+                "Test Display Name",
+                Collections.emptySet(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                1);
+
+        assertThat(definition1).isNotEqualTo(definition2);
+    }
+
+    @Test
+    @DisplayName("Should not be equal when display name differs")
+    public void shouldNotBeEqualWhenDisplayNameDiffers() {
+        ConcreteClassDefinition definition1 = createDefaultDefinition();
+        ConcreteClassDefinition definition2 = new ConcreteClassDefinition(
+                TestClass.class,
+                "Different Name",
+                Collections.emptySet(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                1);
+
+        assertThat(definition1).isNotEqualTo(definition2);
+    }
+
+    @Test
+    @DisplayName("Should not be equal when arguments differ")
+    public void shouldNotBeEqualWhenArgumentsDiffer() {
+        Argument<String> argument = Argument.of("test", "value");
+        ConcreteClassDefinition definition1 = createDefaultDefinition();
+        ConcreteClassDefinition definition2 = new ConcreteClassDefinition(
+                TestClass.class,
+                "Test Display Name",
+                Collections.emptySet(),
+                Collections.emptyList(),
+                Collections.singletonList(argument),
+                1);
+
+        assertThat(definition1).isNotEqualTo(definition2);
+    }
+
+    @Test
+    @DisplayName("Should include all fields in toString")
+    public void shouldIncludeAllFieldsInToString() {
+        Set<String> tags = new LinkedHashSet<>(Arrays.asList("tag1"));
+        Argument<String> argument = Argument.of("test", "value");
+        ConcreteClassDefinition definition = new ConcreteClassDefinition(
+                TestClass.class,
+                "Test Display Name",
+                tags,
+                Collections.emptyList(),
+                Collections.singletonList(argument),
+                2);
+
+        String result = definition.toString();
+
+        assertThat(result).contains("ConcreteClassDefinition");
+        assertThat(result).contains(TestClass.class.getName());
+        assertThat(result).contains("Test Display Name");
+        assertThat(result).contains("argumentParallelism=2");
+        assertThat(result).contains("testArguments");
+        assertThat(result).contains("test");
+    }
+
     private ConcreteClassDefinition createDefaultDefinition() {
         return new ConcreteClassDefinition(
                 TestClass.class,
