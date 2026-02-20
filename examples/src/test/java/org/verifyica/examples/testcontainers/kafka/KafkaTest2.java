@@ -58,7 +58,7 @@ public class KafkaTest2 {
     }
 
     @Verifyica.BeforeAll
-    public void initializeTestEnvironment(ArgumentContext argumentContext) {
+    public void initializeTestEnvironment(ArgumentContext argumentContext) throws Exception {
         LOGGER.info(
                 "[%s] initialize test environment ...",
                 argumentContext.getArgument().getName());

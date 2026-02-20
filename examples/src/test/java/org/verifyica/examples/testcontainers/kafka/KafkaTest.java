@@ -57,7 +57,7 @@ public class KafkaTest {
     }
 
     @Verifyica.BeforeAll
-    public void initializeTestEnvironment(KafkaTestEnvironment kafkaTestEnvironment) {
+    public void initializeTestEnvironment(KafkaTestEnvironment kafkaTestEnvironment) throws Exception {
         LOGGER.info("[%s] initialize test environment ...", kafkaTestEnvironment.getName());
 
         Network network = Network.newNetwork();
