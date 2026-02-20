@@ -180,7 +180,7 @@ public class UniqueIdSelectorResolver {
     private static void addTestMethods(Class<?> testClass, Map<Class<?>, Set<Method>> classMethodSet, boolean order) {
         Set<Method> methods = classMethodSet.get(testClass);
         if (methods == null) {
-            methods = new LinkedHashSet<Method>();
+            methods = new LinkedHashSet<>();
             classMethodSet.put(testClass, methods);
         }
 
@@ -208,7 +208,7 @@ public class UniqueIdSelectorResolver {
 
         Set<Integer> indices = argumentIndexMap.get(testClass);
         if (indices == null) {
-            indices = new LinkedHashSet<Integer>();
+            indices = new LinkedHashSet<>();
             argumentIndexMap.put(testClass, indices);
         }
 

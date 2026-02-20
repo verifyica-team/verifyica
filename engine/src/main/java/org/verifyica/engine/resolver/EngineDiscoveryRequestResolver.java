@@ -148,9 +148,9 @@ public class EngineDiscoveryRequestResolver {
 
         Stopwatch stopwatch = new Stopwatch();
 
-        Map<Class<?>, Set<Method>> testClassMethodSet = new HashMap<Class<?>, Set<Method>>(32);
-        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new HashMap<Class<?>, List<Argument<?>>>(32);
-        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new HashMap<Class<?>, Set<Integer>>(32);
+        Map<Class<?>, Set<Method>> testClassMethodSet = new HashMap<>(32);
+        Map<Class<?>, List<Argument<?>>> testClassArgumentMap = new HashMap<>(32);
+        Map<Class<?>, Set<Integer>> testClassArgumentIndexMap = new HashMap<>(32);
 
         try {
             traceSelectors(engineDiscoveryRequest);
@@ -218,10 +218,9 @@ public class EngineDiscoveryRequestResolver {
      */
     private static List<ClassDefinition> buildClassDefinitions(
             Map<Class<?>, Set<Method>> testClassMethodSet, Map<Class<?>, List<Argument<?>>> testClassArgumentMap) {
-        Set<Class<?>> orderedClasses =
-                OrderSupport.orderClasses(new LinkedHashSet<Class<?>>(testClassMethodSet.keySet()));
+        Set<Class<?>> orderedClasses = OrderSupport.orderClasses(new LinkedHashSet<>(testClassMethodSet.keySet()));
 
-        List<ClassDefinition> classDefinitions = new ArrayList<ClassDefinition>(orderedClasses.size());
+        List<ClassDefinition> classDefinitions = new ArrayList<>(orderedClasses.size());
 
         for (Class<?> testClass : orderedClasses) {
             List<Argument<?>> testArguments = testClassArgumentMap.get(testClass);
@@ -231,7 +230,7 @@ public class EngineDiscoveryRequestResolver {
             String testClassDisplayName = DisplayNameSupport.getDisplayName(testClass);
             Set<String> testClassTags = TagSupport.getTags(testClass);
 
-            List<MethodDefinition> testMethodDefinitions = new ArrayList<MethodDefinition>(testMethods.size());
+            List<MethodDefinition> testMethodDefinitions = new ArrayList<>(testMethods.size());
             for (Method testMethod : testMethods) {
                 String methodDisplayName = DisplayNameSupport.getDisplayName(testMethod);
                 testMethodDefinitions.add(new ConcreteMethodDefinition(testMethod, methodDisplayName));
@@ -520,7 +519,7 @@ public class EngineDiscoveryRequestResolver {
         LOGGER.trace("pruneDisabledTestMethods()");
 
         // Avoid building a separate stream/collector list; remove in a single pass.
-        List<TestDescriptor> descendants = new ArrayList<TestDescriptor>(testDescriptor.getDescendants());
+        List<TestDescriptor> descendants = new ArrayList<>(testDescriptor.getDescendants());
         for (TestDescriptor d : descendants) {
             if (d instanceof TestMethodTestDescriptor) {
                 Method m = ((TestMethodTestDescriptor) d).getTestMethod();
@@ -552,8 +551,7 @@ public class EngineDiscoveryRequestResolver {
         Stopwatch stopwatch = new Stopwatch();
 
         // Cache lifecycle method resolution per test class; this avoids repeated hierarchy scanning.
-        Map<Class<?>, LifecycleMethods> lifecycleCache =
-                new HashMap<Class<?>, LifecycleMethods>(Math.max(16, classDefinitions.size() * 2));
+        Map<Class<?>, LifecycleMethods> lifecycleCache = new HashMap<>(Math.max(16, classDefinitions.size() * 2));
 
         for (ClassDefinition classDefinition : classDefinitions) {
             Class<?> testClass = classDefinition.getTestClass();

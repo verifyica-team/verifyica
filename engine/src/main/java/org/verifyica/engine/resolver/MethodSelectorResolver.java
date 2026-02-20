@@ -89,8 +89,7 @@ public class MethodSelectorResolver {
         int selectorCount = selectors.size();
 
         // Cache ordered test methods per class for this resolve call.
-        Map<Class<?>, List<Method>> orderedMethodsCache =
-                new HashMap<Class<?>, List<Method>>(Math.max(16, selectorCount * 4));
+        Map<Class<?>, List<Method>> orderedMethodsCache = new HashMap<>(Math.max(16, selectorCount * 4));
 
         for (MethodSelector methodSelector : selectors) {
             Class<?> testClass = methodSelector.getJavaClass();
@@ -118,7 +117,7 @@ public class MethodSelectorResolver {
 
             Set<Method> methodSet = classMethodSet.get(testClass);
             if (methodSet == null) {
-                methodSet = new LinkedHashSet<Method>();
+                methodSet = new LinkedHashSet<>();
                 classMethodSet.put(testClass, methodSet);
             }
 
