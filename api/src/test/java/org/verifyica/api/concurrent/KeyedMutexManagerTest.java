@@ -35,7 +35,7 @@ public class KeyedMutexManagerTest {
     @Test
     @DisplayName("Should perform lock and unlock sequence")
     public void testLockUnlockSequence() {
-        String key = "testKey";
+        final String key = "testKey";
 
         for (int i = 0; i < 10; i++) {
             KeyedMutexManager.assertSize(0);
@@ -66,7 +66,7 @@ public class KeyedMutexManagerTest {
     @Test
     @DisplayName("Should support reentrant locking")
     public void testReentrantLocking() {
-        String key = "reentrantKey";
+        final String key = "reentrantKey";
 
         KeyedMutexManager.lock(key);
         KeyedMutexManager.assertSize(1);
@@ -95,7 +95,7 @@ public class KeyedMutexManagerTest {
     @Test
     @DisplayName("Should try to acquire lock")
     public void testTryLock() {
-        String key = "tryLockKey";
+        final String key = "tryLockKey";
 
         assertThat(KeyedMutexManager.tryLock(key)).isTrue();
         KeyedMutexManager.assertSize(1);
@@ -113,7 +113,7 @@ public class KeyedMutexManagerTest {
     @Test
     @DisplayName("Should try to acquire lock with timeout")
     public void testTryLockWithTimeout() throws InterruptedException {
-        String key = "tryLockTimeoutKey";
+        final String key = "tryLockTimeoutKey";
 
         assertThat(KeyedMutexManager.tryLock(key, 100, TimeUnit.MILLISECONDS)).isTrue();
         KeyedMutexManager.assertSize(1);
@@ -126,11 +126,11 @@ public class KeyedMutexManagerTest {
     @Test
     @DisplayName("Should handle concurrent access")
     public void testConcurrentAccess() throws InterruptedException {
-        int threadCount = 50;
-        String key = "concurrentKey";
-        AtomicInteger counter = new AtomicInteger();
+        final int threadCount = 50;
+        final String key = "concurrentKey";
+        final AtomicInteger counter = new AtomicInteger();
 
-        Thread[] threads = new Thread[threadCount];
+        final Thread[] threads = new Thread[threadCount];
         for (int i = 0; i < threadCount; i++) {
             threads[i] = new Thread(() -> {
                 KeyedMutexManager.lock(key);
@@ -152,17 +152,17 @@ public class KeyedMutexManagerTest {
             threads[i].setDaemon(true);
         }
 
-        List<Integer> indices = new ArrayList<>();
+        final List<Integer> indices = new ArrayList<>();
         for (int i = 0; i < threads.length; i++) {
             indices.add(i);
         }
         Collections.shuffle(indices);
 
-        for (int index : indices) {
+        for (final int index : indices) {
             threads[index].start();
         }
 
-        for (Thread thread : threads) {
+        for (final Thread thread : threads) {
             thread.join();
         }
 
@@ -173,10 +173,10 @@ public class KeyedMutexManagerTest {
     @Test
     @DisplayName("Should prevent different threads from unlocking")
     public void testDifferentThreadsCannotUnlock() throws InterruptedException {
-        String key = "differentThreadKey";
-        CountDownLatch latch = new CountDownLatch(1);
+        final String key = "differentThreadKey";
+        final CountDownLatch latch = new CountDownLatch(1);
 
-        Thread lockThread = new Thread(() -> {
+        final Thread lockThread = new Thread(() -> {
             KeyedMutexManager.lock(key);
 
             try {
@@ -189,7 +189,7 @@ public class KeyedMutexManagerTest {
         });
         lockThread.start();
 
-        Thread unlockThread = new Thread(() -> {
+        final Thread unlockThread = new Thread(() -> {
             assertThatExceptionOfType(IllegalMonitorStateException.class)
                     .isThrownBy(() -> KeyedMutexManager.unlock(key));
             latch.countDown();
@@ -205,7 +205,7 @@ public class KeyedMutexManagerTest {
     @Test
     @DisplayName("Should trim key when accessing mutex")
     public void testKeyTrimming() {
-        String key = "trimKey";
+        final String key = "trimKey";
 
         KeyedMutexManager.lock(key);
         KeyedMutexManager.lock(" " + key);
@@ -222,27 +222,107 @@ public class KeyedMutexManagerTest {
     }
 
     @Test
-    @DisplayName("Should throw exception for null key")
-    public void testNullKey() {
+    @DisplayName("Should throw exception for null key on lock")
+    public void testNullKeyOnLock() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> KeyedMutexManager.lock(null))
                 .withMessage("key is null");
     }
 
     @Test
-    @DisplayName("Should throw exception for blank key")
-    public void testBlankKey() {
+    @DisplayName("Should throw exception for blank key on lock")
+    public void testBlankKeyOnLock() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> KeyedMutexManager.lock("   "))
                 .withMessage("key is blank");
     }
 
     @Test
+    @DisplayName("Should throw exception for null key on tryLock")
+    public void testNullKeyOnTryLock() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedMutexManager.tryLock(null))
+                .withMessage("key is null");
+    }
+
+    @Test
+    @DisplayName("Should throw exception for blank key on tryLock")
+    public void testBlankKeyOnTryLock() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedMutexManager.tryLock("   "))
+                .withMessage("key is blank");
+    }
+
+    @Test
+    @DisplayName("Should throw exception for null key on tryLock with timeout")
+    public void testNullKeyOnTryLockWithTimeout() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedMutexManager.tryLock(null, 100, TimeUnit.MILLISECONDS))
+                .withMessage("key is null");
+    }
+
+    @Test
+    @DisplayName("Should throw exception for blank key on tryLock with timeout")
+    public void testBlankKeyOnTryLockWithTimeout() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedMutexManager.tryLock("   ", 100, TimeUnit.MILLISECONDS))
+                .withMessage("key is blank");
+    }
+
+    @Test
+    @DisplayName("Should throw exception for null timeUnit on tryLock with timeout")
+    public void testNullTimeUnitOnTryLockWithTimeout() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedMutexManager.tryLock("key", 100, null))
+                .withMessage("timeUnit is null");
+    }
+
+    @Test
+    @DisplayName("Should throw exception for null key on unlock")
+    public void testNullKeyOnUnlock() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedMutexManager.unlock(null))
+                .withMessage("key is null");
+    }
+
+    @Test
+    @DisplayName("Should throw exception for blank key on unlock")
+    public void testBlankKeyOnUnlock() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedMutexManager.unlock("   "))
+                .withMessage("key is blank");
+    }
+
+    @Test
+    @DisplayName("Should throw exception for null key on isLocked")
+    public void testNullKeyOnIsLocked() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedMutexManager.isLocked(null))
+                .withMessage("key is null");
+    }
+
+    @Test
+    @DisplayName("Should throw exception for blank key on isLocked")
+    public void testBlankKeyOnIsLocked() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedMutexManager.isLocked("   "))
+                .withMessage("key is blank");
+    }
+
+    @Test
+    @DisplayName("Should return false for isLocked when key is not locked")
+    public void testIsLockedReturnsFalseForUnlockedKey() {
+        final String key = "unlockedKey";
+
+        assertThat(KeyedMutexManager.isLocked(key)).isFalse();
+    }
+
+    @Test
     @DisplayName("Should handle multiple keys")
     public void testMultipleKeys() {
-        String key1 = "key1";
-        String key2 = "key2";
-        String key3 = "key3";
+        final String key1 = "key1";
+        final String key2 = "key2";
+        final String key3 = "key3";
 
         KeyedMutexManager.lock(key1);
         KeyedMutexManager.lock(key2);
@@ -266,11 +346,11 @@ public class KeyedMutexManagerTest {
     @Test
     @DisplayName("Should fail tryLock when mutex is held")
     public void testTryLockFailure() throws InterruptedException {
-        String key = "contendedKey";
-        CountDownLatch threadStarted = new CountDownLatch(1);
-        CountDownLatch canRelease = new CountDownLatch(1);
+        final String key = "contendedKey";
+        final CountDownLatch threadStarted = new CountDownLatch(1);
+        final CountDownLatch canRelease = new CountDownLatch(1);
 
-        Thread holder = new Thread(() -> {
+        final Thread holder = new Thread(() -> {
             KeyedMutexManager.lock(key);
             threadStarted.countDown();
             try {
@@ -291,6 +371,160 @@ public class KeyedMutexManagerTest {
         canRelease.countDown();
         holder.join();
 
+        KeyedMutexManager.assertSize(0);
+    }
+
+    @Test
+    @DisplayName("Should cleanup mutex reference after all threads release")
+    public void testCleanupAfterAllThreadsRelease() throws InterruptedException {
+        final String key = "cleanupKey";
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicInteger result = new AtomicInteger();
+
+        final Thread thread = new Thread(() -> {
+            KeyedMutexManager.lock(key);
+            try {
+                result.set(42);
+            } finally {
+                KeyedMutexManager.unlock(key);
+            }
+            latch.countDown();
+        });
+        thread.start();
+
+        latch.await();
+
+        // After thread completes and unlocks, the mutex reference should be cleaned up
+        KeyedMutexManager.assertSize(0);
+        assertThat(result).hasValue(42);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when unlocking already unlocked key")
+    public void testUnlockAlreadyUnlockedKey() {
+        final String key = "unlockTwiceKey";
+
+        KeyedMutexManager.lock(key);
+        KeyedMutexManager.unlock(key);
+
+        // Second unlock should fail since key is no longer locked
+        assertThatExceptionOfType(IllegalMonitorStateException.class)
+                .isThrownBy(() -> KeyedMutexManager.unlock(key))
+                .withMessageContaining("is not locked");
+    }
+
+    @Test
+    @DisplayName("Should handle tryLock with zero timeout")
+    public void testTryLockWithZeroTimeout() throws InterruptedException {
+        final String key = "zeroTimeoutKey";
+
+        assertThat(KeyedMutexManager.tryLock(key, 0, TimeUnit.MILLISECONDS)).isTrue();
+        assertThat(KeyedMutexManager.isLocked(key)).isTrue();
+
+        KeyedMutexManager.unlock(key);
+        KeyedMutexManager.assertSize(0);
+    }
+
+    @Test
+    @DisplayName("Should handle tryLock with very long timeout")
+    public void testTryLockWithLongTimeout() throws InterruptedException {
+        final String key = "longTimeoutKey";
+
+        assertThat(KeyedMutexManager.tryLock(key, 1, TimeUnit.HOURS)).isTrue();
+        assertThat(KeyedMutexManager.isLocked(key)).isTrue();
+
+        KeyedMutexManager.unlock(key);
+        KeyedMutexManager.assertSize(0);
+    }
+
+    @Test
+    @DisplayName("Should handle reentrant tryLock with timeout")
+    public void testReentrantTryLockWithTimeout() throws InterruptedException {
+        final String key = "reentrantTimeoutKey";
+
+        KeyedMutexManager.lock(key);
+        KeyedMutexManager.assertSize(1);
+
+        // Reentrant tryLock with timeout should succeed
+        assertThat(KeyedMutexManager.tryLock(key, 100, TimeUnit.MILLISECONDS)).isTrue();
+        KeyedMutexManager.assertSize(1);
+
+        KeyedMutexManager.unlock(key);
+        KeyedMutexManager.unlock(key);
+        KeyedMutexManager.assertSize(0);
+    }
+
+    @Test
+    @DisplayName("Should handle assertSize with incorrect size")
+    public void testAssertSizeWithIncorrectSize() {
+        final String key = "assertSizeKey";
+
+        KeyedMutexManager.lock(key);
+
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> KeyedMutexManager.assertSize(0))
+                .withMessage("mutexReferences size is incorrect");
+
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> KeyedMutexManager.assertSize(2))
+                .withMessage("mutexReferences size is incorrect");
+
+        KeyedMutexManager.unlock(key);
+        KeyedMutexManager.assertSize(0);
+    }
+
+    @Test
+    @DisplayName("Should handle empty string key")
+    public void testEmptyStringKey() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedMutexManager.lock(""))
+                .withMessage("key is blank");
+    }
+
+    @Test
+    @DisplayName("Should handle tab and newline in blank key")
+    public void testTabAndNewlineInBlankKey() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedMutexManager.lock("\t\n"))
+                .withMessage("key is blank");
+    }
+
+    @Test
+    @DisplayName("Should handle concurrent tryLock attempts")
+    public void testConcurrentTryLock() throws InterruptedException {
+        final int threadCount = 20;
+        final String key = "concurrentTryLockKey";
+        final AtomicInteger successCount = new AtomicInteger();
+        final CountDownLatch startLatch = new CountDownLatch(1);
+        final CountDownLatch completeLatch = new CountDownLatch(threadCount);
+
+        final Thread[] threads = new Thread[threadCount];
+        for (int i = 0; i < threadCount; i++) {
+            threads[i] = new Thread(() -> {
+                try {
+                    startLatch.await();
+                    if (KeyedMutexManager.tryLock(key)) {
+                        try {
+                            successCount.incrementAndGet();
+                            Thread.sleep(10);
+                        } finally {
+                            KeyedMutexManager.unlock(key);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    completeLatch.countDown();
+                }
+            });
+            threads[i].start();
+        }
+
+        startLatch.countDown();
+        completeLatch.await();
+
+        // Only one thread should have successfully acquired the lock
+        assertThat(successCount).hasValue(1);
         KeyedMutexManager.assertSize(0);
     }
 }

@@ -34,7 +34,7 @@ import org.verifyica.engine.exception.EngineConfigurationException;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * Class to implement FilterFactory
+ * Factory class for creating and loading {@link Filter} instances from configuration.
  */
 @SuppressWarnings("unchecked")
 public class FilterFactory {
@@ -50,55 +50,57 @@ public class FilterFactory {
     }
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation.
      */
     private FilterFactory() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Method to load Filters
+     * Loads filters from the configuration file specified by the
+     * {@link Constants#ENGINE_FILTER_DEFINITIONS_FILENAME} property.
      *
-     * @return a List of Filters
+     * @return a list of loaded filters
+     * @throws EngineConfigurationException if there is an error loading or parsing the filter definitions
      */
     public static List<Filter> loadFilters() {
         String filtersFilename = null;
 
         try {
-            List<Filter> filters = new ArrayList<>();
+            final List<Filter> filters = new ArrayList<>();
 
             filtersFilename = ConcreteConfiguration.getInstance()
                     .getProperties()
                     .getProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, null);
 
             if (filtersFilename != null && !filtersFilename.trim().isEmpty()) {
-                List<Object> objects = new Yaml().load(loadContents(new File(filtersFilename)));
+                final List<Object> objects = new Yaml().load(loadContents(new File(filtersFilename)));
 
-                for (Object object : objects) {
-                    Map<Object, Object> filterMap = (Map<Object, Object>) object;
-                    String type = (String) filterMap.get("type");
-                    boolean enabled = Boolean.TRUE.equals(filterMap.get("enabled"));
+                for (final Object object : objects) {
+                    final Map<Object, Object> filterMap = (Map<Object, Object>) object;
+                    final String type = (String) filterMap.get("type");
+                    final boolean enabled = Boolean.TRUE.equals(filterMap.get("enabled"));
 
                     if (enabled) {
-                        Filter.Type decodedType = filterTypeMap.getOrDefault(type, Filter.Type.UNKNOWN);
+                        final Filter.Type decodedType = filterTypeMap.getOrDefault(type, Filter.Type.UNKNOWN);
                         switch (decodedType) {
                             case INCLUDE_CLASS: {
-                                String classRegex = (String) filterMap.get("classRegex");
+                                final String classRegex = (String) filterMap.get("classRegex");
                                 filters.add(IncludeClassFilter.create(classRegex));
                                 break;
                             }
                             case EXCLUDE_CLASS: {
-                                String classRegex = (String) filterMap.get("classRegex");
+                                final String classRegex = (String) filterMap.get("classRegex");
                                 filters.add(ExcludeClassFilter.create(classRegex));
                                 break;
                             }
                             case INCLUDE_TAGGED_CLASS: {
-                                String classTagRegex = (String) filterMap.get("classTagRegex");
+                                final String classTagRegex = (String) filterMap.get("classTagRegex");
                                 filters.add(IncludeTaggedClassFilter.create(classTagRegex));
                                 break;
                             }
                             case EXCLUDE_TAGGED_CLASS: {
-                                String classTagRegex = (String) filterMap.get("classTagRegex");
+                                final String classTagRegex = (String) filterMap.get("classTagRegex");
                                 filters.add(ExcludeTaggedClassFilter.create(classTagRegex));
                                 break;
                             }
@@ -111,26 +113,26 @@ public class FilterFactory {
             }
 
             return filters;
-        } catch (EngineConfigurationException e) {
+        } catch (final EngineConfigurationException e) {
             throw e;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new EngineConfigurationException(
                     format("Exception loading filter definition file [%s]", filtersFilename), e);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             throw new EngineConfigurationException(format("Invalid filter definition file [%s]", filtersFilename), t);
         }
     }
 
     /**
-     * Method to load a File contents
+     * Loads the contents of the specified file as a string.
      *
-     * @param file file
-     * @return the files contents
-     * @throws IOException IOException
+     * @param file the file to load
+     * @return the file contents as a string
+     * @throws IOException if an I/O error occurs reading the file
      */
-    private static String loadContents(File file) throws IOException {
-        Path path = Paths.get(file.getAbsolutePath());
-        byte[] bytes = Files.readAllBytes(path);
+    private static String loadContents(final File file) throws IOException {
+        final Path path = Paths.get(file.getAbsolutePath());
+        final byte[] bytes = Files.readAllBytes(path);
         return new String(bytes, StandardCharsets.UTF_8);
     }
 }

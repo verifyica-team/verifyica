@@ -28,8 +28,8 @@ public class UncheckedClassNotFoundExceptionTest {
     @Test
     @DisplayName("Should extend RuntimeException")
     public void shouldExtendRuntimeException() {
-        ClassNotFoundException cause = new ClassNotFoundException("Class not found");
-        UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException("message", cause);
+        final ClassNotFoundException cause = new ClassNotFoundException("Class not found");
+        final UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException("message", cause);
 
         assertThat(exception).isInstanceOf(RuntimeException.class);
     }
@@ -37,9 +37,9 @@ public class UncheckedClassNotFoundExceptionTest {
     @Test
     @DisplayName("Should store message and cause")
     public void shouldStoreMessageAndCause() {
-        String message = "Class not found error";
-        ClassNotFoundException cause = new ClassNotFoundException("Original error");
-        UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException(message, cause);
+        final String message = "Class not found error";
+        final ClassNotFoundException cause = new ClassNotFoundException("Original error");
+        final UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException(message, cause);
 
         assertThat(exception.getMessage()).isEqualTo(message);
         assertThat(exception.getCause()).isEqualTo(cause);
@@ -48,8 +48,8 @@ public class UncheckedClassNotFoundExceptionTest {
     @Test
     @DisplayName("Should throw itself when throwUnchecked is called")
     public void shouldThrowItselfWhenThrowUncheckedIsCalled() {
-        ClassNotFoundException cause = new ClassNotFoundException("Original error");
-        UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException("message", cause);
+        final ClassNotFoundException cause = new ClassNotFoundException("Original error");
+        final UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException("message", cause);
 
         assertThatThrownBy(exception::throwUnchecked)
                 .isInstanceOf(UncheckedClassNotFoundException.class)
@@ -60,7 +60,7 @@ public class UncheckedClassNotFoundExceptionTest {
     @Test
     @DisplayName("Should create and throw using static throwUnchecked method")
     public void shouldCreateAndThrowUsingStaticThrowUncheckedMethod() {
-        ClassNotFoundException cause = new ClassNotFoundException("Original error");
+        final ClassNotFoundException cause = new ClassNotFoundException("Original error");
 
         assertThatThrownBy(() -> UncheckedClassNotFoundException.throwUnchecked(cause))
                 .isInstanceOf(UncheckedClassNotFoundException.class)
@@ -71,8 +71,8 @@ public class UncheckedClassNotFoundExceptionTest {
     @Test
     @DisplayName("Should preserve stack trace")
     public void shouldPreserveStackTrace() {
-        ClassNotFoundException cause = new ClassNotFoundException("Original error");
-        UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException("message", cause);
+        final ClassNotFoundException cause = new ClassNotFoundException("Original error");
+        final UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException("message", cause);
 
         assertThat(exception.getStackTrace()).isNotNull();
         assertThat(exception.getStackTrace().length).isGreaterThan(0);
@@ -81,8 +81,8 @@ public class UncheckedClassNotFoundExceptionTest {
     @Test
     @DisplayName("Should handle null message")
     public void shouldHandleNullMessage() {
-        ClassNotFoundException cause = new ClassNotFoundException("Original error");
-        UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException(null, cause);
+        final ClassNotFoundException cause = new ClassNotFoundException("Original error");
+        final UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException(null, cause);
 
         assertThat(exception.getMessage()).isNull();
         assertThat(exception.getCause()).isEqualTo(cause);
@@ -91,7 +91,7 @@ public class UncheckedClassNotFoundExceptionTest {
     @Test
     @DisplayName("Should handle null cause")
     public void shouldHandleNullCause() {
-        UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException("message", null);
+        final UncheckedClassNotFoundException exception = new UncheckedClassNotFoundException("message", null);
 
         assertThat(exception.getMessage()).isEqualTo("message");
         assertThat(exception.getCause()).isNull();

@@ -30,7 +30,7 @@ public class Counter {
     private final AtomicLong count;
 
     /**
-     * Constructor
+     * Creates a new Counter with the specified name and description.
      *
      * @param name the name of the counter
      * @param description the description of the counter
@@ -91,7 +91,10 @@ public class Counter {
 
     @Override
     public String toString() {
-        return new StringBuilder()
+        // Estimate capacity: "Counter {" (9) + name + "'', description=''" (19) + count + " }" (3)
+        // Plus estimate for count as string (20 chars for long)
+        final int estimatedLength = 9 + name.length() + description.length() + 19 + 20 + 3;
+        return new StringBuilder(estimatedLength)
                 .append("Counter {")
                 .append("name='")
                 .append(name)
@@ -106,7 +109,7 @@ public class Counter {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (!(o instanceof Counter)) return false;
         final Counter counter = (Counter) o;
         return Objects.equals(name, counter.name) && Objects.equals(description, counter.description);
@@ -114,7 +117,10 @@ public class Counter {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description);
+        // Manual hash computation to avoid Objects.hash() array allocation
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
     }
 
     /**

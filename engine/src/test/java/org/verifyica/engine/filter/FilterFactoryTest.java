@@ -49,7 +49,7 @@ public class FilterFactoryTest {
             Files.walk(tempDirectory).sorted((a, b) -> b.compareTo(a)).forEach(path -> {
                 try {
                     Files.deleteIfExists(path);
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     // Ignore
                 }
             });
@@ -64,7 +64,7 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should return empty list when no filter file configured")
         public void shouldReturnEmptyListWhenNoFilterFileConfigured() {
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).isNotNull();
             assertThat(filters).isEmpty();
         }
@@ -76,7 +76,7 @@ public class FilterFactoryTest {
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, "");
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).isNotNull();
             assertThat(filters).isEmpty();
         }
@@ -88,7 +88,7 @@ public class FilterFactoryTest {
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, "   ");
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).isNotNull();
             assertThat(filters).isEmpty();
         }
@@ -96,14 +96,14 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should load IncludeClass filter")
         public void shouldLoadIncludeClassFilter() throws IOException {
-            String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \".*Test\"\n";
+            final String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \".*Test\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(1);
             assertThat(filters.get(0)).isInstanceOf(IncludeClassFilter.class);
             assertThat(filters.get(0).getType()).isEqualTo(Filter.Type.INCLUDE_CLASS);
@@ -112,14 +112,14 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should load ExcludeClass filter")
         public void shouldLoadExcludeClassFilter() throws IOException {
-            String yaml = "- type: ExcludeClass\n" + "  enabled: true\n" + "  classRegex: \".*Abstract.*\"\n";
+            final String yaml = "- type: ExcludeClass\n" + "  enabled: true\n" + "  classRegex: \".*Abstract.*\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(1);
             assertThat(filters.get(0)).isInstanceOf(ExcludeClassFilter.class);
             assertThat(filters.get(0).getType()).isEqualTo(Filter.Type.EXCLUDE_CLASS);
@@ -128,14 +128,14 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should load IncludeTaggedClass filter")
         public void shouldLoadIncludeTaggedClassFilter() throws IOException {
-            String yaml = "- type: IncludeTaggedClass\n" + "  enabled: true\n" + "  classTagRegex: \"fast\"\n";
+            final String yaml = "- type: IncludeTaggedClass\n" + "  enabled: true\n" + "  classTagRegex: \"fast\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(1);
             assertThat(filters.get(0)).isInstanceOf(IncludeTaggedClassFilter.class);
             assertThat(filters.get(0).getType()).isEqualTo(Filter.Type.INCLUDE_TAGGED_CLASS);
@@ -144,14 +144,14 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should load ExcludeTaggedClass filter")
         public void shouldLoadExcludeTaggedClassFilter() throws IOException {
-            String yaml = "- type: ExcludeTaggedClass\n" + "  enabled: true\n" + "  classTagRegex: \"slow\"\n";
+            final String yaml = "- type: ExcludeTaggedClass\n" + "  enabled: true\n" + "  classTagRegex: \"slow\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(1);
             assertThat(filters.get(0)).isInstanceOf(ExcludeTaggedClassFilter.class);
             assertThat(filters.get(0).getType()).isEqualTo(Filter.Type.EXCLUDE_TAGGED_CLASS);
@@ -160,7 +160,7 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should load multiple filters")
         public void shouldLoadMultipleFilters() throws IOException {
-            String yaml = "- type: IncludeClass\n"
+            final String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Test\"\n"
                     + "- type: ExcludeClass\n"
@@ -170,12 +170,12 @@ public class FilterFactoryTest {
                     + "  enabled: true\n"
                     + "  classTagRegex: \"fast\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(3);
             assertThat(filters.get(0).getType()).isEqualTo(Filter.Type.INCLUDE_CLASS);
             assertThat(filters.get(1).getType()).isEqualTo(Filter.Type.EXCLUDE_CLASS);
@@ -185,7 +185,7 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should skip disabled filters")
         public void shouldSkipDisabledFilters() throws IOException {
-            String yaml = "- type: IncludeClass\n"
+            final String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Test\"\n"
                     + "- type: ExcludeClass\n"
@@ -195,12 +195,12 @@ public class FilterFactoryTest {
                     + "  enabled: true\n"
                     + "  classTagRegex: \"fast\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(2);
             assertThat(filters.get(0).getType()).isEqualTo(Filter.Type.INCLUDE_CLASS);
             assertThat(filters.get(1).getType()).isEqualTo(Filter.Type.INCLUDE_TAGGED_CLASS);
@@ -209,23 +209,23 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should skip filters without enabled field")
         public void shouldSkipFiltersWithoutEnabledField() throws IOException {
-            String yaml = "- type: IncludeClass\n" + "  classRegex: \".*Test\"\n";
+            final String yaml = "- type: IncludeClass\n" + "  classRegex: \".*Test\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).isEmpty();
         }
 
         @Test
         @DisplayName("Should return empty list for empty YAML file")
         public void shouldReturnEmptyListForEmptyYamlFile() throws IOException {
-            String yaml = "";
+            final String yaml = "";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
@@ -253,9 +253,9 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should throw exception for invalid YAML")
         public void shouldThrowExceptionForInvalidYaml() throws IOException {
-            String yaml = "invalid: yaml: content: [unclosed";
+            final String yaml = "invalid: yaml: content: [unclosed";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
@@ -268,9 +268,9 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should throw exception for unknown filter type")
         public void shouldThrowExceptionForUnknownFilterType() throws IOException {
-            String yaml = "- type: UnknownFilter\n" + "  enabled: true\n" + "  classRegex: \".*Test\"\n";
+            final String yaml = "- type: UnknownFilter\n" + "  enabled: true\n" + "  classRegex: \".*Test\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
@@ -283,9 +283,9 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should throw exception for invalid regex in filter")
         public void shouldThrowExceptionForInvalidRegexInFilter() throws IOException {
-            String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \"[invalid\"\n";
+            final String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \"[invalid\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
@@ -301,61 +301,61 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should handle complex regex patterns")
         public void shouldHandleComplexRegexPatterns() throws IOException {
-            String yaml = "- type: IncludeClass\n"
+            final String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \"^org\\\\.verifyica\\\\.(.*Test|.*IT)$\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(1);
         }
 
         @Test
         @DisplayName("Should handle YAML with comments")
         public void shouldHandleYamlWithComments() throws IOException {
-            String yaml = "# This is a comment\n"
+            final String yaml = "# This is a comment\n"
                     + "- type: IncludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Test\"  # Include all test classes\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(1);
         }
 
         @Test
         @DisplayName("Should handle filters with special characters in regex")
         public void shouldHandleFiltersWithSpecialCharactersInRegex() throws IOException {
-            String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \".*\\\\$Inner.*\"\n";
+            final String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \".*\\\\$Inner.*\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(1);
         }
 
         @Test
         @DisplayName("Should handle empty regex")
         public void shouldHandleEmptyRegex() throws IOException {
-            String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \"\"\n";
+            final String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \"\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(1);
         }
     }
@@ -367,7 +367,7 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should load all filter types in one file")
         public void shouldLoadAllFilterTypesInOneFile() throws IOException {
-            String yaml = "- type: IncludeClass\n"
+            final String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Test\"\n"
                     + "- type: ExcludeClass\n"
@@ -380,12 +380,12 @@ public class FilterFactoryTest {
                     + "  enabled: true\n"
                     + "  classTagRegex: \"slow\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(4);
             assertThat(filters.get(0).getType()).isEqualTo(Filter.Type.INCLUDE_CLASS);
             assertThat(filters.get(1).getType()).isEqualTo(Filter.Type.EXCLUDE_CLASS);
@@ -396,7 +396,7 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should preserve filter order")
         public void shouldPreserveFilterOrder() throws IOException {
-            String yaml = "- type: ExcludeClass\n"
+            final String yaml = "- type: ExcludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Abstract.*\"\n"
                     + "- type: IncludeClass\n"
@@ -406,12 +406,12 @@ public class FilterFactoryTest {
                     + "  enabled: true\n"
                     + "  classTagRegex: \"slow\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters = FilterFactory.loadFilters();
+            final List<Filter> filters = FilterFactory.loadFilters();
             assertThat(filters).hasSize(3);
             assertThat(filters.get(0).getType()).isEqualTo(Filter.Type.EXCLUDE_CLASS);
             assertThat(filters.get(1).getType()).isEqualTo(Filter.Type.INCLUDE_CLASS);
@@ -421,23 +421,23 @@ public class FilterFactoryTest {
         @Test
         @DisplayName("Should be reusable across multiple calls")
         public void shouldBeReusableAcrossMultipleCalls() throws IOException {
-            String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \".*Test\"\n";
+            final String yaml = "- type: IncludeClass\n" + "  enabled: true\n" + "  classRegex: \".*Test\"\n";
 
-            Path filterFile = createFilterFile(yaml);
+            final Path filterFile = createFilterFile(yaml);
             ConcreteConfiguration.getInstance()
                     .getProperties()
                     .setProperty(Constants.ENGINE_FILTER_DEFINITIONS_FILENAME, filterFile.toString());
 
-            List<Filter> filters1 = FilterFactory.loadFilters();
-            List<Filter> filters2 = FilterFactory.loadFilters();
+            final List<Filter> filters1 = FilterFactory.loadFilters();
+            final List<Filter> filters2 = FilterFactory.loadFilters();
 
             assertThat(filters1).hasSize(1);
             assertThat(filters2).hasSize(1);
         }
     }
 
-    private Path createFilterFile(String content) throws IOException {
-        Path file = tempDirectory.resolve("filters.yaml");
+    private Path createFilterFile(final String content) throws IOException {
+        final Path file = tempDirectory.resolve("filters.yaml");
         Files.write(file, content.getBytes(StandardCharsets.UTF_8));
         return file;
     }

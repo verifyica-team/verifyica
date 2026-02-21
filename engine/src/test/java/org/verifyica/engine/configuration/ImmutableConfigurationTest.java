@@ -31,11 +31,11 @@ public class ImmutableConfigurationTest {
 
     // Java 8 compatible String repeat helper
     private static String repeat(String str, int count) {
-        StringBuilder sb = new StringBuilder(str.length() * count);
+        StringBuilder stringBuilder = new StringBuilder(str.length() * count);
         for (int i = 0; i < count; i++) {
-            sb.append(str);
+            stringBuilder.append(str);
         }
-        return sb.toString();
+        return stringBuilder.toString();
     }
 
     @Nested

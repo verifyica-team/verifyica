@@ -19,35 +19,35 @@ package org.verifyica.api;
 import java.util.function.BooleanSupplier;
 
 /**
- * Class to implement Execution
+ * Utility class providing methods to skip test execution based on conditions.
  */
 public class Execution {
 
     /**
-     * Constructor
+     * Constructor.
      */
     private Execution() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Throws an ExecutionSkippedException if condition
+     * Skips execution if the condition is true.
      *
-     * @param condition condition
-     * @throws ExecutionSkippedException ExecutionSkippedException
+     * @param condition the condition to check
+     * @throws ExecutionSkippedException if the condition is true
      */
-    public static void skipIfCondition(boolean condition) throws ExecutionSkippedException {
+    public static void skipIfCondition(final boolean condition) throws ExecutionSkippedException {
         skipIfCondition(condition, null);
     }
 
     /**
-     * Throws an ExecutionSkippedException if condition
+     * Skips execution if the condition is true.
      *
-     * @param condition condition
-     * @param message message
-     * @throws ExecutionSkippedException ExecutionSkippedException
+     * @param condition the condition to check
+     * @param message the skip message
+     * @throws ExecutionSkippedException if the condition is true
      */
-    public static void skipIfCondition(boolean condition, String message) throws ExecutionSkippedException {
+    public static void skipIfCondition(final boolean condition, final String message) throws ExecutionSkippedException {
         if (condition) {
             if (message == null || message.trim().isEmpty()) {
                 throw new ExecutionSkippedException();
@@ -58,12 +58,13 @@ public class Execution {
     }
 
     /**
-     * Throws an ExecutionSkippedException if condition
+     * Skips execution if the supplier returns true.
      *
-     * @param supplier supplier
-     * @throws ExecutionSkippedException ExecutionSkippedException
+     * @param supplier the boolean supplier
+     * @throws ExecutionSkippedException if the supplier returns true
+     * @throws IllegalArgumentException if supplier is null
      */
-    public static void skipIfCondition(BooleanSupplier supplier) throws ExecutionSkippedException {
+    public static void skipIfCondition(final BooleanSupplier supplier) throws ExecutionSkippedException {
         if (supplier == null) {
             throw new IllegalArgumentException("supplier is null");
         }
@@ -72,13 +73,15 @@ public class Execution {
     }
 
     /**
-     * Throws an ExecutionSkippedException if condition
+     * Skips execution if the supplier returns true.
      *
-     * @param supplier supplier
-     * @param message message
-     * @throws ExecutionSkippedException ExecutionSkippedException
+     * @param supplier the boolean supplier
+     * @param message the skip message
+     * @throws ExecutionSkippedException if the supplier returns true
+     * @throws IllegalArgumentException if supplier is null
      */
-    public static void skipIfCondition(BooleanSupplier supplier, String message) throws ExecutionSkippedException {
+    public static void skipIfCondition(final BooleanSupplier supplier, final String message)
+            throws ExecutionSkippedException {
         if (supplier == null) {
             throw new IllegalArgumentException("supplier is null");
         }
@@ -87,23 +90,24 @@ public class Execution {
     }
 
     /**
-     * Throws an ExecutionSkippedException if not condition
+     * Skips execution if the condition is false.
      *
-     * @param condition condition
-     * @throws ExecutionSkippedException ExecutionSkippedException
+     * @param condition the condition to check
+     * @throws ExecutionSkippedException if the condition is false
      */
-    public static void skipIfNotCondition(boolean condition) throws ExecutionSkippedException {
+    public static void skipIfNotCondition(final boolean condition) throws ExecutionSkippedException {
         skipIfNotCondition(condition, null);
     }
 
     /**
-     * Throws an ExecutionSkippedException if not condition
+     * Skips execution if the condition is false.
      *
-     * @param condition condition
-     * @param message message
-     * @throws ExecutionSkippedException ExecutionSkippedException
+     * @param condition the condition to check
+     * @param message the skip message
+     * @throws ExecutionSkippedException if the condition is false
      */
-    public static void skipIfNotCondition(boolean condition, String message) throws ExecutionSkippedException {
+    public static void skipIfNotCondition(final boolean condition, final String message)
+            throws ExecutionSkippedException {
         if (!condition) {
             if (message == null || message.trim().isEmpty()) {
                 throw new ExecutionSkippedException();
@@ -114,12 +118,13 @@ public class Execution {
     }
 
     /**
-     * Throws an ExecutionSkippedException if not condition
+     * Skips execution if the supplier returns false.
      *
-     * @param supplier supplier
-     * @throws ExecutionSkippedException ExecutionSkippedException
+     * @param supplier the boolean supplier
+     * @throws ExecutionSkippedException if the supplier returns false
+     * @throws IllegalArgumentException if supplier is null
      */
-    public static void skipIfNotCondition(BooleanSupplier supplier) throws ExecutionSkippedException {
+    public static void skipIfNotCondition(final BooleanSupplier supplier) throws ExecutionSkippedException {
         if (supplier == null) {
             throw new IllegalArgumentException("supplier is null");
         }
@@ -128,13 +133,15 @@ public class Execution {
     }
 
     /**
-     * Throws an ExecutionSkippedException if not condition
+     * Skips execution if the supplier returns false.
      *
-     * @param supplier supplier
-     * @param message message
-     * @throws ExecutionSkippedException ExecutionSkippedException
+     * @param supplier the boolean supplier
+     * @param message the skip message
+     * @throws ExecutionSkippedException if the supplier returns false
+     * @throws IllegalArgumentException if supplier is null
      */
-    public static void skipIfNotCondition(BooleanSupplier supplier, String message) throws ExecutionSkippedException {
+    public static void skipIfNotCondition(final BooleanSupplier supplier, final String message)
+            throws ExecutionSkippedException {
         if (supplier == null) {
             throw new IllegalArgumentException("supplier is null");
         }
@@ -143,23 +150,23 @@ public class Execution {
     }
 
     /**
-     * Class to implement ExecutionSkippedException
+     * Exception thrown to indicate that test execution should be skipped.
      */
     public static class ExecutionSkippedException extends RuntimeException {
 
         /**
-         * Constructor
+         * Creates a new ExecutionSkippedException with no message.
          */
         public ExecutionSkippedException() {
             super();
         }
 
         /**
-         * Constructor
+         * Creates a new ExecutionSkippedException with the specified message.
          *
-         * @param message message
+         * @param message the exception message
          */
-        public ExecutionSkippedException(String message) {
+        public ExecutionSkippedException(final String message) {
             super(message);
         }
     }

@@ -17,37 +17,37 @@
 package org.verifyica.api;
 
 /**
- * Interface to implement ArgumentContext
+ * Provides context for an argument within a test execution.
  */
 public interface ArgumentContext extends Context {
 
     /**
-     * Get the ClassContext
+     * Returns the ClassContext.
      *
      * @return the ClassContext
      */
     ClassContext getClassContext();
 
     /**
-     * Get the Argument index
+     * Returns the Argument index.
      *
      * @return the Argument index
      */
     int getArgumentIndex();
 
     /**
-     * Get the Argument
+     * Returns the Argument.
      *
      * @return the Argument
      */
     Argument<?> getArgument();
 
     /**
-     * Get the Argument casting to the specified type
+     * Returns the Argument cast to the specified type.
      *
      * @param type the type to cast the Argument to
-     * @return the Argument
-     * @param <V> type
+     * @return the Argument cast to the specified type
+     * @param <V> the type to cast the Argument to
      */
-    <V> Argument<V> getArgumentAs(Class<V> type);
+    <V> Argument<V> getArgumentAs(final Class<V> type);
 }

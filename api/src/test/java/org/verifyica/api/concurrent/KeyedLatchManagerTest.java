@@ -31,9 +31,9 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should create latch with given count")
     public void testCreateLatch() {
-        String key = "testLatch";
+        final String key = "testLatch";
 
-        CountDownLatch latch = KeyedLatchManager.createLatch(key, 3);
+        final CountDownLatch latch = KeyedLatchManager.createLatch(key, 3);
         assertThat(latch).isNotNull();
         assertThat(latch.getCount()).isEqualTo(3);
 
@@ -47,7 +47,7 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should throw exception when creating duplicate latch")
     public void testCreateDuplicateLatch() {
-        String key = "duplicateLatch";
+        final String key = "duplicateLatch";
 
         KeyedLatchManager.createLatch(key, 1);
 
@@ -62,10 +62,10 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should get existing latch")
     public void testGetLatch() {
-        String key = "getLatchKey";
+        final String key = "getLatchKey";
 
-        CountDownLatch created = KeyedLatchManager.createLatch(key, 2);
-        CountDownLatch retrieved = KeyedLatchManager.getLatch(key);
+        final CountDownLatch created = KeyedLatchManager.createLatch(key, 2);
+        final CountDownLatch retrieved = KeyedLatchManager.getLatch(key);
 
         assertThat(retrieved).isSameAs(created);
 
@@ -82,7 +82,7 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should count down latch")
     public void testCountDown() {
-        String key = "countDownKey";
+        final String key = "countDownKey";
 
         KeyedLatchManager.createLatch(key, 3);
         assertThat(KeyedLatchManager.getCount(key)).isEqualTo(3);
@@ -103,12 +103,12 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should await latch")
     public void testAwait() throws InterruptedException {
-        String key = "awaitKey";
-        AtomicBoolean threadCompleted = new AtomicBoolean(false);
+        final String key = "awaitKey";
+        final AtomicBoolean threadCompleted = new AtomicBoolean(false);
 
         KeyedLatchManager.createLatch(key, 2);
 
-        Thread waiter = new Thread(() -> {
+        final Thread waiter = new Thread(() -> {
             try {
                 KeyedLatchManager.await(key);
                 threadCompleted.set(true);
@@ -136,7 +136,7 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should await latch with timeout")
     public void testAwaitWithTimeout() throws InterruptedException {
-        String key = "awaitTimeoutKey";
+        final String key = "awaitTimeoutKey";
 
         KeyedLatchManager.createLatch(key, 1);
 
@@ -157,13 +157,13 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should handle concurrent access")
     public void testConcurrentAccess() throws InterruptedException {
-        String key = "concurrentKey";
-        int threadCount = 5;
+        final String key = "concurrentKey";
+        final int threadCount = 5;
 
         KeyedLatchManager.createLatch(key, 1);
 
-        AtomicBoolean[] completed = new AtomicBoolean[threadCount];
-        Thread[] threads = new Thread[threadCount];
+        final AtomicBoolean[] completed = new AtomicBoolean[threadCount];
+        final Thread[] threads = new Thread[threadCount];
 
         for (int i = 0; i < threadCount; i++) {
             completed[i] = new AtomicBoolean(false);
@@ -202,12 +202,12 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should remove latch")
     public void testRemoveLatch() {
-        String key = "removeKey";
+        final String key = "removeKey";
 
         KeyedLatchManager.createLatch(key, 1);
         KeyedLatchManager.assertSize(1);
 
-        CountDownLatch removed = KeyedLatchManager.removeLatch(key);
+        final CountDownLatch removed = KeyedLatchManager.removeLatch(key);
         assertThat(removed).isNotNull();
         assertThat(removed.getCount()).isEqualTo(1);
 
@@ -225,7 +225,7 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should check if latch exists")
     public void testHasLatch() {
-        String key = "hasLatchKey";
+        final String key = "hasLatchKey";
 
         assertThat(KeyedLatchManager.hasLatch(key)).isFalse();
 
@@ -239,7 +239,7 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should trim key when accessing latch")
     public void testKeyTrimming() {
-        String key = "trimKey";
+        final String key = "trimKey";
 
         KeyedLatchManager.createLatch(key, 1);
         assertThat(KeyedLatchManager.hasLatch(" " + key)).isTrue();
@@ -279,7 +279,7 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should create latch with zero count")
     public void testZeroCount() {
-        String key = "zeroCountKey";
+        final String key = "zeroCountKey";
 
         KeyedLatchManager.createLatch(key, 0);
         assertThat(KeyedLatchManager.getCount(key)).isEqualTo(0);
@@ -316,9 +316,9 @@ public class KeyedLatchManagerTest {
     @Test
     @DisplayName("Should handle multiple keys")
     public void testMultipleKeys() {
-        String key1 = "latch1";
-        String key2 = "latch2";
-        String key3 = "latch3";
+        final String key1 = "latch1";
+        final String key2 = "latch2";
+        final String key3 = "latch3";
 
         KeyedLatchManager.createLatch(key1, 1);
         KeyedLatchManager.createLatch(key2, 2);
@@ -335,6 +335,79 @@ public class KeyedLatchManagerTest {
 
         KeyedLatchManager.removeLatch(key1);
         KeyedLatchManager.removeLatch(key3);
+        KeyedLatchManager.assertSize(0);
+    }
+
+    @Test
+    @DisplayName("Should throw exception for null timeUnit in await with timeout")
+    public void testNullTimeUnit() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> KeyedLatchManager.await("key", 100, null))
+                .withMessage("timeUnit is null");
+    }
+
+    @Test
+    @DisplayName("Should throw InterruptedException when thread is interrupted during await")
+    public void testAwaitInterrupted() throws InterruptedException {
+        final String key = "interruptKey";
+        final AtomicBoolean interruptedCaught = new AtomicBoolean(false);
+
+        KeyedLatchManager.createLatch(key, 1);
+
+        final Thread waiter = new Thread(() -> {
+            try {
+                KeyedLatchManager.await(key);
+            } catch (InterruptedException e) {
+                interruptedCaught.set(true);
+            }
+        });
+        waiter.start();
+
+        // Give the waiter thread time to start waiting
+        Thread.sleep(50);
+
+        // Interrupt the waiter thread
+        waiter.interrupt();
+        waiter.join(1000);
+
+        assertThat(interruptedCaught.get()).isTrue();
+
+        KeyedLatchManager.removeLatch(key);
+        KeyedLatchManager.assertSize(0);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when assertSize fails")
+    public void testAssertSizeFailure() {
+        KeyedLatchManager.createLatch("key1", 1);
+
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> KeyedLatchManager.assertSize(0))
+                .withMessage("latches size is incorrect");
+
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> KeyedLatchManager.assertSize(2))
+                .withMessage("latches size is incorrect");
+
+        KeyedLatchManager.removeLatch("key1");
+        KeyedLatchManager.assertSize(0);
+    }
+
+    @Test
+    @DisplayName("Should pass when assertSize matches")
+    public void testAssertSizeSuccess() {
+        KeyedLatchManager.assertSize(0);
+
+        KeyedLatchManager.createLatch("key1", 1);
+        KeyedLatchManager.assertSize(1);
+
+        KeyedLatchManager.createLatch("key2", 1);
+        KeyedLatchManager.assertSize(2);
+
+        KeyedLatchManager.removeLatch("key1");
+        KeyedLatchManager.assertSize(1);
+
+        KeyedLatchManager.removeLatch("key2");
         KeyedLatchManager.assertSize(0);
     }
 }

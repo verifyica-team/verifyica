@@ -28,10 +28,10 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should create empty builder")
     public void testEmptyBuilder() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append(AnsiColor.NONE);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append(AnsiColor.NONE);
 
-        String string1 = ansiColoredString.toString();
-        String string2 = ansiColoredString.build();
+        final String string1 = ansiColoredString.toString();
+        final String string2 = ansiColoredString.build();
 
         assertThat(string1).isNotNull();
         assertThat(string2).isNotNull();
@@ -43,12 +43,12 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should handle no color before append")
     public void testNoColorBeforeAppend() {
-        String displayString = UUID.randomUUID().toString();
+        final String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColoredString =
+        final AnsiColoredString ansiColoredString =
                 new AnsiColoredString().append(AnsiColor.NONE).append(displayString);
 
-        String string = ansiColoredString.build();
+        final String string = ansiColoredString.build();
 
         assertThat(string).isNotNull();
         assertThat(string.length()).isEqualTo(displayString.length());
@@ -58,13 +58,14 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should handle no color after append")
     public void testNoColorAfterAppend() {
-        String displayString = UUID.randomUUID().toString();
+        final String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColoredString =
+        final AnsiColoredString ansiColoredString =
                 new AnsiColoredString().append(displayString).append(AnsiColor.NONE);
 
-        String string = ansiColoredString.build();
-        int expectedLength = displayString.length() + AnsiColor.NONE.toString().length();
+        final String string = ansiColoredString.build();
+        final int expectedLength =
+                displayString.length() + AnsiColor.NONE.toString().length();
 
         assertThat(string).isNotNull();
         assertThat(string.length()).isEqualTo(expectedLength);
@@ -74,13 +75,13 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should reuse color")
     public void testReuseColor() {
-        String displayString = UUID.randomUUID().toString();
+        final String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColoredString =
+        final AnsiColoredString ansiColoredString =
                 new AnsiColoredString(AnsiColor.TEXT_RED).append(displayString).append(AnsiColor.TEXT_RED);
 
-        String string = ansiColoredString.build();
-        int expectedLength = AnsiColor.TEXT_RED.toString().length() + displayString.length();
+        final String string = ansiColoredString.build();
+        final int expectedLength = AnsiColor.TEXT_RED.toString().length() + displayString.length();
 
         assertThat(string).isNotNull();
         assertThat(string.length()).isEqualTo(expectedLength);
@@ -92,16 +93,17 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append color")
     public void testAppendColor() {
-        String displayString = UUID.randomUUID().toString();
+        final String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColoredString =
+        final AnsiColoredString ansiColoredString =
                 new AnsiColoredString().append(displayString).append(AnsiColor.TEXT_RED);
 
-        String string = ansiColoredString.build();
+        final String string = ansiColoredString.build();
 
         assertThat(string).isNotNull();
 
-        int expected = displayString.length() + AnsiColor.TEXT_RED.toString().length();
+        final int expected =
+                displayString.length() + AnsiColor.TEXT_RED.toString().length();
 
         assertThat(string.length()).isEqualTo(expected);
         assertThat(string.toCharArray()).hasSize(expected);
@@ -110,14 +112,14 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should build and convert to string")
     public void testBuildAndToString() {
-        String displayString = UUID.randomUUID().toString();
+        final String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColorString1 = new AnsiColoredString()
+        final AnsiColoredString ansiColorString1 = new AnsiColoredString()
                 .append(AnsiColor.TEXT_RED)
                 .append(displayString)
                 .append(AnsiColor.NONE);
 
-        String string1 = ansiColorString1.build();
+        final String string1 = ansiColorString1.build();
 
         assertThat(string1).isNotNull();
         assertThat(string1.length()).isGreaterThan(0);
@@ -125,10 +127,10 @@ public class AnsiColoredStringTest {
 
         assertThat(string1).isEqualTo(AnsiColor.TEXT_RED + displayString + AnsiColor.NONE);
 
-        AnsiColoredString ansiColorString2 =
+        final AnsiColoredString ansiColorString2 =
                 new AnsiColoredString(AnsiColor.TEXT_RED).append(displayString).append(AnsiColor.NONE);
 
-        String string2 = ansiColorString2.toString();
+        final String string2 = ansiColorString2.toString();
 
         assertThat(string2).isNotNull();
         assertThat(string2.length()).isGreaterThan(0);
@@ -140,14 +142,14 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should use builder constructor with color")
     public void testBuilderConstructorWithColor() {
-        String displayString = UUID.randomUUID().toString();
+        final String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColorString1 = new AnsiColoredString()
+        final AnsiColoredString ansiColorString1 = new AnsiColoredString()
                 .append(AnsiColor.TEXT_RED)
                 .append(displayString)
                 .append(AnsiColor.NONE);
 
-        String string1 = ansiColorString1.build();
+        final String string1 = ansiColorString1.build();
 
         assertThat(string1).isNotNull();
         assertThat(string1.length()).isGreaterThan(0);
@@ -155,10 +157,10 @@ public class AnsiColoredStringTest {
 
         assertThat(string1).isEqualTo(AnsiColor.TEXT_RED + displayString + AnsiColor.NONE);
 
-        AnsiColoredString ansiColorString2 =
+        final AnsiColoredString ansiColorString2 =
                 new AnsiColoredString(AnsiColor.TEXT_RED).append(displayString).append(AnsiColor.NONE);
 
-        String string2 = ansiColorString2.build();
+        final String string2 = ansiColorString2.build();
 
         assertThat(string2).isNotNull();
         assertThat(string2.length()).isGreaterThan(0);
@@ -170,14 +172,14 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should handle duplicate last color")
     public void testDuplicateLastColor() {
-        String displayString = UUID.randomUUID().toString();
+        final String displayString = UUID.randomUUID().toString();
 
-        AnsiColoredString ansiColorString1 = new AnsiColoredString()
+        final AnsiColoredString ansiColorString1 = new AnsiColoredString()
                 .append(AnsiColor.TEXT_RED)
                 .append(displayString)
                 .append(AnsiColor.NONE);
 
-        String string1 = ansiColorString1.build();
+        final String string1 = ansiColorString1.build();
 
         assertThat(string1).isNotNull();
         assertThat(string1.length()).isGreaterThan(0);
@@ -185,13 +187,13 @@ public class AnsiColoredStringTest {
 
         assertThat(string1).isEqualTo(AnsiColor.TEXT_RED + displayString + AnsiColor.NONE);
 
-        AnsiColoredString ansiColorString2 = new AnsiColoredString()
+        final AnsiColoredString ansiColorString2 = new AnsiColoredString()
                 .append(AnsiColor.TEXT_RED)
                 .append(displayString)
                 .append(AnsiColor.NONE)
                 .append(AnsiColor.NONE);
 
-        String string2 = ansiColorString2.build();
+        final String string2 = ansiColorString2.build();
 
         assertThat(string2).isNotNull();
         assertThat(string2.length()).isGreaterThan(0);
@@ -203,10 +205,10 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append boolean value")
     public void shouldAppendBooleanValue() {
-        AnsiColoredString ansiColoredString =
+        final AnsiColoredString ansiColoredString =
                 new AnsiColoredString().append(true).append(false);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("truefalse");
     }
@@ -214,9 +216,9 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append short value")
     public void shouldAppendShortValue() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append((short) 42);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append((short) 42);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("42");
     }
@@ -224,10 +226,10 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append character")
     public void shouldAppendCharacter() {
-        AnsiColoredString ansiColoredString =
+        final AnsiColoredString ansiColoredString =
                 new AnsiColoredString().append('A').append('B');
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("AB");
     }
@@ -235,11 +237,11 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append character array")
     public void shouldAppendCharacterArray() {
-        char[] chars = {'H', 'e', 'l', 'l', 'o'};
+        final char[] chars = {'H', 'e', 'l', 'l', 'o'};
 
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append(chars);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append(chars);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("Hello");
     }
@@ -247,11 +249,11 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append character array with offset and length")
     public void shouldAppendCharacterArrayWithOffsetAndLength() {
-        char[] chars = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
+        final char[] chars = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
 
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append(chars, 6, 5);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append(chars, 6, 5);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("World");
     }
@@ -259,10 +261,10 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append integer value")
     public void shouldAppendIntegerValue() {
-        AnsiColoredString ansiColoredString =
+        final AnsiColoredString ansiColoredString =
                 new AnsiColoredString().append(123).append(-456);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("123-456");
     }
@@ -270,9 +272,9 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append long value")
     public void shouldAppendLongValue() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append(123456789L);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append(123456789L);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("123456789");
     }
@@ -280,9 +282,9 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append float value")
     public void shouldAppendFloatValue() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append(3.14f);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append(3.14f);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).startsWith("3.14");
     }
@@ -290,9 +292,9 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append double value")
     public void shouldAppendDoubleValue() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append(2.71828);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append(2.71828);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).startsWith("2.71828");
     }
@@ -300,16 +302,16 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append object")
     public void shouldAppendObject() {
-        Object obj = new Object() {
+        final Object obj = new Object() {
             @Override
             public String toString() {
                 return "customObject";
             }
         };
 
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append(obj);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append(obj);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("customObject");
     }
@@ -317,9 +319,9 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append null object")
     public void shouldAppendNullObject() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append((Object) null);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append((Object) null);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("null");
     }
@@ -327,11 +329,11 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append StringBuffer")
     public void shouldAppendStringBuffer() {
-        StringBuffer sb = new StringBuffer("bufferContent");
+        final StringBuffer sb = new StringBuffer("bufferContent");
 
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append(sb);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append(sb);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("bufferContent");
     }
@@ -339,11 +341,11 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append CharSequence")
     public void shouldAppendCharSequence() {
-        CharSequence cs = "charSequence";
+        final CharSequence cs = "charSequence";
 
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append(cs);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append(cs);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("charSequence");
     }
@@ -351,11 +353,11 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should create with string constructor")
     public void shouldCreateWithStringConstructor() {
-        String initial = "initialString";
+        final String initial = "initialString";
 
-        AnsiColoredString ansiColoredString = new AnsiColoredString(initial);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString(initial);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("initialString");
     }
@@ -363,9 +365,9 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should create with null color constructor")
     public void shouldCreateWithNullColorConstructor() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString((AnsiColor) null);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString((AnsiColor) null);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEmpty();
     }
@@ -373,7 +375,7 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should return correct length")
     public void shouldReturnCorrectLength() {
-        AnsiColoredString ansiColoredString =
+        final AnsiColoredString ansiColoredString =
                 new AnsiColoredString().append("Hello").append("World");
 
         assertThat(ansiColoredString.length()).isEqualTo(10);
@@ -382,7 +384,7 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should return zero length for empty builder")
     public void shouldReturnZeroLengthForEmptyBuilder() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString();
+        final AnsiColoredString ansiColoredString = new AnsiColoredString();
 
         assertThat(ansiColoredString.length()).isEqualTo(0);
     }
@@ -390,9 +392,9 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should check ANSI color support")
     public void shouldCheckAnsiColorSupport() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString();
+        final AnsiColoredString ansiColoredString = new AnsiColoredString();
 
-        boolean supported = ansiColoredString.isAnsiColorSupported();
+        final boolean supported = ansiColoredString.isAnsiColorSupported();
 
         assertThat(supported).isEqualTo(AnsiColor.isSupported());
     }
@@ -400,9 +402,9 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should skip appending NONE color when builder is empty")
     public void shouldSkipAppendingNoneColorWhenBuilderIsEmpty() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append(AnsiColor.NONE);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append(AnsiColor.NONE);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEmpty();
     }
@@ -410,9 +412,9 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should skip appending null color")
     public void shouldSkipAppendingNullColor() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append((AnsiColor) null);
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append((AnsiColor) null);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEmpty();
     }
@@ -420,10 +422,10 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should append NONE color when builder is not empty")
     public void shouldAppendNoneColorWhenBuilderIsNotEmpty() {
-        AnsiColoredString ansiColoredString =
+        final AnsiColoredString ansiColoredString =
                 new AnsiColoredString().append("text").append(AnsiColor.NONE);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo("text" + AnsiColor.NONE.toString());
     }
@@ -431,7 +433,7 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should be equal to itself")
     public void shouldBeEqualToItself() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append("test");
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append("test");
 
         assertThat(ansiColoredString).isEqualTo(ansiColoredString);
     }
@@ -439,8 +441,8 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should be equal to equivalent builder")
     public void shouldBeEqualToEquivalentBuilder() {
-        AnsiColoredString string1 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_RED);
-        AnsiColoredString string2 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_RED);
+        final AnsiColoredString string1 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_RED);
+        final AnsiColoredString string2 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_RED);
 
         assertThat(string1).isEqualTo(string2);
         assertThat(string2).isEqualTo(string1);
@@ -449,7 +451,7 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should not be equal to null")
     public void shouldNotBeEqualToNull() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append("test");
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append("test");
 
         assertThat(ansiColoredString).isNotEqualTo(null);
     }
@@ -457,7 +459,7 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should not be equal to different type")
     public void shouldNotBeEqualToDifferentType() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append("test");
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append("test");
 
         assertThat(ansiColoredString).isNotEqualTo("test");
     }
@@ -465,8 +467,8 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should not be equal when content differs")
     public void shouldNotBeEqualWhenContentDiffers() {
-        AnsiColoredString string1 = new AnsiColoredString().append("test1");
-        AnsiColoredString string2 = new AnsiColoredString().append("test2");
+        final AnsiColoredString string1 = new AnsiColoredString().append("test1");
+        final AnsiColoredString string2 = new AnsiColoredString().append("test2");
 
         assertThat(string1).isNotEqualTo(string2);
     }
@@ -474,8 +476,8 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should not be equal when last color differs")
     public void shouldNotBeEqualWhenLastColorDiffers() {
-        AnsiColoredString string1 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_RED);
-        AnsiColoredString string2 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_GREEN);
+        final AnsiColoredString string1 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_RED);
+        final AnsiColoredString string2 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_GREEN);
 
         assertThat(string1).isNotEqualTo(string2);
     }
@@ -483,10 +485,10 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should have consistent hashCode")
     public void shouldHaveConsistentHashCode() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString().append("test");
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append("test");
 
-        int hash1 = ansiColoredString.hashCode();
-        int hash2 = ansiColoredString.hashCode();
+        final int hash1 = ansiColoredString.hashCode();
+        final int hash2 = ansiColoredString.hashCode();
 
         assertThat(hash1).isEqualTo(hash2);
     }
@@ -494,8 +496,8 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should have same hashCode for equal builders")
     public void shouldHaveSameHashCodeForEqualBuilders() {
-        AnsiColoredString string1 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_RED);
-        AnsiColoredString string2 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_RED);
+        final AnsiColoredString string1 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_RED);
+        final AnsiColoredString string2 = new AnsiColoredString().append("test").append(AnsiColor.TEXT_RED);
 
         assertThat(string1.hashCode()).isEqualTo(string2.hashCode());
     }
@@ -503,14 +505,14 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should handle chained appends")
     public void shouldHandleChainedAppends() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString()
+        final AnsiColoredString ansiColoredString = new AnsiColoredString()
                 .append(AnsiColor.TEXT_RED)
                 .append("Hello")
                 .append(' ')
                 .append(123)
                 .append(AnsiColor.NONE);
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEqualTo(AnsiColor.TEXT_RED + "Hello 123" + AnsiColor.NONE);
     }
@@ -518,9 +520,9 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should handle empty string constructor")
     public void shouldHandleEmptyStringConstructor() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString("");
+        final AnsiColoredString ansiColoredString = new AnsiColoredString("");
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result).isEmpty();
         assertThat(ansiColoredString.length()).isEqualTo(0);
@@ -529,7 +531,7 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should handle multiple color changes")
     public void shouldHandleMultipleColorChanges() {
-        AnsiColoredString ansiColoredString = new AnsiColoredString()
+        final AnsiColoredString ansiColoredString = new AnsiColoredString()
                 .append(AnsiColor.TEXT_RED)
                 .append("Red")
                 .append(AnsiColor.TEXT_GREEN)
@@ -537,7 +539,7 @@ public class AnsiColoredStringTest {
                 .append(AnsiColor.TEXT_BLUE)
                 .append("Blue");
 
-        String result = ansiColoredString.build();
+        final String result = ansiColoredString.build();
 
         assertThat(result)
                 .isEqualTo(AnsiColor.TEXT_RED + "Red" + AnsiColor.TEXT_GREEN + "Green" + AnsiColor.TEXT_BLUE + "Blue");
@@ -546,19 +548,19 @@ public class AnsiColoredStringTest {
     @Test
     @DisplayName("Should optimize duplicate consecutive colors")
     public void shouldOptimizeDuplicateConsecutiveColors() {
-        boolean originalSupport = AnsiColor.isSupported();
+        final boolean originalSupport = AnsiColor.isSupported();
         try {
             AnsiColor.setSupported(true);
 
-            AnsiColoredString ansiColoredString = new AnsiColoredString()
+            final AnsiColoredString ansiColoredString = new AnsiColoredString()
                     .append(AnsiColor.TEXT_RED)
                     .append("A")
                     .append(AnsiColor.TEXT_RED)
                     .append(AnsiColor.TEXT_RED)
                     .append("B");
 
-            String result = ansiColoredString.build();
-            String redSequence = AnsiColor.TEXT_RED.toString();
+            final String result = ansiColoredString.build();
+            final String redSequence = AnsiColor.TEXT_RED.toString();
 
             // Count occurrences of the red color sequence manually
             int count = 0;
@@ -570,6 +572,77 @@ public class AnsiColoredStringTest {
 
             // Only one TEXT_RED should be present
             assertThat(count).isEqualTo(1);
+        } finally {
+            AnsiColor.setSupported(originalSupport);
+        }
+    }
+
+    @Test
+    @DisplayName("Should not be equal when length differs")
+    public void shouldNotBeEqualWhenLengthDiffers() {
+        final AnsiColoredString string1 = new AnsiColoredString().append("test");
+        final AnsiColoredString string2 = new AnsiColoredString().append("test1");
+
+        assertThat(string1).isNotEqualTo(string2);
+    }
+
+    @Test
+    @DisplayName("Should have different hashCode for different content")
+    public void shouldHaveDifferentHashCodeForDifferentContent() {
+        final AnsiColoredString string1 = new AnsiColoredString().append("test1");
+        final AnsiColoredString string2 = new AnsiColoredString().append("test2");
+
+        assertThat(string1.hashCode()).isNotEqualTo(string2.hashCode());
+    }
+
+    @Test
+    @DisplayName("Should append null CharSequence")
+    public void shouldAppendNullCharSequence() {
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append((CharSequence) null);
+
+        final String result = ansiColoredString.build();
+
+        assertThat(result).isEqualTo("null");
+    }
+
+    @Test
+    @DisplayName("Should append null String")
+    public void shouldAppendNullString() {
+        final AnsiColoredString ansiColoredString = new AnsiColoredString().append((String) null);
+
+        final String result = ansiColoredString.build();
+
+        assertThat(result).isEqualTo("null");
+    }
+
+    @Test
+    @DisplayName("Should re-add same color after different content")
+    public void shouldReAddSameColorAfterDifferentContent() {
+        final boolean originalSupport = AnsiColor.isSupported();
+        try {
+            AnsiColor.setSupported(true);
+
+            final AnsiColoredString ansiColoredString = new AnsiColoredString()
+                    .append(AnsiColor.TEXT_RED)
+                    .append("A")
+                    .append(AnsiColor.TEXT_GREEN)
+                    .append("B")
+                    .append(AnsiColor.TEXT_RED)
+                    .append("C");
+
+            final String result = ansiColoredString.build();
+            final String redSequence = AnsiColor.TEXT_RED.toString();
+
+            // Count occurrences of the red color sequence manually
+            int count = 0;
+            int index = 0;
+            while ((index = result.indexOf(redSequence, index)) != -1) {
+                count++;
+                index += redSequence.length();
+            }
+
+            // TEXT_RED should appear twice (before A and before C)
+            assertThat(count).isEqualTo(2);
         } finally {
             AnsiColor.setSupported(originalSupport);
         }

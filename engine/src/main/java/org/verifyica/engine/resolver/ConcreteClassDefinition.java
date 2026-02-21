@@ -101,8 +101,9 @@ public class ConcreteClassDefinition implements ClassDefinition {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(256);
-        sb.append("ConcreteClassDefinition{testClass=")
+        StringBuilder stringBuilder = new StringBuilder(256);
+        stringBuilder
+                .append("ConcreteClassDefinition{testClass=")
                 .append(testClass)
                 .append(", displayName=")
                 .append(displayName)
@@ -113,7 +114,7 @@ public class ConcreteClassDefinition implements ClassDefinition {
                 .append(", testArguments=")
                 .append(arguments)
                 .append('}');
-        return sb.toString();
+        return stringBuilder.toString();
     }
 
     @Override

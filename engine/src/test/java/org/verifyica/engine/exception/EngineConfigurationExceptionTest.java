@@ -27,7 +27,7 @@ public class EngineConfigurationExceptionTest {
     @Test
     @DisplayName("Should extend EngineException")
     public void shouldExtendEngineException() {
-        EngineConfigurationException exception = new EngineConfigurationException("test");
+        final EngineConfigurationException exception = new EngineConfigurationException("test");
 
         assertThat(exception).isInstanceOf(EngineException.class);
         assertThat(exception).isInstanceOf(RuntimeException.class);
@@ -36,8 +36,8 @@ public class EngineConfigurationExceptionTest {
     @Test
     @DisplayName("Should store message with message constructor")
     public void shouldStoreMessageWithMessageConstructor() {
-        String message = "Configuration error";
-        EngineConfigurationException exception = new EngineConfigurationException(message);
+        final String message = "Configuration error";
+        final EngineConfigurationException exception = new EngineConfigurationException(message);
 
         assertThat(exception.getMessage()).isEqualTo(message);
     }
@@ -45,9 +45,9 @@ public class EngineConfigurationExceptionTest {
     @Test
     @DisplayName("Should store message and cause with two-argument constructor")
     public void shouldStoreMessageAndCauseWithTwoArgumentConstructor() {
-        String message = "Configuration error";
-        Throwable cause = new IllegalStateException("Invalid state");
-        EngineConfigurationException exception = new EngineConfigurationException(message, cause);
+        final String message = "Configuration error";
+        final Throwable cause = new IllegalStateException("Invalid state");
+        final EngineConfigurationException exception = new EngineConfigurationException(message, cause);
 
         assertThat(exception.getMessage()).isEqualTo(message);
         assertThat(exception.getCause()).isEqualTo(cause);
@@ -56,7 +56,7 @@ public class EngineConfigurationExceptionTest {
     @Test
     @DisplayName("Should handle null message")
     public void shouldHandleNullMessage() {
-        EngineConfigurationException exception = new EngineConfigurationException(null);
+        final EngineConfigurationException exception = new EngineConfigurationException(null);
 
         assertThat(exception.getMessage()).isNull();
     }
@@ -64,7 +64,7 @@ public class EngineConfigurationExceptionTest {
     @Test
     @DisplayName("Should handle null cause")
     public void shouldHandleNullCause() {
-        EngineConfigurationException exception = new EngineConfigurationException("message", null);
+        final EngineConfigurationException exception = new EngineConfigurationException("message", null);
 
         assertThat(exception.getMessage()).isEqualTo("message");
         assertThat(exception.getCause()).isNull();
@@ -73,7 +73,7 @@ public class EngineConfigurationExceptionTest {
     @Test
     @DisplayName("Should preserve stack trace")
     public void shouldPreserveStackTrace() {
-        EngineConfigurationException exception = new EngineConfigurationException("test");
+        final EngineConfigurationException exception = new EngineConfigurationException("test");
 
         assertThat(exception.getStackTrace()).isNotNull();
         assertThat(exception.getStackTrace().length).isGreaterThan(0);

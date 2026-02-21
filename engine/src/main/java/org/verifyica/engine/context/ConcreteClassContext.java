@@ -25,7 +25,7 @@ import org.verifyica.api.EngineContext;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * Class to implement ConcreteClassContext
+ * Concrete implementation of {@link ClassContext}.
  */
 public class ConcreteClassContext extends AbstractContext implements ClassContext {
 
@@ -37,22 +37,22 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
     private final AtomicReference<Object> testClassInstanceReference;
 
     /**
-     * Constructor
+     * Creates a new ConcreteClassContext.
      *
-     * @param engineContext engineContext
-     * @param testClass testClass
-     * @param testClassDisplayName testClassDisplayName
-     * @param testClassTags testClassTags
-     * @param testArgumentParallelism testArgumentParallelism
-     * @param testClassInstanceReference testClassInstanceReference
+     * @param engineContext the engine context
+     * @param testClass the test class
+     * @param testClassDisplayName the test class display name
+     * @param testClassTags the test class tags
+     * @param testArgumentParallelism the test argument parallelism
+     * @param testClassInstanceReference the test class instance reference
      */
     public ConcreteClassContext(
-            EngineContext engineContext,
-            Class<?> testClass,
-            String testClassDisplayName,
-            Set<String> testClassTags,
-            int testArgumentParallelism,
-            AtomicReference<Object> testClassInstanceReference) {
+            final EngineContext engineContext,
+            final Class<?> testClass,
+            final String testClassDisplayName,
+            final Set<String> testClassTags,
+            final int testArgumentParallelism,
+            final AtomicReference<Object> testClassInstanceReference) {
         Precondition.notNull(engineContext, "engineContext is null");
         Precondition.notNull(testClass, "testClass is null");
         Precondition.notNull(testClassDisplayName, "testClassDisplayName is null");
@@ -103,7 +103,7 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
 
     @Override
     public Object getTestInstance() {
-        Object testInstance = testClassInstanceReference.get();
+        final Object testInstance = testClassInstanceReference.get();
         if (testInstance == null) {
             throw new IllegalStateException("The class instance has not yet been instantiated");
         }
@@ -111,8 +111,8 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
     }
 
     @Override
-    public <V> V getTestInstanceAs(Class<V> type) {
-        Object testInstance = testClassInstanceReference.get();
+    public <V> V getTestInstanceAs(final Class<V> type) {
+        final Object testInstance = testClassInstanceReference.get();
         if (testInstance == null) {
             throw new IllegalStateException("The class instance has not yet been instantiated");
         }
@@ -130,11 +130,11 @@ public class ConcreteClassContext extends AbstractContext implements ClassContex
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         if (!super.equals(object)) return false;
-        ConcreteClassContext that = (ConcreteClassContext) object;
+        final ConcreteClassContext that = (ConcreteClassContext) object;
         return testArgumentParallelism == that.testArgumentParallelism
                 && Objects.equals(engineContext, that.engineContext)
                 && Objects.equals(testClass, that.testClass)

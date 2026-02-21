@@ -29,7 +29,7 @@ public class AbstractContextTest {
 
     @BeforeEach
     public void setUp() {
-        context = new TestContext();
+        this.context = new TestContext();
     }
 
     @Nested
@@ -39,7 +39,7 @@ public class AbstractContextTest {
         @Test
         @DisplayName("Should initialize with empty map")
         public void shouldInitializeWithEmptyMap() {
-            ExtendedMap<String, Object> map = context.getMap();
+            final ExtendedMap<String, Object> map = context.getMap();
 
             assertThat(map).isNotNull().isEmpty();
         }
@@ -47,10 +47,24 @@ public class AbstractContextTest {
         @Test
         @DisplayName("Should return same map instance on multiple calls")
         public void shouldReturnSameMapInstanceOnMultipleCalls() {
-            ExtendedMap<String, Object> map1 = context.getMap();
-            ExtendedMap<String, Object> map2 = context.getMap();
+            final ExtendedMap<String, Object> map1 = context.getMap();
+            final ExtendedMap<String, Object> map2 = context.getMap();
 
             assertThat(map1).isSameAs(map2);
+        }
+
+        @Test
+        @DisplayName("Should have independent maps for different instances")
+        public void shouldHaveIndependentMapsForDifferentInstances() {
+            final TestContext context1 = new TestContext();
+            final TestContext context2 = new TestContext();
+
+            context1.getMap().put("key", "value1");
+            context2.getMap().put("key", "value2");
+
+            assertThat(context1.getMap().get("key")).isEqualTo("value1");
+            assertThat(context2.getMap().get("key")).isEqualTo("value2");
+            assertThat(context1.getMap()).isNotSameAs(context2.getMap());
         }
     }
 
@@ -74,16 +88,30 @@ public class AbstractContextTest {
         }
 
         @Test
+        @DisplayName("Should reject null keys (ConcurrentHashMap doesn't support nulls)")
+        public void shouldRejectNullKeys() {
+            assertThatThrownBy(() -> context.getMap().put(null, "value")).isInstanceOf(NullPointerException.class);
+        }
+
+        @Test
         @DisplayName("Should support type-safe casting with getAs")
         public void shouldSupportTypeSafeCastingWithGetAs() {
             context.getMap().put("stringKey", "value");
             context.getMap().put("intKey", 42);
 
-            String stringValue = context.getMap().getAs("stringKey", String.class);
-            Integer intValue = context.getMap().getAs("intKey", Integer.class);
+            final String stringValue = context.getMap().getAs("stringKey", String.class);
+            final Integer intValue = context.getMap().getAs("intKey", Integer.class);
 
             assertThat(stringValue).isEqualTo("value");
             assertThat(intValue).isEqualTo(42);
+        }
+
+        @Test
+        @DisplayName("Should return null for non-existent key")
+        public void shouldReturnNullForNonExistentKey() {
+            final Object value = context.getMap().get("nonExistentKey");
+
+            assertThat(value).isNull();
         }
 
         @Test
@@ -105,6 +133,32 @@ public class AbstractContextTest {
 
             assertThat(context.getMap()).isEmpty();
         }
+
+        @Test
+        @DisplayName("Should update existing value")
+        public void shouldUpdateExistingValue() {
+            context.getMap().put("key", "original");
+            context.getMap().put("key", "updated");
+
+            assertThat(context.getMap().get("key")).isEqualTo("updated");
+        }
+
+        @Test
+        @DisplayName("Should handle multiple data types")
+        public void shouldHandleMultipleDataTypes() {
+            context.getMap().put("string", "value");
+            context.getMap().put("integer", 42);
+            context.getMap().put("long", 42L);
+            context.getMap().put("double", 3.14);
+            context.getMap().put("boolean", true);
+
+            assertThat(context.getMap()).hasSize(5);
+            assertThat(context.getMap().get("string")).isInstanceOf(String.class);
+            assertThat(context.getMap().get("integer")).isInstanceOf(Integer.class);
+            assertThat(context.getMap().get("long")).isInstanceOf(Long.class);
+            assertThat(context.getMap().get("double")).isInstanceOf(Double.class);
+            assertThat(context.getMap().get("boolean")).isInstanceOf(Boolean.class);
+        }
     }
 
     @Nested
@@ -112,28 +166,68 @@ public class AbstractContextTest {
     public class ThreadSafetyTests {
 
         @Test
-        @DisplayName("Should be thread-safe for concurrent access")
-        public void shouldBeThreadSafeForConcurrentAccess() throws InterruptedException {
-            int threadCount = 10;
-            int operationsPerThread = 100;
-            Thread[] threads = new Thread[threadCount];
+        @DisplayName("Should be thread-safe for concurrent writes")
+        public void shouldBeThreadSafeForConcurrentWrites() throws InterruptedException {
+            final int threadCount = 10;
+            final int operationsPerThread = 100;
+            final Thread[] threads = new Thread[threadCount];
 
             for (int i = 0; i < threadCount; i++) {
                 final int threadIndex = i;
                 threads[i] = new Thread(() -> {
                     for (int j = 0; j < operationsPerThread; j++) {
-                        String key = "thread-" + threadIndex + "-key-" + j;
+                        final String key = "thread-" + threadIndex + "-key-" + j;
                         context.getMap().put(key, j);
                     }
                 });
                 threads[i].start();
             }
 
-            for (Thread thread : threads) {
+            for (final Thread thread : threads) {
                 thread.join();
             }
 
             assertThat(context.getMap()).hasSize(threadCount * operationsPerThread);
+        }
+
+        @Test
+        @DisplayName("Should be thread-safe for concurrent reads and writes")
+        public void shouldBeThreadSafeForConcurrentReadsAndWrites() throws InterruptedException {
+            final int writerCount = 5;
+            final int readerCount = 5;
+            final int operationsPerThread = 50;
+            final Thread[] threads = new Thread[writerCount + readerCount];
+
+            // Writer threads
+            for (int i = 0; i < writerCount; i++) {
+                final int threadIndex = i;
+                threads[i] = new Thread(() -> {
+                    for (int j = 0; j < operationsPerThread; j++) {
+                        final String key = "writer-" + threadIndex + "-key-" + j;
+                        context.getMap().put(key, j);
+                    }
+                });
+            }
+
+            // Reader threads
+            for (int i = 0; i < readerCount; i++) {
+                threads[writerCount + i] = new Thread(() -> {
+                    for (int j = 0; j < operationsPerThread; j++) {
+                        context.getMap().size();
+                        context.getMap().isEmpty();
+                    }
+                });
+            }
+
+            for (final Thread thread : threads) {
+                thread.start();
+            }
+
+            for (final Thread thread : threads) {
+                thread.join();
+            }
+
+            assertThat(context.getMap()).hasSize(writerCount * operationsPerThread);
         }
     }
 

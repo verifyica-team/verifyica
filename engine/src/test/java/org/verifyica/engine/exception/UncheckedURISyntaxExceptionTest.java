@@ -29,8 +29,8 @@ public class UncheckedURISyntaxExceptionTest {
     @Test
     @DisplayName("Should extend RuntimeException")
     public void shouldExtendRuntimeException() {
-        URISyntaxException cause = new URISyntaxException("input", "Invalid syntax");
-        UncheckedURISyntaxException exception = new UncheckedURISyntaxException("message", cause);
+        final URISyntaxException cause = new URISyntaxException("input", "Invalid syntax");
+        final UncheckedURISyntaxException exception = new UncheckedURISyntaxException("message", cause);
 
         assertThat(exception).isInstanceOf(RuntimeException.class);
     }
@@ -38,9 +38,9 @@ public class UncheckedURISyntaxExceptionTest {
     @Test
     @DisplayName("Should store message and cause")
     public void shouldStoreMessageAndCause() {
-        String message = "URI syntax error";
-        URISyntaxException cause = new URISyntaxException("bad:uri", "Invalid syntax");
-        UncheckedURISyntaxException exception = new UncheckedURISyntaxException(message, cause);
+        final String message = "URI syntax error";
+        final URISyntaxException cause = new URISyntaxException("bad:uri", "Invalid syntax");
+        final UncheckedURISyntaxException exception = new UncheckedURISyntaxException(message, cause);
 
         assertThat(exception.getMessage()).isEqualTo(message);
         assertThat(exception.getCause()).isEqualTo(cause);
@@ -49,8 +49,8 @@ public class UncheckedURISyntaxExceptionTest {
     @Test
     @DisplayName("Should throw itself when throwUnchecked is called")
     public void shouldThrowItselfWhenThrowUncheckedIsCalled() {
-        URISyntaxException cause = new URISyntaxException("bad:uri", "Invalid syntax");
-        UncheckedURISyntaxException exception = new UncheckedURISyntaxException("message", cause);
+        final URISyntaxException cause = new URISyntaxException("bad:uri", "Invalid syntax");
+        final UncheckedURISyntaxException exception = new UncheckedURISyntaxException("message", cause);
 
         assertThatThrownBy(exception::throwUnchecked)
                 .isInstanceOf(UncheckedURISyntaxException.class)
@@ -61,7 +61,7 @@ public class UncheckedURISyntaxExceptionTest {
     @Test
     @DisplayName("Should create and throw using static throwUnchecked method")
     public void shouldCreateAndThrowUsingStaticThrowUncheckedMethod() {
-        URISyntaxException cause = new URISyntaxException("bad:uri", "Invalid syntax");
+        final URISyntaxException cause = new URISyntaxException("bad:uri", "Invalid syntax");
 
         assertThatThrownBy(() -> UncheckedURISyntaxException.throwUnchecked(cause))
                 .isInstanceOf(UncheckedURISyntaxException.class)
@@ -72,8 +72,8 @@ public class UncheckedURISyntaxExceptionTest {
     @Test
     @DisplayName("Should preserve stack trace")
     public void shouldPreserveStackTrace() {
-        URISyntaxException cause = new URISyntaxException("bad:uri", "Invalid syntax");
-        UncheckedURISyntaxException exception = new UncheckedURISyntaxException("message", cause);
+        final URISyntaxException cause = new URISyntaxException("bad:uri", "Invalid syntax");
+        final UncheckedURISyntaxException exception = new UncheckedURISyntaxException("message", cause);
 
         assertThat(exception.getStackTrace()).isNotNull();
         assertThat(exception.getStackTrace().length).isGreaterThan(0);
@@ -82,8 +82,8 @@ public class UncheckedURISyntaxExceptionTest {
     @Test
     @DisplayName("Should handle null message")
     public void shouldHandleNullMessage() {
-        URISyntaxException cause = new URISyntaxException("bad:uri", "Invalid syntax");
-        UncheckedURISyntaxException exception = new UncheckedURISyntaxException(null, cause);
+        final URISyntaxException cause = new URISyntaxException("bad:uri", "Invalid syntax");
+        final UncheckedURISyntaxException exception = new UncheckedURISyntaxException(null, cause);
 
         assertThat(exception.getMessage()).isNull();
         assertThat(exception.getCause()).isEqualTo(cause);
@@ -92,7 +92,7 @@ public class UncheckedURISyntaxExceptionTest {
     @Test
     @DisplayName("Should handle null cause")
     public void shouldHandleNullCause() {
-        UncheckedURISyntaxException exception = new UncheckedURISyntaxException("message", null);
+        final UncheckedURISyntaxException exception = new UncheckedURISyntaxException("message", null);
 
         assertThat(exception.getMessage()).isEqualTo("message");
         assertThat(exception.getCause()).isNull();

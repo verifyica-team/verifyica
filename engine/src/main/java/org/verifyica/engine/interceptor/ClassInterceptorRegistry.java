@@ -55,7 +55,8 @@ import org.verifyica.engine.support.ObjectSupport;
 import org.verifyica.engine.support.OrderSupport;
 
 /**
- * Class to implement ClassInterceptorRegistry
+ * Registry for managing class interceptors. Provides functionality to load, initialize,
+ * and destroy class interceptors for test classes.
  */
 public class ClassInterceptorRegistry {
 
@@ -67,11 +68,11 @@ public class ClassInterceptorRegistry {
     private final Map<Class<?>, List<ClassInterceptor>> mappedClassInterceptors;
 
     /**
-     * Constructor
+     * Creates a new ClassInterceptorRegistry with the specified configuration.
      *
-     * @param configuration configuration
+     * @param configuration the configuration
      */
-    public ClassInterceptorRegistry(Configuration configuration) {
+    public ClassInterceptorRegistry(final Configuration configuration) {
         this.configuration = configuration;
         this.readWriteLock = new ReentrantReadWriteLock(true);
 
@@ -82,17 +83,17 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to initialize the registry
+     * Initializes the registry by loading autowired class interceptors.
      *
-     * @param engineContext engineContext
+     * @param engineContext the engine context
      */
-    public void initialize(EngineContext engineContext) {
+    public void initialize(final EngineContext engineContext) {
         readWriteLock.writeLock().lock();
         try {
             LOGGER.trace("initialize()");
             LOGGER.trace("loading autowired class interceptors");
 
-            List<Class<?>> autowiredClassInterceptors = new ArrayList<>(
+            final List<Class<?>> autowiredClassInterceptors = new ArrayList<>(
                     ClassSupport.findAllClasses(InterceptorPredicates.AUTOWIRED_CLASS_INTERCEPTOR_CLASS));
 
             filter(autowiredClassInterceptors);
@@ -101,19 +102,19 @@ public class ClassInterceptorRegistry {
 
             LOGGER.trace("autowired class interceptor count [%d]", autowiredClassInterceptors.size());
 
-            for (Class<?> classInterceptorClass : autowiredClassInterceptors) {
+            for (final Class<?> classInterceptorClass : autowiredClassInterceptors) {
                 try {
                     LOGGER.trace("loading autowired class interceptor [%s]", classInterceptorClass.getName());
 
-                    ClassInterceptor classInterceptor = ObjectSupport.createObject(classInterceptorClass);
+                    final ClassInterceptor classInterceptor = ObjectSupport.createObject(classInterceptorClass);
                     classInterceptor.initialize(engineContext);
 
                     classInterceptors.add(classInterceptor);
 
                     LOGGER.trace("autowired class interceptor [%s] loaded", classInterceptorClass.getName());
-                } catch (EngineException e) {
+                } catch (final EngineException e) {
                     throw e;
-                } catch (Throwable t) {
+                } catch (final Throwable t) {
                     throw new EngineException(t);
                 }
             }
@@ -123,18 +124,18 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to get class interceptors for a test class
+     * Returns the class interceptors for a test class.
      *
-     * @param engineContext engineContext
-     * @param testClass testClass
+     * @param engineContext the engine context
+     * @param testClass the test class
      * @return a List of ClassInterceptors
-     * @throws Throwable Throwable
+     * @throws Throwable if an error occurs
      */
-    public List<ClassInterceptor> getClassInterceptors(EngineContext engineContext, Class<?> testClass)
+    public List<ClassInterceptor> getClassInterceptors(final EngineContext engineContext, final Class<?> testClass)
             throws Throwable {
         readWriteLock.readLock().lock();
         try {
-            List<ClassInterceptor> classInterceptors = new ArrayList<>(this.classInterceptors);
+            final List<ClassInterceptor> classInterceptors = new ArrayList<>(this.classInterceptors);
             classInterceptors.addAll(getDeclaredClassInterceptor(engineContext, testClass));
             return classInterceptors;
         } finally {
@@ -143,7 +144,7 @@ public class ClassInterceptorRegistry {
     }
 
     private synchronized List<ClassInterceptor> getDeclaredClassInterceptor(
-            EngineContext engineContext, Class<?> testClass) throws Throwable {
+            final EngineContext engineContext, final Class<?> testClass) throws Throwable {
         List<ClassInterceptor> classInterceptors = mappedClassInterceptors.get(testClass);
 
         if (classInterceptors != null) {
@@ -153,30 +154,30 @@ public class ClassInterceptorRegistry {
         classInterceptors = new ArrayList<>();
         mappedClassInterceptors.put(testClass, classInterceptors);
 
-        List<Method> classInterceptorSupplierMethods = ClassSupport.findMethods(
+        final List<Method> classInterceptorSupplierMethods = ClassSupport.findMethods(
                 testClass, ResolverPredicates.CLASS_INTERCEPTOR_SUPPLIER, HierarchyTraversalMode.BOTTOM_UP);
 
         validateSingleMethodPerClass(Verifyica.ClassInterceptorSupplier.class, classInterceptorSupplierMethods);
 
         if (!classInterceptorSupplierMethods.isEmpty()) {
-            Method classInterceptorSupplierMethod = classInterceptorSupplierMethods.get(0);
-            Object object = classInterceptorSupplierMethod.invoke(null);
+            final Method classInterceptorSupplierMethod = classInterceptorSupplierMethods.get(0);
+            final Object object = classInterceptorSupplierMethod.invoke(null);
 
             if (object == null) {
                 throw new TestClassDefinitionException(format(
                         "Null Object supplied by test class" + " [%s] @Verifyica.ClassInterceptorSupplier" + " method",
                         testClass.getName()));
             } else if (object instanceof ClassInterceptor) {
-                ClassInterceptor classInterceptor = (ClassInterceptor) object;
+                final ClassInterceptor classInterceptor = (ClassInterceptor) object;
                 classInterceptor.initialize(engineContext);
                 classInterceptors.add(classInterceptor);
             } else if (object.getClass().isArray()) {
-                Object[] objects = (Object[]) object;
+                final Object[] objects = (Object[]) object;
                 if (objects.length > 0) {
                     int index = 0;
-                    for (Object o : objects) {
+                    for (final Object o : objects) {
                         if (o instanceof ClassInterceptor) {
-                            ClassInterceptor classInterceptor = (ClassInterceptor) o;
+                            final ClassInterceptor classInterceptor = (ClassInterceptor) o;
                             classInterceptor.initialize(engineContext);
                             classInterceptors.add(classInterceptor);
                         } else {
@@ -193,23 +194,23 @@ public class ClassInterceptorRegistry {
                     || object instanceof Iterable
                     || object instanceof Iterator
                     || object instanceof Enumeration) {
-                Iterator<?> iterator;
+                final Iterator<?> iterator;
                 if (object instanceof Enumeration) {
                     iterator = Collections.list((Enumeration<?>) object).iterator();
                 } else if (object instanceof Iterator) {
                     iterator = (Iterator<?>) object;
                 } else if (object instanceof Stream) {
-                    Stream<?> stream = (Stream<?>) object;
+                    final Stream<?> stream = (Stream<?>) object;
                     iterator = stream.iterator();
                 } else {
-                    Iterable<?> iterable = (Iterable<?>) object;
+                    final Iterable<?> iterable = (Iterable<?>) object;
                     iterator = iterable.iterator();
                 }
 
                 while (iterator.hasNext()) {
-                    Object o = iterator.next();
+                    final Object o = iterator.next();
                     if (o instanceof ClassInterceptor) {
-                        ClassInterceptor classInterceptor = (ClassInterceptor) o;
+                        final ClassInterceptor classInterceptor = (ClassInterceptor) o;
                         classInterceptor.initialize(engineContext);
                         classInterceptors.add(classInterceptor);
                     } else {
@@ -227,39 +228,39 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to destroy class interceptors
+     * Destroys all class interceptors.
      *
-     * @param engineContext engineContext
+     * @param engineContext the engine context
      */
-    public void destroy(EngineContext engineContext) {
-        for (Map.Entry<Class<?>, List<ClassInterceptor>> entry : mappedClassInterceptors.entrySet()) {
-            List<ClassInterceptor> classInterceptorsReversed = ListSupport.copyAndReverse(entry.getValue());
-            for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+    public void destroy(final EngineContext engineContext) {
+        for (final Map.Entry<Class<?>, List<ClassInterceptor>> entry : mappedClassInterceptors.entrySet()) {
+            final List<ClassInterceptor> classInterceptorsReversed = ListSupport.copyAndReverse(entry.getValue());
+            for (final ClassInterceptor classInterceptor : classInterceptorsReversed) {
                 try {
                     classInterceptor.destroy(engineContext);
-                } catch (Throwable t) {
+                } catch (final Throwable t) {
                     StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
                 }
             }
         }
 
-        List<ClassInterceptor> classInterceptorsReversed = ListSupport.copyAndReverse(classInterceptors);
-        for (ClassInterceptor classInterceptor : classInterceptorsReversed) {
+        final List<ClassInterceptor> classInterceptorsReversed = ListSupport.copyAndReverse(classInterceptors);
+        for (final ClassInterceptor classInterceptor : classInterceptorsReversed) {
             try {
                 classInterceptor.destroy(engineContext);
-            } catch (Throwable t) {
+            } catch (final Throwable t) {
                 StackTracePrinter.printStackTrace(t, AnsiColor.TEXT_RED_BOLD, System.err);
             }
         }
     }
 
     /**
-     * Method to filter ClassInterceptors
+     * Filters ClassInterceptors based on include/exclude regex patterns.
      *
-     * @param classes classes
+     * @param classes the classes to filter
      */
-    private void filter(List<Class<?>> classes) {
-        Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
+    private void filter(final List<Class<?>> classes) {
+        final Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);
 
         ofNullable(configuration
                         .getProperties()
@@ -267,12 +268,12 @@ public class ClassInterceptorRegistry {
                 .ifPresent(regex -> {
                     LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX, regex);
 
-                    Pattern pattern = Pattern.compile(regex);
-                    Matcher matcher = pattern.matcher("");
+                    final Pattern pattern = Pattern.compile(regex);
+                    final Matcher matcher = pattern.matcher("");
 
-                    Iterator<Class<?>> iterator = filteredClasses.iterator();
+                    final Iterator<Class<?>> iterator = filteredClasses.iterator();
                     while (iterator.hasNext()) {
-                        Class<?> clazz = iterator.next();
+                        final Class<?> clazz = iterator.next();
                         matcher.reset(clazz.getName());
                         if (matcher.find()) {
                             LOGGER.trace("removing class interceptor [%s]", clazz.getName());
@@ -287,10 +288,10 @@ public class ClassInterceptorRegistry {
                 .ifPresent(regex -> {
                     LOGGER.trace("%s [%s]", Constants.ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX, regex);
 
-                    Pattern pattern = Pattern.compile(regex);
-                    Matcher matcher = pattern.matcher("");
+                    final Pattern pattern = Pattern.compile(regex);
+                    final Matcher matcher = pattern.matcher("");
 
-                    for (Class<?> clazz : classes) {
+                    for (final Class<?> clazz : classes) {
                         matcher.reset(clazz.getName());
                         if (matcher.find()) {
                             LOGGER.trace("adding class interceptor [%s]", clazz.getName());
@@ -304,21 +305,20 @@ public class ClassInterceptorRegistry {
     }
 
     /**
-     * Method to validate only a single method per declared class is annotation with the given
-     * annotation
+     * Validates that only a single method per declared class is annotated with the given annotation.
      *
-     * @param annotationClass annotationClass
-     * @param methods methods
+     * @param annotationClass the annotation class
+     * @param methods the methods to validate
      */
-    private static void validateSingleMethodPerClass(Class<?> annotationClass, List<Method> methods) {
+    private static void validateSingleMethodPerClass(final Class<?> annotationClass, final List<Method> methods) {
         Precondition.notNull(annotationClass, "annotationClass is null");
 
         if (methods != null) {
-            Set<Class<?>> classes = new HashSet<>();
+            final Set<Class<?>> classes = new HashSet<>();
 
             methods.forEach(method -> {
                 if (classes.contains(method.getDeclaringClass())) {
-                    String annotationDisplayName = "@Verifyica." + annotationClass.getSimpleName();
+                    final String annotationDisplayName = "@Verifyica." + annotationClass.getSimpleName();
                     throw new TestClassDefinitionException(format(
                             "Test class [%s] contains more than one method" + " annotated with [%s]",
                             method.getDeclaringClass().getName(), annotationDisplayName));

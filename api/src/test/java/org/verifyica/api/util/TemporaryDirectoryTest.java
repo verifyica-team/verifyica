@@ -36,9 +36,9 @@ public class TemporaryDirectoryTest {
     @Test
     @DisplayName("Should create temporary directory and file")
     public void testCreateTemporaryDirectoryAndFile() throws IOException, InterruptedException {
-        String permissions = "rwx------";
+        final String permissions = "rwx------";
 
-        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
 
         assertThat(temporaryDirectory.toPath()).exists();
         assertThat(temporaryDirectory.toFile()).exists();
@@ -47,7 +47,7 @@ public class TemporaryDirectoryTest {
         assertThat(getLinuxPermissionString(temporaryDirectory.toPath())).isEqualTo(permissions);
         assertThat(getLinuxPermissionString(temporaryDirectory.toFile())).isEqualTo(permissions);
 
-        File temporaryFile = temporaryDirectory.newFile();
+        final File temporaryFile = temporaryDirectory.newFile();
 
         assertThat(temporaryFile).exists();
         assertThat(temporaryFile).isFile();
@@ -64,7 +64,7 @@ public class TemporaryDirectoryTest {
 
         Set<PosixFilePermission> posixFilePermissionsSet = PosixFilePermissions.fromString(permissions);
 
-        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory(posixFilePermissionsSet);
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory(posixFilePermissionsSet);
 
         assertThat(temporaryDirectory.toPath()).exists();
         assertThat(temporaryDirectory.toFile()).exists();
@@ -100,8 +100,8 @@ public class TemporaryDirectoryTest {
     @Test
     @DisplayName("Should close and delete temporary directory")
     public void testClose() throws IOException {
-        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
-        Path path = temporaryDirectory.toPath();
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        final Path path = temporaryDirectory.toPath();
 
         assertThat(path).exists();
 
@@ -113,8 +113,8 @@ public class TemporaryDirectoryTest {
     @Test
     @DisplayName("Should delete temporary directory")
     public void testDelete() throws IOException {
-        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
-        Path path = temporaryDirectory.toPath();
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        final Path path = temporaryDirectory.toPath();
 
         assertThat(path).exists();
 
@@ -126,15 +126,15 @@ public class TemporaryDirectoryTest {
     @Test
     @DisplayName("Should delete temporary directory with contents")
     public void testDeleteWithContents() throws IOException {
-        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
-        Path path = temporaryDirectory.toPath();
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        final Path path = temporaryDirectory.toPath();
 
         // Create nested directory structure
-        File file1 = temporaryDirectory.newFile();
-        File file2 = temporaryDirectory.newFile();
+        final File file1 = temporaryDirectory.newFile();
+        final File file2 = temporaryDirectory.newFile();
 
         // Create subdirectory with file
-        Path subDir = path.resolve("subdir");
+        final Path subDir = path.resolve("subdir");
         Files.createDirectory(subDir);
         Files.createFile(subDir.resolve("nestedFile.txt"));
 
@@ -154,8 +154,8 @@ public class TemporaryDirectoryTest {
     @Test
     @DisplayName("Should implement equals and hashCode correctly")
     public void testEqualsAndHashCode() throws IOException {
-        TemporaryDirectory tempDir1 = TemporaryDirectory.newDirectory();
-        TemporaryDirectory tempDir2 = TemporaryDirectory.newDirectory();
+        final TemporaryDirectory tempDir1 = TemporaryDirectory.newDirectory();
+        final TemporaryDirectory tempDir2 = TemporaryDirectory.newDirectory();
 
         try {
             // Same object
@@ -172,7 +172,7 @@ public class TemporaryDirectoryTest {
             assertThat(tempDir1).isNotEqualTo("not a directory");
 
             // Different path
-            TemporaryDirectory tempDir3 = TemporaryDirectory.newDirectory();
+            final TemporaryDirectory tempDir3 = TemporaryDirectory.newDirectory();
             try {
                 assertThat(tempDir1.toPath()).isNotEqualTo(tempDir3.toPath());
                 assertThat(tempDir1).isNotEqualTo(tempDir3);
@@ -188,7 +188,7 @@ public class TemporaryDirectoryTest {
     @Test
     @DisplayName("Should return path string from toString()")
     public void testToStringReturnsPath() throws IOException {
-        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
         try {
             assertThat(temporaryDirectory.toString())
                     .isEqualTo(temporaryDirectory.toPath().toString());
@@ -216,7 +216,7 @@ public class TemporaryDirectoryTest {
     @Test
     @DisplayName("Should throw exception for null permissions when creating file")
     public void testNewFileWithNullPermissions() throws IOException {
-        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
         try {
             assertThatThrownBy(() -> temporaryDirectory.newFile(null))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -229,7 +229,7 @@ public class TemporaryDirectoryTest {
     @Test
     @DisplayName("Should throw exception for empty permissions when creating file")
     public void testNewFileWithEmptyPermissions() throws IOException {
-        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
         try {
             assertThatThrownBy(() -> temporaryDirectory.newFile(new HashSet<>()))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -242,14 +242,153 @@ public class TemporaryDirectoryTest {
     @Test
     @DisplayName("Should create file with default permissions")
     public void testNewFileWithDefaultPermissions() throws IOException {
-        TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
         try {
-            File file = temporaryDirectory.newFile();
+            final File file = temporaryDirectory.newFile();
 
             assertThat(file).exists();
             assertThat(file).isFile();
             assertThat(file.canRead()).isTrue();
             assertThat(file.canWrite()).isTrue();
+        } finally {
+            temporaryDirectory.delete();
+        }
+    }
+
+    @Test
+    @DisplayName("Should create multiple unique files in same directory")
+    public void testCreateMultipleUniqueFiles() throws IOException {
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        try {
+            final File file1 = temporaryDirectory.newFile();
+            final File file2 = temporaryDirectory.newFile();
+            final File file3 = temporaryDirectory.newFile();
+
+            assertThat(file1).exists();
+            assertThat(file2).exists();
+            assertThat(file3).exists();
+
+            // Verify all files are different
+            assertThat(file1).isNotEqualTo(file2);
+            assertThat(file1).isNotEqualTo(file3);
+            assertThat(file2).isNotEqualTo(file3);
+
+            // Verify all paths are different
+            assertThat(file1.toPath()).isNotEqualTo(file2.toPath());
+            assertThat(file1.toPath()).isNotEqualTo(file3.toPath());
+            assertThat(file2.toPath()).isNotEqualTo(file3.toPath());
+        } finally {
+            temporaryDirectory.delete();
+        }
+    }
+
+    @Test
+    @DisplayName("Should work with try-with-resources")
+    public void testTryWithResources() throws IOException {
+        final Path path;
+
+        try (final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory()) {
+            path = temporaryDirectory.toPath();
+            assertThat(path).exists();
+
+            // Create a file inside the directory
+            final File file = temporaryDirectory.newFile();
+            assertThat(file).exists();
+        }
+
+        // After try-with-resources, directory should be deleted
+        assertThat(path).doesNotExist();
+    }
+
+    @Test
+    @DisplayName("Should handle deeply nested directory structure")
+    public void testDeeplyNestedDirectoryStructure() throws IOException {
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        try {
+            final Path root = temporaryDirectory.toPath();
+
+            // Create deeply nested structure
+            Path current = root;
+            for (int i = 0; i < 5; i++) {
+                current = current.resolve("level" + i);
+                Files.createDirectory(current);
+                Files.createFile(current.resolve("file" + i + ".txt"));
+            }
+
+            // Verify structure exists
+            assertThat(root).exists();
+
+            // Verify each level exists
+            Path verifyPath = root;
+            for (int i = 0; i < 5; i++) {
+                verifyPath = verifyPath.resolve("level" + i);
+                assertThat(verifyPath).exists();
+                assertThat(verifyPath.resolve("file" + i + ".txt")).exists();
+            }
+
+            // Delete should clean up everything
+            temporaryDirectory.delete();
+            assertThat(root).doesNotExist();
+        } finally {
+            // Cleanup if test fails before delete
+            if (temporaryDirectory.toPath().toFile().exists()) {
+                temporaryDirectory.delete();
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("Should delete directory with many files")
+    public void testDeleteWithManyFiles() throws IOException {
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        try {
+            final int fileCount = 100;
+            final Set<File> files = new java.util.HashSet<>();
+
+            for (int i = 0; i < fileCount; i++) {
+                files.add(temporaryDirectory.newFile());
+            }
+
+            // Verify all files exist
+            for (final File file : files) {
+                assertThat(file).exists();
+            }
+
+            temporaryDirectory.delete();
+
+            // Verify all files and directory are deleted
+            assertThat(temporaryDirectory.toPath()).doesNotExist();
+            for (final File file : files) {
+                assertThat(file).doesNotExist();
+            }
+        } finally {
+            // Cleanup if test fails before delete
+            if (temporaryDirectory.toPath().toFile().exists()) {
+                temporaryDirectory.delete();
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("Should create files with different permissions in same directory")
+    public void testCreateFilesWithDifferentPermissions() throws IOException {
+        final TemporaryDirectory temporaryDirectory = TemporaryDirectory.newDirectory();
+        try {
+            final Set<PosixFilePermission> readWritePermissions = PosixFilePermissions.fromString("rw-------");
+            final Set<PosixFilePermission> readOnlyPermissions = PosixFilePermissions.fromString("r--------");
+            final Set<PosixFilePermission> readWriteExecutePermissions = PosixFilePermissions.fromString("rwx------");
+
+            final File file1 = temporaryDirectory.newFile(readWritePermissions);
+            final File file2 = temporaryDirectory.newFile(readOnlyPermissions);
+            final File file3 = temporaryDirectory.newFile(readWriteExecutePermissions);
+
+            assertThat(file1).exists();
+            assertThat(file2).exists();
+            assertThat(file3).exists();
+
+            assertThat(getLinuxPermissionString(file1)).isEqualTo("rw-------");
+            assertThat(getLinuxPermissionString(file2)).isEqualTo("r--------");
+            assertThat(getLinuxPermissionString(file3)).isEqualTo("rwx------");
         } finally {
             temporaryDirectory.delete();
         }

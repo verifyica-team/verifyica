@@ -26,12 +26,12 @@ import org.junit.jupiter.api.*;
 public class StackTracePrinterTest {
 
     // Java 8 compatible String repeat helper
-    private static String repeat(String str, int count) {
-        StringBuilder sb = new StringBuilder(str.length() * count);
+    private static String repeat(final String str, final int count) {
+        final StringBuilder stringBuilder = new StringBuilder(str.length() * count);
         for (int i = 0; i < count; i++) {
-            sb.append(str);
+            stringBuilder.append(str);
         }
-        return sb.toString();
+        return stringBuilder.toString();
     }
 
     @Nested
@@ -41,40 +41,40 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should print stack trace to stream")
         public void shouldPrintStackTraceToStream() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException("Test exception");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException("Test exception");
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException").contains("Test exception");
         }
 
         @Test
         @DisplayName("Should print stack trace with ANSI color")
         public void shouldPrintStackTraceWithAnsiColor() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException("Test exception");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException("Test exception");
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.TEXT_RED, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException").contains("Test exception");
         }
 
         @Test
         @DisplayName("Should handle exception with cause")
         public void shouldHandleExceptionWithCause() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception cause = new IllegalArgumentException("Cause exception");
-            Exception exception = new RuntimeException("Main exception", cause);
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception cause = new IllegalArgumentException("Cause exception");
+            final Exception exception = new RuntimeException("Main exception", cause);
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output)
                     .contains("RuntimeException")
                     .contains("Main exception")
@@ -85,15 +85,15 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should handle exception with nested causes")
         public void shouldHandleExceptionWithNestedCauses() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception rootCause = new IllegalStateException("Root cause");
-            Exception middleCause = new IllegalArgumentException("Middle cause", rootCause);
-            Exception topException = new RuntimeException("Top exception", middleCause);
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception rootCause = new IllegalStateException("Root cause");
+            final Exception middleCause = new IllegalArgumentException("Middle cause", rootCause);
+            final Exception topException = new RuntimeException("Top exception", middleCause);
 
             StackTracePrinter.printStackTrace(topException, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output)
                     .contains("RuntimeException")
                     .contains("Top exception")
@@ -106,12 +106,12 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should prune stack traces from engine classes")
         public void shouldPruneStackTracesFromEngineClasses() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
 
             // Create exception with a mix of user and engine stack frames
-            Exception exception = new RuntimeException("User code exception");
-            StackTraceElement[] stackTrace = new StackTraceElement[] {
+            final Exception exception = new RuntimeException("User code exception");
+            final StackTraceElement[] stackTrace = new StackTraceElement[] {
                 new StackTraceElement("com.example.UserTest", "testMethod", "UserTest.java", 25),
                 new StackTraceElement(
                         "org.verifyica.engine.internal.TestExecutor", "execute", "TestExecutor.java", 100),
@@ -121,7 +121,7 @@ public class StackTracePrinterTest {
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             // Verify exception type and message
             assertThat(output).contains("RuntimeException").contains("User code exception");
             // Verify user code is present
@@ -137,25 +137,25 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should be thread-safe for concurrent printing")
         public void shouldBeThreadSafeForConcurrentPrinting() throws InterruptedException {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            int threadCount = 10;
-            Thread[] threads = new Thread[threadCount];
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final int threadCount = 10;
+            final Thread[] threads = new Thread[threadCount];
 
             for (int i = 0; i < threadCount; i++) {
                 final int threadIndex = i;
                 threads[i] = new Thread(() -> {
-                    Exception exception = new RuntimeException("Exception " + threadIndex);
+                    final Exception exception = new RuntimeException("Exception " + threadIndex);
                     StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
                 });
                 threads[i].start();
             }
 
-            for (Thread thread : threads) {
+            for (final Thread thread : threads) {
                 thread.join();
             }
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException");
         }
     }
@@ -165,11 +165,60 @@ public class StackTracePrinterTest {
     public class StackTracePruningTests {
 
         @Test
+        @DisplayName("Should not prune when no engine classes in stack trace")
+        public void shouldNotPruneWhenNoEngineClassesInStackTrace() {
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+
+            final Exception exception = new RuntimeException("Test exception");
+            final StackTraceElement[] stackTrace = new StackTraceElement[] {
+                new StackTraceElement("com.example.UserClass", "userMethod", "UserClass.java", 10),
+                new StackTraceElement("com.example.AnotherClass", "anotherMethod", "AnotherClass.java", 20),
+                new StackTraceElement("java.lang.reflect.Method", "invoke", "Method.java", 498)
+            };
+            exception.setStackTrace(stackTrace);
+
+            StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
+
+            final String output = outputStream.toString();
+            // Verify all frames are present (no pruning)
+            assertThat(output).contains("com.example.UserClass");
+            assertThat(output).contains("com.example.AnotherClass");
+            assertThat(output).contains("java.lang.reflect.Method");
+            // Verify no "... X more" indicator since nothing was pruned
+            assertThat(output).doesNotContain("more");
+        }
+
+        @Test
+        @DisplayName("Should handle cyclic cause chain")
+        public void shouldHandleCyclicCauseChain() {
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+
+            // Create a cyclic exception chain: A -> B -> C -> A
+            final Exception exceptionA = new RuntimeException("Exception A");
+            final Exception exceptionB = new RuntimeException("Exception B", exceptionA);
+            final Exception exceptionC = new RuntimeException("Exception C", exceptionB);
+            // Create cycle by setting A's cause to C
+            exceptionA.initCause(exceptionC);
+
+            StackTracePrinter.printStackTrace(exceptionC, AnsiColor.NONE, printStream);
+
+            final String output = outputStream.toString();
+            // Verify all exceptions are mentioned
+            assertThat(output).contains("Exception C");
+            assertThat(output).contains("Exception B");
+            assertThat(output).contains("Exception A");
+            // Verify cyclic cause detection message
+            assertThat(output).contains("[Cyclic cause chain detected]");
+        }
+
+        @Test
         @DisplayName("Should handle exception without stack trace")
         public void shouldHandleExceptionWithoutStackTrace() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException("Test exception") {
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException("Test exception") {
                 @Override
                 public synchronized Throwable fillInStackTrace() {
                     return this;
@@ -178,33 +227,33 @@ public class StackTracePrinterTest {
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
-            // Anonymous subpublic class won't have "RuntimeException" in the name, just check for the message
+            final String output = outputStream.toString();
+            // Anonymous subclass won't have "RuntimeException" in the name, just check for the message
             assertThat(output).contains("Test exception");
         }
 
         @Test
         @DisplayName("Should handle exception with empty stack trace")
         public void shouldHandleExceptionWithEmptyStackTrace() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException("Test exception");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException("Test exception");
             exception.setStackTrace(new StackTraceElement[0]);
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException").contains("Test exception");
         }
 
         @Test
         @DisplayName("Should trim stack trace at engine boundary")
         public void shouldTrimStackTraceAtEngineBoundary() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
 
-            Exception exception = new RuntimeException("Test exception");
-            StackTraceElement[] stackTrace = new StackTraceElement[] {
+            final Exception exception = new RuntimeException("Test exception");
+            final StackTraceElement[] stackTrace = new StackTraceElement[] {
                 new StackTraceElement("UserClass", "userMethod", "UserClass.java", 10),
                 new StackTraceElement("org.verifyica.engine.SomeClass", "engineMethod", "SomeClass.java", 20),
                 new StackTraceElement("FrameworkClass", "frameworkMethod", "FrameworkClass.java", 30)
@@ -213,7 +262,7 @@ public class StackTracePrinterTest {
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             // Verify exception type and message are present
             assertThat(output).contains("RuntimeException").contains("Test exception");
             // Verify user code is present
@@ -233,39 +282,39 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should support different ANSI colors")
         public void shouldSupportDifferentAnsiColors() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException("Test exception");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException("Test exception");
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.TEXT_GREEN, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException");
         }
 
         @Test
         @DisplayName("Should handle ANSI color NONE")
         public void shouldHandleAnsiColorNone() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException("Test exception");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException("Test exception");
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException");
         }
 
         @Test
         @DisplayName("Should reset ANSI color after printing")
         public void shouldResetAnsiColorAfterPrinting() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException("Test exception");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException("Test exception");
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.TEXT_RED, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException");
         }
     }
@@ -277,53 +326,53 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should handle exception with null message")
         public void shouldHandleExceptionWithNullMessage() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException((String) null);
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException((String) null);
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException");
         }
 
         @Test
         @DisplayName("Should handle exception with empty message")
         public void shouldHandleExceptionWithEmptyMessage() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException("");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException("");
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException");
         }
 
         @Test
         @DisplayName("Should handle exception with very long message")
         public void shouldHandleExceptionWithVeryLongMessage() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            String longMessage = repeat("A", 1000);
-            Exception exception = new RuntimeException(longMessage);
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final String longMessage = repeat("A", 1000);
+            final Exception exception = new RuntimeException(longMessage);
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException");
         }
 
         @Test
         @DisplayName("Should handle exception with special characters in message")
         public void shouldHandleExceptionWithSpecialCharactersInMessage() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException("Test \n\t\r exception with special chars: <>&\"'");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException("Test \n\t\r exception with special chars: <>&\"'");
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException");
         }
     }
@@ -335,52 +384,52 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should handle RuntimeException")
         public void shouldHandleRuntimeException() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException("Runtime exception");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException("Runtime exception");
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("RuntimeException").contains("Runtime exception");
         }
 
         @Test
         @DisplayName("Should handle IllegalArgumentException")
         public void shouldHandleIllegalArgumentException() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new IllegalArgumentException("Invalid argument");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new IllegalArgumentException("Invalid argument");
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("IllegalArgumentException").contains("Invalid argument");
         }
 
         @Test
         @DisplayName("Should handle NullPointerException")
         public void shouldHandleNullPointerException() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new NullPointerException("Null pointer");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new NullPointerException("Null pointer");
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("NullPointerException").contains("Null pointer");
         }
 
         @Test
         @DisplayName("Should handle custom exception types")
         public void shouldHandleCustomExceptionTypes() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new CustomException("Custom exception");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new CustomException("Custom exception");
 
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output).contains("CustomException").contains("Custom exception");
         }
     }
@@ -392,8 +441,8 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should throw NullPointerException when throwable is null")
         public void shouldThrowNullPointerExceptionWhenThrowableIsNull() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
 
             assertThatThrownBy(() -> StackTracePrinter.printStackTrace(null, AnsiColor.NONE, printStream))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -403,9 +452,9 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should throw NullPointerException when ansiColor is null")
         public void shouldThrowNullPointerExceptionWhenAnsiColorIsNull() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            Exception exception = new RuntimeException("Test");
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            final Exception exception = new RuntimeException("Test");
 
             assertThatThrownBy(() -> StackTracePrinter.printStackTrace(exception, null, printStream))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -415,7 +464,7 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should throw NullPointerException when printStream is null")
         public void shouldThrowNullPointerExceptionWhenPrintStreamIsNull() {
-            Exception exception = new RuntimeException("Test");
+            final Exception exception = new RuntimeException("Test");
 
             assertThatThrownBy(() -> StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, null))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -430,19 +479,19 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should not modify original exception stack trace")
         public void shouldNotModifyOriginalExceptionStackTrace() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
 
             // Create exception with known stack trace
-            Exception exception = new RuntimeException("Test exception");
-            StackTraceElement[] originalStackTrace = exception.getStackTrace();
-            int originalLength = originalStackTrace.length;
+            final Exception exception = new RuntimeException("Test exception");
+            final StackTraceElement[] originalStackTrace = exception.getStackTrace();
+            final int originalLength = originalStackTrace.length;
 
             // Print the stack trace (which may prune)
             StackTracePrinter.printStackTrace(exception, AnsiColor.NONE, printStream);
 
             // Verify original exception is unchanged
-            StackTraceElement[] stackTraceAfterPrint = exception.getStackTrace();
+            final StackTraceElement[] stackTraceAfterPrint = exception.getStackTrace();
             assertThat(stackTraceAfterPrint).hasSize(originalLength);
             assertThat(stackTraceAfterPrint).isEqualTo(originalStackTrace);
         }
@@ -450,16 +499,16 @@ public class StackTracePrinterTest {
         @Test
         @DisplayName("Should not modify cause stack traces")
         public void shouldNotModifyCauseStackTraces() {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
 
-            Exception rootCause = new IllegalStateException("Root cause");
-            Exception middleCause = new IllegalArgumentException("Middle cause", rootCause);
-            Exception topException = new RuntimeException("Top exception", middleCause);
+            final Exception rootCause = new IllegalStateException("Root cause");
+            final Exception middleCause = new IllegalArgumentException("Middle cause", rootCause);
+            final Exception topException = new RuntimeException("Top exception", middleCause);
 
-            StackTraceElement[] originalRootTrace = rootCause.getStackTrace();
-            StackTraceElement[] originalMiddleTrace = middleCause.getStackTrace();
-            StackTraceElement[] originalTopTrace = topException.getStackTrace();
+            final StackTraceElement[] originalRootTrace = rootCause.getStackTrace();
+            final StackTraceElement[] originalMiddleTrace = middleCause.getStackTrace();
+            final StackTraceElement[] originalTopTrace = topException.getStackTrace();
 
             StackTracePrinter.printStackTrace(topException, AnsiColor.NONE, printStream);
 
@@ -477,7 +526,7 @@ public class StackTracePrinterTest {
     // Custom exception for testing
     private static class CustomException extends Exception {
 
-        public CustomException(String message) {
+        public CustomException(final String message) {
             super(message);
         }
     }

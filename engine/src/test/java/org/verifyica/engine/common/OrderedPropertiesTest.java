@@ -37,7 +37,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should create empty properties")
         public void shouldCreateEmptyProperties() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             assertThat(properties).isEmpty();
         }
@@ -45,7 +45,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should initialize with empty ordered map")
         public void shouldInitializeWithEmptyOrderedMap() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             assertThat(properties.keySet()).isEmpty();
         }
@@ -58,7 +58,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should store and retrieve string property")
         public void shouldStoreAndRetrieveStringProperty() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.put("key1", "value1");
 
@@ -68,7 +68,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should store multiple properties")
         public void shouldStoreMultipleProperties() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.put("key1", "value1");
             properties.put("key2", "value2");
@@ -82,7 +82,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should replace existing property value")
         public void shouldReplaceExistingPropertyValue() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.put("key1", "value1");
             properties.put("key1", "value2");
@@ -93,10 +93,10 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should return previous value when replacing")
         public void shouldReturnPreviousValueWhenReplacing() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.put("key1", "value1");
-            Object oldValue = properties.put("key1", "value2");
+            final Object oldValue = properties.put("key1", "value2");
 
             assertThat(oldValue).isEqualTo("value1");
         }
@@ -104,7 +104,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should return null for non-existent key")
         public void shouldReturnNullForNonExistentKey() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             assertThat(properties.get("nonexistent")).isNull();
         }
@@ -117,14 +117,14 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should maintain sorted order by keys")
         public void shouldMaintainSortedOrderByKeys() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.put("z", "26");
             properties.put("a", "1");
             properties.put("m", "13");
             properties.put("b", "2");
 
-            List<Object> keys = new ArrayList<>(properties.keySet());
+            final List<Object> keys = new ArrayList<>(properties.keySet());
 
             assertThat(keys).containsExactly("a", "b", "m", "z");
         }
@@ -132,14 +132,14 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should maintain order when iterating over keys")
         public void shouldMaintainOrderWhenIteratingOverKeys() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.put("3", "three");
             properties.put("1", "one");
             properties.put("2", "two");
 
-            List<Object> keys = new ArrayList<>();
-            Enumeration<Object> enumeration = properties.keys();
+            final List<Object> keys = new ArrayList<>();
+            final Enumeration<Object> enumeration = properties.keys();
             while (enumeration.hasMoreElements()) {
                 keys.add(enumeration.nextElement());
             }
@@ -150,13 +150,13 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should maintain order in entrySet")
         public void shouldMaintainOrderInEntrySet() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.put("c", "3");
             properties.put("a", "1");
             properties.put("b", "2");
 
-            List<String> keys =
+            final List<String> keys =
                     properties.entrySet().stream().map(e -> (String) e.getKey()).collect(Collectors.toList());
 
             assertThat(keys).containsExactly("a", "b", "c");
@@ -165,13 +165,13 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should maintain order in values")
         public void shouldMaintainOrderInValues() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.put("c", "value-c");
             properties.put("a", "value-a");
             properties.put("b", "value-b");
 
-            List<Object> values = new ArrayList<>(properties.values());
+            final List<Object> values = new ArrayList<>(properties.values());
 
             assertThat(values).containsExactly("value-a", "value-b", "value-c");
         }
@@ -179,13 +179,13 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should maintain order with numeric string keys")
         public void shouldMaintainOrderWithNumericStringKeys() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.put("10", "ten");
             properties.put("2", "two");
             properties.put("1", "one");
 
-            List<Object> keys = new ArrayList<>(properties.keySet());
+            final List<Object> keys = new ArrayList<>(properties.keySet());
 
             // String comparison: "1", "10", "2"
             assertThat(keys).containsExactly("1", "10", "2");
@@ -199,7 +199,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should remove existing property")
         public void shouldRemoveExistingProperty() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
             properties.remove("key1");
@@ -211,10 +211,10 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should return removed value")
         public void shouldReturnRemovedValue() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
-            Object removedValue = properties.remove("key1");
+            final Object removedValue = properties.remove("key1");
 
             assertThat(removedValue).isEqualTo("value1");
         }
@@ -222,9 +222,9 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should return null when removing non-existent key")
         public void shouldReturnNullWhenRemovingNonExistentKey() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
-            Object removedValue = properties.remove("nonexistent");
+            final Object removedValue = properties.remove("nonexistent");
 
             assertThat(removedValue).isNull();
         }
@@ -232,14 +232,14 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should maintain order after removal")
         public void shouldMaintainOrderAfterRemoval() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("a", "1");
             properties.put("b", "2");
             properties.put("c", "3");
 
             properties.remove("b");
 
-            List<Object> keys = new ArrayList<>(properties.keySet());
+            final List<Object> keys = new ArrayList<>(properties.keySet());
             assertThat(keys).containsExactly("a", "c");
         }
     }
@@ -251,7 +251,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should clear all properties")
         public void shouldClearAllProperties() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
             properties.put("key2", "value2");
 
@@ -263,7 +263,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should clear ordered map")
         public void shouldClearOrderedMap() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
             properties.clear();
@@ -274,7 +274,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should allow adding properties after clear")
         public void shouldAllowAddingPropertiesAfterClear() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
             properties.clear();
 
@@ -291,9 +291,9 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should load properties from InputStream")
         public void shouldLoadPropertiesFromInputStream() throws IOException {
-            String propertiesContent = "key1=value1\nkey2=value2\n";
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(propertiesContent.getBytes());
-            OrderedProperties properties = new OrderedProperties();
+            final String propertiesContent = "key1=value1\nkey2=value2\n";
+            final ByteArrayInputStream inputStream = new ByteArrayInputStream(propertiesContent.getBytes());
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.load(inputStream);
 
@@ -304,9 +304,9 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should load properties from Reader")
         public void shouldLoadPropertiesFromReader() throws IOException {
-            String propertiesContent = "key1=value1\nkey2=value2\n";
-            StringReader reader = new StringReader(propertiesContent);
-            OrderedProperties properties = new OrderedProperties();
+            final String propertiesContent = "key1=value1\nkey2=value2\n";
+            final StringReader reader = new StringReader(propertiesContent);
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.load(reader);
 
@@ -317,24 +317,24 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should maintain order after loading")
         public void shouldMaintainOrderAfterLoading() throws IOException {
-            String propertiesContent = "z=26\na=1\nm=13\n";
-            StringReader reader = new StringReader(propertiesContent);
-            OrderedProperties properties = new OrderedProperties();
+            final String propertiesContent = "z=26\na=1\nm=13\n";
+            final StringReader reader = new StringReader(propertiesContent);
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.load(reader);
 
-            List<Object> keys = new ArrayList<>(properties.keySet());
+            final List<Object> keys = new ArrayList<>(properties.keySet());
             assertThat(keys).containsExactly("a", "m", "z");
         }
 
         @Test
         @DisplayName("Should replace existing properties when loading")
         public void shouldReplaceExistingPropertiesWhenLoading() throws IOException {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "oldValue");
 
-            String propertiesContent = "key1=newValue\n";
-            StringReader reader = new StringReader(propertiesContent);
+            final String propertiesContent = "key1=newValue\n";
+            final StringReader reader = new StringReader(propertiesContent);
 
             properties.load(reader);
 
@@ -349,14 +349,14 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should store properties to OutputStream")
         public void shouldStorePropertiesToOutputStream() throws IOException {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
             properties.put("key2", "value2");
 
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             properties.store(outputStream, "Test comment");
 
-            String output = outputStream.toString();
+            final String output = outputStream.toString();
             assertThat(output)
                     .contains("key1")
                     .contains("value1")
@@ -367,14 +367,14 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should store properties to Writer")
         public void shouldStorePropertiesToWriter() throws IOException {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
             properties.put("key2", "value2");
 
-            StringWriter writer = new StringWriter();
+            final StringWriter writer = new StringWriter();
             properties.store(writer, "Test comment");
 
-            String output = writer.toString();
+            final String output = writer.toString();
             assertThat(output)
                     .contains("key1")
                     .contains("value1")
@@ -385,13 +385,13 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should include comment in output")
         public void shouldIncludeCommentInOutput() throws IOException {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
-            StringWriter writer = new StringWriter();
+            final StringWriter writer = new StringWriter();
             properties.store(writer, "Custom comment");
 
-            String output = writer.toString();
+            final String output = writer.toString();
             assertThat(output).contains("Custom comment");
         }
     }
@@ -403,9 +403,9 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should return empty enumeration for empty properties")
         public void shouldReturnEmptyEnumerationForEmptyProperties() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
-            Enumeration<Object> elements = properties.elements();
+            final Enumeration<Object> elements = properties.elements();
 
             assertThat(elements.hasMoreElements()).isFalse();
         }
@@ -413,12 +413,12 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should return values in sorted order")
         public void shouldReturnValuesInSortedOrder() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("c", "value-c");
             properties.put("a", "value-a");
             properties.put("b", "value-b");
 
-            List<Object> values = new ArrayList<>();
+            final List<Object> values = new ArrayList<>();
             Enumeration<Object> enumeration = properties.elements();
             while (enumeration.hasMoreElements()) {
                 values.add(enumeration.nextElement());
@@ -430,14 +430,14 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should return values after removal")
         public void shouldReturnValuesAfterRemoval() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("a", "value-a");
             properties.put("b", "value-b");
             properties.put("c", "value-c");
 
             properties.remove("b");
 
-            List<Object> values = new ArrayList<>();
+            final List<Object> values = new ArrayList<>();
             Enumeration<Object> enumeration = properties.elements();
             while (enumeration.hasMoreElements()) {
                 values.add(enumeration.nextElement());
@@ -454,7 +454,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should return correct size")
         public void shouldReturnCorrectSize() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             assertThat(properties.size()).isEqualTo(0);
 
@@ -468,7 +468,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should return correct isEmpty state")
         public void shouldReturnCorrectIsEmptyState() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             assertThat(properties.isEmpty()).isTrue();
 
@@ -482,7 +482,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should check containsKey correctly")
         public void shouldCheckContainsKeyCorrectly() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
             assertThat(properties.containsKey("key1")).isTrue();
@@ -492,7 +492,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should check containsValue correctly")
         public void shouldCheckContainsValueCorrectly() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
             assertThat(properties.containsValue("value1")).isTrue();
@@ -502,9 +502,9 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should return null when putting new key")
         public void shouldReturnNullWhenPuttingNewKey() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
-            Object result = properties.put("key1", "value1");
+            final Object result = properties.put("key1", "value1");
 
             assertThat(result).isNull();
         }
@@ -512,7 +512,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should use getProperty for string values")
         public void shouldUseGetPropertyForStringValues() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
             assertThat(properties.getProperty("key1")).isEqualTo("value1");
@@ -522,7 +522,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should use getProperty with default value")
         public void shouldUseGetPropertyWithDefaultValue() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
 
             assertThat(properties.getProperty("key1", "default")).isEqualTo("value1");
@@ -537,7 +537,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should return null for get with non-existent key")
         public void shouldReturnNullForGetWithNonExistentKey() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             assertThat(properties.get("nonexistent")).isNull();
         }
@@ -550,8 +550,8 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should handle empty load from InputStream")
         public void shouldHandleEmptyLoadFromInputStream() throws IOException {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[0]);
-            OrderedProperties properties = new OrderedProperties();
+            final ByteArrayInputStream inputStream = new ByteArrayInputStream(new byte[0]);
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.load(inputStream);
 
@@ -561,8 +561,8 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should handle empty load from Reader")
         public void shouldHandleEmptyLoadFromReader() throws IOException {
-            StringReader reader = new StringReader("");
-            OrderedProperties properties = new OrderedProperties();
+            final StringReader reader = new StringReader("");
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.load(reader);
 
@@ -572,7 +572,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should handle single property")
         public void shouldHandleSingleProperty() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.put("onlyKey", "onlyValue");
 
@@ -584,7 +584,7 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should handle special characters in keys and values")
         public void shouldHandleSpecialCharactersInKeysAndValues() {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
 
             properties.put("key with spaces", "value with spaces");
             properties.put("key=with=equals", "value=with=equals");
@@ -603,10 +603,10 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should be thread-safe for concurrent puts")
         public void shouldBeThreadSafeForConcurrentPuts() throws InterruptedException {
-            OrderedProperties properties = new OrderedProperties();
-            int threadCount = 10;
-            int operationsPerThread = 100;
-            Thread[] threads = new Thread[threadCount];
+            final OrderedProperties properties = new OrderedProperties();
+            final int threadCount = 10;
+            final int operationsPerThread = 100;
+            final Thread[] threads = new Thread[threadCount];
 
             for (int i = 0; i < threadCount; i++) {
                 final int threadIndex = i;
@@ -618,7 +618,7 @@ public class OrderedPropertiesTest {
                 threads[i].start();
             }
 
-            for (Thread thread : threads) {
+            for (final Thread thread : threads) {
                 thread.join();
             }
 
@@ -628,13 +628,13 @@ public class OrderedPropertiesTest {
         @Test
         @DisplayName("Should be thread-safe for concurrent reads")
         public void shouldBeThreadSafeForConcurrentReads() throws InterruptedException {
-            OrderedProperties properties = new OrderedProperties();
+            final OrderedProperties properties = new OrderedProperties();
             properties.put("key1", "value1");
             properties.put("key2", "value2");
 
-            int threadCount = 10;
-            Thread[] threads = new Thread[threadCount];
-            List<Boolean> results = Collections.synchronizedList(new ArrayList<>());
+            final int threadCount = 10;
+            final Thread[] threads = new Thread[threadCount];
+            final List<Boolean> results = Collections.synchronizedList(new ArrayList<>());
 
             for (int i = 0; i < threadCount; i++) {
                 threads[i] = new Thread(() -> {
@@ -645,7 +645,7 @@ public class OrderedPropertiesTest {
                 threads[i].start();
             }
 
-            for (Thread thread : threads) {
+            for (final Thread thread : threads) {
                 thread.join();
             }
 

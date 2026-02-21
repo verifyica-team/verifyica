@@ -20,13 +20,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
+import java.util.function.Predicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.engine.ConfigurationParameters;
 import org.junit.platform.engine.EngineDiscoveryRequest;
+import org.junit.platform.engine.EngineExecutionListener;
+import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.support.descriptor.EngineDescriptor;
@@ -52,14 +57,14 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Should create engine instance successfully")
         public void shouldCreateEngineInstanceSuccessfully() {
-            VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
+            final VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
             assertThat(testEngine).isNotNull();
         }
 
         @Test
         @DisplayName("Should have public constructor")
         public void shouldHavePublicConstructor() throws Exception {
-            Constructor<VerifyicaTestEngine> constructor = VerifyicaTestEngine.class.getDeclaredConstructor();
+            final Constructor<VerifyicaTestEngine> constructor = VerifyicaTestEngine.class.getDeclaredConstructor();
             assertThat(Modifier.isPublic(constructor.getModifiers())).isTrue();
         }
     }
@@ -75,9 +80,15 @@ public class VerifyicaTestEngineTest {
         }
 
         @Test
+        @DisplayName("Should return correct display name")
+        public void shouldReturnCorrectDisplayName() {
+            assertThat(engine.getId()).isEqualToIgnoringCase("Verifyica");
+        }
+
+        @Test
         @DisplayName("Should return correct group ID")
         public void shouldReturnCorrectGroupId() {
-            Optional<String> groupId = engine.getGroupId();
+            final Optional<String> groupId = engine.getGroupId();
             assertThat(groupId).isPresent();
             assertThat(groupId.get()).isEqualTo("org.verifyica");
         }
@@ -85,7 +96,7 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Should return correct artifact ID")
         public void shouldReturnCorrectArtifactId() {
-            Optional<String> artifactId = engine.getArtifactId();
+            final Optional<String> artifactId = engine.getArtifactId();
             assertThat(artifactId).isPresent();
             assertThat(artifactId.get()).isEqualTo("engine");
         }
@@ -93,7 +104,7 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Should return version")
         public void shouldReturnVersion() {
-            Optional<String> version = engine.getVersion();
+            final Optional<String> version = engine.getVersion();
             assertThat(version).isPresent();
             // Version should not be null or empty
             assertThat(version.get()).isNotEmpty();
@@ -102,7 +113,7 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Static getVersion should return version")
         public void staticGetVersionShouldReturnVersion() {
-            String version = VerifyicaTestEngine.staticGetVersion();
+            final String version = VerifyicaTestEngine.staticGetVersion();
             assertThat(version).isNotNull();
             // Version should not be empty
             assertThat(version).isNotEmpty();
@@ -111,8 +122,8 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Static and instance version should match")
         public void staticAndInstanceVersionShouldMatch() {
-            String staticVersion = VerifyicaTestEngine.staticGetVersion();
-            Optional<String> instanceVersion = engine.getVersion();
+            final String staticVersion = VerifyicaTestEngine.staticGetVersion();
+            final Optional<String> instanceVersion = engine.getVersion();
             assertThat(instanceVersion).isPresent();
             assertThat(staticVersion).isEqualTo(instanceVersion.get());
         }
@@ -126,17 +137,17 @@ public class VerifyicaTestEngineTest {
         @DisplayName("Should return disabled descriptor when running via Maven Surefire")
         public void shouldReturnDisabledDescriptorWhenRunningViaMavenSurefire() {
             // Save original property
-            String originalProperty = System.getProperty("surefire.test.class.path");
+            final String originalProperty = System.getProperty("surefire.test.class.path");
 
             try {
                 // Set the property to simulate running under Maven Surefire
                 System.setProperty("surefire.test.class.path", "/some/path");
 
-                EngineDiscoveryRequest discoveryRequest = mock(EngineDiscoveryRequest.class);
-                UniqueId uniqueId = UniqueId.forEngine("verifyica");
+                final EngineDiscoveryRequest discoveryRequest = mock(EngineDiscoveryRequest.class);
+                final UniqueId uniqueId = UniqueId.forEngine("verifyica");
 
-                VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
-                TestDescriptor descriptor = testEngine.discover(discoveryRequest, uniqueId);
+                final VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
+                final TestDescriptor descriptor = testEngine.discover(discoveryRequest, uniqueId);
 
                 assertThat(descriptor).isNotNull();
                 assertThat(descriptor.getDisplayName()).contains("disabled");
@@ -154,10 +165,10 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Should return engine descriptor for correct unique ID")
         public void shouldReturnEngineDescriptorForCorrectUniqueId() {
-            EngineDiscoveryRequest discoveryRequest = mock(EngineDiscoveryRequest.class);
-            UniqueId uniqueId = UniqueId.forEngine("verifyica");
+            final EngineDiscoveryRequest discoveryRequest = mock(EngineDiscoveryRequest.class);
+            final UniqueId uniqueId = UniqueId.forEngine("verifyica");
 
-            TestDescriptor descriptor = engine.discover(discoveryRequest, uniqueId);
+            final TestDescriptor descriptor = engine.discover(discoveryRequest, uniqueId);
 
             // When not running under Surefire, should return an EngineDescriptor
             assertThat(descriptor).isNotNull();
@@ -167,10 +178,10 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Should return disabled descriptor for incorrect unique ID")
         public void shouldReturnDisabledDescriptorForIncorrectUniqueId() {
-            EngineDiscoveryRequest discoveryRequest = mock(EngineDiscoveryRequest.class);
-            UniqueId uniqueId = UniqueId.forEngine("junit-jupiter");
+            final EngineDiscoveryRequest discoveryRequest = mock(EngineDiscoveryRequest.class);
+            final UniqueId uniqueId = UniqueId.forEngine("junit-jupiter");
 
-            TestDescriptor descriptor = engine.discover(discoveryRequest, uniqueId);
+            final TestDescriptor descriptor = engine.discover(discoveryRequest, uniqueId);
 
             assertThat(descriptor).isNotNull();
             assertThat(descriptor.getDisplayName()).contains("disabled");
@@ -185,13 +196,13 @@ public class VerifyicaTestEngineTest {
         @DisplayName("Engine ID should be lowercase display name")
         public void engineIdShouldBeLowercaseDisplayName() {
             assertThat(engine.getId()).isEqualTo("verifyica");
-            assertThat(engine.getId()).isEqualTo("Verifyica".toLowerCase());
+            assertThat(engine.getId()).isEqualTo("Verifyica".toLowerCase(java.util.Locale.ENGLISH));
         }
 
         @Test
         @DisplayName("Group ID should not be empty")
         public void groupIdShouldNotBeEmpty() {
-            Optional<String> groupId = engine.getGroupId();
+            final Optional<String> groupId = engine.getGroupId();
             assertThat(groupId).isPresent();
             assertThat(groupId.get()).isNotEmpty();
         }
@@ -199,7 +210,7 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Artifact ID should not be empty")
         public void artifactIdShouldNotBeEmpty() {
-            Optional<String> artifactId = engine.getArtifactId();
+            final Optional<String> artifactId = engine.getArtifactId();
             assertThat(artifactId).isPresent();
             assertThat(artifactId.get()).isNotEmpty();
         }
@@ -212,7 +223,7 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Version should follow semantic versioning pattern or be unknown")
         public void versionShouldFollowSemanticVersioningPatternOrBeUnknown() {
-            String version = VerifyicaTestEngine.staticGetVersion();
+            final String version = VerifyicaTestEngine.staticGetVersion();
 
             // Version should be either "unknown" or match semantic versioning pattern
             assertThat(version).satisfiesAnyOf(v -> assertThat(v).isEqualTo("unknown"), v -> assertThat(v)
@@ -222,7 +233,7 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Version should not be null")
         public void versionShouldNotBeNull() {
-            String version = VerifyicaTestEngine.staticGetVersion();
+            final String version = VerifyicaTestEngine.staticGetVersion();
             assertThat(version).isNotNull();
         }
     }
@@ -238,6 +249,20 @@ public class VerifyicaTestEngineTest {
         }
 
         @Test
+        @DisplayName("Should have TestEngine as direct interface")
+        public void shouldHaveTestEngineAsDirectInterface() {
+            final Class<?>[] interfaces = VerifyicaTestEngine.class.getInterfaces();
+            boolean found = false;
+            for (final Class<?> iface : interfaces) {
+                if (iface.equals(org.junit.platform.engine.TestEngine.class)) {
+                    found = true;
+                    break;
+                }
+            }
+            assertThat(found).isTrue();
+        }
+
+        @Test
         @DisplayName("Should have all required TestEngine methods")
         public void shouldHaveAllRequiredTestEngineMethods() {
             // Check that all required methods exist
@@ -245,6 +270,24 @@ public class VerifyicaTestEngineTest {
             assertThat(engine.getGroupId()).isPresent();
             assertThat(engine.getArtifactId()).isPresent();
             assertThat(engine.getVersion()).isPresent();
+        }
+
+        @Test
+        @DisplayName("Should have discover method")
+        public void shouldHaveDiscoverMethod() throws NoSuchMethodException {
+            final java.lang.reflect.Method method =
+                    VerifyicaTestEngine.class.getMethod("discover", EngineDiscoveryRequest.class, UniqueId.class);
+            assertThat(method).isNotNull();
+            assertThat(method.getReturnType()).isEqualTo(TestDescriptor.class);
+        }
+
+        @Test
+        @DisplayName("Should have execute method")
+        public void shouldHaveExecuteMethod() throws NoSuchMethodException {
+            final java.lang.reflect.Method method =
+                    VerifyicaTestEngine.class.getMethod("execute", ExecutionRequest.class);
+            assertThat(method).isNotNull();
+            assertThat(method.getReturnType()).isEqualTo(void.class);
         }
     }
 
@@ -256,14 +299,14 @@ public class VerifyicaTestEngineTest {
         @DisplayName("Should detect Maven plugin when property is set")
         public void shouldDetectMavenPluginWhenPropertyIsSet() {
             // Save original property
-            String originalProperty = System.getProperty(Constants.MAVEN_PLUGIN);
+            final String originalProperty = System.getProperty(Constants.MAVEN_PLUGIN);
 
             try {
                 // Set the property to simulate running via Maven plugin
                 System.setProperty(Constants.MAVEN_PLUGIN, "true");
 
                 // Create a new engine instance to pick up the property
-                VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
+                final VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
 
                 // The engine should behave differently when running via Maven plugin
                 // This is tested indirectly through discover behavior
@@ -282,14 +325,14 @@ public class VerifyicaTestEngineTest {
         @DisplayName("Should not detect Maven plugin when property is not set")
         public void shouldNotDetectMavenPluginWhenPropertyIsNotSet() {
             // Save original property
-            String originalProperty = System.getProperty(Constants.MAVEN_PLUGIN);
+            final String originalProperty = System.getProperty(Constants.MAVEN_PLUGIN);
 
             try {
                 // Clear the property
                 System.clearProperty(Constants.MAVEN_PLUGIN);
 
                 // Create a new engine instance
-                VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
+                final VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
 
                 assertThat(testEngine).isNotNull();
             } finally {
@@ -312,14 +355,14 @@ public class VerifyicaTestEngineTest {
         public void shouldBeThreadSafeForConcurrentVersionAccess() throws InterruptedException {
             final int threadCount = 10;
             final int iterationsPerThread = 100;
-            Thread[] threads = new Thread[threadCount];
+            final Thread[] threads = new Thread[threadCount];
             final boolean[] success = {true};
 
             for (int i = 0; i < threadCount; i++) {
                 threads[i] = new Thread(() -> {
                     for (int j = 0; j < iterationsPerThread; j++) {
                         try {
-                            String version = VerifyicaTestEngine.staticGetVersion();
+                            final String version = VerifyicaTestEngine.staticGetVersion();
                             if (version == null) {
                                 success[0] = false;
                             }
@@ -331,7 +374,7 @@ public class VerifyicaTestEngineTest {
                 threads[i].start();
             }
 
-            for (Thread thread : threads) {
+            for (final Thread thread : threads) {
                 thread.join();
             }
 
@@ -342,7 +385,7 @@ public class VerifyicaTestEngineTest {
         @DisplayName("Should be thread-safe for concurrent engine creation")
         public void shouldBeThreadSafeForConcurrentEngineCreation() throws InterruptedException {
             final int threadCount = 10;
-            Thread[] threads = new Thread[threadCount];
+            final Thread[] threads = new Thread[threadCount];
             final VerifyicaTestEngine[] engines = new VerifyicaTestEngine[threadCount];
 
             for (int i = 0; i < threadCount; i++) {
@@ -353,11 +396,11 @@ public class VerifyicaTestEngineTest {
                 threads[i].start();
             }
 
-            for (Thread thread : threads) {
+            for (final Thread thread : threads) {
                 thread.join();
             }
 
-            for (VerifyicaTestEngine testEngine : engines) {
+            for (final VerifyicaTestEngine testEngine : engines) {
                 assertThat(testEngine).isNotNull();
                 assertThat(testEngine.getId()).isEqualTo("verifyica");
             }
@@ -371,9 +414,9 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Should handle multiple engine instances")
         public void shouldHandleMultipleEngineInstances() {
-            VerifyicaTestEngine engine1 = new VerifyicaTestEngine();
-            VerifyicaTestEngine engine2 = new VerifyicaTestEngine();
-            VerifyicaTestEngine engine3 = new VerifyicaTestEngine();
+            final VerifyicaTestEngine engine1 = new VerifyicaTestEngine();
+            final VerifyicaTestEngine engine2 = new VerifyicaTestEngine();
+            final VerifyicaTestEngine engine3 = new VerifyicaTestEngine();
 
             assertThat(engine1.getId()).isEqualTo(engine2.getId());
             assertThat(engine2.getId()).isEqualTo(engine3.getId());
@@ -384,14 +427,344 @@ public class VerifyicaTestEngineTest {
         @Test
         @DisplayName("Should maintain consistent identity across instances")
         public void shouldMaintainConsistentIdentityAcrossInstances() {
-            VerifyicaTestEngine engine1 = new VerifyicaTestEngine();
-            VerifyicaTestEngine engine2 = new VerifyicaTestEngine();
+            final VerifyicaTestEngine engine1 = new VerifyicaTestEngine();
+            final VerifyicaTestEngine engine2 = new VerifyicaTestEngine();
 
             assertThat(engine1.getId()).isEqualTo("verifyica");
             assertThat(engine2.getId()).isEqualTo("verifyica");
             assertThat(engine1.getGroupId()).isEqualTo(engine2.getGroupId());
             assertThat(engine1.getArtifactId()).isEqualTo(engine2.getArtifactId());
             assertThat(engine1.getVersion()).isEqualTo(engine2.getVersion());
+        }
+    }
+
+    @Nested
+    @DisplayName("Execute Tests")
+    public class ExecuteTests {
+
+        @Test
+        @DisplayName("Should handle empty root descriptor children")
+        public void shouldHandleEmptyRootDescriptorChildren() {
+            // Create an execution request with an empty engine descriptor
+            final EngineDescriptor engineDescriptor =
+                    new EngineDescriptor(UniqueId.forEngine("verifyica"), "Verifyica");
+            final EngineExecutionListener listener = mock(EngineExecutionListener.class);
+            final ConfigurationParameters configParams = mock(ConfigurationParameters.class);
+            final ExecutionRequest executionRequest = new ExecutionRequest(engineDescriptor, listener, configParams);
+
+            // Should not throw when executing with empty children
+            final VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
+            testEngine.execute(executionRequest);
+
+            // No exception should be thrown, and no interactions should occur
+            assertThat(testEngine).isNotNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("Reflection Tests")
+    public class ReflectionTests {
+
+        @Test
+        @DisplayName("Should have private version method")
+        public void shouldHavePrivateVersionMethod() throws NoSuchMethodException {
+            final Method versionMethod = VerifyicaTestEngine.class.getDeclaredMethod("version");
+            assertThat(Modifier.isPrivate(versionMethod.getModifiers())).isTrue();
+            assertThat(Modifier.isStatic(versionMethod.getModifiers())).isTrue();
+            assertThat(versionMethod.getReturnType()).isEqualTo(String.class);
+        }
+
+        @Test
+        @DisplayName("Should have private isRunningViaMavenSurefirePlugin method")
+        public void shouldHavePrivateIsRunningViaMavenSurefirePluginMethod() throws NoSuchMethodException {
+            final Method method = VerifyicaTestEngine.class.getDeclaredMethod("isRunningViaMavenSurefirePlugin");
+            assertThat(Modifier.isPrivate(method.getModifiers())).isTrue();
+            assertThat(Modifier.isStatic(method.getModifiers())).isTrue();
+            assertThat(method.getReturnType()).isEqualTo(boolean.class);
+        }
+
+        @Test
+        @DisplayName("Should have private isRunningViaVerifyicaMavenPlugin method")
+        public void shouldHavePrivateIsRunningViaVerifyicaMavenPluginMethod() throws NoSuchMethodException {
+            final Method method = VerifyicaTestEngine.class.getDeclaredMethod("isRunningViaVerifyicaMavenPlugin");
+            assertThat(Modifier.isPrivate(method.getModifiers())).isTrue();
+            assertThat(Modifier.isStatic(method.getModifiers())).isTrue();
+            assertThat(method.getReturnType()).isEqualTo(boolean.class);
+        }
+
+        @Test
+        @DisplayName("Should have ArgumentExecutorServiceSupplierMethod inner class")
+        public void shouldHaveArgumentExecutorServiceSupplierMethodInnerClass() {
+            final Class<?>[] innerClasses = VerifyicaTestEngine.class.getDeclaredClasses();
+            boolean found = false;
+            for (final Class<?> innerClass : innerClasses) {
+                if (innerClass.getSimpleName().equals("ArgumentExecutorServiceSupplierMethod")) {
+                    found = true;
+                    break;
+                }
+            }
+            assertThat(found).isTrue();
+        }
+
+        @Test
+        @DisplayName("ArgumentExecutorServiceSupplierMethod should implement Predicate")
+        public void argumentExecutorServiceSupplierMethodShouldImplementPredicate() throws ClassNotFoundException {
+            final Class<?>[] innerClasses = VerifyicaTestEngine.class.getDeclaredClasses();
+            for (final Class<?> innerClass : innerClasses) {
+                if (innerClass.getSimpleName().equals("ArgumentExecutorServiceSupplierMethod")) {
+                    assertThat(Predicate.class.isAssignableFrom(innerClass)).isTrue();
+                    break;
+                }
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("System Property Tests")
+    public class SystemPropertyTests {
+
+        @Test
+        @DisplayName("Should handle null surefire.test.class.path property")
+        public void shouldHandleNullSurefireTestClassPathProperty() {
+            // Save original property
+            final String originalProperty = System.getProperty("surefire.test.class.path");
+
+            try {
+                // Clear the property
+                System.clearProperty("surefire.test.class.path");
+
+                // Create a new engine instance
+                final VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
+
+                // The engine should be created successfully
+                assertThat(testEngine).isNotNull();
+                assertThat(testEngine.getId()).isEqualTo("verifyica");
+            } finally {
+                // Restore original property
+                if (originalProperty == null) {
+                    System.clearProperty("surefire.test.class.path");
+                } else {
+                    System.setProperty("surefire.test.class.path", originalProperty);
+                }
+            }
+        }
+
+        @Test
+        @DisplayName("Should handle empty string property values")
+        public void shouldHandleEmptyStringPropertyValues() {
+            // Save original property
+            final String originalProperty = System.getProperty(Constants.MAVEN_PLUGIN);
+
+            try {
+                // Set empty string property
+                System.setProperty(Constants.MAVEN_PLUGIN, "");
+
+                // Create a new engine instance
+                final VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
+
+                // The engine should be created successfully
+                assertThat(testEngine).isNotNull();
+            } finally {
+                // Restore original property
+                if (originalProperty == null) {
+                    System.clearProperty(Constants.MAVEN_PLUGIN);
+                } else {
+                    System.setProperty(Constants.MAVEN_PLUGIN, originalProperty);
+                }
+            }
+        }
+
+        @Test
+        @DisplayName("Should handle property value other than true for Maven plugin")
+        public void shouldHandlePropertyValueOtherThanTrueForMavenPlugin() {
+            // Save original property
+            final String originalProperty = System.getProperty(Constants.MAVEN_PLUGIN);
+
+            try {
+                // Set property to a value other than "true"
+                System.setProperty(Constants.MAVEN_PLUGIN, "false");
+
+                // Create a new engine instance
+                final VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
+
+                // The engine should be created successfully
+                assertThat(testEngine).isNotNull();
+            } finally {
+                // Restore original property
+                if (originalProperty == null) {
+                    System.clearProperty(Constants.MAVEN_PLUGIN);
+                } else {
+                    System.setProperty(Constants.MAVEN_PLUGIN, originalProperty);
+                }
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("Engine Descriptor Tests")
+    public class EngineDescriptorTests {
+
+        @Test
+        @DisplayName("Should return engine descriptor with correct unique ID")
+        public void shouldReturnEngineDescriptorWithCorrectUniqueId() {
+            // Save original property to ensure we're not under Surefire
+            final String originalProperty = System.getProperty("surefire.test.class.path");
+
+            try {
+                System.clearProperty("surefire.test.class.path");
+
+                final EngineDiscoveryRequest discoveryRequest = mock(EngineDiscoveryRequest.class);
+                final UniqueId uniqueId = UniqueId.forEngine("verifyica");
+
+                final VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
+                final TestDescriptor descriptor = testEngine.discover(discoveryRequest, uniqueId);
+
+                assertThat(descriptor).isNotNull();
+                assertThat(descriptor.getUniqueId().toString()).contains("verifyica");
+            } finally {
+                // Restore original property
+                if (originalProperty == null) {
+                    System.clearProperty("surefire.test.class.path");
+                } else {
+                    System.setProperty("surefire.test.class.path", originalProperty);
+                }
+            }
+        }
+
+        @Test
+        @DisplayName("Should handle discover with different unique ID")
+        public void shouldHandleDiscoverWithDifferentUniqueId() {
+            final EngineDiscoveryRequest discoveryRequest = mock(EngineDiscoveryRequest.class);
+            final UniqueId uniqueId = UniqueId.forEngine("different-engine");
+
+            final VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
+            final TestDescriptor descriptor = testEngine.discover(discoveryRequest, uniqueId);
+
+            assertThat(descriptor).isNotNull();
+            assertThat(descriptor.getDisplayName()).containsIgnoringCase("disabled");
+        }
+    }
+
+    @Nested
+    @DisplayName("Constants Tests")
+    public class ConstantsTests {
+
+        @Test
+        @DisplayName("Should have correct display name constant")
+        public void shouldHaveCorrectDisplayNameConstant() {
+            // The display name should be "Verifyica" which matches the ID when lowercased
+            assertThat(engine.getId()).isEqualTo("verifyica");
+            assertThat("Verifyica".toLowerCase(java.util.Locale.ENGLISH)).isEqualTo(engine.getId());
+        }
+
+        @Test
+        @DisplayName("Should have consistent group and artifact IDs")
+        public void shouldHaveConsistentGroupAndArtifactIds() {
+            final Optional<String> groupId = engine.getGroupId();
+            final Optional<String> artifactId = engine.getArtifactId();
+
+            assertThat(groupId).isPresent();
+            assertThat(artifactId).isPresent();
+
+            // Group ID should follow Maven conventions
+            assertThat(groupId.get()).contains(".");
+            assertThat(groupId.get()).isEqualTo("org.verifyica");
+
+            // Artifact ID should not contain dots
+            assertThat(artifactId.get()).doesNotContain(".");
+            assertThat(artifactId.get()).isEqualTo("engine");
+        }
+    }
+
+    @Nested
+    @DisplayName("Null Safety Tests")
+    public class NullSafetyTests {
+
+        @Test
+        @DisplayName("Engine ID should never be null")
+        public void engineIdShouldNeverBeNull() {
+            final String id = engine.getId();
+            assertThat(id).isNotNull();
+        }
+
+        @Test
+        @DisplayName("Group ID optional should never be null")
+        public void groupIdOptionalShouldNeverBeNull() {
+            final Optional<String> groupId = engine.getGroupId();
+            assertThat(groupId).isNotNull();
+        }
+
+        @Test
+        @DisplayName("Artifact ID optional should never be null")
+        public void artifactIdOptionalShouldNeverBeNull() {
+            final Optional<String> artifactId = engine.getArtifactId();
+            assertThat(artifactId).isNotNull();
+        }
+
+        @Test
+        @DisplayName("Version optional should never be null")
+        public void versionOptionalShouldNeverBeNull() {
+            final Optional<String> version = engine.getVersion();
+            assertThat(version).isNotNull();
+        }
+
+        @Test
+        @DisplayName("Static version should never be null")
+        public void staticVersionShouldNeverBeNull() {
+            final String version = VerifyicaTestEngine.staticGetVersion();
+            assertThat(version).isNotNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("Concurrency Tests")
+    public class ConcurrencyTests {
+
+        @Test
+        @DisplayName("Should handle concurrent discover calls")
+        public void shouldHandleConcurrentDiscoverCalls() throws InterruptedException {
+            // Save original property
+            final String originalProperty = System.getProperty("surefire.test.class.path");
+
+            try {
+                System.clearProperty("surefire.test.class.path");
+
+                final int threadCount = 5;
+                final Thread[] threads = new Thread[threadCount];
+                final TestDescriptor[] descriptors = new TestDescriptor[threadCount];
+                final boolean[] success = {true};
+
+                for (int i = 0; i < threadCount; i++) {
+                    final int index = i;
+                    threads[i] = new Thread(() -> {
+                        try {
+                            final VerifyicaTestEngine testEngine = new VerifyicaTestEngine();
+                            final EngineDiscoveryRequest discoveryRequest = mock(EngineDiscoveryRequest.class);
+                            final UniqueId uniqueId = UniqueId.forEngine("verifyica");
+                            descriptors[index] = testEngine.discover(discoveryRequest, uniqueId);
+                        } catch (Exception e) {
+                            success[0] = false;
+                        }
+                    });
+                    threads[i].start();
+                }
+
+                for (final Thread thread : threads) {
+                    thread.join();
+                }
+
+                assertThat(success[0]).isTrue();
+                for (final TestDescriptor descriptor : descriptors) {
+                    assertThat(descriptor).isNotNull();
+                }
+            } finally {
+                // Restore original property
+                if (originalProperty == null) {
+                    System.clearProperty("surefire.test.class.path");
+                } else {
+                    System.setProperty("surefire.test.class.path", originalProperty);
+                }
+            }
         }
     }
 }
