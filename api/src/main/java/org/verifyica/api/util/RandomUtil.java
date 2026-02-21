@@ -16,15 +16,26 @@
 
 package org.verifyica.api.util;
 
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.sampling.distribution.ZigguratSampler;
+import org.apache.commons.rng.simple.RandomSource;
 
 /**
  * Central support class for random value generation.
  *
  * <p>
- * By default, randomness is sourced from {@link ThreadLocalRandom}, providing
- * fast, thread-safe, non-deterministic behavior.
+ * By default, randomness is sourced from a per-thread
+ * {@link RandomSource#XO_SHI_RO_256_SS} instance, providing fast,
+ * thread-safe, non-deterministic behavior. XoShiRo256** is a 256-bit
+ * generator with a period of 2&#x00B2;&#x2075;&#x2076;&#x22121; that passes
+ * BigCrush and PractRand.
+ * </p>
+ *
+ * <p>
+ * Gaussian values are produced by the Ziggurat algorithm
+ * ({@link ZigguratSampler.NormalizedGaussian}), which is faster and
+ * statistically superior to the Box-Muller transform used by
+ * {@code java.util.Random#nextGaussian()}.
  * </p>
  *
  * <p>
@@ -37,6 +48,12 @@ import java.util.concurrent.ThreadLocalRandom;
  * All methods validate arguments explicitly and throw
  * {@link IllegalArgumentException} on invalid input.
  * </p>
+ *
+ * <h2>Required dependencies (Apache License 2.0, Java 8+)</h2>
+ * <pre>
+ *   org.apache.commons:commons-rng-simple:1.6
+ *   org.apache.commons:commons-rng-sampling:1.6
+ * </pre>
  */
 public final class RandomUtil {
 
@@ -47,34 +64,73 @@ public final class RandomUtil {
     private static final char[] ALPHANUM =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
 
+    // -------------------------------------------------------------------------
+    // Internal RNG holder
+    // -------------------------------------------------------------------------
+
+    /**
+     * Bundles a {@link UniformRandomProvider} with its associated
+     * {@link ZigguratSampler.NormalizedGaussian}.
+     *
+     * <p>The Ziggurat sampler holds a reference to the underlying RNG, so a
+     * single holder object covers all primitive and Gaussian generation without
+     * extra indirection. Creating the sampler is O(1) and involves only a
+     * reference assignment.</p>
+     */
+    private static final class RngHolder {
+        final UniformRandomProvider rng;
+        final ZigguratSampler.NormalizedGaussian gaussian;
+
+        RngHolder(UniformRandomProvider rng) {
+            this.rng = rng;
+            this.gaussian = ZigguratSampler.NormalizedGaussian.of(rng);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Thread-local state
+    // -------------------------------------------------------------------------
+
+    /**
+     * Per-thread default RNG — XoShiRo256** seeded non-deterministically.
+     * Created lazily on first access per thread; never removed.
+     */
+    private static final ThreadLocal<RngHolder> DEFAULT_HOLDER =
+            ThreadLocal.withInitial(() -> new RngHolder(RandomSource.XO_SHI_RO_256_SS.create()));
+
     /**
      * Thread-local deterministic RNG override.
-     * When absent, {@link ThreadLocalRandom} is used.
      *
      * <p><strong>Warning:</strong> if a thread is returned to a pool while a seed
      * is still installed (e.g. because an exception bypassed cleanup), subsequent
      * unrelated work on that thread will silently use the deterministic RNG.
      * Prefer {@link #withSeed(long, Runnable)} for safe, scoped seeding.</p>
      */
-    private static final ThreadLocal<Random> SEEDED = new ThreadLocal<>();
+    private static final ThreadLocal<RngHolder> SEEDED_HOLDER = new ThreadLocal<>();
 
-    /**
-     * Prevent instantiation.
-     */
+    // -------------------------------------------------------------------------
+    // Prevent instantiation
+    // -------------------------------------------------------------------------
+
     private RandomUtil() {}
+
+    // -------------------------------------------------------------------------
+    // Seeding API  (signatures unchanged)
+    // -------------------------------------------------------------------------
 
     /**
      * Installs a deterministic seed for the current thread.
      *
      * <p><strong>Warning:</strong> this method leaves the seed active until
-     * {@link #useThreadLocal()} is explicitly called. In thread-pool environments
-     * this can cause the seed to bleed into unrelated work. Prefer the
-     * scoped variant {@link #withSeed(long, Runnable)} wherever possible.</p>
+     * {@link #useThreadLocal()} is explicitly called. In thread-pool
+     * environments this can cause the seed to bleed into unrelated work.
+     * Prefer the scoped variant {@link #withSeed(long, Runnable)} wherever
+     * possible.</p>
      *
      * @param seed deterministic seed
      */
     public static void useSeed(long seed) {
-        SEEDED.set(new Random(seed));
+        SEEDED_HOLDER.set(new RngHolder(RandomSource.XO_SHI_RO_256_SS.create(seed)));
     }
 
     /**
@@ -82,7 +138,7 @@ public final class RandomUtil {
      * default non-deterministic behavior.
      */
     public static void useThreadLocal() {
-        SEEDED.remove();
+        SEEDED_HOLDER.remove();
     }
 
     /**
@@ -98,30 +154,40 @@ public final class RandomUtil {
             throw new IllegalArgumentException("r is null");
         }
 
-        Random previous = SEEDED.get();
+        RngHolder previous = SEEDED_HOLDER.get();
         try {
-            SEEDED.set(new Random(seed));
+            SEEDED_HOLDER.set(new RngHolder(RandomSource.XO_SHI_RO_256_SS.create(seed)));
             r.run();
         } finally {
             if (previous == null) {
-                SEEDED.remove();
+                SEEDED_HOLDER.remove();
             } else {
-                SEEDED.set(previous);
+                SEEDED_HOLDER.set(previous);
             }
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Internal accessor
+    // -------------------------------------------------------------------------
+
     /**
-     * Returns the active {@link Random} for the current thread.
-     * Resolves the ThreadLocal exactly once per public call site so that
-     * delegation helpers can accept the resolved instance directly.
+     * Returns the active {@link RngHolder} for the current thread.
      *
-     * @return active random generator
+     * <p>Resolving the holder once per public entry point and passing it
+     * directly to any private helpers avoids repeated {@link ThreadLocal}
+     * lookups inside loops or delegation chains.</p>
+     *
+     * @return active RNG holder
      */
-    private static Random random() {
-        Random r = SEEDED.get();
-        return (r != null) ? r : ThreadLocalRandom.current();
+    private static RngHolder holder() {
+        RngHolder seeded = SEEDED_HOLDER.get();
+        return (seeded != null) ? seeded : DEFAULT_HOLDER.get();
     }
+
+    // -------------------------------------------------------------------------
+    // Public API  (all signatures unchanged)
+    // -------------------------------------------------------------------------
 
     /**
      * Returns a uniformly distributed boolean.
@@ -129,7 +195,7 @@ public final class RandomUtil {
      * @return random boolean
      */
     public static boolean nextBoolean() {
-        return random().nextBoolean();
+        return holder().rng.nextBoolean();
     }
 
     /**
@@ -143,7 +209,7 @@ public final class RandomUtil {
             throw new IllegalArgumentException("bound must be > 0");
         }
 
-        return random().nextInt(bound);
+        return holder().rng.nextInt(bound);
     }
 
     /**
@@ -159,18 +225,14 @@ public final class RandomUtil {
             throw new IllegalArgumentException("min must be < max");
         }
 
-        return minInclusive + random().nextInt(maxExclusive - minInclusive);
+        return minInclusive + holder().rng.nextInt(maxExclusive - minInclusive);
     }
 
     /**
      * Returns a uniformly distributed long in {@code [0, bound)}.
      *
-     * <p>Uses rejection sampling for non-power-of-2 bounds to guarantee
-     * uniform distribution. The power-of-2 fast path via bit-masking is
-     * correct for all power-of-2 bounds because {@link Random#nextLong()}
-     * produces 64 independently-distributed bits (two independent 32-bit
-     * words combined), so masking any number of low-order bits yields a
-     * uniform result.</p>
+     * <p>Delegates to {@link UniformRandomProvider#nextLong(long)}, which uses
+     * a bias-free rejection-sampling algorithm — no hand-rolled loop required.</p>
      *
      * @param bound exclusive upper bound (must be {@code > 0})
      * @return random long
@@ -180,10 +242,7 @@ public final class RandomUtil {
             throw new IllegalArgumentException("bound must be > 0");
         }
 
-        // FIX #4: resolve random() once and pass it to the private helper so that
-        // callers of nextLong(min, max) — which delegate here — do not incur a
-        // second ThreadLocal lookup (or repeated lookups inside the rejection loop).
-        return nextLong(random(), bound);
+        return holder().rng.nextLong(bound);
     }
 
     /**
@@ -199,34 +258,9 @@ public final class RandomUtil {
             throw new IllegalArgumentException("min must be < max");
         }
 
-        // FIX #4: resolve random() once and share it with the inner helper so the
-        // rejection-sampling loop does not re-hit the ThreadLocal on every iteration.
-        return minInclusive + nextLong(random(), maxExclusive - minInclusive);
-    }
-
-    /**
-     * Core long generation helper. Accepts a pre-resolved {@link Random} so
-     * that callers can avoid redundant {@link ThreadLocal} lookups, including
-     * inside the rejection-sampling loop.
-     *
-     * @param rng   pre-resolved random generator
-     * @param bound exclusive upper bound (must be {@code > 0}, caller-validated)
-     * @return uniform random long in {@code [0, bound)}
-     */
-    private static long nextLong(Random rng, long bound) {
-        long m = bound - 1L;
-
-        if ((bound & m) == 0L) {
-            // Power-of-2 fast path: bit-mask is safe and uniform.
-            return rng.nextLong() & m;
-        }
-
-        long r;
-        do {
-            r = rng.nextLong() >>> 1;
-        } while (r + m - (r % bound) < 0L);
-
-        return r % bound;
+        // Resolve holder once so the inner call reuses the same RNG reference
+        // without a second ThreadLocal lookup.
+        return minInclusive + holder().rng.nextLong(maxExclusive - minInclusive);
     }
 
     /**
@@ -235,7 +269,7 @@ public final class RandomUtil {
      * @return random double
      */
     public static double nextDouble() {
-        return random().nextDouble();
+        return holder().rng.nextDouble();
     }
 
     /**
@@ -247,13 +281,11 @@ public final class RandomUtil {
      * @return random double
      */
     public static double nextDouble(double minInclusive, double maxExclusive) {
-        // FIX #1: was ">" which allowed min == max to silently return min;
-        // changed to ">=" to match the contract of all other bounded methods.
         if (minInclusive >= maxExclusive) {
             throw new IllegalArgumentException("min must be < max");
         }
 
-        return minInclusive + random().nextDouble() * (maxExclusive - minInclusive);
+        return minInclusive + holder().rng.nextDouble() * (maxExclusive - minInclusive);
     }
 
     /**
@@ -271,7 +303,7 @@ public final class RandomUtil {
             return true;
         }
 
-        return random().nextDouble() < p;
+        return holder().rng.nextDouble() < p;
     }
 
     /**
@@ -285,16 +317,20 @@ public final class RandomUtil {
             throw new IllegalArgumentException("n must be > 0");
         }
 
-        return random().nextInt(n) == 0;
+        return holder().rng.nextInt(n) == 0;
     }
 
     /**
      * Returns a standard normal value with mean 0 and standard deviation 1.
      *
+     * <p>Uses the Ziggurat algorithm, which is faster and produces better
+     * tail behaviour than the Box-Muller transform used by
+     * {@code java.util.Random#nextGaussian()}.</p>
+     *
      * @return normally distributed value
      */
     public static double standardNormal() {
-        return random().nextGaussian();
+        return holder().gaussian.sample();
     }
 
     /**
@@ -309,7 +345,8 @@ public final class RandomUtil {
             throw new IllegalArgumentException("stddev must be >= 0");
         }
 
-        return mean + random().nextGaussian() * stddev;
+        // Resolve holder once; reuse the cached Ziggurat sampler directly.
+        return mean + holder().gaussian.sample() * stddev;
     }
 
     /**
@@ -322,20 +359,17 @@ public final class RandomUtil {
      * @return bounded normal value
      */
     public static double boundedGaussian(double mean, double stddev, double minInclusive, double maxInclusive) {
-        // FIX #2: was "min must be <= max" which described the passing condition,
-        // not the error; corrected to "min must be < max".
         if (maxInclusive <= minInclusive) {
             throw new IllegalArgumentException("min must be < max");
         }
 
         if (stddev < 0.0) {
-            throw new IllegalArgumentException("stddev must be > 0");
+            throw new IllegalArgumentException("stddev must be >= 0");
         }
 
-        // FIX #4: resolve random() once and delegate directly to avoid a second
-        // ThreadLocal lookup inside gaussian(), which is called from here.
-        Random rng = random();
-        double x = mean + rng.nextGaussian() * stddev;
+        // Resolve holder once; avoids a second lookup inside the Gaussian call.
+        RngHolder h = holder();
+        double x = mean + h.gaussian.sample() * stddev;
 
         if (x < minInclusive) {
             return minInclusive;
@@ -361,9 +395,9 @@ public final class RandomUtil {
             throw new IllegalArgumentException("sigma must be >= 0");
         }
 
-        // FIX #4: resolve random() once and inline the gaussian computation to
-        // avoid a second ThreadLocal lookup inside the gaussian() delegation chain.
-        return Math.exp(mu + random().nextGaussian() * sigma);
+        // Resolve holder once; inline the Gaussian to avoid a second lookup
+        // through a delegation chain.
+        return Math.exp(mu + holder().gaussian.sample() * sigma);
     }
 
     /**
@@ -407,7 +441,9 @@ public final class RandomUtil {
         }
 
         StringBuilder stringBuilder = new StringBuilder(length);
-        Random rng = random();
+        // Resolve holder once before the loop to avoid a ThreadLocal lookup
+        // on every iteration.
+        UniformRandomProvider rng = holder().rng;
 
         for (int i = 0; i < length; i++) {
             stringBuilder.append(alphabet[rng.nextInt(alphabet.length)]);
