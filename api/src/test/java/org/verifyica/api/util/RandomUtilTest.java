@@ -394,7 +394,7 @@ public class RandomUtilTest {
 
         assertThatThrownBy(() -> RandomUtil.boundedGaussian(0.0, -0.1, 0.0, 1.0))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("stddev must be > 0");
+                .hasMessage("stddev must be >= 0");
     }
 
     @Test
