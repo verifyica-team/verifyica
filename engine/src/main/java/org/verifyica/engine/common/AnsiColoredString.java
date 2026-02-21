@@ -19,38 +19,40 @@ package org.verifyica.engine.common;
 import java.util.Objects;
 
 /**
- * Class to build ANSI colored strings.
+ * Builds ANSI colored strings.
  */
 public class AnsiColoredString {
+
+    private static final int DEFAULT_CAPACITY = 64;
 
     private final StringBuilder stringBuilder;
     private AnsiColor lastAnsiColor;
 
     /**
-     * Constructor.
+     * Creates an empty AnsiColoredString.
      */
     public AnsiColoredString() {
         this((AnsiColor) null);
     }
 
     /**
-     * Constructor.
+     * Creates an AnsiColoredString with the specified initial string.
      *
      * @param string the initial string to append
      */
-    public AnsiColoredString(String string) {
+    public AnsiColoredString(final String string) {
         stringBuilder = new StringBuilder(string.length());
         stringBuilder.append(string);
         lastAnsiColor = null;
     }
 
     /**
-     * Constructor.
+     * Creates an AnsiColoredString with the specified initial ANSI color.
      *
      * @param ansiColor the initial ANSI color to append
      */
-    public AnsiColoredString(AnsiColor ansiColor) {
-        stringBuilder = new StringBuilder();
+    public AnsiColoredString(final AnsiColor ansiColor) {
+        stringBuilder = new StringBuilder(DEFAULT_CAPACITY);
 
         if (ansiColor != null) {
             stringBuilder.append(ansiColor);
@@ -64,8 +66,9 @@ public class AnsiColoredString {
      * @param b the boolean value to append
      * @return this
      */
-    public AnsiColoredString append(boolean b) {
+    public AnsiColoredString append(final boolean b) {
         stringBuilder.append(b);
+
         return this;
     }
 
@@ -75,8 +78,9 @@ public class AnsiColoredString {
      * @param s the short value to append
      * @return this
      */
-    public AnsiColoredString append(short s) {
+    public AnsiColoredString append(final short s) {
         stringBuilder.append(s);
+
         return this;
     }
 
@@ -86,8 +90,9 @@ public class AnsiColoredString {
      * @param c the character to append
      * @return this
      */
-    public AnsiColoredString append(char c) {
+    public AnsiColoredString append(final char c) {
         stringBuilder.append(c);
+
         return this;
     }
 
@@ -97,8 +102,9 @@ public class AnsiColoredString {
      * @param chars the character array to append
      * @return this
      */
-    public AnsiColoredString append(char[] chars) {
+    public AnsiColoredString append(final char[] chars) {
         stringBuilder.append(chars);
+
         return this;
     }
 
@@ -110,7 +116,7 @@ public class AnsiColoredString {
      * @param length the number of characters to append
      * @return this
      */
-    public AnsiColoredString append(char[] chars, int offset, int length) {
+    public AnsiColoredString append(final char[] chars, final int offset, final int length) {
         stringBuilder.append(chars, offset, length);
         return this;
     }
@@ -121,7 +127,7 @@ public class AnsiColoredString {
      * @param i the integer value to append
      * @return this
      */
-    public AnsiColoredString append(int i) {
+    public AnsiColoredString append(final int i) {
         stringBuilder.append(i);
         return this;
     }
@@ -132,7 +138,7 @@ public class AnsiColoredString {
      * @param l the long value to append
      * @return this
      */
-    public AnsiColoredString append(long l) {
+    public AnsiColoredString append(final long l) {
         stringBuilder.append(l);
         return this;
     }
@@ -143,7 +149,7 @@ public class AnsiColoredString {
      * @param f the float value to append
      * @return this
      */
-    public AnsiColoredString append(float f) {
+    public AnsiColoredString append(final float f) {
         stringBuilder.append(f);
         return this;
     }
@@ -154,7 +160,7 @@ public class AnsiColoredString {
      * @param d the double value to append
      * @return this
      */
-    public AnsiColoredString append(double d) {
+    public AnsiColoredString append(final double d) {
         stringBuilder.append(d);
         return this;
     }
@@ -165,7 +171,7 @@ public class AnsiColoredString {
      * @param s the string to append
      * @return this
      */
-    public AnsiColoredString append(String s) {
+    public AnsiColoredString append(final String s) {
         stringBuilder.append(s);
         return this;
     }
@@ -176,7 +182,7 @@ public class AnsiColoredString {
      * @param o the object to append
      * @return this
      */
-    public AnsiColoredString append(Object o) {
+    public AnsiColoredString append(final Object o) {
         stringBuilder.append(o);
         return this;
     }
@@ -187,7 +193,7 @@ public class AnsiColoredString {
      * @param sb the StringBuffer to append
      * @return this
      */
-    public AnsiColoredString append(StringBuffer sb) {
+    public AnsiColoredString append(final StringBuffer sb) {
         stringBuilder.append(sb);
         return this;
     }
@@ -198,7 +204,7 @@ public class AnsiColoredString {
      * @param cs the CharSequence to append
      * @return this
      */
-    public AnsiColoredString append(CharSequence cs) {
+    public AnsiColoredString append(final CharSequence cs) {
         stringBuilder.append(cs);
         return this;
     }
@@ -209,7 +215,7 @@ public class AnsiColoredString {
      * @param ansiColor the ANSI color to append
      * @return this
      */
-    public AnsiColoredString append(AnsiColor ansiColor) {
+    public AnsiColoredString append(final AnsiColor ansiColor) {
         if (ansiColor == null || (ansiColor.equals(AnsiColor.NONE) && stringBuilder.length() == 0)) {
             return this;
         }
@@ -255,10 +261,10 @@ public class AnsiColoredString {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AnsiColoredString that = (AnsiColoredString) o;
+        final AnsiColoredString that = (AnsiColoredString) o;
         return stringBuilder.length() == that.stringBuilder.length()
                 && Objects.equals(lastAnsiColor, that.lastAnsiColor)
                 && stringBuilder.toString().equals(that.stringBuilder.toString());
@@ -266,6 +272,12 @@ public class AnsiColoredString {
 
     @Override
     public int hashCode() {
-        return Objects.hash(stringBuilder.toString(), lastAnsiColor);
+        int result = 1;
+        result = 31 * result + Objects.hashCode(lastAnsiColor);
+        // Compute hash from StringBuilder contents without creating a temporary String
+        for (int i = 0; i < stringBuilder.length(); i++) {
+            result = 31 * result + stringBuilder.charAt(i);
+        }
+        return result;
     }
 }

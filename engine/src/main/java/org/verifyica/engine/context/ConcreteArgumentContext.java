@@ -26,7 +26,7 @@ import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * Class to implement ConcreteArgumentContext
+ * Concrete implementation of {@link ArgumentContext}.
  */
 @SuppressWarnings("unchecked")
 public class ConcreteArgumentContext extends AbstractContext implements ArgumentContext {
@@ -36,13 +36,14 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
     private final Argument<?> argument;
 
     /**
-     * Constructor
+     * Creates a new ConcreteArgumentContext.
      *
-     * @param classContext classContext
-     * @param argumentIndex argumentIndex
-     * @param argument argument
+     * @param classContext the class context
+     * @param argumentIndex the argument index
+     * @param argument the argument
      */
-    public ConcreteArgumentContext(ClassContext classContext, int argumentIndex, Argument<?> argument) {
+    public ConcreteArgumentContext(
+            final ClassContext classContext, final int argumentIndex, final Argument<?> argument) {
         Precondition.notNull(classContext, "classContext is null");
         Precondition.notNull(argument, "argument is null");
 
@@ -72,7 +73,7 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
     }
 
     @Override
-    public <V> Argument<V> getArgumentAs(Class<V> type) {
+    public <V> Argument<V> getArgumentAs(final Class<V> type) {
         Precondition.notNull(type, "type is null");
 
         if (argument.getPayload() == null) {
@@ -95,10 +96,10 @@ public class ConcreteArgumentContext extends AbstractContext implements Argument
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
-        ConcreteArgumentContext that = (ConcreteArgumentContext) object;
+        final ConcreteArgumentContext that = (ConcreteArgumentContext) object;
         return argumentIndex == that.argumentIndex
                 && Objects.equals(classContext, that.classContext)
                 && Objects.equals(argument, that.argument);

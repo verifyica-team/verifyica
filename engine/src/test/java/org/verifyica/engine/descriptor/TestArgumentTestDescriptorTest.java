@@ -67,11 +67,11 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should create descriptor with all parameters")
         public void shouldCreateDescriptorWithAllParameters() {
-            UniqueId uniqueId = UniqueId.root("test", "argument-id");
-            List<Method> beforeAllMethods = new ArrayList<>();
-            List<Method> afterAllMethods = new ArrayList<>();
+            final UniqueId uniqueId = UniqueId.root("test", "argument-id");
+            final List<Method> beforeAllMethods = new ArrayList<>();
+            final List<Method> afterAllMethods = new ArrayList<>();
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     uniqueId, "Test Argument", 0, testArgument, beforeAllMethods, afterAllMethods);
 
             assertThat(descriptor).satisfies(d -> {
@@ -84,7 +84,7 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should handle different argument indices")
         public void shouldHandleDifferentArgumentIndices() {
-            TestArgumentTestDescriptor descriptor1 = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor1 = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id1"),
                     "Arg 0",
                     0,
@@ -92,7 +92,7 @@ public class TestArgumentTestDescriptorTest {
                     Collections.emptyList(),
                     Collections.emptyList());
 
-            TestArgumentTestDescriptor descriptor2 = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor2 = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id2"),
                     "Arg 5",
                     5,
@@ -103,6 +103,48 @@ public class TestArgumentTestDescriptorTest {
             assertThat(descriptor1.getTestArgument()).isSameAs(testArgument);
             assertThat(descriptor2.getTestArgument()).isSameAs(testArgument);
         }
+
+        @Test
+        @DisplayName("Should handle zero argument index")
+        public void shouldHandleZeroArgumentIndex() {
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"),
+                    "Arg 0",
+                    0,
+                    testArgument,
+                    Collections.emptyList(),
+                    Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            assertThat(descriptor.getTestDescriptorStatus().isSuccess()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should handle large argument index")
+        public void shouldHandleLargeArgumentIndex() {
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"),
+                    "Arg 999",
+                    999,
+                    testArgument,
+                    Collections.emptyList(),
+                    Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            assertThat(descriptor.getTestDescriptorStatus().isSuccess()).isTrue();
+        }
     }
 
     @Nested
@@ -112,7 +154,7 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should return test argument")
         public void shouldReturnTestArgument() {
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
                     0,
@@ -126,11 +168,11 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should handle different argument types")
         public void shouldHandleDifferentArgumentTypes() {
-            Argument<String> stringArg = Argument.of("string-arg", "string");
-            Argument<Integer> intArg = Argument.of("int-arg", 42);
-            Argument<List<String>> listArg = Argument.of("list-arg", Arrays.asList("a", "b", "c"));
+            final Argument<String> stringArg = Argument.of("string-arg", "string");
+            final Argument<Integer> intArg = Argument.of("int-arg", 42);
+            final Argument<List<String>> listArg = Argument.of("list-arg", Arrays.asList("a", "b", "c"));
 
-            TestArgumentTestDescriptor stringDescriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor stringDescriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id1"),
                     "String",
                     0,
@@ -138,10 +180,10 @@ public class TestArgumentTestDescriptorTest {
                     Collections.emptyList(),
                     Collections.emptyList());
 
-            TestArgumentTestDescriptor intDescriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor intDescriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id2"), "Int", 1, intArg, Collections.emptyList(), Collections.emptyList());
 
-            TestArgumentTestDescriptor listDescriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor listDescriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id3"), "List", 2, listArg, Collections.emptyList(), Collections.emptyList());
 
             assertThat(stringDescriptor.getTestArgument()).isSameAs(stringArg);
@@ -157,7 +199,7 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should execute successful test lifecycle")
         public void shouldExecuteSuccessfulTestLifecycle() {
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
                     0,
@@ -182,10 +224,10 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should execute beforeAll methods")
         public void shouldExecuteBeforeAllMethods() throws Exception {
-            Method beforeAll = TestArgumentClass.class.getDeclaredMethod("beforeAllMethod");
-            List<Method> beforeAllMethods = Collections.singletonList(beforeAll);
+            final Method beforeAll = TestArgumentClass.class.getDeclaredMethod("beforeAllMethod");
+            final List<Method> beforeAllMethods = Collections.singletonList(beforeAll);
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"), "Test", 0, testArgument, beforeAllMethods, Collections.emptyList());
 
             Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
@@ -202,10 +244,10 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should execute afterAll methods")
         public void shouldExecuteAfterAllMethods() throws Exception {
-            Method afterAll = TestArgumentClass.class.getDeclaredMethod("afterAllMethod");
-            List<Method> afterAllMethods = Collections.singletonList(afterAll);
+            final Method afterAll = TestArgumentClass.class.getDeclaredMethod("afterAllMethod");
+            final List<Method> afterAllMethods = Collections.singletonList(afterAll);
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"), "Test", 0, testArgument, Collections.emptyList(), afterAllMethods);
 
             Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
@@ -222,10 +264,10 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should handle ExecutionSkippedException in beforeAll")
         public void shouldHandleExecutionSkippedExceptionInBeforeAll() throws Exception {
-            Method beforeAll = TestArgumentClass.class.getDeclaredMethod("skippedBeforeAllMethod");
-            List<Method> beforeAllMethods = Collections.singletonList(beforeAll);
+            final Method beforeAll = TestArgumentClass.class.getDeclaredMethod("skippedBeforeAllMethod");
+            final List<Method> beforeAllMethods = Collections.singletonList(beforeAll);
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"), "Test", 0, testArgument, beforeAllMethods, Collections.emptyList());
 
             Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
@@ -245,10 +287,10 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should ignore ExecutionSkippedException in afterAll")
         public void shouldIgnoreExecutionSkippedExceptionInAfterAll() throws Exception {
-            Method afterAll = TestArgumentClass.class.getDeclaredMethod("skippedAfterAllMethod");
-            List<Method> afterAllMethods = Collections.singletonList(afterAll);
+            final Method afterAll = TestArgumentClass.class.getDeclaredMethod("skippedAfterAllMethod");
+            final List<Method> afterAllMethods = Collections.singletonList(afterAll);
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"), "Test", 0, testArgument, Collections.emptyList(), afterAllMethods);
 
             Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
@@ -268,10 +310,10 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should handle exception in beforeAll")
         public void shouldHandleExceptionInBeforeAll() throws Exception {
-            Method beforeAll = TestArgumentClass.class.getDeclaredMethod("failingBeforeAllMethod");
-            List<Method> beforeAllMethods = Collections.singletonList(beforeAll);
+            final Method beforeAll = TestArgumentClass.class.getDeclaredMethod("failingBeforeAllMethod");
+            final List<Method> beforeAllMethods = Collections.singletonList(beforeAll);
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"), "Test", 0, testArgument, beforeAllMethods, Collections.emptyList());
 
             Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
@@ -291,10 +333,10 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should handle exception in afterAll")
         public void shouldHandleExceptionInAfterAll() throws Exception {
-            Method afterAll = TestArgumentClass.class.getDeclaredMethod("failingAfterAllMethod");
-            List<Method> afterAllMethods = Collections.singletonList(afterAll);
+            final Method afterAll = TestArgumentClass.class.getDeclaredMethod("failingAfterAllMethod");
+            final List<Method> afterAllMethods = Collections.singletonList(afterAll);
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"), "Test", 0, testArgument, Collections.emptyList(), afterAllMethods);
 
             Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
@@ -310,6 +352,94 @@ public class TestArgumentTestDescriptorTest {
                 assertThat(status.isFailure()).isTrue();
             });
         }
+
+        @Test
+        @DisplayName("Should execute multiple beforeAll methods")
+        public void shouldExecuteMultipleBeforeAllMethods() throws Exception {
+            final Method beforeAll1 = TestArgumentClass.class.getDeclaredMethod("beforeAllMethod1");
+            final Method beforeAll2 = TestArgumentClass.class.getDeclaredMethod("beforeAllMethod2");
+            final List<Method> beforeAllMethods = Arrays.asList(beforeAll1, beforeAll2);
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"), "Test", 0, testArgument, beforeAllMethods, Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(mockListener).executionStarted(descriptor);
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(descriptor.getTestDescriptorStatus().isSuccess()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should execute multiple afterAll methods")
+        public void shouldExecuteMultipleAfterAllMethods() throws Exception {
+            final Method afterAll1 = TestArgumentClass.class.getDeclaredMethod("afterAllMethod1");
+            final Method afterAll2 = TestArgumentClass.class.getDeclaredMethod("afterAllMethod2");
+            final List<Method> afterAllMethods = Arrays.asList(afterAll1, afterAll2);
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"), "Test", 0, testArgument, Collections.emptyList(), afterAllMethods);
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(mockListener).executionStarted(descriptor);
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(descriptor.getTestDescriptorStatus().isSuccess()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should stop beforeAll execution on first failure")
+        public void shouldStopBeforeAllExecutionOnFirstFailure() throws Exception {
+            final Method beforeAll1 = TestArgumentClass.class.getDeclaredMethod("failingBeforeAllMethod");
+            final Method beforeAll2 = TestArgumentClass.class.getDeclaredMethod("beforeAllMethod1");
+            final List<Method> beforeAllMethods = Arrays.asList(beforeAll1, beforeAll2);
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"), "Test", 0, testArgument, beforeAllMethods, Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(mockListener).executionStarted(descriptor);
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(descriptor.getTestDescriptorStatus().isFailure()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should continue afterAll execution despite failure")
+        public void shouldContinueAfterAllExecutionDespiteFailure() throws Exception {
+            final Method afterAll1 = TestArgumentClass.class.getDeclaredMethod("failingAfterAllMethod");
+            final Method afterAll2 = TestArgumentClass.class.getDeclaredMethod("afterAllMethod1");
+            final List<Method> afterAllMethods = Arrays.asList(afterAll1, afterAll2);
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"), "Test", 0, testArgument, Collections.emptyList(), afterAllMethods);
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(mockListener).executionStarted(descriptor);
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(descriptor.getTestDescriptorStatus().isFailure()).isTrue();
+        }
     }
 
     @Nested
@@ -319,7 +449,7 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should skip test and notify listener")
         public void shouldSkipTestAndNotifyListener() {
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
                     0,
@@ -344,7 +474,7 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should skip children when parent is skipped")
         public void shouldSkipChildrenWhenParentIsSkipped() throws Exception {
-            TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "parent-id"),
                     "Parent",
                     0,
@@ -352,7 +482,7 @@ public class TestArgumentTestDescriptorTest {
                     Collections.emptyList(),
                     Collections.emptyList());
 
-            TestMethodTestDescriptor child = new TestMethodTestDescriptor(
+            final TestMethodTestDescriptor child = new TestMethodTestDescriptor(
                     UniqueId.root("test", "child-id"),
                     "Child",
                     Collections.emptyList(),
@@ -380,7 +510,7 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should execute all child tests when no failures")
         public void shouldExecuteAllChildTestsWhenNoFailures() throws Exception {
-            TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "parent-id"),
                     "Parent",
                     0,
@@ -388,21 +518,21 @@ public class TestArgumentTestDescriptorTest {
                     Collections.emptyList(),
                     Collections.emptyList());
 
-            Method testMethod = TestArgumentClass.class.getDeclaredMethod("testMethod");
+            final Method testMethod = TestArgumentClass.class.getDeclaredMethod("testMethod");
 
-            TestMethodTestDescriptor child1 = new TestMethodTestDescriptor(
+            final TestMethodTestDescriptor child1 = new TestMethodTestDescriptor(
                     UniqueId.root("test", "child1-id"),
                     "Child1",
                     Collections.emptyList(),
                     testMethod,
                     Collections.emptyList());
-            TestMethodTestDescriptor child2 = new TestMethodTestDescriptor(
+            final TestMethodTestDescriptor child2 = new TestMethodTestDescriptor(
                     UniqueId.root("test", "child2-id"),
                     "Child2",
                     Collections.emptyList(),
                     testMethod,
                     Collections.emptyList());
-            TestMethodTestDescriptor child3 = new TestMethodTestDescriptor(
+            final TestMethodTestDescriptor child3 = new TestMethodTestDescriptor(
                     UniqueId.root("test", "child3-id"),
                     "Child3",
                     Collections.emptyList(),
@@ -410,7 +540,7 @@ public class TestArgumentTestDescriptorTest {
                     Collections.emptyList());
 
             // Inject dependencies into children
-            for (TestMethodTestDescriptor child : Arrays.asList(child1, child2, child3)) {
+            for (final TestMethodTestDescriptor child : Arrays.asList(child1, child2, child3)) {
                 Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, child);
                 Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), child);
                 Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), child);
@@ -436,7 +566,7 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should skip remaining tests after first failure")
         public void shouldSkipRemainingTestsAfterFirstFailure() throws Exception {
-            TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "parent-id"),
                     "Parent",
                     0,
@@ -444,24 +574,24 @@ public class TestArgumentTestDescriptorTest {
                     Collections.emptyList(),
                     Collections.emptyList());
 
-            Method testMethod = TestArgumentClass.class.getDeclaredMethod("testMethod");
-            Method failingTestMethod = TestArgumentClass.class.getDeclaredMethod("failingTestMethod");
+            final Method testMethod = TestArgumentClass.class.getDeclaredMethod("testMethod");
+            final Method failingTestMethod = TestArgumentClass.class.getDeclaredMethod("failingTestMethod");
 
-            TestMethodTestDescriptor child1 = new TestMethodTestDescriptor(
+            final TestMethodTestDescriptor child1 = new TestMethodTestDescriptor(
                     UniqueId.root("test", "child1-id"),
                     "Child1",
                     Collections.emptyList(),
                     testMethod,
                     Collections.emptyList());
 
-            TestMethodTestDescriptor child2 = new TestMethodTestDescriptor(
+            final TestMethodTestDescriptor child2 = new TestMethodTestDescriptor(
                     UniqueId.root("test", "child2-id"),
                     "Child2",
                     Collections.emptyList(),
                     failingTestMethod,
                     Collections.emptyList());
 
-            TestMethodTestDescriptor child3 = new TestMethodTestDescriptor(
+            final TestMethodTestDescriptor child3 = new TestMethodTestDescriptor(
                     UniqueId.root("test", "child3-id"),
                     "Child3",
                     Collections.emptyList(),
@@ -469,7 +599,7 @@ public class TestArgumentTestDescriptorTest {
                     Collections.emptyList());
 
             // Inject dependencies into children BEFORE adding to parent
-            for (TestMethodTestDescriptor child : Arrays.asList(child1, child2, child3)) {
+            for (final TestMethodTestDescriptor child : Arrays.asList(child1, child2, child3)) {
                 Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, child);
                 Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), child);
                 Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), child);
@@ -496,7 +626,7 @@ public class TestArgumentTestDescriptorTest {
         // @DisplayName("Should continue after skipped test")
         // TODO fix test
         public void shouldContinueAfterSkippedTest() throws Exception {
-            TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor parent = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "parent-id"),
                     "Parent",
                     0,
@@ -504,23 +634,23 @@ public class TestArgumentTestDescriptorTest {
                     Collections.emptyList(),
                     Collections.emptyList());
 
-            Method testMethod = TestArgumentClass.class.getDeclaredMethod("testMethod");
+            final Method testMethod = TestArgumentClass.class.getDeclaredMethod("testMethod");
 
-            TestMethodTestDescriptor child1 = new TestMethodTestDescriptor(
+            final TestMethodTestDescriptor child1 = new TestMethodTestDescriptor(
                     UniqueId.root("test", "child1-id"),
                     "Child1",
                     Collections.emptyList(),
                     testMethod,
                     Collections.emptyList());
 
-            TestMethodTestDescriptor child2 = new TestMethodTestDescriptor(
+            final TestMethodTestDescriptor child2 = new TestMethodTestDescriptor(
                     UniqueId.root("test", "child2-id"),
                     "Child2",
                     Collections.emptyList(),
                     testMethod,
                     Collections.emptyList());
 
-            TestMethodTestDescriptor child3 = new TestMethodTestDescriptor(
+            final TestMethodTestDescriptor child3 = new TestMethodTestDescriptor(
                     UniqueId.root("test", "child3-id"),
                     "Child3",
                     Collections.emptyList(),
@@ -528,7 +658,7 @@ public class TestArgumentTestDescriptorTest {
                     Collections.emptyList());
 
             // Inject dependencies into children BEFORE adding to parent
-            for (TestMethodTestDescriptor child : Arrays.asList(child1, child2, child3)) {
+            for (final TestMethodTestDescriptor child : Arrays.asList(child1, child2, child3)) {
                 Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, child);
                 Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), child);
                 Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), child);
@@ -562,9 +692,9 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should invoke preBeforeAll interceptor")
         public void shouldInvokePreBeforeAllInterceptor() throws Throwable {
-            ClassInterceptor interceptor = mock(ClassInterceptor.class);
+            final ClassInterceptor interceptor = mock(ClassInterceptor.class);
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
                     0,
@@ -586,9 +716,9 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should invoke postBeforeAll interceptor")
         public void shouldInvokePostBeforeAllInterceptor() throws Throwable {
-            ClassInterceptor interceptor = mock(ClassInterceptor.class);
+            final ClassInterceptor interceptor = mock(ClassInterceptor.class);
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
                     0,
@@ -612,9 +742,9 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should invoke preAfterAll interceptor")
         public void shouldInvokePreAfterAllInterceptor() throws Throwable {
-            ClassInterceptor interceptor = mock(ClassInterceptor.class);
+            final ClassInterceptor interceptor = mock(ClassInterceptor.class);
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
                     0,
@@ -636,9 +766,9 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should invoke postAfterAll interceptor")
         public void shouldInvokePostAfterAllInterceptor() throws Throwable {
-            ClassInterceptor interceptor = mock(ClassInterceptor.class);
+            final ClassInterceptor interceptor = mock(ClassInterceptor.class);
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
                     0,
@@ -662,10 +792,10 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should pass throwable to postBeforeAll on failure")
         public void shouldPassThrowableToPostBeforeAllOnFailure() throws Throwable {
-            ClassInterceptor interceptor = mock(ClassInterceptor.class);
-            Method beforeAll = TestArgumentClass.class.getDeclaredMethod("failingBeforeAllMethod");
+            final ClassInterceptor interceptor = mock(ClassInterceptor.class);
+            final Method beforeAll = TestArgumentClass.class.getDeclaredMethod("failingBeforeAllMethod");
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
                     0,
@@ -685,6 +815,181 @@ public class TestArgumentTestDescriptorTest {
 
             verify(interceptor).postBeforeAll(any(ArgumentContext.class), any(RuntimeException.class));
         }
+
+        @Test
+        @DisplayName("Should handle exception in preBeforeAll interceptor")
+        public void shouldHandleExceptionInPreBeforeAllInterceptor() throws Throwable {
+            final ClassInterceptor interceptor = mock(ClassInterceptor.class);
+            doThrow(new RuntimeException("preBeforeAll failed"))
+                    .when(interceptor)
+                    .preBeforeAll(any(ArgumentContext.class));
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"),
+                    "Test",
+                    0,
+                    testArgument,
+                    Collections.emptyList(),
+                    Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(
+                    TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.singletonList(interceptor), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(interceptor).preBeforeAll(any(ArgumentContext.class));
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(descriptor.getTestDescriptorStatus().isFailure()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should handle exception in postBeforeAll interceptor")
+        public void shouldHandleExceptionInPostBeforeAllInterceptor() throws Throwable {
+            final ClassInterceptor interceptor = mock(ClassInterceptor.class);
+            doThrow(new RuntimeException("postBeforeAll failed"))
+                    .when(interceptor)
+                    .postBeforeAll(any(ArgumentContext.class), any());
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"),
+                    "Test",
+                    0,
+                    testArgument,
+                    Collections.emptyList(),
+                    Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(
+                    TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED,
+                    Collections.singletonList(interceptor),
+                    descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(interceptor).postBeforeAll(any(ArgumentContext.class), isNull());
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(descriptor.getTestDescriptorStatus().isFailure()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should handle exception in preAfterAll interceptor")
+        public void shouldHandleExceptionInPreAfterAllInterceptor() throws Throwable {
+            final ClassInterceptor interceptor = mock(ClassInterceptor.class);
+            doThrow(new RuntimeException("preAfterAll failed"))
+                    .when(interceptor)
+                    .preAfterAll(any(ArgumentContext.class));
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"),
+                    "Test",
+                    0,
+                    testArgument,
+                    Collections.emptyList(),
+                    Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(
+                    TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.singletonList(interceptor), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(interceptor).preAfterAll(any(ArgumentContext.class));
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(descriptor.getTestDescriptorStatus().isFailure()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should handle exception in postAfterAll interceptor")
+        public void shouldHandleExceptionInPostAfterAllInterceptor() throws Throwable {
+            final ClassInterceptor interceptor = mock(ClassInterceptor.class);
+            doThrow(new RuntimeException("postAfterAll failed"))
+                    .when(interceptor)
+                    .postAfterAll(any(ArgumentContext.class), any());
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"),
+                    "Test",
+                    0,
+                    testArgument,
+                    Collections.emptyList(),
+                    Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(
+                    TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED,
+                    Collections.singletonList(interceptor),
+                    descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(interceptor).postAfterAll(any(ArgumentContext.class), isNull());
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(descriptor.getTestDescriptorStatus().isFailure()).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should pass throwable to postAfterAll on afterAll failure")
+        public void shouldPassThrowableToPostAfterAllOnAfterAllFailure() throws Throwable {
+            final ClassInterceptor interceptor = mock(ClassInterceptor.class);
+            final Method afterAll = TestArgumentClass.class.getDeclaredMethod("failingAfterAllMethod");
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"),
+                    "Test",
+                    0,
+                    testArgument,
+                    Collections.emptyList(),
+                    Collections.singletonList(afterAll));
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(
+                    TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED,
+                    Collections.singletonList(interceptor),
+                    descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(interceptor).postAfterAll(any(ArgumentContext.class), any(RuntimeException.class));
+        }
+
+        @Test
+        @DisplayName("Should invoke multiple interceptors in order")
+        public void shouldInvokeMultipleInterceptorsInOrder() throws Throwable {
+            final ClassInterceptor interceptor1 = mock(ClassInterceptor.class);
+            final ClassInterceptor interceptor2 = mock(ClassInterceptor.class);
+            final List<ClassInterceptor> interceptors = Arrays.asList(interceptor1, interceptor2);
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"),
+                    "Test",
+                    0,
+                    testArgument,
+                    Collections.emptyList(),
+                    Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, interceptors, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, interceptors, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(interceptor1).preBeforeAll(any(ArgumentContext.class));
+            verify(interceptor2).preBeforeAll(any(ArgumentContext.class));
+            verify(interceptor1).preAfterAll(any(ArgumentContext.class));
+            verify(interceptor2).preAfterAll(any(ArgumentContext.class));
+        }
     }
 
     @Nested
@@ -694,10 +999,10 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should close AutoCloseable argument")
         public void shouldCloseAutoCloseableArgument() {
-            AutoCloseableArgument closeableArg = new AutoCloseableArgument();
-            Argument<AutoCloseableArgument> argument = Argument.of("closeable-arg", closeableArg);
+            final AutoCloseableArgument closeableArg = new AutoCloseableArgument();
+            final Argument<AutoCloseableArgument> argument = Argument.of("closeable-arg", closeableArg);
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"), "Test", 0, argument, Collections.emptyList(), Collections.emptyList());
 
             Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
@@ -713,9 +1018,9 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should not fail when argument is not AutoCloseable")
         public void shouldNotFailWhenArgumentIsNotAutoCloseable() {
-            Argument<String> argument = Argument.of("string-arg", "not-closeable");
+            final Argument<String> argument = Argument.of("string-arg", "not-closeable");
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"), "Test", 0, argument, Collections.emptyList(), Collections.emptyList());
 
             Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
@@ -728,6 +1033,72 @@ public class TestArgumentTestDescriptorTest {
             verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
             assertThat(descriptor.getTestDescriptorStatus().isSuccess()).isTrue();
         }
+
+        @Test
+        @DisplayName("Should close AutoCloseable payload")
+        public void shouldCloseAutoCloseablePayload() {
+            final AutoCloseableArgument closeablePayload = new AutoCloseableArgument();
+            final Argument<AutoCloseableArgument> argument = Argument.of("closeable-payload", closeablePayload);
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"), "Test", 0, argument, Collections.emptyList(), Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(closeablePayload.closed).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should close both payload and argument when both are AutoCloseable and different")
+        public void shouldCloseBothPayloadAndArgumentWhenBothAreAutoCloseableAndDifferent() {
+            final AutoCloseableArgument closeablePayload = new AutoCloseableArgument();
+            final AutoCloseableWrapperArgument wrapperArgument = new AutoCloseableWrapperArgument(closeablePayload);
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"),
+                    "Test",
+                    0,
+                    wrapperArgument,
+                    Collections.emptyList(),
+                    Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(wrapperArgument.closed).isTrue();
+            assertThat(closeablePayload.closed).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should handle exception when closing AutoCloseable payload")
+        public void shouldHandleExceptionWhenClosingAutoCloseablePayload() {
+            final FailingAutoCloseable failingPayload = new FailingAutoCloseable();
+            final Argument<FailingAutoCloseable> argument = Argument.of("failing-payload", failingPayload);
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"), "Test", 0, argument, Collections.emptyList(), Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(failingPayload.closeAttempted).isTrue();
+        }
     }
 
     @Nested
@@ -737,7 +1108,7 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should follow state machine START to BEFORE_ALL to TEST to AFTER_ALL to CLOSE to CLEAN_UP to END")
         public void shouldFollowStateMachineStartToBeforeAllToTestToAfterAllToCloseToCleanUpToEnd() {
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
                     0,
@@ -760,9 +1131,9 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should transition to SKIP on beforeAll failure")
         public void shouldTransitionToSkipOnBeforeAllFailure() throws Exception {
-            Method beforeAll = TestArgumentClass.class.getDeclaredMethod("failingBeforeAllMethod");
+            final Method beforeAll = TestArgumentClass.class.getDeclaredMethod("failingBeforeAllMethod");
 
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
                     0,
@@ -790,13 +1161,73 @@ public class TestArgumentTestDescriptorTest {
         @Test
         @DisplayName("Should clean up argument context map")
         public void shouldCleanUpArgumentContextMap() {
-            TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
                     UniqueId.root("test", "id"),
                     "Test",
                     0,
                     testArgument,
                     Collections.emptyList(),
                     Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+        }
+
+        @Test
+        @DisplayName("Should close AutoCloseable values in argument context map")
+        public void shouldCloseAutoCloseableValuesInArgumentContextMap() {
+            final CloseableResource closeableResource = new CloseableResource();
+            final Argument<CloseableResource> argument = Argument.of("resource-arg", closeableResource);
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"), "Test", 0, argument, Collections.emptyList(), Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(closeableResource.closed).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should handle exception when closing AutoCloseable in argument context map")
+        public void shouldHandleExceptionWhenClosingAutoCloseableInArgumentContextMap() {
+            final FailingCloseableResource failingResource = new FailingCloseableResource();
+            final Argument<FailingCloseableResource> argument = Argument.of("failing-arg", failingResource);
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"), "Test", 0, argument, Collections.emptyList(), Collections.emptyList());
+
+            Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS_REVERSED, Collections.emptyList(), descriptor);
+            Injector.inject(TestableTestDescriptor.CLASS_CONTEXT, mockClassContext, descriptor);
+
+            descriptor.test();
+
+            verify(mockListener).executionFinished(eq(descriptor), any(TestExecutionResult.class));
+            assertThat(failingResource.closeAttempted).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should close multiple AutoCloseable values in argument context map")
+        public void shouldCloseMultipleAutoCloseableValuesInArgumentContextMap() {
+            final CloseableResource resource1 = new CloseableResource();
+            final CloseableResource resource2 = new CloseableResource();
+            final Argument<String> argument = Argument.of("test-arg", "test-payload");
+
+            final TestArgumentTestDescriptor descriptor = new TestArgumentTestDescriptor(
+                    UniqueId.root("test", "id"), "Test", 0, argument, Collections.emptyList(), Collections.emptyList());
 
             Injector.inject(TestableTestDescriptor.ENGINE_EXECUTION_LISTENER, mockListener, descriptor);
             Injector.inject(TestableTestDescriptor.CLASS_INTERCEPTORS, Collections.emptyList(), descriptor);
@@ -844,6 +1275,22 @@ public class TestArgumentTestDescriptorTest {
         public void failingAfterAllMethod() {
             throw new RuntimeException("AfterAll failed");
         }
+
+        public void beforeAllMethod1() {
+            // INTENTIONALLY EMPTY
+        }
+
+        public void beforeAllMethod2() {
+            // INTENTIONALLY EMPTY
+        }
+
+        public void afterAllMethod1() {
+            // INTENTIONALLY EMPTY
+        }
+
+        public void afterAllMethod2() {
+            // INTENTIONALLY EMPTY
+        }
     }
 
     public static class AutoCloseableArgument implements AutoCloseable {
@@ -853,6 +1300,63 @@ public class TestArgumentTestDescriptorTest {
         @Override
         public void close() {
             closed = true;
+        }
+    }
+
+    public static class AutoCloseableWrapperArgument implements Argument<AutoCloseableArgument>, AutoCloseable {
+
+        private final AutoCloseableArgument payload;
+        public boolean closed = false;
+
+        public AutoCloseableWrapperArgument(final AutoCloseableArgument payload) {
+            this.payload = payload;
+        }
+
+        @Override
+        public String getName() {
+            return "wrapper-arg";
+        }
+
+        @Override
+        public AutoCloseableArgument getPayload() {
+            return payload;
+        }
+
+        @Override
+        public void close() {
+            closed = true;
+        }
+    }
+
+    public static class FailingAutoCloseable implements AutoCloseable {
+
+        public boolean closeAttempted = false;
+
+        @Override
+        public void close() throws Exception {
+            closeAttempted = true;
+            throw new RuntimeException("Close failed");
+        }
+    }
+
+    public static class CloseableResource implements AutoCloseable {
+
+        public boolean closed = false;
+
+        @Override
+        public void close() {
+            closed = true;
+        }
+    }
+
+    public static class FailingCloseableResource implements AutoCloseable {
+
+        public boolean closeAttempted = false;
+
+        @Override
+        public void close() throws Exception {
+            closeAttempted = true;
+            throw new RuntimeException("Close failed");
         }
     }
 }

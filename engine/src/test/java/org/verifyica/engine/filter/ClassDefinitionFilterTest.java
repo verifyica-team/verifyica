@@ -167,7 +167,7 @@ public class ClassDefinitionFilterTest {
         public void shouldApplyMultipleFilters() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
-                    + "  classRegex: \".*Test.*\"\n"
+                    + "  classRegex: \"\\\\$.*Test.*\"\n"
                     + "- type: ExcludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Abstract.*\"\n";
@@ -177,13 +177,13 @@ public class ClassDefinitionFilterTest {
             List<ClassDefinition> classDefinitions = new ArrayList<>();
             classDefinitions.add(createClassDefinition(TestClass1.class));
             classDefinitions.add(createClassDefinition(AbstractTestClass.class));
-            classDefinitions.add(createClassDefinition(OtherClass.class));
+            classDefinitions.add(createClassDefinition(TestClass2.class));
 
             ClassDefinitionFilter.filter(classDefinitions);
 
             assertThat(classDefinitions).hasSize(2);
             assertThat(classDefinitions.get(0).getTestClass()).isEqualTo(TestClass1.class);
-            assertThat(classDefinitions.get(1).getTestClass()).isEqualTo(OtherClass.class);
+            assertThat(classDefinitions.get(1).getTestClass()).isEqualTo(TestClass2.class);
         }
 
         @Test
@@ -228,7 +228,7 @@ public class ClassDefinitionFilterTest {
         public void shouldApplyIncludeAndExcludeClassFiltersTogether() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
-                    + "  classRegex: \".*Test.*\"\n"
+                    + "  classRegex: \"\\\\$.*Test.*\"\n"
                     + "- type: ExcludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*2\"\n";
@@ -242,9 +242,8 @@ public class ClassDefinitionFilterTest {
 
             ClassDefinitionFilter.filter(classDefinitions);
 
-            assertThat(classDefinitions).hasSize(2);
+            assertThat(classDefinitions).hasSize(1);
             assertThat(classDefinitions.get(0).getTestClass()).isEqualTo(TestClass1.class);
-            assertThat(classDefinitions.get(1).getTestClass()).isEqualTo(OtherClass.class);
         }
 
         @Test
@@ -276,7 +275,7 @@ public class ClassDefinitionFilterTest {
         public void shouldApplyAllFourFilterTypesTogether() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
-                    + "  classRegex: \".*Test.*\"\n"
+                    + "  classRegex: \"\\\\$.*Test.*\"\n"
                     + "- type: ExcludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Abstract.*\"\n"
@@ -371,7 +370,7 @@ public class ClassDefinitionFilterTest {
         public void shouldFilterRealTestScenario() throws IOException {
             String yaml = "- type: IncludeClass\n"
                     + "  enabled: true\n"
-                    + "  classRegex: \".*Test.*\"\n"
+                    + "  classRegex: \"\\\\$.*Test.*\"\n"
                     + "- type: ExcludeClass\n"
                     + "  enabled: true\n"
                     + "  classRegex: \".*Abstract.*\"\n"
@@ -391,10 +390,10 @@ public class ClassDefinitionFilterTest {
 
             ClassDefinitionFilter.filter(classDefinitions);
 
-            assertThat(classDefinitions).hasSize(4);
+            assertThat(classDefinitions).hasSize(2);
             assertThat(classDefinitions)
                     .extracting(cd -> cd.getTestClass().getSimpleName())
-                    .containsExactlyInAnyOrder("TestClass1", "TestClass2", "FastClass", "OtherClass");
+                    .containsExactlyInAnyOrder("TestClass1", "TestClass2");
         }
 
         @Test

@@ -21,7 +21,7 @@ import java.util.Set;
 import org.verifyica.api.Argument;
 
 /**
- * Interface to provide a class definition.
+ * Provides a class definition for test execution.
  */
 public interface ClassDefinition {
 

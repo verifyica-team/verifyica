@@ -75,7 +75,7 @@ public class ConcreteClassContextTest {
         @Test
         @DisplayName("Should handle empty tags set")
         public void shouldHandleEmptyTagsSet() {
-            ConcreteClassContext emptyTagsContext = new ConcreteClassContext(
+            final ConcreteClassContext emptyTagsContext = new ConcreteClassContext(
                     mockEngineContext, String.class, "Display Name", new HashSet<>(), 1, new AtomicReference<>());
 
             assertThat(emptyTagsContext.getTestClassTags()).isEmpty();
@@ -84,16 +84,25 @@ public class ConcreteClassContextTest {
         @Test
         @DisplayName("Should handle parallelism of 1")
         public void shouldHandleParallelismOfOne() {
-            ConcreteClassContext sequentialContext = new ConcreteClassContext(
+            final ConcreteClassContext sequentialContext = new ConcreteClassContext(
                     mockEngineContext, String.class, "Display Name", new HashSet<>(), 1, new AtomicReference<>());
 
             assertThat(sequentialContext.getTestArgumentParallelism()).isEqualTo(1);
         }
 
         @Test
+        @DisplayName("Should handle parallelism of 0")
+        public void shouldHandleParallelismOfZero() {
+            final ConcreteClassContext zeroParallelismContext = new ConcreteClassContext(
+                    mockEngineContext, String.class, "Display Name", new HashSet<>(), 0, new AtomicReference<>());
+
+            assertThat(zeroParallelismContext.getTestArgumentParallelism()).isEqualTo(0);
+        }
+
+        @Test
         @DisplayName("Should handle high parallelism value")
         public void shouldHandleHighParallelismValue() {
-            ConcreteClassContext highParallelismContext = new ConcreteClassContext(
+            final ConcreteClassContext highParallelismContext = new ConcreteClassContext(
                     mockEngineContext,
                     String.class,
                     "Display Name",
@@ -102,6 +111,65 @@ public class ConcreteClassContextTest {
                     new AtomicReference<>());
 
             assertThat(highParallelismContext.getTestArgumentParallelism()).isEqualTo(Integer.MAX_VALUE);
+        }
+
+        @Test
+        @DisplayName("Should throw exception when engineContext is null")
+        public void shouldThrowExceptionWhenEngineContextIsNull() {
+            assertThatThrownBy(() -> new ConcreteClassContext(
+                            null, String.class, "Display Name", new HashSet<>(), 1, new AtomicReference<>()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("engineContext is null");
+        }
+
+        @Test
+        @DisplayName("Should throw exception when testClass is null")
+        public void shouldThrowExceptionWhenTestClassIsNull() {
+            assertThatThrownBy(() -> new ConcreteClassContext(
+                            mockEngineContext, null, "Display Name", new HashSet<>(), 1, new AtomicReference<>()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("testClass is null");
+        }
+
+        @Test
+        @DisplayName("Should throw exception when testClassDisplayName is null")
+        public void shouldThrowExceptionWhenTestClassDisplayNameIsNull() {
+            assertThatThrownBy(() -> new ConcreteClassContext(
+                            mockEngineContext, String.class, null, new HashSet<>(), 1, new AtomicReference<>()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("testClassDisplayName is null");
+        }
+
+        @Test
+        @DisplayName("Should throw exception when testClassTags is null")
+        public void shouldThrowExceptionWhenTestClassTagsIsNull() {
+            assertThatThrownBy(() -> new ConcreteClassContext(
+                            mockEngineContext, String.class, "Display Name", null, 1, new AtomicReference<>()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("testClassTags is null");
+        }
+
+        @Test
+        @DisplayName("Should throw exception when testClassInstanceReference is null")
+        public void shouldThrowExceptionWhenTestClassInstanceReferenceIsNull() {
+            assertThatThrownBy(() -> new ConcreteClassContext(
+                            mockEngineContext, String.class, "Display Name", new HashSet<>(), 1, null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("testClassInstanceReference is null");
+        }
+
+        @Test
+        @DisplayName("Should throw exception when testArgumentParallelism is negative")
+        public void shouldThrowExceptionWhenTestArgumentParallelismIsNegative() {
+            assertThatThrownBy(() -> new ConcreteClassContext(
+                            mockEngineContext,
+                            String.class,
+                            "Display Name",
+                            new HashSet<>(),
+                            -1,
+                            new AtomicReference<>()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("testArgumentParallelism must be non-negative");
         }
     }
 
@@ -134,10 +202,10 @@ public class ConcreteClassContextTest {
         @Test
         @DisplayName("Should return test instance after it is set")
         public void shouldReturnTestInstanceAfterItIsSet() {
-            Object testInstance = new Object();
+            final Object testInstance = new Object();
             testInstanceRef.set(testInstance);
 
-            Object retrieved = context.getTestInstance();
+            final Object retrieved = context.getTestInstance();
 
             assertThat(retrieved).isSameAs(testInstance);
         }
@@ -145,10 +213,10 @@ public class ConcreteClassContextTest {
         @Test
         @DisplayName("Should cast test instance to specific type")
         public void shouldCastTestInstanceToSpecificType() {
-            String testInstance = "test instance";
+            final String testInstance = "test instance";
             testInstanceRef.set(testInstance);
 
-            String retrieved = context.getTestInstanceAs(String.class);
+            final String retrieved = context.getTestInstanceAs(String.class);
 
             assertThat(retrieved).isEqualTo("test instance");
         }
@@ -165,6 +233,16 @@ public class ConcreteClassContextTest {
         @DisplayName("Should throw exception when getting typed instance before creation")
         public void shouldThrowExceptionWhenGettingTypedInstanceBeforeCreation() {
             assertThatThrownBy(() -> context.getTestInstanceAs(String.class))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("The class instance has not yet been instantiated");
+        }
+
+        @Test
+        @DisplayName("Should handle null test instance in reference")
+        public void shouldHandleNullTestInstanceInReference() {
+            testInstanceRef.set(null);
+
+            assertThatThrownBy(() -> context.getTestInstance())
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("The class instance has not yet been instantiated");
         }
@@ -231,10 +309,24 @@ public class ConcreteClassContextTest {
         @Test
         @DisplayName("Should have consistent hashCode")
         public void shouldHaveConsistentHashCode() {
-            int hashCode1 = context.hashCode();
-            int hashCode2 = context.hashCode();
+            final int hashCode1 = context.hashCode();
+            final int hashCode2 = context.hashCode();
 
             assertThat(hashCode1).isEqualTo(hashCode2);
+        }
+
+        @Test
+        @DisplayName("Should not be equal to different context instance")
+        public void shouldNotBeEqualToDifferentContextInstance() {
+            final ConcreteClassContext other = new ConcreteClassContext(
+                    mockEngineContext,
+                    ConcreteClassContextTest.class,
+                    "Test Class Display Name",
+                    testTags,
+                    4,
+                    testInstanceRef);
+
+            assertThat(context).isNotEqualTo(other);
         }
     }
 
@@ -243,15 +335,31 @@ public class ConcreteClassContextTest {
     public class ToStringTests {
 
         @Test
-        @DisplayName("Should include public class information in toString")
+        @DisplayName("Should include class information in toString")
         public void shouldIncludeClassInformationInToString() {
-            String toString = context.toString();
+            final String toString = context.toString();
 
             assertThat(toString)
                     .contains("ConcreteClassContext")
                     .contains("testClass")
                     .contains("testClassDisplayName")
                     .contains("testArgumentParallelism");
+        }
+
+        @Test
+        @DisplayName("Should include engine context in toString")
+        public void shouldIncludeEngineContextInToString() {
+            final String toString = context.toString();
+
+            assertThat(toString).contains("engineContext");
+        }
+
+        @Test
+        @DisplayName("Should include instance reference in toString")
+        public void shouldIncludeInstanceReferenceInToString() {
+            final String toString = context.toString();
+
+            assertThat(toString).contains("testClassInstanceReference");
         }
     }
 
@@ -265,6 +373,26 @@ public class ConcreteClassContextTest {
             context.getMap().put("classKey", "classValue");
 
             assertThat(context.getMap()).containsEntry("classKey", "classValue");
+        }
+
+        @Test
+        @DisplayName("Should isolate state between different class contexts")
+        public void shouldIsolateStateBetweenDifferentClassContexts() {
+            final ConcreteClassContext context1 = new ConcreteClassContext(
+                    mockEngineContext,
+                    ConcreteClassContextTest.class,
+                    "Test Class 1",
+                    testTags,
+                    4,
+                    new AtomicReference<>());
+            final ConcreteClassContext context2 = new ConcreteClassContext(
+                    mockEngineContext, String.class, "Test Class 2", testTags, 4, new AtomicReference<>());
+
+            context1.getMap().put("key", "value1");
+            context2.getMap().put("key", "value2");
+
+            assertThat(context1.getMap().get("key")).isEqualTo("value1");
+            assertThat(context2.getMap().get("key")).isEqualTo("value2");
         }
     }
 }

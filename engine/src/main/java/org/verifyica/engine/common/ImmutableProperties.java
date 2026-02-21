@@ -107,6 +107,7 @@ public class ImmutableProperties extends Properties {
         if (unmodifiableEntrySet == null) {
             unmodifiableEntrySet = Collections.unmodifiableSet(super.entrySet());
         }
+
         return unmodifiableEntrySet;
     }
 

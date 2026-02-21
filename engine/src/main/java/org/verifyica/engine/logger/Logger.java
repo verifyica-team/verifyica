@@ -305,10 +305,11 @@ public class Logger {
 
     private void logMessage(final PrintStream printStream, final Level level, final String message) {
         // Preserve legacy behavior: if caller passes null, StringBuilder.append(null) prints "null".
-        final StringBuilder sb = TL_BUILDER.get();
-        sb.setLength(0);
+        StringBuilder stringBuilder = TL_BUILDER.get();
+        stringBuilder.setLength(0);
 
-        sb.append(LocalDateTime.now().format(DATE_TIME_FORMATTER))
+        stringBuilder
+                .append(LocalDateTime.now().format(DATE_TIME_FORMATTER))
                 .append(" | ")
                 .append(level)
                 .append(" | ")
@@ -318,15 +319,16 @@ public class Logger {
                 .append(" | ")
                 .append(message);
 
-        printStream.println(sb);
+        printStream.println(stringBuilder);
     }
 
     private void logFormat(
             final PrintStream printStream, final Level level, final String format, final Object... objects) {
-        final StringBuilder sb = TL_BUILDER.get();
-        sb.setLength(0);
+        StringBuilder stringBuilder = TL_BUILDER.get();
+        stringBuilder.setLength(0);
 
-        sb.append(LocalDateTime.now().format(DATE_TIME_FORMATTER))
+        stringBuilder
+                .append(LocalDateTime.now().format(DATE_TIME_FORMATTER))
                 .append(" | ")
                 .append(level)
                 .append(" | ")
@@ -336,6 +338,6 @@ public class Logger {
                 .append(" | ")
                 .append(String.format(format, objects));
 
-        printStream.println(sb);
+        printStream.println(stringBuilder);
     }
 }

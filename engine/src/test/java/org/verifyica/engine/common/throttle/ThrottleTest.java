@@ -28,7 +28,7 @@ public class ThrottleTest {
     @Test
     @DisplayName("Should be able to implement Throttle interface")
     public void shouldBeAbleToImplementThrottleInterface() {
-        Throttle customThrottle = () -> {
+        final Throttle customThrottle = () -> {
             // Custom implementation
         };
 
@@ -38,9 +38,9 @@ public class ThrottleTest {
     @Test
     @DisplayName("Should execute throttle method")
     public void shouldExecuteThrottleMethod() {
-        boolean[] executed = {false};
+        final boolean[] executed = {false};
 
-        Throttle customThrottle = () -> executed[0] = true;
+        final Throttle customThrottle = () -> executed[0] = true;
 
         assertThatCode(customThrottle::throttle).doesNotThrowAnyException();
         assertThat(executed[0]).isTrue();
@@ -49,14 +49,14 @@ public class ThrottleTest {
     @Test
     @DisplayName("Should propagate InterruptedException")
     public void shouldPropagateInterruptedException() {
-        Throttle customThrottle = () -> {
+        final Throttle customThrottle = () -> {
             throw new InterruptedException("Test interruption");
         };
 
         assertThatCode(() -> {
                     try {
                         customThrottle.throttle();
-                    } catch (InterruptedException e) {
+                    } catch (final InterruptedException e) {
                         // Expected
                         assertThat(e.getMessage()).isEqualTo("Test interruption");
                     }

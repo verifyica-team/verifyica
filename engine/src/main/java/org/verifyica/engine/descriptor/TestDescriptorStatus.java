@@ -19,7 +19,7 @@ package org.verifyica.engine.descriptor;
 import java.util.Objects;
 
 /**
- * Class to implement TestDescriptorStatus
+ * Represents the status of a test descriptor execution.
  */
 public class TestDescriptorStatus {
 
@@ -55,7 +55,7 @@ public class TestDescriptorStatus {
      *
      * @param type type
      */
-    private TestDescriptorStatus(Type type) {
+    private TestDescriptorStatus(final Type type) {
         this(type, null);
     }
 
@@ -65,13 +65,13 @@ public class TestDescriptorStatus {
      * @param type type
      * @param throwable throwable
      */
-    private TestDescriptorStatus(Type type, Throwable throwable) {
+    private TestDescriptorStatus(final Type type, final Throwable throwable) {
         this.type = type;
         this.throwable = throwable;
     }
 
     /**
-     * Method to get the invocation result type
+     * Returns the invocation result type.
      *
      * @return the invocation result type
      */
@@ -80,7 +80,7 @@ public class TestDescriptorStatus {
     }
 
     /**
-     * Method to get the invocation Throwable. May be null in some scenarios.
+     * Returns the invocation Throwable. May be null in some scenarios.
      *
      * @return the invocation Throwable
      */
@@ -89,7 +89,7 @@ public class TestDescriptorStatus {
     }
 
     /**
-     * Method to return if the result is success
+     * Returns true if the result is success.
      *
      * @return true if the result is success, otherwise false
      */
@@ -98,7 +98,7 @@ public class TestDescriptorStatus {
     }
 
     /**
-     * Method to return if the result is failure
+     * Returns true if the result is failure.
      *
      * @return true if the result is failure, otherwise false
      */
@@ -107,7 +107,7 @@ public class TestDescriptorStatus {
     }
 
     /**
-     * Method to return if the result is skipped
+     * Returns true if the result is skipped.
      *
      * @return true if the result is skipped, otherwise false
      */
@@ -116,7 +116,7 @@ public class TestDescriptorStatus {
     }
 
     /**
-     * Method to return if the result is skipped with a Throwable
+     * Returns true if the result is skipped with a Throwable.
      *
      * @return true if the result is skipped with a Throwable, otherwise false
      */
@@ -130,10 +130,10 @@ public class TestDescriptorStatus {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TestDescriptorStatus that = (TestDescriptorStatus) o;
+        final TestDescriptorStatus that = (TestDescriptorStatus) o;
         return type == that.type && Objects.equals(throwable, that.throwable);
     }
 
@@ -143,7 +143,7 @@ public class TestDescriptorStatus {
     }
 
     /**
-     * Method to create successful invocation result
+     * Creates a successful invocation result.
      *
      * @return an InvocationResult
      */
@@ -152,7 +152,7 @@ public class TestDescriptorStatus {
     }
 
     /**
-     * Method to create a skipped invocation result
+     * Creates a skipped invocation result.
      *
      * @return an InvocationResult
      */
@@ -161,22 +161,22 @@ public class TestDescriptorStatus {
     }
 
     /**
-     * Method to create a skipped invocation result
+     * Creates a skipped invocation result.
      *
      * @param throwable throwable
      * @return an InvocationResult
      */
-    public static TestDescriptorStatus skipped(Throwable throwable) {
+    public static TestDescriptorStatus skipped(final Throwable throwable) {
         return new TestDescriptorStatus(Type.SKIPPED, throwable);
     }
 
     /**
-     * Method to create a exception invocation result
+     * Creates an exception invocation result.
      *
      * @param throwable throwable
      * @return an InvocationResult
      */
-    public static TestDescriptorStatus failed(Throwable throwable) {
+    public static TestDescriptorStatus failed(final Throwable throwable) {
         return new TestDescriptorStatus(Type.FAILED, throwable);
     }
 }

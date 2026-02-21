@@ -28,15 +28,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -45,7 +42,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.junit.platform.engine.EngineDiscoveryRequest;
@@ -98,52 +94,52 @@ public class VerifyicaTestEngine implements TestEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(VerifyicaTestEngine.class);
 
     /**
-     * Constant
+     * The version string used when the actual version cannot be determined.
      */
     private static final String UNKNOWN_VERSION = "unknown";
 
     /**
-     * Constant
+     * The display name of the test engine.
      */
     private static final String DISPLAY_NAME = "Verifyica";
 
     /**
-     * Constant
+     * The unique identifier of the test engine.
      */
     private static final String ID = DISPLAY_NAME.toLowerCase(Locale.ENGLISH);
 
     /**
-     * Constant
+     * The Maven group ID of the engine artifact.
      */
     private static final String GROUP_ID = "org.verifyica";
 
     /**
-     * Constant
+     * The Maven artifact ID of the engine.
      */
     private static final String ARTIFACT_ID = "engine";
 
     /**
-     * Constant
+     * The version of the test engine.
      */
     private static final String VERSION = version();
 
     /**
-     * Constant
+     * The unique ID string for the engine descriptor.
      */
     private static final String UNIQUE_ID = "[engine:" + ID + "]";
 
     /**
-     * Constant
+     * The resource path for engine properties.
      */
     private static final String ENGINE_PROPERTIES_RESOURCE = "/engine.properties";
 
     /**
-     * Constant
+     * The property key for the engine version in the properties file.
      */
     private static final String ENGINE_PROPERTIES_VERSION_KEY = "version";
 
     /**
-     * Predicate to find an ArgumentExecutorServiceSupplier method
+     * Predicate to find an ArgumentExecutorServiceSupplier method.
      */
     private static final Predicate<Method> ARGUMENT_EXECUTOR_SERVICE_SUPPLIER_METHOD =
             new ArgumentExecutorServiceSupplierMethod();
@@ -152,28 +148,48 @@ public class VerifyicaTestEngine implements TestEngine {
 
     private Configuration configuration;
 
+    /**
+     * Returns the unique ID of this test engine.
+     *
+     * @return the unique ID of this test engine
+     */
     @Override
     public String getId() {
         return ID;
     }
 
+    /**
+     * Returns the group ID of this test engine.
+     *
+     * @return an Optional containing the group ID
+     */
     @Override
     public Optional<String> getGroupId() {
         return of(GROUP_ID);
     }
 
+    /**
+     * Returns the artifact ID of this test engine.
+     *
+     * @return an Optional containing the artifact ID
+     */
     @Override
     public Optional<String> getArtifactId() {
         return of(ARTIFACT_ID);
     }
 
+    /**
+     * Returns the version of this test engine.
+     *
+     * @return an Optional containing the version
+     */
     @Override
     public Optional<String> getVersion() {
         return of(VERSION);
     }
 
     /**
-     * Constructor
+     * Creates a new VerifyicaTestEngine instance.
      */
     public VerifyicaTestEngine() {
         throwables = new ArrayList<>();
@@ -188,6 +204,13 @@ public class VerifyicaTestEngine implements TestEngine {
         return VERSION;
     }
 
+    /**
+     * Discovers tests based on the supplied request.
+     *
+     * @param engineDiscoveryRequest the engine discovery request
+     * @param uniqueId the unique ID
+     * @return a TestDescriptor representing the discovered tests
+     */
     @Override
     public TestDescriptor discover(EngineDiscoveryRequest engineDiscoveryRequest, UniqueId uniqueId) {
         if (!UNIQUE_ID.equals(uniqueId.toString()) || isRunningViaMavenSurefirePlugin()) {
@@ -224,6 +247,11 @@ public class VerifyicaTestEngine implements TestEngine {
         }
     }
 
+    /**
+     * Executes tests based on the supplied request.
+     *
+     * @param executionRequest the execution request
+     */
     @Override
     public void execute(ExecutionRequest executionRequest) {
         if (executionRequest.getRootTestDescriptor().getChildren().isEmpty()) {
@@ -237,7 +265,7 @@ public class VerifyicaTestEngine implements TestEngine {
         EngineContext engineContext = null;
         EngineInterceptorRegistry engineInterceptorRegistry = null;
         ClassInterceptorRegistry classInterceptorRegistry = null;
-        Map<Class<?>, ExecutorService> testClassArgumentExecutorServiceMap = new HashMap<>();
+        Map<Class<?>, ExecutorService> testClassArgumentExecutorServiceMap = null;
 
         try {
             if (LOGGER.isTraceEnabled()) {
@@ -264,8 +292,8 @@ public class VerifyicaTestEngine implements TestEngine {
                                 .map(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_MAPPER)
                                 .collect(Collectors.toList());
 
-                configureTestClassArgumentExecutorServices(
-                        testableTestDescriptors, testClassArgumentExecutorServiceMap);
+                testClassArgumentExecutorServiceMap =
+                        configureTestClassArgumentExecutorServices(testableTestDescriptors);
 
                 List<Future<?>> futures = new ArrayList<>(testableTestDescriptors.size());
 
@@ -301,7 +329,11 @@ public class VerifyicaTestEngine implements TestEngine {
                             testableTestDescriptor);
 
                     String hash = HashSupport.alphanumeric(6);
-                    String threadName = hash + "/" + hash;
+                    String threadName = new StringBuilder(13)
+                            .append(hash)
+                            .append('/')
+                            .append(hash)
+                            .toString();
                     ThreadNameRunnable threadNameRunnable =
                             new ThreadNameRunnable(threadName, testableTestDescriptor::test);
 
@@ -318,8 +350,7 @@ public class VerifyicaTestEngine implements TestEngine {
 
                 Map<String, Object> map = engineContext.getMap();
 
-                Set<Map.Entry<String, Object>> entrySet = map.entrySet();
-                for (Map.Entry<String, Object> entry : entrySet) {
+                for (Map.Entry<String, Object> entry : map.entrySet()) {
                     if (entry.getValue() instanceof AutoCloseable) {
                         try {
                             ((AutoCloseable) entry.getValue()).close();
@@ -417,14 +448,15 @@ public class VerifyicaTestEngine implements TestEngine {
             return true;
         }
 
-        boolean isRunningViaMavenSurefirePlugin = Arrays.stream(
-                        Thread.currentThread().getStackTrace())
-                .anyMatch(
-                        stackTraceElement -> stackTraceElement.getClassName().startsWith("org.apache.maven.surefire"));
+        for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+            if (stackTraceElement.getClassName().startsWith("org.apache.maven.surefire")) {
+                LOGGER.trace("isRunningViaMavenSurefirePlugin [true]");
+                return true;
+            }
+        }
 
-        LOGGER.trace("isRunningViaMavenSurefirePlugin [%b]", isRunningViaMavenSurefirePlugin);
-
-        return isRunningViaMavenSurefirePlugin;
+        LOGGER.trace("isRunningViaMavenSurefirePlugin [false]");
+        return false;
     }
 
     /**
@@ -443,10 +475,18 @@ public class VerifyicaTestEngine implements TestEngine {
      * @param level the indentation level
      */
     private static void traceTestDescriptor(TestDescriptor testDescriptor, int level) {
-        LOGGER.trace(String.join(" ", Collections.nCopies(level, " ")) + testDescriptor);
+        String testDescriptorString = testDescriptor.toString();
+        int numSpaces = level > 0 ? level * 2 - 1 : 0;
+        StringBuilder stringBuilder = new StringBuilder(numSpaces + testDescriptorString.length());
+        for (int i = 0; i < numSpaces; i++) {
+            stringBuilder.append(' ');
+        }
+        stringBuilder.append(testDescriptorString);
+        LOGGER.trace(stringBuilder.toString());
 
-        testDescriptor.getChildren().forEach((Consumer<TestDescriptor>)
-                childTestDescriptor -> traceTestDescriptor(childTestDescriptor, level + 2));
+        for (TestDescriptor childTestDescriptor : testDescriptor.getChildren()) {
+            traceTestDescriptor(childTestDescriptor, level + 2);
+        }
     }
 
     /**
@@ -647,15 +687,17 @@ public class VerifyicaTestEngine implements TestEngine {
      * Configures test class argument executor services.
      *
      * @param testableTestDescriptors the testable test descriptors
-     * @param testClassArgumentExecutorServiceMap the test class argument executor service map
+     * @return a map of test class to ExecutorService
      * @throws IllegalAccessException if the method is not accessible
      * @throws InvocationTargetException if the method invocation fails
      */
-    private static void configureTestClassArgumentExecutorServices(
-            List<TestableTestDescriptor> testableTestDescriptors,
-            Map<Class<?>, ExecutorService> testClassArgumentExecutorServiceMap)
+    private static Map<Class<?>, ExecutorService> configureTestClassArgumentExecutorServices(
+            List<TestableTestDescriptor> testableTestDescriptors)
             throws IllegalAccessException, InvocationTargetException {
         LOGGER.trace("configureTestClassArgumentExecutorServices()");
+
+        Map<Class<?>, ExecutorService> testClassArgumentExecutorServiceMap =
+                new HashMap<>((int) (testableTestDescriptors.size() / 0.75f) + 1);
 
         String annotationDisplayName = "@Verifyica." + ArgumentExecutorServiceSupplierMethod.class.getSimpleName();
 
@@ -697,6 +739,8 @@ public class VerifyicaTestEngine implements TestEngine {
         }
 
         LOGGER.trace("testClassArgumentExecutorServiceMap.size() [%d]", testClassArgumentExecutorServiceMap.size());
+
+        return testClassArgumentExecutorServiceMap;
     }
 
     /**
@@ -707,18 +751,19 @@ public class VerifyicaTestEngine implements TestEngine {
     private void cleanupTestClassExecutorServices(Map<Class<?>, ExecutorService> testClassArgumentExecutorServiceMap) {
         LOGGER.trace("cleanupTestClassExecutorServices()");
 
+        if (testClassArgumentExecutorServiceMap == null) {
+            return;
+        }
+
         for (Map.Entry<Class<?>, ExecutorService> entry : testClassArgumentExecutorServiceMap.entrySet()) {
-            LOGGER.trace(
-                    "shutting down testClass [%s] executor service",
-                    entry.getKey().getName());
+            String className = entry.getKey().getName();
+            LOGGER.trace("shutting down testClass [%s] executor service", className);
 
             try {
                 ExecutorService executorService = entry.getValue();
                 executorService.shutdownNow();
             } catch (Throwable t) {
-                LOGGER.error(
-                        "Exception shutting down test class [%s] executor service",
-                        entry.getKey().getName());
+                LOGGER.error("Exception shutting down test class [%s] executor service", className);
             }
         }
 
@@ -726,7 +771,7 @@ public class VerifyicaTestEngine implements TestEngine {
     }
 
     /**
-     * Predicate to find an ArgumentExecutorServiceSupplier method
+     * Predicate to find an ArgumentExecutorServiceSupplier method.
      */
     private static class ArgumentExecutorServiceSupplierMethod implements Predicate<Method> {
 

@@ -35,7 +35,7 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
         @Test
         @DisplayName("Should create handler")
         public void shouldCreateHandler() {
-            HeadOfQueueRejectedExecutionHandler handler = new HeadOfQueueRejectedExecutionHandler();
+            final HeadOfQueueRejectedExecutionHandler handler = new HeadOfQueueRejectedExecutionHandler();
 
             assertThat(handler).isNotNull();
         }
@@ -48,11 +48,11 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
         @Test
         @DisplayName("Should execute rejected task when queue is empty")
         public void shouldExecuteRejectedTaskWhenQueueIsEmpty() throws InterruptedException {
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<>(1), new HeadOfQueueRejectedExecutionHandler());
 
-            List<String> results = Collections.synchronizedList(new ArrayList<>());
-            CountDownLatch latch = new CountDownLatch(1);
+            final List<String> results = Collections.synchronizedList(new ArrayList<>());
+            final CountDownLatch latch = new CountDownLatch(1);
 
             // Block the single thread
             executor.execute(() -> {
@@ -79,12 +79,12 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
         @Test
         @DisplayName("Should remove and execute head of queue when queue not empty")
         public void shouldRemoveAndExecuteHeadOfQueueWhenQueueNotEmpty() throws InterruptedException {
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<>(2), new HeadOfQueueRejectedExecutionHandler());
 
-            List<String> results = Collections.synchronizedList(new ArrayList<>());
-            CountDownLatch startLatch = new CountDownLatch(1);
-            CountDownLatch finishLatch = new CountDownLatch(1);
+            final List<String> results = Collections.synchronizedList(new ArrayList<>());
+            final CountDownLatch startLatch = new CountDownLatch(1);
+            final CountDownLatch finishLatch = new CountDownLatch(1);
 
             // Block the single thread
             executor.execute(() -> {
@@ -116,14 +116,14 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
         @Test
         @DisplayName("Should handle null runnable from queue")
         public void shouldHandleNullRunnableFromQueue() {
-            BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
-            ThreadPoolExecutor executor =
+            final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
+            final ThreadPoolExecutor executor =
                     new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, queue, new HeadOfQueueRejectedExecutionHandler());
 
-            List<String> results = Collections.synchronizedList(new ArrayList<>());
+            final List<String> results = Collections.synchronizedList(new ArrayList<>());
 
             // Queue is empty, poll returns null
-            HeadOfQueueRejectedExecutionHandler handler = new HeadOfQueueRejectedExecutionHandler();
+            final HeadOfQueueRejectedExecutionHandler handler = new HeadOfQueueRejectedExecutionHandler();
             handler.rejectedExecution(() -> results.add("executed"), executor);
 
             executor.shutdown();
@@ -139,7 +139,7 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
         @Test
         @DisplayName("Should maintain FIFO order for non-rejected tasks")
         public void shouldMaintainFifoOrderForNonRejectedTasks() throws InterruptedException {
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1,
                     1,
                     1,
@@ -147,7 +147,7 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
                     new LinkedBlockingQueue<>(10),
                     new HeadOfQueueRejectedExecutionHandler());
 
-            List<Integer> results = Collections.synchronizedList(new ArrayList<>());
+            final List<Integer> results = Collections.synchronizedList(new ArrayList<>());
 
             for (int i = 0; i < 10; i++) {
                 final int value = i;
@@ -170,11 +170,11 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
         @Test
         @DisplayName("Should handle multiple rejections")
         public void shouldHandleMultipleRejections() throws InterruptedException {
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<>(1), new HeadOfQueueRejectedExecutionHandler());
 
-            List<String> results = Collections.synchronizedList(new ArrayList<>());
-            CountDownLatch latch = new CountDownLatch(1);
+            final List<String> results = Collections.synchronizedList(new ArrayList<>());
+            final CountDownLatch latch = new CountDownLatch(1);
 
             // Block the executor
             executor.execute(() -> {
@@ -202,11 +202,11 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
         @Test
         @DisplayName("Should work with zero capacity queue")
         public void shouldWorkWithZeroCapacityQueue() throws InterruptedException {
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new SynchronousQueue<>(), new HeadOfQueueRejectedExecutionHandler());
 
-            List<String> results = Collections.synchronizedList(new ArrayList<>());
-            CountDownLatch latch = new CountDownLatch(1);
+            final List<String> results = Collections.synchronizedList(new ArrayList<>());
+            final CountDownLatch latch = new CountDownLatch(1);
 
             // Block the executor
             executor.execute(() -> {
@@ -235,12 +235,12 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
         @Test
         @DisplayName("Should execute oldest task first when rejecting")
         public void shouldExecuteOldestTaskFirstWhenRejecting() throws InterruptedException {
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<>(2), new HeadOfQueueRejectedExecutionHandler());
 
-            List<String> executionOrder = Collections.synchronizedList(new ArrayList<>());
-            CountDownLatch startLatch = new CountDownLatch(1);
-            CountDownLatch blockLatch = new CountDownLatch(1);
+            final List<String> executionOrder = Collections.synchronizedList(new ArrayList<>());
+            final CountDownLatch startLatch = new CountDownLatch(1);
+            final CountDownLatch blockLatch = new CountDownLatch(1);
 
             // Block the executor
             executor.execute(() -> {
@@ -274,12 +274,12 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
         @Test
         @DisplayName("Should execute rejected task on calling thread")
         public void shouldExecuteRejectedTaskOnCallingThread() throws InterruptedException {
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new SynchronousQueue<>(), new HeadOfQueueRejectedExecutionHandler());
 
-            Thread callingThread = Thread.currentThread();
-            List<Boolean> sameThreadResults = Collections.synchronizedList(new ArrayList<>());
-            CountDownLatch latch = new CountDownLatch(1);
+            final Thread callingThread = Thread.currentThread();
+            final List<Boolean> sameThreadResults = Collections.synchronizedList(new ArrayList<>());
+            final CountDownLatch latch = new CountDownLatch(1);
 
             // Block the executor
             executor.execute(() -> {
@@ -308,10 +308,10 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
         @Test
         @DisplayName("Should propagate exception from rejected task")
         public void shouldPropagateExceptionFromRejectedTask() throws InterruptedException {
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            final ThreadPoolExecutor executor = new ThreadPoolExecutor(
                     1, 1, 1, TimeUnit.SECONDS, new SynchronousQueue<>(), new HeadOfQueueRejectedExecutionHandler());
 
-            CountDownLatch latch = new CountDownLatch(1);
+            final CountDownLatch latch = new CountDownLatch(1);
 
             // Block the executor
             executor.execute(() -> {
@@ -332,6 +332,36 @@ public class HeadOfQueueRejectedExecutionHandlerTest {
             latch.countDown();
             executor.shutdown();
             executor.awaitTermination(2, TimeUnit.SECONDS);
+        }
+    }
+
+    @Nested
+    @DisplayName("Null Parameter Validation Tests")
+    public class NullParameterValidationTests {
+
+        @Test
+        @DisplayName("Should throw IllegalArgumentException when runnable is null")
+        public void shouldThrowWhenRunnableIsNull() {
+            final HeadOfQueueRejectedExecutionHandler handler = new HeadOfQueueRejectedExecutionHandler();
+            final ThreadPoolExecutor executor =
+                    new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<>(1));
+
+            assertThatThrownBy(() -> handler.rejectedExecution(null, executor))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("runnable is null");
+
+            executor.shutdown();
+        }
+
+        @Test
+        @DisplayName("Should throw IllegalArgumentException when threadPoolExecutor is null")
+        public void shouldThrowWhenThreadPoolExecutorIsNull() {
+            final HeadOfQueueRejectedExecutionHandler handler = new HeadOfQueueRejectedExecutionHandler();
+            final Runnable runnable = () -> {};
+
+            assertThatThrownBy(() -> handler.rejectedExecution(runnable, null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("threadPoolExecutor is null");
         }
     }
 }

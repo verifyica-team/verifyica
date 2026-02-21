@@ -44,20 +44,20 @@ public class KeyedLatchManager {
     }
 
     /**
-     * Create or get a latch with the specified count
+     * Creates a latch with the specified count.
      *
-     * @param key key
+     * @param key the key to identify the latch
      * @param count the number of times countDown must be invoked before threads can pass through await
      * @return the CountDownLatch
      * @throws IllegalArgumentException if key is null or blank, or count is negative
      * @throws IllegalStateException if a latch already exists for this key
      */
-    public static CountDownLatch createLatch(String key, int count) {
+    public static CountDownLatch createLatch(final String key, final int count) {
         if (count < 0) {
             throw new IllegalArgumentException("count cannot be negative");
         }
 
-        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
+        final String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
 
         LOCK.lock();
         try {
@@ -65,7 +65,7 @@ public class KeyedLatchManager {
                 throw new IllegalStateException(format("Latch for key [%s] already exists", trimmedKey));
             }
 
-            CountDownLatch latch = new CountDownLatch(count);
+            final CountDownLatch latch = new CountDownLatch(count);
             LATCHES.put(trimmedKey, latch);
             return latch;
         } finally {
@@ -74,14 +74,14 @@ public class KeyedLatchManager {
     }
 
     /**
-     * Get an existing latch
+     * Gets an existing latch.
      *
-     * @param key key
+     * @param key the key to identify the latch
      * @return the CountDownLatch, or null if no latch exists for this key
      * @throws IllegalArgumentException if key is null or blank
      */
-    public static CountDownLatch getLatch(String key) {
-        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
+    public static CountDownLatch getLatch(final String key) {
+        final String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
 
         LOCK.lock();
         try {
@@ -92,16 +92,16 @@ public class KeyedLatchManager {
     }
 
     /**
-     * Wait for the latch to count down to zero
+     * Waits for the latch to count down to zero.
      *
-     * @param key key
+     * @param key the key to identify the latch
      * @throws IllegalArgumentException if key is null or blank
      * @throws IllegalStateException if no latch exists for this key
      * @throws InterruptedException if the current thread is interrupted while waiting
      */
-    public static void await(String key) throws InterruptedException {
-        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
-        CountDownLatch latch;
+    public static void await(final String key) throws InterruptedException {
+        final String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
+        final CountDownLatch latch;
 
         LOCK.lock();
         try {
@@ -117,9 +117,9 @@ public class KeyedLatchManager {
     }
 
     /**
-     * Wait for the latch to count down to zero, with timeout
+     * Waits for the latch to count down to zero, with timeout.
      *
-     * @param key key
+     * @param key the key to identify the latch
      * @param timeout the maximum time to wait
      * @param timeUnit the time unit of the timeout argument
      * @return true if the count reached zero, false if the waiting time elapsed
@@ -127,11 +127,12 @@ public class KeyedLatchManager {
      * @throws IllegalStateException if no latch exists for this key
      * @throws InterruptedException if the current thread is interrupted while waiting
      */
-    public static boolean await(String key, long timeout, TimeUnit timeUnit) throws InterruptedException {
+    public static boolean await(final String key, final long timeout, final TimeUnit timeUnit)
+            throws InterruptedException {
         notNull(timeUnit, "timeUnit is null");
 
-        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
-        CountDownLatch latch;
+        final String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
+        final CountDownLatch latch;
 
         LOCK.lock();
         try {
@@ -147,15 +148,15 @@ public class KeyedLatchManager {
     }
 
     /**
-     * Count down the latch
+     * Counts down the latch.
      *
-     * @param key key
+     * @param key the key to identify the latch
      * @throws IllegalArgumentException if key is null or blank
      * @throws IllegalStateException if no latch exists for this key
      */
-    public static void countDown(String key) {
-        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
-        CountDownLatch latch;
+    public static void countDown(final String key) {
+        final String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
+        final CountDownLatch latch;
 
         LOCK.lock();
         try {
@@ -171,16 +172,16 @@ public class KeyedLatchManager {
     }
 
     /**
-     * Get the current count of the latch
+     * Gets the current count of the latch.
      *
-     * @param key key
+     * @param key the key to identify the latch
      * @return the current count
      * @throws IllegalArgumentException if key is null or blank
      * @throws IllegalStateException if no latch exists for this key
      */
-    public static long getCount(String key) {
-        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
-        CountDownLatch latch;
+    public static long getCount(final String key) {
+        final String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
+        final CountDownLatch latch;
 
         LOCK.lock();
         try {
@@ -196,14 +197,14 @@ public class KeyedLatchManager {
     }
 
     /**
-     * Remove a latch
+     * Removes a latch.
      *
-     * @param key key
+     * @param key the key to identify the latch
      * @return the removed CountDownLatch, or null if no latch existed for this key
      * @throws IllegalArgumentException if key is null or blank
      */
-    public static CountDownLatch removeLatch(String key) {
-        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
+    public static CountDownLatch removeLatch(final String key) {
+        final String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
 
         LOCK.lock();
         try {
@@ -214,14 +215,14 @@ public class KeyedLatchManager {
     }
 
     /**
-     * Check if a latch exists for the key
+     * Checks if a latch exists for the key.
      *
-     * @param key key
+     * @param key the key to identify the latch
      * @return true if a latch exists, false otherwise
      * @throws IllegalArgumentException if key is null or blank
      */
-    public static boolean hasLatch(String key) {
-        String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
+    public static boolean hasLatch(final String key) {
+        final String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
 
         LOCK.lock();
         try {
@@ -232,11 +233,11 @@ public class KeyedLatchManager {
     }
 
     /**
-     * Assert the number of latches
+     * Asserts the number of latches.
      *
-     * @param size size
+     * @param size the expected number of latches
      */
-    static void assertSize(int size) {
+    static void assertSize(final int size) {
         LOCK.lock();
         try {
             if (LATCHES.size() != size) {
@@ -248,32 +249,32 @@ public class KeyedLatchManager {
     }
 
     /**
-     * Validate an Object is not null, throwing an IllegalArgumentException if it is null
+     * Validates an Object is not null, throwing an IllegalArgumentException if it is null.
      *
-     * @param object object
-     * @param message message
+     * @param object the object to validate
+     * @param message the exception message
      */
-    private static void notNull(Object object, String message) {
+    private static void notNull(final Object object, final String message) {
         if (object == null) {
             throw new IllegalArgumentException(message);
         }
     }
 
     /**
-     * Validate a String is not null and not blank, throwing an IllegalArgumentException
+     * Validates a String is not null and not blank, throwing an IllegalArgumentException
      * if it is null or blank. Returns the trimmed string.
      *
-     * @param string string
-     * @param nullMessage nullMessage
-     * @param blankMessage blankMessage
+     * @param string the string to validate
+     * @param nullMessage the exception message if the string is null
+     * @param blankMessage the exception message if the string is blank
      * @return the trimmed string
      */
-    private static String trimAndValidate(String string, String nullMessage, String blankMessage) {
+    private static String trimAndValidate(final String string, final String nullMessage, final String blankMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }
 
-        String trimmed = string.trim();
+        final String trimmed = string.trim();
         if (trimmed.isEmpty()) {
             throw new IllegalArgumentException(blankMessage);
         }

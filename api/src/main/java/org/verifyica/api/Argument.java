@@ -55,7 +55,7 @@ public interface Argument<T> extends Named {
      * @throws IllegalArgumentException if {@code type} is {@code null}
      * @throws ClassCastException if the payload cannot be cast to {@code type}
      */
-    default <V> V getPayloadAs(Class<V> type) {
+    default <V> V getPayloadAs(final Class<V> type) {
         notNull(type, "type is null");
         return type.cast(getPayload());
     }
@@ -75,7 +75,7 @@ public interface Argument<T> extends Named {
      * @param value the value
      * @return an {@code Argument} containing the value
      */
-    static Argument<Boolean> ofBoolean(boolean value) {
+    static Argument<Boolean> ofBoolean(final boolean value) {
         return of(String.valueOf(value), value);
     }
 
@@ -85,7 +85,7 @@ public interface Argument<T> extends Named {
      * @param value the value
      * @return an {@code Argument} containing the value
      */
-    static Argument<Byte> ofByte(byte value) {
+    static Argument<Byte> ofByte(final byte value) {
         return of(String.valueOf(value), value);
     }
 
@@ -95,7 +95,7 @@ public interface Argument<T> extends Named {
      * @param value the value
      * @return an {@code Argument} containing the value
      */
-    static Argument<Character> ofChar(char value) {
+    static Argument<Character> ofChar(final char value) {
         return of(String.valueOf(value), value);
     }
 
@@ -105,7 +105,7 @@ public interface Argument<T> extends Named {
      * @param value the value
      * @return an {@code Argument} containing the value
      */
-    static Argument<Short> ofShort(short value) {
+    static Argument<Short> ofShort(final short value) {
         return of(String.valueOf(value), value);
     }
 
@@ -115,7 +115,7 @@ public interface Argument<T> extends Named {
      * @param value the value
      * @return an {@code Argument} containing the value
      */
-    static Argument<Integer> ofInt(int value) {
+    static Argument<Integer> ofInt(final int value) {
         return of(String.valueOf(value), value);
     }
 
@@ -125,7 +125,7 @@ public interface Argument<T> extends Named {
      * @param value the value
      * @return an {@code Argument} containing the value
      */
-    static Argument<Long> ofLong(long value) {
+    static Argument<Long> ofLong(final long value) {
         return of(String.valueOf(value), value);
     }
 
@@ -135,7 +135,7 @@ public interface Argument<T> extends Named {
      * @param value the value
      * @return an {@code Argument} containing the value
      */
-    static Argument<Float> ofFloat(float value) {
+    static Argument<Float> ofFloat(final float value) {
         return of(String.valueOf(value), value);
     }
 
@@ -145,7 +145,7 @@ public interface Argument<T> extends Named {
      * @param value the value
      * @return an {@code Argument} containing the value
      */
-    static Argument<Double> ofDouble(double value) {
+    static Argument<Double> ofDouble(final double value) {
         return of(String.valueOf(value), value);
     }
 
@@ -155,7 +155,7 @@ public interface Argument<T> extends Named {
      * @param value the value
      * @return an {@code Argument} containing the value
      */
-    static Argument<String> ofString(String value) {
+    static Argument<String> ofString(final String value) {
         if (value == null) {
             return of("String=/null/", null);
         } else if (value.isEmpty()) {
@@ -171,7 +171,7 @@ public interface Argument<T> extends Named {
      * @param value the value
      * @return an {@code Argument} containing the value
      */
-    static Argument<BigInteger> ofBigInteger(BigInteger value) {
+    static Argument<BigInteger> ofBigInteger(final BigInteger value) {
         return value == null ? of("BigInteger=/null/", null) : of(value.toString(), value);
     }
 
@@ -182,7 +182,7 @@ public interface Argument<T> extends Named {
      * @return an {@code Argument} containing the parsed value
      * @throws NumberFormatException if the string is not a valid representation of a BigInteger
      */
-    static Argument<BigInteger> ofBigInteger(String value) {
+    static Argument<BigInteger> ofBigInteger(final String value) {
         return value == null ? of("BigInteger=/null/", null) : ofBigInteger(new BigInteger(value));
     }
 
@@ -192,7 +192,7 @@ public interface Argument<T> extends Named {
      * @param value the value
      * @return an {@code Argument} containing the value
      */
-    static Argument<BigDecimal> ofBigDecimal(BigDecimal value) {
+    static Argument<BigDecimal> ofBigDecimal(final BigDecimal value) {
         return value == null ? of("BigDecimal=/null/", null) : of(value.toString(), value);
     }
 
@@ -203,7 +203,7 @@ public interface Argument<T> extends Named {
      * @return an {@code Argument} containing the parsed value
      * @throws NumberFormatException if the string is not a valid representation of a BigDecimal
      */
-    static Argument<BigDecimal> ofBigDecimal(String value) {
+    static Argument<BigDecimal> ofBigDecimal(final String value) {
         return value == null ? of("BigDecimal=/null/", null) : ofBigDecimal(new BigDecimal(value));
     }
 
@@ -216,10 +216,11 @@ public interface Argument<T> extends Named {
      * @return a new {@code Argument}
      * @throws IllegalArgumentException if {@code name} is null or blank
      */
-    static <T> Argument<T> of(String name, T payload) {
+    static <T> Argument<T> of(final String name, final T payload) {
         notBlank(name, "name is null", "name is blank");
 
         return new Argument<T>() {
+
             @Override
             public String getName() {
                 return name;
@@ -244,7 +245,7 @@ public interface Argument<T> extends Named {
      * @param message the exception message
      * @throws IllegalArgumentException if {@code object} is {@code null}
      */
-    static void notNull(Object object, String message) {
+    static void notNull(final Object object, final String message) {
         if (object == null) {
             throw new IllegalArgumentException(message);
         }
@@ -258,7 +259,7 @@ public interface Argument<T> extends Named {
      * @param blankMessage the exception message if {@code string} is blank
      * @throws IllegalArgumentException if validation fails
      */
-    static void notBlank(String string, String nullMessage, String blankMessage) {
+    static void notBlank(final String string, final String nullMessage, final String blankMessage) {
         if (string == null) {
             throw new IllegalArgumentException(nullMessage);
         }

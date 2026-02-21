@@ -29,7 +29,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Class to implement SystemLoadAverageThrottle
+ * Throttles execution based on system load average and CPU usage.
+ * This class monitors system metrics and introduces delays when
+ * system load or CPU usage exceeds configured thresholds.
  */
 public class SystemLoadAverageThrottle implements Throttle {
 
@@ -67,12 +69,12 @@ public class SystemLoadAverageThrottle implements Throttle {
     private final AtomicLong prevIoWait = new AtomicLong(0);
 
     /**
-     * Constructor
+     * Creates a new SystemLoadAverageThrottle with the specified thresholds.
      *
      * @param targetMaximumLoad the maximum load percentage (0.0 - 1.0)
      * @param targetMaximumCpuPercentage the maximum CPU percentage (0.0 - 1.0)
      */
-    private SystemLoadAverageThrottle(double targetMaximumLoad, double targetMaximumCpuPercentage) {
+    private SystemLoadAverageThrottle(final double targetMaximumLoad, final double targetMaximumCpuPercentage) {
         // Validate targetMaximumLoad input
         if (targetMaximumLoad <= 0 || targetMaximumLoad > 1.0) {
             throw new IllegalArgumentException("Target maximum load must be between 0 and 1");
@@ -90,7 +92,7 @@ public class SystemLoadAverageThrottle implements Throttle {
 
         // Calculate maximum allowed system load based on available processors
         // or cgroup limits if running in a container
-        int effectiveProcessors = getEffectiveProcessorCount();
+        final int effectiveProcessors = getEffectiveProcessorCount();
         maximumLoad = effectiveProcessors * targetMaximumLoad;
 
         // Initialize CPU stats
@@ -103,21 +105,21 @@ public class SystemLoadAverageThrottle implements Throttle {
     }
 
     /**
-     * Method to throttle execution with maximum cumulative sleep time
+     * Throttles execution with maximum cumulative sleep time.
      *
      * @param maxCumulativeSleepTimeMs the maximum cumulative sleep time in milliseconds
      * @throws InterruptedException if the thread is interrupted
      */
-    public void throttle(long maxCumulativeSleepTimeMs) throws InterruptedException {
+    public void throttle(final long maxCumulativeSleepTimeMs) throws InterruptedException {
         long cumulativeSleepTime = 0;
 
         while (cumulativeSleepTime < maxCumulativeSleepTimeMs) {
-            double currentLoad = operatingSystemMXBean.getSystemLoadAverage();
-            double currentCpuUsage = getInstantCpuUsage();
+            final double currentLoad = operatingSystemMXBean.getSystemLoadAverage();
+            final double currentCpuUsage = getInstantCpuUsage();
 
             // Check if we need to throttle
-            boolean loadExceeded = currentLoad > 0 && currentLoad > maximumLoad;
-            boolean cpuExceeded = currentCpuUsage > targetMaximumCpuPercentage;
+            final boolean loadExceeded = currentLoad > 0 && currentLoad > maximumLoad;
+            final boolean cpuExceeded = currentCpuUsage > targetMaximumCpuPercentage;
 
             if (!loadExceeded && !cpuExceeded) {
                 // System is within limits, exit throttling
@@ -125,7 +127,7 @@ public class SystemLoadAverageThrottle implements Throttle {
             }
 
             // Calculate sleep time based on which metric is more exceeded
-            double excessRatio;
+            final double excessRatio;
             if (loadExceeded && cpuExceeded) {
                 excessRatio = Math.max(currentLoad / maximumLoad, currentCpuUsage / targetMaximumCpuPercentage);
             } else if (loadExceeded) {
@@ -137,7 +139,7 @@ public class SystemLoadAverageThrottle implements Throttle {
             long sleepTime = calculateExponentialSleepTime(excessRatio);
 
             // Ensure we don't exceed cumulative limit
-            long remainingTime = maxCumulativeSleepTimeMs - cumulativeSleepTime;
+            final long remainingTime = maxCumulativeSleepTimeMs - cumulativeSleepTime;
             sleepTime = Math.min(sleepTime, remainingTime);
 
             if (sleepTime < MINIMUM_SLEEP_TIME_MS) {
@@ -150,29 +152,29 @@ public class SystemLoadAverageThrottle implements Throttle {
     }
 
     /**
-     * Method to calculate exponential sleep time.
+     * Calculates exponential sleep time based on excess ratio.
      *
      * @param excessRatio the ratio of current to target (1.0 = at target)
      * @return the exponential sleep time
      */
-    private long calculateExponentialSleepTime(double excessRatio) {
+    private long calculateExponentialSleepTime(final double excessRatio) {
         // excessRatio > 1 means we're over the target
         if (excessRatio <= 1.0) {
             return BASE_SLEEP_TIME_MS;
         }
 
         // Calculate how much we're over (e.g., 1.5 = 50% over)
-        double excess = excessRatio - 1.0;
+        final double excess = excessRatio - 1.0;
 
         // Exponential backoff: double sleep time for each unit of excess
-        long sleepTime = (long) (BASE_SLEEP_TIME_MS * Math.pow(2, excess * 5));
+        final long sleepTime = (long) (BASE_SLEEP_TIME_MS * Math.pow(2, excess * 5));
 
         // Clamp to valid range
         return Math.max(MINIMUM_SLEEP_TIME_MS, Math.min(sleepTime, MAXIMUM_SLEEP_TIME_MS));
     }
 
     /**
-     * Gets instantaneous CPU usage from /proc/stat (Linux only)
+     * Gets instantaneous CPU usage from /proc/stat (Linux only).
      *
      * @return CPU usage as a percentage (0.0 - 1.0), or -1 if unavailable
      */
@@ -183,9 +185,9 @@ public class SystemLoadAverageThrottle implements Throttle {
         }
 
         try {
-            List<String> lines = readAllLines(PROC_STAT);
+            final List<String> lines = readAllLines(PROC_STAT);
             String cpuLine = null;
-            for (String line : lines) {
+            for (final String line : lines) {
                 if (line.startsWith("cpu ")) {
                     cpuLine = line;
                     break;
@@ -196,21 +198,21 @@ public class SystemLoadAverageThrottle implements Throttle {
                 return -1;
             }
 
-            String[] parts = cpuLine.trim().split("\\s+");
+            final String[] parts = cpuLine.trim().split("\\s+");
             if (parts.length < 5) {
                 return -1;
             }
 
-            long user = Long.parseLong(parts[1]);
-            long nice = Long.parseLong(parts[2]);
-            long system = Long.parseLong(parts[3]);
-            long idle = Long.parseLong(parts[4]);
-            long iowait = parts.length > 5 ? Long.parseLong(parts[5]) : 0;
+            final long user = Long.parseLong(parts[1]);
+            final long nice = Long.parseLong(parts[2]);
+            final long system = Long.parseLong(parts[3]);
+            final long idle = Long.parseLong(parts[4]);
+            final long iowait = parts.length > 5 ? Long.parseLong(parts[5]) : 0;
 
-            long prevUserVal = prevUser.get();
-            long prevSystemVal = prevSystem.get();
-            long prevIdleVal = prevIdle.get();
-            long prevIoWaitVal = prevIoWait.get();
+            final long prevUserVal = prevUser.get();
+            final long prevSystemVal = prevSystem.get();
+            final long prevIdleVal = prevIdle.get();
+            final long prevIoWaitVal = prevIoWait.get();
 
             // Store current values for next call
             prevUser.set(user);
@@ -223,26 +225,26 @@ public class SystemLoadAverageThrottle implements Throttle {
                 return -1;
             }
 
-            long userDelta = user - prevUserVal;
-            long systemDelta = system - prevSystemVal;
-            long idleDelta = idle - prevIdleVal;
-            long iowaitDelta = iowait - prevIoWaitVal;
+            final long userDelta = user - prevUserVal;
+            final long systemDelta = system - prevSystemVal;
+            final long idleDelta = idle - prevIdleVal;
+            final long iowaitDelta = iowait - prevIoWaitVal;
 
-            long totalDelta = userDelta + nice + systemDelta + idleDelta + iowaitDelta;
-            long usedDelta = userDelta + systemDelta;
+            final long totalDelta = userDelta + nice + systemDelta + idleDelta + iowaitDelta;
+            final long usedDelta = userDelta + systemDelta;
 
             if (totalDelta == 0) {
                 return 0.0;
             }
 
             return (double) usedDelta / totalDelta;
-        } catch (IOException | NumberFormatException e) {
+        } catch (final IOException | NumberFormatException e) {
             return -1;
         }
     }
 
     /**
-     * Reads CPU stats to initialize previous values
+     * Reads CPU stats to initialize previous values.
      */
     @SuppressWarnings("PMD.EmptyCatchBlock")
     private void readCpuStats() {
@@ -251,10 +253,10 @@ public class SystemLoadAverageThrottle implements Throttle {
         }
 
         try {
-            List<String> lines = Files.readAllLines(PROC_STAT);
-            for (String line : lines) {
+            final List<String> lines = Files.readAllLines(PROC_STAT);
+            for (final String line : lines) {
                 if (line.startsWith("cpu ")) {
-                    String[] parts = line.trim().split("\\s+");
+                    final String[] parts = line.trim().split("\\s+");
                     if (parts.length >= 5) {
                         prevUser.set(Long.parseLong(parts[1]));
                         prevSystem.set(Long.parseLong(parts[3]));
@@ -264,19 +266,19 @@ public class SystemLoadAverageThrottle implements Throttle {
                     break;
                 }
             }
-        } catch (IOException | NumberFormatException e) {
+        } catch (final IOException | NumberFormatException e) {
             // Ignore, will fall back to load average
         }
     }
 
     /**
-     * Gets effective processor count considering cgroups limits
+     * Gets effective processor count considering cgroups limits.
      *
      * @return effective number of processors
      */
     private int getEffectiveProcessorCount() {
         // Try to detect cgroup CPU limits (container environments)
-        Double cgroupLimit = readCgroupCpuLimit();
+        final Double cgroupLimit = readCgroupCpuLimit();
         if (cgroupLimit != null) {
             return Math.max(1, cgroupLimit.intValue());
         }
@@ -285,44 +287,45 @@ public class SystemLoadAverageThrottle implements Throttle {
     }
 
     /**
-     * Reads CPU limit from cgroups (v1 or v2)
+     * Reads CPU limit from cgroups (v1 or v2).
      *
      * @return CPU limit as a double, or null if not in a container/no limit
      */
     @SuppressWarnings("PMD.EmptyCatchBlock")
     private Double readCgroupCpuLimit() {
         // Try cgroups v2 first
-        Path cpuMax = Paths.get("/sys/fs/cgroup/cpu.max");
+        final Path cpuMax = Paths.get("/sys/fs/cgroup/cpu.max");
         if (Files.exists(cpuMax)) {
             try {
-                String content = readFileToString(cpuMax).trim();
-                String[] parts = content.split(" ");
+                final String content = readFileToString(cpuMax).trim();
+                final String[] parts = content.split(" ");
                 if (parts.length == 2) {
-                    long quota = Long.parseLong(parts[0]);
-                    long period = Long.parseLong(parts[1]);
+                    final long quota = Long.parseLong(parts[0]);
+                    final long period = Long.parseLong(parts[1]);
                     if (quota > 0 && period > 0) {
                         return (double) quota / period;
                     }
                 }
-            } catch (IOException | NumberFormatException e) {
+            } catch (final IOException | NumberFormatException e) {
                 // Fall through to cgroups v1 - this is expected fallback behavior
             }
         }
 
         // Try cgroups v1
-        Path quotaPath = Paths.get("/sys/fs/cgroup/cpu/cpu.cfs_quota_us");
-        Path periodPath = Paths.get("/sys/fs/cgroup/cpu/cpu.cfs_period_us");
+        final Path quotaPath = Paths.get("/sys/fs/cgroup/cpu/cpu.cfs_quota_us");
+        final Path periodPath = Paths.get("/sys/fs/cgroup/cpu/cpu.cfs_period_us");
 
         if (Files.exists(quotaPath)) {
             try {
-                long quota = Long.parseLong(readFileToString(quotaPath).trim());
+                final long quota = Long.parseLong(readFileToString(quotaPath).trim());
                 if (quota > 0) {
-                    long period = Long.parseLong(readFileToString(periodPath).trim());
+                    final long period =
+                            Long.parseLong(readFileToString(periodPath).trim());
                     if (period > 0) {
                         return (double) quota / period;
                     }
                 }
-            } catch (IOException | NumberFormatException e) {
+            } catch (final IOException | NumberFormatException e) {
                 // Ignore - cgroup limit not readable, use available processors
             }
         }
@@ -331,43 +334,45 @@ public class SystemLoadAverageThrottle implements Throttle {
     }
 
     /**
-     * Java 8 compatible method to read all lines from a file
+     * Java 8 compatible method to read all lines from a file.
      *
      * @param path the file path
      * @return list of lines
      * @throws IOException if an I/O error occurs
      */
-    private static List<String> readAllLines(Path path) throws IOException {
-        List<String> lines = new ArrayList<>();
+    private static List<String> readAllLines(final Path path) throws IOException {
+        final List<String> lines = new ArrayList<>();
         try (BufferedReader reader = Files.newBufferedReader(path)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 lines.add(line);
             }
         }
+
         return lines;
     }
 
     /**
-     * Java 8 compatible method to read a file to string
+     * Java 8 compatible method to read a file to string.
      *
      * @param path the file path
      * @return file content as string
      * @throws IOException if an I/O error occurs
      */
-    private static String readFileToString(Path path) throws IOException {
-        StringBuilder sb = new StringBuilder();
+    private static String readFileToString(final Path path) throws IOException {
+        final StringBuilder stringBuilder = new StringBuilder();
         try (BufferedReader reader = Files.newBufferedReader(path)) {
             String line;
             while ((line = reader.readLine()) != null) {
-                sb.append(line);
+                stringBuilder.append(line);
             }
         }
-        return sb.toString();
+
+        return stringBuilder.toString();
     }
 
     /**
-     * Method to get singleton instance
+     * Returns the singleton instance.
      *
      * @return the singleton instance
      */
@@ -376,12 +381,12 @@ public class SystemLoadAverageThrottle implements Throttle {
     }
 
     /**
-     * Class to implement Holder
+     * Holder class for the singleton instance.
      */
     private static class Holder {
 
         /**
-         * The singleton instance
+         * The singleton instance.
          */
         private static final SystemLoadAverageThrottle INSTANCE =
                 new SystemLoadAverageThrottle(TARGET_MAXIMUM_LOAD_PERCENTAGE, TARGET_MAXIMUM_LOAD_PERCENTAGE);

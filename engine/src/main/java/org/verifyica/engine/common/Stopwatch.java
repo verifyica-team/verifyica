@@ -75,6 +75,7 @@ public final class Stopwatch {
             accumulatedNanos = 0L;
             startNanoTime = System.nanoTime();
             running = true;
+
             return this;
         } finally {
             readWriteLock.writeLock().unlock();
@@ -93,6 +94,7 @@ public final class Stopwatch {
                 startNanoTime = System.nanoTime();
                 running = true;
             }
+
             return this;
         } finally {
             readWriteLock.writeLock().unlock();
@@ -112,6 +114,7 @@ public final class Stopwatch {
                 accumulatedNanos += (System.nanoTime() - startNanoTime);
                 running = false;
             }
+
             return this;
         } finally {
             readWriteLock.writeLock().unlock();

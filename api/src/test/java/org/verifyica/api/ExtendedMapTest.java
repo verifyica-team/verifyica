@@ -19,6 +19,8 @@ package org.verifyica.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +30,7 @@ public class ExtendedMapTest {
     @Test
     @DisplayName("Should perform common ExtendedMap operations")
     public void testCommon() {
-        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
 
         extendedMap.put("foo", 1);
 
@@ -40,18 +42,18 @@ public class ExtendedMapTest {
         assertThat(extendedMap.getAs("foo", Integer.class)).isInstanceOf(Integer.class);
         assertThat(extendedMap.getAs("foo", Integer.class)).isEqualTo(1);
 
-        Object value = extendedMap.removeAs("foo");
+        final Object value = extendedMap.removeAs("foo");
         assertThat(value).isNotNull();
         assertThat(value).isInstanceOf(Integer.class);
         assertThat((Integer) value).isEqualTo(1);
 
-        assertThat(extendedMap).isEmpty();
+        assertThat(extendedMap.isEmpty()).isTrue();
     }
 
     @Test
     @DisplayName("Should handle inheritance in ExtendedMap")
     public void testInheritance() {
-        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
 
         extendedMap.put("foo", new SuperClass("bar"));
 
@@ -69,20 +71,20 @@ public class ExtendedMapTest {
         assertThat(extendedMap.getAs("foo", SuperClass.class)).isInstanceOf(SuperClass.class);
         assertThat(extendedMap.getAs("foo", SuperClass.class).getValue()).isEqualTo("bar");
 
-        Object value = extendedMap.removeAs("foo");
+        final Object value = extendedMap.removeAs("foo");
         assertThat(value).isNotNull();
         assertThat(value).isInstanceOf(SubClass.class);
         assertThat(value).isInstanceOf(SuperClass.class);
         assertThat(((SubClass) value).getValue()).isEqualTo("bar");
         assertThat(((SuperClass) value).getValue()).isEqualTo("bar");
 
-        assertThat(extendedMap).isEmpty();
+        assertThat(extendedMap.isEmpty()).isTrue();
     }
 
     @Test
     @DisplayName("Should throw exception when getAs type is null")
     public void testGetAsWithNullType() {
-        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
         extendedMap.put("foo", "bar");
 
         assertThatExceptionOfType(IllegalArgumentException.class)
@@ -93,7 +95,7 @@ public class ExtendedMapTest {
     @Test
     @DisplayName("Should throw exception when removeAs type is null")
     public void testRemoveAsWithNullType() {
-        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
         extendedMap.put("foo", "bar");
 
         assertThatExceptionOfType(IllegalArgumentException.class)
@@ -104,9 +106,9 @@ public class ExtendedMapTest {
     @Test
     @DisplayName("Should return null for non-existent key in getAs")
     public void testGetAsNonExistentKey() {
-        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
 
-        Object result = extendedMap.getAs("nonexistent");
+        final Object result = extendedMap.getAs("nonexistent");
         assertThat(result).isNull();
         assertThat(extendedMap.getAs("nonexistent", String.class)).isNull();
     }
@@ -114,9 +116,9 @@ public class ExtendedMapTest {
     @Test
     @DisplayName("Should return null for non-existent key in removeAs")
     public void testRemoveAsNonExistentKey() {
-        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
 
-        Object result = extendedMap.removeAs("nonexistent");
+        final Object result = extendedMap.removeAs("nonexistent");
         assertThat(result).isNull();
         assertThat(extendedMap.removeAs("nonexistent", String.class)).isNull();
     }
@@ -124,7 +126,7 @@ public class ExtendedMapTest {
     @Test
     @DisplayName("Should throw ClassCastException for wrong type in getAs")
     public void testGetAsWrongType() {
-        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
         extendedMap.put("foo", 123);
 
         assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> extendedMap.getAs("foo", String.class));
@@ -133,7 +135,7 @@ public class ExtendedMapTest {
     @Test
     @DisplayName("Should throw ClassCastException for wrong type in removeAs")
     public void testRemoveAsWrongType() {
-        ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
         extendedMap.put("foo", 123);
 
         assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> extendedMap.removeAs("foo", String.class));
@@ -143,37 +145,149 @@ public class ExtendedMapTest {
     @DisplayName("Should create ExtendedMap with various constructors")
     public void testConstructors() {
         // Default constructor
-        ExtendedMap<String, Object> map1 = new ExtendedMap<>();
+        final ExtendedMap<String, Object> map1 = new ExtendedMap<>();
         assertThat(map1).isEmpty();
 
         // Initial capacity constructor
-        ExtendedMap<String, Object> map2 = new ExtendedMap<>(16);
+        final ExtendedMap<String, Object> map2 = new ExtendedMap<>(16);
         assertThat(map2).isEmpty();
 
         // Load factor constructor
-        ExtendedMap<String, Object> map3 = new ExtendedMap<>(16, 0.75f);
+        final ExtendedMap<String, Object> map3 = new ExtendedMap<>(16, 0.75f);
         assertThat(map3).isEmpty();
 
         // Concurrency level constructor
-        ExtendedMap<String, Object> map4 = new ExtendedMap<>(16, 0.75f, 4);
+        final ExtendedMap<String, Object> map4 = new ExtendedMap<>(16, 0.75f, 4);
         assertThat(map4).isEmpty();
 
         // Copy constructor
-        ExtendedMap<String, Object> source = new ExtendedMap<>();
+        final ExtendedMap<String, Object> source = new ExtendedMap<>();
         source.put("key1", "value1");
         source.put("key2", 123);
 
-        ExtendedMap<String, Object> copy = new ExtendedMap<>(source);
+        final ExtendedMap<String, Object> copy = new ExtendedMap<>(source);
         assertThat(copy).hasSize(2);
         assertThat(copy.get("key1")).isEqualTo("value1");
         assertThat(copy.get("key2")).isEqualTo(123);
+    }
+
+    @Test
+    @DisplayName("Should throw ClassCastException for unchecked cast in getAs without type parameter")
+    public void testGetAsUncheckedCastException() {
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        extendedMap.put("foo", 123);
+
+        // This should throw ClassCastException when assigning to wrong type
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> {
+            final String value = extendedMap.getAs("foo");
+        });
+    }
+
+    @Test
+    @DisplayName("Should throw ClassCastException for unchecked cast in removeAs without type parameter")
+    public void testRemoveAsUncheckedCastException() {
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+        extendedMap.put("foo", 123);
+
+        // This should throw ClassCastException when assigning to wrong type
+        assertThatExceptionOfType(ClassCastException.class).isThrownBy(() -> {
+            final String value = extendedMap.removeAs("foo");
+        });
+    }
+
+    @Test
+    @DisplayName("Should handle different key types")
+    public void testDifferentKeyTypes() {
+        final ExtendedMap<Integer, Object> intKeyMap = new ExtendedMap<>();
+        intKeyMap.put(1, "value1");
+        intKeyMap.put(2, 123);
+
+        assertThat((Object) intKeyMap.getAs(1)).isEqualTo("value1");
+        assertThat((Object) intKeyMap.getAs(2)).isEqualTo(123);
+        assertThat(intKeyMap.getAs(1, String.class)).isEqualTo("value1");
+        assertThat(intKeyMap.getAs(2, Integer.class)).isEqualTo(123);
+
+        assertThat((Object) intKeyMap.removeAs(1)).isEqualTo("value1");
+        assertThat(intKeyMap.removeAs(2, Integer.class)).isEqualTo(123);
+        assertThat(intKeyMap).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should copy from regular Map in constructor")
+    public void testCopyFromRegularMap() {
+        final Map<String, Object> regularMap = new HashMap<>();
+        regularMap.put("key1", "value1");
+        regularMap.put("key2", 123);
+        regularMap.put("key3", true);
+
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>(regularMap);
+
+        assertThat(extendedMap).hasSize(3);
+        assertThat(extendedMap.getAs("key1", String.class)).isEqualTo("value1");
+        assertThat(extendedMap.getAs("key2", Integer.class)).isEqualTo(123);
+        assertThat(extendedMap.getAs("key3", Boolean.class)).isEqualTo(Boolean.TRUE);
+    }
+
+    @Test
+    @DisplayName("Should handle empty map copy constructor")
+    public void testEmptyMapCopyConstructor() {
+        final Map<String, Object> emptyMap = new HashMap<>();
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>(emptyMap);
+
+        assertThat(extendedMap.isEmpty()).isTrue();
+        assertThat((Object) extendedMap.getAs("anykey")).isNull();
+    }
+
+    @Test
+    @DisplayName("Should handle complex object types")
+    public void testComplexObjectTypes() {
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+
+        final Map<String, Integer> nestedMap = new HashMap<>();
+        nestedMap.put("nested", 42);
+
+        extendedMap.put("map", nestedMap);
+        extendedMap.put("array", new int[] {1, 2, 3});
+
+        @SuppressWarnings("unchecked")
+        final Map<String, Integer> retrievedMap = extendedMap.getAs("map");
+        assertThat(retrievedMap).isEqualTo(nestedMap);
+
+        final Map<String, Integer> typedMap = extendedMap.getAs("map", Map.class);
+        assertThat(typedMap).isEqualTo(nestedMap);
+
+        final int[] retrievedArray = extendedMap.getAs("array", int[].class);
+        assertThat(retrievedArray).containsExactly(1, 2, 3);
+    }
+
+    @Test
+    @DisplayName("Should handle multiple operations on same key")
+    public void testMultipleOperationsOnSameKey() {
+        final ExtendedMap<String, Object> extendedMap = new ExtendedMap<>();
+
+        // First put
+        extendedMap.put("key", "value1");
+        assertThat(extendedMap.getAs("key", String.class)).isEqualTo("value1");
+
+        // Overwrite
+        extendedMap.put("key", "value2");
+        assertThat(extendedMap.getAs("key", String.class)).isEqualTo("value2");
+
+        // Remove
+        final String removed = extendedMap.removeAs("key", String.class);
+        assertThat(removed).isEqualTo("value2");
+        assertThat(extendedMap.isEmpty()).isTrue();
+
+        // Put again
+        extendedMap.put("key", 123);
+        assertThat(extendedMap.getAs("key", Integer.class)).isEqualTo(123);
     }
 
     public static class SubClass {
 
         private final String value;
 
-        public SubClass(String value) {
+        public SubClass(final String value) {
             this.value = value;
         }
 
@@ -184,7 +298,7 @@ public class ExtendedMapTest {
 
     public static class SuperClass extends SubClass {
 
-        public SuperClass(String value) {
+        public SuperClass(final String value) {
             super(value);
         }
     }

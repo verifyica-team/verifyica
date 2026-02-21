@@ -41,7 +41,7 @@ public class ConcreteEngineContextTest {
         @Test
         @DisplayName("Should create context with valid configuration and version")
         public void shouldCreateContextWithValidConfigurationAndVersion() {
-            ConcreteEngineContext newContext = new ConcreteEngineContext(mockConfiguration, "2.0.0");
+            final ConcreteEngineContext newContext = new ConcreteEngineContext(mockConfiguration, "2.0.0");
 
             assertThat(newContext).isNotNull().satisfies(ctx -> {
                 assertThat(ctx.getConfiguration()).isNotNull();
@@ -57,10 +57,19 @@ public class ConcreteEngineContextTest {
         }
 
         @Test
-        @DisplayName("Should handle null version")
-        public void shouldHandleNullVersion() {
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                    .isThrownBy(() -> new ConcreteEngineContext(mockConfiguration, null));
+        @DisplayName("Should throw IllegalArgumentException when configuration is null")
+        public void shouldThrowWhenConfigurationIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new ConcreteEngineContext(null, "1.0.0"))
+                    .withMessageContaining("configuration is null");
+        }
+
+        @Test
+        @DisplayName("Should throw IllegalArgumentException when version is null")
+        public void shouldThrowWhenVersionIsNull() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> new ConcreteEngineContext(mockConfiguration, null))
+                    .withMessageContaining("version is null");
         }
     }
 
@@ -84,6 +93,20 @@ public class ConcreteEngineContextTest {
             assertThat(new ConcreteEngineContext(mockConfiguration, "v3.0.0-beta").getVersion())
                     .isEqualTo("v3.0.0-beta");
         }
+
+        @Test
+        @DisplayName("Should handle empty string version")
+        public void shouldHandleEmptyStringVersion() {
+            final ConcreteEngineContext emptyVersionContext = new ConcreteEngineContext(mockConfiguration, "");
+            assertThat(emptyVersionContext.getVersion()).isEqualTo("");
+        }
+
+        @Test
+        @DisplayName("Should handle whitespace-only version")
+        public void shouldHandleWhitespaceOnlyVersion() {
+            final ConcreteEngineContext whitespaceVersionContext = new ConcreteEngineContext(mockConfiguration, "   ");
+            assertThat(whitespaceVersionContext.getVersion()).isEqualTo("   ");
+        }
     }
 
     @Nested
@@ -93,7 +116,7 @@ public class ConcreteEngineContextTest {
         @Test
         @DisplayName("Should return immutable configuration")
         public void shouldReturnImmutableConfiguration() {
-            Configuration config = context.getConfiguration();
+            final Configuration config = context.getConfiguration();
 
             assertThat(config).isNotNull().isNotSameAs(mockConfiguration);
         }
@@ -101,8 +124,8 @@ public class ConcreteEngineContextTest {
         @Test
         @DisplayName("Should return same configuration instance on multiple calls")
         public void shouldReturnSameConfigurationInstanceOnMultipleCalls() {
-            Configuration config1 = context.getConfiguration();
-            Configuration config2 = context.getConfiguration();
+            final Configuration config1 = context.getConfiguration();
+            final Configuration config2 = context.getConfiguration();
 
             assertThat(config1).isSameAs(config2);
         }
@@ -119,20 +142,19 @@ public class ConcreteEngineContextTest {
         }
 
         @Test
-        @DisplayName("Should be equal to context with same version")
-        public void shouldBeEqualToContextWithSameVersion() {
-            ConcreteEngineContext other = new ConcreteEngineContext(mockConfiguration, "1.0.0");
+        @DisplayName("Should be equal to context with same version and map state")
+        public void shouldNotBeEqualToContextWithSameVersion() {
+            final ConcreteEngineContext other = new ConcreteEngineContext(mockConfiguration, "1.0.0");
 
-            // Note: equals() checks version, but configurations are wrapped separately
-            assertThat(context.getVersion()).isEqualTo(other.getVersion());
+            assertThat(context).isNotEqualTo(other);
         }
 
         @Test
         @DisplayName("Should not be equal to context with different version")
         public void shouldNotBeEqualToContextWithDifferentVersion() {
-            ConcreteEngineContext other = new ConcreteEngineContext(mockConfiguration, "2.0.0");
+            final ConcreteEngineContext other = new ConcreteEngineContext(mockConfiguration, "2.0.0");
 
-            assertThat(context.getVersion()).isNotEqualTo(other.getVersion());
+            assertThat(context).isNotEqualTo(other);
         }
 
         @Test
@@ -148,12 +170,38 @@ public class ConcreteEngineContextTest {
         }
 
         @Test
+        @DisplayName("Should not be equal when map content differs")
+        public void shouldNotBeEqualWhenMapContentDiffers() {
+            final ConcreteEngineContext other = new ConcreteEngineContext(mockConfiguration, "1.0.0");
+            other.getMap().put("key", "value");
+
+            assertThat(context).isNotEqualTo(other);
+        }
+
+        @Test
         @DisplayName("Should have consistent hashCode")
         public void shouldHaveConsistentHashCode() {
-            int hashCode1 = context.hashCode();
-            int hashCode2 = context.hashCode();
+            final int hashCode1 = context.hashCode();
+            final int hashCode2 = context.hashCode();
 
             assertThat(hashCode1).isEqualTo(hashCode2);
+        }
+
+        @Test
+        @DisplayName("Should not have equal hashCode for different objects")
+        public void shouldNotHaveEqualHashCodeForDifferentObjects() {
+            final ConcreteEngineContext other = new ConcreteEngineContext(mockConfiguration, "1.0.0");
+
+            assertThat(context).isNotEqualTo(other);
+            assertThat(context.hashCode()).isNotEqualTo(other.hashCode());
+        }
+
+        @Test
+        @DisplayName("Should have different hashCode for different versions")
+        public void shouldHaveDifferentHashCodeForDifferentVersions() {
+            final ConcreteEngineContext other = new ConcreteEngineContext(mockConfiguration, "2.0.0");
+
+            assertThat(context.hashCode()).isNotEqualTo(other.hashCode());
         }
     }
 
@@ -164,7 +212,7 @@ public class ConcreteEngineContextTest {
         @Test
         @DisplayName("Should include version in toString")
         public void shouldIncludeVersionInToString() {
-            String toString = context.toString();
+            final String toString = context.toString();
 
             assertThat(toString)
                     .contains("ConcreteEngineContext")
@@ -197,6 +245,24 @@ public class ConcreteEngineContextTest {
                     .containsEntry("key1", "value1")
                     .containsEntry("key2", 123)
                     .containsEntry("key3", true);
+        }
+
+        @Test
+        @DisplayName("Should return same map instance on multiple calls")
+        public void shouldReturnSameMapInstanceOnMultipleCalls() {
+            assertThat(context.getMap()).isSameAs(context.getMap());
+        }
+
+        @Test
+        @DisplayName("Should share map state with other contexts when inherited")
+        public void shouldMaintainMapStateIndependentlyPerInstance() {
+            final ConcreteEngineContext otherContext = new ConcreteEngineContext(mockConfiguration, "1.0.0");
+
+            context.getMap().put("context1Key", "context1Value");
+            otherContext.getMap().put("context2Key", "context2Value");
+
+            assertThat(context.getMap()).containsOnlyKeys("context1Key");
+            assertThat(otherContext.getMap()).containsOnlyKeys("context2Key");
         }
     }
 }

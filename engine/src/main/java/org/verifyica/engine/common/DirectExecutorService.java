@@ -62,16 +62,17 @@ public class DirectExecutorService extends AbstractExecutorService {
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit timeUnit) throws InterruptedException {
-        if (!isShutdown.get()) {
-            long nanos = timeUnit.toNanos(timeout);
-            long deadline = System.nanoTime() + nanos;
-            while (!isShutdown.get()) {
-                if (nanos <= 0) {
-                    return false;
-                }
-                Thread.sleep(Math.min(nanos / 1_000_000L, 10L));
-                nanos = deadline - System.nanoTime();
+        if (isShutdown.get()) {
+            return true;
+        }
+
+        final long deadline = System.nanoTime() + timeUnit.toNanos(timeout);
+        while (!isShutdown.get()) {
+            final long nanos = deadline - System.nanoTime();
+            if (nanos <= 0) {
+                return false;
             }
+            Thread.sleep(Math.min(nanos / 1_000_000L, 10L));
         }
         return true;
     }

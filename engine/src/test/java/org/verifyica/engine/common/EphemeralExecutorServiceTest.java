@@ -36,9 +36,9 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should create executor with thread factory")
         public void shouldCreateExecutorWithThreadFactory() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
 
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             assertThat(executor.isShutdown()).isFalse();
         }
@@ -59,11 +59,11 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should execute runnable in new thread")
         public void shouldExecuteRunnableInNewThread() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            Thread callingThread = Thread.currentThread();
-            AtomicBoolean differentThread = new AtomicBoolean(false);
-            CountDownLatch latch = new CountDownLatch(1);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final Thread callingThread = Thread.currentThread();
+            final AtomicBoolean differentThread = new AtomicBoolean(false);
+            final CountDownLatch latch = new CountDownLatch(1);
 
             executor.execute(() -> {
                 differentThread.set(Thread.currentThread() != callingThread);
@@ -78,11 +78,11 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should execute multiple runnables concurrently")
         public void shouldExecuteMultipleRunnablesConcurrently() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            int taskCount = 5;
-            CountDownLatch latch = new CountDownLatch(taskCount);
-            AtomicInteger counter = new AtomicInteger(0);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final int taskCount = 5;
+            final CountDownLatch latch = new CountDownLatch(taskCount);
+            final AtomicInteger counter = new AtomicInteger(0);
 
             for (int i = 0; i < taskCount; i++) {
                 executor.execute(() -> {
@@ -99,10 +99,10 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should create daemon threads")
         public void shouldCreateDaemonThreads() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            AtomicBoolean isDaemon = new AtomicBoolean(false);
-            CountDownLatch latch = new CountDownLatch(1);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final AtomicBoolean isDaemon = new AtomicBoolean(false);
+            final CountDownLatch latch = new CountDownLatch(1);
 
             executor.execute(() -> {
                 isDaemon.set(Thread.currentThread().isDaemon());
@@ -117,8 +117,8 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should throw exception when executing after shutdown")
         public void shouldThrowExceptionWhenExecutingAfterShutdown() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             executor.shutdown();
 
@@ -130,8 +130,8 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should throw exception when runnable is null")
         public void shouldThrowExceptionWhenRunnableIsNull() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             assertThatThrownBy(() -> executor.execute(null))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -141,14 +141,14 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should throw exception when thread factory returns null")
         public void shouldThrowExceptionWhenThreadFactoryReturnsNull() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory() {
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory() {
                 @Override
                 public Thread newThread(Runnable r) {
                     return null;
                 }
             };
 
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             assertThatThrownBy(() -> executor.execute(() -> {}))
                     .isInstanceOf(IllegalStateException.class)
@@ -158,7 +158,7 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should throw RejectedExecutionException when thread fails to start")
         public void shouldThrowRejectedExecutionExceptionWhenThreadFailsToStart() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory() {
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory() {
                 @Override
                 public Thread newThread(Runnable r) {
                     return new Thread(r) {
@@ -170,7 +170,7 @@ public class EphemeralExecutorServiceTest {
                 }
             };
 
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             assertThatThrownBy(() -> executor.execute(() -> {}))
                     .isInstanceOf(RejectedExecutionException.class)
@@ -181,10 +181,10 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should track running threads")
         public void shouldTrackRunningThreads() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            CountDownLatch startLatch = new CountDownLatch(3);
-            CountDownLatch finishLatch = new CountDownLatch(1);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final CountDownLatch startLatch = new CountDownLatch(3);
+            final CountDownLatch finishLatch = new CountDownLatch(1);
 
             for (int i = 0; i < 3; i++) {
                 executor.execute(() -> {
@@ -212,8 +212,8 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should change state to shutdown")
         public void shouldChangeStateToShutdown() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             executor.shutdown();
 
@@ -223,10 +223,10 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should allow running tasks to complete")
         public void shouldAllowRunningTasksToComplete() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            AtomicBoolean completed = new AtomicBoolean(false);
-            CountDownLatch startLatch = new CountDownLatch(1);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final AtomicBoolean completed = new AtomicBoolean(false);
+            final CountDownLatch startLatch = new CountDownLatch(1);
 
             executor.execute(() -> {
                 startLatch.countDown();
@@ -248,8 +248,8 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should be idempotent")
         public void shouldBeIdempotent() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             executor.shutdown();
             executor.shutdown();
@@ -265,8 +265,8 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should change state to shutdown")
         public void shouldChangeStateToShutdown() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             executor.shutdownNow();
 
@@ -276,10 +276,10 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should interrupt running threads")
         public void shouldInterruptRunningThreads() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            AtomicBoolean interrupted = new AtomicBoolean(false);
-            CountDownLatch startLatch = new CountDownLatch(1);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final AtomicBoolean interrupted = new AtomicBoolean(false);
+            final CountDownLatch startLatch = new CountDownLatch(1);
 
             executor.execute(() -> {
                 startLatch.countDown();
@@ -301,10 +301,10 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should return empty list")
         public void shouldReturnEmptyList() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
-            List<Runnable> remaining = executor.shutdownNow();
+            final List<Runnable> remaining = executor.shutdownNow();
 
             assertThat(remaining).isEmpty();
         }
@@ -312,8 +312,8 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should be idempotent")
         public void shouldBeIdempotent() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             executor.shutdownNow();
             executor.shutdownNow();
@@ -324,11 +324,11 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should interrupt all running threads when called multiple times")
         public void shouldInterruptAllRunningThreadsWhenCalledMultipleTimes() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            AtomicBoolean interrupted1 = new AtomicBoolean(false);
-            AtomicBoolean interrupted2 = new AtomicBoolean(false);
-            CountDownLatch startLatch = new CountDownLatch(2);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final AtomicBoolean interrupted1 = new AtomicBoolean(false);
+            final AtomicBoolean interrupted2 = new AtomicBoolean(false);
+            final CountDownLatch startLatch = new CountDownLatch(2);
 
             executor.execute(() -> {
                 startLatch.countDown();
@@ -367,8 +367,8 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should be false initially")
         public void shouldBeFalseInitially() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             assertThat(executor.isTerminated()).isFalse();
         }
@@ -376,8 +376,8 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should be true when shutdown with no running threads")
         public void shouldBeTrueWhenShutdownWithNoRunningThreads() {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             executor.shutdown();
 
@@ -387,10 +387,10 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should be false when shutdown with running threads")
         public void shouldBeFalseWhenShutdownWithRunningThreads() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            CountDownLatch startLatch = new CountDownLatch(1);
-            CountDownLatch finishLatch = new CountDownLatch(1);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final CountDownLatch startLatch = new CountDownLatch(1);
+            final CountDownLatch finishLatch = new CountDownLatch(1);
 
             executor.execute(() -> {
                 startLatch.countDown();
@@ -412,9 +412,9 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should become true after all threads complete")
         public void shouldBecomeTrueAfterAllThreadsComplete() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            CountDownLatch latch = new CountDownLatch(1);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final CountDownLatch latch = new CountDownLatch(1);
 
             executor.execute(() -> {
                 try {
@@ -440,11 +440,11 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should return true when no tasks running")
         public void shouldReturnTrueWhenNoTasksRunning() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
 
             executor.shutdown();
-            boolean terminated = executor.awaitTermination(1, TimeUnit.SECONDS);
+            final boolean terminated = executor.awaitTermination(1, TimeUnit.SECONDS);
 
             assertThat(terminated).isTrue();
         }
@@ -452,9 +452,9 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should wait for tasks to complete")
         public void shouldWaitForTasksToComplete() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            CountDownLatch latch = new CountDownLatch(1);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final CountDownLatch latch = new CountDownLatch(1);
 
             executor.execute(() -> {
                 try {
@@ -466,7 +466,7 @@ public class EphemeralExecutorServiceTest {
             });
 
             executor.shutdown();
-            boolean terminated = executor.awaitTermination(2, TimeUnit.SECONDS);
+            final boolean terminated = executor.awaitTermination(2, TimeUnit.SECONDS);
 
             assertThat(terminated).isTrue();
             assertThat(latch.getCount()).isZero();
@@ -475,9 +475,9 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should return false when timeout expires")
         public void shouldReturnFalseWhenTimeoutExpires() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            CountDownLatch latch = new CountDownLatch(1);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final CountDownLatch latch = new CountDownLatch(1);
 
             executor.execute(() -> {
                 try {
@@ -488,7 +488,7 @@ public class EphemeralExecutorServiceTest {
             });
 
             executor.shutdown();
-            boolean terminated = executor.awaitTermination(100, TimeUnit.MILLISECONDS);
+            final boolean terminated = executor.awaitTermination(100, TimeUnit.MILLISECONDS);
 
             assertThat(terminated).isFalse();
 
@@ -498,9 +498,9 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should handle very short timeout")
         public void shouldHandleVeryShortTimeout() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            CountDownLatch latch = new CountDownLatch(1);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final CountDownLatch latch = new CountDownLatch(1);
 
             executor.execute(() -> {
                 try {
@@ -512,7 +512,7 @@ public class EphemeralExecutorServiceTest {
 
             executor.shutdown();
             // Use a very short timeout to test the spin loop path
-            boolean terminated = executor.awaitTermination(1, TimeUnit.NANOSECONDS);
+            final boolean terminated = executor.awaitTermination(1, TimeUnit.NANOSECONDS);
 
             assertThat(terminated).isFalse();
 
@@ -522,9 +522,9 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should respond to interruption")
         public void shouldRespondToInterruption() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            CountDownLatch latch = new CountDownLatch(1);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final CountDownLatch latch = new CountDownLatch(1);
 
             executor.execute(() -> {
                 try {
@@ -536,7 +536,7 @@ public class EphemeralExecutorServiceTest {
 
             executor.shutdown();
 
-            Thread testThread = new Thread(() -> {
+            final Thread testThread = new Thread(() -> {
                 try {
                     executor.awaitTermination(10, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
@@ -560,8 +560,8 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should use provided thread factory")
         public void shouldUseProvidedThreadFactory() throws InterruptedException {
-            AtomicBoolean factoryUsed = new AtomicBoolean(false);
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory() {
+            final AtomicBoolean factoryUsed = new AtomicBoolean(false);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory() {
                 @Override
                 public Thread newThread(Runnable r) {
                     factoryUsed.set(true);
@@ -569,8 +569,8 @@ public class EphemeralExecutorServiceTest {
                 }
             };
 
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            CountDownLatch latch = new CountDownLatch(1);
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final CountDownLatch latch = new CountDownLatch(1);
 
             executor.execute(() -> latch.countDown());
 
@@ -587,11 +587,11 @@ public class EphemeralExecutorServiceTest {
         @Test
         @DisplayName("Should handle many concurrent tasks")
         public void shouldHandleManyConcurrentTasks() throws InterruptedException {
-            PlatformThreadFactory threadFactory = new PlatformThreadFactory();
-            EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
-            int taskCount = 100;
-            CountDownLatch latch = new CountDownLatch(taskCount);
-            AtomicInteger counter = new AtomicInteger(0);
+            final PlatformThreadFactory threadFactory = new PlatformThreadFactory();
+            final EphemeralExecutorService executor = new EphemeralExecutorService(threadFactory);
+            final int taskCount = 100;
+            final CountDownLatch latch = new CountDownLatch(taskCount);
+            final AtomicInteger counter = new AtomicInteger(0);
 
             for (int i = 0; i < taskCount; i++) {
                 executor.execute(() -> {

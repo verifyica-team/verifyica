@@ -17,21 +17,21 @@
 package org.verifyica.api;
 
 /**
- * Interface to implement Context
+ * Interface representing a context that provides access to configuration and a data map.
  */
 public interface Context {
 
     /**
-     * Get the Configuration
+     * Returns the Configuration.
      *
      * @return the Configuration
      */
     Configuration getConfiguration();
 
     /**
-     * Get the Map
+     * Returns the ExtendedMap containing context data.
      *
-     * @return the Map
+     * @return the ExtendedMap
      */
     ExtendedMap<String, Object> getMap();
 }
