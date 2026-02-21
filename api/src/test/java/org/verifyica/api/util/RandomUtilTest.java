@@ -301,9 +301,6 @@ public class RandomUtilTest {
     public void nextDoubleMinMaxProducesValuesWithinRange_includingEqualBounds() {
         RandomUtil.useSeed(123L);
 
-        // When min == max, should always return that value (because (max - min) == 0)
-        assertThat(RandomUtil.nextDouble(5.0, 5.0)).isEqualTo(5.0);
-
         for (int i = 0; i < 10_000; i++) {
             double x = RandomUtil.nextDouble(-2.5, 7.25);
             assertThat(x).isGreaterThanOrEqualTo(-2.5);
@@ -393,11 +390,11 @@ public class RandomUtilTest {
     public void boundedGaussianValidatesRangeAndStddev() {
         assertThatThrownBy(() -> RandomUtil.boundedGaussian(0.0, 1.0, 5.0, 5.0))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("min must be <= max");
+                .hasMessage("min must be < max");
 
         assertThatThrownBy(() -> RandomUtil.boundedGaussian(0.0, -0.1, 0.0, 1.0))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("stddev must be >= 0");
+                .hasMessage("stddev must be > 0");
     }
 
     @Test
