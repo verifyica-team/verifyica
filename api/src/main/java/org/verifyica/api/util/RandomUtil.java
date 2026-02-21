@@ -153,7 +153,7 @@ public final class RandomUtil {
         RngHolder seeded = SEEDED_HOLDER.get();
         return (seeded != null) ? seeded : DEFAULT_HOLDER.get();
     }
-    
+
     /**
      * Returns a uniformly distributed boolean.
      *
