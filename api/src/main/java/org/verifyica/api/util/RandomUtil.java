@@ -64,33 +64,6 @@ public final class RandomUtil {
     private static final char[] ALPHANUM =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
 
-    // -------------------------------------------------------------------------
-    // Internal RNG holder
-    // -------------------------------------------------------------------------
-
-    /**
-     * Bundles a {@link UniformRandomProvider} with its associated
-     * {@link ZigguratSampler.NormalizedGaussian}.
-     *
-     * <p>The Ziggurat sampler holds a reference to the underlying RNG, so a
-     * single holder object covers all primitive and Gaussian generation without
-     * extra indirection. Creating the sampler is O(1) and involves only a
-     * reference assignment.</p>
-     */
-    private static final class RngHolder {
-        final UniformRandomProvider rng;
-        final ZigguratSampler.NormalizedGaussian gaussian;
-
-        RngHolder(UniformRandomProvider rng) {
-            this.rng = rng;
-            this.gaussian = ZigguratSampler.NormalizedGaussian.of(rng);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // Thread-local state
-    // -------------------------------------------------------------------------
-
     /**
      * Per-thread default RNG — XoShiRo256** seeded non-deterministically.
      * Created lazily on first access per thread; never removed.
@@ -167,10 +140,6 @@ public final class RandomUtil {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Internal accessor
-    // -------------------------------------------------------------------------
-
     /**
      * Returns the active {@link RngHolder} for the current thread.
      *
@@ -184,11 +153,7 @@ public final class RandomUtil {
         RngHolder seeded = SEEDED_HOLDER.get();
         return (seeded != null) ? seeded : DEFAULT_HOLDER.get();
     }
-
-    // -------------------------------------------------------------------------
-    // Public API  (all signatures unchanged)
-    // -------------------------------------------------------------------------
-
+    
     /**
      * Returns a uniformly distributed boolean.
      *
@@ -450,5 +415,24 @@ public final class RandomUtil {
         }
 
         return stringBuilder.toString();
+    }
+
+    /**
+     * Bundles a {@link UniformRandomProvider} with its associated
+     * {@link ZigguratSampler.NormalizedGaussian}.
+     *
+     * <p>The Ziggurat sampler holds a reference to the underlying RNG, so a
+     * single holder object covers all primitive and Gaussian generation without
+     * extra indirection. Creating the sampler is O(1) and involves only a
+     * reference assignment.</p>
+     */
+    private static final class RngHolder {
+        final UniformRandomProvider rng;
+        final ZigguratSampler.NormalizedGaussian gaussian;
+
+        RngHolder(UniformRandomProvider rng) {
+            this.rng = rng;
+            this.gaussian = ZigguratSampler.NormalizedGaussian.of(rng);
+        }
     }
 }
