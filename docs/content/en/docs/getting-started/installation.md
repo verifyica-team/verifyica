@@ -51,7 +51,7 @@ Configure the Maven Surefire plugin to **ignore** Verifyica tests (they will be 
             <version>3.5.2</version>
             <configuration>
                 <excludes>
-                    <!-- Exclude Verifyica tests ... this should not match standard JUnit tests -->
+                    <!-- Exclude Verifyica tests ... this should match standard JUnit tests -->
                     <exclude>**/*</exclude>
                 </excludes>
             </configuration>
@@ -95,7 +95,7 @@ Add the Verifyica Maven Plugin to run your tests:
             <version>3.5.2</version>
             <configuration>
                 <excludes>
-                    <!-- Exclude Verifyica tests ... this should not match standard JUnit tests -->
+                    <!-- Exclude Verifyica tests ... this should match standard JUnit tests -->
                     <exclude>**/*</exclude>
                 </excludes>
             </configuration>
