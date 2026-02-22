@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
@@ -44,25 +43,34 @@ import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.support.TimestampSupport;
 
 /**
- * Class to implement a SummaryEngineExecutionListener2
+ * EngineExecutionListener implementation that provides a summary of test execution results,
+ * including counts of passed, failed, and skipped tests, as well as total execution time.
+ * The summary is printed to the console after all tests have finished executing.
  */
 @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.UnusedPrivateField", "PMD.EmptyCatchBlock"})
 public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
+    /**
+     * Summary banner displayed after execution.
+     */
     private static final String SUMMARY_BANNER = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
             .append("Verifyica ")
             .append(VerifyicaTestEngine.staticGetVersion())
-            .append(" Summary @ ")
+            .append(" Finished @ ")
             .append(TimestampSupport.now())
             .append(AnsiColor.NONE)
             .build();
 
-    private static final String COMPACT_SUMMARY_BANNER = AnsiColor.TEXT_WHITE_BRIGHT.wrap("Compact Summary");
-
+    /**
+     * Separator line for console output.
+     */
     private static final String SEPARATOR = AnsiColor.TEXT_WHITE_BRIGHT.wrap(
             "------------------------------------------------------------------------");
 
+    /**
+     * INFO-level console prefix.
+     */
     private static final String INFO = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE)
             .append("[")
@@ -74,12 +82,18 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             .append(" ")
             .build();
 
+    /**
+     * Counter registry for execution statistics.
+     */
     private final Map<String, Counter> counterMap;
 
+    /**
+     * Stopwatch for tracking total elapsed time.
+     */
     private final Stopwatch stopwatch;
 
     /**
-     * Constructor
+     * Creates a new SummaryEngineExecutionListener and initializes counters and stopwatch.
      */
     public SummaryEngineExecutionListener() {
         counterMap = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -101,7 +115,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     @Override
-    public void executionStarted(TestDescriptor testDescriptor) {
+    public void executionStarted(final TestDescriptor testDescriptor) {
         if (testDescriptor.isRoot()) {
             stopwatch.reset();
         }
@@ -123,7 +137,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     @Override
-    public void executionSkipped(TestDescriptor testDescriptor, String reason) {
+    public void executionSkipped(final TestDescriptor testDescriptor, final String reason) {
         String type = null;
         String suffix = ".skipped";
 
@@ -141,7 +155,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     @Override
-    public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
+    public void executionFinished(final TestDescriptor testDescriptor, final TestExecutionResult testExecutionResult) {
         TestExecutionResult.Status status = getDescendantFailureCount(testDescriptor) > 0
                 ? TestExecutionResult.Status.FAILED
                 : testExecutionResult.getStatus();
@@ -175,7 +189,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to print the summary
+     * Prints a summary of test execution results, including counts of passed, failed, and skipped tests,
+     * as well as total execution time. The summary is printed to the console in a formatted
+     * table format, with color-coded status messages. If any failures are detected, the summary will indicate
+     * a failed status; otherwise, it will indicate a passed status.
      */
     private void summary() {
         try {
@@ -221,8 +238,8 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             println(INFO + SEPARATOR);
 
             String message = failureCount > 0
-                    ? AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("FAILED")
-                    : AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("PASSED");
+                    ? AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("STATUS FAILED")
+                    : AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("STATUS PASSED");
 
             println(INFO + message);
 
@@ -249,7 +266,13 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         }
     }
 
-    private static long getDescendantFailureCount(TestDescriptor testDescriptor) {
+    /**
+     * Counts failed descendant test descriptors.
+     *
+     * @param testDescriptor root descriptor to inspect
+     * @return number of failed descendants
+     */
+    private static long getDescendantFailureCount(final TestDescriptor testDescriptor) {
         Set<? extends TestDescriptor> descendants = testDescriptor.getDescendants();
 
         return descendants.stream()
@@ -262,48 +285,31 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 .count();
     }
 
-    private static void print(Object object) {
+    /**
+     * Prints an Object to the console without a newline.
+     *
+     * @param object object
+     */
+    private static void print(final Object object) {
         System.out.print(object);
     }
 
     /**
-     * Method to println an Object
+     * Prints an Object to the console with a newline.
      *
      * @param object object
      */
-    private static void println(Object object) {
+    private static void println(final Object object) {
         System.out.println(object);
     }
 
     /**
-     * Method to get the pad for a list of values
+     * Capitalizes the first character of a string.
      *
-     * @param atomicLongs atomicLongs
-     * @return the return pad
+     * @param s string to capitalize
+     * @return capitalized string
      */
-    private static int getPad(List<AtomicLong> atomicLongs) {
-        return atomicLongs.stream()
-                .mapToInt(atomicLong -> String.valueOf(atomicLong.get()).length())
-                .max()
-                .orElse(0);
-    }
-
     private static String capitalize(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
-    }
-
-    /**
-     * Method to get a String that is the value passed to a specific width
-     *
-     * @param width width
-     * @param value value
-     * @return the return value
-     */
-    private static String pad(long width, long value) {
-        if (width > 0) {
-            return format("%" + width + "d", value);
-        } else {
-            return String.valueOf(value);
-        }
     }
 }
