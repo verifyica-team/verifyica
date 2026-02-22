@@ -124,7 +124,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
             .append("Verifyica ")
             .append(VerifyicaTestEngine.staticGetVersion())
-            .append(" Starting @ ")
+            .append(" Started @ ")
             .append(TimestampSupport.now())
             .append(AnsiColor.NONE)
             .build();
@@ -256,7 +256,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
                 System.out.println(new AnsiColoredString()
                         .append(ERROR)
                         .append(AnsiColor.TEXT_RED_BOLD)
-                        .append("ERROR DURING TEST DISCOVERY")
+                        .append("STATUS ERROR DURING TEST DISCOVERY")
                         .append(AnsiColor.NONE));
                 System.out.println(ERROR + SEPARATOR);
 
@@ -412,7 +412,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
      *
      * @param testDescriptor the root test descriptor to execute
      */
-    private void execute(TestDescriptor testDescriptor) {
+    private void execute(final TestDescriptor testDescriptor) {
         final ChainedEngineExecutionListener chainedEngineExecutionListener = new ChainedEngineExecutionListener(
                 new TracingEngineExecutionListener(),
                 new StatusEngineExecutionListener(),
@@ -432,7 +432,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
      * @param classpathElements classpath element strings
      * @return resolved classpath paths
      */
-    private Set<Path> resolveClasspathElements(Collection<String> classpathElements) {
+    private Set<Path> resolveClasspathElements(final Collection<String> classpathElements) {
         final Set<Path> paths = new LinkedHashSet<>();
 
         if (classpathElements != null) {
@@ -455,7 +455,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
      * @param artifact artifact to resolve
      * @return resolved classpath paths
      */
-    private Set<Path> resolveArtifact(Artifact artifact) {
+    private Set<Path> resolveArtifact(final Artifact artifact) {
         if (artifact == null) {
             return Collections.emptySet();
         }
@@ -471,7 +471,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
      * @param artifacts artifacts to resolve
      * @return resolved classpath paths
      */
-    private Set<Path> resolveArtifacts(Collection<Artifact> artifacts) {
+    private Set<Path> resolveArtifacts(final Collection<Artifact> artifacts) {
         final Set<Path> paths = new LinkedHashSet<>();
 
         if (artifacts != null) {
@@ -498,7 +498,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
      * @param urls classpath URLs
      * @return a platform-specific classpath string
      */
-    private static String buildClasspath(Collection<URL> urls) {
+    private static String buildClasspath(final Collection<URL> urls) {
         final StringJoiner stringJoiner = new StringJoiner(File.pathSeparator);
         for (URL url : urls) {
             stringJoiner.add(url.getPath());
@@ -540,7 +540,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
          *
          * @param log log
          */
-        private Logger(Log log) {
+        private Logger(final Log log) {
             this.log = log;
         }
 
@@ -550,7 +550,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
          * @param format format string
          * @param objects format arguments
          */
-        public void debug(String format, Object... objects) {
+        public void debug(final String format, final Object... objects) {
             if (log.isDebugEnabled()) {
                 log.debug(format(format, objects));
             }
@@ -562,7 +562,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
          * @param log Maven log to wrap
          * @return a logger wrapper
          */
-        public static Logger create(Log log) {
+        public static Logger create(final Log log) {
             return new Logger(log);
         }
     }

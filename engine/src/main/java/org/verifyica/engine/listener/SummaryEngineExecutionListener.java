@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 import org.junit.platform.engine.EngineExecutionListener;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
@@ -53,12 +52,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
             .append("Verifyica ")
             .append(VerifyicaTestEngine.staticGetVersion())
-            .append(" Summary @ ")
+            .append(" Finished @ ")
             .append(TimestampSupport.now())
             .append(AnsiColor.NONE)
             .build();
-
-    private static final String COMPACT_SUMMARY_BANNER = AnsiColor.TEXT_WHITE_BRIGHT.wrap("Compact Summary");
 
     private static final String SEPARATOR = AnsiColor.TEXT_WHITE_BRIGHT.wrap(
             "------------------------------------------------------------------------");
@@ -101,7 +98,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     @Override
-    public void executionStarted(TestDescriptor testDescriptor) {
+    public void executionStarted(final TestDescriptor testDescriptor) {
         if (testDescriptor.isRoot()) {
             stopwatch.reset();
         }
@@ -123,7 +120,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     @Override
-    public void executionSkipped(TestDescriptor testDescriptor, String reason) {
+    public void executionSkipped(final TestDescriptor testDescriptor, final String reason) {
         String type = null;
         String suffix = ".skipped";
 
@@ -141,7 +138,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     @Override
-    public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
+    public void executionFinished(final TestDescriptor testDescriptor, final TestExecutionResult testExecutionResult) {
         TestExecutionResult.Status status = getDescendantFailureCount(testDescriptor) > 0
                 ? TestExecutionResult.Status.FAILED
                 : testExecutionResult.getStatus();
@@ -221,8 +218,8 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             println(INFO + SEPARATOR);
 
             String message = failureCount > 0
-                    ? AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("FAILED")
-                    : AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("PASSED");
+                    ? AnsiColor.TEXT_RED_BOLD_BRIGHT.wrap("STATUS FAILED")
+                    : AnsiColor.TEXT_GREEN_BOLD_BRIGHT.wrap("STATUS PASSED");
 
             println(INFO + message);
 
@@ -249,7 +246,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         }
     }
 
-    private static long getDescendantFailureCount(TestDescriptor testDescriptor) {
+    private static long getDescendantFailureCount(final TestDescriptor testDescriptor) {
         Set<? extends TestDescriptor> descendants = testDescriptor.getDescendants();
 
         return descendants.stream()
@@ -262,7 +259,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 .count();
     }
 
-    private static void print(Object object) {
+    private static void print(final Object object) {
         System.out.print(object);
     }
 
@@ -271,39 +268,11 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
      *
      * @param object object
      */
-    private static void println(Object object) {
+    private static void println(final Object object) {
         System.out.println(object);
-    }
-
-    /**
-     * Method to get the pad for a list of values
-     *
-     * @param atomicLongs atomicLongs
-     * @return the return pad
-     */
-    private static int getPad(List<AtomicLong> atomicLongs) {
-        return atomicLongs.stream()
-                .mapToInt(atomicLong -> String.valueOf(atomicLong.get()).length())
-                .max()
-                .orElse(0);
     }
 
     private static String capitalize(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
-    }
-
-    /**
-     * Method to get a String that is the value passed to a specific width
-     *
-     * @param width width
-     * @param value value
-     * @return the return value
-     */
-    private static String pad(long width, long value) {
-        if (width > 0) {
-            return format("%" + width + "d", value);
-        } else {
-            return String.valueOf(value);
-        }
     }
 }
