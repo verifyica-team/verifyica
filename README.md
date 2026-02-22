@@ -16,9 +16,9 @@ A multi-threaded Java test engine for parameterized class / scenario / integrati
 
 # Documentation
 
-`1.0.0` release documentation is available at [https://www.verifyica.org/](https://www.verifyica.org/).
+`1.0.5` release documentation is available at [https://www.verifyica.org/](https://www.verifyica.org/).
 
-Past release documentation is available on the associated `release-X.Y.Z` branch.
+Past, pre-1.x.x release documentation is available on the associated `release-X.Y.Z` branch.
 
 **Notes**
 
