@@ -68,7 +68,7 @@ import org.verifyica.engine.listener.TracingEngineExecutionListener;
 import org.verifyica.engine.support.TimestampSupport;
 
 /**
- * Class to implement VerifyicaMavenPlugin
+ * Maven plugin entry point for running Verifyica tests in a Maven build.
  */
 @SuppressWarnings({"unused", "deprecation"})
 @org.apache.maven.plugins.annotations.Mojo(
@@ -78,54 +78,60 @@ import org.verifyica.engine.support.TimestampSupport;
 public class VerifyicaMavenPlugin extends AbstractMojo {
 
     /**
-     * Constant
+     * Resource path for plugin metadata properties.
      */
     private static final String MAVEN_PLUGIN_PROPERTIES_RESOURCE = "/maven-plugin.properties";
 
     /**
-     * Constant
+     * Property key for the plugin version.
      */
     private static final String MAVEN_PLUGIN_VERSION_KEY = "version";
 
     /**
-     * Constant
+     * Fallback version when the properties resource is unavailable.
      */
     private static final String UNKNOWN_VERSION = "unknown";
 
     /**
-     * Constant
+     * Configuration value for interactive execution mode.
      */
     private static final String INTERACTIVE = "interactive";
 
     /**
-     * Constant
+     * Configuration value for batch execution mode.
      */
     private static final String BATCH = "batch";
 
     /**
-     * Constant
+     * Maven group id for the plugin artifact.
      */
     private static final String GROUP_ID = "org.verifyica";
 
     /**
-     * Constant
+     * Maven artifact id for the plugin artifact.
      */
     private static final String ARTIFACT_ID = "maven-plugin";
 
     /**
-     * Constant
+     * Plugin version resolved from the embedded properties resource.
      */
     public static final String VERSION = version();
 
+    /**
+     * Startup banner displayed before execution.
+     */
     private static final String BANNER = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
             .append("Verifyica ")
             .append(VerifyicaTestEngine.staticGetVersion())
-            .append(" @ ")
+            .append(" Starting @ ")
             .append(TimestampSupport.now())
             .append(AnsiColor.NONE)
             .build();
 
+    /**
+     * Summary banner displayed after execution.
+     */
     private static final String SUMMARY_BANNER = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
             .append("Verifyica ")
@@ -135,9 +141,15 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             .append(AnsiColor.NONE)
             .build();
 
+    /**
+     * Separator line for console output.
+     */
     private static final String SEPARATOR = AnsiColor.TEXT_WHITE_BRIGHT.wrap(
             "------------------------------------------------------------------------");
 
+    /**
+     * INFO-level console prefix.
+     */
     private static final String INFO = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE)
             .append("[")
@@ -149,6 +161,9 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             .append(" ")
             .build();
 
+    /**
+     * ERROR-level console prefix.
+     */
     private static final String ERROR = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE)
             .append("[")
@@ -160,13 +175,26 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
             .append(" ")
             .build();
 
+    /**
+     * Maven project injected by the Maven runtime.
+     */
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject mavenProject;
 
+    /**
+     * Maven session injected by the Maven runtime.
+     */
     @Parameter(defaultValue = "${session}", required = true, readonly = true)
     private MavenSession mavenSession;
 
+    /**
+     * Plugin logger wrapper.
+     */
     private Logger logger;
+
+    /**
+     * Verifyica test engine used for discovery and execution.
+     */
     private VerifyicaTestEngine verifyicaTestEngine;
 
     static {
@@ -181,106 +209,128 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     }
 
     /**
-     * Method to get the version
+     * Returns the plugin version.
      *
-     * @return the version
+     * @return the plugin version
      */
     public Optional<String> getVersion() {
         return of(VERSION);
     }
 
     /**
-     * Method to execute the plugin
+     * Executes Verifyica discovery and test execution within the Maven build.
      *
-     * @throws MojoFailureException MojoFailureException
+     * @throws MojoFailureException when test discovery or execution fails
+     * @throws MojoExecutionException when an unexpected error occurs
      */
     public void execute() throws MojoFailureException, MojoExecutionException {
         initialize();
 
-        if (System.getProperties().containsKey("skipTests") || System.getProperty("skipTests") != null) {
+        if (isSkipTestsEnabled()) {
             return;
         }
 
-        Stopwatch stopwatch = new Stopwatch();
-
-        System.out.println(INFO + SEPARATOR);
-        System.out.println(INFO + BANNER);
-        System.out.println(INFO + SEPARATOR);
-
-        TestDescriptor testDescriptor;
+        final ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
 
         try {
-            testDescriptor = discovery();
-        } catch (Throwable t) {
-            if (t instanceof TestClassDefinitionException) {
-                System.err.println(ERROR + AnsiColor.TEXT_RED_BOLD.wrap(t.getMessage()));
-            } else {
-                t.printStackTrace(System.err);
+            final Stopwatch stopwatch = new Stopwatch();
+
+            System.out.println(INFO + SEPARATOR);
+            System.out.println(INFO + BANNER);
+            System.out.println(INFO + SEPARATOR);
+
+            final TestDescriptor testDescriptor;
+
+            try {
+                testDescriptor = discovery();
+            } catch (Throwable t) {
+                if (t instanceof TestClassDefinitionException) {
+                    System.err.println(ERROR + AnsiColor.TEXT_RED_BOLD.wrap(t.getMessage()));
+                } else {
+                    t.printStackTrace(System.err);
+                }
+
+                System.out.println(ERROR + SEPARATOR);
+                System.out.println(ERROR + SUMMARY_BANNER);
+                System.out.println(ERROR + SEPARATOR);
+                System.out.println(new AnsiColoredString()
+                        .append(ERROR)
+                        .append(AnsiColor.TEXT_RED_BOLD)
+                        .append("ERROR DURING TEST DISCOVERY")
+                        .append(AnsiColor.NONE));
+                System.out.println(ERROR + SEPARATOR);
+
+                final Duration elapsedTime = stopwatch.elapsed();
+
+                System.out.println(new AnsiColoredString()
+                        .append(ERROR)
+                        .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                        .append("Total time  : ")
+                        .append(TimestampSupport.toHumanReadable(TimestampSupport.Format.SHORT, elapsedTime.toNanos()))
+                        .append(" (")
+                        .append(elapsedTime.toNanos() / 1e+6D)
+                        .append(" ms)")
+                        .append(AnsiColor.NONE));
+
+                System.out.println(new AnsiColoredString()
+                        .append(ERROR)
+                        .append(AnsiColor.TEXT_WHITE_BRIGHT)
+                        .append("Finished at : ")
+                        .append(TimestampSupport.now())
+                        .append(AnsiColor.NONE));
+
+                System.out.println(ERROR + SEPARATOR);
+
+                if (t instanceof TestClassDefinitionException) {
+                    throw new MojoFailureException(t.getMessage(), t);
+                } else {
+                    throw new MojoExecutionException(t.getMessage(), t);
+                }
             }
 
-            System.out.println(ERROR + SEPARATOR);
-            System.out.println(ERROR + SUMMARY_BANNER);
-            System.out.println(ERROR + SEPARATOR);
-            System.out.println(new AnsiColoredString()
-                    .append(ERROR)
-                    .append(AnsiColor.TEXT_RED_BOLD)
-                    .append("ERROR DURING TEST DISCOVERY")
-                    .append(AnsiColor.NONE));
-            System.out.println(ERROR + SEPARATOR);
-
-            Duration elapsedTime = stopwatch.elapsed();
-
-            System.out.println(new AnsiColoredString()
-                    .append(ERROR)
-                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
-                    .append("Total time  : ")
-                    .append(TimestampSupport.toHumanReadable(TimestampSupport.Format.SHORT, elapsedTime.toNanos()))
-                    .append(" (")
-                    .append(elapsedTime.toNanos() / 1e+6D)
-                    .append(" ms)")
-                    .append(AnsiColor.NONE));
-
-            System.out.println(new AnsiColoredString()
-                    .append(ERROR)
-                    .append(AnsiColor.TEXT_WHITE_BRIGHT)
-                    .append("Finished at : ")
-                    .append(TimestampSupport.now())
-                    .append(AnsiColor.NONE));
-
-            System.out.println(ERROR + SEPARATOR);
-
-            if (t instanceof TestClassDefinitionException) {
-                throw new MojoFailureException("");
-            } else {
-                throw new MojoExecutionException("");
+            try {
+                execute(testDescriptor);
+            } catch (Throwable t) {
+                throw new MojoExecutionException(t);
             }
-        }
 
-        try {
-            execute(testDescriptor);
-        } catch (Throwable t) {
-            throw new MojoExecutionException(t);
-        }
+            final Optional<TestableTestDescriptor> optionalExecutableTestDescriptor =
+                    testDescriptor.getDescendants().stream()
+                            .filter(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_FILTER)
+                            .map(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_MAPPER)
+                            .filter(testableTestDescriptor -> testableTestDescriptor
+                                    .getTestDescriptorStatus()
+                                    .isFailure())
+                            .findFirst();
 
-        Optional<TestableTestDescriptor> optionalExecutableTestDescriptor = testDescriptor.getDescendants().stream()
-                .filter(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_FILTER)
-                .map(TestableTestDescriptor.TESTABLE_TEST_DESCRIPTOR_MAPPER)
-                .filter(testableTestDescriptor ->
-                        testableTestDescriptor.getTestDescriptorStatus().isFailure())
-                .findFirst();
-
-        if (optionalExecutableTestDescriptor.isPresent()) {
-            throw new MojoFailureException(optionalExecutableTestDescriptor
-                    .get()
-                    .getTestDescriptorStatus()
-                    .getThrowable());
+            if (optionalExecutableTestDescriptor.isPresent()) {
+                throw new MojoFailureException(optionalExecutableTestDescriptor
+                        .get()
+                        .getTestDescriptorStatus()
+                        .getThrowable());
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
     }
 
+    /**
+     * Determines whether tests should be skipped based on Maven properties.
+     *
+     * @return {@code true} when tests should be skipped
+     */
+    private boolean isSkipTestsEnabled() {
+        return Boolean.parseBoolean(System.getProperty("skipTests"))
+                || Boolean.parseBoolean(System.getProperty("maven.test.skip"));
+    }
+
+    /**
+     * Initializes configuration, logging, and engine state prior to execution.
+     */
     private void initialize() {
         logger = Logger.create(getLog());
 
-        Configuration configuration = ConcreteConfiguration.getInstance();
+        final Configuration configuration = ConcreteConfiguration.getInstance();
 
         System.getProperties().putAll(configuration.getProperties());
 
@@ -319,10 +369,15 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         verifyicaTestEngine = new VerifyicaTestEngine();
     }
 
+    /**
+     * Discovers test descriptors using the Verifyica test engine.
+     *
+     * @return the root test descriptor
+     * @throws Throwable if discovery fails
+     */
     private TestDescriptor discovery() throws Throwable {
-        Set<Path> artifactPaths = new LinkedHashSet<>();
+        final Set<Path> artifactPaths = new LinkedHashSet<>();
 
-        artifactPaths.addAll(resolveClasspathElements(mavenProject.getCompileClasspathElements()));
         artifactPaths.addAll(resolveClasspathElements(mavenProject.getCompileClasspathElements()));
         artifactPaths.addAll(resolveClasspathElements(mavenProject.getRuntimeClasspathElements()));
         artifactPaths.addAll(resolveClasspathElements(mavenProject.getTestClasspathElements()));
@@ -330,21 +385,21 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         artifactPaths.addAll(resolveArtifacts(mavenProject.getDependencyArtifacts()));
         artifactPaths.addAll(resolveArtifacts(mavenProject.getAttachedArtifacts()));
 
-        Map<String, URL> urls = new LinkedHashMap<>();
+        final Map<String, URL> urls = new LinkedHashMap<>();
 
         for (Path path : artifactPaths) {
-            URL url = path.toUri().toURL();
+            final URL url = path.toUri().toURL();
             urls.putIfAbsent(url.getPath(), url);
         }
 
         System.setProperty("java.class.path", buildClasspath(urls.values()));
 
-        ClassLoader classLoader = new URLClassLoader(
+        final ClassLoader classLoader = new URLClassLoader(
                 urls.values().toArray(new URL[0]), Thread.currentThread().getContextClassLoader());
 
         Thread.currentThread().setContextClassLoader(classLoader);
 
-        LauncherDiscoveryRequest launcherDiscoveryRequest = LauncherDiscoveryRequestBuilder.request()
+        final LauncherDiscoveryRequest launcherDiscoveryRequest = LauncherDiscoveryRequestBuilder.request()
                 .selectors(DiscoverySelectors.selectClasspathRoots(artifactPaths))
                 .filters(includeClassNamePatterns(".*"))
                 .configurationParameters(Collections.emptyMap())
@@ -352,13 +407,18 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         return verifyicaTestEngine.discover(launcherDiscoveryRequest, UniqueId.forEngine(verifyicaTestEngine.getId()));
     }
 
+    /**
+     * Executes the Verifyica test engine with the provided descriptor.
+     *
+     * @param testDescriptor the root test descriptor to execute
+     */
     private void execute(TestDescriptor testDescriptor) {
-        ChainedEngineExecutionListener chainedEngineExecutionListener = new ChainedEngineExecutionListener(
+        final ChainedEngineExecutionListener chainedEngineExecutionListener = new ChainedEngineExecutionListener(
                 new TracingEngineExecutionListener(),
                 new StatusEngineExecutionListener(),
                 new SummaryEngineExecutionListener());
 
-        ExecutionRequest executionRequest = new ExecutionRequest(
+        final ExecutionRequest executionRequest = new ExecutionRequest(
                 testDescriptor,
                 chainedEngineExecutionListener,
                 new ConcreteConfigurationParameters(ConcreteConfiguration.getInstance()));
@@ -367,19 +427,19 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     }
 
     /**
-     * Method to process a Collection of Strings representing classpath elements
+     * Resolves a collection of classpath elements into existing paths.
      *
-     * @param classpathElements classpathElements
-     * @return a Set of Paths
+     * @param classpathElements classpath element strings
+     * @return resolved classpath paths
      */
     private Set<Path> resolveClasspathElements(Collection<String> classpathElements) {
-        Set<Path> paths = new LinkedHashSet<>();
+        final Set<Path> paths = new LinkedHashSet<>();
 
         if (classpathElements != null) {
             for (String classpathElement : classpathElements) {
-                File file = new File(classpathElement);
+                final File file = new File(classpathElement);
                 if (file.exists()) {
-                    Path path = file.toPath();
+                    final Path path = file.toPath();
                     paths.add(path);
                     logger.debug("classpathElement [%s]", path);
                 }
@@ -390,31 +450,39 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     }
 
     /**
-     * Method to process an Artifact representing a classpath element
+     * Resolves a single artifact into an existing path.
      *
-     * @param artifact artifact
-     * @return a Set of Paths
+     * @param artifact artifact to resolve
+     * @return resolved classpath paths
      */
     private Set<Path> resolveArtifact(Artifact artifact) {
-        Set<Artifact> artifacts = new LinkedHashSet<>();
+        if (artifact == null) {
+            return Collections.emptySet();
+        }
+
+        final Set<Artifact> artifacts = new LinkedHashSet<>();
         artifacts.add(artifact);
         return resolveArtifacts(artifacts);
     }
 
     /**
-     * Method to process a Collection of Artifacts representing a classpath element
+     * Resolves a collection of artifacts into existing paths.
      *
-     * @param artifacts artifacts
-     * @return a Set of Paths
+     * @param artifacts artifacts to resolve
+     * @return resolved classpath paths
      */
     private Set<Path> resolveArtifacts(Collection<Artifact> artifacts) {
-        Set<Path> paths = new LinkedHashSet<>();
+        final Set<Path> paths = new LinkedHashSet<>();
 
         if (artifacts != null) {
             for (Artifact artifact : artifacts) {
-                File file = artifact.getFile();
-                if (file.exists()) {
-                    Path path = file.toPath();
+                if (artifact == null) {
+                    continue;
+                }
+
+                final File file = artifact.getFile();
+                if (file != null && file.exists()) {
+                    final Path path = file.toPath();
                     paths.add(path);
                     logger.debug("classpathElement [%s]", path);
                 }
@@ -425,13 +493,13 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     }
 
     /**
-     * Method to build a String representing the classpath
+     * Builds a {@code java.class.path} string from the provided URLs.
      *
-     * @param urls urls
-     * @return a String representing the classpath
+     * @param urls classpath URLs
+     * @return a platform-specific classpath string
      */
     private static String buildClasspath(Collection<URL> urls) {
-        StringJoiner stringJoiner = new StringJoiner(File.pathSeparator);
+        final StringJoiner stringJoiner = new StringJoiner(File.pathSeparator);
         for (URL url : urls) {
             stringJoiner.add(url.getPath());
         }
@@ -439,9 +507,9 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     }
 
     /**
-     * Method to return the version
+     * Resolves the plugin version from the embedded properties resource.
      *
-     * @return the version
+     * @return the resolved version or a fallback when unavailable
      */
     private static String version() {
         String value = UNKNOWN_VERSION;
@@ -449,7 +517,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         try (InputStream inputStream =
                 VerifyicaMavenPlugin.class.getResourceAsStream(MAVEN_PLUGIN_PROPERTIES_RESOURCE)) {
             if (inputStream != null) {
-                Properties properties = new Properties();
+                final Properties properties = new Properties();
                 properties.load(inputStream);
                 value = properties.getProperty(MAVEN_PLUGIN_VERSION_KEY).trim();
             }
@@ -461,7 +529,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
     }
 
     /**
-     * Class to implement Logger
+     * Simple Maven logger wrapper for formatted debug output.
      */
     private static class Logger {
 
@@ -477,10 +545,10 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         }
 
         /**
-         * Method to log a DEBUG message
+         * Logs a formatted DEBUG message when debug is enabled.
          *
-         * @param format format
-         * @param objects object
+         * @param format format string
+         * @param objects format arguments
          */
         public void debug(String format, Object... objects) {
             if (log.isDebugEnabled()) {
@@ -489,10 +557,10 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         }
 
         /**
-         * Method to create a Logger from a Maven Log
+         * Creates a logger wrapper for the provided Maven log.
          *
-         * @param log log
-         * @return a Logger
+         * @param log Maven log to wrap
+         * @return a logger wrapper
          */
         public static Logger create(Log log) {
             return new Logger(log);
