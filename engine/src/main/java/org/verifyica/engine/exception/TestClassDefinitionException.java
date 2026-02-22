@@ -17,7 +17,7 @@
 package org.verifyica.engine.exception;
 
 /**
- * Class to implement TestClassDefinitionException
+ * TestClassDefinitionException is an exception for test class definition errors
  */
 public class TestClassDefinitionException extends EngineException {
 

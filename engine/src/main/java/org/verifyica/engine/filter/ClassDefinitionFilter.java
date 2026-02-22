@@ -23,7 +23,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /**
- * Class to implement ClassDefinitionFilter
+ * ClassDefinitionFilter provides filtering functionality for ClassDefinition instances
  */
 public class ClassDefinitionFilter {
 

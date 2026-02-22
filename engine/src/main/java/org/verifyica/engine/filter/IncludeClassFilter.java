@@ -17,7 +17,7 @@
 package org.verifyica.engine.filter;
 
 /**
- * Class to implement IncludeClassFilter
+ * IncludeClassFilter provides filtering to include classes by regex pattern
  */
 public class IncludeClassFilter extends AbstractFilter {
 
@@ -41,7 +41,7 @@ public class IncludeClassFilter extends AbstractFilter {
     }
 
     /**
-     * Method to create an IncludeFilter
+     * Creates an IncludeFilter
      *
      * @param classRegex classRegex
      * @return an IncludeFilter

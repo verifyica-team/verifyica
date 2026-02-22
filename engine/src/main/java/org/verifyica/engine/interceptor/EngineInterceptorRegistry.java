@@ -41,7 +41,7 @@ import org.verifyica.engine.support.ObjectSupport;
 import org.verifyica.engine.support.OrderSupport;
 
 /**
- * Class to implement EngineInterceptorRegistry
+ * EngineInterceptorRegistry provides registry functionality for engine interceptors
  */
 public class EngineInterceptorRegistry {
 
@@ -63,7 +63,7 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to initialize engine interceptors
+     * Initializes engine interceptors
      *
      * @param engineContext engineContext
      */
@@ -109,9 +109,9 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to get the list of engine interceptors
+     * Gets the list of engine interceptors
      *
-     * @return a list of engine interceptors
+     * @return the list of engine interceptors
      */
     public List<EngineInterceptor> getEngineInterceptors() {
         readWriteLock.readLock().lock();
@@ -124,7 +124,7 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to destroy engine interceptors
+     * Destroys engine interceptors
      *
      * @param engineContext engineContext
      */
@@ -139,7 +139,7 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Method to filter ClassInterceptors
+     * Filters ClassInterceptors
      *
      * @param classes classes
      */

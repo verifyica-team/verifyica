@@ -33,7 +33,7 @@ import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.exception.TestClassDefinitionException;
 
 /**
- * Class to implement OrderSupport
+ * OrderSupport provides utility methods for working with ordering
  */
 public class OrderSupport {
 
@@ -49,7 +49,7 @@ public class OrderSupport {
     }
 
     /**
-     * Method to order a List of Classes by display name then Order annotation
+     * Orders a List of Classes by display name then Order annotation
      *
      * <p>Performance note: Order annotation values are pre-cached before sorting to avoid
      * repeated annotation lookups during comparison operations.</p>
@@ -96,7 +96,7 @@ public class OrderSupport {
     }
 
     /**
-     * Method to order a Set of Classes by display name then Order annotation
+     * Orders a Set of Classes by display name then Order annotation
      *
      * <p>orders the Set in place
      *
@@ -113,7 +113,7 @@ public class OrderSupport {
     }
 
     /**
-     * Method to get the Order annotation value
+     * Gets the Order annotation value
      *
      * @param clazz clazz
      * @return the order annotation value
@@ -132,7 +132,7 @@ public class OrderSupport {
     }
 
     /**
-     * Method to order a List of Methods by display name then Order annotation
+     * Orders a List of Methods by display name then Order annotation
      *
      * <p>orders the List in place
      *
@@ -183,7 +183,7 @@ public class OrderSupport {
     }
 
     /**
-     * Method to order a Set of Methods by display name then Order annotation
+     * Orders a Set of Methods by display name then Order annotation
      *
      * <p>orders the Set in place
      *

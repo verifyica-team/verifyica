@@ -19,7 +19,7 @@ package org.verifyica.engine.filter;
 import org.verifyica.engine.support.TagSupport;
 
 /**
- * Class to implement IncludeTaggedClassFilter
+ * IncludeTaggedClassFilter provides filtering to include classes by tag pattern
  */
 public class IncludeTaggedClassFilter extends AbstractFilter {
 
@@ -49,7 +49,7 @@ public class IncludeTaggedClassFilter extends AbstractFilter {
     }
 
     /**
-     * Method to create an IncludeFilter
+     * Creates an IncludeFilter
      *
      * @param classRegex classRegex
      * @return an IncludeFilter

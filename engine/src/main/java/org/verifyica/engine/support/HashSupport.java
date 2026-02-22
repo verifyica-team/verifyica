@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * Class to implement HashSupport
+ * HashSupport provides utility methods for generating hashes
  */
 public class HashSupport {
 
@@ -35,7 +35,7 @@ public class HashSupport {
     }
 
     /**
-     * Method to generate an alphanumeric hash
+     * Generates an alphanumeric hash
      *
      * @param length length
      * @return an alphanumeric hash
@@ -66,7 +66,7 @@ public class HashSupport {
     }
 
     /**
-     * Method to check if a string contains "fail" (case-insensitive) without creating a new lowercased string
+     * Checks if a string contains "fail" (case-insensitive) without creating a new lowercased string
      *
      * @param s the string to check
      * @return true if the string contains "fail", false otherwise
@@ -86,7 +86,7 @@ public class HashSupport {
     }
 
     /**
-     * Method to compare a substring of one string with a substring of another (case-insensitive)
+     * Compares a substring of one string with a substring of another (case-insensitive)
      *
      * @param s1 first string
      * @param start1 start index in first string

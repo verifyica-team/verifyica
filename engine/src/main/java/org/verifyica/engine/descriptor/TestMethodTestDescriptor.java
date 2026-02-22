@@ -40,7 +40,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /**
- * Class to implement TestMethodDescriptor
+ * TestMethodTestDescriptor provides test method descriptor functionality
  */
 public class TestMethodTestDescriptor extends TestableTestDescriptor {
 
@@ -113,7 +113,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to get the test Method
+     * Gets the test Method
      *
      * @return the test Method
      */
@@ -199,7 +199,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to do before each
+     * Does before each
      *
      * @return the next state
      */
@@ -255,7 +255,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to execute the test method
+     * Executes the test method
      *
      * @return the next state
      */
@@ -303,7 +303,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to do after each
+     * Does after each
      *
      * @return the next state
      */

@@ -26,7 +26,7 @@ import java.nio.charset.StandardCharsets;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * Class to implement UrlSupport
+ * UrlSupport provides utility methods for working with URLs
  */
 public class UrlSupport {
 
@@ -38,7 +38,7 @@ public class UrlSupport {
     }
 
     /**
-     * Method to create an InputStream from a URL
+     * Creates an InputStream from a URL
      *
      * @param url url
      * @return an InputStream for the URL
@@ -53,7 +53,7 @@ public class UrlSupport {
     }
 
     /**
-     * Method to create a BufferedReader from a URL
+     * Creates a BufferedReader from a URL
      *
      * @param url url
      * @return a BufferedReader for the URL

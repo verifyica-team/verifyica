@@ -25,7 +25,7 @@ import org.junit.platform.engine.reporting.ReportEntry;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * Class to implement ChainedEngineExecutionListener
+ * ChainedEngineExecutionListener provides chaining of multiple EngineExecutionListeners
  */
 public class ChainedEngineExecutionListener implements EngineExecutionListener {
 
@@ -69,7 +69,7 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to add an EngineExecutionListener
+     * Adds an EngineExecutionListener
      *
      * @param engineExecutionListener engineExecutionListener
      * @return this
@@ -83,7 +83,7 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to get the Collection of EngineExecutionListeners
+     * Gets the Collection of EngineExecutionListeners
      *
      * @return the Collection of EngineExecutionListeners
      */

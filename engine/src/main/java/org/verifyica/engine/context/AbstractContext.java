@@ -21,7 +21,7 @@ import org.verifyica.api.Context;
 import org.verifyica.api.ExtendedMap;
 
 /**
- * Class to implement AbstractContext
+ * AbstractContext provides a base implementation for Context
  */
 public abstract class AbstractContext implements Context {
 

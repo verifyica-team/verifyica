@@ -19,7 +19,7 @@ package org.verifyica.engine.exception;
 import java.net.URISyntaxException;
 
 /**
- * Class to implement UncheckedURISyntaxException
+ * UncheckedURISyntaxException is an unchecked wrapper for URISyntaxException
  */
 public class UncheckedURISyntaxException extends RuntimeException {
 
@@ -34,14 +34,14 @@ public class UncheckedURISyntaxException extends RuntimeException {
     }
 
     /**
-     * Method to propagate (throw) the exception
+     * Propagates (throws) the exception
      */
     public void throwUnchecked() {
         throw this;
     }
 
     /**
-     * Method to wrap and propagate (throw) the exception
+     * Wraps and propagates (throws) the exception
      *
      * @param uriSyntaxException uriSyntaxException
      */

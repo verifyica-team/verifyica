@@ -44,7 +44,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /**
- * Class to implement TestArgumentTestDescriptor
+ * TestArgumentTestDescriptor provides test argument descriptor functionality
  */
 public class TestArgumentTestDescriptor extends TestableTestDescriptor {
 
@@ -150,7 +150,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to get argument
+     * Gets argument
      *
      * @return the argument
      */
@@ -266,7 +266,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to do before all
+     * Does before all
      *
      * @return the next state
      */
@@ -322,7 +322,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to test child test descriptors
+     * Tests child test descriptors
      *
      * @return the next state
      */
@@ -346,7 +346,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to do skip child test descriptors
+     * Skips child test descriptors
      *
      * @return the next state
      */
@@ -363,7 +363,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to do after all
+     * Does after all
      *
      * @return the next state
      */
@@ -411,7 +411,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to close the argument
+     * Closes the argument
      *
      * @return the next state
      */
@@ -440,7 +440,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to clean up the argument context
+     * Cleans up the argument context
      *
      * @return the next state
      */

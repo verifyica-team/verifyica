@@ -17,7 +17,7 @@
 package org.verifyica.engine.exception;
 
 /**
- * Class to implement EngineConfigurationException
+ * EngineConfigurationException is an exception for engine configuration errors
  */
 public class EngineConfigurationException extends EngineException {
 

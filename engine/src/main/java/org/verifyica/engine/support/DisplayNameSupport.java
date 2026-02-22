@@ -23,7 +23,7 @@ import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * Class to implement DisplayNameSupport
+ * DisplayNameSupport provides utility methods for working with display names
  */
 public class DisplayNameSupport {
 
@@ -40,7 +40,7 @@ public class DisplayNameSupport {
     }
 
     /**
-     * Method to get a test class display name. If no name is declared, use the Class name
+     * Gets a test class display name. If no name is declared, use the Class name
      *
      * <p>Performance note: Results are cached per class to avoid repeated annotation lookups.</p>
      *
@@ -75,7 +75,7 @@ public class DisplayNameSupport {
     }
 
     /**
-     * Method to get a method display name. If no name is declared, use the Method name
+     * Gets a method display name. If no name is declared, use the Method name
      *
      * <p>Performance note: Results are cached per method to avoid repeated annotation lookups.</p>
      *

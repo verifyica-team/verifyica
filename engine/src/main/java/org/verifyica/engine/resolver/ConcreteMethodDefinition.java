@@ -21,7 +21,7 @@ import java.util.Objects;
 import org.verifyica.engine.api.MethodDefinition;
 
 /**
- * Class to implement ConcreteMethodDefinition
+ * ConcreteMethodDefinition provides a concrete implementation of MethodDefinition
  */
 public class ConcreteMethodDefinition implements MethodDefinition {
 

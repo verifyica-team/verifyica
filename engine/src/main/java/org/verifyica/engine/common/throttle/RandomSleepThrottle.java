@@ -21,7 +21,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /**
- * Class to implement RandomSleepThrottle
+ * RandomSleepThrottle provides a throttle that sleeps for a random duration
  */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class RandomSleepThrottle implements Throttle {
@@ -65,7 +65,7 @@ public class RandomSleepThrottle implements Throttle {
     }
 
     /**
-     * Method to create a random long that is inclusive of minimum and maximum.
+     * Creates a random long that is inclusive of minimum and maximum.
      *
      * @param minimum minimum value (inclusive)
      * @param maximum maximum value (inclusive)

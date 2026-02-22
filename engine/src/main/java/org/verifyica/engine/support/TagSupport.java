@@ -25,13 +25,18 @@ import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * Class to implement TagSupport
+ * TagSupport provides utility methods for working with tags
  */
 public class TagSupport {
 
-    // Caches for tags to avoid repeated annotation lookups.
-    // Using WeakHashMap to avoid classloader leaks.
+    /**
+     * Cache for class tags. Uses WeakHashMap to allow classes to be garbage collected when no longer in use.
+     */
     private static final Map<Class<?>, Set<String>> CLASS_TAGS_CACHE = new WeakHashMap<>();
+
+    /**
+     * Cache for method tags. Uses WeakHashMap to allow methods to be garbage collected when no longer in use.
+     */
     private static final Map<Method, Set<String>> METHOD_TAGS_CACHE = new WeakHashMap<>();
 
     /**
@@ -42,7 +47,7 @@ public class TagSupport {
     }
 
     /**
-     * Method to get a Set of tags for a Class
+     * Gets a Set of tags for a Class.
      *
      * <p>Performance note: Results are cached per class to avoid repeated annotation lookups.</p>
      *
@@ -93,7 +98,7 @@ public class TagSupport {
     }
 
     /**
-     * Method to get a Set of tags for a Method
+     * Gets a Set of tags for a Method.
      *
      * <p>Performance note: Results are cached per method to avoid repeated annotation lookups.</p>
      *

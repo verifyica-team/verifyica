@@ -26,7 +26,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /**
- * Class to implement ExecutorServiceSupport
+ * ExecutorServiceSupport provides utility methods for working with ExecutorServices
  */
 public class ExecutorServiceSupport {
 
@@ -40,7 +40,7 @@ public class ExecutorServiceSupport {
     }
 
     /**
-     * Method to wait for all Futures to complete
+     * Waits for all Futures to complete
      *
      * @param futures futures
      */
@@ -62,7 +62,7 @@ public class ExecutorServiceSupport {
     }
 
     /**
-     * Method to shutdown an ExecutorService wait for termination
+     * Shuts down an ExecutorService and waits for termination
      *
      * @param executorService executorService
      */

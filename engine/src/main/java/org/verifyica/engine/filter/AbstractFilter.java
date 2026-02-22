@@ -19,7 +19,7 @@ package org.verifyica.engine.filter;
 import java.util.regex.Pattern;
 
 /**
- * Class to implement AbstractFilter
+ * AbstractFilter provides a base implementation for Filter
  */
 public abstract class AbstractFilter implements Filter {
 
@@ -35,7 +35,7 @@ public abstract class AbstractFilter implements Filter {
     }
 
     /**
-     * Method to get the class name Pattern
+     * Gets the class name Pattern
      *
      * @return the class name Pattern
      */

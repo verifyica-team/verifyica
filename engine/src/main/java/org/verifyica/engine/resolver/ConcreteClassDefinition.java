@@ -25,7 +25,7 @@ import org.verifyica.engine.api.ClassDefinition;
 import org.verifyica.engine.api.MethodDefinition;
 
 /**
- * Class to implement ConcreteClassDefinition
+ * ConcreteClassDefinition provides a concrete implementation of ClassDefinition
  */
 public class ConcreteClassDefinition implements ClassDefinition {
 

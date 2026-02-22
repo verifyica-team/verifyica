@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * Class to implement ObjectSupport
+ * ObjectSupport provides utility methods for working with objects
  */
 @SuppressWarnings("unchecked")
 public class ObjectSupport {
@@ -36,7 +36,7 @@ public class ObjectSupport {
     }
 
     /**
-     * Method to create an instance of a Class
+     * Creates an instance of a Class
      *
      * @param clazz clazz
      * @param <T> T
@@ -50,7 +50,7 @@ public class ObjectSupport {
     }
 
     /**
-     * Method to convert a List of Methods to a String representation
+     * Converts a List of Methods to a String representation
      *
      * @param methods methods
      * @return a String representation of the Methods
@@ -62,7 +62,7 @@ public class ObjectSupport {
     }
 
     /**
-     * Method to convert a List Methods to a String representation
+     * Converts a List Methods to a String representation
      *
      * @param methods methods
      * @return a String representation of the Methods

@@ -36,7 +36,7 @@ import org.verifyica.engine.common.OrderedProperties;
 import org.verifyica.engine.exception.EngineConfigurationException;
 
 /**
- * Class to implement ConcreteConfiguration
+ * ConcreteConfiguration provides a concrete implementation of Configuration
  */
 public class ConcreteConfiguration implements Configuration {
 
@@ -73,7 +73,7 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     /**
-     * Method to get a singleton instance
+     * Gets a singleton instance
      *
      * @return the singleton instance
      */
@@ -82,7 +82,7 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     /**
-     * Method to load configuration Properties
+     * Loads configuration Properties
      */
     private Properties load() {
         if (IS_TRACE_ENABLED) {
@@ -134,7 +134,7 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     /**
-     * Method to find a properties file, searching the working directory, then parent directories
+     * Finds a properties file, searching the working directory, then parent directories
      * toward the root
      *
      * @param path path
@@ -174,7 +174,7 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     /**
-     * Method to log a TRACE message
+     * Logs a TRACE message
      *
      * @param message message
      */

@@ -40,7 +40,7 @@ import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.TimestampSupport;
 
 /**
- * Class to implement StatusEngineExecutionListener
+ * StatusEngineExecutionListener provides status reporting for engine execution
  */
 public class StatusEngineExecutionListener implements EngineExecutionListener {
 
@@ -273,7 +273,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to get or compute descriptor info with caching
+     * Gets or computes descriptor info with caching
      *
      * @param testDescriptor the test descriptor
      * @return the descriptor info
@@ -324,7 +324,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to find the ClassTestDescriptor
+     * Finds the ClassTestDescriptor
      *
      * @param testDescriptor testDescriptor
      * @return the ClassTestDescriptor or null if not found
@@ -349,7 +349,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to resolve the ArgumentTestDescriptor
+     * Resolves the ArgumentTestDescriptor
      *
      * @param testDescriptor testDescriptor
      * @return the ArgumentTestDescriptor or null if not found
@@ -367,7 +367,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to find the TestMethodTestDescriptor
+     * Finds the TestMethodTestDescriptor
      *
      * @param testDescriptor testDescriptor
      * @return the TestMethodTestDescriptor or null if not found

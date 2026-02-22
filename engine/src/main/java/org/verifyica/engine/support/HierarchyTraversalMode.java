@@ -19,7 +19,7 @@ package org.verifyica.engine.support;
 import static java.lang.String.format;
 
 /**
- * Class to implement HierarchyTraversalMode
+ * HierarchyTraversalMode provides enumeration values for hierarchy traversal modes
  */
 public enum HierarchyTraversalMode {
 
@@ -39,7 +39,7 @@ public enum HierarchyTraversalMode {
     HierarchyTraversalMode() {}
 
     /**
-     * Method to decode a Verifyica HierarchyTraversalMode to JUnit HierarchyTraversalMode
+     * Decodes a Verifyica HierarchyTraversalMode to JUnit HierarchyTraversalMode
      *
      * @param hierarchyTraversalMode hierarchyTraversalMode
      * @return a JUnit HierarchyTraversalMode

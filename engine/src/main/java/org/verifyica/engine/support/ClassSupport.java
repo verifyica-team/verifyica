@@ -44,7 +44,7 @@ import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.exception.UncheckedURISyntaxException;
 
 /**
- * Class to implement ClassPathSupport
+ * ClassSupport provides utility methods for working with classes
  */
 public class ClassSupport {
 
@@ -73,7 +73,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to get a List of classpath URIs
+     * Gets a List of classpath URIs
      *
      * @return a List of classpath URIs
      */
@@ -82,7 +82,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to scan the Java classpath and return a list of classes matching the Predicate
+     * Scans the Java classpath and returns a list of classes matching the Predicate
      *
      * @param predicate predicate
      * @return a List of Classes
@@ -102,7 +102,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to find nested classes in a Class
+     * Finds nested classes in a Class
      *
      * @param clazz clazz
      * @param predicate predicate
@@ -113,7 +113,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to scan the Java classpath URI and return a list of classes matching the Predicate
+     * Scans the Java classpath URI and returns a list of classes matching the Predicate
      *
      * @param uri uri
      * @param predicate predicate
@@ -128,7 +128,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to scan the Java classpath and return a list of classes matching the package name and
+     * Scans the Java classpath and returns a list of classes matching the package name and
      * Predicate
      *
      * @param packageName packageName
@@ -145,7 +145,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to find fields of a Class
+     * Finds fields of a Class
      *
      * @param clazz clazz
      * @param predicate predicate
@@ -163,7 +163,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to find Methods of a Class
+     * Finds Methods of a Class
      *
      * @param clazz clazz
      * @param predicate predicate
@@ -181,7 +181,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to scan the Java classpath and return a List of URIs matching the resource name
+     * Scans the Java classpath and returns a List of URIs matching the resource name
      *
      * @param predicate predicate
      * @return a List of URIs
@@ -209,7 +209,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to scan a directory
+     * Scans a directory
      *
      * @param directoryPath directoryPath
      * @param predicate predicate
@@ -222,7 +222,7 @@ public class ClassSupport {
     }
 
     /**
-     * Method to scan a Jar file
+     * Scans a Jar file
      *
      * @param jarPath jarPath
      * @param predicate predicate
@@ -243,7 +243,7 @@ public class ClassSupport {
     }
 
     /**
-     * Class to implement PathSimpleFileVisitor
+     * PathSimpleFileVisitor is a SimpleFileVisitor for scanning paths
      */
     private static class PathSimpleFileVisitor extends SimpleFileVisitor<Path> {
 

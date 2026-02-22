@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * Class to implement TimestampSupport
+ * TimestampSupport provides utility methods for working with timestamps
  */
 // Suppress PMD.UselessParentheses - PMD has bug around UselessParentheses calculating milliseconds
 @SuppressWarnings("PMD.UselessParentheses")
@@ -58,7 +58,7 @@ public final class TimestampSupport {
     }
 
     /**
-     * Method to convert nanoseconds into a human-readable time
+     * Converts nanoseconds into a human-readable time
      *
      * @param nanoseconds nanoseconds
      * @return the return value
@@ -68,7 +68,7 @@ public final class TimestampSupport {
     }
 
     /**
-     * Method to convert nanoseconds into a human-readable time
+     * Converts nanoseconds into a human-readable time
      *
      * @param format format
      * @param nanoseconds nanoseconds
@@ -148,7 +148,7 @@ public final class TimestampSupport {
     }
 
     /**
-     * Method to get the current time as a String
+     * Gets the current time as a String
      *
      * @return the return value
      */
@@ -157,7 +157,7 @@ public final class TimestampSupport {
     }
 
     /**
-     * Method to convert a duration to milliseconds.nanoseconds String
+     * Converts a duration to milliseconds.nanoseconds String
      *
      * @param duration duration
      * @return a milliseconds.nanoseconds String
@@ -167,7 +167,7 @@ public final class TimestampSupport {
     }
 
     /**
-     * Method to convert nanoseconds to specific timing unit String
+     * Converts nanoseconds to specific timing unit String
      *
      * @param timingUnit timingUnit
      * @param nanoseconds nanoseconds

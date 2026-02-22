@@ -24,7 +24,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /**
- * Class to implement TracingEngineExecutionListener
+ * TracingEngineExecutionListener provides tracing for engine execution events
  */
 public class TracingEngineExecutionListener implements EngineExecutionListener {
 

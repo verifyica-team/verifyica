@@ -25,7 +25,7 @@ import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.ImmutableProperties;
 
 /**
- * Class to implement ImmutableConfiguration
+ * ImmutableConfiguration provides an immutable implementation of Configuration
  */
 public class ImmutableConfiguration implements Configuration {
 

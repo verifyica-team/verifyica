@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Class to implement ListSupport
+ * ListSupport provides utility methods for working with lists
  */
 public class ListSupport {
 
@@ -33,7 +33,7 @@ public class ListSupport {
     }
 
     /**
-     * Method to copy and reverse a List
+     * Copies and reverses a List
      *
      * @param list list
      * @return a reversed copy of the List

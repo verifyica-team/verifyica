@@ -23,7 +23,7 @@ import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.configuration.ImmutableConfiguration;
 
 /**
- * Class to implement ConcreteEngineContext
+ * ConcreteEngineContext provides a concrete implementation of EngineContext
  */
 public class ConcreteEngineContext extends AbstractContext implements EngineContext {
 

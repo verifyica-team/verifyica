@@ -23,7 +23,7 @@ import org.verifyica.api.EngineInterceptor;
 import org.verifyica.api.Verifyica;
 
 /**
- * Class to implement InterceptorPredicates
+ * InterceptorPredicates provides Predicate implementations for filtering interceptors
  */
 public class InterceptorPredicates {
 
@@ -61,7 +61,7 @@ public class InterceptorPredicates {
     }
 
     /**
-     * Method to return if a Class has a default constructor
+     * Returns if a Class has a default constructor
      *
      * @param clazz clazz
      * @return true if the Class has a default constructor, otherwise false
