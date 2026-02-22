@@ -541,7 +541,7 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
         /**
          * Constructor
          *
-         * @param log log
+         * @param log Maven log to wrap
          */
         private Logger(final Log log) {
             this.log = log;

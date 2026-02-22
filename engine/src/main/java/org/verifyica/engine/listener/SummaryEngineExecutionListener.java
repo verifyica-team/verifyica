@@ -43,7 +43,9 @@ import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.support.TimestampSupport;
 
 /**
- * Class to implement a SummaryEngineExecutionListener.
+ * EngineExecutionListener implementation that provides a summary of test execution results,
+ * including counts of passed, failed, and skipped tests, as well as total execution time.
+ * The summary is printed to the console after all tests have finished executing.
  */
 @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.UnusedPrivateField", "PMD.EmptyCatchBlock"})
 public class SummaryEngineExecutionListener implements EngineExecutionListener {
@@ -91,7 +93,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     private final Stopwatch stopwatch;
 
     /**
-     * Constructor
+     * Creates a new SummaryEngineExecutionListener and initializes counters and stopwatch.
      */
     public SummaryEngineExecutionListener() {
         counterMap = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -187,7 +189,10 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to print the summary
+     * Prints a summary of test execution results, including counts of passed, failed, and skipped tests,
+     * as well as total execution time. The summary is printed to the console in a formatted
+     * table format, with color-coded status messages. If any failures are detected, the summary will indicate
+     * a failed status; otherwise, it will indicate a passed status.
      */
     private void summary() {
         try {
@@ -281,7 +286,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to print an Object without a line break.
+     * Prints an Object to the console without a newline.
      *
      * @param object object
      */
@@ -290,7 +295,7 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to println an Object
+     * Prints an Object to the console with a newline.
      *
      * @param object object
      */
