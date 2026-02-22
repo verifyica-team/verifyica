@@ -86,7 +86,22 @@ import org.verifyica.engine.support.HierarchyTraversalMode;
 import org.verifyica.engine.support.ListSupport;
 
 /**
- * Implements the Verifyica test engine.
+ * The main test engine implementation for the Verifyica testing framework.
+ *
+ * <p>This class implements the JUnit Platform {@link TestEngine} interface to provide
+ * a custom test execution engine. It is responsible for:
+ * <ul>
+ *   <li>Discovering tests based on engine discovery requests</li>
+ *   <li>Executing discovered tests with configurable parallelism</li>
+ *   <li>Managing test interceptors and class injection</li>
+ *   <li>Configuring and managing executor services for test execution</li>
+ * </ul>
+ *
+ * <p>The engine supports both virtual threads (Java 21+) and platform threads, with
+ * configurable parallelism for test classes and test arguments.
+ *
+ * @see TestEngine
+ * @see org.junit.platform.engine.TestDescriptor
  */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class VerifyicaTestEngine implements TestEngine {

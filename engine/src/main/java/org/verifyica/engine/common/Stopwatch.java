@@ -21,11 +21,15 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Stopwatch.
+ * A thread-safe stopwatch for measuring elapsed time.
  *
- * <p>This class provides a simple way to measure elapsed time, supporting
- * multiple start/stop cycles with accumulated duration. All operations are
- * thread-safe.
+ * <p>This class provides a simple and efficient way to measure elapsed time. It supports
+ * multiple start/stop cycles with accumulated duration, making it suitable for timing
+ * multiple operations. All operations are thread-safe through the use of a read-write lock.
+ *
+ * <p>The stopwatch starts automatically upon construction.
+ *
+ * @see Duration
  */
 public final class Stopwatch {
 

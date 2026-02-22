@@ -17,12 +17,16 @@
 package org.verifyica.engine.common.throttle;
 
 /**
- * Interface to implement Throttle
+ * Throttle interface to control the rate of operations, such as API calls or processing tasks.
+ * Implementations of this interface can use various strategies to manage the rate of operations,
+ * such as fixed delay, token bucket, or leaky bucket algorithms.
  */
 public interface Throttle {
 
     /**
-     * Method to throttle
+     * Throttles the operation according to the implemented strategy.
+     * This method may block the calling thread until it is allowed
+     * to proceed based on the throttling rules defined by the implementation.
      *
      * @throws InterruptedException if the thread is interrupted
      */

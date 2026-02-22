@@ -21,7 +21,16 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * A simple thread-safe counter class that can be used to count occurrences of events.
+ * A thread-safe counter implementation for tracking occurrences of events.
+ *
+ * <p>This class provides a simple, thread-safe way to count occurrences of events.
+ * It uses an {@link AtomicLong} internally to ensure accurate counting across
+ * multiple threads without explicit synchronization.
+ *
+ * <p>Each counter has a name and description for identification purposes, making
+ * it useful for tracking and reporting statistics in multi-threaded environments.
+ *
+ * @see AtomicLong
  */
 public class Counter {
 
@@ -32,8 +41,9 @@ public class Counter {
     /**
      * Creates a new Counter with the specified name and description.
      *
-     * @param name the name of the counter
-     * @param description the description of the counter
+     * @param name the name of the counter (must not be null or blank)
+     * @param description the description of the counter (must not be null or blank)
+     * @throws IllegalArgumentException if name or description is null or blank
      */
     public Counter(final String name, final String description) {
         Precondition.notNullOrBlank(name, "name is null", "name is blank");
@@ -63,25 +73,26 @@ public class Counter {
     }
 
     /**
-     * Returns the current count.
+     * Returns the current count value.
      *
-     * @return the current count
+     * @return the current count value
      */
     public long count() {
         return count.get();
     }
 
     /**
-     * Increments the counter by 1.
+     * Atomically increments the counter by one.
      */
     public void increment() {
         count.incrementAndGet();
     }
 
     /**
-     * Increments the counter by a specified value. The value must be greater than or equal to 0.
+     * Atomically increments the counter by the specified value.
      *
-     * @param value the value to increment by
+     * @param value the value to increment by (must be >= 0)
+     * @throws IllegalArgumentException if value is negative
      */
     public void increment(final long value) {
         Precondition.isTrue(value >= 0, "value must be >= 0");
@@ -124,9 +135,10 @@ public class Counter {
     }
 
     /**
-     * Registers the counter in a map.
+     * Registers this counter in the specified map using its name as the key.
      *
-     * @param map the map to register the counter in
+     * @param map the map to register the counter in (must not be null)
+     * @throws IllegalArgumentException if map is null
      */
     public void register(final Map<String, Counter> map) {
         Precondition.notNull(map, "map is null");

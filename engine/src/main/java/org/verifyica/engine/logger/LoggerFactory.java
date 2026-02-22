@@ -20,7 +20,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class to implement LoggerFactory
+ * A factory for creating and managing {@link Logger} instances.
+ *
+ * <p>This class provides a centralized way to obtain logger instances. Loggers are
+ * cached and reused for the same name, making it efficient to obtain loggers from
+ * multiple locations in the codebase.
+ *
+ * <p>The factory uses a singleton pattern with lazy initialization to ensure only
+ * one instance exists throughout the application lifecycle.
+ *
+ * @see Logger
  */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public final class LoggerFactory {
@@ -30,37 +39,37 @@ public final class LoggerFactory {
     private final Map<String, Logger> loggers = new ConcurrentHashMap<>();
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation since this is a factory class.
      */
     private LoggerFactory() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Method to get or create a Logger
+     * Gets or creates a logger with the specified name.
      *
-     * @param name name
-     * @return a Logger
+     * @param name the name for the logger
+     * @return the logger instance
      */
     private Logger getOrCreateLogger(String name) {
         return loggers.computeIfAbsent(name, Logger::new);
     }
 
     /**
-     * Method to get a Logger for a Class
+     * Gets a logger for the specified class.
      *
-     * @param clazz clazz
-     * @return a Logger
+     * @param clazz the class for which to get the logger (may be null)
+     * @return a Logger instance
      */
     public static Logger getLogger(Class<?> clazz) {
         return clazz != null ? getLogger(clazz.getName()) : ROOT_LOGGER;
     }
 
     /**
-     * Method to get a Logger by name
+     * Gets a logger with the specified name.
      *
-     * @param name name
-     * @return a Logger
+     * @param name the name for the logger (may be null or blank)
+     * @return a Logger instance
      */
     public static Logger getLogger(String name) {
         if (name == null) {
@@ -76,7 +85,7 @@ public final class LoggerFactory {
     }
 
     /**
-     * Class to hold the singleton instance
+     * Holds the singleton instance of LoggerFactory using lazy initialization.
      */
     private static final class SingletonHolder {
 

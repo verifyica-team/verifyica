@@ -19,7 +19,24 @@ package org.verifyica.engine.common;
 import java.util.Objects;
 
 /**
- * Builds ANSI colored strings.
+ * A builder class for constructing strings with embedded ANSI color escape sequences.
+ *
+ * <p>This class provides a fluent API for building strings that include ANSI color
+ * escape sequences for terminal text formatting. It tracks the last applied color to
+ * avoid redundant escape sequences and automatically handles cases where ANSI colors
+ * are not supported by the terminal.
+ *
+ * <p>Example usage:
+ * <pre>
+ * String colored = new AnsiColoredString()
+ *     .append(AnsiColor.TEXT_RED_BOLD)
+ *     .append("Error: ")
+ *     .append(AnsiColor.TEXT_YELLOW)
+ *     .append("Something went wrong")
+ *     .build();
+ * </pre>
+ *
+ * @see AnsiColor
  */
 public class AnsiColoredString {
 
@@ -29,16 +46,16 @@ public class AnsiColoredString {
     private AnsiColor lastAnsiColor;
 
     /**
-     * Creates an empty AnsiColoredString.
+     * Constructs an empty AnsiColoredString with default capacity.
      */
     public AnsiColoredString() {
         this((AnsiColor) null);
     }
 
     /**
-     * Creates an AnsiColoredString with the specified initial string.
+     * Constructs an AnsiColoredString with the specified initial string.
      *
-     * @param string the initial string to append
+     * @param string the initial string to append (may be null)
      */
     public AnsiColoredString(final String string) {
         stringBuilder = new StringBuilder(string.length());
@@ -47,9 +64,9 @@ public class AnsiColoredString {
     }
 
     /**
-     * Creates an AnsiColoredString with the specified initial ANSI color.
+     * Constructs an AnsiColoredString with the specified initial ANSI color.
      *
-     * @param ansiColor the initial ANSI color to append
+     * @param ansiColor the initial ANSI color to apply (may be null)
      */
     public AnsiColoredString(final AnsiColor ansiColor) {
         stringBuilder = new StringBuilder(DEFAULT_CAPACITY);

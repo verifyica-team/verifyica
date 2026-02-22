@@ -21,37 +21,44 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Class to implement Level
+ * An enumeration representing logging levels in the Verifyica logging framework.
+ *
+ * <p>Logging levels are ordered from most severe to least severe:
+ * ERROR &gt; WARN &gt; INFO &gt; DEBUG &gt; TRACE. Each level has an associated
+ * integer value used for comparisons.
+ *
+ * <p>The Level class provides methods to convert between string representations
+ * and Level instances, as well as integer values for efficient level checking.
  */
 public final class Level {
 
     /**
-     * ERROR log level
+     * ERROR level - indicates a serious problem that has caused a failure.
      */
     public static final Level ERROR = new Level(100, "ERROR");
 
     /**
-     * WARN log level
+     * WARN level - indicates a potentially harmful situation.
      */
     public static final Level WARN = new Level(200, "WARN");
 
     /**
-     * INFO log level
+     * INFO level - indicates informational messages about the progress of the application.
      */
     public static final Level INFO = new Level(300, "INFO");
 
     /**
-     * DEBUG log level
+     * DEBUG level - indicates fine-grained informational events useful for debugging.
      */
     public static final Level DEBUG = new Level(400, "DEBUG");
 
     /**
-     * TRACE log level
+     * TRACE level - indicates even more detailed informational events than DEBUG.
      */
     public static final Level TRACE = new Level(500, "TRACE");
 
     /**
-     * ALL log level
+     * ALL level - indicates that all messages should be logged.
      */
     public static final Level ALL = new Level(Integer.MAX_VALUE, "ALL");
 
@@ -70,10 +77,10 @@ public final class Level {
     private final String string;
 
     /**
-     * Constructor
+     * Private constructor to create a Level instance.
      *
-     * @param level level
-     * @param string string
+     * @param level the integer value of the level
+     * @param string the string representation of the level
      */
     private Level(int level, String string) {
         this.level = level;
@@ -81,18 +88,18 @@ public final class Level {
     }
 
     /**
-     * Method to get the Level as an int
+     * Returns the integer value of this level.
      *
-     * @return the Level as an int
+     * @return the integer value of this level
      */
     public int toInt() {
         return level;
     }
 
     /**
-     * Method to get the Level as a String
+     * Returns the string representation of this level.
      *
-     * @return the level as a String
+     * @return the string representation of this level
      */
     @Override
     public String toString() {
@@ -113,10 +120,10 @@ public final class Level {
     }
 
     /**
-     * Method to map a Level String to a Level
+     * Decodes a string into a Level.
      *
-     * @param string string
-     * @return the decoded Level, or INFO if the not valid
+     * @param string the string to decode (case-insensitive)
+     * @return the corresponding Level, or INFO if the string is not recognized
      */
     public static Level decode(String string) {
         Level level = null;

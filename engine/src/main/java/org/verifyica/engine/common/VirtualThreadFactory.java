@@ -20,12 +20,20 @@ import io.github.thunkware.vt.bridge.ThreadTool;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * Class to implement VirtualThreadFactory
+ * A {@link ThreadFactory} implementation that creates virtual threads when available,
+ * falling back to platform threads on older JVM versions.
+ *
+ * <p>This factory is the preferred choice for test execution when the JVM supports
+ * virtual threads (Java 21+). If virtual threads are not available, it gracefully
+ * falls back to creating platform threads.
+ *
+ * @see ThreadFactory
+ * @see java.lang.Thread
  */
 public class VirtualThreadFactory implements ThreadFactory {
 
     /**
-     * Constructor
+     * Constructs a new VirtualThreadFactory instance.
      */
     public VirtualThreadFactory() {
         // INTENTIONALLY EMPTY

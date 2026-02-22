@@ -31,17 +31,26 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * Class to implement OrderedProperties
+ * A {@link Properties} implementation that maintains property entries in a consistent,
+ * predictable order.
+ *
+ * <p>Standard Java {@link Properties} does not guarantee any particular iteration order
+ * for its entries. This class extends Properties and uses a {@link TreeMap} internally
+ * to maintain properties in sorted key order, which is useful for deterministic output
+ * and consistent behavior across JVM runs.
+ *
+ * @see Properties
+ * @see TreeMap
  */
 public class OrderedProperties extends Properties {
 
     /**
-     * Ordered Map
+     * The internal map that maintains properties in sorted key order.
      */
     private final TreeMap<Object, Object> orderedMap;
 
     /**
-     * Constructor
+     * Constructs a new empty OrderedProperties instance.
      */
     public OrderedProperties() {
         this.orderedMap = new TreeMap<>();

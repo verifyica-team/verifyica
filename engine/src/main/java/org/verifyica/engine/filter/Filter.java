@@ -17,53 +17,57 @@
 package org.verifyica.engine.filter;
 
 /**
- * Interface to implement Filter
+ * Interface for filters that determine whether test classes should be included or excluded.
+ *
+ * <p>Filters are used during test discovery to determine which test classes should be
+ * executed. Each filter has a type and can match against test classes based on various criteria
+ * such as class name patterns, annotations, or tags.
  */
 public interface Filter {
 
     /**
-     * Filter type
+     * Enumeration of filter types supported by the engine.
      */
     enum Type {
 
         /**
-         * Unknown
+         * Unknown or unspecified filter type.
          */
         UNKNOWN,
 
         /**
-         * IncludeClass
+         * Filter that includes classes matching specific criteria.
          */
         INCLUDE_CLASS,
 
         /**
-         * ExcludeClass
+         * Filter that excludes classes matching specific criteria.
          */
         EXCLUDE_CLASS,
 
         /**
-         * IncludeTaggedClass
+         * Filter that includes classes with specific tags.
          */
         INCLUDE_TAGGED_CLASS,
 
         /**
-         * ExcludeTaggedClass
+         * Filter that excludes classes with specific tags.
          */
         EXCLUDE_TAGGED_CLASS
     }
 
     /**
-     * Method to get the Filter Type
+     * Returns the type of this filter.
      *
-     * @return the Filter Type
+     * @return the filter type
      */
     Type getType();
 
     /**
-     * Method to return if a Filter matches a Class
+     * Determines whether this filter matches the specified test class.
      *
-     * @param testClass testClass
-     * @return true if the test class matches, otherwise false
+     * @param testClass the class to test for a match
+     * @return true if the test class matches the filter criteria, false otherwise
      */
     boolean matches(Class<?> testClass);
 }
