@@ -533,6 +533,9 @@ public class VerifyicaMavenPlugin extends AbstractMojo {
      */
     private static class Logger {
 
+        /**
+         * Maven log used for output.
+         */
         private final Log log;
 
         /**

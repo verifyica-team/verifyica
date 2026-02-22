@@ -43,11 +43,14 @@ import org.verifyica.engine.descriptor.TestableTestDescriptor;
 import org.verifyica.engine.support.TimestampSupport;
 
 /**
- * Class to implement a SummaryEngineExecutionListener2
+ * Class to implement a SummaryEngineExecutionListener.
  */
 @SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.UnusedPrivateField", "PMD.EmptyCatchBlock"})
 public class SummaryEngineExecutionListener implements EngineExecutionListener {
 
+    /**
+     * Summary banner displayed after execution.
+     */
     private static final String SUMMARY_BANNER = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
             .append("Verifyica ")
@@ -57,9 +60,15 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             .append(AnsiColor.NONE)
             .build();
 
+    /**
+     * Separator line for console output.
+     */
     private static final String SEPARATOR = AnsiColor.TEXT_WHITE_BRIGHT.wrap(
             "------------------------------------------------------------------------");
 
+    /**
+     * INFO-level console prefix.
+     */
     private static final String INFO = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE)
             .append("[")
@@ -71,8 +80,14 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
             .append(" ")
             .build();
 
+    /**
+     * Counter registry for execution statistics.
+     */
     private final Map<String, Counter> counterMap;
 
+    /**
+     * Stopwatch for tracking total elapsed time.
+     */
     private final Stopwatch stopwatch;
 
     /**
@@ -246,6 +261,12 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         }
     }
 
+    /**
+     * Counts failed descendant test descriptors.
+     *
+     * @param testDescriptor root descriptor to inspect
+     * @return number of failed descendants
+     */
     private static long getDescendantFailureCount(final TestDescriptor testDescriptor) {
         Set<? extends TestDescriptor> descendants = testDescriptor.getDescendants();
 
@@ -259,6 +280,11 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
                 .count();
     }
 
+    /**
+     * Method to print an Object without a line break.
+     *
+     * @param object object
+     */
     private static void print(final Object object) {
         System.out.print(object);
     }
@@ -272,6 +298,12 @@ public class SummaryEngineExecutionListener implements EngineExecutionListener {
         System.out.println(object);
     }
 
+    /**
+     * Capitalizes the first character of a string.
+     *
+     * @param s string to capitalize
+     * @return capitalized string
+     */
     private static String capitalize(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
