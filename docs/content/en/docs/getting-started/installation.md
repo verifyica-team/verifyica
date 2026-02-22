@@ -24,14 +24,14 @@ Add the following dependencies to your `pom.xml`:
     <dependency>
         <groupId>org.verifyica</groupId>
         <artifactId>verifyica-api</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.5</version>
     </dependency>
 
     <!-- Verifyica Engine (test scope) -->
     <dependency>
         <groupId>org.verifyica</groupId>
         <artifactId>verifyica-engine</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.5</version>
         <scope>test</scope>
     </dependency>
 
@@ -70,7 +70,7 @@ Add the Verifyica Maven Plugin to run your tests:
         <plugin>
             <groupId>org.verifyica</groupId>
             <artifactId>verifyica-maven-plugin</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.5</version>
             <executions>
                 <execution>
                     <goals>
@@ -105,7 +105,7 @@ Add the Verifyica Maven Plugin to run your tests:
         <plugin>
             <groupId>org.verifyica</groupId>
             <artifactId>verifyica-maven-plugin</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.5</version>
             <executions>
                 <execution>
                     <goals>
@@ -168,9 +168,9 @@ Verifyica tests work with any IDE that supports JUnit Platform:
 
 ## Version Compatibility
 
-| Verifyica Version | Java Version | JUnit Platform Version |
-|-------------------|--------------|------------------------|
-| 1.0.0             | 8+ | 1.10.0+ |
+| Verifyica Version | Java Version |
+|-------------------|--------------|
+| 1.0.5             | 8+           |
 
 ## Next Steps
 

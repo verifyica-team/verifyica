@@ -60,7 +60,7 @@ graph TD
 - **GitHub:** https://github.com/verifyica-team/verifyica
 - **Maven Central:** https://central.sonatype.com/artifact/org.verifyica/verifyica-api
 - **License:** Apache License 2.0
-- **Current Version:** 1.0.0
+- **Current Version:** 1.0.5
 
 ## Module Structure
 
