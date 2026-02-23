@@ -34,7 +34,14 @@ import org.verifyica.engine.exception.EngineConfigurationException;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * Factory class for creating and loading {@link Filter} instances from configuration.
+ * A factory for creating and loading {@link Filter} instances from YAML configuration files.
+ *
+ * <p>This factory reads filter definitions from a YAML file specified in the engine
+ * configuration and creates appropriate filter instances based on the definition type.
+ * Filter definitions include include/exclude patterns for classes and tags.
+ *
+ * @see Filter
+ * @see Filter.Type
  */
 @SuppressWarnings("unchecked")
 public class FilterFactory {

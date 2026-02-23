@@ -19,11 +19,15 @@ package org.verifyica.engine.common;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Immutable 128-bit identifier with fast random generation and UUID-style
- * (RFC 4122 version 4 / IETF variant) canonical string form.
+ * An immutable 128-bit identifier with fast random generation and UUID-style canonical string representation.
  *
- * <p>The string form is 36 characters: 32 lowercase hex digits and 4 hyphens
- * in the pattern {@code 8-4-4-4-12}.</p>
+ * <p>This class provides a more efficient alternative to UUID for generating unique identifiers.
+ * It generates identifiers conforming to RFC 4122 version 4 (random UUID) with the IETF variant.
+ *
+ * <p>The string representation is 36 characters: 32 lowercase hexadecimal digits and 4 hyphens
+ * in the standard UUID format {@code 8-4-4-4-12}.
+ *
+ * @see Comparable
  */
 public final class FastId implements Comparable<FastId> {
 
@@ -39,26 +43,32 @@ public final class FastId implements Comparable<FastId> {
     private final long msb;
     private final long lsb;
 
+    /**
+     * Private constructor to enforce creation through static factory methods.
+     *
+     * @param msb the most significant 64 bits
+     * @param lsb the least significant 64 bits
+     */
     private FastId(long msb, long lsb) {
         this.msb = msb;
         this.lsb = lsb;
     }
 
     /**
-     * Creates a {@link FastId} from raw 128-bit parts.
+     * Creates a FastId from the raw 128-bit parts.
      *
-     * @param msb most significant 64 bits
-     * @param lsb least significant 64 bits
-     * @return a FastId with the provided bits
+     * @param msb the most significant 64 bits
+     * @param lsb the least significant 64 bits
+     * @return a new FastId instance with the specified bits
      */
     public static FastId from(long msb, long lsb) {
         return new FastId(msb, lsb);
     }
 
     /**
-     * Generates a new random FastId (RFC 4122 version 4 with IETF variant).
+     * Generates a new random FastId conforming to RFC 4122 version 4 with IETF variant.
      *
-     * @return a new FastId instance with random values
+     * @return a new FastId instance with randomly generated values
      */
     public static FastId randomFastId() {
         ThreadLocalRandom rnd = ThreadLocalRandom.current();
@@ -73,7 +83,7 @@ public final class FastId implements Comparable<FastId> {
     }
 
     /**
-     * Returns the most significant 64 bits.
+     * Returns the most significant 64 bits of this identifier.
      *
      * @return the most significant 64 bits
      */
@@ -82,7 +92,7 @@ public final class FastId implements Comparable<FastId> {
     }
 
     /**
-     * Returns the least significant 64 bits.
+     * Returns the least significant 64 bits of this identifier.
      *
      * @return the least significant 64 bits
      */
@@ -90,6 +100,11 @@ public final class FastId implements Comparable<FastId> {
         return lsb;
     }
 
+    /**
+     * Returns the string representation of this identifier in the standard UUID format.
+     *
+     * @return the string representation (e.g., "550e8400-e29b-41d4-a716-446655440000")
+     */
     @Override
     public String toString() {
         final char[] out = new char[36];
@@ -109,10 +124,12 @@ public final class FastId implements Comparable<FastId> {
     }
 
     /**
-     * Writes the low {@code digits} hex digits of {@code value} into {@code dest}
-     * ending at {@code offset + digits - 1}.
+     * Writes the specified number of hexadecimal digits of the given value into the destination array.
      *
-     * <p>Uses lowercase hex.</p>
+     * @param dest the destination character array
+     * @param offset the starting offset in the array
+     * @param value the value to write
+     * @param digits the number of hexadecimal digits to write
      */
     private static void writeHexLong(char[] dest, int offset, long value, int digits) {
         for (int i = offset + digits - 1; i >= offset; i--) {

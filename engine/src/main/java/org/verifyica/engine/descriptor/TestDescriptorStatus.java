@@ -47,23 +47,26 @@ public class TestDescriptorStatus {
         SKIPPED
     }
 
+    /** The type of the test descriptor status. */
     private final Type type;
+
+    /** The throwable associated with this status, or null if none. */
     private final Throwable throwable;
 
     /**
-     * Constructor
+     * Constructs a new TestDescriptorStatus with the specified type and no throwable.
      *
-     * @param type type
+     * @param type the type of the test descriptor status
      */
     private TestDescriptorStatus(final Type type) {
         this(type, null);
     }
 
     /**
-     * Constructor
+     * Constructs a new TestDescriptorStatus with the specified type and throwable.
      *
-     * @param type type
-     * @param throwable throwable
+     * @param type the type of the test descriptor status
+     * @param throwable the throwable associated with this status, or null if none
      */
     private TestDescriptorStatus(final Type type, final Throwable throwable) {
         this.type = type;

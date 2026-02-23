@@ -25,16 +25,17 @@ import org.junit.platform.engine.reporting.ReportEntry;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * Class to implement ChainedEngineExecutionListener
+ * ChainedEngineExecutionListener provides chaining of multiple EngineExecutionListeners
  */
 public class ChainedEngineExecutionListener implements EngineExecutionListener {
 
+    /** The collection of engine execution listeners. */
     private final Collection<EngineExecutionListener> engineExecutionListeners = new ArrayList<>();
 
     /**
-     * Constructor
+     * Constructs a new ChainedEngineExecutionListener containing the specified engine execution listener.
      *
-     * @param engineExecutionListener engineExecutionListener
+     * @param engineExecutionListener the engine execution listener to add
      */
     public ChainedEngineExecutionListener(EngineExecutionListener engineExecutionListener) {
         Precondition.notNull(engineExecutionListener, "engineExecutionListener is null");
@@ -43,9 +44,9 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Constructor
+     * Constructs a new ChainedEngineExecutionListener containing the specified engine execution listeners.
      *
-     * @param engineExecutionListeners engineExecutionListeners
+     * @param engineExecutionListeners the engine execution listeners to add
      */
     public ChainedEngineExecutionListener(EngineExecutionListener... engineExecutionListeners) {
         Precondition.notNull(engineExecutionListeners, "engineExecutionListeners is null");
@@ -57,9 +58,9 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Constructor
+     * Constructs a new ChainedEngineExecutionListener containing the specified collection of engine execution listeners.
      *
-     * @param engineExecutionListeners engineExecutionListeners
+     * @param engineExecutionListeners the collection of engine execution listeners to add
      */
     public ChainedEngineExecutionListener(Collection<EngineExecutionListener> engineExecutionListeners) {
         Precondition.notNull(engineExecutionListeners, "engineExecutionListeners is null");
@@ -69,7 +70,7 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to add an EngineExecutionListener
+     * Adds an EngineExecutionListener
      *
      * @param engineExecutionListener engineExecutionListener
      * @return this
@@ -83,7 +84,7 @@ public class ChainedEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to get the Collection of EngineExecutionListeners
+     * Gets the Collection of EngineExecutionListeners
      *
      * @return the Collection of EngineExecutionListeners
      */

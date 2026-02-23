@@ -427,9 +427,18 @@ public final class RandomUtil {
      * reference assignment.</p>
      */
     private static final class RngHolder {
+
+        /** The random number generator. */
         final UniformRandomProvider rng;
+
+        /** The Gaussian sampler. */
         final ZigguratSampler.NormalizedGaussian gaussian;
 
+        /**
+         * Creates a new RngHolder instance.
+         *
+         * @param rng the random number generator
+         */
         RngHolder(UniformRandomProvider rng) {
             this.rng = rng;
             this.gaussian = ZigguratSampler.NormalizedGaussian.of(rng);

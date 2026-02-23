@@ -24,7 +24,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * An {@link AbstractExecutorService} implementation that executes tasks directly in the calling thread.
+ * An {@link AbstractExecutorService} implementation that executes tasks synchronously
+ * in the calling thread.
+ *
+ * <p>This executor service provides a simple way to run tasks synchronously without
+ * the overhead of thread management. Tasks are executed immediately in the calling
+ * thread when {@link #execute(Runnable)} is called. This is useful for testing or
+ * when asynchronous execution is not required.
+ *
+ * @see AbstractExecutorService
  */
 public class DirectExecutorService extends AbstractExecutorService {
 
@@ -33,7 +41,7 @@ public class DirectExecutorService extends AbstractExecutorService {
     private final AtomicBoolean isShutdown = new AtomicBoolean(false);
 
     /**
-     * Constructs a new {@code DirectExecutorService}.
+     * Constructs a new DirectExecutorService instance.
      */
     public DirectExecutorService() {
         // INTENTIONALLY EMPTY

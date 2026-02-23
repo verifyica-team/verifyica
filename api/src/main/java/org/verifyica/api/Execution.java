@@ -24,7 +24,7 @@ import java.util.function.BooleanSupplier;
 public class Execution {
 
     /**
-     * Constructor.
+     * Private constructor to prevent instantiation of this utility class.
      */
     private Execution() {
         // INTENTIONALLY EMPTY

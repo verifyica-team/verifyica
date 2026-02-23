@@ -21,7 +21,13 @@ import java.util.Set;
 import org.verifyica.api.Argument;
 
 /**
- * Provides a class definition for test execution.
+ * An interface providing metadata and configuration for a test class during test execution.
+ *
+ * <p>This interface encapsulates all information about a test class that is relevant for
+ * test discovery and execution, including the test class itself, display name, tags,
+ * test methods, and arguments for parameterized tests.
+ *
+ * @see MethodDefinition
  */
 public interface ClassDefinition {
 

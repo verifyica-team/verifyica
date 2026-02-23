@@ -40,7 +40,7 @@ import org.verifyica.engine.logger.LoggerFactory;
 import org.verifyica.engine.support.TimestampSupport;
 
 /**
- * Class to implement StatusEngineExecutionListener
+ * StatusEngineExecutionListener provides status reporting for engine execution
  */
 public class StatusEngineExecutionListener implements EngineExecutionListener {
 
@@ -82,15 +82,23 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     private static final String NONE_STRING = AnsiColor.NONE.toString();
 
+    /** Flag indicating whether to log tests to the console. */
     private final boolean consoleLogTests;
+
+    /** The timing units to use when logging test duration. */
     private final String consoleLogTimingUnits;
+
+    /** The map of test descriptors to stopwatches for tracking test duration. */
     private final Map<TestDescriptor, Stopwatch> stopwatches;
 
+    /** Thread-local StringBuilder for building log messages. */
     private final ThreadLocal<StringBuilder> stringBuilderThreadLocal;
+
+    /** Thread-local cache for descriptor information. */
     private final ThreadLocal<Map<TestDescriptor, DescriptorInfo>> descriptorInfoCache;
 
     /**
-     * Constructor
+     * Constructs a new StatusEngineExecutionListener with default configuration settings.
      */
     public StatusEngineExecutionListener() {
         Configuration configuration = ConcreteConfiguration.getInstance();
@@ -273,7 +281,7 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to get or compute descriptor info with caching
+     * Gets or computes descriptor info with caching.
      *
      * @param testDescriptor the test descriptor
      * @return the descriptor info
@@ -310,6 +318,12 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
         return info;
     }
 
+    /**
+     * Gets the count of descendant test descriptors that have failed.
+     *
+     * @param testDescriptor the test descriptor
+     * @return the count of descendant failures
+     */
     private static long getDescendantFailureCount(TestDescriptor testDescriptor) {
         Set<? extends TestDescriptor> descendants = testDescriptor.getDescendants();
 
@@ -324,9 +338,9 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to find the ClassTestDescriptor
+     * Finds the ClassTestDescriptor for the given test descriptor.
      *
-     * @param testDescriptor testDescriptor
+     * @param testDescriptor the test descriptor
      * @return the ClassTestDescriptor or null if not found
      */
     private static TestClassTestDescriptor findClassTestDescriptor(TestDescriptor testDescriptor) {
@@ -349,9 +363,9 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to resolve the ArgumentTestDescriptor
+     * Resolves the ArgumentTestDescriptor for the given test descriptor.
      *
-     * @param testDescriptor testDescriptor
+     * @param testDescriptor the test descriptor
      * @return the ArgumentTestDescriptor or null if not found
      */
     private static TestArgumentTestDescriptor findArgumentTestDescriptor(TestDescriptor testDescriptor) {
@@ -367,9 +381,9 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
     }
 
     /**
-     * Method to find the TestMethodTestDescriptor
+     * Finds the TestMethodTestDescriptor for the given test descriptor.
      *
-     * @param testDescriptor testDescriptor
+     * @param testDescriptor the test descriptor
      * @return the TestMethodTestDescriptor or null if not found
      */
     private static TestMethodTestDescriptor findTestMethodTestDescriptor(TestDescriptor testDescriptor) {

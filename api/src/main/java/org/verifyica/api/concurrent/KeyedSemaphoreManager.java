@@ -26,18 +26,19 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Class to implement KeyedSemaphoreManager
- *
- * <p>Manages Semaphores by string keys, allowing control over the number of threads
- * that can access a particular resource or pool of resources concurrently.</p>
+ * KeyedSemaphoreManager manages semaphores by string keys, allowing control over the number of threads
+ * that can access a particular resource or pool of resources concurrently.
  */
 public class KeyedSemaphoreManager {
 
+    /** The lock used for thread-safe access to the semaphores map. */
     private static final Lock LOCK = new ReentrantLock(true);
+
+    /** The map of semaphores keyed by string identifiers. */
     private static final Map<String, Semaphore> SEMAPHORES = new HashMap<>();
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private KeyedSemaphoreManager() {
         // INTENTIONALLY EMPTY
@@ -393,9 +394,9 @@ public class KeyedSemaphoreManager {
     }
 
     /**
-     * Assert the number of semaphores
+     * Asserts that the number of semaphores matches the expected size.
      *
-     * @param size size
+     * @param size the expected number of semaphores.
      */
     static void assertSize(int size) {
         LOCK.lock();
@@ -409,10 +410,10 @@ public class KeyedSemaphoreManager {
     }
 
     /**
-     * Validate an Object is not null, throwing an IllegalArgumentException if it is null
+     * Validates that an object is not null, throwing an IllegalArgumentException if it is null.
      *
-     * @param object object
-     * @param message message
+     * @param object the object to validate.
+     * @param message the exception message.
      */
     private static void notNull(Object object, String message) {
         if (object == null) {
@@ -421,12 +422,12 @@ public class KeyedSemaphoreManager {
     }
 
     /**
-     * Validate a String is not null and not blank, throwing an IllegalArgumentException
-     * if it is null or blank
+     * Validates that a string is not null and not blank, throwing an IllegalArgumentException
+     * if it is null or blank.
      *
-     * @param string string
-     * @param nullMessage nullMessage
-     * @param blankMessage blankMessage
+     * @param string the string to validate.
+     * @param nullMessage the exception message if the string is null.
+     * @param blankMessage the exception message if the string is blank.
      */
     private static void notBlank(String string, String nullMessage, String blankMessage) {
         if (string == null) {

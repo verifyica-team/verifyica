@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.util.function.Predicate;
 
 /**
- * Interface to implement ClassInterceptor
+ * Interface for intercepting test class lifecycle events.
  */
 public interface ClassInterceptor {
 

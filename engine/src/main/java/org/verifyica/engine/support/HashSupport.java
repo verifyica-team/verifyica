@@ -20,25 +20,28 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * Class to implement HashSupport
+ * HashSupport provides utility methods for generating hashes.
  */
 public class HashSupport {
 
+    /**
+     * The set of alphanumeric characters used for generating hashes.
+     */
     private static final String ALPHA_NUMERIC_CHARACTERS =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz" + "0123456789";
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private HashSupport() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Method to generate an alphanumeric hash
+     * Generates an alphanumeric hash.
      *
-     * @param length length
-     * @return an alphanumeric hash
+     * @param length the length of the hash to generate
+     * @return an alphanumeric hash of the specified length
      */
     public static String alphanumeric(int length) {
         Precondition.isTrue(length > 0, "length is less than 1");
@@ -66,7 +69,7 @@ public class HashSupport {
     }
 
     /**
-     * Method to check if a string contains "fail" (case-insensitive) without creating a new lowercased string
+     * Checks if a string contains "fail" (case-insensitive) without creating a new lowercased string.
      *
      * @param s the string to check
      * @return true if the string contains "fail", false otherwise
@@ -86,13 +89,13 @@ public class HashSupport {
     }
 
     /**
-     * Method to compare a substring of one string with a substring of another (case-insensitive)
+     * Compares a substring of one string with a substring of another (case-insensitive).
      *
-     * @param s1 first string
-     * @param start1 start index in first string
-     * @param s2 second string
-     * @param start2 start index in second string
-     * @param length length to compare
+     * @param s1 the first string
+     * @param start1 the start index in the first string
+     * @param s2 the second string
+     * @param start2 the start index in the second string
+     * @param length the number of characters to compare
      * @return true if the substrings are equal ignoring case
      */
     private static boolean equalsIgnoreCase(String s1, int start1, String s2, int start2, int length) {

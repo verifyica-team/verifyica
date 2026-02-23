@@ -21,14 +21,17 @@ import org.verifyica.api.Context;
 import org.verifyica.api.ExtendedMap;
 
 /**
- * Class to implement AbstractContext
+ * AbstractContext provides a base implementation for Context.
  */
 public abstract class AbstractContext implements Context {
 
+    /**
+     * The extended map for storing context data.
+     */
     private final ExtendedMap<String, Object> map;
 
     /**
-     * Constructor
+     * Protected constructor to initialize the context map.
      */
     protected AbstractContext() {
         this.map = new ExtendedMap<>();

@@ -23,14 +23,17 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /**
- * Class to implement ClassDefinitionFilter
+ * ClassDefinitionFilter provides filtering functionality for ClassDefinition instances.
  */
 public class ClassDefinitionFilter {
 
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassDefinitionFilter.class);
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private ClassDefinitionFilter() {
         // INTENTIONALLY EMPTY

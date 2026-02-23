@@ -40,7 +40,7 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /**
- * Class to implement TestMethodDescriptor
+ * TestMethodTestDescriptor provides test method descriptor functionality
  */
 public class TestMethodTestDescriptor extends TestableTestDescriptor {
 
@@ -54,10 +54,19 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
         END
     }
 
+    /** The list of methods to execute before each test invocation. */
     private final List<Method> beforeEachMethods;
+
+    /** The test method. */
     private final Method testMethod;
+
+    /** The list of methods to execute after each test invocation. */
     private final List<Method> afterEachMethods;
+
+    /** The list of arguments to use for test invocations. */
     private final List<Object> invocationArguments;
+
+    /** The list of throwables captured during test execution. */
     private final List<Throwable> throwables;
 
     @Inject
@@ -76,16 +85,17 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     @Named(ARGUMENT_CONTEXT)
     private ArgumentContext argumentContext;
 
+    /** Flag indicating whether this test should be marked as skipped. */
     private boolean markSkipped;
 
     /**
-     * Constructor
+     * Constructs a new TestMethodTestDescriptor with the specified parameters.
      *
-     * @param uniqueId uniqueId
-     * @param displayName displayName
-     * @param beforeEachMethods beforeEachMethods
-     * @param testMethod testMethod
-     * @param afterEachMethods afterEachMethods
+     * @param uniqueId the unique identifier for this test descriptor
+     * @param displayName the display name for this test descriptor
+     * @param beforeEachMethods the list of methods to execute before each test invocation
+     * @param testMethod the test method
+     * @param afterEachMethods the list of methods to execute after each test invocation
      */
     public TestMethodTestDescriptor(
             UniqueId uniqueId,
@@ -113,9 +123,9 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to get the test Method
+     * Gets the test method.
      *
-     * @return the test Method
+     * @return the test method
      */
     public Method getTestMethod() {
         return testMethod;
@@ -199,7 +209,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to do before each
+     * Executes the before-each methods and returns the next state.
      *
      * @return the next state
      */
@@ -255,7 +265,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to execute the test method
+     * Executes the test method and returns the next state.
      *
      * @return the next state
      */
@@ -303,7 +313,7 @@ public class TestMethodTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Method to do after each
+     * Executes the after-each methods and returns the next state.
      *
      * @return the next state
      */

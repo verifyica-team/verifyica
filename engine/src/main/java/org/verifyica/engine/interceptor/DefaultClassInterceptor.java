@@ -19,12 +19,12 @@ package org.verifyica.engine.interceptor;
 import org.verifyica.api.ClassInterceptor;
 
 /**
- * Class to implement DefaultClassInterceptor
+ * DefaultClassInterceptor provides a default implementation of ClassInterceptor.
  */
 public class DefaultClassInterceptor implements ClassInterceptor {
 
     /**
-     * Constructor
+     * Default constructor for DefaultClassInterceptor.
      */
     public DefaultClassInterceptor() {
         // INTENTIONALLY EMPTY

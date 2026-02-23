@@ -27,21 +27,29 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * Class to implement ImmutableProperties
+ * An immutable {@link Properties} implementation that prevents any modifications to the
+ * property map after construction.
+ *
+ * <p>This class extends {@link Properties} and provides read-only access to a snapshot
+ * of properties. All mutation operations throw {@link UnsupportedOperationException}.
+ * This is useful for passing configuration to components that should not modify the
+ * properties.
+ *
+ * @see Properties
  */
 public class ImmutableProperties extends Properties {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Unmodifiable entry set
+     * Cached unmodifiable view of the entry set.
      */
     private Set<Map.Entry<Object, Object>> unmodifiableEntrySet;
 
     /**
-     * Constructor
+     * Constructs a new ImmutableProperties instance with a copy of the specified properties.
      *
-     * @param properties properties
+     * @param properties the properties to copy into this immutable instance; may be null
      */
     public ImmutableProperties(Properties properties) {
         super();

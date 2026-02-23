@@ -62,9 +62,9 @@ public class Logger {
     private volatile int levelInt;
 
     /**
-     * Constructor.
+     * Constructs a new Logger instance with the specified name.
      *
-     * @param name logger name
+     * @param name the name of the logger (typically the fully qualified class name)
      */
     Logger(final String name) {
         this.name = name;

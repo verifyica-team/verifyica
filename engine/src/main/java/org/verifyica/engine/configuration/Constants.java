@@ -17,230 +17,237 @@
 package org.verifyica.engine.configuration;
 
 /**
- * Class to implement Constants
+ * A collection of constants used throughout the Verifyica engine for configuration.
+ *
+ * <p>This class defines string constants for all configuration property keys used by
+ * the engine. These constants provide a centralized way to reference configuration
+ * properties and ensure consistency across the codebase.
+ *
+ * <p>Configuration properties follow the pattern {@code verifyica.engine.*} and control
+ * various aspects of engine behavior including threading, logging, filtering, and parallelism.
  */
 public final class Constants {
 
     /**
-     * Configuration constant
+     * String representation of boolean true for configuration values.
      */
     public static final String TRUE = "true";
 
     /**
-     * Configuration constant
+     * String representation of boolean false for configuration values.
      */
     public static final String FALSE = "false";
 
     /**
-     * Configuration constant
+     * Configuration value indicating virtual thread execution.
      */
     public static final String VIRTUAL = "virtual";
 
     /**
-     * Configuration constant
+     * Configuration value indicating platform thread execution.
      */
     public static final String PLATFORM = "platform";
 
     /**
-     * Configuration constant
+     * Configuration value indicating ephemeral platform thread execution.
      */
     public static final String PLATFORM_EPHEMERAL = "platform-ephemeral";
 
     /**
-     * Configuration constant
+     * The base prefix for all Verifyica configuration properties.
      */
     public static final String PREFIX = "verifyica";
 
     /**
-     * Configuration constant
+     * The base prefix for engine-related configuration properties.
      */
     public static final String ENGINE = PREFIX + ".engine";
 
     /**
-     * Configuration constant
+     * Configuration property for thread-related settings.
      */
     public static final String ENGINE_THREAD = ENGINE + ".thread";
 
     /**
-     * Configuration constant
+     * Configuration property for thread type (virtual, platform, or platform-ephemeral).
      */
     public static final String ENGINE_THREAD_TYPE = ENGINE_THREAD + ".type";
 
     /**
-     * Configuration constant
+     * Configuration property for logger regex pattern to filter which loggers are enabled.
      */
     public static final String ENGINE_LOGGER_REGEX = ENGINE + ".logger.regex";
 
     /**
-     * Configuration constant
+     * Configuration property for logger level (TRACE, DEBUG, INFO, WARN, ERROR).
      */
     public static final String ENGINE_LOGGER_LEVEL = ENGINE + ".logger.level";
 
     /**
-     * Configuration constant
+     * Configuration property for autowiring dependencies.
      */
     public static final String ENGINE_AUTOWIRED = ENGINE + ".autowired";
 
     /**
-     * Configuration constant
+     * Configuration property for pruning stack traces in error output.
      */
     public static final String ENGINE_PRUNE_STACK_TRACE = ENGINE + ".prune.stacktraces";
 
     /**
-     * Configuration constant
+     * Configuration property for engine-level autowired dependencies.
      */
     public static final String ENGINE_AUTOWIRED_ENGINE = ENGINE_AUTOWIRED + ".engine";
 
     /**
-     * Configuration constant
+     * Configuration property for engine-level interceptor autowiring.
      */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS = ENGINE_AUTOWIRED_ENGINE + ".interceptors";
 
     /**
-     * Configuration constant
+     * Configuration property for engine-level interceptor include patterns.
      */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE =
             ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS + ".include";
 
     /**
-     * Configuration constant
+     * Configuration property for engine-level interceptor include regex patterns.
      */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE_REGEX =
             ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_INCLUDE + ".regex";
 
     /**
-     * Configuration constant
+     * Configuration property for engine-level interceptor exclude patterns.
      */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE =
             ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS + ".exclude";
 
     /**
-     * Configuration constant
+     * Configuration property for engine-level interceptor exclude regex patterns.
      */
     public static final String ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE_REGEX =
             ENGINE_AUTOWIRED_ENGINE_INTERCEPTORS_EXCLUDE + ".regex";
 
     /**
-     * Configuration constant
+     * Configuration property for test class-related settings.
      */
     public static final String ENGINE_CLASS = ENGINE + ".class";
 
     /**
-     * Configuration constant
+     * Configuration property for class-level autowired dependencies.
      */
     public static final String ENGINE_AUTOWIRED_CLASS = ENGINE_AUTOWIRED + ".class";
 
     /**
-     * Configuration constant
+     * Configuration property for class-level interceptor autowiring.
      */
     public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS = ENGINE_AUTOWIRED_CLASS + ".interceptors";
 
     /**
-     * Configuration constant
+     * Configuration property for class-level interceptor include patterns.
      */
     public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE =
             ENGINE_AUTOWIRED_CLASS_INTERCEPTORS + ".include";
 
     /**
-     * Configuration constant
+     * Configuration property for class-level interceptor include regex patterns.
      */
     public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE_REGEX =
             ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_INCLUDE + ".regex";
 
     /**
-     * Configuration constant
+     * Configuration property for class-level interceptor exclude patterns.
      */
     public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE =
             ENGINE_AUTOWIRED_CLASS_INTERCEPTORS + ".exclude";
 
     /**
-     * Configuration constant
+     * Configuration property for class-level interceptor exclude regex patterns.
      */
     public static final String ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE_REGEX =
             ENGINE_AUTOWIRED_CLASS_INTERCEPTORS_EXCLUDE + ".regex";
 
     /**
-     * Configuration constant
+     * Configuration property for test class filtering.
      */
     public static final String ENGINE_FILTER = ENGINE + ".filter";
 
     /**
-     * Configuration constant
+     * Configuration property for filter definitions.
      */
     public static final String ENGINE_FILTER_DEFINITIONS = ENGINE_FILTER + ".definitions";
 
     /**
-     * Configuration constant
+     * Configuration property for filter definitions filename.
      */
     public static final String ENGINE_FILTER_DEFINITIONS_FILENAME = ENGINE_FILTER_DEFINITIONS + ".filename";
 
     /**
-     * Configuration constant
+     * Configuration property for test class parallelism.
      */
     public static final String ENGINE_CLASS_PARALLELISM = ENGINE_CLASS + ".parallelism";
 
     /**
-     * Configuration constant
+     * Configuration property for test class state machine throttle.
      */
     public static final String ENGINE_CLASS_STATE_MACHINE_THROTTLE = ENGINE_CLASS + ".state.machine.throttle";
 
     /**
-     * Configuration constant
+     * Configuration property for test argument-related settings.
      */
     public static final String ENGINE_ARGUMENT = ENGINE + ".argument";
 
     /**
-     * Configuration constant
+     * Configuration property for test argument parallelism.
      */
     public static final String ENGINE_ARGUMENT_PARALLELISM = ENGINE_ARGUMENT + ".parallelism";
 
     /**
-     * Configuration constant
+     * Configuration property for test argument state machine throttle.
      */
     public static final String ENGINE_ARGUMENT_STATE_MACHINE_THROTTLE = ENGINE_ARGUMENT + ".state.machine.throttle";
 
     /**
-     * Configuration constant
+     * Configuration property for test-related settings.
      */
     public static final String ENGINE_TEST = ENGINE + ".test";
 
     /**
-     * Configuration constant
+     * Configuration property for test state machine throttle.
      */
     public static final String ENGINE_TEST_STATE_MACHINE_THROTTLE = ENGINE_TEST + ".state.machine.throttle";
 
     /**
-     * Configuration constant
+     * Configuration property for Maven plugin detection.
      */
     public static final String MAVEN_PLUGIN = PREFIX + ".maven.plugin";
 
     /**
-     * Configuration constant
+     * Configuration property for Maven plugin mode.
      */
     public static final String MAVEN_PLUGIN_MODE = MAVEN_PLUGIN + ".mode";
 
     /**
-     * Configuration constant
+     * Configuration property for Maven plugin version.
      */
     public static final String MAVEN_PLUGIN_VERSION = MAVEN_PLUGIN + ".version";
 
     /**
-     * Configuration constant
+     * Configuration property for Maven plugin logging.
      */
     public static final String MAVEN_PLUGIN_LOG = MAVEN_PLUGIN + ".log";
 
     /**
-     * Configuration constant
+     * Configuration property for Maven plugin test logging.
      */
     public static final String MAVEN_PLUGIN_LOG_TESTS = MAVEN_PLUGIN_LOG + ".tests";
 
     /**
-     * Configuration constant
+     * Configuration property for Maven plugin timing units.
      */
     public static final String MAVEN_PLUGIN_LOG_TIMING_UNITS = MAVEN_PLUGIN_LOG + ".units";
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private Constants() {
         // INTENTIONALLY EMPTY

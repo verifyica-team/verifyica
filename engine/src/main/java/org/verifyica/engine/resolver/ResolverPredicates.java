@@ -26,7 +26,7 @@ import org.verifyica.engine.support.ClassSupport;
 import org.verifyica.engine.support.HierarchyTraversalMode;
 
 /**
- * Class to implement ResolverPredicates
+ * ResolverPredicates provides Predicate implementations for filtering classes and methods
  */
 public class ResolverPredicates {
 
@@ -194,14 +194,14 @@ public class ResolverPredicates {
     };
 
     /**
-     * Constructor
+     * Constructs a new ResolverPredicates instance. This constructor is intentionally empty as all methods are static.
      */
     private ResolverPredicates() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Method to return if a Class has a default constructor
+     * Returns if a Class has a default constructor
      *
      * @param clazz clazz
      * @return true if the Class has a default constructor, otherwise false

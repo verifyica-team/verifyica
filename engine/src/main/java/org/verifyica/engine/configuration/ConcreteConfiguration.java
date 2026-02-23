@@ -36,27 +36,49 @@ import org.verifyica.engine.common.OrderedProperties;
 import org.verifyica.engine.exception.EngineConfigurationException;
 
 /**
- * Class to implement ConcreteConfiguration
+ * ConcreteConfiguration provides a concrete implementation of Configuration.
  */
 public class ConcreteConfiguration implements Configuration {
 
+    /**
+     * System environment variable name for enabling configuration tracing.
+     */
     private static final String VERIFYICA_CONFIGURATION_TRACE = "VERIFYICA_CONFIGURATION_TRACE";
 
+    /**
+     * The name of the properties file to load.
+     */
     private static final String VERIFYICA_PROPERTIES_FILENAME = "verifyica.properties";
 
+    /**
+     * Flag indicating whether trace logging is enabled.
+     */
     private static final boolean IS_TRACE_ENABLED =
             Constants.TRUE.equals(System.getenv().get(VERIFYICA_CONFIGURATION_TRACE));
 
+    /**
+     * The class name for logging purposes.
+     */
     private static final String CLASS_NAME = ConcreteConfiguration.class.getName();
 
+    /**
+     * DateTimeFormatter for formatting trace timestamps.
+     */
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
 
+    /**
+     * The properties loaded from the configuration file.
+     */
     private final Properties properties;
+
+    /**
+     * The path to the properties file.
+     */
     private Path propertiesPath;
 
     /**
-     * Constructor
+     * Private constructor to initialize the configuration by loading properties.
      */
     private ConcreteConfiguration() {
         properties = load();
@@ -73,7 +95,7 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     /**
-     * Method to get a singleton instance
+     * Gets a singleton instance
      *
      * @return the singleton instance
      */
@@ -82,7 +104,7 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     /**
-     * Method to load configuration Properties
+     * Loads configuration Properties
      */
     private Properties load() {
         if (IS_TRACE_ENABLED) {
@@ -134,7 +156,7 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     /**
-     * Method to find a properties file, searching the working directory, then parent directories
+     * Finds a properties file, searching the working directory, then parent directories
      * toward the root
      *
      * @param path path
@@ -174,7 +196,7 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     /**
-     * Method to log a TRACE message
+     * Logs a TRACE message
      *
      * @param message message
      */

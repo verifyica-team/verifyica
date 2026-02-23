@@ -20,13 +20,21 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * Implements a RejectedExecutionHandler that executes the oldest task in the queue
- * when a new task is rejected, then submits the new task.
+ * A {@link RejectedExecutionHandler} implementation that executes the oldest queued task
+ * when a new task is rejected, then submits the new task for execution.
+ *
+ * <p>This handler ensures that no tasks are lost when the thread pool is saturated.
+ * Instead of simply rejecting the new task, it removes the oldest waiting task from
+ * the queue, executes it immediately, and then attempts to queue the new task.
+ * This approach provides better throughput under high load conditions.
+ *
+ * @see RejectedExecutionHandler
+ * @see ThreadPoolExecutor
  */
 public class HeadOfQueueRejectedExecutionHandler implements RejectedExecutionHandler {
 
     /**
-     * Constructor.
+     * Constructs a new HeadOfQueueRejectedExecutionHandler instance.
      */
     public HeadOfQueueRejectedExecutionHandler() {
         // INTENTIONALLY EMPTY

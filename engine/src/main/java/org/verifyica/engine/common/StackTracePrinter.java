@@ -23,7 +23,15 @@ import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 
 /**
- * Class to implement StackTracePrinter
+ * A utility class for printing stack traces of exceptions in a formatted manner.
+ *
+ * <p>This class provides functionality to print stack traces with optional ANSI color formatting.
+ * It can also optionally prune stack traces by removing frames that belong to the Verifyica
+ * engine itself, based on a configuration setting. This helps improve readability of stack
+ * traces by focusing on the relevant application code and hiding internal engine details.
+ *
+ * @see Throwable
+ * @see AnsiColor
  */
 public class StackTracePrinter {
 
@@ -31,9 +39,9 @@ public class StackTracePrinter {
     private static final boolean PRUNE_STACK_TRACES = initializePruneStackTraces();
 
     /**
-     * Method to initialize the PRUNE_STACK_TRACES constant
+     * Initializes the PRUNE_STACK_TRACES flag based on configuration.
      *
-     * @return true if stack traces should be pruned
+     * @return true if stack traces should be pruned, false otherwise
      */
     private static boolean initializePruneStackTraces() {
         try {
@@ -47,18 +55,19 @@ public class StackTracePrinter {
     }
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation since this is a utility class.
      */
     private StackTracePrinter() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Method to print the stacktrace using a specific AnsiColor
+     * Prints the stack trace of the given throwable using the specified ANSI color and print stream.
      *
-     * @param throwable throwable
-     * @param ansiColor ansiColor
-     * @param printStream printStream
+     * @param throwable the throwable whose stack trace is to be printed (must not be null)
+     * @param ansiColor the ANSI color to use for the stack trace (must not be null)
+     * @param printStream the print stream to write to (must not be null)
+     * @throws IllegalArgumentException if throwable, ansiColor, or printStream is null
      */
     public static void printStackTrace(Throwable throwable, AnsiColor ansiColor, PrintStream printStream) {
         if (throwable == null) {
@@ -81,9 +90,9 @@ public class StackTracePrinter {
     }
 
     /**
-     * Method to build a stack trace string, optionally pruning engine frames
+     * Builds a string representation of the stack trace, optionally pruning engine frames.
      *
-     * @param throwable throwable
+     * @param throwable the throwable to build the stack trace for
      * @return the stack trace as a string
      */
     private static String buildStackTraceString(Throwable throwable) {
@@ -142,10 +151,11 @@ public class StackTracePrinter {
     }
 
     /**
-     * Method to determine how many stack trace elements to keep
+     * Calculates the number of stack trace elements to keep by finding the first frame
+     * that belongs to the Verifyica engine.
      *
-     * @param stackTrace stackTrace
-     * @return the number of StackTrace elements to keep
+     * @param stackTrace the stack trace elements to analyze
+     * @return the number of elements to keep
      */
     private static int calculatePrunedLength(StackTraceElement[] stackTrace) {
         for (int i = 0; i < stackTrace.length; i++) {

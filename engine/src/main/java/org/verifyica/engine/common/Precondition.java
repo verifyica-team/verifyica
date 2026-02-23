@@ -17,22 +17,29 @@
 package org.verifyica.engine.common;
 
 /**
- * Utility class for precondition validation.
+ * A utility class that provides static methods for validating preconditions and arguments.
+ *
+ * <p>This class is used throughout the engine to ensure that method arguments and
+ * preconditions are met. All validation methods throw {@link IllegalArgumentException}
+ * when validation fails, providing clear error messages for debugging.
+ *
+ * @see IllegalArgumentException
  */
 public class Precondition {
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private Precondition() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Validates an Object is not null, throwing an IllegalArgumentException if it is null.
+     * Validates that an object is not null, throwing an {@link IllegalArgumentException} if it is null.
      *
      * @param object the object to validate
-     * @param message the exception message
+     * @param message the exception message to use if validation fails
+     * @throws IllegalArgumentException if object is null
      */
     public static void notNull(Object object, String message) {
         if (object == null) {
@@ -41,12 +48,13 @@ public class Precondition {
     }
 
     /**
-     * Validates a String is not null and not blank, throwing an IllegalArgumentException
-     * if it is null or blank.
+     * Validates that a string is not null and not blank (empty or whitespace-only),
+     * throwing an {@link IllegalArgumentException} if validation fails.
      *
      * @param string the string to validate
-     * @param nullMessage the exception message if the string is null
-     * @param blankMessage the exception message if the string is blank
+     * @param nullMessage the exception message to use if the string is null
+     * @param blankMessage the exception message to use if the string is blank
+     * @throws IllegalArgumentException if string is null or blank
      */
     public static void notNullOrBlank(String string, String nullMessage, String blankMessage) {
         if (string == null) {
@@ -59,7 +67,7 @@ public class Precondition {
     }
 
     /**
-     * Checks if a String is blank (empty or contains only whitespace).
+     * Checks if a string is blank (null, empty, or contains only whitespace characters).
      *
      * @param string the string to check
      * @return true if the string is blank, false otherwise
@@ -80,10 +88,11 @@ public class Precondition {
     }
 
     /**
-     * Validates a condition is true, throwing an IllegalArgumentException if it is false.
+     * Validates that a condition is true, throwing an {@link IllegalArgumentException} if it is false.
      *
      * @param condition the condition to validate
-     * @param message the exception message
+     * @param message the exception message to use if validation fails
+     * @throws IllegalArgumentException if condition is false
      */
     public static void isTrue(boolean condition, String message) {
         if (!condition) {
@@ -92,10 +101,11 @@ public class Precondition {
     }
 
     /**
-     * Validates a condition is false, throwing an IllegalArgumentException if it is true.
+     * Validates that a condition is false, throwing an {@link IllegalArgumentException} if it is true.
      *
      * @param condition the condition to validate
-     * @param message the exception message
+     * @param message the exception message to use if validation fails
+     * @throws IllegalArgumentException if condition is true
      */
     public static void isFalse(boolean condition, String message) {
         if (condition) {

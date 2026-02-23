@@ -21,23 +21,37 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /**
- * Class to implement RandomSleepThrottle
+ * RandomSleepThrottle provides a throttle that sleeps for a random duration.
  */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class RandomSleepThrottle implements Throttle {
 
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(Throttle.class);
 
+    /**
+     * The name of this throttle.
+     */
     private final String name;
+
+    /**
+     * The minimum sleep duration in milliseconds.
+     */
     private final long minimum;
+
+    /**
+     * The maximum sleep duration in milliseconds.
+     */
     private final long maximum;
 
     /**
-     * Constructor
+     * Constructs a new RandomSleepThrottle with the specified parameters.
      *
-     * @param name name
-     * @param minimum minimum
-     * @param maximum maximum
+     * @param name the name of this throttle
+     * @param minimum the minimum sleep duration in milliseconds
+     * @param maximum the maximum sleep duration in milliseconds
      */
     public RandomSleepThrottle(String name, long minimum, long maximum) {
         this.name = name;
@@ -65,7 +79,7 @@ public class RandomSleepThrottle implements Throttle {
     }
 
     /**
-     * Method to create a random long that is inclusive of minimum and maximum.
+     * Creates a random long that is inclusive of minimum and maximum.
      *
      * @param minimum minimum value (inclusive)
      * @param maximum maximum value (inclusive)

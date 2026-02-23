@@ -19,12 +19,19 @@ package org.verifyica.engine.common;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * Factory for creating platform threads.
+ * A {@link ThreadFactory} implementation that creates platform threads (non-virtual threads).
+ *
+ * <p>This factory is used when the engine is configured to use platform threads rather than
+ * virtual threads for test execution. Each call to {@link #newThread(Runnable)} creates
+ * a new platform thread to execute the provided task.
+ *
+ * @see ThreadFactory
+ * @see java.lang.Thread
  */
 public class PlatformThreadFactory implements ThreadFactory {
 
     /**
-     * Constructor
+     * Constructs a new PlatformThreadFactory instance.
      */
     public PlatformThreadFactory() {
         // INTENTIONALLY EMPTY

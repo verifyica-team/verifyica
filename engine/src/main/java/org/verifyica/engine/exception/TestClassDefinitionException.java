@@ -17,33 +17,33 @@
 package org.verifyica.engine.exception;
 
 /**
- * Class to implement TestClassDefinitionException
+ * TestClassDefinitionException is an exception for test class definition errors.
  */
 public class TestClassDefinitionException extends EngineException {
 
     /**
-     * Constructor
+     * Constructs a new TestClassDefinitionException with the specified message.
      *
-     * @param message message
+     * @param message the detail message
      */
     public TestClassDefinitionException(String message) {
         super(message);
     }
 
     /**
-     * Constructor
+     * Constructs a new TestClassDefinitionException with the specified message and cause.
      *
-     * @param message message
-     * @param throwable throwable
+     * @param message the detail message
+     * @param throwable the cause of this exception
      */
     public TestClassDefinitionException(String message, Throwable throwable) {
         super(message, throwable);
     }
 
     /**
-     * Constructor
+     * Constructs a new TestClassDefinitionException with the specified cause.
      *
-     * @param throwable throwable
+     * @param throwable the cause of this exception
      */
     public TestClassDefinitionException(Throwable throwable) {
         super(throwable);

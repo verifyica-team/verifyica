@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Interface to implement Configuration
+ * Interface providing access to test configuration.
  */
 public interface Configuration {
 

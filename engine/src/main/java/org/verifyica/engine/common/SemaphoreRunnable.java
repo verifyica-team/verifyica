@@ -19,7 +19,14 @@ package org.verifyica.engine.common;
 import java.util.concurrent.Semaphore;
 
 /**
- * Class to implement SemaphoreControlledRunnable
+ * A {@link Runnable} wrapper that controls execution concurrency using a {@link Semaphore}.
+ *
+ * <p>This class wraps a Runnable and ensures that only a limited number of threads
+ * can execute the underlying task concurrently. The semaphore controls access to the
+ * resource by requiring acquisition before execution and releasing it afterward.
+ *
+ * @see Runnable
+ * @see Semaphore
  */
 public class SemaphoreRunnable implements Runnable {
 
@@ -27,10 +34,11 @@ public class SemaphoreRunnable implements Runnable {
     private final Runnable runnable;
 
     /**
-     * Constructor
+     * Constructs a new SemaphoreRunnable instance.
      *
-     * @param semaphore semaphore
-     * @param runnable runnable
+     * @param semaphore the semaphore that controls concurrent execution
+     * @param runnable the task to be executed
+     * @throws IllegalArgumentException if semaphore or runnable is null
      */
     public SemaphoreRunnable(Semaphore semaphore, Runnable runnable) {
         Precondition.notNull(semaphore, "semaphore is null");

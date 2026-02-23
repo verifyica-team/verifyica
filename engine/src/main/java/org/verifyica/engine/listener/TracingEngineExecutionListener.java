@@ -24,14 +24,17 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /**
- * Class to implement TracingEngineExecutionListener
+ * TracingEngineExecutionListener provides tracing for engine execution events.
  */
 public class TracingEngineExecutionListener implements EngineExecutionListener {
 
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(TracingEngineExecutionListener.class);
 
     /**
-     * Constructor
+     * Default constructor for TracingEngineExecutionListener.
      */
     public TracingEngineExecutionListener() {
         // INTENTIONALLY EMPTY

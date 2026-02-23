@@ -19,14 +19,14 @@ package org.verifyica.engine.filter;
 import org.verifyica.engine.support.TagSupport;
 
 /**
- * Class to implement IncludeTaggedClassFilter
+ * IncludeTaggedClassFilter provides filtering to include classes by tag pattern.
  */
 public class IncludeTaggedClassFilter extends AbstractFilter {
 
     /**
-     * Constructor
+     * Private constructor to prevent direct instantiation.
      *
-     * @param classNameRegex classNameRegex
+     * @param classNameRegex the regex pattern for matching tag names
      */
     private IncludeTaggedClassFilter(String classNameRegex) {
         super(classNameRegex);
@@ -49,10 +49,10 @@ public class IncludeTaggedClassFilter extends AbstractFilter {
     }
 
     /**
-     * Method to create an IncludeFilter
+     * Creates an IncludeTaggedClassFilter with the specified tag regex.
      *
-     * @param classRegex classRegex
-     * @return an IncludeFilter
+     * @param classRegex the regex pattern for matching tag names
+     * @return a new IncludeTaggedClassFilter instance
      */
     public static IncludeTaggedClassFilter create(String classRegex) {
         return new IncludeTaggedClassFilter(classRegex);

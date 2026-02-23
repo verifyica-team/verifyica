@@ -17,12 +17,14 @@
 package org.verifyica.engine.filter;
 
 /**
- * Class to implement ExcludeClassFilter
+ * ExcludeClassFilter is a filter that excludes test classes based on their class names.
+ * It uses a regular expression to match the class names and determines if a test class
+ * should be excluded from execution.
  */
 public class ExcludeClassFilter extends AbstractFilter {
 
     /**
-     * Constructor
+     * Constructor for ExcludeClassFilter that takes a regular expression to match class names.
      *
      * @param classNameRegex classNameRegex
      */
@@ -41,7 +43,7 @@ public class ExcludeClassFilter extends AbstractFilter {
     }
 
     /**
-     * Method to create an ExcludeFilter
+     * Creates an ExcludeClassFilter with the specified regular expression for class names.
      *
      * @param classRegex classRegex
      * @return an ExcludeFilter

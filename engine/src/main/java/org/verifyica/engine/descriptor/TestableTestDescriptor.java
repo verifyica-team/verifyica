@@ -38,7 +38,7 @@ import org.verifyica.engine.common.throttle.Throttle;
 import org.verifyica.engine.exception.TestClassDefinitionException;
 
 /**
- * Class to implement TestableTestDescriptor
+ * TestableTestDescriptor provides base functionality for testable descriptors
  */
 public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
 
@@ -98,13 +98,14 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     @Named(ENGINE_EXECUTION_LISTENER)
     private EngineExecutionListener engineExecutionListener;
 
+    /** The test descriptor status. */
     private TestDescriptorStatus testDescriptorStatus;
 
     /**
-     * Constructor
+     * Constructs a new TestableTestDescriptor with the specified unique identifier and display name.
      *
-     * @param uniqueId uniqueId
-     * @param displayName displayName
+     * @param uniqueId the unique identifier for this test descriptor
+     * @param displayName the display name for this test descriptor
      */
     protected TestableTestDescriptor(UniqueId uniqueId, String displayName) {
         super(uniqueId, displayName);
@@ -116,19 +117,19 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     }
 
     /**
-     * Method to test the test descriptor
+     * Tests the test descriptor.
      *
      * @return this
      */
     public abstract TestableTestDescriptor test();
 
     /**
-     * Method to skip the test descriptor
+     * Skips the test descriptor.
      */
     public abstract void skip();
 
     /**
-     * Method to get the test descriptor status
+     * Gets the test descriptor status
      *
      * @return the test descriptor status
      */
@@ -137,7 +138,7 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     }
 
     /**
-     * Method to set the test descriptor status
+     * Sets the test descriptor status
      *
      * @param testDescriptorStatus testDescriptorStatus
      */
@@ -146,7 +147,7 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     }
 
     /**
-     * Method to invoke a Method.
+     * Invokes a Method.
      *
      * <p>Loops through each argument. If an argument type matches, invokes the method with the argument and returns.
      *
@@ -162,7 +163,7 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     }
 
     /**
-     * Method to invoke a Method.
+     * Invokes a Method.
      *
      * <p>Loops through each argument. If an argument type matches, invokes the method with the argument and returns.
      *
@@ -197,7 +198,7 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     }
 
     /**
-     * Method to create a Throttle
+     * Creates a Throttle
      *
      * @param configuration configuration
      * @param name name
@@ -229,7 +230,7 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     }
 
     /**
-     * Method to print a stack trace in AnsiColor.TEXT_RED_BOLD
+     * Prints a stack trace in AnsiColor.TEXT_RED_BOLD
      *
      * @param throwable throwable
      */

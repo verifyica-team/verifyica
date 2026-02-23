@@ -27,8 +27,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * An ephemeral executor service that creates a new thread for each task.
- * Threads are created on-demand and are not reused.
+ * An {@link AbstractExecutorService} implementation that creates a new thread for each task.
+ *
+ * <p>Each task submitted to this executor service results in the creation of a new thread
+ * to execute that task. Threads are created on-demand and are not reused, hence the term
+ * "ephemeral." This approach provides complete isolation between tasks but may be less
+ * efficient than thread pooling for high-throughput scenarios.
+ *
+ * <p>This executor service is particularly useful when tasks are long-running or when
+ * complete isolation between task executions is required.
+ *
+ * @see AbstractExecutorService
+ * @see ThreadFactory
  */
 public class EphemeralExecutorService extends AbstractExecutorService {
 
@@ -37,7 +47,7 @@ public class EphemeralExecutorService extends AbstractExecutorService {
     private final AtomicBoolean isShutdown;
 
     /**
-     * Constructs an EphemeralExecutorService with the given thread factory.
+     * Constructs a new EphemeralExecutorService with the given thread factory.
      *
      * @param threadFactory the thread factory to use for creating threads
      * @throws IllegalArgumentException if threadFactory is null

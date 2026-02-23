@@ -31,7 +31,17 @@ import javax.inject.Named;
 import org.verifyica.engine.exception.EngineException;
 
 /**
- * Class to implement Injector
+ * A dependency injection utility for populating fields in target objects.
+ *
+ * <p>This class provides static methods for injecting values into fields of target objects.
+ * It supports injection based on the JSR-330 {@link Inject} annotation, optionally combined
+ * with {@link Named} for named dependency injection. The injector traverses the class
+ * hierarchy to find fields in superclasses as well.
+ *
+ * <p>This is a simple, lightweight injection mechanism suitable for test framework use cases.
+ *
+ * @see javax.inject.Inject
+ * @see javax.inject.Named
  */
 @SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class Injector {
@@ -43,18 +53,20 @@ public class Injector {
     private static final ReentrantLock FIELD_LOCK = new ReentrantLock(true);
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation since this is a utility class.
      */
     private Injector() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Method to inject a value into named annotated fields
+     * Injects a value into fields annotated with both {@link Inject} and {@link Named}
+     * with the specified name.
      *
-     * @param name name
-     * @param value value
-     * @param target target
+     * @param name the name value from the Named annotation
+     * the value to inject
+     * @param value the value to inject into matching fields
+     * @param target the target object to inject into
      */
     public static void inject(String name, Object value, Object target) {
         Class<?> clazz = target.getClass();
@@ -79,11 +91,11 @@ public class Injector {
     }
 
     /**
-     * Method to inject a value into annotated fields
+     * Injects a value into fields annotated with the specified annotation.
      *
-     * @param annotation annotation
-     * @param value value
-     * @param target target
+     * @param annotation the annotation class to look for on fields
+     * @param value the value to inject into matching fields
+     * @param target the target object to inject into
      */
     public static void inject(Class<? extends Annotation> annotation, Object value, Object target) {
         Class<?> clazz = target.getClass();
@@ -104,11 +116,11 @@ public class Injector {
     }
 
     /**
-     * Method to inject a value into annotated static fields
+     * Injects a value into static fields annotated with the specified annotation.
      *
-     * @param annotation annotation
-     * @param value value
-     * @param target target
+     * @param annotation the annotation class to look for on static fields
+     * @param value the value to inject into matching fields
+     * @param target the target class to inject into
      */
     public static void inject(Class<? extends Annotation> annotation, Object value, Class<?> target) {
         Class<?> clazz = target;
@@ -129,21 +141,23 @@ public class Injector {
     }
 
     /**
-     * Method to get all fields for a class
+     * Returns all declared fields for the specified class, including inherited fields
+     * from the class hierarchy.
      *
-     * @param clazz clazz
-     * @return a List of fields for a class
+     * @param clazz the class to get fields for
+     * @return a list of fields for the class
      */
     private static List<Field> getFields(Class<?> clazz) {
         return FIELD_CACHE.computeIfAbsent(clazz, c -> Arrays.asList(c.getDeclaredFields()));
     }
 
     /**
-     * Method to inject a field
+     * Sets a field to the specified value, using reflection to bypass access controls.
      *
-     * @param field field
-     * @param target target (null for static field)
-     * @param value value
+     * @param field the field to set
+     * @param target the target object (null for static fields)
+     * @param value the value to set
+     * @throws EngineException if an illegal access exception occurs
      */
     private static void setField(Field field, Object target, Object value) {
         FIELD_LOCK.lock();

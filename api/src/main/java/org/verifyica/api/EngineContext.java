@@ -17,7 +17,7 @@
 package org.verifyica.api;
 
 /**
- * Interface to implement EngineContext
+ * Interface providing context for the test engine.
  */
 public interface EngineContext extends Context {
 
