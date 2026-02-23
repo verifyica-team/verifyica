@@ -97,7 +97,7 @@ public class Logger {
             final Matcher matcher = pattern.matcher(loggerName);
             return matcher.find() ? decoded : Level.INFO;
         } catch (Throwable t) {
-            // Intentionally empty (config errors should not break logging)
+            // INTENTIONALLY EMPTY (config errors should not break logging)
             return Level.INFO;
         }
     }
