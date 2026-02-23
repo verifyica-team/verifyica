@@ -122,15 +122,6 @@ public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
                     .waitingFor(Wait.forLogMessage(".*[Kk]afka.*[Ss]erver.*started.*\\n", 1)
                             .withStartupTimeout(INITIALIZE_TIMEOUT));
 
-            /*
-             * Workaround for Kafka 3.9.0 listener registration bug.
-             * https://github.com/testcontainers/testcontainers-java/issues/9506
-             * https://issues.apache.org/jira/browse/KAFKA-18281
-             */
-            if (dockerImageName.contains("3.9.0")) {
-                kafkaContainer.withEnv("KAFKA_LISTENERS", "PLAINTEXT://:9092,BROKER://:9093,CONTROLLER://:9094");
-            }
-
             try {
                 kafkaContainer.start();
             } catch (Exception e) {
