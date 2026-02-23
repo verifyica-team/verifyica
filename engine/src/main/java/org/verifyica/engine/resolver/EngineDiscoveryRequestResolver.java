@@ -277,7 +277,7 @@ public class EngineDiscoveryRequestResolver {
                 continue;
             }
 
-            List<Argument<?>> specific = new ArrayList<Argument<?>>(Math.min(allArguments.size(), indices.size()));
+            List<Argument<?>> specific = new ArrayList<>(Math.min(allArguments.size(), indices.size()));
             for (int i = 0; i < allArguments.size(); i++) {
                 if (indices.contains(i)) {
                     specific.add(allArguments.get(i));
@@ -322,7 +322,7 @@ public class EngineDiscoveryRequestResolver {
         LOGGER.trace("getTestArguments() testClass [%s]", testClass.getName());
 
         Stopwatch stopwatch = new Stopwatch();
-        List<Argument<?>> testArguments = new ArrayList<Argument<?>>();
+        List<Argument<?>> testArguments = new ArrayList<>();
 
         Method supplier = getArgumentSupplierMethod(testClass);
         Object supplied = supplier.invoke(null);
@@ -649,7 +649,7 @@ public class EngineDiscoveryRequestResolver {
             return;
         }
 
-        Set<Class<?>> declaringClasses = new HashSet<Class<?>>((int) (methods.size() / 0.75f) + 1);
+        Set<Class<?>> declaringClasses = new HashSet<>((int) (methods.size() / 0.75f) + 1);
 
         for (Method method : methods) {
             Class<?> declaringClass = method.getDeclaringClass();
