@@ -29,7 +29,9 @@ import org.verifyica.engine.common.Precondition;
  */
 public class ChainedEngineExecutionListener implements EngineExecutionListener {
 
-    /** The collection of engine execution listeners. */
+    /**
+     * The collection of EngineExecutionListeners that are chained together.
+     */
     private final Collection<EngineExecutionListener> engineExecutionListeners = new ArrayList<>();
 
     /**

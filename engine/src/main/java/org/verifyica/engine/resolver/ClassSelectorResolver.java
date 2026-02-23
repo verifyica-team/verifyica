@@ -62,6 +62,9 @@ import org.verifyica.engine.support.OrderSupport;
  */
 public class ClassSelectorResolver {
 
+    /**
+     * Logger instance for this resolver.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassSelectorResolver.class);
 
     /**
@@ -148,11 +151,7 @@ public class ClassSelectorResolver {
                 methodsCache.put(clazz, ordered);
             }
 
-            Set<Method> methodSet = classMethodSet.get(clazz);
-            if (methodSet == null) {
-                methodSet = new LinkedHashSet<>();
-                classMethodSet.put(clazz, methodSet);
-            }
+            Set<Method> methodSet = classMethodSet.computeIfAbsent(clazz, k -> new LinkedHashSet<>());
 
             methodSet.addAll(ordered);
         }

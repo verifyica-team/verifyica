@@ -57,6 +57,9 @@ import org.verifyica.engine.support.OrderSupport;
  */
 public class MethodSelectorResolver {
 
+    /**
+     * Logger instance for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodSelectorResolver.class);
 
     /**

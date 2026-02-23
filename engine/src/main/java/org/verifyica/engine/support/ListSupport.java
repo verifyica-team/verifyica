@@ -42,6 +42,7 @@ public class ListSupport {
     public static <V> List<V> copyAndReverse(List<V> list) {
         List<V> reversedList = new ArrayList<>(list);
         Collections.reverse(reversedList);
+
         return reversedList;
     }
 }

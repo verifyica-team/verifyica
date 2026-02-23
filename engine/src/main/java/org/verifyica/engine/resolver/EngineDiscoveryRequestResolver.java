@@ -88,6 +88,9 @@ import org.verifyica.engine.support.TagSupport;
  */
 public class EngineDiscoveryRequestResolver {
 
+    /**
+     * Logger instance for this resolver.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(EngineDiscoveryRequestResolver.class);
 
     /**
@@ -366,6 +369,7 @@ public class EngineDiscoveryRequestResolver {
             LOGGER.trace(
                     "getTestArguments() elapsedTime [%d] ms",
                     stopwatch.elapsed().toMillis());
+
             return testArguments;
         }
 
@@ -387,6 +391,7 @@ public class EngineDiscoveryRequestResolver {
             LOGGER.trace(
                     "getTestArguments() elapsedTime [%d] ms",
                     stopwatch.elapsed().toMillis());
+
             return testArguments;
         }
 
@@ -400,6 +405,7 @@ public class EngineDiscoveryRequestResolver {
             LOGGER.trace(
                     "getTestArguments() elapsedTime [%d] ms",
                     stopwatch.elapsed().toMillis());
+
             return testArguments;
         }
 
@@ -408,6 +414,7 @@ public class EngineDiscoveryRequestResolver {
 
         LOGGER.trace(
                 "getTestArguments() elapsedTime [%d] ms", stopwatch.elapsed().toMillis());
+
         return testArguments;
     }
 
@@ -491,6 +498,7 @@ public class EngineDiscoveryRequestResolver {
         }
 
         validateSingleMethodPerClass(Verifyica.ArgumentSupplier.class, methods);
+
         return methods.get(0);
     }
 
@@ -629,6 +637,7 @@ public class EngineDiscoveryRequestResolver {
             Class<?> annotationClass) {
         List<Method> methods = ClassSupport.findMethods(testClass, predicate, mode);
         validateSingleMethodPerClass(annotationClass, methods);
+
         return methods;
     }
 
@@ -686,6 +695,7 @@ public class EngineDiscoveryRequestResolver {
         int parallelism = Math.max(annotation.parallelism(), 1);
 
         LOGGER.trace("testClass [%s] parallelism [%d]", testClass.getName(), parallelism);
+
         return parallelism;
     }
 
@@ -697,7 +707,12 @@ public class EngineDiscoveryRequestResolver {
      */
     private static final class LifecycleMethods {
 
+        /**
+         * Lists of lifecycle methods for the test class, ordered according
+         * to the hierarchy traversal mode used during discovery.
+         */
         final List<Method> prepare;
+
         final List<Method> conclude;
         final List<Method> beforeAll;
         final List<Method> afterAll;

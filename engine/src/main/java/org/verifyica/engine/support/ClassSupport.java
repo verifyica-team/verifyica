@@ -59,6 +59,10 @@ public class ClassSupport {
      * Lazy holder for classpath URIs - initialized on first access.
      */
     private static class ClasspathUrisHolder {
+
+        /**
+         * List of URIs for each path in the classpath, initialized lazily to avoid unnecessary overhead
+         */
         static final List<URI> URIS = initializeClasspathUris();
 
         /**
@@ -73,6 +77,7 @@ public class ClassSupport {
             for (String path : paths) {
                 uriSet.add(new File(path).toURI());
             }
+
             return new ArrayList<>(uriSet);
         }
     }
@@ -103,6 +108,7 @@ public class ClassSupport {
 
         List<Class<?>> list = new ArrayList<>(set);
         list.sort(Comparator.comparing(Class::getName));
+
         return list;
     }
 
@@ -252,7 +258,14 @@ public class ClassSupport {
      */
     private static class PathSimpleFileVisitor extends SimpleFileVisitor<Path> {
 
+        /**
+         * Predicate to test file names against
+         */
         private final Predicate<String> predicate;
+
+        /**
+         * List of URIs to collect matching file paths
+         */
         private final List<URI> uris;
 
         /**
