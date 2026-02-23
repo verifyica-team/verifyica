@@ -98,13 +98,14 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     @Named(ENGINE_EXECUTION_LISTENER)
     private EngineExecutionListener engineExecutionListener;
 
+    /** The test descriptor status. */
     private TestDescriptorStatus testDescriptorStatus;
 
     /**
-     * Constructor
+     * Constructs a new TestableTestDescriptor with the specified unique identifier and display name.
      *
-     * @param uniqueId uniqueId
-     * @param displayName displayName
+     * @param uniqueId the unique identifier for this test descriptor
+     * @param displayName the display name for this test descriptor
      */
     protected TestableTestDescriptor(UniqueId uniqueId, String displayName) {
         super(uniqueId, displayName);
@@ -116,14 +117,14 @@ public abstract class TestableTestDescriptor extends AbstractTestDescriptor {
     }
 
     /**
-     * Tests the test descriptor
+     * Tests the test descriptor.
      *
      * @return this
      */
     public abstract TestableTestDescriptor test();
 
     /**
-     * Skips the test descriptor
+     * Skips the test descriptor.
      */
     public abstract void skip();
 

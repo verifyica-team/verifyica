@@ -19,23 +19,26 @@ package org.verifyica.engine.filter;
 import java.util.regex.Pattern;
 
 /**
- * AbstractFilter provides a base implementation for Filter
+ * AbstractFilter provides a base implementation for Filter.
  */
 public abstract class AbstractFilter implements Filter {
 
+    /**
+     * The compiled pattern for matching class names.
+     */
     private final Pattern classNamePattern;
 
     /**
-     * Constructor
+     * Constructs an AbstractFilter with the specified class name regex pattern.
      *
-     * @param classNameRegex classNameRegex
+     * @param classNameRegex the regex pattern for matching class names
      */
     protected AbstractFilter(String classNameRegex) {
         this.classNamePattern = Pattern.compile(classNameRegex);
     }
 
     /**
-     * Gets the class name Pattern
+     * Gets the class name Pattern.
      *
      * @return the class name Pattern
      */

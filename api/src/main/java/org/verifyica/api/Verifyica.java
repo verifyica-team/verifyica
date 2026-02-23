@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Interface that contains all Verifyica annotations
+ * Meta-annotation that contains all Verifyica framework annotations.
  */
 public @interface Verifyica {
 

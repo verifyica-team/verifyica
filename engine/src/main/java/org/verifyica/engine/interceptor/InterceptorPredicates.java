@@ -23,12 +23,12 @@ import org.verifyica.api.EngineInterceptor;
 import org.verifyica.api.Verifyica;
 
 /**
- * InterceptorPredicates provides Predicate implementations for filtering interceptors
+ * InterceptorPredicates provides Predicate implementations for filtering interceptors.
  */
 public class InterceptorPredicates {
 
     /**
-     * Predicate to filter autowired engine interceptors classes
+     * Predicate to filter autowired engine interceptor classes.
      */
     public static final Predicate<Class<?>> AUTOWIRED_ENGINE_INTERCEPTOR_CLASS = clazz -> {
         int modifiers = clazz.getModifiers();
@@ -41,7 +41,7 @@ public class InterceptorPredicates {
     };
 
     /**
-     * Predicate to filter autowired class interceptor classes
+     * Predicate to filter autowired class interceptor classes.
      */
     public static final Predicate<Class<?>> AUTOWIRED_CLASS_INTERCEPTOR_CLASS = clazz -> {
         int modifiers = clazz.getModifiers();
@@ -54,16 +54,16 @@ public class InterceptorPredicates {
     };
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private InterceptorPredicates() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Returns if a Class has a default constructor
+     * Returns if a Class has a default constructor.
      *
-     * @param clazz clazz
+     * @param clazz the class to check
      * @return true if the Class has a default constructor, otherwise false
      */
     @SuppressWarnings("PMD.UselessPureMethodCall")

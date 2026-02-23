@@ -194,7 +194,7 @@ public class ResolverPredicates {
     };
 
     /**
-     * Constructor
+     * Constructs a new ResolverPredicates instance. This constructor is intentionally empty as all methods are static.
      */
     private ResolverPredicates() {
         // INTENTIONALLY EMPTY

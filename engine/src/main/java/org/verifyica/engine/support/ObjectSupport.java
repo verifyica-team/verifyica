@@ -23,25 +23,25 @@ import java.util.stream.Collectors;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * ObjectSupport provides utility methods for working with objects
+ * ObjectSupport provides utility methods for working with objects.
  */
 @SuppressWarnings("unchecked")
 public class ObjectSupport {
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private ObjectSupport() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Creates an instance of a Class
+     * Creates an instance of a Class.
      *
-     * @param clazz clazz
-     * @param <T> T
-     * @return an Object of type T
-     * @throws Throwable Throwable
+     * @param clazz the class to instantiate
+     * @param <T> the type of object to create
+     * @return an instance of the specified class
+     * @throws Throwable if instantiation fails
      */
     public static <T> T createObject(Class<?> clazz) throws Throwable {
         Precondition.notNull(clazz, "clazz is null");
@@ -50,9 +50,9 @@ public class ObjectSupport {
     }
 
     /**
-     * Converts a List of Methods to a String representation
+     * Converts a List of Methods to a String representation.
      *
-     * @param methods methods
+     * @param methods the methods to convert
      * @return a String representation of the Methods
      */
     public static String toString(Method... methods) {
@@ -62,9 +62,9 @@ public class ObjectSupport {
     }
 
     /**
-     * Converts a List Methods to a String representation
+     * Converts a List of Methods to a String representation.
      *
-     * @param methods methods
+     * @param methods the methods to convert
      * @return a String representation of the Methods
      */
     public static String toString(List<Method> methods) {

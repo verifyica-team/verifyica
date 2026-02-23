@@ -17,7 +17,7 @@
 package org.verifyica.api;
 
 /**
- * Interface to implement EngineInterceptor
+ * Interface for intercepting engine lifecycle events.
  */
 public interface EngineInterceptor {
 

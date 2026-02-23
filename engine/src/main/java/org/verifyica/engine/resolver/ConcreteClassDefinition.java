@@ -29,23 +29,33 @@ import org.verifyica.engine.api.MethodDefinition;
  */
 public class ConcreteClassDefinition implements ClassDefinition {
 
+    /** The test class. */
     private final Class<?> testClass;
+
+    /** The set of test method definitions. */
     private final Set<MethodDefinition> testMethodDefinitions;
+
+    /** The list of test arguments. */
     private final List<Argument<?>> arguments;
+
+    /** The set of tags associated with this class definition. */
     private final Set<String> tags;
+
+    /** The parallelism factor for test arguments. */
     private final int argumentParallelism;
 
+    /** The display name for this class definition. */
     private String displayName;
 
     /**
-     * Constructor
+     * Constructs a new ConcreteClassDefinition with the specified parameters.
      *
-     * @param testClass testClass
-     * @param displayName displayName
-     * @param tags tags
-     * @param testMethodDefinitions testMethodDefinitions
-     * @param arguments arguments
-     * @param argumentParallelism testArgumentParallelism
+     * @param testClass the test class
+     * @param displayName the display name for this class definition
+     * @param tags the set of tags associated with this class definition
+     * @param testMethodDefinitions the list of test method definitions
+     * @param arguments the list of test arguments
+     * @param argumentParallelism the parallelism factor for test arguments
      */
     public ConcreteClassDefinition(
             Class<?> testClass,

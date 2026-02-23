@@ -40,7 +40,7 @@ public class TagSupport {
     private static final Map<Method, Set<String>> METHOD_TAGS_CACHE = new WeakHashMap<>();
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private TagSupport() {
         // INTENTIONALLY EMPTY

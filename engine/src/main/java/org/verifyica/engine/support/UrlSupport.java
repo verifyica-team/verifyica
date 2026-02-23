@@ -31,7 +31,7 @@ import org.verifyica.engine.common.Precondition;
 public class UrlSupport {
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private UrlSupport() {
         // INTENTIONALLY EMPTY

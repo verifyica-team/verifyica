@@ -33,29 +33,30 @@ import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.exception.TestClassDefinitionException;
 
 /**
- * OrderSupport provides utility methods for working with ordering
+ * OrderSupport provides utility methods for working with ordering.
  */
 public class OrderSupport {
 
-    // Cache for method tags to avoid repeated annotation lookups.
-    // Using WeakHashMap to avoid classloader leaks.
+    /**
+     * Cache for method tags to avoid repeated annotation lookups. Uses WeakHashMap to avoid classloader leaks.
+     */
     private static final Map<Method, String> METHOD_TAG_CACHE = new WeakHashMap<>();
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private OrderSupport() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Orders a List of Classes by display name then Order annotation
+     * Orders a List of Classes by display name then Order annotation.
      *
      * <p>Performance note: Order annotation values are pre-cached before sorting to avoid
      * repeated annotation lookups during comparison operations.</p>
      *
-     * @param classes classes
-     * @return an order List of classes
+     * @param classes the list of classes to order
+     * @return an ordered List of classes
      */
     public static List<Class<?>> orderClasses(List<Class<?>> classes) {
         Precondition.notNull(classes, "classes is null");
@@ -96,12 +97,12 @@ public class OrderSupport {
     }
 
     /**
-     * Orders a Set of Classes by display name then Order annotation
+     * Orders a Set of Classes by display name then Order annotation.
      *
-     * <p>orders the Set in place
+     * <p>Orders the Set in place.
      *
-     * @param classes classes
-     * @return an ordered Set of Methods
+     * @param classes the set of classes to order
+     * @return an ordered Set of classes
      */
     public static Set<Class<?>> orderClasses(Set<Class<?>> classes) {
         List<Class<?>> list = orderClasses(new ArrayList<>(classes));
@@ -113,9 +114,9 @@ public class OrderSupport {
     }
 
     /**
-     * Gets the Order annotation value
+     * Gets the Order annotation value.
      *
-     * @param clazz clazz
+     * @param clazz the class to get the order value for
      * @return the order annotation value
      */
     public static int getOrder(Class<?> clazz) {
@@ -132,14 +133,14 @@ public class OrderSupport {
     }
 
     /**
-     * Orders a List of Methods by display name then Order annotation
+     * Orders a List of Methods by display name then Order annotation.
      *
-     * <p>orders the List in place
+     * <p>Orders the List in place.
      *
      * <p>Performance note: Order annotation values are pre-cached before sorting to avoid
      * repeated annotation lookups during comparison operations.</p>
      *
-     * @param methods methods
+     * @param methods the list of methods to order
      * @return an ordered List of Methods
      */
     public static List<Method> orderMethods(List<Method> methods) {
@@ -183,11 +184,11 @@ public class OrderSupport {
     }
 
     /**
-     * Orders a Set of Methods by display name then Order annotation
+     * Orders a Set of Methods by display name then Order annotation.
      *
-     * <p>orders the Set in place
+     * <p>Orders the Set in place.
      *
-     * @param methods methods
+     * @param methods the set of methods to order
      * @return an ordered Set of Methods
      */
     public static Set<Method> orderMethods(Set<Method> methods) {
@@ -203,8 +204,8 @@ public class OrderSupport {
      * Orders methods based on their DependsOn annotations while maintaining stability.
      * Methods with the same dependencies maintain their original relative order.
      *
-     * @param methods List of methods to order
-     * @return Ordered list of methods with dependency groups
+     * @param methods the list of methods to order
+     * @return an ordered list of methods with dependency groups
      * @throws TestClassDefinitionException if circular dependencies are detected
      */
     private static List<Method> orderMethodsByDependencies(List<Method> methods) {
@@ -287,6 +288,15 @@ public class OrderSupport {
     /**
      * Recursively processes a method and all its dependent methods.
      * Methods with the same dependencies are processed in their original order.
+     *
+     * @param methodTag the tag of the method to process
+     * @param methodMap the map of method tags to Method objects
+     * @param dependents the map of method tags to their dependent method tags
+     * @param dependencies the map of method tags to their dependency method tags
+     * @param processed the set of method tags that have been processed
+     * @param processing the set of method tags currently being processed
+     * @param result the list to add processed methods to
+     * @param originalOrder the map of method tags to their original order
      */
     private static void processMethodAndDependents(
             String methodTag,
@@ -355,6 +365,9 @@ public class OrderSupport {
      * If no tag annotation is present, returns the method name.
      *
      * <p>Performance note: Results are cached per method to avoid repeated annotation lookups.</p>
+     *
+     * @param method the method to get the tag for
+     * @return the tag associated with the method
      */
     private static String getMethodTag(Method method) {
         synchronized (METHOD_TAG_CACHE) {

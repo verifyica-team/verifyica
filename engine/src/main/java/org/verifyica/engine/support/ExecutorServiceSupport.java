@@ -26,23 +26,26 @@ import org.verifyica.engine.logger.Logger;
 import org.verifyica.engine.logger.LoggerFactory;
 
 /**
- * ExecutorServiceSupport provides utility methods for working with ExecutorServices
+ * ExecutorServiceSupport provides utility methods for working with ExecutorServices.
  */
 public class ExecutorServiceSupport {
 
+    /**
+     * Logger instance for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorServiceSupport.class);
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private ExecutorServiceSupport() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Waits for all Futures to complete
+     * Waits for all Futures to complete.
      *
-     * @param futures futures
+     * @param futures the collection of Futures to wait for
      */
     public static void waitForAllFutures(Collection<Future<?>> futures) {
         Precondition.notNull(futures, "futures is null");
@@ -62,9 +65,9 @@ public class ExecutorServiceSupport {
     }
 
     /**
-     * Shuts down an ExecutorService and waits for termination
+     * Shuts down an ExecutorService and waits for termination.
      *
-     * @param executorService executorService
+     * @param executorService the ExecutorService to shutdown
      */
     public static void shutdownAndAwaitTermination(ExecutorService executorService) {
         Precondition.notNull(executorService, "executorService is null");

@@ -17,24 +17,24 @@
 package org.verifyica.engine.exception;
 
 /**
- * EngineConfigurationException is an exception for engine configuration errors
+ * EngineConfigurationException is an exception for engine configuration errors.
  */
 public class EngineConfigurationException extends EngineException {
 
     /**
-     * Constructor
+     * Constructs a new EngineConfigurationException with the specified message.
      *
-     * @param message message
+     * @param message the detail message
      */
     public EngineConfigurationException(String message) {
         super(message);
     }
 
     /**
-     * Constructor
+     * Constructs a new EngineConfigurationException with the specified message and cause.
      *
-     * @param message message
-     * @param throwable throwable
+     * @param message the detail message
+     * @param throwable the cause of this exception
      */
     public EngineConfigurationException(String message, Throwable throwable) {
         super(message, throwable);

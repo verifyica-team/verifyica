@@ -26,53 +26,56 @@ import java.util.concurrent.TimeUnit;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * TimestampSupport provides utility methods for working with timestamps
+ * TimestampSupport provides utility methods for working with timestamps.
  */
 // Suppress PMD.UselessParentheses - PMD has bug around UselessParentheses calculating milliseconds
 @SuppressWarnings("PMD.UselessParentheses")
 public final class TimestampSupport {
 
+    /**
+     * DateTimeFormatter for formatting timestamps in the pattern yyyy-MM-dd HH:mm:ss.SSS.
+     */
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     /**
-     * Format
+     * Enum representing the format options for timestamp display.
      */
     public enum Format {
 
         /**
-         * Long.
+         * Long format.
          */
         LONG,
 
         /**
-         * Short.
+         * Short format.
          */
         SHORT
     }
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private TimestampSupport() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Converts nanoseconds into a human-readable time
+     * Converts nanoseconds into a human-readable time.
      *
-     * @param nanoseconds nanoseconds
-     * @return the return value
+     * @param nanoseconds the number of nanoseconds to convert
+     * @return a human-readable string representation of the time
      */
     public static String toHumanReadable(long nanoseconds) {
         return toHumanReadable(Format.LONG, nanoseconds);
     }
 
     /**
-     * Converts nanoseconds into a human-readable time
+     * Converts nanoseconds into a human-readable time.
      *
-     * @param format format
-     * @param nanoseconds nanoseconds
-     * @return the return value
+     * @param format the format to use (long or short)
+     * @param nanoseconds the number of nanoseconds to convert
+     * @return a human-readable string representation of the time
      */
     public static String toHumanReadable(Format format, long nanoseconds) {
         Precondition.notNull(format, "format is null");
@@ -148,29 +151,29 @@ public final class TimestampSupport {
     }
 
     /**
-     * Gets the current time as a String
+     * Gets the current time as a String.
      *
-     * @return the return value
+     * @return the current time formatted as a String
      */
     public static String now() {
         return LocalDateTime.now().format(DATE_TIME_FORMATTER);
     }
 
     /**
-     * Converts a duration to milliseconds.nanoseconds String
+     * Converts a duration to milliseconds.nanoseconds String.
      *
-     * @param duration duration
-     * @return a milliseconds.nanoseconds String
+     * @param duration the Duration to convert
+     * @return a milliseconds.nanoseconds String representation
      */
     public static String convertDurationToMillisAndNanoseconds(Duration duration) {
         return format("%d.%06d", duration.toMillis(), duration.getNano() % 1_000_000);
     }
 
     /**
-     * Converts nanoseconds to specific timing unit String
+     * Converts nanoseconds to specific timing unit String.
      *
-     * @param timingUnit timingUnit
-     * @param nanoseconds nanoseconds
+     * @param timingUnit the timing unit to convert to (e.g., "nanoseconds", "microseconds", "milliseconds", "seconds", "minutes", "adaptive")
+     * @param nanoseconds the number of nanoseconds to convert
      * @return a String representing the converted nanoseconds value
      */
     public static String toTimingUnit(long nanoseconds, String timingUnit) {

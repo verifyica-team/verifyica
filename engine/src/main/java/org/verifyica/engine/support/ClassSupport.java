@@ -44,23 +44,28 @@ import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.exception.UncheckedURISyntaxException;
 
 /**
- * ClassSupport provides utility methods for working with classes
+ * ClassSupport provides utility methods for working with classes.
  */
 public class ClassSupport {
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private ClassSupport() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Lazy holder for classpath URIs - initialized on first access
+     * Lazy holder for classpath URIs - initialized on first access.
      */
     private static class ClasspathUrisHolder {
         static final List<URI> URIS = initializeClasspathUris();
 
+        /**
+         * Initializes the list of classpath URIs.
+         *
+         * @return a list of URIs for each path in the classpath
+         */
         private static List<URI> initializeClasspathUris() {
             Set<URI> uriSet = new LinkedHashSet<>();
             String classpath = System.getProperty("java.class.path");
@@ -251,10 +256,10 @@ public class ClassSupport {
         private final List<URI> uris;
 
         /**
-         * Constructor
+         * Constructs a new PathSimpleFileVisitor with the specified predicate and list of URIs.
          *
-         * @param uris uris
-         * @param predicate predicate
+         * @param predicate the predicate to test file names against
+         * @param uris the list of URIs to collect matching file paths
          */
         public PathSimpleFileVisitor(Predicate<String> predicate, List<URI> uris) {
             this.predicate = predicate;

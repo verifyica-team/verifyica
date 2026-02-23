@@ -23,18 +23,25 @@ import org.verifyica.engine.common.Precondition;
 import org.verifyica.engine.configuration.ImmutableConfiguration;
 
 /**
- * ConcreteEngineContext provides a concrete implementation of EngineContext
+ * ConcreteEngineContext provides a concrete implementation of EngineContext.
  */
 public class ConcreteEngineContext extends AbstractContext implements EngineContext {
 
+    /**
+     * The configuration for the engine.
+     */
     private final Configuration configuration;
+
+    /**
+     * The version of the engine.
+     */
     private final String version;
 
     /**
-     * Constructor
+     * Constructs a new ConcreteEngineContext with the given configuration and version.
      *
-     * @param configuration configuration
-     * @param version version
+     * @param configuration the configuration for the engine
+     * @param version the version of the engine
      */
     public ConcreteEngineContext(Configuration configuration, String version) {
         Precondition.notNull(configuration, "configuration is null");

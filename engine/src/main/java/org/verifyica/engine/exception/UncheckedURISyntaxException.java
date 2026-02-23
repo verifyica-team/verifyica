@@ -19,31 +19,31 @@ package org.verifyica.engine.exception;
 import java.net.URISyntaxException;
 
 /**
- * UncheckedURISyntaxException is an unchecked wrapper for URISyntaxException
+ * UncheckedURISyntaxException is an unchecked wrapper for URISyntaxException.
  */
 public class UncheckedURISyntaxException extends RuntimeException {
 
     /**
-     * Constructor
+     * Constructs a new UncheckedURISyntaxException with the specified message and cause.
      *
-     * @param message message
-     * @param uriSyntaxException uriSyntaxException
+     * @param message the detail message
+     * @param uriSyntaxException the cause of this exception
      */
     public UncheckedURISyntaxException(String message, URISyntaxException uriSyntaxException) {
         super(message, uriSyntaxException);
     }
 
     /**
-     * Propagates (throws) the exception
+     * Propagates (throws) this exception as an unchecked exception.
      */
     public void throwUnchecked() {
         throw this;
     }
 
     /**
-     * Wraps and propagates (throws) the exception
+     * Wraps and propagates (throws) the specified URISyntaxException as an unchecked exception.
      *
-     * @param uriSyntaxException uriSyntaxException
+     * @param uriSyntaxException the URISyntaxException to wrap and throw
      */
     public static void throwUnchecked(URISyntaxException uriSyntaxException) {
         new UncheckedURISyntaxException(uriSyntaxException.getMessage(), uriSyntaxException).throwUnchecked();

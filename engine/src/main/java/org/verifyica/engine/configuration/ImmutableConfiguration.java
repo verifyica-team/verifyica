@@ -25,17 +25,24 @@ import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.ImmutableProperties;
 
 /**
- * ImmutableConfiguration provides an immutable implementation of Configuration
+ * ImmutableConfiguration provides an immutable implementation of Configuration.
  */
 public class ImmutableConfiguration implements Configuration {
 
+    /**
+     * The path to the properties file.
+     */
     private final Path propertiesFilenamePath;
+
+    /**
+     * The immutable properties.
+     */
     private final Properties properties;
 
     /**
-     * Constructor
+     * Constructs a new ImmutableConfiguration from the given configuration.
      *
-     * @param configuration configuration
+     * @param configuration the configuration to make immutable
      */
     public ImmutableConfiguration(Configuration configuration) {
         propertiesFilenamePath = configuration.getPropertiesPath().orElse(null);

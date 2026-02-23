@@ -17,31 +17,31 @@
 package org.verifyica.engine.exception;
 
 /**
- * UncheckedClassNotFoundException is an unchecked wrapper for ClassNotFoundException
+ * UncheckedClassNotFoundException is an unchecked wrapper for ClassNotFoundException.
  */
 public class UncheckedClassNotFoundException extends RuntimeException {
 
     /**
-     * Constructor
+     * Constructs a new UncheckedClassNotFoundException with the specified message and cause.
      *
-     * @param message message
-     * @param classNotFoundException classNotFoundException
+     * @param message the detail message
+     * @param classNotFoundException the cause of this exception
      */
     public UncheckedClassNotFoundException(String message, ClassNotFoundException classNotFoundException) {
         super(message, classNotFoundException);
     }
 
     /**
-     * Propagates (throws) the exception
+     * Propagates (throws) this exception as an unchecked exception.
      */
     public void throwUnchecked() {
         throw this;
     }
 
     /**
-     * Wraps and propagates (throws) the exception
+     * Wraps and propagates (throws) the specified ClassNotFoundException as an unchecked exception.
      *
-     * @param classNotFoundException classNotFoundException
+     * @param classNotFoundException the ClassNotFoundException to wrap and throw
      */
     public static void throwUnchecked(ClassNotFoundException classNotFoundException) {
         new UncheckedClassNotFoundException(classNotFoundException.getMessage(), classNotFoundException)

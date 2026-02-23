@@ -19,14 +19,14 @@ package org.verifyica.engine.filter;
 import org.verifyica.engine.support.TagSupport;
 
 /**
- * ExcludeTaggedClassFilter provides filtering to exclude classes by tag pattern
+ * ExcludeTaggedClassFilter provides filtering to exclude classes by tag pattern.
  */
 public class ExcludeTaggedClassFilter extends AbstractFilter {
 
     /**
-     * Constructor
+     * Private constructor to prevent direct instantiation.
      *
-     * @param classNameRegex classNameRegex
+     * @param classNameRegex the regex pattern for matching tag names
      */
     private ExcludeTaggedClassFilter(String classNameRegex) {
         super(classNameRegex);
@@ -49,10 +49,10 @@ public class ExcludeTaggedClassFilter extends AbstractFilter {
     }
 
     /**
-     * Creates an ExcludeFilter
+     * Creates an ExcludeTaggedClassFilter with the specified tag regex.
      *
-     * @param classRegex classRegex
-     * @return an ExcludeFilter
+     * @param classRegex the regex pattern for matching tag names
+     * @return a new ExcludeTaggedClassFilter instance
      */
     public static ExcludeTaggedClassFilter create(String classRegex) {
         return new ExcludeTaggedClassFilter(classRegex);

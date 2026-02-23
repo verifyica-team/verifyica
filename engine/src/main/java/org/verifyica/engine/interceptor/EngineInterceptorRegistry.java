@@ -41,20 +41,34 @@ import org.verifyica.engine.support.ObjectSupport;
 import org.verifyica.engine.support.OrderSupport;
 
 /**
- * EngineInterceptorRegistry provides registry functionality for engine interceptors
+ * EngineInterceptorRegistry provides registry functionality for engine interceptors.
  */
 public class EngineInterceptorRegistry {
 
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
 
+    /**
+     * The configuration for the engine.
+     */
     private final Configuration configuration;
+
+    /**
+     * The read/write lock for thread-safe access.
+     */
     private final ReadWriteLock readWriteLock;
+
+    /**
+     * The list of registered engine interceptors.
+     */
     private final List<EngineInterceptor> engineInterceptors;
 
     /**
-     * Constructor
+     * Constructs a new EngineInterceptorRegistry with the specified configuration.
      *
-     * @param configuration configuration
+     * @param configuration the configuration for the engine
      */
     public EngineInterceptorRegistry(Configuration configuration) {
         this.configuration = configuration;
@@ -63,9 +77,9 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Initializes engine interceptors
+     * Initializes engine interceptors.
      *
-     * @param engineContext engineContext
+     * @param engineContext the context for the engine
      */
     public void initialize(EngineContext engineContext) {
         readWriteLock.writeLock().lock();
@@ -139,9 +153,9 @@ public class EngineInterceptorRegistry {
     }
 
     /**
-     * Filters ClassInterceptors
+     * Filters the list of interceptor classes based on configuration.
      *
-     * @param classes classes
+     * @param classes the list of classes to filter
      */
     private void filter(List<Class<?>> classes) {
         Set<Class<?>> filteredClasses = new LinkedHashSet<>(classes);

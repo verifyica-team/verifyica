@@ -17,7 +17,7 @@
 package org.verifyica.api;
 
 /**
- * Interface to implement Named
+ * Interface for objects that have a name.
  */
 public interface Named {
 

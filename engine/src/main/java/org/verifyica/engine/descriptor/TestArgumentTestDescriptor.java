@@ -96,11 +96,22 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
         END
     }
 
+    /** The index of this test argument. */
     private final int argumentIndex;
+
+    /** The test argument. */
     private final Argument<?> testArgument;
+
+    /** The list of methods to execute before all test invocations. */
     private final List<Method> beforeAllMethods;
+
+    /** The list of methods to execute after all test invocations. */
     private final List<Method> afterAllMethods;
+
+    /** The list of arguments to use for test invocations. */
     private final List<Object> invocationArguments;
+
+    /** The list of throwables captured during test execution. */
     private final List<Throwable> throwables;
 
     @Inject
@@ -119,18 +130,21 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     @Named(CLASS_CONTEXT)
     private ClassContext classContext;
 
+    /** The argument context for this test argument. */
     private ArgumentContext argumentContext;
+
+    /** Flag indicating whether this test should be marked as skipped. */
     private boolean markSkipped;
 
     /**
-     * Constructor
+     * Constructs a new TestArgumentTestDescriptor with the specified parameters.
      *
-     * @param uniqueId uniqueId
-     * @param displayName displayName
-     * @param argumentIndex argumentIndex
-     * @param testArgument argument
-     * @param beforeAllMethods beforeAllMethods
-     * @param afterAllMethods afterAllMethods
+     * @param uniqueId the unique identifier for this test descriptor
+     * @param displayName the display name for this test descriptor
+     * @param argumentIndex the index of this test argument
+     * @param testArgument the test argument
+     * @param beforeAllMethods the list of methods to execute before all test invocations
+     * @param afterAllMethods the list of methods to execute after all test invocations
      */
     public TestArgumentTestDescriptor(
             UniqueId uniqueId,
@@ -150,9 +164,9 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Gets argument
+     * Gets the test argument.
      *
-     * @return the argument
+     * @return the test argument
      */
     public Argument<?> getTestArgument() {
         return testArgument;
@@ -266,7 +280,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Does before all
+     * Executes the before-all methods and returns the next state.
      *
      * @return the next state
      */
@@ -322,7 +336,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Tests child test descriptors
+     * Tests child test descriptors and returns the next state.
      *
      * @return the next state
      */
@@ -346,7 +360,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Skips child test descriptors
+     * Skips child test descriptors and returns the next state.
      *
      * @return the next state
      */
@@ -363,7 +377,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Does after all
+     * Executes the after-all methods and returns the next state.
      *
      * @return the next state
      */
@@ -411,7 +425,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Closes the argument
+     * Closes the argument and returns the next state.
      *
      * @return the next state
      */
@@ -440,7 +454,7 @@ public class TestArgumentTestDescriptor extends TestableTestDescriptor {
     }
 
     /**
-     * Cleans up the argument context
+     * Cleans up the argument context and returns the next state.
      *
      * @return the next state
      */

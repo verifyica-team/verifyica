@@ -17,14 +17,14 @@
 package org.verifyica.engine.filter;
 
 /**
- * IncludeClassFilter provides filtering to include classes by regex pattern
+ * IncludeClassFilter provides filtering to include classes by regex pattern.
  */
 public class IncludeClassFilter extends AbstractFilter {
 
     /**
-     * Constructor
+     * Private constructor to prevent direct instantiation.
      *
-     * @param classNameRegex classNameRegex
+     * @param classNameRegex the regex pattern for matching class names
      */
     private IncludeClassFilter(String classNameRegex) {
         super(classNameRegex);
@@ -41,10 +41,10 @@ public class IncludeClassFilter extends AbstractFilter {
     }
 
     /**
-     * Creates an IncludeFilter
+     * Creates an IncludeFilter with the specified class regex.
      *
-     * @param classRegex classRegex
-     * @return an IncludeFilter
+     * @param classRegex the regex pattern for matching class names
+     * @return a new IncludeClassFilter instance
      */
     public static IncludeClassFilter create(String classRegex) {
         return new IncludeClassFilter(classRegex);

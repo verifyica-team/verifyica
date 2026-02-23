@@ -31,11 +31,6 @@ public interface Argument<T> extends Named {
      */
     Argument<Object> EMPTY = new Empty();
 
-    /**
-     * Returns the name of this argument.
-     *
-     * @return the argument name
-     */
     @Override
     String getName();
 
@@ -274,37 +269,23 @@ public interface Argument<T> extends Named {
      */
     final class Empty implements Argument<Object> {
 
+        /** The name used for an empty argument. */
         private static final String NAME = "---";
 
         private Empty() {
             // intentionally empty
         }
 
-        /**
-         * Returns the empty argument name.
-         *
-         * @return the name
-         */
         @Override
         public String getName() {
             return NAME;
         }
 
-        /**
-         * Returns {@code null}.
-         *
-         * @return {@code null}
-         */
         @Override
         public Object getPayload() {
             return null;
         }
 
-        /**
-         * Returns the argument name.
-         *
-         * @return the name
-         */
         @Override
         public String toString() {
             return NAME;

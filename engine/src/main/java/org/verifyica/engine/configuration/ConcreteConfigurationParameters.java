@@ -26,17 +26,20 @@ import org.verifyica.api.Configuration;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * ConcreteConfigurationParameters provides a concrete implementation of ConfigurationParameters
+ * ConcreteConfigurationParameters provides a concrete implementation of ConfigurationParameters.
  */
 @SuppressWarnings("deprecation")
 public class ConcreteConfigurationParameters implements ConfigurationParameters {
 
+    /**
+     * The configuration instance.
+     */
     private final Configuration configuration;
 
     /**
-     * Constructor
+     * Constructs a new ConcreteConfigurationParameters with the given configuration.
      *
-     * @param configuration configuration
+     * @param configuration the configuration to wrap
      */
     public ConcreteConfigurationParameters(Configuration configuration) {
         Precondition.notNull(configuration, "configuration is null");

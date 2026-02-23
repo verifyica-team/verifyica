@@ -17,33 +17,33 @@
 package org.verifyica.engine.exception;
 
 /**
- * EngineException is the base exception class for engine errors
+ * EngineException is the base exception class for engine errors.
  */
 public class EngineException extends RuntimeException {
 
     /**
-     * Constructor
+     * Constructs a new EngineException with the specified message.
      *
-     * @param message message
+     * @param message the detail message
      */
     public EngineException(String message) {
         super(message);
     }
 
     /**
-     * Constructor
+     * Constructs a new EngineException with the specified message and cause.
      *
-     * @param message message
-     * @param throwable throwable
+     * @param message the detail message
+     * @param throwable the cause of this exception
      */
     public EngineException(String message, Throwable throwable) {
         super(message, throwable);
     }
 
     /**
-     * Constructor
+     * Constructs a new EngineException with the specified cause.
      *
-     * @param throwable throwable
+     * @param throwable the cause of this exception
      */
     public EngineException(Throwable throwable) {
         super(throwable);

@@ -23,29 +23,34 @@ import org.verifyica.api.Verifyica;
 import org.verifyica.engine.common.Precondition;
 
 /**
- * DisplayNameSupport provides utility methods for working with display names
+ * DisplayNameSupport provides utility methods for working with display names.
  */
 public class DisplayNameSupport {
 
-    // Caches for display names to avoid repeated annotation lookups.
-    // Using WeakHashMap to avoid classloader leaks.
+    /**
+     * Cache for class display names to avoid repeated annotation lookups. Uses WeakHashMap to avoid classloader leaks.
+     */
     private static final Map<Class<?>, String> CLASS_DISPLAY_NAME_CACHE = new WeakHashMap<>();
+
+    /**
+     * Cache for method display names to avoid repeated annotation lookups. Uses WeakHashMap to avoid classloader leaks.
+     */
     private static final Map<Method, String> METHOD_DISPLAY_NAME_CACHE = new WeakHashMap<>();
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation of this utility class.
      */
     private DisplayNameSupport() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Gets a test class display name. If no name is declared, use the Class name
+     * Gets a test class display name. If no name is declared, use the Class name.
      *
      * <p>Performance note: Results are cached per class to avoid repeated annotation lookups.</p>
      *
-     * @param clazz clazz
-     * @return the display name
+     * @param clazz the class to get the display name for
+     * @return the display name for the class
      */
     public static String getDisplayName(Class<?> clazz) {
         Precondition.notNull(clazz, "clazz is null");
@@ -75,12 +80,12 @@ public class DisplayNameSupport {
     }
 
     /**
-     * Gets a method display name. If no name is declared, use the Method name
+     * Gets a method display name. If no name is declared, use the Method name.
      *
      * <p>Performance note: Results are cached per method to avoid repeated annotation lookups.</p>
      *
-     * @param method method
-     * @return the display name
+     * @param method the method to get the display name for
+     * @return the display name for the method
      */
     public static String getDisplayName(Method method) {
         Precondition.notNull(method, "method is null");
