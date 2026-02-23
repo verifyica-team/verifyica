@@ -63,9 +63,15 @@ import org.verifyica.engine.support.OrderSupport;
  */
 public class UniqueIdSelectorResolver {
 
+    /**
+     * Logger instance for this resolver.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(UniqueIdSelectorResolver.class);
 
-    // Cache the legacy segment type string to avoid repeated Class.getName() calls
+    /**
+     * Segment type used by Verifyica's TestClassTestDescriptor for class segments.
+     * This is supported for compatibility with legacy UniqueId formats.
+     */
     private static final String TEST_CLASS_TEST_DESCRIPTOR_CLASS_NAME = TestClassTestDescriptor.class.getName();
 
     /**

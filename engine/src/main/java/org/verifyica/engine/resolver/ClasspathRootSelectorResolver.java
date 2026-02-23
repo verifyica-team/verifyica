@@ -63,6 +63,9 @@ import org.verifyica.engine.support.OrderSupport;
  */
 public class ClasspathRootSelectorResolver {
 
+    /**
+     * Logger instance for this resolver.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathRootSelectorResolver.class);
 
     /**

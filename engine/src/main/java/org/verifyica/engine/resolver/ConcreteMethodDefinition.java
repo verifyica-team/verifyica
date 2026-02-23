@@ -25,10 +25,14 @@ import org.verifyica.engine.api.MethodDefinition;
  */
 public class ConcreteMethodDefinition implements MethodDefinition {
 
-    /** The method. */
+    /**
+     * The method represented by this MethodDefinition.
+     */
     private final Method method;
 
-    /** The display name for this method definition. */
+    /**
+     * The display name for this MethodDefinition, which can be used for reporting and logging purposes.
+     */
     private String displayName;
 
     /**

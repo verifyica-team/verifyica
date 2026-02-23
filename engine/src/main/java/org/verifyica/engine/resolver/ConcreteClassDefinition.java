@@ -29,22 +29,37 @@ import org.verifyica.engine.api.MethodDefinition;
  */
 public class ConcreteClassDefinition implements ClassDefinition {
 
-    /** The test class. */
+    /**
+     * The test class represented by this ClassDefinition.
+     */
     private final Class<?> testClass;
 
-    /** The set of test method definitions. */
+    /**
+     * The set of test method definitions associated with this class definition.
+     */
     private final Set<MethodDefinition> testMethodDefinitions;
 
-    /** The list of test arguments. */
+    /**
+     * The list of test arguments associated with this class definition.
+     */
     private final List<Argument<?>> arguments;
 
-    /** The set of tags associated with this class definition. */
+    /**
+     * The set of tags associated with this class definition, which can be used
+     * for filtering and categorization purposes.
+     */
     private final Set<String> tags;
 
-    /** The parallelism factor for test arguments. */
+    /**
+     * The parallelism factor for test arguments, which indicates how many
+     * instances of the test class should be created to run tests with different
+     * arguments in parallel.
+     */
     private final int argumentParallelism;
 
-    /** The display name for this class definition. */
+    /**
+     * The display name for this ClassDefinition, which can be used for reporting and logging purposes.
+     */
     private String displayName;
 
     /**

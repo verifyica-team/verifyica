@@ -75,6 +75,7 @@ public class DisplayNameSupport {
             }
 
             CLASS_DISPLAY_NAME_CACHE.put(clazz, displayName);
+
             return displayName;
         }
     }
@@ -110,6 +111,7 @@ public class DisplayNameSupport {
             }
 
             METHOD_DISPLAY_NAME_CACHE.put(method, displayName);
+
             return displayName;
         }
     }

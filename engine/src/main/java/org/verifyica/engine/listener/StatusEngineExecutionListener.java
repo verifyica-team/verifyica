@@ -44,8 +44,14 @@ import org.verifyica.engine.support.TimestampSupport;
  */
 public class StatusEngineExecutionListener implements EngineExecutionListener {
 
+    /**
+     * The logger for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusEngineExecutionListener.class);
 
+    /**
+     * Predefined ANSI colored string for logging INFO statuses.
+     */
     private static final String INFO = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE)
             .append("[")
@@ -56,45 +62,70 @@ public class StatusEngineExecutionListener implements EngineExecutionListener {
             .append(AnsiColor.NONE)
             .build();
 
+    /**
+     * Predefined ANSI colored string for logging TEST statuses.
+     */
     private static final String TEST = new AnsiColoredString()
             .append(AnsiColor.TEXT_WHITE_BRIGHT)
             .append("TEST")
             .append(AnsiColor.NONE)
             .build();
 
+    /**
+     * Predefined ANSI colored string for logging PASS statuses.
+     */
     private static final String PASS = new AnsiColoredString()
             .append(AnsiColor.TEXT_GREEN_BOLD_BRIGHT)
             .append("PASS")
             .append(AnsiColor.NONE)
             .build();
 
+    /**
+     * Predefined ANSI colored string for logging FAIL statuses.
+     */
     private static final String FAIL = new AnsiColoredString()
             .append(AnsiColor.TEXT_RED_BOLD_BRIGHT)
             .append("FAIL")
             .append(AnsiColor.NONE)
             .build();
 
+    /**
+     * Predefined ANSI colored string for logging SKIP statuses.
+     */
     private static final String SKIP = new AnsiColoredString()
             .append(AnsiColor.TEXT_YELLOW_BOLD_BRIGHT)
             .append("SKIP")
             .append(AnsiColor.NONE)
             .build();
 
+    /**
+     * Predefined ANSI colored string for resetting color to none.
+     */
     private static final String NONE_STRING = AnsiColor.NONE.toString();
 
-    /** Flag indicating whether to log tests to the console. */
+    /**
+     * Flag indicating whether to log tests to the console.
+     */
     private final boolean consoleLogTests;
 
-    /** The timing units to use when logging test duration. */
+    /**
+     * The timing units to use when logging test duration.
+     */
     private final String consoleLogTimingUnits;
 
-    /** The map of test descriptors to stopwatches for tracking test duration. */
+    /**
+     * The map of test descriptors to stopwatches for tracking test duration.
+     */
     private final Map<TestDescriptor, Stopwatch> stopwatches;
 
-    /** Thread-local StringBuilder for building log messages. */
+    /**
+     * Thread-local StringBuilder for building log messages.
+     */
     private final ThreadLocal<StringBuilder> stringBuilderThreadLocal;
 
-    /** Thread-local cache for descriptor information. */
+    /**
+     * Thread-local cache for descriptor information.
+     */
     private final ThreadLocal<Map<TestDescriptor, DescriptorInfo>> descriptorInfoCache;
 
     /**

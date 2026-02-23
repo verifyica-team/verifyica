@@ -80,11 +80,13 @@ public class HashSupport {
         if (len < failLen) {
             return false;
         }
+
         for (int i = 0; i <= len - failLen; i++) {
             if (equalsIgnoreCase(s, i, "fail", 0, failLen)) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -104,6 +106,7 @@ public class HashSupport {
                 return false;
             }
         }
+
         return true;
     }
 }

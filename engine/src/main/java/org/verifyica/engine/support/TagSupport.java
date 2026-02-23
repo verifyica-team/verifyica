@@ -93,6 +93,7 @@ public class TagSupport {
             }
 
             CLASS_TAGS_CACHE.put(clazz, tags);
+
             return tags;
         }
     }
@@ -144,6 +145,7 @@ public class TagSupport {
             }
 
             METHOD_TAGS_CACHE.put(method, tags);
+
             return tags;
         }
     }

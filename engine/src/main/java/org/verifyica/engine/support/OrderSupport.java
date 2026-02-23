@@ -236,7 +236,7 @@ public class OrderSupport {
         for (Method method : methods) {
             Verifyica.DependsOn[] dependsOnAnnotations = method.getAnnotationsByType(Verifyica.DependsOn.class);
 
-            if (dependsOnAnnotations != null && dependsOnAnnotations.length > 0) {
+            if (dependsOnAnnotations.length > 0) {
                 String dependent = getMethodTag(method);
 
                 for (Verifyica.DependsOn dependency : dependsOnAnnotations) {
@@ -379,6 +379,7 @@ public class OrderSupport {
             Verifyica.Tag tagAnnotation = method.getAnnotation(Verifyica.Tag.class);
             String tag = tagAnnotation != null ? tagAnnotation.value() : method.getName();
             METHOD_TAG_CACHE.put(method, tag);
+
             return tag;
         }
     }
