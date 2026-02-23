@@ -46,7 +46,7 @@ import org.verifyica.engine.support.OrderSupport;
 public class EngineInterceptorRegistry {
 
     /**
-     * Logger for this class.
+     * Logger instance for this class..
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
 

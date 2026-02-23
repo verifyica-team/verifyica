@@ -45,7 +45,7 @@ import org.verifyica.engine.support.TimestampSupport;
 public class StatusEngineExecutionListener implements EngineExecutionListener {
 
     /**
-     * The logger for this class.
+     * Logger instance for this class..
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusEngineExecutionListener.class);
 

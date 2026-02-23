@@ -29,7 +29,7 @@ import org.verifyica.engine.logger.LoggerFactory;
 public class TracingEngineExecutionListener implements EngineExecutionListener {
 
     /**
-     * Logger for this class.
+     * Logger instance for this class..
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(TracingEngineExecutionListener.class);
 
