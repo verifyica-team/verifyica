@@ -30,9 +30,9 @@ import org.verifyica.engine.support.HierarchyTraversalMode;
  */
 public class ResolverPredicates {
 
-    // Cache for TEST_CLASS predicate results to avoid repeated reflection scans.
-    // Using WeakHashMap to avoid classloader leaks - classes are only cached while
-    // they are reachable elsewhere.
+    /**
+     * Cache for test class predicate results to improve performance during classpath scanning.
+     */
     private static final Map<Class<?>, Boolean> TEST_CLASS_CACHE = new WeakHashMap<>();
 
     /**
@@ -211,7 +211,7 @@ public class ResolverPredicates {
         try {
             clazz.getDeclaredConstructor();
             return true;
-        } catch (Throwable t) {
+        } catch (NoSuchMethodException e) {
             return false;
         }
     }
