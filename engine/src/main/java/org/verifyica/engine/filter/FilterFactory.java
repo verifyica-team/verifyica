@@ -46,9 +46,13 @@ import org.yaml.snakeyaml.Yaml;
 @SuppressWarnings("unchecked")
 public class FilterFactory {
 
+    /**
+     * A mapping of filter type strings to their corresponding Filter.Type enum values.
+     */
     private static final Map<String, Filter.Type> filterTypeMap;
 
     static {
+        // Initialize the filter type mapping
         filterTypeMap = new HashMap<>();
         filterTypeMap.put("IncludeClass", Filter.Type.INCLUDE_CLASS);
         filterTypeMap.put("ExcludeClass", Filter.Type.EXCLUDE_CLASS);
