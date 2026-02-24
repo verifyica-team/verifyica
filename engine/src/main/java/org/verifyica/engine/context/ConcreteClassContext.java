@@ -29,11 +29,34 @@ import org.verifyica.engine.common.Precondition;
  */
 public class ConcreteClassContext extends AbstractContext implements ClassContext {
 
+    /**
+     * The engine context associated with this class context.
+     */
     private final EngineContext engineContext;
+
+    /**
+     * The test class associated with this context.
+     */
     private final Class<?> testClass;
+
+    /**
+     * The display name of the test class.
+     */
     private final String testClassDisplayName;
+
+    /**
+     * The tags associated with the test class.
+     */
     private final Set<String> testClassTags;
+
+    /**
+     * The parallelism level for test arguments within this class context.
+     */
     private final int testArgumentParallelism;
+
+    /**
+     * The reference to the test class instance, which may be lazily instantiated.
+     */
     private final AtomicReference<Object> testClassInstanceReference;
 
     /**

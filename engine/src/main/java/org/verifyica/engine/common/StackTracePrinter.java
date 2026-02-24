@@ -35,7 +35,15 @@ import org.verifyica.engine.configuration.Constants;
  */
 public class StackTracePrinter {
 
+    /**
+     * The package prefix used to identify frames that belong to the Verifyica engine. Frames with class
+     */
     private static final String ENGINE_PACKAGE = "org.verifyica.engine.";
+
+    /**
+     * Flag indicating whether to prune stack traces by removing frames that belong to the Verifyica engine.
+     * This is initialized based on the configuration property "engine.pruneStackTrace", which defaults to true.
+     */
     private static final boolean PRUNE_STACK_TRACES = initializePruneStackTraces();
 
     /**

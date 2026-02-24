@@ -34,8 +34,19 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class Counter {
 
+    /**
+     * The name of the counter, used for identification. Must not be null or blank.
+     */
     private final String name;
+
+    /**
+     * The description of the counter, providing additional context. Must not be null or blank.
+     */
     private final String description;
+
+    /**
+     * The atomic long value that holds the current count. Initialized to zero and updated atomically.
+     */
     private final AtomicLong count;
 
     /**

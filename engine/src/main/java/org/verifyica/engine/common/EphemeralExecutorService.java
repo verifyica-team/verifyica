@@ -42,8 +42,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class EphemeralExecutorService extends AbstractExecutorService {
 
+    /**
+     * The thread factory used to create new threads for executing tasks.
+     */
     private final ThreadFactory threadFactory;
+
+    /**
+     * A thread-safe set to track currently running threads. This allows for proper shutdown
+     */
     private final Set<Thread> runningThreads;
+
+    /**
+     * AtomicBoolean to track whether the executor service has been shut down. This ensures that
+     */
     private final AtomicBoolean isShutdown;
 
     /**

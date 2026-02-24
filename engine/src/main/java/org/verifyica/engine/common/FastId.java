@@ -31,16 +31,39 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class FastId implements Comparable<FastId> {
 
+    /**
+     * Hexadecimal characters for converting to string representation.
+     */
     private static final char[] HEX = "0123456789abcdef".toCharArray();
 
-    // RFC 4122: set version (4) and IETF variant (10xx...)
+    /**
+     * Masks and bits for setting the version and variant according to RFC 4122.
+     */
     private static final long VERSION_4_MASK = 0xffffffffffff0ffFL;
+
+    /**
+     * The bits to set for version 4 (random UUID) in the most significant bits.
+     */
     private static final long VERSION_4_BITS = 0x0000000000004000L;
 
+    /**
+     * Masks and bits for setting the IETF variant in the least significant bits.
+     */
     private static final long IETF_VARIANT_MASK = 0x3fffffffffffffffL;
+
+    /**
+     * The bits to set for the IETF variant in the least significant bits (variant 2).
+     */
     private static final long IETF_VARIANT_BITS = 0x8000000000000000L;
 
+    /**
+     * The most significant 64 bits of the identifier.
+     */
     private final long msb;
+
+    /**
+     * The least significant 64 bits of the identifier.
+     */
     private final long lsb;
 
     /**
