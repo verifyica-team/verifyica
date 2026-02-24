@@ -46,10 +46,24 @@ import org.verifyica.engine.exception.EngineException;
 @SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class Injector {
 
+    /**
+     * Package name prefix to exclude from injection to avoid modifying core Java classes.
+     */
     private static final String JAVA_PACKAGE = "java.";
+
+    /**
+     * Package name prefix to exclude from injection to avoid modifying internal Sun classes.
+     */
     private static final String SUN_PACKAGE = "sun.";
 
+    /**
+     * Cache of fields for each class to optimize reflection performance.
+     */
     private static final Map<Class<?>, List<Field>> FIELD_CACHE = new ConcurrentHashMap<>();
+
+    /**
+     * Lock to synchronize access to field modification to ensure thread safety.
+     */
     private static final ReentrantLock FIELD_LOCK = new ReentrantLock(true);
 
     /**
