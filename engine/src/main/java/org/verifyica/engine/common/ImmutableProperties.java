@@ -39,6 +39,11 @@ import java.util.Set;
  */
 public class ImmutableProperties extends Properties {
 
+    /**
+     * Serialization UID for compatibility. This class is serializable because it extends Properties,
+     * which implements Serializable. The UID is set to 1L since this class does not
+     * introduce any new fields that affect serialization beyond what Properties already has.
+     */
     private static final long serialVersionUID = 1L;
 
     /**

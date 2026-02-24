@@ -27,7 +27,7 @@ import org.verifyica.engine.logger.LoggerFactory;
 public class RandomSleepThrottle implements Throttle {
 
     /**
-     * Logger instance for this class..
+     * Logger instance for this class.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Throttle.class);
 

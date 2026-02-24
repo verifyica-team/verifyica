@@ -60,11 +60,31 @@ import org.verifyica.engine.support.OrderSupport;
  */
 public class ClassInterceptorRegistry {
 
+    /**
+     * Logger instance for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassInterceptorRegistry.class);
 
+    /**
+     * The configuration for the registry.
+     */
     private final Configuration configuration;
+
+    /**
+     * ReadWriteLock to manage concurrent access to the registry's internal state.
+     */
     private final ReadWriteLock readWriteLock;
+
+    /**
+     * List of global class interceptors that are applied to all test classes. This list is initialized with a
+     */
     private final List<ClassInterceptor> classInterceptors;
+
+    /**
+     * Map of test classes to their respective class interceptors. This allows for
+     * class-specific interceptors that are declared within the test class itself using
+     * the @Verifyica.ClassInterceptorSupplier annotation.
+     */
     private final Map<Class<?>, List<ClassInterceptor>> mappedClassInterceptors;
 
     /**

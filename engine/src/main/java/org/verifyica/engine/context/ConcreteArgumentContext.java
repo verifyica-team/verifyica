@@ -31,8 +31,19 @@ import org.verifyica.engine.common.Precondition;
 @SuppressWarnings("unchecked")
 public class ConcreteArgumentContext extends AbstractContext implements ArgumentContext {
 
+    /**
+     * The class context associated with this argument context.
+     */
     private final ClassContext classContext;
+
+    /**
+     * The index of the argument within the class context.
+     */
     private final int argumentIndex;
+
+    /**
+     * The argument associated with this context.
+     */
     private final Argument<?> argument;
 
     /**

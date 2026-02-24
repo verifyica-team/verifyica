@@ -30,7 +30,14 @@ import java.util.concurrent.Semaphore;
  */
 public class SemaphoreRunnable implements Runnable {
 
+    /**
+     * The semaphore that controls concurrent execution of the wrapped Runnable.
+     */
     private final Semaphore semaphore;
+
+    /**
+     * The Runnable task to be executed with concurrency control.
+     */
     private final Runnable runnable;
 
     /**

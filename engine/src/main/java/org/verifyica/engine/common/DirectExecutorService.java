@@ -36,8 +36,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DirectExecutorService extends AbstractExecutorService {
 
+    /**
+     * An empty list of Runnables used for shutdownNow() to indicate that no tasks were pending.
+     */
     private static final List<Runnable> EMPTY_LIST = Collections.emptyList();
 
+    /**
+     * AtomicBoolean to track whether the executor service has been shut down.
+     */
     private final AtomicBoolean isShutdown = new AtomicBoolean(false);
 
     /**

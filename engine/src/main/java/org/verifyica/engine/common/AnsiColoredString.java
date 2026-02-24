@@ -40,9 +40,20 @@ import java.util.Objects;
  */
 public class AnsiColoredString {
 
+    /**
+     * The default initial capacity for the internal StringBuilder.
+     */
     private static final int DEFAULT_CAPACITY = 64;
 
+    /**
+     * The internal StringBuilder used to construct the string with ANSI color codes.
+     */
     private final StringBuilder stringBuilder;
+
+    /**
+     * The last ANSI color that was appended to the string. This is used to avoid appending
+     * redundant ANSI color codes if the same color is applied multiple times in a row.
+     */
     private AnsiColor lastAnsiColor;
 
     /**
