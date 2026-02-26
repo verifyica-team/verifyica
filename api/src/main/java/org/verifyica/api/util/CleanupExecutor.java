@@ -24,7 +24,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Class to implement CleanupExecutor
+ * Utility class to execute multiple cleanup tasks, collecting any thrown throwables.
+ * This is useful for scenarios where multiple cleanup actions need to be performed, and we want to
+ * ensure that all actions are attempted even if some of them fail, while still being able to report
+ * any failures that occur during the cleanup process.
  */
 public final class CleanupExecutor {
 

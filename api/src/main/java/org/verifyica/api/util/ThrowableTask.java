@@ -17,7 +17,7 @@
 package org.verifyica.api.util;
 
 /**
- * Functional interface for tasks that can throw exceptions.
+ * Functional interface for a task that can throw any exception.
  */
 @FunctionalInterface
 public interface ThrowableTask {

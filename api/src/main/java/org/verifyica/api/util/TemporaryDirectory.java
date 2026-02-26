@@ -31,7 +31,8 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Class to implement TemporaryDirectory
+ * Class to create a temporary directory with specified permissions
+ * and automatically delete it when closed or when the JVM shuts down.
  */
 public class TemporaryDirectory implements AutoCloseable {
 
