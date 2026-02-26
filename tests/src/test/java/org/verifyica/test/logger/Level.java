@@ -21,37 +21,37 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Class to implement Level
+ * Defines logging levels for the test logger.
  */
 public final class Level {
 
     /**
-     * ERROR log level
+     * ERROR log level.
      */
     public static final Level ERROR = new Level(100, "ERROR");
 
     /**
-     * WARN log level
+     * WARN log level.
      */
     public static final Level WARN = new Level(200, "WARN");
 
     /**
-     * INFO log level
+     * INFO log level.
      */
     public static final Level INFO = new Level(300, "INFO");
 
     /**
-     * DEBUG log level
+     * DEBUG log level.
      */
     public static final Level DEBUG = new Level(400, "DEBUG");
 
     /**
-     * TRACE log level
+     * TRACE log level.
      */
     public static final Level TRACE = new Level(500, "TRACE");
 
     /**
-     * ALL log level
+     * ALL log level.
      */
     public static final Level ALL = new Level(Integer.MAX_VALUE, "ALL");
 
@@ -70,10 +70,10 @@ public final class Level {
     private final String string;
 
     /**
-     * Constructor
+     * Constructs a Level with the specified integer value and string representation.
      *
-     * @param level level
-     * @param string string
+     * @param level the integer level value
+     * @param string the string representation
      */
     private Level(int level, String string) {
         this.level = level;
@@ -81,7 +81,7 @@ public final class Level {
     }
 
     /**
-     * Method to get the Level as an int
+     * Returns the Level as an int.
      *
      * @return the Level as an int
      */
@@ -90,7 +90,7 @@ public final class Level {
     }
 
     /**
-     * Method to get the Level as a String
+     * Returns the Level as a String.
      *
      * @return the level as a String
      */
@@ -113,10 +113,10 @@ public final class Level {
     }
 
     /**
-     * Method to map a Level String to a Level
+     * Maps a Level String to a Level.
      *
-     * @param string string
-     * @return the decoded Level, or INFO if the not valid
+     * @param string the string to decode
+     * @return the decoded Level, or INFO if not valid
      */
     public static Level decode(String string) {
         Level level = null;

@@ -25,19 +25,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Utility class to load resources
+ * Utility class for loading classpath resources.
  */
 public final class Resource {
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation.
      */
     private Resource() {
         // utility class
     }
 
     /**
-     * Method to load a resource from the classpath as a list of strings
+     * Loads a resource from the classpath as a list of strings.
      *
      * @param clazz                the class to derive the package from
      * @param relativeResourceName the relative resource name

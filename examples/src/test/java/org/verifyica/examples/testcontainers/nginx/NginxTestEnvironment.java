@@ -29,7 +29,7 @@ import org.verifyica.examples.support.Resource;
 import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
- * Class to implement a NginxTestEnvironment
+ * Test environment for Nginx using Testcontainers.
  */
 public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
 
@@ -37,18 +37,18 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     private NginxContainer<?> nginxContainer;
 
     /**
-     * Constructor
+     * Constructs a NginxTestEnvironment with the specified Docker image name.
      *
-     * @param dockerImageName the name
+     * @param dockerImageName the Docker image name
      */
     public NginxTestEnvironment(String dockerImageName) {
         this.dockerImageName = dockerImageName;
     }
 
     /**
-     * Method to get the name
+     * Returns the Docker image name.
      *
-     * @return the name
+     * @return the Docker image name
      */
     @Override
     public String getName() {
@@ -56,9 +56,9 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     }
 
     /**
-     * Method to get the payload
+     * Returns this test environment as the payload.
      *
-     * @return the payload
+     * @return this NginxTestEnvironment
      */
     @Override
     public NginxTestEnvironment getPayload() {
@@ -66,9 +66,9 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     }
 
     /**
-     * Method to initialize the NginxTestEnvironment using a specific network
+     * Initializes the NginxTestEnvironment using the specified network.
      *
-     * @param network the network
+     * @param network the Docker network
      */
     public void initialize(Network network) {
         // info("initializing test environment [%s] ...", dockerImageName);
@@ -90,7 +90,7 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     }
 
     /**
-     * Method to determine if the NginxTestEnvironment is running
+     * Returns whether the NginxTestEnvironment is running.
      *
      * @return true if the NginxTestEnvironment is running, otherwise false
      */
@@ -99,7 +99,7 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     }
 
     /**
-     * Method to get the NginxContainer
+     * Returns the Nginx container.
      *
      * @return the NginxContainer
      */
@@ -108,7 +108,7 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     }
 
     /**
-     * Method to destroy the NginxTestEnvironment
+     * Destroys the NginxTestEnvironment, stopping the container.
      */
     public void destroy() {
         // info("destroying test environment [%s] ...", dockerImageName);
@@ -122,9 +122,10 @@ public class NginxTestEnvironment implements Argument<NginxTestEnvironment> {
     }
 
     /**
-     * Method to create a Stream of NginxTestEnvironments
+     * Creates a Stream of NginxTestEnvironment instances from the docker-images.txt resource.
      *
      * @return a Stream of NginxTestEnvironments
+     * @throws IOException if the resource file cannot be read
      */
     public static Stream<NginxTestEnvironment> createTestEnvironments() throws IOException {
         List<NginxTestEnvironment> nginxTestEnvironments = new ArrayList<>();

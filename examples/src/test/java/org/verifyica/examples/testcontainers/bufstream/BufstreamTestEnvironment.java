@@ -38,7 +38,7 @@ import org.verifyica.examples.support.TextBlock;
 import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
- * Class to implement a BufstreamTestEnvironment
+ * Test environment for Bufstream using Testcontainers.
  */
 public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironment> {
 
@@ -46,18 +46,18 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     private GenericContainer<?> genericContainer;
 
     /**
-     * Constructor
+     * Constructs a BufstreamTestEnvironment with the specified Docker image name.
      *
-     * @param dockerImageName the name
+     * @param dockerImageName the Docker image name
      */
     public BufstreamTestEnvironment(String dockerImageName) {
         this.dockerImageName = dockerImageName;
     }
 
     /**
-     * Method to get the name
+     * Returns the Docker image name.
      *
-     * @return the name
+     * @return the Docker image name
      */
     @Override
     public String getName() {
@@ -65,9 +65,9 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     }
 
     /**
-     * Method to get the payload
+     * Returns this test environment as the payload.
      *
-     * @return the payload
+     * @return this BufstreamTestEnvironment
      */
     @Override
     public BufstreamTestEnvironment getPayload() {
@@ -75,9 +75,9 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     }
 
     /**
-     * Method to initialize the BufstreamTestEnvironment using a specific network
+     * Initializes the BufstreamTestEnvironment using the specified network.
      *
-     * @param network the network
+     * @param network the Docker network
      * @throws IOException if an error occurs
      */
     public void initialize(Network network) throws IOException {
@@ -126,7 +126,7 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     }
 
     /**
-     * Method to determine if the BufstreamTestEnvironment is running
+     * Returns whether the BufstreamTestEnvironment is running.
      *
      * @return true if the BufstreamTestEnvironment is running, otherwise false
      */
@@ -135,16 +135,16 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     }
 
     /**
-     * Method to get the Bufstream bootstrap servers
+     * Returns the Bufstream bootstrap servers.
      *
-     * @return the Bufstream bootstrap servers
+     * @return the Bufstream bootstrap servers string
      */
     public String getBootstrapServers() {
         return genericContainer.getHost() + ":" + genericContainer.getMappedPort(9092);
     }
 
     /**
-     * Method to destroy the BufstreamTestEnvironment
+     * Destroys the BufstreamTestEnvironment, stopping the container.
      */
     public void destroy() {
         // info("destroying test environment [%s] ...", dockerImageName);
@@ -158,9 +158,10 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     }
 
     /**
-     * Method to create a Stream of BufstreamTestEnvironment
+     * Creates a Stream of BufstreamTestEnvironment instances from the docker-images.txt resource.
      *
-     * @return a Stream of BufstreamTestEnvironment
+     * @return a Stream of BufstreamTestEnvironments
+     * @throws IOException if the resource file cannot be read
      */
     public static Stream<BufstreamTestEnvironment> createTestEnvironments() throws IOException {
         List<BufstreamTestEnvironment> bufstreamTestEnvironments = new ArrayList<>();
@@ -173,10 +174,10 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     }
 
     /**
-     * Method to build the Bufstream configuration
+     * Builds the Bufstream configuration for the specified Kafka port.
      *
-     * @param HOST_KAFKA_PORT the kafka port
-     * @return the configuration
+     * @param HOST_KAFKA_PORT the Kafka port
+     * @return the configuration string
      */
     private String buildConfiguration(int HOST_KAFKA_PORT) {
         if (dockerImageName.contains("0.3.")) {
@@ -205,10 +206,10 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     }
 
     /**
-     * Method to bind fixed host ports -> container ports
+     * Binds fixed host ports to container ports.
      *
      * @param createContainerCmd the create container command
-     * @param HOST_KAFKA_PORT the kafka port
+     * @param HOST_KAFKA_PORT the Kafka port
      * @param HOST_ADMIN_PORT the admin port
      */
     private static void bindHostPorts(CreateContainerCmd createContainerCmd, int HOST_KAFKA_PORT, int HOST_ADMIN_PORT) {
@@ -220,7 +221,7 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     }
 
     /**
-     * Method to safely stop a container
+     * Safely stops a container, ignoring any exceptions.
      *
      * @param container the container to stop
      */
@@ -237,7 +238,7 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     }
 
     /**
-     * Method to get a free port on localhost
+     * Gets a free port on localhost.
      *
      * @return a free port on localhost
      * @throws IOException if an I/O error occurs when opening the socket
@@ -250,7 +251,7 @@ public class BufstreamTestEnvironment implements Argument<BufstreamTestEnvironme
     }
 
     /**
-     * Method to generate a random 8-character string
+     * Generates a random 8-character string.
      *
      * @return a random 8-character string
      */

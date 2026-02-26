@@ -31,7 +31,7 @@ import org.verifyica.engine.configuration.ConcreteConfiguration;
 import org.verifyica.engine.configuration.Constants;
 
 /**
- * Class to implement Logger
+ * A simple logger for test output.
  */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public class Logger {
@@ -43,9 +43,9 @@ public class Logger {
     private final AtomicReference<Level> level;
 
     /**
-     * Constructor
+     * Constructs a Logger with the specified name.
      *
-     * @param name name
+     * @param name the logger name
      */
     Logger(String name) {
         this.name = name;
@@ -69,54 +69,54 @@ public class Logger {
     }
 
     /**
-     * Method to return if TRACE logging is enabled
+     * Returns whether TRACE logging is enabled.
      *
-     * @return the return value
+     * @return true if TRACE is enabled, otherwise false
      */
     public boolean isTraceEnabled() {
         return level.get().toInt() >= Level.TRACE.toInt();
     }
 
     /**
-     * Method to return if DEBUG logging is enabled
+     * Returns whether DEBUG logging is enabled.
      *
-     * @return the return value
+     * @return true if DEBUG is enabled, otherwise false
      */
     public boolean isDebugEnabled() {
         return level.get().toInt() >= Level.DEBUG.toInt();
     }
 
     /**
-     * Method to return if INFO logging is enabled
+     * Returns whether INFO logging is enabled.
      *
-     * @return the return value
+     * @return true if INFO is enabled, otherwise false
      */
     public boolean isInfoEnabled() {
         return level.get().toInt() >= Level.INFO.toInt();
     }
 
     /**
-     * Method to return if WARNING logging is enabled
+     * Returns whether WARN logging is enabled.
      *
-     * @return the return value
+     * @return true if WARN is enabled, otherwise false
      */
     public boolean isWarnEnabled() {
         return level.get().toInt() >= Level.WARN.toInt();
     }
 
     /**
-     * Method to return if ERROR logging is enabled
+     * Returns whether ERROR logging is enabled.
      *
-     * @return the return value
+     * @return true if ERROR is enabled, otherwise false
      */
     public boolean isErrorEnabled() {
         return level.get().toInt() >= Level.ERROR.toInt();
     }
 
     /**
-     * Method to dynamically change the logging level
+     * Sets the logging level.
      *
-     * @param level level
+     * @param level the logging level to set
      */
     public void setLevel(Level level) {
         Precondition.notNull(level, "level is null");
@@ -125,10 +125,10 @@ public class Logger {
     }
 
     /**
-     * Method to return if a specific Level is enabled
+     * Returns whether the specified logging level is enabled.
      *
-     * @param level level
-     * @return the return value
+     * @param level the level to check
+     * @return true if the level is enabled, otherwise false
      */
     public boolean isEnabled(Level level) {
         Precondition.notNull(level, "level is null");
@@ -137,9 +137,9 @@ public class Logger {
     }
 
     /**
-     * Method to log a TRACE message
+     * Logs a TRACE message.
      *
-     * @param message message
+     * @param message the message to log
      */
     public void trace(String message) {
         if (isTraceEnabled()) {
@@ -148,10 +148,10 @@ public class Logger {
     }
 
     /**
-     * Method to log a TRACE message
+     * Logs a formatted TRACE message.
      *
-     * @param format format
-     * @param objects objects
+     * @param format the format string
+     * @param objects the arguments to format
      */
     public void trace(String format, Object... objects) {
         Precondition.notNullOrBlank(format, "format is null", "format is blank");
@@ -162,9 +162,9 @@ public class Logger {
     }
 
     /**
-     * Method to log a DEBUG message
+     * Logs a DEBUG message.
      *
-     * @param message message
+     * @param message the message to log
      */
     public void debug(String message) {
         if (isDebugEnabled()) {
@@ -173,10 +173,10 @@ public class Logger {
     }
 
     /**
-     * Method to log a DEBUG message
+     * Logs a formatted DEBUG message.
      *
-     * @param format format
-     * @param objects objects
+     * @param format the format string
+     * @param objects the arguments to format
      */
     public void debug(String format, Object... objects) {
         Precondition.notNullOrBlank(format, "format is null", "format is blank");
@@ -187,9 +187,9 @@ public class Logger {
     }
 
     /**
-     * Method to log an INFO message
+     * Logs an INFO message.
      *
-     * @param message message
+     * @param message the message to log
      */
     public void info(String message) {
         if (isInfoEnabled()) {
@@ -198,10 +198,10 @@ public class Logger {
     }
 
     /**
-     * Method to log an INFO message
+     * Logs a formatted INFO message.
      *
-     * @param format format
-     * @param objects objects
+     * @param format the format string
+     * @param objects the arguments to format
      */
     public void info(String format, Object... objects) {
         Precondition.notNullOrBlank(format, "format is null", "format is blank");
@@ -212,9 +212,9 @@ public class Logger {
     }
 
     /**
-     * Method to log a WARN message
+     * Logs a WARN message.
      *
-     * @param message message
+     * @param message the message to log
      */
     public void warn(String message) {
         if (isWarnEnabled()) {
@@ -223,10 +223,10 @@ public class Logger {
     }
 
     /**
-     * Method to log an WARN message
+     * Logs a formatted WARN message.
      *
-     * @param format format
-     * @param objects objects
+     * @param format the format string
+     * @param objects the arguments to format
      */
     public void warn(String format, Object... objects) {
         Precondition.notNullOrBlank(format, "format is null", "format is blank");
@@ -237,9 +237,9 @@ public class Logger {
     }
 
     /**
-     * Method to log an ERROR message
+     * Logs an ERROR message.
      *
-     * @param message message
+     * @param message the message to log
      */
     public void error(String message) {
         if (isErrorEnabled()) {
@@ -248,10 +248,10 @@ public class Logger {
     }
 
     /**
-     * Method to log an ERROR message
+     * Logs a formatted ERROR message.
      *
-     * @param format format
-     * @param objects objects
+     * @param format the format string
+     * @param objects the arguments to format
      */
     public void error(String format, Object... objects) {
         Precondition.notNullOrBlank(format, "format is null", "format is blank");
@@ -262,7 +262,7 @@ public class Logger {
     }
 
     /**
-     * Method to flush
+     * Flushes the output streams.
      */
     public void flush() {
         System.err.flush();
@@ -270,12 +270,12 @@ public class Logger {
     }
 
     /**
-     * Method to log a message
+     * Logs a message to the specified PrintStream.
      *
-     * @param printStream printStream
-     * @param level level
-     * @param format format
-     * @param objects objects
+     * @param printStream the print stream to log to
+     * @param level the logging level
+     * @param format the format string
+     * @param objects the arguments to format
      */
     private void log(PrintStream printStream, Level level, String format, Object... objects) {
         printStream.println(LocalDateTime.now().format(DATE_TIME_FORMATTER)

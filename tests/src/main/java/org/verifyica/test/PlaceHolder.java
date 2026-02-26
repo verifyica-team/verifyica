@@ -17,12 +17,12 @@
 package org.verifyica.test;
 
 /**
- * PlaceHolder to prevent Maven warning
+ * Placeholder class to prevent Maven warning about empty source directories.
  */
 public class PlaceHolder {
 
     /**
-     * Constructor
+     * Constructs a PlaceHolder.
      */
     public PlaceHolder() {
         // INTENTIONALLY EMPTY

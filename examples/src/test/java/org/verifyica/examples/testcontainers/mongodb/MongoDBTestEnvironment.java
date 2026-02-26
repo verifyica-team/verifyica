@@ -29,7 +29,7 @@ import org.verifyica.examples.support.Resource;
 import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
- * Class to implement a MongoDBTestEnvironment
+ * Test environment for MongoDB using Testcontainers.
  */
 public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> {
 
@@ -37,18 +37,18 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     private MongoDBContainer mongoDBContainer;
 
     /**
-     * Constructor
+     * Constructs a MongoDBTestEnvironment with the specified Docker image name.
      *
-     * @param dockerImageName the name
+     * @param dockerImageName the Docker image name
      */
     public MongoDBTestEnvironment(String dockerImageName) {
         this.dockerImageName = dockerImageName;
     }
 
     /**
-     * Method to get the name
+     * Returns the Docker image name.
      *
-     * @return the name
+     * @return the Docker image name
      */
     @Override
     public String getName() {
@@ -56,9 +56,9 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     }
 
     /**
-     * Method to get the payload
+     * Returns this test environment as the payload.
      *
-     * @return the payload
+     * @return this MongoDBTestEnvironment
      */
     @Override
     public MongoDBTestEnvironment getPayload() {
@@ -66,9 +66,9 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     }
 
     /**
-     * Method to initialize the MongoDBTestEnvironment using a specific network
+     * Initializes the MongoDBTestEnvironment using the specified network.
      *
-     * @param network the network
+     * @param network the Docker network
      */
     public void initialize(Network network) {
         // info("initializing test environment [%s] ...", dockerImageName);
@@ -90,7 +90,7 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     }
 
     /**
-     * Method to determine if the MongoDBTestEnvironment is running
+     * Returns whether the MongoDBTestEnvironment is running.
      *
      * @return true if the MongoDBTestEnvironment is running, otherwise false
      */
@@ -99,7 +99,7 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     }
 
     /**
-     * Method to get the MongoDB connection string
+     * Returns the MongoDB connection string.
      *
      * @return the MongoDB connection string
      */
@@ -108,7 +108,7 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     }
 
     /**
-     * Method to destroy the MongoDBTestEnvironment
+     * Destroys the MongoDBTestEnvironment, stopping the container.
      */
     public void destroy() {
         // info("destroying test environment [%s] ...", dockerImageName);
@@ -122,9 +122,10 @@ public class MongoDBTestEnvironment implements Argument<MongoDBTestEnvironment> 
     }
 
     /**
-     * Method to create a Stream of MongoDBTestEnvironments
+     * Creates a Stream of MongoDBTestEnvironment instances from the docker-images.txt resource.
      *
      * @return a Stream of MongoDBTestEnvironments
+     * @throws IOException if the resource file cannot be read
      */
     public static Stream<MongoDBTestEnvironment> createTestEnvironments() throws IOException {
         List<MongoDBTestEnvironment> mongoDBTestEnvironments = new ArrayList<>();

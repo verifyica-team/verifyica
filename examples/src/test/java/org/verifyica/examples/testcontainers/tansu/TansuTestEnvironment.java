@@ -41,7 +41,7 @@ import org.verifyica.examples.support.Resource;
 import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
- * Class to implement a TansuTestEnvironment
+ * Test environment for Tansu (Kafka-compatible message broker) using Testcontainers.
  */
 public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
 
@@ -50,9 +50,9 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
     private int hostKafkaPort;
 
     /**
-     * Constructor
+     * Constructs a TansuTestEnvironment with the specified Docker image name.
      *
-     * @param dockerImageName the name
+     * @param dockerImageName the Docker image name
      */
     public TansuTestEnvironment(String dockerImageName) {
         this.dockerImageName = dockerImageName;
@@ -69,9 +69,9 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
     }
 
     /**
-     * Method to initialize the TansuTestEnvironment using a specific network
+     * Initializes the TansuTestEnvironment using the specified network.
      *
-     * @param network the network
+     * @param network the Docker network
      * @throws IOException if an error occurs
      */
     public void initialize(Network network) throws IOException {
@@ -122,7 +122,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
     }
 
     /**
-     * Method to determine if the TansuTestEnvironment is running
+     * Returns whether the TansuTestEnvironment is running.
      *
      * @return true if running, otherwise false
      */
@@ -131,9 +131,9 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
     }
 
     /**
-     * Method to get the Kafka bootstrap servers for Tansu
+     * Returns the Kafka bootstrap servers for Tansu.
      *
-     * @return bootstrap servers
+     * @return the bootstrap servers string
      */
     public String getBootstrapServers() {
         // Use the same host/port that we advertised to avoid metadata/unreachable hangs
@@ -141,7 +141,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
     }
 
     /**
-     * Method to destroy the TansuTestEnvironment
+     * Destroys the TansuTestEnvironment, stopping the container.
      */
     public void destroy() {
         if (genericContainer != null) {
@@ -151,7 +151,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
     }
 
     /**
-     * Method to create a topic in the TansuTestEnvironment
+     * Creates a topic in the TansuTestEnvironment.
      *
      * @param topic the topic name
      * @throws ExecutionException if an error occurs
@@ -166,7 +166,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
             topics.add(new NewTopic(topic, 1, (short) 1));
             admin.createTopics(topics).all().get();
         } catch (ExecutionException e) {
-            // ignore “already exists”
+            // ignore "already exists"
             if (e.getCause() == null || !e.getCause().getClass().getName().contains("TopicExists")) {
                 throw e;
             }
@@ -174,9 +174,10 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
     }
 
     /**
-     * Method to create a Stream of TansuTestEnvironments
+     * Creates a Stream of TansuTestEnvironment instances from the docker-images.txt resource.
      *
      * @return a Stream of TansuTestEnvironments
+     * @throws IOException if the resource file cannot be read
      */
     public static Stream<TansuTestEnvironment> createTestEnvironments() throws IOException {
         List<TansuTestEnvironment> envs = new ArrayList<>();
@@ -189,7 +190,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
     }
 
     /**
-     * Method to bind fixed host port -> container port 9092
+     * Binds a fixed host port to container port 9092.
      *
      * @param createContainerCmd the create container command
      * @param HOST_KAFKA_PORT the kafka port
@@ -202,7 +203,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
     }
 
     /**
-     * Method to safely stop a container
+     * Safely stops a container, ignoring any exceptions.
      *
      * @param container the container to stop
      */
@@ -219,7 +220,7 @@ public class TansuTestEnvironment implements Argument<TansuTestEnvironment> {
     }
 
     /**
-     * Method to get a free port on localhost
+     * Gets a free port on localhost.
      *
      * @return a free port on localhost
      * @throws IOException if an I/O error occurs when opening the socket

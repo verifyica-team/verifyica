@@ -19,35 +19,35 @@ package org.verifyica.examples.support;
 import static java.lang.String.format;
 
 /**
- * Class to implement Logger
+ * A simple logger that outputs messages to standard output.
  */
 public class Logger {
 
     private final String name;
 
     /**
-     * Constructor
+     * Constructs a Logger with the specified name.
      *
-     * @param name name
+     * @param name the name of the logger
      */
     private Logger(String name) {
         this.name = name;
     }
 
     /**
-     * Log an info print
+     * Logs an info message.
      *
-     * @param object object
+     * @param object the object to log
      */
     public void info(Object object) {
         System.out.printf("%s | %s%n", name, object);
     }
 
     /**
-     * Log an info print
+     * Logs a formatted info message.
      *
-     * @param format format
-     * @param objects objects
+     * @param format the format string
+     * @param objects the arguments to format
      */
     public void info(String format, Object... objects) {
         if (format == null) {
@@ -62,10 +62,10 @@ public class Logger {
     }
 
     /**
-     * Create a Logger
+     * Creates a Logger for the specified class.
      *
-     * @param clazz clazz
-     * @return a Logger
+     * @param clazz the class to create the logger for
+     * @return a Logger instance
      */
     public static Logger createLogger(Class<?> clazz) {
         if (clazz == null) {

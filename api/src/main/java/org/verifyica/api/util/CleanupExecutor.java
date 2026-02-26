@@ -36,7 +36,7 @@ public final class CleanupExecutor {
     private boolean hasRun = false;
 
     /**
-     * Creates a new instance of CleanupExecutor
+     * Constructs a CleanupExecutor.
      */
     public CleanupExecutor() {
         // INTENTIONALLY EMPTY

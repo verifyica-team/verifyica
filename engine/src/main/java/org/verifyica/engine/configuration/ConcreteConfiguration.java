@@ -216,12 +216,12 @@ public class ConcreteConfiguration implements Configuration {
     }
 
     /**
-     * Class to hold the singleton instance
+     * Holder for the singleton instance.
      */
     private static class SingletonHolder {
 
         /**
-         * The singleton instance
+         * The singleton instance.
          */
         private static final ConcreteConfiguration SINGLETON = new ConcreteConfiguration();
     }
