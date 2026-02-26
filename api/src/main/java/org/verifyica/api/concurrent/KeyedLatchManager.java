@@ -26,10 +26,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Class to implement KeyedLatchManager
- *
- * <p>Manages CountDownLatches by string keys, allowing thread synchronization
- * where one or more threads can wait for a set of operations to complete.</p>
+ * Manages CountDownLatches by string keys, allowing thread synchronization
+ * where one or more threads can wait for a set of operations to complete.
  */
 public class KeyedLatchManager {
 
@@ -37,7 +35,7 @@ public class KeyedLatchManager {
     private static final Map<String, CountDownLatch> LATCHES = new HashMap<>();
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation.
      */
     private KeyedLatchManager() {
         // INTENTIONALLY EMPTY

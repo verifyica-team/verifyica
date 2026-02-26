@@ -20,22 +20,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class to implement ExtendedMap
+ * An extended ConcurrentHashMap with type-safe casting methods.
  *
- * @param <K> key type
- * @param <V> value type
+ * @param <K> the key type
+ * @param <V> the value type
  */
 public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
 
     /**
-     * Constructor
+     * Constructs an empty ExtendedMap.
      */
     public ExtendedMap() {
         super();
     }
 
     /**
-     * Constructor
+     * Constructs an empty ExtendedMap with the specified initial capacity.
      *
      * @param initialCapacity the initial capacity
      */
@@ -44,7 +44,7 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     }
 
     /**
-     * Constructor
+     * Constructs an ExtendedMap containing the mappings from the specified map.
      *
      * @param map the map to copy
      */
@@ -53,7 +53,7 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     }
 
     /**
-     * Constructor
+     * Constructs an empty ExtendedMap with the specified initial capacity and load factor.
      *
      * @param initialCapacity the initial capacity
      * @param loadFactor the load factor
@@ -63,7 +63,7 @@ public class ExtendedMap<K, V> extends ConcurrentHashMap<K, V> {
     }
 
     /**
-     * Constructor
+     * Constructs an empty ExtendedMap with the specified initial capacity, load factor, and concurrency level.
      *
      * @param initialCapacity the initial capacity
      * @param loadFactor the load factor

@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class to implement LoggerFactory
+ * Factory for creating and retrieving Logger instances.
  */
 @SuppressWarnings("PMD.EmptyCatchBlock")
 public final class LoggerFactory {
@@ -30,37 +30,37 @@ public final class LoggerFactory {
     private final Map<String, Logger> loggers = new ConcurrentHashMap<>();
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation.
      */
     private LoggerFactory() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Method to get or create a Logger
+     * Gets or creates a Logger with the specified name.
      *
-     * @param name name
-     * @return a Logger
+     * @param name the logger name
+     * @return a Logger instance
      */
     private Logger getOrCreateLogger(String name) {
         return loggers.computeIfAbsent(name, Logger::new);
     }
 
     /**
-     * Method to get a Logger for a Class
+     * Returns a Logger for the specified Class.
      *
-     * @param clazz clazz
-     * @return a Logger
+     * @param clazz the class to get the logger for
+     * @return a Logger instance
      */
     public static Logger getLogger(Class<?> clazz) {
         return clazz != null ? getLogger(clazz.getName()) : ROOT_LOGGER;
     }
 
     /**
-     * Method to get a Logger by name
+     * Returns a Logger with the specified name.
      *
-     * @param name name
-     * @return a Logger
+     * @param name the logger name
+     * @return a Logger instance
      */
     public static Logger getLogger(String name) {
         Logger logger = null;
@@ -73,12 +73,12 @@ public final class LoggerFactory {
     }
 
     /**
-     * Class to hold the singleton instance
+     * Holder for the singleton instance.
      */
     private static final class SingletonHolder {
 
         /**
-         * The singleton instance
+         * The singleton instance.
          */
         private static final LoggerFactory SINGLETON = new LoggerFactory();
     }

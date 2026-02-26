@@ -20,24 +20,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class to build a block of text
+ * Builder for constructing multi-line text blocks.
  */
 public class TextBlock {
 
     private final List<String> lines;
 
     /**
-     * Constructor
+     * Constructs an empty TextBlock.
      */
     public TextBlock() {
         this.lines = new ArrayList<>();
     }
 
     /**
-     * Method to add a line of text
+     * Adds a line of text.
      *
      * @param line line of text
-     * @return this
+     * @return this TextBlock for method chaining
      */
     public TextBlock line(String line) {
         this.lines.add(line);
@@ -45,16 +45,16 @@ public class TextBlock {
     }
 
     /**
-     * Method to add an empty line of text
+     * Adds an empty line.
      *
-     * @return this
+     * @return this TextBlock for method chaining
      */
     public TextBlock line() {
         return line("");
     }
 
     /**
-     * Method to get the text block as a string
+     * Returns the text block as a string.
      *
      * @return the text block as a string
      */

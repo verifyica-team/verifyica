@@ -148,10 +148,10 @@ public class KafkaTest {
     }
 
     /**
-     * Method to create a KafkaProducer
+     * Creates a KafkaProducer.
      *
-     * @param kafkaTestEnvironment kafkaTestEnvironment
-     * @return a KafkaProducer
+     * @param kafkaTestEnvironment the Kafka test environment
+     * @return a KafkaProducer instance
      */
     private static KafkaProducer<String, String> createKafkaProducer(KafkaTestEnvironment kafkaTestEnvironment) {
         Properties properties = new Properties();
@@ -164,10 +164,10 @@ public class KafkaTest {
     }
 
     /**
-     * Method to create a KafkaConsumer
+     * Creates a KafkaConsumer.
      *
-     * @param kafkaTestEnvironment kafkaTestEnvironment
-     * @return a KafkaConsumer
+     * @param kafkaTestEnvironment the Kafka test environment
+     * @return a KafkaConsumer instance
      */
     private static KafkaConsumer<String, String> createKafkaConsumer(KafkaTestEnvironment kafkaTestEnvironment) {
         Properties properties = new Properties();

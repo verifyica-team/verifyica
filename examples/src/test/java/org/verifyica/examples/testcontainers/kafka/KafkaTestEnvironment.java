@@ -34,7 +34,7 @@ import org.verifyica.examples.support.Resource;
 import org.verifyica.examples.testcontainers.util.ContainerLogConsumer;
 
 /**
- * Class to implement a KafkaTestEnvironment
+ * Test environment for Apache Kafka using Testcontainers.
  */
 public class KafkaTestEnvironment implements Argument<KafkaTestEnvironment> {
 

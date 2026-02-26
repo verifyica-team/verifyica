@@ -58,7 +58,7 @@ public class Logger {
 
     private final String name;
 
-    /** Cached integer value of {@link Level} fast comparisons. */
+    /** Cached integer value of {@link Level} for fast comparisons. */
     private volatile int levelInt;
 
     /**

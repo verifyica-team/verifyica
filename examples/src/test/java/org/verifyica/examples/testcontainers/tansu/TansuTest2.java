@@ -178,10 +178,10 @@ public class TansuTest2 {
     }
 
     /**
-     * Method to create a KafkaProducer
+     * Creates a KafkaProducer.
      *
-     * @param argumentContext argumentContext
-     * @return a KafkaProducer
+     * @param argumentContext the argument context
+     * @return a KafkaProducer instance
      */
     private static KafkaProducer<String, String> createKafkaProducer(ArgumentContext argumentContext) {
         Properties properties = new Properties();
@@ -199,10 +199,10 @@ public class TansuTest2 {
     }
 
     /**
-     * Method to create a KafkaConsumer
+     * Creates a KafkaConsumer.
      *
-     * @param argumentContext argumentContext
-     * @return a KafkaConsumer
+     * @param argumentContext the argument context
+     * @return a KafkaConsumer instance
      */
     private static KafkaConsumer<String, String> createKafkaConsumer(ArgumentContext argumentContext) {
         Properties properties = new Properties();

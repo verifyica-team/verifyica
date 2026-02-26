@@ -27,10 +27,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Class to implement KeyedMutexManager
- *
- * <p>Manages mutexes (locks) by string keys, allowing thread-safe synchronization
- * across different parts of an application using the same key.</p>
+ * Manages mutexes (locks) by string keys, allowing thread-safe synchronization
+ * across different parts of an application using the same key.
  */
 public class KeyedMutexManager {
 
@@ -38,16 +36,16 @@ public class KeyedMutexManager {
     private static final Map<String, MutexReference> MUTEX_REFERENCES = new HashMap<>();
 
     /**
-     * Constructor
+     * Private constructor to prevent instantiation.
      */
     private KeyedMutexManager() {
         // INTENTIONALLY EMPTY
     }
 
     /**
-     * Try to lock a key
+     * Attempts to acquire the lock for the specified key.
      *
-     * @param key key
+     * @param key the key to lock
      * @return true if the lock was free or locked by the current Thread, otherwise false
      */
     public static boolean tryLock(String key) {
@@ -90,13 +88,13 @@ public class KeyedMutexManager {
     }
 
     /**
-     * Try to lock a key
+     * Attempts to acquire the lock for the specified key, with timeout.
      *
-     * @param key key
-     * @param timeout timeout
-     * @param timeUnit timeUnit
+     * @param key the key to lock
+     * @param timeout the maximum time to wait for the lock
+     * @param timeUnit the time unit of the timeout argument
      * @return true if the lock was free or locked by the current Thread, otherwise false
-     * @throws InterruptedException InterruptedException
+     * @throws InterruptedException if the current thread is interrupted while waiting
      */
     public static boolean tryLock(String key, long timeout, TimeUnit timeUnit) throws InterruptedException {
         notNull(timeUnit, "timeUnit is null");
@@ -140,9 +138,9 @@ public class KeyedMutexManager {
     }
 
     /**
-     * Lock a key
+     * Acquires the lock for the specified key.
      *
-     * @param key key
+     * @param key the key to lock
      */
     public static void lock(String key) {
         String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
@@ -170,9 +168,9 @@ public class KeyedMutexManager {
     }
 
     /**
-     * Unlock a key
+     * Releases the lock for the specified key.
      *
-     * @param key key
+     * @param key the key to unlock
      */
     public static void unlock(String key) {
         String trimmedKey = trimAndValidate(key, "key is null", "key is blank");
@@ -212,9 +210,9 @@ public class KeyedMutexManager {
     }
 
     /**
-     * Return if a key is locked
+     * Returns whether the specified key is locked.
      *
-     * @param key key
+     * @param key the key to check
      * @return true if the key is locked, otherwise false
      */
     public static boolean isLocked(String key) {
@@ -230,9 +228,9 @@ public class KeyedMutexManager {
     }
 
     /**
-     * Assert the number of MutexReferences
+     * Asserts the number of mutex references.
      *
-     * @param size size
+     * @param size the expected number of mutex references
      */
     static void assertSize(int size) {
         LOCK.lock();
@@ -246,10 +244,10 @@ public class KeyedMutexManager {
     }
 
     /**
-     * Validate an Object is not null, throwing an IllegalArgumentException if it is null
+     * Validates an Object is not null, throwing an IllegalArgumentException if it is null.
      *
-     * @param object object
-     * @param message message
+     * @param object the object to validate
+     * @param message the exception message
      */
     private static void notNull(Object object, String message) {
         if (object == null) {
@@ -258,12 +256,12 @@ public class KeyedMutexManager {
     }
 
     /**
-     * Validate a String is not null and not blank, throwing an IllegalArgumentException
+     * Validates a String is not null and not blank, throwing an IllegalArgumentException
      * if it is null or blank. Returns the trimmed string.
      *
-     * @param string string
-     * @param nullMessage nullMessage
-     * @param blankMessage blankMessage
+     * @param string the string to validate
+     * @param nullMessage the exception message if the string is null
+     * @param blankMessage the exception message if the string is blank
      * @return the trimmed string
      */
     private static String trimAndValidate(String string, String nullMessage, String blankMessage) {
@@ -279,7 +277,7 @@ public class KeyedMutexManager {
     }
 
     /**
-     * Class to implement MutexReference
+     * Reference to a mutex with tracking of threads holding the lock.
      */
     private static class MutexReference {
 
@@ -287,7 +285,7 @@ public class KeyedMutexManager {
         private final Set<Thread> threads;
 
         /**
-         * Constructor
+         * Constructs a new MutexReference.
          */
         private MutexReference() {
             reentrantLock = new ReentrantLock(true);
@@ -295,32 +293,32 @@ public class KeyedMutexManager {
         }
 
         /**
-         * Get the Lock
+         * Returns the lock.
          *
-         * @return the Lock
+         * @return the ReentrantLock
          */
         private ReentrantLock getLock() {
             return reentrantLock;
         }
 
         /**
-         * Add the current Thread
+         * Adds the current thread to the tracking set.
          */
         private void addThread() {
             threads.add(Thread.currentThread());
         }
 
         /**
-         * Remove the current Thread
+         * Removes the current thread from the tracking set.
          */
         private void removeThread() {
             threads.remove(Thread.currentThread());
         }
 
         /**
-         * Get the Thread count
+         * Returns the count of threads holding the lock.
          *
-         * @return the Thread count
+         * @return the thread count
          */
         private int getThreadCount() {
             return threads.size();
