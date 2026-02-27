@@ -40,18 +40,20 @@ public class ConfigurationPropertiesMutationTest {
                 .isThrownBy(
                         () -> argumentContext.getConfiguration().getProperties().clear());
 
-        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> argumentContext
-                .getClassContext()
-                .getConfiguration()
-                .getProperties()
-                .clear());
+        assertThatExceptionOfType(UnsupportedOperationException.class)
+                .isThrownBy(() -> argumentContext
+                        .getClassContext()
+                        .getConfiguration()
+                        .getProperties()
+                        .clear());
 
-        assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> argumentContext
-                .getClassContext()
-                .getEngineContext()
-                .getConfiguration()
-                .getProperties()
-                .clear());
+        assertThatExceptionOfType(UnsupportedOperationException.class)
+                .isThrownBy(() -> argumentContext
+                        .getClassContext()
+                        .getEngineContext()
+                        .getConfiguration()
+                        .getProperties()
+                        .clear());
     }
 
     public static class NestedConfigurationPropertiesMutationTest {
@@ -71,18 +73,20 @@ public class ConfigurationPropertiesMutationTest {
                     .isThrownBy(() ->
                             argumentContext.getConfiguration().getProperties().clear());
 
-            assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> argumentContext
-                    .getClassContext()
-                    .getConfiguration()
-                    .getProperties()
-                    .clear());
+            assertThatExceptionOfType(UnsupportedOperationException.class)
+                    .isThrownBy(() -> argumentContext
+                            .getClassContext()
+                            .getConfiguration()
+                            .getProperties()
+                            .clear());
 
-            assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> argumentContext
-                    .getClassContext()
-                    .getEngineContext()
-                    .getConfiguration()
-                    .getProperties()
-                    .clear());
+            assertThatExceptionOfType(UnsupportedOperationException.class)
+                    .isThrownBy(() -> argumentContext
+                            .getClassContext()
+                            .getEngineContext()
+                            .getConfiguration()
+                            .getProperties()
+                            .clear());
         }
     }
 }

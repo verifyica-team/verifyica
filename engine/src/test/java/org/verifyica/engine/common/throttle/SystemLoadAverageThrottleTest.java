@@ -372,8 +372,10 @@ public class SystemLoadAverageThrottleTest {
 
         // On Linux systems with /proc/stat, should return a value between 0 and 1
         // On non-Linux systems, should return -1
-        assertThat(cpuUsage).satisfiesAnyOf(value -> assertThat(value).isBetween(0.0, 1.0), value -> assertThat(value)
-                .isEqualTo(-1.0));
+        assertThat(cpuUsage)
+                .satisfiesAnyOf(
+                        value -> assertThat(value).isBetween(0.0, 1.0),
+                        value -> assertThat(value).isEqualTo(-1.0));
     }
 
     @Test

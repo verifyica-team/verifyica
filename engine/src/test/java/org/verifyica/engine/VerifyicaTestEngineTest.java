@@ -226,8 +226,10 @@ public class VerifyicaTestEngineTest {
             final String version = VerifyicaTestEngine.staticGetVersion();
 
             // Version should be either "unknown" or match semantic versioning pattern
-            assertThat(version).satisfiesAnyOf(v -> assertThat(v).isEqualTo("unknown"), v -> assertThat(v)
-                    .matches("^\\d+\\.\\d+\\.\\d+.*"));
+            assertThat(version)
+                    .satisfiesAnyOf(
+                            v -> assertThat(v).isEqualTo("unknown"),
+                            v -> assertThat(v).matches("^\\d+\\.\\d+\\.\\d+.*"));
         }
 
         @Test
