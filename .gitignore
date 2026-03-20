@@ -36,8 +36,5 @@ pom.xml.releaseBackup
 test.sh
 test.log
 
-junit-platform-console-standalone.sh
-build.sh
-.aider*
-.orchestrator
+__pycache__
 

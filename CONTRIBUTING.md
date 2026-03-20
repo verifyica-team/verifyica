@@ -20,6 +20,10 @@ For changes, you should...
 - Open a pull request targeting `main`, tagging `@antublue` for review
 - A [Developer Certificate of Origin](DCO.md) (DCO) is required for all contributions
 
+## Release Process
+
+Releases are managed using `release.py`. See [RELEASING.md](RELEASING.md) for details.
+
 ---
 
 Copyright (C) Verifyica project authors and contributors. All rights reserved.
