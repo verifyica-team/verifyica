@@ -49,4 +49,4 @@ The script performs the full release flow:
 
 ---
 
-Copyright (C) Verifyica project authors and contributors. All rights reserved.
+Copyright 2024-present Verifyica project authors and contributors. All rights reserved.
