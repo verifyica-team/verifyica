@@ -1,108 +1,51 @@
-# Releasing
+# Releasing Verifyica
 
-This document describes the release process for Verifyica.
+This repository publishes artifacts to Maven Central using `./release.sh` and the Maven `release` profile.
 
 ## Prerequisites
 
-- Clean git working directory (no uncommitted changes)
-- `~/.m2/verifyica.settings.xml` configured for Maven Central deployment
-- Git remote with push access
-- On `main` or `master` branch
+- Run the script from the repository root where `mvnw` is available.
+- Use a clean git working tree.
+- Start from the `main` branch.
+- Have push access to the remote tracked by `main` (or `origin` if no branch remote is configured).
+- Have `gpg` available locally because the Maven `release` profile signs artifacts during `verify`.
+- Have Maven settings configured for publishing to Maven Central.
 
-## Release Script
+## Release
 
-The `release.py` script handles the complete release workflow:
-
-1. Validates prerequisites
-2. Updates version across all Maven modules
-3. Builds and verifies the project
-4. Deploys artifacts to Maven Central
-5. Creates git tag and release branch
-6. Bumps to post-release version
-
-## Usage
-
-### Dry-Run (Default)
-
-Preview what the release would do without making changes:
+Run the release script with the target version:
 
 ```bash
-./release.py 1.0.7
+./release.sh 1.0.7
 ```
 
-### Execute Release
+The script performs the full release flow:
 
-Perform the actual release:
+1. Validates the version format.
+2. Verifies the repository is on a clean `main` branch.
+3. Verifies the release branch and tag do not already exist locally or on the remote.
+4. Runs a baseline release build with `./mvnw -Prelease clean verify`.
+5. Creates the release branch `release-<version>`.
+6. Sets the project version to `<version>`.
+7. Runs `./mvnw -Prelease clean verify`.
+8. Runs `./mvnw -Prelease clean deploy`.
+9. Commits the release changes as `Release <version>`.
+10. Creates the annotated tag `v<version>`.
+11. Pushes the release branch.
+12. Switches back to `main`.
+13. Sets the project version to `<version>-post`.
+14. Runs `./mvnw -Prelease clean verify`.
+15. Commits the post-release changes as `Prepare for development`.
+16. Pushes `main`.
+17. Pushes the release tag.
 
-```bash
-./release.py 1.0.7 --execute
-```
+## Conventions
 
-### Verbose Output
-
-Enable detailed logging:
-
-```bash
-./release.py 1.0.7 --execute --verbose
-```
-
-### Resume from Step
-
-Resume an interrupted release from a specific step:
-
-```bash
-./release.py 1.0.7 --execute --resume deploy
-```
-
-Available steps: `check_prerequisites`, `update_version`, `build_verify`, `deploy`, `git_release`, `post_release`
-
-### Specify Git Remote
-
-```bash
-./release.py 1.0.7 --execute --remote upstream
-```
-
-### Disable Colored Output
-
-```bash
-./release.py 1.0.7 --execute --no-color
-```
-
-## Release Workflow
-
-| Step | Description |
-|------|-------------|
-| `check_prerequisites` | Validates settings file, git, and mvnw exist |
-| `update_version` | Sets version across all Maven modules |
-| `build_verify` | Runs `./mvnw -B clean verify` |
-| `deploy` | Deploys to Maven Central using settings file |
-| `git_release` | Commits, tags, creates and pushes release branch |
-| `post_release` | Bumps version to `-post` for next development cycle |
-
-## Version Format
-
-Versions must follow semantic versioning: `MAJOR.MINOR.PATCH`
-
-Examples:
-- `1.0.7`
-- `1.1.0`
-- `2.0.0-beta`
-
-Versions ending with `-post` are reserved for post-release development snapshots.
-
-## Rollback
-
-If a release fails, the script attempts to rollback to the original state. However, you may need to manually:
-
-1. `git checkout main` (or your original branch)
-2. Reset version if needed: `./mvnw versions:set -DnewVersion=X.Y.Z-post -DprocessAllModules`
-3. Clean backup files: `rm -Rf $(find . -name "*versionsBackup")`
-
-## Help
-
-```bash
-./release.py --help
-```
+- Release tag: `v<version>`
+- Release branch: `release-<version>`
+- Post-release development version: `<version>-post`
+- Accepted version format: `MAJOR.MINOR.PATCH` or `MAJOR.MINOR.PATCH-label`
+- The release version must not already end in `-post`
 
 ---
 

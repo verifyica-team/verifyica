@@ -22,7 +22,7 @@ For changes, you should...
 
 ## Release Process
 
-Releases are managed using `release.py`. See [RELEASING.md](RELEASING.md) for details.
+Releases are managed using `release.sh`. See [RELEASING.md](RELEASING.md) for details.
 
 ---
 

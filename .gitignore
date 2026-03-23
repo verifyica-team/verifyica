@@ -36,5 +36,3 @@ pom.xml.releaseBackup
 test.sh
 test.log
 
-__pycache__
-
