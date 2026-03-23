@@ -5,6 +5,7 @@ set -euo pipefail
 readonly VERSION_PATTERN='^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9._-]+)?$'
 readonly BASE_BRANCH='main'
 readonly POST_SUFFIX='post'
+readonly SETTINGS_FILE="${HOME}/.m2/verifyica.settings.xml"
 
 usage() {
     echo "Usage: ./release.sh <version>" >&2
@@ -17,6 +18,10 @@ log() {
 fail() {
     echo "[ERROR] $*" >&2
     exit 1
+}
+
+run_maven() {
+    ./mvnw -s "${SETTINGS_FILE}" "$@"
 }
 
 require_clean_worktree() {
@@ -54,15 +59,15 @@ detect_remote() {
 set_version() {
     local version="$1"
 
-    ./mvnw -B versions:set -DnewVersion="${version}" -DprocessAllModules -DgenerateBackupPoms=false
+    run_maven -B versions:set -DnewVersion="${version}" -DprocessAllModules -DgenerateBackupPoms=false
 }
 
 verify_release_build() {
-    ./mvnw -Prelease clean verify
+    run_maven -Prelease clean verify
 }
 
 deploy_release_build() {
-    ./mvnw -Prelease clean deploy
+    run_maven -Prelease clean deploy
 }
 
 main() {
@@ -79,6 +84,7 @@ main() {
     tag_name="v${version}"
 
     [[ -f mvnw ]] || fail "mvnw not found in current directory"
+    [[ -f "${SETTINGS_FILE}" ]] || fail "Maven settings file not found: ${SETTINGS_FILE}"
 
     git rev-parse --is-inside-work-tree >/dev/null 2>&1 || fail "Not a git repository"
 

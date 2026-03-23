@@ -1,6 +1,6 @@
 # Releasing Verifyica
 
-This repository publishes artifacts to Maven Central using `./release.sh` and the Maven `release` profile.
+This repository publishes artifacts to Maven Central using `./release.sh`, the Maven `release` profile, and `~/.m2/verifyica.settings.xml`.
 
 ## Prerequisites
 
@@ -9,7 +9,7 @@ This repository publishes artifacts to Maven Central using `./release.sh` and th
 - Start from the `main` branch.
 - Have push access to the remote tracked by `main` (or `origin` if no branch remote is configured).
 - Have `gpg` available locally because the Maven `release` profile signs artifacts during `verify`.
-- Have Maven settings configured for publishing to Maven Central.
+- Have `~/.m2/verifyica.settings.xml` configured with the `central` server credentials for publishing to Maven Central.
 
 ## Release
 
@@ -38,6 +38,12 @@ The script performs the full release flow:
 15. Commits the post-release changes as `Prepare for development`.
 16. Pushes `main`.
 17. Pushes the release tag.
+
+All Maven commands in the script run with:
+
+```bash
+-s ~/.m2/verifyica.settings.xml
+```
 
 ## Conventions
 
