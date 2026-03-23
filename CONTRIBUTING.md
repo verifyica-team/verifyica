@@ -26,4 +26,4 @@ Releases are managed using `release.sh`. See [RELEASING.md](RELEASING.md) for de
 
 ---
 
-Copyright (C) Verifyica project authors and contributors. All rights reserved.
+Copyright 2024-present Verifyica project authors and contributors. All rights reserved.
