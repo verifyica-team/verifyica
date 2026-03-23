@@ -2,13 +2,13 @@
 
 ---
 
-[![Build](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml/badge.svg)](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0264117ec3e74d678551a03e67b4a6d2)](https://app.codacy.com/gh/verifyica-team/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) <a href="#"><img src="https://img.shields.io/badge/JDK%20compatibility-8+-blue.svg" alt="java 8+"></a> <a href="#"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="Apache 2.0"></a>
-
-|              |                                                                                                                                                                                                                         |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| API          | [![Maven Central](https://img.shields.io/maven-central/v/org.verifyica/verifyica-api.svg?label=Maven%20Central&color=dark_green)](https://central.sonatype.com/artifact/org.verifyica/verifyica-api)                    |
-| Engine       | [![Maven Central](https://img.shields.io/maven-central/v/org.verifyica/verifyica-engine.svg?label=Maven%20Central&color=dark_green)](https://central.sonatype.com/artifact/org.verifyica/verifyica-engine)              |
-| Maven Plugin | [![Maven Central](https://img.shields.io/maven-central/v/org.verifyica/verifyica-maven-plugin.svg?label=Maven%20Central&color=dark_green)](https://central.sonatype.com/artifact/org.verifyica/verifyica-maven-plugin) |
+[![Build](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml/badge.svg)](https://github.com/verifyica-team/verifyica/actions/workflows/build.yaml)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0264117ec3e74d678551a03e67b4a6d2)](https://app.codacy.com/gh/verifyica-team/verifyica/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Java Version](https://img.shields.io/badge/Java-8-blue)](https://openjdk.org/projects/jdk8/)
+[![Maven Central API](https://img.shields.io/maven-central/v/org.verifyica/verifyica-api?label=Maven%20Central%20API)](https://central.sonatype.com/artifact/org.verifyica/verifyica-api)
+[![Maven Central Engine](https://img.shields.io/maven-central/v/org.verifyica/verifyica-engine?label=Maven%20Central%20Engine)](https://central.sonatype.com/artifact/org.verifyica/verifyica-engine)
+[![Maven Central Plugin](https://img.shields.io/maven-central/v/org.verifyica/verifyica-maven-plugin?label=Maven%20Central%20Plugin)](https://central.sonatype.com/artifact/org.verifyica/verifyica-maven-plugin)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ![Verifyica](assets/verifyica.png)
 
