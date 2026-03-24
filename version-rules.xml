@@ -3,6 +3,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://mojo.codehaus.org/versions-maven-plugin/rule/2.0.0 http://mojo.codehaus.org/versions-maven-plugin/xsd/rule-2.0.0.xsd">
     <rules>
+        <rule groupId="org.junit" artifactId="junit-bom">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
         <rule groupId="org.junit.jupiter" artifactId="junit-jupiter">
             <ignoreVersions>
                 <ignoreVersion type="regex">^6\..*</ignoreVersion>
@@ -18,7 +23,32 @@
                 <ignoreVersion type="regex">^6\..*</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="org.junit.jupiter" artifactId="junit-jupiter-migrationsupport">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.jupiter" artifactId="junit-jupiter-params">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
         <rule groupId="org.junit.platform" artifactId="junit-platform-commons">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.platform" artifactId="junit-platform-console">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.platform" artifactId="junit-platform-engine">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.platform" artifactId="junit-platform-jfr">
             <ignoreVersions>
                 <ignoreVersion type="regex">^6\..*</ignoreVersion>
             </ignoreVersions>
@@ -26,6 +56,56 @@
         <rule groupId="org.junit.platform" artifactId="junit-platform-launcher">
             <ignoreVersions>
                 <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.platform" artifactId="junit-platform-reporting">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.platform" artifactId="junit-platform-runner">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.platform" artifactId="junit-platform-suite">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.platform" artifactId="junit-platform-suite-api">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.platform" artifactId="junit-platform-suite-commons">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.platform" artifactId="junit-platform-suite-engine">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.platform" artifactId="junit-platform-testkit">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.junit.vintage" artifactId="junit-vintage-engine">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^6\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.opentest4j" artifactId="opentest4j">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^[2-9]\..*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.apiguardian" artifactId="apiguardian-api">
+            <ignoreVersions>
+                <ignoreVersion type="regex">^[2-9]\..*</ignoreVersion>
             </ignoreVersions>
         </rule>
     </rules>
