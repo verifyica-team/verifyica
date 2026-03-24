@@ -36,3 +36,5 @@ pom.xml.releaseBackup
 test.sh
 test.log
 
+**/.flattened-pom.xml
+

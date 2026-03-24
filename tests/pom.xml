@@ -4,86 +4,41 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.verifyica</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0.7-post</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-    <groupId>org.verifyica</groupId>
     <artifactId>verfiyica-tests</artifactId>
-    <version>1.0.7-post</version>
     <packaging>jar</packaging>
     <name>Verifyica Tests</name>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.6.2</version>
-                <executions>
-                    <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>[3.9.14,)</version>
-                                </requireMavenVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.1.4</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.15.0</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                    <release>${maven.compiler.target}</release>
-                    <compilerArgs>
-                        <arg>-Xlint:deprecation</arg>
-                    </compilerArgs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.5</version>
                 <configuration>
                     <includes>
                         <include>%regex[.*org.junit.*]</include>
                     </includes>
                     <systemPropertyVariables>
-                        <junit.jupiter.extensions.autodetection.enabled>true
-                        </junit.jupiter.extensions.autodetection.enabled>
+                        <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.verifyica</groupId>
                 <artifactId>verifyica-maven-plugin</artifactId>
-                <version>1.0.7-post</version>
                 <executions>
                     <execution>
                         <phase>test</phase>
@@ -96,7 +51,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.28.0</version>
                 <configuration>
                     <linkXRef>false</linkXRef>
                     <format>txt</format>
@@ -112,40 +66,8 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.21.0</version>
-                <configuration>
-                    <rulesUri>file://${maven.multiModuleProjectDirectory}/version-rules.xml</rulesUri>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.diffplug.spotless</groupId>
-                <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.4.0</version>
-                <configuration>
-                    <licenseHeader>
-                        <file>${project.basedir}/../assets/license-header.txt</file>
-                    </licenseHeader>
-                    <java>
-                        <palantirJavaFormat>
-                            <version>2.89.0</version>
-                            <style>PALANTIR</style>
-                        </palantirJavaFormat>
-                    </java>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>apply</goal>
-                        </goals>
-                        <phase>compile</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.10.0</version>
                 <executions>
                     <execution>
                         <phase>prepare-package</phase>
@@ -165,31 +87,26 @@
         <dependency>
             <groupId>org.verifyica</groupId>
             <artifactId>verifyica-api</artifactId>
-            <version>1.0.7-post</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.verifyica</groupId>
             <artifactId>verifyica-engine</artifactId>
-            <version>1.0.7-post</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.14.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.14.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.27.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -4,75 +4,44 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.verifyica</groupId>
+    <parent>
+        <groupId>org.verifyica</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0.7-post</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <artifactId>verifyica-api</artifactId>
-    <version>1.0.7-post</version>
     <packaging>jar</packaging>
     <name>Verifyica API</name>
     <description>Verifyica API</description>
-    <url>https://github.com/verifyica-team/verifyica</url>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
-
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repository</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <name>AntuBLUE</name>
-            <email>antublue@antublue.org</email>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:git://github.com/verifyica-team/verifyica.git</connection>
-        <developerConnection>scm:git:git@github.com:verifyica-team/verifyica.git</developerConnection>
-        <url>https://github.com/verifyica-team/verifyica</url>
-        <tag>HEAD</tag>
-    </scm>
 
     <dependencies>
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-commons</artifactId>
-            <version>1.14.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-rng-simple</artifactId>
-            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-rng-sampling</artifactId>
-            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.14.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.14.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.27.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -97,55 +66,7 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.6.2</version>
-                <executions>
-                    <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>[3.9.14,)</version>
-                                </requireMavenVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.5.0</version>
-                <configuration>
-                    <propertiesEncoding>${project.build.sourceEncoding}</propertiesEncoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.15.0</version>
-                <inherited>true</inherited>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                    <release>${maven.compiler.target}</release>
-                    <compilerArgs>
-                        <arg>-Xlint:deprecation</arg>
-                    </compilerArgs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -187,7 +108,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.28.0</version>
                 <configuration>
                     <linkXRef>false</linkXRef>
                     <format>txt</format>
@@ -203,46 +123,37 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.21.0</version>
-                <configuration>
-                    <rulesUri>file://${maven.multiModuleProjectDirectory}/version-rules.xml</rulesUri>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.diffplug.spotless</groupId>
-                <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.4.0</version>
-                <configuration>
-                    <licenseHeader>
-                        <file>${project.basedir}/../assets/license-header.txt</file>
-                    </licenseHeader>
-                    <java>
-                        <palantirJavaFormat>
-                            <version>2.89.0</version>
-                            <style>PALANTIR</style>
-                        </palantirJavaFormat>
-                    </java>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>apply</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.12.0</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <configuration>
+                            <flattenMode>ossrh</flattenMode>
+                            <updatePomFile>true</updatePomFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -257,28 +168,7 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>3.6.2</version>
-                        <executions>
-                            <execution>
-                                <id>enforce-maven</id>
-                                <goals>
-                                    <goal>enforce</goal>
-                                </goals>
-                                <configuration>
-                                    <rules>
-                                        <requireMavenVersion>
-                                            <version>[3.9.14,)</version>
-                                        </requireMavenVersion>
-                                    </rules>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.8</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -292,7 +182,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.4.0</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -303,22 +192,8 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.12.0</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>0.10.0</version>
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
