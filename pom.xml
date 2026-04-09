@@ -36,7 +36,7 @@
         <testcontainers.nginx.version>1.21.4</testcontainers.nginx.version>
         <commons.compress.version>1.28.0</commons.compress.version>
         <kafka.clients.version>4.2.0</kafka.clients.version>
-        <mongodb.driver.version>5.6.4</mongodb.driver.version>
+        <mongodb.driver.version>5.6.5</mongodb.driver.version>
         <maven.plugin.api.version>${maven.min.version}</maven.plugin.api.version>
         <maven.plugin.tools.version>3.15.2</maven.plugin.tools.version>
 
