@@ -30,7 +30,7 @@
         <javax.inject.version>1</javax.inject.version>
         <mockito.version>5.23.0</mockito.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <testcontainers.version>2.0.4</testcontainers.version>
+        <testcontainers.version>2.0.5</testcontainers.version>
         <testcontainers.kafka.version>1.21.4</testcontainers.kafka.version>
         <testcontainers.mongodb.version>1.21.4</testcontainers.mongodb.version>
         <testcontainers.nginx.version>1.21.4</testcontainers.nginx.version>
