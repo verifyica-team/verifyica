@@ -20,5 +20,16 @@
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.24",
     "postcss-cli": "^11.0.0"
+  },
+  "overrides": {
+    "anymatch": {
+      "picomatch": "2.3.2"
+    },
+    "readdirp": {
+      "picomatch": "2.3.2"
+    },
+    "tinyglobby": {
+      "picomatch": "4.0.4"
+    }
   }
 }
