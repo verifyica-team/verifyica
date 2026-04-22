@@ -18,7 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <maven.min.version>3.9.14</maven.min.version>
+        <maven.min.version>3.9.15</maven.min.version>
 
         <commons.rng.version>1.7</commons.rng.version>
         <assertj.version>3.27.7</assertj.version>
