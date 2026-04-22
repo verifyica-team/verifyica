@@ -54,15 +54,15 @@ detect_remote() {
 set_version() {
     local version="$1"
 
-    ./mvnw -B versions:set -DnewVersion="${version}" -DprocessAllModules -DgenerateBackupPoms=false
+    ./mvnw -s ~/.m2/verifyica.settings.xml -B versions:set -DnewVersion="${version}" -DprocessAllModules -DgenerateBackupPoms=false
 }
 
 verify_release_build() {
-    ./mvnw -Prelease clean verify
+    ./mvnw -s ~/.m2/verifyica.settings.xml -Prelease clean verify
 }
 
 deploy_release_build() {
-    ./mvnw -Prelease clean deploy
+    ./mvnw -s ~/.m2/verifyica.settings.xml -Prelease clean deploy
 }
 
 main() {
