@@ -1,3 +1,28 @@
+## 📦 Archive Notice
+
+This repository is now in **archive mode** and is no longer actively maintained.
+
+# Why is this project being archived?
+
+## Fragile IDE ↔ Integration behavior
+
+In practice, the integration between IDEs and custom JUnit test engine implementations has proven to be unreliable.
+Differences in how IDEs discover, execute, and report tests frequently lead to broken or inconsistent behavior,
+especially for downstream users building on top of this project.
+
+Many of the IDEs have core JUnit integration issues that are outside of our, or JUnit's control. The custom test
+engine approach has made it difficult to work around these problems effectively.
+
+## What should I use instead?
+
+We recommend migrating to:
+
+👉 https://github.com/paramixel/paramixel
+
+The Paramixel project is designed with greater flexibility and aims to address the limitations encountered here, particularly around integration stability and extensibility.
+
+---
+
 ###  This README.md and other documentation is specific to a branch / release
 
 ---
